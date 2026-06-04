@@ -79,7 +79,7 @@
                     <x-lucide-download class="icon me-1" />
                     Unduh Template Surat Kesanggupan
                 </button>
-                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-partner">
+                <button type="button" class="btn btn-primary btn-sm" wire:click="$dispatch('open-modal', {modalId: 'modal-partner'})">
                     <x-lucide-plus class="icon" />
                     Tambah Mitra
                 </button>
@@ -89,7 +89,10 @@
         @if (empty($form->partner_ids))
             <div class="alert alert-info">
                 <x-lucide-info class="icon me-2" />
-                Belum ada mitra yang ditambahkan. Untuk proposal Pengabdian Masyarakat, minimal wajib menambahkan 1 mitra.
+                Belum ada mitra yang ditambahkan.
+                @if(\App\Models\Setting::get('feature_community_partner_required', true))
+                    Untuk proposal Pengabdian Masyarakat, minimal wajib menambahkan 1 mitra.
+                @endif
             </div>
         @endif
 

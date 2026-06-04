@@ -1020,9 +1020,7 @@ class ProposalForm extends Form
 
     private function attachPartners(Proposal $proposal): void
     {
-        if (! empty($this->partner_ids)) {
-            $proposal->partners()->sync($this->partner_ids);
-        }
+        $proposal->partners()->sync($this->partner_ids);
     }
 
     private function attachKeywords(Proposal $proposal): void

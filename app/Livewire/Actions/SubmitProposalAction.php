@@ -85,6 +85,16 @@ class SubmitProposalAction
             }
         }
 
+        // Check partner requirement for community service proposals
+        if (Setting::get('feature_community_partner_required', true)
+            && $proposal->detailable_type === 'App\Models\CommunityService'
+            && $proposal->partners()->count() === 0) {
+            return [
+                'success' => false,
+                'message' => 'Proposal Pengabdian Masyarakat wajib memiliki minimal 1 mitra.',
+            ];
+        }
+
         try {
             DB::transaction(function () use ($proposal) {
                 $proposal->update(['status' => ProposalStatus::SUBMITTED->value]);

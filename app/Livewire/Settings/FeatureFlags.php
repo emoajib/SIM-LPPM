@@ -12,10 +12,13 @@ class FeatureFlags extends Component
 
     public bool $featureKaprodiValidation = false;
 
+    public bool $featureCommunityPartnerRequired = true;
+
     public function mount(): void
     {
         $this->featureRoadmapActive = Setting::get('feature_roadmap_active', false);
         $this->featureKaprodiValidation = Setting::get('feature_kaprodi_validation', false);
+        $this->featureCommunityPartnerRequired = Setting::get('feature_community_partner_required', true);
     }
 
     public function updated(string $property, mixed $value): void
@@ -26,6 +29,10 @@ class FeatureFlags extends Component
 
         if ($property === 'featureKaprodiValidation') {
             Setting::set('feature_kaprodi_validation', $value, 'boolean');
+        }
+
+        if ($property === 'featureCommunityPartnerRequired') {
+            Setting::set('feature_community_partner_required', $value, 'boolean');
         }
 
         // We dispatch a browser event or notify the user

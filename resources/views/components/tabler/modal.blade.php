@@ -79,7 +79,7 @@
     $wireIgnoreAttr = $wireIgnore ? ['wire:ignore.self' => true] : [];
 @endphp
 
-<div
+<div wire:key="{{ $id }}"
     {{ $attributes->merge(
         array_merge(
             [

@@ -13,6 +13,7 @@ use App\Models\Faculty;
 use App\Models\FocusArea;
 use App\Models\Identity;
 use App\Models\Institution;
+use App\Models\Partner;
 use App\Models\Proposal;
 use App\Models\ProposalReviewer;
 use App\Models\Research;
@@ -370,6 +371,9 @@ class ProposalWorkflowTest extends TestCase
         $proposal->teamMembers()->attach($this->dosen->id, ['role' => 'ketua', 'status' => 'accepted']);
         $fakeFile = UploadedFile::fake()->create('substance.pdf', 100, 'application/pdf');
         $proposal->detailable->addMedia($fakeFile)->toMediaCollection('substance');
+
+        // Add a partner so submission passes partner validation
+        $proposal->partners()->attach(Partner::factory()->create()->id);
 
         $this->actingAs($this->dosen);
         app(SubmitProposalAction::class)->execute($proposal);

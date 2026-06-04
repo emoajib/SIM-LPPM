@@ -50,5 +50,26 @@
                 </div>
             </div>
         </div>
+
+        <div class="list-group-item px-0">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <span class="avatar bg-purple-lt">
+                        <x-lucide-handshake class="icon" />
+                    </span>
+                </div>
+                <div class="col text-truncate">
+                    <div class="text-body d-block font-weight-medium">Mitra Wajib (Pengabdian Masyarakat)</div>
+                    <div class="text-muted text-truncate mt-n1">
+                        Mewajibkan dosen menambahkan minimal 1 mitra pada proposal Pengabdian Masyarakat.
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <label class="form-check form-switch m-0">
+                        <input class="form-check-input" type="checkbox" wire:model.live="featureCommunityPartnerRequired">
+                    </label>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

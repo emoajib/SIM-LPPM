@@ -79,7 +79,7 @@
                     <x-lucide-download class="icon me-1" />
                     Unduh Template Surat Kesanggupan
                 </button>
-                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-partner">
+                <button type="button" class="btn btn-primary btn-sm" wire:click="$dispatch('open-modal', {modalId: 'modal-partner'})">
                     <x-lucide-plus class="icon" />
                     Tambah Mitra
                 </button>

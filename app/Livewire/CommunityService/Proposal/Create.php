@@ -5,6 +5,7 @@ namespace App\Livewire\CommunityService\Proposal;
 use App\Constants\ProposalConstants;
 use App\Livewire\Abstracts\ProposalCreate;
 use App\Models\Proposal;
+use App\Models\Setting;
 use Illuminate\Validation\Rule;
 use Spatie\MediaLibrary\HasMedia;
 
@@ -56,8 +57,10 @@ class Create extends ProposalCreate
         }
 
         if ($step === 4) {
+            $rule = Setting::get('feature_community_partner_required', true) ? 'required|array|min:1' : 'nullable|array';
+
             return [
-                'form.partner_ids' => 'required|array|min:1',
+                'form.partner_ids' => $rule,
                 'form.partner_ids.*' => 'exists:partners,id',
             ];
         }
