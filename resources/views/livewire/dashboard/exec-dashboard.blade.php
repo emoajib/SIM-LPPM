@@ -38,6 +38,22 @@
                     </a>
                 </div>
             </div>
+            <div class="dropdown">
+                <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2"
+                    data-bs-toggle="dropdown">
+                    <i class="ti ti-filter fs-2"></i>
+                    <span>Status:
+                        {{ $availableStatuses[$selectedStatus] ?? 'Semua Status' }}</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end" style="max-height: 300px; overflow-y: auto;">
+                    @foreach ($availableStatuses as $value => $label)
+                        <a href="#" class="dropdown-item {{ $selectedStatus === $value ? 'active' : '' }}"
+                            wire:click.preserve-scroll="$set('selectedStatus', '{{ $value }}')">
+                            {{ $label }}
+                        </a>
+                    @endforeach
+                </div>
+            </div>
         </div>
     </div>
 
@@ -178,7 +194,7 @@
         </div>
     </div>
 
-    <!-- Recent Approved Proposals -->
+    <!-- Recent Proposals -->
     <div class="row row-cards">
         <div class="col-lg-6">
             <div class="card border-0 shadow-sm" style="border-radius: 12px;">
@@ -186,13 +202,14 @@
                     <div class="avatar bg-primary-lt text-primary shadow-sm avatar-sm me-3 border-0">
                         <i class="ti ti-flask-2"></i>
                     </div>
-                    <h3 class="card-title fw-bold mb-0">Penelitian Strategis (Approved)</h3>
+                    <h3 class="card-title fw-bold mb-0">Penelitian Terbaru</h3>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-vcenter card-table table-hover table-borderless">
                         <thead class="bg-transparent text-muted">
                             <tr>
                                 <th class="ps-4">Judul & Peneliti</th>
+                                <th class="text-center">Status</th>
                                 <th class="text-end pe-4">Tanggal</th>
                             </tr>
                         </thead>
@@ -210,13 +227,19 @@
                                             {{ $research->submitter?->name }}
                                         </div>
                                     </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-{{ $research->status->color() }}-lt fw-bold px-2 py-1">
+                                            <span class="badge bg-{{ $research->status->color() }} me-1"></span>
+                                            {{ $research->status->label() }}
+                                        </span>
+                                    </td>
                                     <td class="text-end pe-4 text-muted small">
-                                        {{ $research->created_at->format('d M Y') }}
+                                        {{ $research->created_at->format('d/m/Y') }}
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="2" class="text-center py-5 text-muted">Belum ada penelitian disetujui</td>
+                                    <td colspan="3" class="text-center py-5 text-muted">Belum ada penelitian</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -231,13 +254,14 @@
                     <div class="avatar bg-azure-lt text-azure shadow-sm avatar-sm me-3 border-0">
                         <i class="ti ti-users-group"></i>
                     </div>
-                    <h3 class="card-title fw-bold mb-0">PKM Strategis (Approved)</h3>
+                    <h3 class="card-title fw-bold mb-0">PKM Terbaru</h3>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-vcenter card-table table-hover table-borderless">
                         <thead class="bg-transparent text-muted">
                             <tr>
                                 <th class="ps-4">Judul & Pengaju</th>
+                                <th class="text-center">Status</th>
                                 <th class="text-end pe-4">Tanggal</th>
                             </tr>
                         </thead>
@@ -255,13 +279,19 @@
                                             {{ $communityService->submitter?->name }}
                                         </div>
                                     </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-{{ $communityService->status->color() }}-lt fw-bold px-2 py-1">
+                                            <span class="badge bg-{{ $communityService->status->color() }} me-1"></span>
+                                            {{ $communityService->status->label() }}
+                                        </span>
+                                    </td>
                                     <td class="text-end pe-4 text-muted small">
-                                        {{ $communityService->created_at->format('d M Y') }}
+                                        {{ $communityService->created_at->format('d/m/Y') }}
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="2" class="text-center py-5 text-muted">Belum ada PKM disetujui</td>
+                                    <td colspan="3" class="text-center py-5 text-muted">Belum ada PKM</td>
                                 </tr>
                             @endforelse
                         </tbody>

@@ -32,7 +32,11 @@ class ExecDashboard extends Component
 
     public $selectedSemester = 'all';
 
+    public $selectedStatus = 'all';
+
     public $availableYears = [];
+
+    public $availableStatuses = [];
 
     public $periodicSummary = [];
 
@@ -42,11 +46,17 @@ class ExecDashboard extends Component
         $this->roleName = active_role();
         $this->selectedYear = (int) date('Y');
         $this->availableYears = $this->getAvailableYears();
+        $this->availableStatuses = $this->getAvailableStatuses();
 
         $this->loadAnalytics();
     }
 
     public function updatedSelectedYear(): void
+    {
+        $this->loadAnalytics();
+    }
+
+    public function updatedSelectedStatus(): void
     {
         $this->loadAnalytics();
     }
@@ -81,17 +91,35 @@ class ExecDashboard extends Component
         return $years;
     }
 
+    private function getAvailableStatuses(): array
+    {
+        return [
+            'all' => 'Semua Status',
+            'draft' => 'Draft',
+            'submitted' => 'Submitted',
+            'need_assignment' => 'Need Assignment',
+            'waiting_reviewer' => 'Waiting Reviewer',
+            'under_review' => 'Under Review',
+            'reviewed' => 'Reviewed',
+            'revision_needed' => 'Revision Needed',
+            'approved' => 'Approved',
+            'rejected' => 'Rejected',
+            'completed' => 'Completed',
+        ];
+    }
+
     public function loadAnalytics(): void
     {
         $yearFilter = $this->selectedYear;
         $semesterFilter = $this->selectedSemester;
+        $statusFilter = $this->selectedStatus;
         $facultyId = $this->roleName === 'dekan' ? $this->user->identity?->faculty_id : null;
 
         // OPTIMIZED: Single aggregated query for all stats
         $this->loadStats($yearFilter, $semesterFilter, $facultyId);
 
         // Load recent proposals
-        $this->loadRecentProposals($yearFilter, $semesterFilter, $facultyId);
+        $this->loadRecentProposals($yearFilter, $semesterFilter, $statusFilter, $facultyId);
 
         // Load periodic summary with optimized queries
         $this->periodicSummary = $this->getPeriodicSummary($facultyId);
@@ -199,13 +227,16 @@ class ExecDashboard extends Component
     /**
      * Load recent proposals in a single query.
      */
-    private function loadRecentProposals(int $yearFilter, string $semesterFilter, ?int $facultyId): void
+    private function loadRecentProposals(int $yearFilter, string $semesterFilter, string $statusFilter, ?int $facultyId): void
     {
         $query = $this->buildBaseQuery($yearFilter, $semesterFilter, $facultyId);
 
+        if ($statusFilter !== 'all') {
+            $query->where('status', $statusFilter);
+        }
+
         $recentProposals = (clone $query)
             ->with(['submitter'])
-            ->whereIn('status', ['approved', 'completed'])
             ->latest()
             ->limit(20)
             ->get();
