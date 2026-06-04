@@ -36,7 +36,11 @@ class AdminDashboard extends Component
 
     public $selectedYear;
 
+    public $selectedStatus = 'all';
+
     public $availableYears = [];
+
+    public $availableStatuses = [];
 
     public function mount(): void
     {
@@ -44,11 +48,17 @@ class AdminDashboard extends Component
         $this->roleName = active_role();
         $this->selectedYear = date('Y');
         $this->availableYears = $this->getAvailableYears();
+        $this->availableStatuses = $this->getAvailableStatuses();
 
         $this->loadAnalytics();
     }
 
     public function updatedSelectedYear(): void
+    {
+        $this->loadAnalytics();
+    }
+
+    public function updatedSelectedStatus(): void
     {
         $this->loadAnalytics();
     }
@@ -86,9 +96,27 @@ class AdminDashboard extends Component
         return $years;
     }
 
+    private function getAvailableStatuses(): array
+    {
+        return [
+            'all' => 'Semua Status',
+            'draft' => 'Draft',
+            'submitted' => 'Submitted',
+            'need_assignment' => 'Need Assignment',
+            'waiting_reviewer' => 'Waiting Reviewer',
+            'under_review' => 'Under Review',
+            'reviewed' => 'Reviewed',
+            'revision_needed' => 'Revision Needed',
+            'approved' => 'Approved',
+            'rejected' => 'Rejected',
+            'completed' => 'Completed',
+        ];
+    }
+
     public function loadAnalytics(): void
     {
         $yearFilter = $this->selectedYear;
+        $statusFilter = $this->selectedStatus;
 
         // OPTIMIZED: Single aggregated query for all stats (replaces 9 separate count queries)
         $this->loadStats($yearFilter);
@@ -97,7 +125,7 @@ class AdminDashboard extends Component
         $this->loadProcessStats($yearFilter);
 
         // Load recent proposals
-        $this->loadRecentProposals($yearFilter);
+        $this->loadRecentProposals($yearFilter, $statusFilter);
     }
 
     /**
@@ -264,14 +292,16 @@ class AdminDashboard extends Component
     /**
      * Load recent proposals in a single query.
      */
-    private function loadRecentProposals(string $yearFilter): void
+    private function loadRecentProposals(string $yearFilter, string $statusFilter = 'all'): void
     {
-        // Filter by start_year (tahun pelaksanaan) — konsisten dengan KPI cards
-        $recentProposals = Proposal::with(['submitter.identity', 'focusArea', 'researchScheme', 'communityServiceScheme'])
-            ->where('start_year', $yearFilter)
-            ->latest()
-            ->limit(20)
-            ->get();
+        $query = Proposal::with(['submitter.identity', 'focusArea', 'researchScheme', 'communityServiceScheme'])
+            ->where('start_year', $yearFilter);
+
+        if ($statusFilter !== 'all') {
+            $query->where('status', $statusFilter);
+        }
+
+        $recentProposals = $query->latest()->limit(20)->get();
 
         $this->recentResearch = $recentProposals
             ->filter(fn ($p) => str_contains($p->detailable_type, 'Research'))
