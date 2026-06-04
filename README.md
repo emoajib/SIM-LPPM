@@ -92,3 +92,39 @@ chmod -R 775 storage bootstrap/cache
 # 7. Maintenance mode OFF
 php artisan up
 ```
+Ringkasan untuk deploy nanti malam
+cd /home/simlppmi/sim-lppm
+
+# Backup
+cp -r . ../backup-$(date +%Y%m%d-%H%M%S)
+
+# Maintenance mode ON
+php artisan down --retry=300
+
+# Pull & install
+git pull origin main
+composer install --no-dev --optimize-autoloader
+
+# Migration
+php artisan migrate --force
+
+# Cache
+php artisan optimize:clear
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+# Flush PDF cache
+find storage/app/public/pdf_cache -type f -name "*.pdf" -delete 2>/dev/null
+echo "PDF cache cleaned"
+
+# OPcache
+php -r 'if (function_exists("opcache_reset")) { opcache_reset(); echo "OPcache cleared\n"; } else { echo "OPcache not available\n"; }'
+
+# Permissions
+find . -type f -print0 | xargs -0 chmod 644
+find . -type d -print0 | xargs -0 chmod 755
+chmod -R 775 storage bootstrap/cache
+
+# Maintenance mode OFF
+php artisan up
