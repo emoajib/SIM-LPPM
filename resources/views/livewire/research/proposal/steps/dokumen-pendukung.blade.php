@@ -253,19 +253,20 @@
 </div>
 
 <!-- Modal: Tambah Mitra -->
-<x-tabler.modal id="modal-partner" title="Tambah Mitra Kerjasama" size="lg" :wireIgnore="false">
+<x-tabler.modal id="modal-partner" title="Tambah Mitra Kerjasama" size="lg"
+    x-data="{ partnerMode: 'existing' }">
     {{-- Tab Toggle --}}
     <div class="mb-3">
         <div class="btn-group w-100" role="group">
             <input type="radio" class="btn-check" name="partner-mode" id="tab-existing-r" value="existing"
-                wire:model.live="partnerMode" checked>
+                x-model="partnerMode">
             <label class="btn btn-outline-primary" for="tab-existing-r">
                 <x-lucide-search class="icon me-1" />
                 Pilih Mitra yang Ada
             </label>
 
             <input type="radio" class="btn-check" name="partner-mode" id="tab-new-r" value="new"
-                wire:model.live="partnerMode">
+                x-model="partnerMode">
             <label class="btn btn-outline-secondary" for="tab-new-r">
                 <x-lucide-plus class="icon me-1" />
                 Buat Mitra Baru
@@ -274,7 +275,7 @@
     </div>
 
     {{-- TAB 1: Pilih Mitra yang Sudah Ada --}}
-    <div @class(['d-none' => ($partnerMode ?? 'existing') !== 'existing'])>
+    <div x-show="partnerMode === 'existing'">
         <div class="mb-3">
             <input type="text" wire:model.live.debounce.300ms="partnerSearch"
                 class="form-control" placeholder="Ketik nama mitra untuk mencari...">
@@ -327,7 +328,7 @@
     </div>
 
     {{-- TAB 2: Buat Mitra Baru --}}
-    <div @class(['d-none' => ($partnerMode ?? 'existing') !== 'new'])>
+<div x-show="partnerMode === 'new'"> 
         <div class="mb-3">
             <label class="form-label">Nama Mitra <span class="text-danger">*</span></label>
             <input type="text" wire:model="form.new_partner.name"
@@ -412,16 +413,15 @@
 
     <x-slot:footer>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-        @if(($partnerMode ?? 'existing') === 'new')
-            <button type="button" wire:click="saveNewPartner" class="btn btn-primary">
-                <span wire:loading.remove>
-                    <x-lucide-save class="icon" />
-                    Simpan Mitra Baru
-                </span>
-                <span wire:loading class="spinner-border spinner-border-sm me-2" role="status"></span>
-                <span wire:loading>Menyimpan...</span>
-            </button>
-        @endif
+        <button type="button" wire:click="saveNewPartner" class="btn btn-primary"
+            x-show="partnerMode === 'new'">
+            <span wire:loading.remove>
+                <x-lucide-save class="icon" />
+                Simpan Mitra Baru
+            </span>
+            <span wire:loading class="spinner-border spinner-border-sm me-2" role="status"></span>
+            <span wire:loading>Menyimpan...</span>
+        </button>
     </x-slot:footer>
 </x-tabler.modal>
 
