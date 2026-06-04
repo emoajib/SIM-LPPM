@@ -88,6 +88,18 @@ class ProposalPdfService
             }
         }
 
+        // Check identity updated_at (submitter + team members)
+        $submitterIdentity = $proposal->submitter->identity;
+        if ($submitterIdentity && $submitterIdentity->updated_at) {
+            $latestTimestamp = max($latestTimestamp, $submitterIdentity->updated_at->timestamp);
+        }
+        foreach ($proposal->teamMembers as $member) {
+            $memberIdentity = $member->identity;
+            if ($memberIdentity && $memberIdentity->updated_at) {
+                $latestTimestamp = max($latestTimestamp, $memberIdentity->updated_at->timestamp);
+            }
+        }
+
         // Debug: Log timestamp calculation for cache invalidation
         Log::debug('PDF Cache Timestamp Calculation', [
             'proposal_id' => $proposal->id,

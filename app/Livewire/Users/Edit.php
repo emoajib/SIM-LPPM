@@ -59,15 +59,15 @@ class Edit extends Component
 
     public string $title_suffix = '';
 
-    public int $scopus_h_index = 0;
+    public ?int $scopus_h_index = null;
 
     public float $sinta_score_v3_overall = 0;
 
     public string $functional_position = '';
 
-    public int $gs_h_index = 0;
+    public ?int $gs_h_index = null;
 
-    public int $wos_h_index = 0;
+    public ?int $wos_h_index = null;
 
     public ?string $type = null;
 
@@ -110,11 +110,11 @@ class Edit extends Component
             $this->wos_id = $user->identity->wos_id ?? '';
             $this->title_prefix = $user->identity->title_prefix ?? '';
             $this->title_suffix = $user->identity->title_suffix ?? '';
-            $this->scopus_h_index = $user->identity->scopus_h_index ?? 0;
+            $this->scopus_h_index = $user->identity->scopus_h_index;
             $this->sinta_score_v3_overall = $user->identity->sinta_score_v3_overall ?? 0;
             $this->functional_position = $user->identity->functional_position ?? '';
-            $this->gs_h_index = $user->identity->gs_h_index ?? 0;
-            $this->wos_h_index = $user->identity->wos_h_index ?? 0;
+            $this->gs_h_index = $user->identity->gs_h_index;
+            $this->wos_h_index = $user->identity->wos_h_index;
             $this->type = $user->identity->type ?? '';
             $this->institution_id = $user->identity->institution_id ?? '';
             // Load from column first

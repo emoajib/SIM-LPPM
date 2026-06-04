@@ -60,11 +60,11 @@ class ProfileForm extends Component
 
     public array $scienceClusters = [];
 
-    public int $scopus_h_index = 0;
+    public ?int $scopus_h_index = null;
 
-    public int $gs_h_index = 0;
+    public ?int $gs_h_index = null;
 
-    public int $wos_h_index = 0;
+    public ?int $wos_h_index = null;
 
     public array $institutions = [];
 
@@ -102,9 +102,9 @@ class ProfileForm extends Component
             $this->faculty_id = $user->identity->faculty_id;
             $this->study_program_id = $user->identity->study_program_id;
             $this->science_cluster_id = (string) ($user->identity->science_cluster_id ?? '');
-            $this->scopus_h_index = $user->identity->scopus_h_index ?? 0;
-            $this->gs_h_index = $user->identity->gs_h_index ?? 0;
-            $this->wos_h_index = $user->identity->wos_h_index ?? 0;
+            $this->scopus_h_index = $user->identity->scopus_h_index;
+            $this->gs_h_index = $user->identity->gs_h_index;
+            $this->wos_h_index = $user->identity->wos_h_index;
         }
 
         // Load institutions for dropdown
@@ -264,9 +264,9 @@ class ProfileForm extends Component
             'science_cluster_id' => $this->science_cluster_id !== null && $this->science_cluster_id !== ''
                 ? (int) $this->science_cluster_id
                 : null,
-            'scopus_h_index' => $validated['scopus_h_index'] ?? 0,
-            'gs_h_index' => $validated['gs_h_index'] ?? 0,
-            'wos_h_index' => $validated['wos_h_index'] ?? 0,
+            'scopus_h_index' => $validated['scopus_h_index'],
+            'gs_h_index' => $validated['gs_h_index'],
+            'wos_h_index' => $validated['wos_h_index'],
         ];
         $user->identity()->updateOrCreate(
             ['user_id' => $user->id],
@@ -351,9 +351,9 @@ class ProfileForm extends Component
             $this->institution_id = $user->identity->institution_id;
             $this->faculty_id = $user->identity->faculty_id;
             $this->study_program_id = $user->identity->study_program_id;
-            $this->scopus_h_index = $user->identity->scopus_h_index ?? 0;
-            $this->gs_h_index = $user->identity->gs_h_index ?? 0;
-            $this->wos_h_index = $user->identity->wos_h_index ?? 0;
+            $this->scopus_h_index = $user->identity->scopus_h_index;
+            $this->gs_h_index = $user->identity->gs_h_index;
+            $this->wos_h_index = $user->identity->wos_h_index;
 
             // Reload faculties based on institution
             if ($this->institution_id) {

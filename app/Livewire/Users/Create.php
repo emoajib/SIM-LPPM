@@ -55,11 +55,11 @@ class Create extends Component
 
     public string $title_suffix = '';
 
-    public int $scopus_h_index = 0;
+    public ?int $scopus_h_index = null;
 
-    public int $gs_h_index = 0;
+    public ?int $gs_h_index = null;
 
-    public int $wos_h_index = 0;
+    public ?int $wos_h_index = null;
 
     public ?string $type = null;
 
