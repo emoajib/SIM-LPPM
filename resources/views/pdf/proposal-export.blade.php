@@ -292,7 +292,7 @@
                 <th width="15%">Program Studi</th>
                 <th width="15%">Bidang Tugas</th>
                 <th width="10%">ID Sinta</th>
-                <th width="10%">H-Index</th>
+                <th width="10%">GS H-Index</th>
                 <th width="15%">Rumpun Ilmu</th>
             </tr>
         </thead>
@@ -307,7 +307,7 @@
                 <td>{{ $proposal->submitter->identity?->studyProgram->name ?? '-' }}</td>
                 <td>{{ $proposal->teamMembers->firstWhere('id', $proposal->submitter_id)->pivot->tasks ?? '-' }}</td>
                 <td class="text-center">{{ $proposal->submitter->identity?->sinta_id ?? '-' }}</td>
-                <td class="text-center">{{ $proposal->submitter->identity?->scopus_h_index ?? '-' }}</td>
+                <td class="text-center">{{ $proposal->submitter->identity?->gs_h_index ?? '-' }}</td>
                 <td>{{ $proposal->submitter->identity?->scienceCluster?->name ?? '-' }}</td>
             </tr>
             {{-- Anggota Dosen --}}
@@ -325,7 +325,7 @@
                         <td>{{ $member->identity?->studyProgram?->name ?? '-' }}</td>
                         <td>{{ $member->pivot->tasks ?? '-' }}</td>
                         <td class="text-center">{{ $member->identity?->sinta_id ?? '-' }}</td>
-                        <td class="text-center">{{ $member->identity?->scopus_h_index ?? '-' }}</td>
+                        <td class="text-center">{{ $member->identity?->gs_h_index ?? '-' }}</td>
                         <td>{{ $member->identity?->scienceCluster?->name ?? '-' }}</td>
                     </tr>
                 @endif
