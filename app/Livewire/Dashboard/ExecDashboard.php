@@ -46,7 +46,7 @@ class ExecDashboard extends Component
         $this->roleName = active_role();
         $this->selectedYear = (int) date('Y');
         $this->availableYears = $this->getAvailableYears();
-        $this->availableStatuses = $this->getAvailableStatuses();
+        $this->availableStatuses = $this->listAvailableStatuses();
 
         $this->loadAnalytics();
     }
@@ -91,7 +91,7 @@ class ExecDashboard extends Component
         return $years;
     }
 
-    private function getAvailableStatuses(): array
+    private function listAvailableStatuses(): array
     {
         return [
             'all' => 'Semua Status',

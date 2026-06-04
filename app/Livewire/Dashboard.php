@@ -3,8 +3,10 @@
 namespace App\Livewire;
 
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
+#[Layout('layouts::app')]
 class Dashboard extends Component
 {
     public $user;
@@ -58,6 +60,9 @@ class Dashboard extends Component
         };
 
         return view('livewire.dashboard.main-dashboard', [
+            'pageTitle' => $titles['title'],
+            'pageSubtitle' => $titles['subtitle'],
+        ])->layoutData([
             'pageTitle' => $titles['title'],
             'pageSubtitle' => $titles['subtitle'],
         ]);

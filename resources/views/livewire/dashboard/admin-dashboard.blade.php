@@ -1,40 +1,38 @@
 <div>
-    <x-slot:pageActions>
-        <div class="d-flex align-items-center gap-2">
-            <button type="button" class="btn btn-success d-none d-md-inline-flex align-items-center gap-2" wire:click="exportResearch">
-                <i class="ti ti-file-spreadsheet fs-2"></i>
-                <span>Export Excel</span>
-            </button>
-            <div class="dropdown">
-                <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
-                    <i class="ti ti-calendar-event fs-2"></i>
-                    <span>Tahun: {{ $selectedYear }}</span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-end">
-                    @foreach ($availableYears as $year)
-                        <a href="#" class="dropdown-item {{ $selectedYear == $year ? 'active' : '' }}"
-                            wire:click.preserve-scroll="$set('selectedYear', {{ $year }})">
-                            {{ $year }}
-                        </a>
-                    @endforeach
-                </div>
-            </div>
-            <div class="dropdown">
-                <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
-                    <i class="ti ti-filter fs-2"></i>
-                    <span>Status: {{ $availableStatuses[$selectedStatus] ?? 'Semua Status' }}</span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-end" style="max-height: 300px; overflow-y: auto;">
-                    @foreach ($availableStatuses as $value => $label)
-                        <a href="#" class="dropdown-item {{ $selectedStatus === $value ? 'active' : '' }}"
-                            wire:click.preserve-scroll="$set('selectedStatus', '{{ $value }}')">
-                            {{ $label }}
-                        </a>
-                    @endforeach
-                </div>
+    <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+        <button type="button" class="btn btn-success d-flex align-items-center gap-2" wire:click="exportResearch">
+            <i class="ti ti-file-spreadsheet fs-2"></i>
+            <span>Export Excel</span>
+        </button>
+        <div class="dropdown">
+            <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                <i class="ti ti-calendar-event fs-2"></i>
+                <span>Tahun: {{ $selectedYear }}</span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end">
+                @foreach ($availableYears as $year)
+                    <a href="#" class="dropdown-item {{ $selectedYear == $year ? 'active' : '' }}"
+                        wire:click.preserve-scroll="$set('selectedYear', {{ $year }})">
+                        {{ $year }}
+                    </a>
+                @endforeach
             </div>
         </div>
-    </x-slot:pageActions>
+        <div class="dropdown">
+            <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                <i class="ti ti-filter fs-2"></i>
+                <span>Status: {{ $availableStatuses[$selectedStatus] ?? 'Semua Status' }}</span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end" style="max-height: 300px; overflow-y: auto;">
+                @foreach ($availableStatuses as $value => $label)
+                    <a href="#" class="dropdown-item {{ $selectedStatus === $value ? 'active' : '' }}"
+                        wire:click.preserve-scroll="$set('selectedStatus', '{{ $value }}')">
+                        {{ $label }}
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    </div>
 
 
     <div class="row row-deck row-cards">

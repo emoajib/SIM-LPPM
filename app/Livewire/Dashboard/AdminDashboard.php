@@ -16,10 +16,8 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Livewire\Attributes\Layout;
 use Livewire\Component;
 
-#[Layout('components.layouts.app', ['title' => 'Dashboard Admin', 'pageTitle' => 'Dashboard Utama', 'pageSubtitle' => 'Ikhtisar performa dan aktivitas LPPM'])]
 class AdminDashboard extends Component
 {
     public $user;
@@ -48,7 +46,7 @@ class AdminDashboard extends Component
         $this->roleName = active_role();
         $this->selectedYear = date('Y');
         $this->availableYears = $this->getAvailableYears();
-        $this->availableStatuses = $this->getAvailableStatuses();
+        $this->availableStatuses = $this->listAvailableStatuses();
 
         $this->loadAnalytics();
     }
@@ -96,7 +94,7 @@ class AdminDashboard extends Component
         return $years;
     }
 
-    private function getAvailableStatuses(): array
+    private function listAvailableStatuses(): array
     {
         return [
             'all' => 'Semua Status',
