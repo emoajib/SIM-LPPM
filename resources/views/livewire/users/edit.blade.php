@@ -501,6 +501,22 @@
 
                 <div class="col-md-6">
                     <div class="mb-3">
+                        <label class="form-label" for="science-cluster">Rumpun Ilmu</label>
+                        <select id="science-cluster" class="form-select @error('science_cluster_id') is-invalid @enderror"
+                            wire:model="science_cluster_id">
+                            <option value="">Pilih rumpun ilmu...</option>
+                            @foreach ($this->scienceClusterOptions as $option)
+                                <option value="{{ $option['value'] }}">{{ $option['label'] }}</option>
+                            @endforeach
+                        </select>
+                        @error('science_cluster_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="mb-3">
                         <label class="d-block form-label">Verifikasi email</label>
                         <label class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" wire:model="emailVerified">

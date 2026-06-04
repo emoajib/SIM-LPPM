@@ -80,6 +80,7 @@ class Identity extends Model
         'institution_name',
         'study_program_id',
         'faculty_id',
+        'science_cluster_id',
         'profile_picture',
         // Academic Profile
         'last_education',
@@ -194,6 +195,14 @@ class Identity extends Model
     public function faculty(): BelongsTo
     {
         return $this->belongsTo(Faculty::class);
+    }
+
+    /**
+     * Get the science cluster (rumpun ilmu) that the identity belongs to.
+     */
+    public function scienceCluster(): BelongsTo
+    {
+        return $this->belongsTo(ScienceCluster::class);
     }
 
     /**

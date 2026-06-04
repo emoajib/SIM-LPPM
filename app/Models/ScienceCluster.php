@@ -52,6 +52,14 @@ class ScienceCluster extends Model
     }
 
     /**
+     * Get all identities (dosen) with this rumpun ilmu.
+     */
+    public function identities(): HasMany
+    {
+        return $this->hasMany(Identity::class);
+    }
+
+    /**
      * Get all proposals using this as level 1 cluster.
      */
     public function proposalsLevel1(): HasMany

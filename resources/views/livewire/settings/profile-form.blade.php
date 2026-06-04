@@ -241,6 +241,22 @@
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
+        <div class="col-md">
+            <div class="form-label">Rumpun Ilmu</div>
+            <div wire:key="science-cluster-select">
+                <select class="form-select @error('science_cluster_id') is-invalid @enderror"
+                    wire:model="science_cluster_id" x-data="tomSelect"
+                    placeholder="Pilih Rumpun Ilmu">
+                    <option value="">Pilih Rumpun Ilmu</option>
+                    @foreach ($scienceClusters as $cluster)
+                        <option value="{{ $cluster['id'] }}">{{ $cluster['name'] }}</option>
+                    @endforeach
+                </select>
+            </div>
+            @error('science_cluster_id')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
     </div>
 
     @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !auth()->user()->hasVerifiedEmail())

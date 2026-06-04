@@ -6,6 +6,7 @@ use App\Actions\HandleHybridInstitution;
 use App\Livewire\Concerns\HasToast;
 use App\Models\Faculty;
 use App\Models\Institution;
+use App\Models\ScienceCluster;
 use App\Models\StudyProgram;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -78,6 +79,8 @@ class Edit extends Component
 
     public ?string $study_program_id = null;
 
+    public ?string $science_cluster_id = null;
+
     // Password Management
     public string $password = '';
 
@@ -118,6 +121,7 @@ class Edit extends Component
             $this->institution_name = $user->identity->institution_name ?? '';
             $this->faculty_id = $user->identity->faculty_id ?? '';
             $this->study_program_id = $user->identity->study_program_id ?? '';
+            $this->science_cluster_id = $user->identity->science_cluster_id ?? '';
         }
     }
 
@@ -189,6 +193,7 @@ class Edit extends Component
                     }
                 },
             ],
+            'science_cluster_id' => ['nullable', 'exists:science_clusters,id'],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
         ];
     }
@@ -272,6 +277,7 @@ class Edit extends Component
                     'institution_name' => $finalInstitutionName,
                     'faculty_id' => ! empty($validated['faculty_id']) ? $validated['faculty_id'] : null,
                     'study_program_id' => ! empty($validated['study_program_id']) ? $validated['study_program_id'] : null,
+                    'science_cluster_id' => ! empty($validated['science_cluster_id']) ? (int) $validated['science_cluster_id'] : null,
                 ]
             );
 
@@ -411,6 +417,23 @@ class Edit extends Component
             ->map(fn (StudyProgram $program) => [
                 'value' => $program->id,
                 'label' => $program->name,
+            ])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Retrieve science cluster options for the selection control.
+     */
+    #[Computed]
+    public function scienceClusterOptions(): array
+    {
+        return ScienceCluster::where('level', 1)
+            ->orderBy('name')
+            ->get()
+            ->map(fn (ScienceCluster $cluster) => [
+                'value' => $cluster->id,
+                'label' => $cluster->name,
             ])
             ->values()
             ->all();

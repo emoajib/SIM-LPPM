@@ -53,7 +53,7 @@ class ValidateTeamCompositionAction
 
         // 3. Cross-Prodi Requirement
         if (! empty($rules['require_cross_prodi']) && isset($rules['min_cross_prodi_members'])) {
-            $leaderProdi = $proposal->submitter->identity->study_program_id ?? null;
+            $leaderProdi = $proposal->submitter->identity?->study_program_id;
             $crossProdiCount = 0;
 
             foreach ($members as $member) {
@@ -61,7 +61,7 @@ class ValidateTeamCompositionAction
                     continue;
                 }
 
-                $memberProdi = $member->identity->study_program_id ?? null;
+                $memberProdi = $member->identity?->study_program_id;
                 if ($memberProdi && $leaderProdi && $memberProdi !== $leaderProdi) {
                     $crossProdiCount++;
                 }

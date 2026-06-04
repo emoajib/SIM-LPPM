@@ -44,6 +44,9 @@ cd /home/simlppmi/sim-lppm
 # Backup
 cp -r . ../backup-$(date +%Y%m%d-%H%M%S)
 
+# Maintenance mode ON (cegah akses selama deploy)
+php artisan down --retry=300
+
 # Pull & install
 git pull origin main
 composer install --no-dev --optimize-autoloader
@@ -57,6 +60,10 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
+# Flush PDF cache (akan regenerate otomatis)
+find storage/app/public/pdf_cache -type f -name "*.pdf" -delete 2>/dev/null
+echo "PDF cache cleaned"
+
 # OPcache
 php -r 'if (function_exists("opcache_reset")) { opcache_reset(); echo "OPcache cleared\n"; } else { echo "OPcache not available\n"; }'
 
@@ -67,6 +74,9 @@ chmod -R 775 storage bootstrap/cache
 chmod 755 public
 chmod 644 public/.htaccess
 chmod 644 public/index.php
+
+# Maintenance mode OFF
+php artisan up
 ```
 
 ### 6. Verifikasi di Browser

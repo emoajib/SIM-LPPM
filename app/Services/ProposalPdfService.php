@@ -289,9 +289,11 @@ class ProposalPdfService
             'submitter.identity.institution',
             'submitter.identity.studyProgram',
             'submitter.identity.faculty',
+            'submitter.identity.scienceCluster',
             'teamMembers.identity.institution',
             'teamMembers.identity.studyProgram',
             'teamMembers.identity.faculty',
+            'teamMembers.identity.scienceCluster',
             'researchScheme',
             'focusArea',
             'theme',
@@ -744,7 +746,11 @@ class ProposalPdfService
             'proposal' => $proposal->load([
                 'submitter.identity.institution',
                 'submitter.identity.studyProgram',
+                'submitter.identity.faculty',
                 'teamMembers.identity.institution',
+                'teamMembers.identity.studyProgram',
+                'teamMembers.identity.faculty',
+                'clusterLevel1',
                 'researchScheme',
             ]),
             'report' => $report->load([

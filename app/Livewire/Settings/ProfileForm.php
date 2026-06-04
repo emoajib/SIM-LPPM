@@ -7,6 +7,7 @@ use App\Livewire\Concerns\HasToast;
 use App\Models\ActivityLog;
 use App\Models\Faculty;
 use App\Models\Institution;
+use App\Models\ScienceCluster;
 use App\Models\StudyProgram;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -55,6 +56,10 @@ class ProfileForm extends Component
 
     public ?int $study_program_id = null;
 
+    public ?string $science_cluster_id = null;
+
+    public array $scienceClusters = [];
+
     public int $scopus_h_index = 0;
 
     public int $gs_h_index = 0;
@@ -96,6 +101,7 @@ class ProfileForm extends Component
             $this->institution_id = $user->identity->institution_id;
             $this->faculty_id = $user->identity->faculty_id;
             $this->study_program_id = $user->identity->study_program_id;
+            $this->science_cluster_id = (string) ($user->identity->science_cluster_id ?? '');
             $this->scopus_h_index = $user->identity->scopus_h_index ?? 0;
             $this->gs_h_index = $user->identity->gs_h_index ?? 0;
             $this->wos_h_index = $user->identity->wos_h_index ?? 0;
@@ -124,6 +130,12 @@ class ProfileForm extends Component
                 ->get()
                 ->toArray();
         }
+
+        // Load science clusters for dropdown
+        $this->scienceClusters = ScienceCluster::where('level', 1)
+            ->orderBy('name')
+            ->get()
+            ->toArray();
     }
 
     /**
@@ -188,6 +200,7 @@ class ProfileForm extends Component
             'institution_id' => ['nullable'], // Bisa ID atau Nama Baru
             'faculty_id' => ['nullable', 'exists:faculties,id'],
             'study_program_id' => ['nullable', 'exists:study_programs,id'],
+            'science_cluster_id' => ['nullable', 'exists:science_clusters,id'],
             'scopus_h_index' => ['nullable', 'integer', 'min:0'],
             'gs_h_index' => ['nullable', 'integer', 'min:0'],
             'wos_h_index' => ['nullable', 'integer', 'min:0'],
@@ -248,6 +261,9 @@ class ProfileForm extends Component
             'institution_name' => $finalInstitutionName,
             'faculty_id' => $validated['faculty_id'] ?? null,
             'study_program_id' => $validated['study_program_id'] ?? null,
+            'science_cluster_id' => $this->science_cluster_id !== null && $this->science_cluster_id !== ''
+                ? (int) $this->science_cluster_id
+                : null,
             'scopus_h_index' => $validated['scopus_h_index'] ?? 0,
             'gs_h_index' => $validated['gs_h_index'] ?? 0,
             'wos_h_index' => $validated['wos_h_index'] ?? 0,

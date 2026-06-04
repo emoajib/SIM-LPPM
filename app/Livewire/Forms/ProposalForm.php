@@ -283,6 +283,8 @@ class ProposalForm extends Form
                         'role' => $student['role'] ?? 'mahasiswa',
                         'status' => 'accepted', // JSON members are implicitly accepted/manual
                         'is_manual' => true,
+                        'study_program' => $student['study_program'] ?? $student['studyProgram'] ?? $student['prodi'] ?? '',
+                        'institution' => $student['institution'] ?? $student['institution_name'] ?? '',
                     ];
                 }
             }

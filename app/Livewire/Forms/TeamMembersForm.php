@@ -167,6 +167,8 @@ class TeamMembersForm extends Component
                 'status' => 'pending',
                 'sinta_id' => $this->foundMember['sinta_id'] ?? null,
                 'role' => $this->foundMember['identity_type'] ?? 'dosen',
+                'study_program' => $this->foundMember['study_program'] ?? '',
+                'institution' => $this->foundMember['institution'] ?? '',
             ];
         }
 
