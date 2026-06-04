@@ -2,16 +2,22 @@
     <div class="page-header d-print-none">
         <div class="container-xl">
             <div class="align-items-center row g-2">
-                <div class="col">
-                    <h2 class="page-title">
-                        Dashboard Kepala LPPM
-                    </h2>
-                    <div class="mt-1 text-muted">
-                        Selamat datang, {{ auth()->user()->name }} ({{ $roleName }})
-                    </div>
-                </div>
-                <div class="col-auto">
-                    <div class="d-flex gap-2">
+                <div class="col-12">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <div class="dropdown">
+                            <a href="#" class="btn btn-success dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                                <i class="ti ti-file-spreadsheet"></i>
+                                Export Excel
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end">
+                                <a href="#" class="dropdown-item" wire:click="exportResearch">
+                                    <i class="ti ti-flask me-2"></i> Penelitian
+                                </a>
+                                <a href="#" class="dropdown-item" wire:click="exportCommunityService">
+                                    <i class="ti ti-users-group me-2"></i> PKM
+                                </a>
+                            </div>
+                        </div>
                         <div class="dropdown">
                             <a href="#" class="btn-outline-primary btn dropdown-toggle" data-bs-toggle="dropdown">
                                 <x-lucide-calendar class="me-2 icon" />
@@ -24,6 +30,68 @@
                                         {{ $year }}
                                     </a>
                                 @endforeach
+                            </div>
+                        </div>
+                        <div class="dropdown">
+                            <a href="#" class="btn-outline-primary btn dropdown-toggle" data-bs-toggle="dropdown">
+                                <x-lucide-filter class="me-2 icon" />
+                                Status: {{ $availableStatuses[$selectedStatus] ?? 'Semua Status' }}
+                            </a>
+                            <div class="dropdown-menu" style="max-height: 300px; overflow-y: auto;">
+                                @foreach ($availableStatuses as $value => $label)
+                                    <a href="#" class="dropdown-item {{ $selectedStatus === $value ? 'active' : '' }}"
+                                        wire:click.preserve-scroll="$set('selectedStatus', '{{ $value }}')">
+                                        {{ $label }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                        <div class="dropdown">
+                            <a href="#" class="btn-outline-primary btn dropdown-toggle" data-bs-toggle="dropdown">
+                                <x-lucide-building class="me-2 icon" />
+                                Fakultas: {{ $availableFaculties[$selectedFaculty] ?? 'Semua Fakultas' }}
+                            </a>
+                            <div class="dropdown-menu" style="max-height: 300px; overflow-y: auto;">
+                                @foreach ($availableFaculties as $value => $label)
+                                    <a href="#" class="dropdown-item {{ $selectedFaculty == $value ? 'active' : '' }}"
+                                        wire:click.preserve-scroll="$set('selectedFaculty', '{{ $value }}')">
+                                        {{ $label }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                        <div class="dropdown">
+                            <a href="#" class="btn-outline-primary btn dropdown-toggle" data-bs-toggle="dropdown">
+                                <x-lucide-book-open class="me-2 icon" />
+                                Prodi: {{ $availableProdis[$selectedProdi] ?? 'Semua Prodi' }}
+                            </a>
+                            <div class="dropdown-menu" style="max-height: 300px; overflow-y: auto;">
+                                @foreach ($availableProdis as $value => $label)
+                                    <a href="#" class="dropdown-item {{ $selectedProdi == $value ? 'active' : '' }}"
+                                        wire:click.preserve-scroll="$set('selectedProdi', '{{ $value }}')">
+                                        {{ $label }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                        <div class="dropdown">
+                            <a href="#" class="btn-outline-primary btn dropdown-toggle" data-bs-toggle="dropdown">
+                                <x-lucide-calendar-range class="me-2 icon" />
+                                Semester: {{ $selectedSemester === 'all' ? 'Semua' : ($selectedSemester === 'ganjil' ? 'Ganjil' : 'Genap') }}
+                            </a>
+                            <div class="dropdown-menu">
+                                <a href="#" class="dropdown-item {{ $selectedSemester === 'all' ? 'active' : '' }}"
+                                    wire:click.preserve-scroll="$set('selectedSemester', 'all')">
+                                    Semua
+                                </a>
+                                <a href="#" class="dropdown-item {{ $selectedSemester === 'ganjil' ? 'active' : '' }}"
+                                    wire:click.preserve-scroll="$set('selectedSemester', 'ganjil')">
+                                    Ganjil
+                                </a>
+                                <a href="#" class="dropdown-item {{ $selectedSemester === 'genap' ? 'active' : '' }}"
+                                    wire:click.preserve-scroll="$set('selectedSemester', 'genap')">
+                                    Genap
+                                </a>
                             </div>
                         </div>
                     </div>

@@ -2,11 +2,15 @@
 
 namespace App\Livewire\Dashboard;
 
+use App\Enums\ProposalStatus;
 use App\Enums\ReportStatus;
 use App\Models\AdditionalOutput;
+use App\Models\Faculty;
 use App\Models\MandatoryOutput;
 use App\Models\ProgressReport;
 use App\Models\Proposal;
+use App\Models\StudyProgram;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -26,7 +30,21 @@ class KepalaLppmDashboard extends Component
 
     public $selectedYear;
 
+    public $selectedStatus = 'all';
+
+    public $selectedFaculty = 'all';
+
+    public $selectedProdi = 'all';
+
+    public $selectedSemester = 'all';
+
     public $availableYears = [];
+
+    public $availableStatuses = [];
+
+    public $availableFaculties = [];
+
+    public $availableProdis = [];
 
     public function mount(): void
     {
@@ -34,6 +52,8 @@ class KepalaLppmDashboard extends Component
         $this->roleName = active_role();
         $this->selectedYear = date('Y');
         $this->availableYears = $this->getAvailableYears();
+        $this->availableStatuses = ProposalStatus::filterOptions();
+        $this->availableFaculties = $this->getFaculties();
 
         $this->loadAnalytics();
     }
@@ -41,6 +61,38 @@ class KepalaLppmDashboard extends Component
     public function updatedSelectedYear(): void
     {
         $this->loadAnalytics();
+    }
+
+    public function updatedSelectedStatus(): void
+    {
+        $this->loadAnalytics();
+    }
+
+    public function updatedSelectedFaculty(): void
+    {
+        $this->selectedProdi = 'all';
+        $this->availableProdis = $this->getProdiByFaculty();
+        $this->loadAnalytics();
+    }
+
+    public function updatedSelectedProdi(): void
+    {
+        $this->loadAnalytics();
+    }
+
+    public function updatedSelectedSemester(): void
+    {
+        $this->loadAnalytics();
+    }
+
+    public function exportResearch(): void
+    {
+        $this->dispatch('download-file', url: route('admin.dashboard.export-research', ['period' => $this->selectedYear]));
+    }
+
+    public function exportCommunityService(): void
+    {
+        $this->dispatch('download-file', url: route('admin.dashboard.export-community-service', ['period' => $this->selectedYear]));
     }
 
     public function exportIkuPdf(): void
@@ -55,17 +107,62 @@ class KepalaLppmDashboard extends Component
 
     private function getAvailableYears(): array
     {
-        $years = Proposal::select(DB::raw(sql_year().' as year'))
+        $years = Proposal::select('start_year as year')
+            ->whereNotNull('start_year')
             ->distinct()
             ->orderBy('year', 'desc')
             ->pluck('year')
+            ->map(fn ($y) => (string) $y)
             ->toArray();
 
         if (empty($years)) {
-            $years = [date('Y')];
+            $years = [(string) date('Y')];
         }
 
         return $years;
+    }
+
+    private function getFaculties(): array
+    {
+        return Faculty::query()
+            ->orderBy('name')
+            ->pluck('name', 'id')
+            ->prepend('Semua Fakultas', 'all')
+            ->toArray();
+    }
+
+    public function getProdiByFaculty(): array
+    {
+        $query = StudyProgram::query()->orderBy('name');
+
+        if ($this->selectedFaculty !== 'all') {
+            $query->where('faculty_id', $this->selectedFaculty);
+        }
+
+        return $query->pluck('name', 'id')
+            ->prepend('Semua Prodi', 'all')
+            ->toArray();
+    }
+
+    private function applyCommonFilters(Builder $query): Builder
+    {
+        if ($this->selectedStatus !== 'all') {
+            $query->where('status', $this->selectedStatus);
+        }
+
+        if ($this->selectedFaculty !== 'all') {
+            $query->whereHas('submitter.identity', fn ($q) => $q->where('faculty_id', $this->selectedFaculty));
+        }
+
+        if ($this->selectedProdi !== 'all') {
+            $query->whereHas('submitter.identity', fn ($q) => $q->where('study_program_id', $this->selectedProdi));
+        }
+
+        if ($this->selectedSemester !== 'all') {
+            $query->where('semester', $this->selectedSemester);
+        }
+
+        return $query;
     }
 
     public function loadAnalytics(): void
@@ -86,7 +183,8 @@ class KepalaLppmDashboard extends Component
     private function loadStats(string $yearFilter): void
     {
         $statsRaw = Proposal::query()
-            ->whereYear('created_at', $yearFilter)
+            ->where('start_year', $yearFilter)
+            ->tap(fn ($q) => $this->applyCommonFilters($q))
             ->select([
                 'detailable_type',
                 'status',
@@ -118,7 +216,7 @@ class KepalaLppmDashboard extends Component
             'community_service_approved' => $communityService->filter(fn ($r) => ($r->status->value ?? '') === 'approved')->sum('count'),
             'research_completed' => $research->filter(fn ($r) => ($r->status->value ?? '') === 'completed')->sum('count'),
             'community_service_completed' => $communityService->filter(fn ($r) => ($r->status->value ?? '') === 'completed')->sum('count'),
-            'pending_initial_approval' => $raw->filter(fn ($r) => ($r->status->value ?? '') === 'approved')->sum('count'),
+            'pending_initial_approval' => $raw->filter(fn ($r) => ($r->status->value ?? '') === 'submitted')->sum('count'),
             'pending_final_decision' => $researchPending + $communityServicePending,
             'final_report_pending' => ProgressReport::query()
                 ->where('reporting_period', 'final')
@@ -139,13 +237,10 @@ class KepalaLppmDashboard extends Component
      */
     private function loadRecentProposals(string $yearFilter): void
     {
-        $relevantStatuses = ['reviewed', 'approved', 'rejected', 'completed'];
-
         $recentProposals = Proposal::with(['submitter', 'focusArea', 'researchScheme', 'communityServiceScheme'])
-            ->whereYear('created_at', $yearFilter)
-            ->whereIn('status', $relevantStatuses)
+            ->where('start_year', $yearFilter)
+            ->tap(fn ($q) => $this->applyCommonFilters($q))
             ->latest()
-            ->limit(20)
             ->get();
 
         $this->recentResearch = $recentProposals

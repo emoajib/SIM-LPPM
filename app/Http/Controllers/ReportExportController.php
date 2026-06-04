@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\Reports\GetPartnerReportQuery;
 use App\Exports\ArchiveDataExport;
 use App\Exports\ArchiveTemplateExport;
+use App\Exports\CommunityServiceProposalExport;
 use App\Exports\CommunityServiceReportExport;
 use App\Exports\IkuReportExport;
 use App\Exports\MonevRecapExport;
@@ -762,6 +763,26 @@ class ReportExportController extends Controller
         } catch (\Exception $e) {
 
             Log::error('Dashboard Research Export Error: '.$e->getMessage());
+
+            return back()->with('error', 'Gagal mengunduh Export: '.$e->getMessage());
+        }
+    }
+
+    public function dashboardCommunityServiceExport(Request $request)
+    {
+        try {
+            $period = $request->query('period', date('Y'));
+            $filename = "community-service-proposals-{$period}.xlsx";
+
+            $download = Excel::download(
+                new CommunityServiceProposalExport((int) $period),
+                $filename
+            );
+
+            return $download;
+        } catch (\Exception $e) {
+
+            Log::error('Dashboard Community Service Export Error: '.$e->getMessage());
 
             return back()->with('error', 'Gagal mengunduh Export: '.$e->getMessage());
         }

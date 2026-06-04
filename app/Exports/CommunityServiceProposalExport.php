@@ -2,8 +2,8 @@
 
 namespace App\Exports;
 
+use App\Models\CommunityService;
 use App\Models\Proposal;
-use App\Models\Research;
 use Illuminate\Database\Eloquent\Builder;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -12,7 +12,7 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 /**
  * @implements WithMapping<Proposal>
  */
-class ResearchProposalExport implements FromQuery, WithHeadings, WithMapping
+class CommunityServiceProposalExport implements FromQuery, WithHeadings, WithMapping
 {
     protected int $year;
 
@@ -26,12 +26,12 @@ class ResearchProposalExport implements FromQuery, WithHeadings, WithMapping
      */
     public function query(): Builder
     {
-        return Proposal::where('detailable_type', Research::class)
+        return Proposal::where('detailable_type', CommunityService::class)
             ->where('start_year', $this->year)
             ->with([
                 'submitter',
                 'submitter.identity',
-                'researchScheme',
+                'communityServiceScheme',
                 'focusArea',
                 'detailable',
                 'teamMembers',
@@ -61,7 +61,6 @@ class ResearchProposalExport implements FromQuery, WithHeadings, WithMapping
             'dana_disetujui',
             'afiliasi_sinta_id',
             'nama_institusi_penerima_dana',
-            'target_tkt',
             'nama_program_hibah',
             'kategori_sumber_dana',
             'negara_sumber_dana',
@@ -93,12 +92,10 @@ class ResearchProposalExport implements FromQuery, WithHeadings, WithMapping
         $no = 1;
         $submitter = $proposal->submitter;
         $submitterIdentity = $submitter->identity;
-        $research = $proposal->detailable;
+        $communityService = $proposal->detailable;
 
-        // Get team members (limit to 5)
         $teamMembers = $proposal->teamMembers()->limit(5)->get();
 
-        // Prepare member data
         $memberData = [];
         for ($i = 0; $i < 5; $i++) {
             if ($i < $teamMembers->count()) {
@@ -108,7 +105,6 @@ class ResearchProposalExport implements FromQuery, WithHeadings, WithMapping
                 $memberData[] = $memberIdentity->identity_id ?? '';
                 $memberData[] = $member->name;
             } else {
-                // Empty slots for members not present
                 $memberData[] = '';
                 $memberData[] = '';
                 $memberData[] = '';
@@ -121,24 +117,23 @@ class ResearchProposalExport implements FromQuery, WithHeadings, WithMapping
             $submitter->name,
             $submitterIdentity->identity_id ?? '',
             $submitterIdentity->institution_name ?? '',
-            '', // kd_pt_ketua - not available in current schema
+            '',
             $proposal->title ?? '',
-            $proposal->researchScheme->name ?? '',
+            $proposal->communityServiceScheme->name ?? '',
             $proposal->start_year ?? '',
             $proposal->start_year ?? '',
             $proposal->start_year ?? '',
             $proposal->duration_in_years ?? '',
             $proposal->focusArea->name ?? '',
-            $proposal->researchScheme->name ?? '',
+            $proposal->communityServiceScheme->name ?? '',
             $proposal->status->label(),
             $proposal->budgetItems->sum('total_price'),
             $submitterIdentity->sinta_id ?? '',
             $submitterIdentity->institution_name ?? '',
-            $research->final_tkt_target ?? '',
-            '', // nama_program_hibah - not available
-            '', // kategori_sumber_dana - not available
-            'ID', // negara_sumber_dana - default ID
-            'Pribadi', // sumber_dana - default
+            '',
+            '',
+            'ID',
+            'Pribadi',
             ...$memberData,
         ];
     }

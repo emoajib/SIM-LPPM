@@ -3,19 +3,21 @@
 namespace App\Livewire\Dashboard;
 
 use App\Enums\InstitutionalReportStatus;
+use App\Enums\ProposalStatus;
 use App\Enums\ReportStatus;
 use App\Models\AdditionalOutput;
+use App\Models\Faculty;
 use App\Models\InstitutionalReport;
 use App\Models\MandatoryOutput;
 use App\Models\ProgressReport;
 use App\Models\Proposal;
+use App\Models\StudyProgram;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Livewire\Attributes\Layout;
 use Livewire\Component;
 
-#[Layout('components.layouts.app', ['title' => 'Dashboard Eksekutif', 'pageTitle' => 'Dashboard Strategis', 'pageSubtitle' => 'Ikhtisar capaian dan tren penelitian ditingkat institusi'])]
 class ExecDashboard extends Component
 {
     public $user;
@@ -34,9 +36,17 @@ class ExecDashboard extends Component
 
     public $selectedStatus = 'all';
 
+    public $selectedFaculty = 'all';
+
+    public $selectedProdi = 'all';
+
     public $availableYears = [];
 
     public $availableStatuses = [];
+
+    public $availableFaculties = [];
+
+    public $availableProdis = [];
 
     public $periodicSummary = [];
 
@@ -46,7 +56,16 @@ class ExecDashboard extends Component
         $this->roleName = active_role();
         $this->selectedYear = (int) date('Y');
         $this->availableYears = $this->getAvailableYears();
-        $this->availableStatuses = $this->listAvailableStatuses();
+        $this->availableStatuses = ProposalStatus::filterOptions();
+        $this->availableFaculties = $this->getFaculties();
+
+        if ($this->roleName === 'dekan') {
+            $facultyId = $this->user->identity?->faculty_id;
+            if ($facultyId) {
+                $this->selectedFaculty = (string) $facultyId;
+                $this->availableProdis = $this->getProdiByFaculty();
+            }
+        }
 
         $this->loadAnalytics();
     }
@@ -61,6 +80,23 @@ class ExecDashboard extends Component
         $this->loadAnalytics();
     }
 
+    public function updatedSelectedSemester(): void
+    {
+        $this->loadAnalytics();
+    }
+
+    public function updatedSelectedFaculty(): void
+    {
+        $this->selectedProdi = 'all';
+        $this->availableProdis = $this->getProdiByFaculty();
+        $this->loadAnalytics();
+    }
+
+    public function updatedSelectedProdi(): void
+    {
+        $this->loadAnalytics();
+    }
+
     public function exportIkuPdf(): void
     {
         $this->dispatch('download-file', url: route('admin.iku.export-pdf', ['period' => $this->selectedYear]));
@@ -71,103 +107,97 @@ class ExecDashboard extends Component
         $this->dispatch('download-file', url: route('admin.iku.export-excel', ['period' => $this->selectedYear]));
     }
 
-    public function updatedSelectedSemester(): void
-    {
-        $this->loadAnalytics();
-    }
-
     private function getAvailableYears(): array
     {
-        $years = Proposal::select(DB::raw(sql_year().' as year'))
+        $years = Proposal::select('start_year as year')
+            ->whereNotNull('start_year')
             ->distinct()
             ->orderBy('year', 'desc')
             ->pluck('year')
+            ->map(fn ($y) => (int) $y)
             ->toArray();
 
         if (empty($years)) {
-            $years = [date('Y')];
+            $years = [(int) date('Y')];
         }
 
         return $years;
     }
 
-    private function listAvailableStatuses(): array
+    private function getFaculties(): array
     {
-        return [
-            'all' => 'Semua Status',
-            'draft' => 'Draft',
-            'submitted' => 'Submitted',
-            'need_assignment' => 'Need Assignment',
-            'waiting_reviewer' => 'Waiting Reviewer',
-            'under_review' => 'Under Review',
-            'reviewed' => 'Reviewed',
-            'revision_needed' => 'Revision Needed',
-            'approved' => 'Approved',
-            'rejected' => 'Rejected',
-            'completed' => 'Completed',
-        ];
+        return Faculty::query()
+            ->orderBy('name')
+            ->pluck('name', 'id')
+            ->prepend('Semua Fakultas', 'all')
+            ->toArray();
+    }
+
+    public function getProdiByFaculty(): array
+    {
+        $query = StudyProgram::query()->orderBy('name');
+
+        if ($this->selectedFaculty !== 'all') {
+            $query->where('faculty_id', $this->selectedFaculty);
+        }
+
+        return $query->pluck('name', 'id')
+            ->prepend('Semua Prodi', 'all')
+            ->toArray();
+    }
+
+    public function isDekanRestricted(): bool
+    {
+        return $this->roleName === 'dekan';
     }
 
     public function loadAnalytics(): void
     {
         $yearFilter = $this->selectedYear;
-        $semesterFilter = $this->selectedSemester;
-        $statusFilter = $this->selectedStatus;
-        $facultyId = $this->roleName === 'dekan' ? $this->user->identity?->faculty_id : null;
 
-        // OPTIMIZED: Single aggregated query for all stats
-        $this->loadStats($yearFilter, $semesterFilter, $facultyId);
+        $this->loadStats($yearFilter);
 
-        // Load recent proposals
-        $this->loadRecentProposals($yearFilter, $semesterFilter, $statusFilter, $facultyId);
+        $this->loadRecentProposals($yearFilter);
 
-        // Load periodic summary with optimized queries
-        $this->periodicSummary = $this->getPeriodicSummary($facultyId);
+        $this->periodicSummary = $this->getPeriodicSummary();
     }
 
-    /**
-     * Build base query with filters applied.
-     */
-    private function buildBaseQuery(int $yearFilter, string $semesterFilter, ?int $facultyId)
+    private function applyCommonFilters(Builder $query): Builder
     {
-        $query = Proposal::whereYear('created_at', $yearFilter);
+        $query->where('start_year', $this->selectedYear);
 
-        if ($semesterFilter !== 'all') {
-            if ($semesterFilter === 'ganjil') {
-                $query->where(function ($q) {
-                    $q->whereMonth('created_at', '>=', 9)
-                        ->orWhereMonth('created_at', '<=', 2);
-                });
-            } elseif ($semesterFilter === 'genap') {
-                $query->whereMonth('created_at', '>=', 3)->whereMonth('created_at', '<=', 8);
-            }
+        if ($this->selectedStatus !== 'all') {
+            $query->where('status', $this->selectedStatus);
         }
 
-        if ($this->roleName === 'dekan') {
+        if ($this->isDekanRestricted()) {
+            $facultyId = $this->user->identity?->faculty_id;
             if (! $facultyId) {
                 $query->whereRaw('1 = 0');
             } else {
-                $query->whereHas('submitter.identity', function ($q) use ($facultyId) {
-                    $q->where('faculty_id', $facultyId);
-                });
+                $query->whereHas('submitter.identity', fn ($q) => $q->where('faculty_id', $facultyId));
             }
-        } elseif ($facultyId) {
-            $query->whereHas('submitter.identity', function ($q) use ($facultyId) {
-                $q->where('faculty_id', $facultyId);
-            });
+        } else {
+            if ($this->selectedFaculty !== 'all') {
+                $query->whereHas('submitter.identity', fn ($q) => $q->where('faculty_id', $this->selectedFaculty));
+            }
+
+            if ($this->selectedProdi !== 'all') {
+                $query->whereHas('submitter.identity', fn ($q) => $q->where('study_program_id', $this->selectedProdi));
+            }
+        }
+
+        if ($this->selectedSemester !== 'all') {
+            $query->where('semester', $this->selectedSemester);
         }
 
         return $query;
     }
 
-    /**
-     * Load all stats in a single aggregated query.
-     */
-    private function loadStats(int $yearFilter, string $semesterFilter, ?int $facultyId): void
+    private function loadStats(int $yearFilter): void
     {
-        $query = $this->buildBaseQuery($yearFilter, $semesterFilter, $facultyId);
-
-        $statsRaw = (clone $query)
+        $statsRaw = Proposal::query()
+            ->tap(fn ($q) => $this->applyCommonFilters($q))
             ->select([
                 'detailable_type',
                 'status',
@@ -176,13 +206,10 @@ class ExecDashboard extends Component
             ->groupBy('detailable_type', 'status')
             ->get();
 
-        $this->stats = $this->transformStats($statsRaw, $facultyId, $yearFilter);
+        $this->stats = $this->transformStats($statsRaw);
     }
 
-    /**
-     * Transform raw stats query result into stats array.
-     */
-    private function transformStats(Collection $raw, ?int $facultyId, int $yearFilter): array
+    private function transformStats(Collection $raw): array
     {
         $research = $raw->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'Research'));
         $communityService = $raw->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'CommunityService'));
@@ -192,54 +219,25 @@ class ExecDashboard extends Component
             'total_community_service' => $communityService->sum('count'),
             'research_approved' => $research->filter(fn ($r) => in_array($r->status->value ?? '', ['approved', 'completed']))->sum('count'),
             'community_service_approved' => $communityService->filter(fn ($r) => in_array($r->status->value ?? '', ['approved', 'completed']))->sum('count'),
-            'faculty_name' => $facultyId ? $this->user->identity?->faculty?->name : null,
+            'faculty_name' => $this->isDekanRestricted() ? $this->user->identity?->faculty?->name : null,
             'final_report_pending' => $this->roleName === 'rektor'
                 ? InstitutionalReport::where('status', InstitutionalReportStatus::SUBMITTED)->count()
                 : ProgressReport::query()
                     ->where('reporting_period', 'final')
                     ->where('status', ReportStatus::SUBMITTED)
-                    ->when($facultyId, function ($q) use ($facultyId) {
-                        $q->whereHas('proposal.submitter.identity', function ($sq) use ($facultyId) {
-                            $sq->where('faculty_id', $facultyId);
-                        });
-                    })
-                    ->whereYear('created_at', $yearFilter)
+                    ->whereYear('created_at', $this->selectedYear)
                     ->count(),
-            'total_outputs' => MandatoryOutput::whereHas('progressReport', function ($q) use ($yearFilter, $facultyId) {
-                $q->whereYear('created_at', $yearFilter);
-                if ($facultyId) {
-                    $q->whereHas('proposal.submitter.identity', function ($sq) use ($facultyId) {
-                        $sq->where('faculty_id', $facultyId);
-                    });
-                }
-            })->count() +
-                AdditionalOutput::whereHas('progressReport', function ($q) use ($yearFilter, $facultyId) {
-                    $q->whereYear('created_at', $yearFilter);
-                    if ($facultyId) {
-                        $q->whereHas('proposal.submitter.identity', function ($sq) use ($facultyId) {
-                            $sq->where('faculty_id', $facultyId);
-                        });
-                    }
-                })->count(),
+            'total_outputs' => MandatoryOutput::whereHas('progressReport', fn ($q) => $q->whereYear('created_at', $this->selectedYear))->count()
+                + AdditionalOutput::whereHas('progressReport', fn ($q) => $q->whereYear('created_at', $this->selectedYear))->count(),
         ];
     }
 
-    /**
-     * Load recent proposals in a single query.
-     */
-    private function loadRecentProposals(int $yearFilter, string $semesterFilter, string $statusFilter, ?int $facultyId): void
+    private function loadRecentProposals(int $yearFilter): void
     {
-        $query = $this->buildBaseQuery($yearFilter, $semesterFilter, $facultyId);
+        $query = Proposal::with(['submitter'])
+            ->tap(fn ($q) => $this->applyCommonFilters($q));
 
-        if ($statusFilter !== 'all') {
-            $query->where('status', $statusFilter);
-        }
-
-        $recentProposals = (clone $query)
-            ->with(['submitter'])
-            ->latest()
-            ->limit(20)
-            ->get();
+        $recentProposals = $query->latest()->get();
 
         $this->recentResearch = $recentProposals
             ->filter(fn ($p) => str_contains($p->detailable_type ?? '', 'Research'))
@@ -252,56 +250,65 @@ class ExecDashboard extends Component
             ->values();
     }
 
-    /**
-     * Get periodic summary with optimized queries.
-     * Uses single query per period instead of multiple.
-     */
-    private function getPeriodicSummary(?int $facultyId): array
+    private function getPeriodicSummary(): array
     {
-        $currentYear = (int) date('Y');
+        $currentYear = (int) $this->selectedYear;
         $summary = [];
 
+        $query = Proposal::query()
+            ->where('start_year', '>=', $currentYear - 4)
+            ->where('start_year', '<=', $currentYear);
+
+        if ($this->selectedStatus !== 'all') {
+            $query->where('status', $this->selectedStatus);
+        }
+
+        if ($this->isDekanRestricted()) {
+            $facultyId = $this->user->identity?->faculty_id;
+            if (! $facultyId) {
+                $query->whereRaw('1 = 0');
+            } else {
+                $query->whereHas('submitter.identity', fn ($q) => $q->where('faculty_id', $facultyId));
+            }
+        } else {
+            if ($this->selectedFaculty !== 'all') {
+                $query->whereHas('submitter.identity', fn ($q) => $q->where('faculty_id', $this->selectedFaculty));
+            }
+
+            if ($this->selectedProdi !== 'all') {
+                $query->whereHas('submitter.identity', fn ($q) => $q->where('study_program_id', $this->selectedProdi));
+            }
+        }
+
+        $data = $query->select([
+            'start_year',
+            'semester',
+            'detailable_type',
+            'status',
+            DB::raw('COUNT(*) as count'),
+        ])
+            ->groupBy('start_year', 'semester', 'detailable_type', 'status')
+            ->get();
+
         for ($year = $currentYear; $year >= $currentYear - 4; $year--) {
-            foreach (['genap', 'ganjil'] as $semester) {
-                $query = Proposal::whereYear('created_at', $year);
+            foreach (['ganjil', 'genap', null] as $semester) {
+                $yearData = $data->where('start_year', $year);
 
-                if ($semester === 'ganjil') {
-                    $query->where(function ($q) {
-                        $q->whereMonth('created_at', '>=', 9)
-                            ->orWhereMonth('created_at', '<=', 2);
-                    });
+                if ($semester === null) {
+                    $yearData = $yearData->whereNull('semester');
                 } else {
-                    $query->whereMonth('created_at', '>=', 3)->whereMonth('created_at', '<=', 8);
+                    $yearData = $yearData->where('semester', $semester);
                 }
 
-                if ($this->roleName === 'dekan') {
-                    if (! $facultyId) {
-                        $query->whereRaw('1 = 0');
-                    } else {
-                        $query->whereHas('submitter.identity', function ($q) use ($facultyId) {
-                            $q->where('faculty_id', $facultyId);
-                        });
-                    }
-                } elseif ($facultyId) {
-                    $query->whereHas('submitter.identity', function ($q) use ($facultyId) {
-                        $q->where('faculty_id', $facultyId);
-                    });
-                }
-
-                $data = (clone $query)->select('detailable_type', 'status', DB::raw('count(*) as count'))
-                    ->groupBy('detailable_type', 'status')
-                    ->get();
-
-                $researchTotal = $data->filter(fn ($d) => str_contains($d->detailable_type ?? '', 'Research'))->sum('count');
-                $researchApproved = $data->filter(fn ($d) => str_contains($d->detailable_type ?? '', 'Research') && in_array($d->status->value ?? '', ['approved', 'completed']))->sum('count');
-
-                $pkmTotal = $data->filter(fn ($d) => str_contains($d->detailable_type ?? '', 'CommunityService'))->sum('count');
-                $pkmApproved = $data->filter(fn ($d) => str_contains($d->detailable_type ?? '', 'CommunityService') && in_array($d->status->value ?? '', ['approved', 'completed']))->sum('count');
+                $researchTotal = $yearData->filter(fn ($d) => str_contains($d->detailable_type ?? '', 'Research'))->sum('count');
+                $researchApproved = $yearData->filter(fn ($d) => str_contains($d->detailable_type ?? '', 'Research') && in_array($d->status->value ?? '', ['approved', 'completed']))->sum('count');
+                $pkmTotal = $yearData->filter(fn ($d) => str_contains($d->detailable_type ?? '', 'CommunityService'))->sum('count');
+                $pkmApproved = $yearData->filter(fn ($d) => str_contains($d->detailable_type ?? '', 'CommunityService') && in_array($d->status->value ?? '', ['approved', 'completed']))->sum('count');
 
                 if ($researchTotal > 0 || $pkmTotal > 0) {
                     $summary[] = [
                         'year' => $year,
-                        'semester' => ucfirst($semester),
+                        'semester' => $semester,
                         'research_total' => $researchTotal,
                         'research_approved' => $researchApproved,
                         'pkm_total' => $pkmTotal,

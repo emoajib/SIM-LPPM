@@ -1,9 +1,19 @@
 <div>
     <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
-        <button type="button" class="btn btn-success d-flex align-items-center gap-2" wire:click="exportResearch">
-            <i class="ti ti-file-spreadsheet fs-2"></i>
-            <span>Export Excel</span>
-        </button>
+        <div class="dropdown">
+            <a href="#" class="btn btn-success dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                <i class="ti ti-file-spreadsheet fs-2"></i>
+                <span>Export Excel</span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end">
+                <a href="#" class="dropdown-item" wire:click="exportResearch">
+                    <i class="ti ti-flask me-2"></i> Penelitian
+                </a>
+                <a href="#" class="dropdown-item" wire:click="exportCommunityService">
+                    <i class="ti ti-users-group me-2"></i> PKM
+                </a>
+            </div>
+        </div>
         <div class="dropdown">
             <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
                 <i class="ti ti-calendar-event fs-2"></i>
@@ -32,8 +42,55 @@
                 @endforeach
             </div>
         </div>
+        <div class="dropdown">
+            <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                <i class="ti ti-building fs-2"></i>
+                <span>Fakultas: {{ $availableFaculties[$selectedFaculty] ?? 'Semua Fakultas' }}</span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end" style="max-height: 300px; overflow-y: auto;">
+                @foreach ($availableFaculties as $value => $label)
+                    <a href="#" class="dropdown-item {{ $selectedFaculty == $value ? 'active' : '' }}"
+                        wire:click.preserve-scroll="$set('selectedFaculty', '{{ $value }}')">
+                        {{ $label }}
+                    </a>
+                @endforeach
+            </div>
+        </div>
+        <div class="dropdown">
+            <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                <i class="ti ti-book fs-2"></i>
+                <span>Prodi: {{ $availableProdis[$selectedProdi] ?? 'Semua Prodi' }}</span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end" style="max-height: 300px; overflow-y: auto;">
+                @foreach ($availableProdis as $value => $label)
+                    <a href="#" class="dropdown-item {{ $selectedProdi == $value ? 'active' : '' }}"
+                        wire:click.preserve-scroll="$set('selectedProdi', '{{ $value }}')">
+                        {{ $label }}
+                    </a>
+                @endforeach
+            </div>
+        </div>
+        <div class="dropdown">
+            <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                <i class="ti ti-calendar-stats fs-2"></i>
+                <span>Semester: {{ $selectedSemester === 'all' ? 'Semua' : ($selectedSemester === 'ganjil' ? 'Ganjil' : 'Genap') }}</span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end">
+                <a href="#" class="dropdown-item {{ $selectedSemester === 'all' ? 'active' : '' }}"
+                    wire:click.preserve-scroll="$set('selectedSemester', 'all')">
+                    Semua
+                </a>
+                <a href="#" class="dropdown-item {{ $selectedSemester === 'ganjil' ? 'active' : '' }}"
+                    wire:click.preserve-scroll="$set('selectedSemester', 'ganjil')">
+                    Ganjil
+                </a>
+                <a href="#" class="dropdown-item {{ $selectedSemester === 'genap' ? 'active' : '' }}"
+                    wire:click.preserve-scroll="$set('selectedSemester', 'genap')">
+                    Genap
+                </a>
+            </div>
+        </div>
     </div>
-
 
     <div class="row row-deck row-cards">
         <!-- KPI Section: Research -->
@@ -275,16 +332,7 @@
                                         </div>
                                     </td>
                                     <td class="text-center">
-                                        @php
-                                            $color = match ($research->status->value) {
-                                                'approved', 'completed' => 'success',
-                                                'rejected' => 'danger',
-                                                'submitted' => 'warning',
-                                                'reviewed' => 'info',
-                                                default => 'secondary'
-                                            };
-                                        @endphp
-                                        <x-tabler.badge :color="$color" class="fw-normal">{{ $research->status->label() }}</x-tabler.badge>
+                                        <x-tabler.badge :color="$research->status->color()" class="fw-normal">{{ $research->status->label() }}</x-tabler.badge>
                                     </td>
                                     <td class="text-end pe-4 text-muted small">
                                         {{ $research->created_at->diffForHumans() }}
@@ -342,16 +390,7 @@
                                         </div>
                                     </td>
                                     <td class="text-center">
-                                        @php
-                                            $color = match ($communityService->status->value) {
-                                                'approved', 'completed' => 'success',
-                                                'rejected' => 'danger',
-                                                'submitted' => 'warning',
-                                                'reviewed' => 'info',
-                                                default => 'secondary'
-                                            };
-                                        @endphp
-                                        <x-tabler.badge :color="$color" class="fw-normal">{{ $communityService->status->label() }}</x-tabler.badge>
+                                        <x-tabler.badge :color="$communityService->status->color()" class="fw-normal">{{ $communityService->status->label() }}</x-tabler.badge>
                                     </td>
                                     <td class="text-end pe-4 text-muted small">
                                         {{ $communityService->created_at->diffForHumans() }}

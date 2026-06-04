@@ -2,16 +2,20 @@
 
 namespace App\Livewire\Dashboard;
 
+use App\Enums\ProposalStatus;
 use App\Enums\ReportStatus;
 use App\Models\AdditionalOutput;
 use App\Models\BudgetItem;
+use App\Models\Faculty;
 use App\Models\MandatoryOutput;
 use App\Models\MonevReview;
 use App\Models\ProgressReport;
 use App\Models\Proposal;
 use App\Models\ProposalMonev;
 use App\Models\ProposalOutput;
+use App\Models\StudyProgram;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
@@ -36,9 +40,19 @@ class AdminDashboard extends Component
 
     public $selectedStatus = 'all';
 
+    public $selectedFaculty = 'all';
+
+    public $selectedProdi = 'all';
+
+    public $selectedSemester = 'all';
+
     public $availableYears = [];
 
     public $availableStatuses = [];
+
+    public $availableFaculties = [];
+
+    public $availableProdis = [];
 
     public function mount(): void
     {
@@ -46,7 +60,8 @@ class AdminDashboard extends Component
         $this->roleName = active_role();
         $this->selectedYear = date('Y');
         $this->availableYears = $this->getAvailableYears();
-        $this->availableStatuses = $this->listAvailableStatuses();
+        $this->availableStatuses = ProposalStatus::filterOptions();
+        $this->availableFaculties = $this->getFaculties();
 
         $this->loadAnalytics();
     }
@@ -61,9 +76,31 @@ class AdminDashboard extends Component
         $this->loadAnalytics();
     }
 
+    public function updatedSelectedFaculty(): void
+    {
+        $this->selectedProdi = 'all';
+        $this->availableProdis = $this->getProdiByFaculty();
+        $this->loadAnalytics();
+    }
+
+    public function updatedSelectedProdi(): void
+    {
+        $this->loadAnalytics();
+    }
+
+    public function updatedSelectedSemester(): void
+    {
+        $this->loadAnalytics();
+    }
+
     public function exportResearch(): void
     {
         $this->dispatch('download-file', url: route('admin.dashboard.export-research', ['period' => $this->selectedYear]));
+    }
+
+    public function exportCommunityService(): void
+    {
+        $this->dispatch('download-file', url: route('admin.dashboard.export-community-service', ['period' => $this->selectedYear]));
     }
 
     public function exportIkuPdf(): void
@@ -94,27 +131,52 @@ class AdminDashboard extends Component
         return $years;
     }
 
-    private function listAvailableStatuses(): array
+    private function getFaculties(): array
     {
-        return [
-            'all' => 'Semua Status',
-            'draft' => 'Draft',
-            'submitted' => 'Submitted',
-            'need_assignment' => 'Need Assignment',
-            'waiting_reviewer' => 'Waiting Reviewer',
-            'under_review' => 'Under Review',
-            'reviewed' => 'Reviewed',
-            'revision_needed' => 'Revision Needed',
-            'approved' => 'Approved',
-            'rejected' => 'Rejected',
-            'completed' => 'Completed',
-        ];
+        return Faculty::query()
+            ->orderBy('name')
+            ->pluck('name', 'id')
+            ->prepend('Semua Fakultas', 'all')
+            ->toArray();
+    }
+
+    public function getProdiByFaculty(): array
+    {
+        $query = StudyProgram::query()->orderBy('name');
+
+        if ($this->selectedFaculty !== 'all') {
+            $query->where('faculty_id', $this->selectedFaculty);
+        }
+
+        return $query->pluck('name', 'id')
+            ->prepend('Semua Prodi', 'all')
+            ->toArray();
+    }
+
+    private function applyCommonFilters(Builder $query): Builder
+    {
+        if ($this->selectedStatus !== 'all') {
+            $query->where('status', $this->selectedStatus);
+        }
+
+        if ($this->selectedFaculty !== 'all') {
+            $query->whereHas('submitter.identity', fn ($q) => $q->where('faculty_id', $this->selectedFaculty));
+        }
+
+        if ($this->selectedProdi !== 'all') {
+            $query->whereHas('submitter.identity', fn ($q) => $q->where('study_program_id', $this->selectedProdi));
+        }
+
+        if ($this->selectedSemester !== 'all') {
+            $query->where('semester', $this->selectedSemester);
+        }
+
+        return $query;
     }
 
     public function loadAnalytics(): void
     {
         $yearFilter = $this->selectedYear;
-        $statusFilter = $this->selectedStatus;
 
         // OPTIMIZED: Single aggregated query for all stats (replaces 9 separate count queries)
         $this->loadStats($yearFilter);
@@ -123,7 +185,7 @@ class AdminDashboard extends Component
         $this->loadProcessStats($yearFilter);
 
         // Load recent proposals
-        $this->loadRecentProposals($yearFilter, $statusFilter);
+        $this->loadRecentProposals($yearFilter);
     }
 
     /**
@@ -135,6 +197,7 @@ class AdminDashboard extends Component
         // Filter by start_year (tahun pelaksanaan kegiatan), bukan created_at
         $statsRaw = Proposal::query()
             ->where('start_year', $yearFilter)
+            ->tap(fn ($q) => $this->applyCommonFilters($q))
             ->select([
                 'detailable_type',
                 'status',
@@ -208,7 +271,9 @@ class AdminDashboard extends Component
     private function loadProcessStats(string $yearFilter): void
     {
         // Baseline: Retrieve all proposals for the selected start_year
-        $proposalsThisYear = Proposal::where('start_year', $yearFilter)->get();
+        $proposalsThisYear = Proposal::where('start_year', $yearFilter)
+            ->tap(fn ($q) => $this->applyCommonFilters($q))
+            ->get();
         $proposalsThisYearIds = $proposalsThisYear->pluck('id');
 
         // New Metrics: Draft & Approval Stages
@@ -290,16 +355,14 @@ class AdminDashboard extends Component
     /**
      * Load recent proposals in a single query.
      */
-    private function loadRecentProposals(string $yearFilter, string $statusFilter = 'all'): void
+    private function loadRecentProposals(string $yearFilter): void
     {
         $query = Proposal::with(['submitter.identity', 'focusArea', 'researchScheme', 'communityServiceScheme'])
             ->where('start_year', $yearFilter);
 
-        if ($statusFilter !== 'all') {
-            $query->where('status', $statusFilter);
-        }
+        $this->applyCommonFilters($query);
 
-        $recentProposals = $query->latest()->limit(20)->get();
+        $recentProposals = $query->latest()->get();
 
         $this->recentResearch = $recentProposals
             ->filter(fn ($p) => str_contains($p->detailable_type, 'Research'))

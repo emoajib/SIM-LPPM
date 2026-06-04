@@ -371,6 +371,7 @@ Route::group(['middleware' => ['auth', 'verified', 'permission:module_laporan']]
 // Rute Ekspor Admin (dashboard, monev, IKU)
 Route::group(['middleware' => ['auth', 'verified', 'role:admin lppm|rektor|kepala lppm']], function () {
     Route::get('/admin/dashboard/export-research', [ReportExportController::class, 'dashboardResearchExport'])->name('admin.dashboard.export-research');
+    Route::get('/admin/dashboard/export-community-service', [ReportExportController::class, 'dashboardCommunityServiceExport'])->name('admin.dashboard.export-community-service');
 
     Route::get('/monev/export-recap', [ReportExportController::class, 'monevRecapExcel'])->name('export.monev.recap');
     Route::get('/laporan-monev/export/pdf', [ReportExportController::class, 'monevPdf'])->name('reports.monev.pdf');
