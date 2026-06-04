@@ -646,6 +646,18 @@ class ProposalPdfService
             }
         }
 
+        // Check identity updated_at (submitter + team members)
+        $submitterIdentity = $proposal->submitter->identity;
+        if ($submitterIdentity && $submitterIdentity->updated_at) {
+            $latestTimestamp = max($latestTimestamp, $submitterIdentity->updated_at->timestamp);
+        }
+        foreach ($proposal->teamMembers as $member) {
+            $memberIdentity = $member->identity;
+            if ($memberIdentity && $memberIdentity->updated_at) {
+                $latestTimestamp = max($latestTimestamp, $memberIdentity->updated_at->timestamp);
+            }
+        }
+
         $cacheFileName = sprintf(
             '%sreport_%s_%s.pdf',
             $isPreview ? 'preview_' : '',

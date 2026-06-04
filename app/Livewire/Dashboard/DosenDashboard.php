@@ -187,9 +187,9 @@ class DosenDashboard extends Component
     {
         $identity = $this->user->identity;
         $this->sinta_score_v3_overall = $identity->sinta_score_v3_overall ?? 0;
-        $this->scopus_h_index = $identity->scopus_h_index ?? 0;
-        $this->gs_h_index = $identity->gs_h_index ?? 0;
-        $this->wos_h_index = $identity->wos_h_index ?? 0;
+        $this->scopus_h_index = $identity->scopus_h_index;
+        $this->gs_h_index = $identity->gs_h_index;
+        $this->wos_h_index = $identity->wos_h_index;
 
         $this->showEditMetricsModal = true;
     }
@@ -198,9 +198,9 @@ class DosenDashboard extends Component
     {
         $this->validate([
             'sinta_score_v3_overall' => 'required|numeric|min:0',
-            'scopus_h_index' => 'required|numeric|min:0',
-            'gs_h_index' => 'required|numeric|min:0',
-            'wos_h_index' => 'required|numeric|min:0',
+            'scopus_h_index' => 'nullable|numeric|min:0',
+            'gs_h_index' => 'nullable|numeric|min:0',
+            'wos_h_index' => 'nullable|numeric|min:0',
         ]);
 
         $identity = $this->user->identity;

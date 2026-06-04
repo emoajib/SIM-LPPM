@@ -227,7 +227,7 @@
                                         </div>
                                         <div class="col-6">
                                             <dt class="text-secondary small">H-Index</dt>
-                                            <dd class="fw-bold">{{ $user->identity?->scopus_h_index ?? 0 }}</dd>
+                                            <dd class="fw-bold">{{ $user->identity?->scopus_h_index ?? '-' }}</dd>
                                         </div>
                                         <div class="col-6">
                                             <dt class="text-secondary small">i10-Index</dt>
@@ -254,7 +254,7 @@
                                         </div>
                                         <div class="col-6">
                                             <dt class="text-secondary small">H-Index</dt>
-                                            <dd class="fw-bold">{{ $user->identity?->gs_h_index ?? 0 }}</dd>
+                                            <dd class="fw-bold">{{ $user->identity?->gs_h_index ?? '-' }}</dd>
                                         </div>
                                         <div class="col-6">
                                             <dt class="text-secondary small">i10-Index</dt>
@@ -281,7 +281,7 @@
                                         </div>
                                         <div class="col-6">
                                             <dt class="text-secondary small">H-Index</dt>
-                                            <dd class="fw-bold">{{ $user->identity?->wos_h_index ?? 0 }}</dd>
+                                            <dd class="fw-bold">{{ $user->identity?->wos_h_index ?? '-' }}</dd>
                                         </div>
                                     </dl>
                                 </div>

@@ -69,7 +69,7 @@
                         </div>
                     </div>
                     <a href="{{ $scopusUrl }}" target="_blank" class="text-decoration-none d-block">
-                        <div class="h1 mb-1 fw-bold text-green">{{ auth()->user()->identity?->scopus_h_index ?? 0 }}
+                        <div class="h1 mb-1 fw-bold text-green">{{ auth()->user()->identity?->scopus_h_index ?? '-' }}
                         </div>
                         <div class="text-muted small">Citations per Publication Ratio</div>
                     </a>
@@ -94,7 +94,7 @@
                         </div>
                     </div>
                     <a href="{{ $gsUrl }}" target="_blank" class="text-decoration-none d-block">
-                        <div class="h1 mb-1 fw-bold text-yellow">{{ auth()->user()->identity?->gs_h_index ?? 0 }}</div>
+                        <div class="h1 mb-1 fw-bold text-yellow">{{ auth()->user()->identity?->gs_h_index ?? '-' }}</div>
                         <div class="text-muted small">Visualized by Scholar Library</div>
                     </a>
                 </div>
@@ -118,7 +118,7 @@
                         </div>
                     </div>
                     <a href="{{ $wosUrl }}" target="_blank" class="text-decoration-none d-block">
-                        <div class="h1 mb-1 fw-bold text-purple">{{ auth()->user()->identity?->wos_h_index ?? 0 }}</div>
+                        <div class="h1 mb-1 fw-bold text-purple">{{ auth()->user()->identity?->wos_h_index ?? '-' }}</div>
                         <div class="text-muted small">Clarivate Analytics WoS</div>
                     </a>
                 </div>
