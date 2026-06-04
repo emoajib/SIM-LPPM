@@ -308,7 +308,7 @@
                 <td>{{ $proposal->teamMembers->firstWhere('id', $proposal->submitter_id)->pivot->tasks ?? '-' }}</td>
                 <td class="text-center">{{ $proposal->submitter->identity?->sinta_id ?? '-' }}</td>
                 <td class="text-center">{{ $proposal->submitter->identity?->scopus_h_index ?? '-' }}</td>
-                <td>{{ $proposal->submitter->identity?->scienceCluster?->name ?? $proposal->clusterLevel1->name ?? '-' }}</td>
+                <td>{{ $proposal->submitter->identity?->scienceCluster?->name ?? '-' }}</td>
             </tr>
             {{-- Anggota Dosen --}}
             @php
@@ -326,7 +326,7 @@
                         <td>{{ $member->pivot->tasks ?? '-' }}</td>
                         <td class="text-center">{{ $member->identity?->sinta_id ?? '-' }}</td>
                         <td class="text-center">{{ $member->identity?->scopus_h_index ?? '-' }}</td>
-                        <td>{{ $member->identity?->scienceCluster?->name ?? $proposal->clusterLevel1->name ?? '-' }}</td>
+                        <td>{{ $member->identity?->scienceCluster?->name ?? '-' }}</td>
                     </tr>
                 @endif
             @endforeach

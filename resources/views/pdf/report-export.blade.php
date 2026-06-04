@@ -298,7 +298,7 @@
                 <td>{{ $proposal->teamMembers->firstWhere('id', $proposal->submitter_id)->pivot->tasks ?? '-' }}</td>
                 <td class="text-center">{{ $proposal->submitter->identity?->sinta_id ?? '-' }}</td>
                 <td class="text-center">{{ $proposal->submitter->identity?->scopus_h_index ?? '-' }}</td>
-                <td>{{ $proposal->submitter->identity?->scienceCluster?->name ?? $proposal->clusterLevel1->name ?? '-' }}</td>
+                <td>{{ $proposal->submitter->identity?->scienceCluster?->name ?? '-' }}</td>
             </tr>
             @php
                 $lecturerMembersSection2 = $proposal->teamMembers->filter(fn($m) => $m->id !== $proposal->submitter_id && ($m->identity?->type === 'dosen' || $m->pivot->role === 'anggota' || $m->pivot->role === 'dosen'));
@@ -311,7 +311,7 @@
                     <td>{{ $member->pivot->tasks ?? '-' }}</td>
                     <td class="text-center">{{ $member->identity?->sinta_id ?? '-' }}</td>
                     <td class="text-center">{{ $member->identity?->scopus_h_index ?? '-' }}</td>
-                    <td>{{ $member->identity?->scienceCluster?->name ?? $proposal->clusterLevel1->name ?? '-' }}</td>
+                    <td>{{ $member->identity?->scienceCluster?->name ?? '-' }}</td>
                 </tr>
             @endforeach
         </tbody>
