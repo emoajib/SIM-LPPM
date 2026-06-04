@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Models\Identity;
 use App\Models\ScienceCluster;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 class BackfillIdentityScienceCluster extends Command
 {
@@ -27,13 +26,15 @@ class BackfillIdentityScienceCluster extends Command
 
         $this->warn("Found {$nullCount} identities without science_cluster_id.");
 
-        $grouped = DB::table('identities')
-            ->leftJoin('study_programs', 'identities.study_program_id', '=', 'study_programs.id')
-            ->whereNull('identities.science_cluster_id')
-            ->selectRaw('COALESCE(study_programs.name, ?) as study_program', ['(no study program)'])
-            ->selectRaw('COUNT(*) as count')
-            ->groupBy('identities.study_program_id')
-            ->get()
+        $identities = Identity::whereNull('science_cluster_id')
+            ->select('study_program_id')
+            ->with('studyProgram:id,name')
+            ->get();
+
+        $grouped = $identities
+            ->groupBy(fn (Identity $i) => optional($i->studyProgram)->name ?? '(no study program)')
+            ->map(fn ($group, $name) => ['study_program' => $name, 'count' => $group->count()])
+            ->values()
             ->toArray();
 
         $this->table(['Study Program', 'Count'], $grouped);
