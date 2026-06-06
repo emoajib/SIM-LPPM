@@ -80,6 +80,9 @@ class ProposalExportController extends Controller
             return response()->file($pdfPath, [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'inline',
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Pragma' => 'no-cache',
+                'Expires' => '0',
             ]);
         } catch (\Exception $e) {
             \Log::error('Proposal PDF Preview Error: '.$e->getMessage());
