@@ -131,6 +131,8 @@
         $facultyName = $submitterIdentity?->faculty?->name ?? '.......................';
         $prodiName = $submitterIdentity?->studyProgram?->name ?? '.......................';
         $institutionName = $submitterIdentity?->institution?->name ?? 'ITSNU Pekalongan';
+        $lecturerSig = $proposal->signatures->first(fn($s) => $s->signed_role === 'lecturer' && strtolower($s->action) === 'submitted');
+        $statusValue = $proposal->status->value;
     @endphp
 </head>
 <body>
@@ -752,7 +754,7 @@
                         Dekan Fakultas {{ $proposal->submitter->identity?->faculty?->name ?? '.......................' }}
                     </td>
                     <td width="50%" class="text-center" style="vertical-align: top;">
-                        Pekalongan, {{ date('d F Y') }}<br>
+                        Pekalongan, {{ $lecturerSig && $lecturerSig->signed_at ? $lecturerSig->signed_at->format('d F Y') : date('d F Y') }}<br>
                         Ketua {{ $proposal->detailable_type === 'App\Models\Research' ? 'Peneliti' : 'Pelaksana' }}
                     </td>
                 </tr>
@@ -774,8 +776,6 @@
                     </td>
                     <td class="text-center" style="height: 120px; vertical-align: bottom; padding-bottom: 20px;">
                         @php
-                            $lecturerSig = $proposal->signatures->first(fn($s) => $s->signed_role === 'lecturer' && strtolower($s->action) === 'submitted');
-                            $statusValue = $proposal->status->value;
                             Log::debug('Lecturer signature check', [
                                 'proposal_id' => $proposal->id,
                                 'signatures_count' => $proposal->signatures->count(),
