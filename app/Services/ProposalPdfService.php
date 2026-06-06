@@ -551,9 +551,9 @@ class ProposalPdfService
             }
 
             $signedAt = [
-                'lecturer' => ProposalStatusLog::where('proposal_id', $proposal->id)->where('status_after', ProposalStatus::SUBMITTED)->value('at') ?? $proposal->created_at ?? now(),
-                'dekan' => ProposalStatusLog::where('proposal_id', $proposal->id)->where('status_after', ProposalStatus::APPROVED)->value('at') ?? now(),
-                'kepala_lppm' => ProposalStatusLog::where('proposal_id', $proposal->id)->whereIn('status_after', [ProposalStatus::WAITING_REVIEWER, ProposalStatus::UNDER_REVIEW])->value('at') ?? now(),
+                'lecturer' => ProposalStatusLog::where('proposal_id', $proposal->id)->where('status_after', ProposalStatus::SUBMITTED)->latest('at')->value('at') ?? $proposal->created_at ?? now(),
+                'dekan' => ProposalStatusLog::where('proposal_id', $proposal->id)->where('status_after', ProposalStatus::APPROVED)->latest('at')->value('at') ?? now(),
+                'kepala_lppm' => ProposalStatusLog::where('proposal_id', $proposal->id)->whereIn('status_after', [ProposalStatus::WAITING_REVIEWER, ProposalStatus::UNDER_REVIEW])->latest('at')->value('at') ?? now(),
             ][$role];
 
             $nonce = Str::random(32);

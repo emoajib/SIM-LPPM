@@ -177,4 +177,124 @@ class ProposalSignatureTest extends TestCase
             'action' => 'submitted',
         ]);
     }
+
+    public function test_lecturer_signed_at_uses_status_log_timestamp()
+    {
+        $research = Research::factory()->create();
+        $proposal = Proposal::factory()->create([
+            'submitter_id' => $this->dosen->id,
+            'detailable_id' => $research->id,
+            'detailable_type' => Research::class,
+            'status' => ProposalStatus::SUBMITTED,
+            'created_at' => now()->subDays(7),
+        ]);
+
+        $submittedAt = now()->subDay();
+        ProposalStatusLog::create([
+            'proposal_id' => $proposal->id,
+            'user_id' => $this->dosen->id,
+            'status_before' => ProposalStatus::DRAFT,
+            'status_after' => ProposalStatus::SUBMITTED,
+            'at' => $submittedAt,
+        ]);
+
+        $this->actingAs($this->dosen);
+        $this->get(route('proposals.export-pdf', $proposal));
+
+        $signature = $proposal->signatures()
+            ->where('signed_role', 'lecturer')
+            ->where('action', 'submitted')
+            ->first();
+
+        $this->assertNotNull($signature);
+        $this->assertNotNull($signature->signed_at);
+
+        $this->assertEquals(
+            $submittedAt->format('Y-m-d H:i:s'),
+            $signature->signed_at->format('Y-m-d H:i:s'),
+            'signed_at harus dari status log, bukan created_at'
+        );
+
+        $this->assertNotEquals(
+            $proposal->created_at->format('Y-m-d H:i:s'),
+            $signature->signed_at->format('Y-m-d H:i:s'),
+            'signed_at tidak boleh sama dengan created_at'
+        );
+    }
+
+    public function test_lecturer_signed_at_falls_back_to_created_at_when_no_status_log()
+    {
+        $research = Research::factory()->create();
+        $proposal = Proposal::factory()->create([
+            'submitter_id' => $this->dosen->id,
+            'detailable_id' => $research->id,
+            'detailable_type' => Research::class,
+            'status' => ProposalStatus::SUBMITTED,
+            'created_at' => now()->subDays(30),
+        ]);
+
+        $this->actingAs($this->dosen);
+        $this->get(route('proposals.export-pdf', $proposal));
+
+        $signature = $proposal->signatures()
+            ->where('signed_role', 'lecturer')
+            ->where('action', 'submitted')
+            ->first();
+
+        $this->assertNotNull($signature);
+        $this->assertNotNull($signature->signed_at);
+
+        $this->assertEquals(
+            $proposal->created_at->format('Y-m-d H:i:s'),
+            $signature->signed_at->format('Y-m-d H:i:s'),
+            'signed_at harus fallback ke created_at ketika tidak ada status log'
+        );
+    }
+
+    public function test_lecturer_signed_at_uses_latest_submission_log()
+    {
+        $research = Research::factory()->create();
+        $proposal = Proposal::factory()->create([
+            'submitter_id' => $this->dosen->id,
+            'detailable_id' => $research->id,
+            'detailable_type' => Research::class,
+            'status' => ProposalStatus::SUBMITTED,
+            'created_at' => now()->subDays(30),
+        ]);
+
+        $firstSubmitAt = now()->subDays(20);
+        ProposalStatusLog::create([
+            'proposal_id' => $proposal->id,
+            'user_id' => $this->dosen->id,
+            'status_before' => ProposalStatus::DRAFT,
+            'status_after' => ProposalStatus::SUBMITTED,
+            'at' => $firstSubmitAt,
+        ]);
+
+        $secondSubmitAt = now()->subDay();
+        ProposalStatusLog::create([
+            'proposal_id' => $proposal->id,
+            'user_id' => $this->dosen->id,
+            'status_before' => ProposalStatus::REVISION_NEEDED,
+            'status_after' => ProposalStatus::SUBMITTED,
+            'at' => $secondSubmitAt,
+        ]);
+
+        $this->actingAs($this->dosen);
+        $this->get(route('proposals.export-pdf', $proposal));
+
+        $signature = $proposal->signatures()
+            ->where('signed_role', 'lecturer')
+            ->where('action', 'submitted')
+            ->first();
+
+        $this->assertNotNull($signature);
+        $this->assertNotNull($signature->signed_at);
+
+        $this->assertEquals(
+            $secondSubmitAt->format('Y-m-d H:i:s'),
+            $signature->signed_at->format('Y-m-d H:i:s'),
+            'signed_at harus menggunakan submission log terbaru (->latest(at))'
+        );
+    }
 }
