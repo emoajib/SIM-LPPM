@@ -1,5 +1,7 @@
 <?php
 
+// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+
 return [
 
     /*
@@ -181,6 +183,12 @@ return [
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
+        'form.substance_file' => [
+            'mimes' => 'Berkas substansi usulan harus diunggah dalam format PDF.',
+        ],
+        'substanceFile' => [
+            'mimes' => 'Berkas substansi usulan harus diunggah dalam format PDF.',
+        ],
     ],
 
     /*
@@ -195,6 +203,8 @@ return [
     */
 
     'attributes' => [
+        'form.substance_file' => 'Berkas Substansi Usulan',
+        'substanceFile' => 'Berkas Substansi Usulan',
         'mandatoryOutputs.*.status_type' => 'Status Publikasi',
         'mandatoryOutputs.*.author_status' => 'Status Penulis',
         'mandatoryOutputs.*.journal_title' => 'Judul Jurnal',
