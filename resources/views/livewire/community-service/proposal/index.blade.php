@@ -116,31 +116,6 @@
                 $eligSubtitle = 'Terdapat kendala yang menghalangi pengajuan proposal:';
                 $eligTindakan = 'Hubungi Admin LPPM untuk informasi lebih lanjut.';
             }
-
-            // User profile for scheme requirements
-            $identity = $user->identity;
-            $userSintaScore = $identity?->sinta_score_v3_overall ?? 0;
-            $userFunctionalPosition = $identity?->functional_position ?? 'Tenaga Pengajar';
-
-            // Per-scheme requirements
-            $schemeRequirements = [];
-            $pkmSchemesAll = \App\Models\CommunityServiceScheme::all();
-            foreach ($pkmSchemesAll as $scheme) {
-                $rules = $scheme->eligibility_rules ?? [];
-                $issues = [];
-                if (isset($rules['min_sinta_score']) && $rules['min_sinta_score'] !== null && is_numeric($userSintaScore) && $userSintaScore < $rules['min_sinta_score']) {
-                    $issues[] = 'SINTA minimal ' . $rules['min_sinta_score'] . ' (anda: ' . $userSintaScore . ')';
-                }
-                if (isset($rules['allowed_functional_positions']) && !empty($rules['allowed_functional_positions']) && !in_array($userFunctionalPosition, $rules['allowed_functional_positions'])) {
-                    $positions = implode(', ', $rules['allowed_functional_positions']);
-                    $issues[] = 'Jabatan: ' . $positions . ' (anda: ' . $userFunctionalPosition . ')';
-                }
-                $schemeRequirements[] = [
-                    'name' => $scheme->name,
-                    'meets' => empty($issues),
-                    'issues' => $issues,
-                ];
-            }
         }
     @endphp
 
@@ -200,75 +175,6 @@
                                     </ul>
                                 </div>
                             @endif
-
-                            {{-- Schedule Status --}}
-                            <div class="border-top pt-2 mt-2 small">
-                                <div class="fw-bold text-info mb-1">
-                                    <i class="ti ti-calendar-event me-1"></i> Jadwal Pengajuan Pengabdian
-                                </div>
-                                <div class="p-2 rounded border {{ $scheduleInfo['pkm_open'] ? 'bg-green-lt border-green' : 'bg-secondary-lt border-secondary' }}">
-                                    <div class="d-flex align-items-center">
-                                        <span class="fw-bold small">Pengabdian</span>
-                                        <span class="ms-auto badge {{ $scheduleInfo['pkm_open'] ? 'bg-green' : 'bg-secondary' }} text-white">
-                                            {{ $scheduleInfo['pkm_open'] ? 'DIBUKA' : 'DITUTUP' }}
-                                        </span>
-                                    </div>
-                                    <div class="text-muted small">
-                                        @if($scheduleInfo['pkm_dates']['start'])
-                                            {{ \Carbon\Carbon::parse($scheduleInfo['pkm_dates']['start'])->format('d M') }}
-                                            -
-                                            {{ \Carbon\Carbon::parse($scheduleInfo['pkm_dates']['end'])->format('d M Y') }}
-                                        @else
-                                            Jadwal belum dikonfigurasi
-                                        @endif
-                                    </div>
-                                    @if($scheduleInfo['pkm_open'] && !empty($scheduleInfo['pkm_schemes']))
-                                        <div class="mt-1 pt-1">
-                                            <div class="fw-bold small text-green">Skema Tersedia:</div>
-                                            <div class="d-flex flex-wrap gap-1">
-                                                @foreach($scheduleInfo['pkm_schemes'] as $scheme)
-                                                    <span class="badge bg-green-lt px-2 py-1" style="font-size: 10px;">{{ $scheme }}</span>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    @elseif($scheduleInfo['pkm_open'] && empty($scheduleInfo['pkm_schemes']))
-                                        <div class="mt-1 pt-1">
-                                            <span class="text-warning small">
-                                                <i class="ti ti-alert-triangle me-1"></i> Tidak ada skema yang memenuhi syarat
-                                            </span>
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-
-                            {{-- Scheme Requirements --}}
-                            <div class="border-top pt-2 mt-2 small">
-                                <div class="fw-bold text-info mb-1">
-                                    <i class="ti ti-clipboard-check me-1"></i> Persyaratan Skema
-                                </div>
-                                <div class="p-2 rounded bg-info-lt mb-2">
-                                    <div class="text-muted">Skor SINTA V3:</div>
-                                    <div class="fw-bold">{{ is_numeric($userSintaScore) ? $userSintaScore : '0' }}</div>
-                                    <div class="text-muted mt-1">Jabatan Fungsional:</div>
-                                    <div class="fw-bold">{{ $userFunctionalPosition }}</div>
-                                </div>
-                                <div class="fw-bold text-info mb-1" style="font-size: 11px;">🤝 Pengabdian Masyarakat:</div>
-                                @forelse($schemeRequirements as $req)
-                                    <div class="mb-1 ms-2" wire:key="pkm-scheme-req-{{ $loop->index }}">
-                                        <strong>{{ $req['name'] }}:</strong>
-                                        @if($req['meets'])
-                                            <span class="text-success">✅ Memenuhi syarat</span>
-                                        @else
-                                            <span class="text-danger">❌ {{ implode(', ', $req['issues']) }}</span>
-                                        @endif
-                                    </div>
-                                @empty
-                                    <div class="ms-2 text-muted">Tidak ada skema pengabdian yang dikonfigurasi.</div>
-                                @endforelse
-                                <div class="mt-2 text-muted">
-                                    <i class="ti ti-info-circle me-1"></i> Hubungi Admin LPPM jika ada ketidaksesuaian data.
-                                </div>
-                            </div>
                         </div>
                     @endif
                 @endif
