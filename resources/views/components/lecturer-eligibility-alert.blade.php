@@ -108,6 +108,35 @@
             </div>
         </div>
     </div>
+@endif
+
+@if (!empty($eligibility['member_reasons']))
+    <!-- Member Quota Info Alert (informational, non-blocking) -->
+    <div class="card bg-info-lt border-info shadow-sm mb-4 overflow-hidden border-0 border-start border-4">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <div class="avatar bg-info text-info-fg shadow-sm">
+                        <i class="ti ti-users fs-2"></i>
+                    </div>
+                </div>
+                <div class="col">
+                    <h4 class="fw-bold text-info mb-1">Status Keterlibatan sebagai Anggota</h4>
+                    <div class="text-info">
+                        <ul class="mb-0 mt-2 p-0 ms-3" style="list-style-type: disc;">
+                            @foreach ($eligibility['member_reasons'] as $reason)
+                                <li wire:key="member-reason-{{ $loop->index }}">{{ $reason }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
+
+@if (!$eligibility['eligible'])
+    <!-- Already shown red alert above, no need for scheme alert -->
 @elseif (!$schemeEligible && !$hasSubmittableProposals && !empty($eligibility['reasons']))
     <!-- Scheme Eligibility Alert with Specific Reasons -->
     <div class="card bg-warning-lt border-warning shadow-sm mb-4 overflow-hidden border-0 border-start border-4">

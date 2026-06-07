@@ -48,6 +48,7 @@ class LecturerEligibilityService
         }
 
         $reasons = [];
+        $memberReasons = [];
 
         // --- 1. Schedule Validation ---
         $scheduleInfo = $this->getScheduleStatus($user);
@@ -131,11 +132,30 @@ class LecturerEligibilityService
                     $reasons = array_merge($reasons, array_unique($identityReasons));
                 }
             }
+
+            // --- 4. Member Quota Check (informational only, does NOT block submission) ---
+            if ($scheduleInfo['research_open']) {
+                foreach (ResearchScheme::all() as $scheme) {
+                    $res = $eligibilityAction->execute($user, $scheme, 'member');
+                    if (! $res['is_eligible']) {
+                        $memberReasons[] = $res['reason'];
+                    }
+                }
+            }
+            if ($scheduleInfo['pkm_open']) {
+                foreach (CommunityServiceScheme::all() as $scheme) {
+                    $res = $eligibilityAction->execute($user, $scheme, 'member');
+                    if (! $res['is_eligible']) {
+                        $memberReasons[] = $res['reason'];
+                    }
+                }
+            }
         }
 
         return [
             'eligible' => empty($reasons),
             'reasons' => $reasons,
+            'member_reasons' => ! empty($memberReasons) ? array_unique($memberReasons) : [],
             'period' => [
                 'current_semester' => $currentSemester,
                 'current_year' => $currentYear,

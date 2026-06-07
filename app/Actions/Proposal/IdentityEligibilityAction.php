@@ -129,10 +129,11 @@ class IdentityEligibilityAction
         // 4.2 Total Member Quota Check (across all proposals of the same type)
         if ($role === 'member' && isset($rules['max_total_proposals_as_member'])) {
             $proposals = $this->getActiveMemberProposals($user, $scheme, $activeStatuses);
-            $totalMemberCount = $proposals->distinct()->count();
+            $uniqueProposals = $proposals->unique('id');
+            $totalMemberCount = $uniqueProposals->count();
 
             if ($totalMemberCount >= $rules['max_total_proposals_as_member']) {
-                $details = $proposals->map(function ($p) {
+                $details = $uniqueProposals->map(function ($p) {
                     $type = $p->detailable_type === 'App\Models\Research' ? 'Penelitian' : 'Pengabdian';
                     $schemeName = $p->researchScheme->name ?? $p->communityServiceScheme->name ?? '-';
 
