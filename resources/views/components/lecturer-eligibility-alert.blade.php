@@ -5,6 +5,9 @@
     $schemeEligible = true;
     $schemeReasons = [];
     $hasSubmittableProposals = false;
+    $alertTitle = 'Status Kelayakan Pengajuan: Tidak Memenuhi Syarat';
+    $alertSubtitle = '';
+    $tindakan = '';
 
     // Hanya cek jika yang login adalah dosen
     if ($user && $user->activeHasRole('dosen')) {
@@ -34,11 +37,50 @@
             $schemeEligible = false;
             $schemeReasons[] = 'Anda tidak memenuhi syarat untuk skema pengabdian manapun.';
         }
+
+        // Determine dynamic title and tindakan based on reason types
+        $hasHistoricalObligations = false;
+        $hasQuotaIssue = false;
+        $hasSintaIssue = false;
+        $hasFunctionalPositionIssue = false;
+
+        foreach ($eligibility['reasons'] as $reason) {
+            if (str_contains($reason, 'Laporan Akhir') || str_contains($reason, 'luaran wajib')) {
+                $hasHistoricalObligations = true;
+            }
+            if (str_contains($reason, 'batas maksimal')) {
+                $hasQuotaIssue = true;
+            }
+            if (str_contains($reason, 'SINTA')) {
+                $hasSintaIssue = true;
+            }
+            if (str_contains($reason, 'Jabatan fungsional')) {
+                $hasFunctionalPositionIssue = true;
+            }
+        }
+
+        if ($hasHistoricalObligations) {
+            $alertSubtitle = 'Sistem mendeteksi kewajiban yang belum terpenuhi dari periode sebelumnya'
+                . ' (' . ucfirst($eligibility['period']['checked_semester']) . ' ' . $eligibility['period']['checked_year'] . '):';
+            $tindakan = 'Penuhi laporan akhir dan komponen luaran wajib sebelum mengajukan proposal baru.';
+        } elseif ($hasQuotaIssue) {
+            $alertSubtitle = 'Anda telah mencapai batas maksimal pengajuan proposal sebagai Ketua:';
+            $tindakan = 'Tunggu hingga periode berikutnya atau hubungi Admin LPPM untuk informasi lebih lanjut.';
+        } elseif ($hasSintaIssue) {
+            $alertSubtitle = 'Skor SINTA Anda belum memenuhi syarat minimal skema:';
+            $tindakan = 'Tingkatkan skor SINTA Anda melalui publikasi ilmiah, lalu hubungi Admin LPPM.';
+        } elseif ($hasFunctionalPositionIssue) {
+            $alertSubtitle = 'Jabatan fungsional Anda belum memenuhi ketentuan skema:';
+            $tindakan = 'Ajukan kenaikan jabatan fungsional melalui prosedur yang berlaku.';
+        } else {
+            $alertSubtitle = 'Terdapat kendala yang menghalangi pengajuan proposal:';
+            $tindakan = 'Hubungi Admin LPPM untuk informasi lebih lanjut.';
+        }
     }
 @endphp
 
 @if (!$eligibility['eligible'])
-    <!-- Premium Eligibility Alert - Kewajiban Laporan -->
+    <!-- Premium Eligibility Alert -->
     <div class="card bg-danger-lt border-danger shadow-sm mb-4 overflow-hidden border-0 border-start border-4">
         <div class="card-body">
             <div class="row align-items-center">
@@ -48,21 +90,19 @@
                     </div>
                 </div>
                 <div class="col">
-                    <h4 class="fw-bold text-danger mb-1">Status Kelayakan Pengajuan: Tidak Memenuhi Syarat</h4>
+                    <h4 class="fw-bold text-danger mb-1">{{ $alertTitle }}</h4>
                     <div class="text-danger">
-                        Sistem mendeteksi kewajiban yang belum terpenuhi dari periode sebelumnya
-                        ({{ ucfirst($eligibility['period']['checked_semester']) }}
-                        {{ $eligibility['period']['checked_year'] }}):
+                        {{ $alertSubtitle }}
                         <ul class="mb-0 mt-2 p-0 ms-3" style="list-style-type: disc;">
                             @foreach ($eligibility['reasons'] as $reason)
                                 <li wire:key="eligibility-reason-{{ $loop->index }}">{{ $reason }}</li>
                             @endforeach
                         </ul>
-                        <div class="mt-2 small">
-                            <strong>Tindakan:</strong> Penuhi laporan akhir dan komponen luaran wajib sebelum mengajukan
-                            proposal periode {{ ucfirst($eligibility['period']['current_semester']) }}
-                            {{ $eligibility['period']['current_year'] }}.
-                        </div>
+                        @if ($tindakan)
+                            <div class="mt-2 small">
+                                <strong>Tindakan:</strong> {{ $tindakan }}
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -87,6 +127,11 @@
                                 <li wire:key="scheme-reason-{{ $loop->index }}">{{ $reason }}</li>
                             @endforeach
                         </ul>
+                        @if ($tindakan)
+                            <div class="mt-2 small">
+                                <strong>Tindakan:</strong> {{ $tindakan }}
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
