@@ -1,0 +1,6 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "gemma-3:12b", // Model default yang digunakan
+  "autoupdate": true, // Opsional: Otomatis update saat startup
+  "provider": {} // Tempat untuk menambahkan detail penyedia (API key) nanti
+}

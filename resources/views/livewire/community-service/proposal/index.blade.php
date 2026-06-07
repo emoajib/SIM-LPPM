@@ -20,8 +20,9 @@
             $eligibility = ['eligible' => true, 'reasons' => []];
             $scheduleInfo = ['pkm_open' => false, 'pkm_schemes' => []];
             if ($user && $user->activeHasRole('dosen')) {
-                $eligibility = app(\App\Services\LecturerEligibilityService::class)->checkEligibility($user);
-                $scheduleInfo = app(\App\Services\LecturerEligibilityService::class)->getScheduleStatus($user);
+                $svc = app(\App\Services\LecturerEligibilityService::class);
+                $eligibility = $svc->checkEligibility($user, 'pkm');
+                $scheduleInfo = $svc->getScheduleStatus($user);
             }
             $hasEligibleSchemes = !empty($scheduleInfo['pkm_schemes']);
         @endphp
@@ -63,7 +64,7 @@
 <div>
     <x-tabler.alert />
 
-    <x-lecturer-eligibility-alert />
+    <x-lecturer-eligibility-alert type="pkm" />
 
     @php
         $user = auth()->user();

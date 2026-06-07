@@ -19,9 +19,6 @@
         </div>
     </div>
 
-
-    <x-lecturer-eligibility-alert />
-
     <!-- Metrics Section -->
     <div class="row row-deck row-cards mb-4">
         <!-- SINTA Score Card -->

@@ -20,8 +20,9 @@
             $eligibility = ['eligible' => true, 'reasons' => []];
             $scheduleInfo = ['research_open' => false, 'research_schemes' => []];
             if ($user && $user->activeHasRole('dosen')) {
-                $eligibility = app(\App\Services\LecturerEligibilityService::class)->checkEligibility($user);
-                $scheduleInfo = app(\App\Services\LecturerEligibilityService::class)->getScheduleStatus($user);
+                $svc = app(\App\Services\LecturerEligibilityService::class);
+                $eligibility = $svc->checkEligibility($user, 'research');
+                $scheduleInfo = $svc->getScheduleStatus($user);
             }
             $hasEligibleSchemes = !empty($scheduleInfo['research_schemes']);
         @endphp
@@ -64,7 +65,7 @@
 <div>
     <x-tabler.alert />
 
-    <x-lecturer-eligibility-alert />
+    <x-lecturer-eligibility-alert type="research" />
 
     @php
         $user = auth()->user();

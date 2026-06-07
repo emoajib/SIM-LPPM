@@ -1,3 +1,4 @@
+@props(['type' => null])
 @php
     $user = auth()->user();
     $eligibility = ['eligible' => true, 'reasons' => []];
@@ -9,12 +10,11 @@
     $alertSubtitle = '';
     $tindakan = '';
 
-    // Hanya cek jika yang login adalah dosen
     if ($user && $user->activeHasRole('dosen')) {
-        $eligibility = app(\App\Services\LecturerEligibilityService::class)->checkEligibility($user);
-        $scheduleInfo = app(\App\Services\LecturerEligibilityService::class)->getScheduleStatus($user);
+        $service = app(\App\Services\LecturerEligibilityService::class);
+        $eligibility = $service->checkEligibility($user, $type);
+        $scheduleInfo = $service->getScheduleStatus($user);
 
-        // Check if user has submittable proposals (drafts, need assignment, revision needed)
         $submittableStatuses = [
             \App\Enums\ProposalStatus::DRAFT,
             \App\Enums\ProposalStatus::NEED_ASSIGNMENT,
@@ -25,7 +25,6 @@
             ->whereIn('status', $submittableStatuses)
             ->exists();
 
-        // Cek eligibilitas skema
         $hasResearchSchemes = !empty($scheduleInfo['research_schemes']);
         $hasPkmSchemes = !empty($scheduleInfo['pkm_schemes']);
 
@@ -38,7 +37,6 @@
             $schemeReasons[] = 'Anda tidak memenuhi syarat untuk skema pengabdian manapun.';
         }
 
-        // Determine dynamic title and tindakan based on reason types
         $hasHistoricalObligations = false;
         $hasQuotaIssue = false;
         $hasSintaIssue = false;
@@ -64,7 +62,9 @@
                 . ' (' . ucfirst($eligibility['period']['checked_semester']) . ' ' . $eligibility['period']['checked_year'] . '):';
             $tindakan = 'Penuhi laporan akhir dan komponen luaran wajib sebelum mengajukan proposal baru.';
         } elseif ($hasQuotaIssue) {
-            $alertSubtitle = 'Anda telah mencapai batas maksimal pengajuan proposal sebagai Ketua:';
+            $alertSubtitle = $type === 'research'
+                ? 'Anda telah mencapai batas maksimal pengajuan proposal Penelitian sebagai Ketua:'
+                : ($type === 'pkm' ? 'Anda telah mencapai batas maksimal pengajuan proposal Pengabdian sebagai Ketua:' : 'Anda telah mencapai batas maksimal pengajuan proposal sebagai Ketua:');
             $tindakan = 'Tunggu hingga periode berikutnya atau hubungi Admin LPPM untuk informasi lebih lanjut.';
         } elseif ($hasSintaIssue) {
             $alertSubtitle = 'Skor SINTA Anda belum memenuhi syarat minimal skema:';

@@ -1,4 +1,4 @@
-<x-lecturer-eligibility-alert />
+<x-lecturer-eligibility-alert type="pkm" />
 
 <!-- Section: Informasi Dasar -->
 <div class="card mb-3">

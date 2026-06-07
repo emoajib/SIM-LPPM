@@ -7,7 +7,6 @@ use App\Enums\ProposalStatus;
 use App\Models\CommunityServiceScheme;
 use App\Models\ProgressReport;
 use App\Models\Proposal;
-use App\Models\ProposalOutput;
 use App\Models\ResearchScheme;
 use App\Models\Setting;
 use App\Models\User;
@@ -21,27 +20,21 @@ class LecturerEligibilityService
 {
     /**
      * Check if a lecturer is eligible to submit a new proposal as Chairperson.
-     * Checks are based on the immediate previous academic semester.
      *
+     * @param  string|null  $type  'research', 'pkm', or null for all
      * @return array ['eligible' => bool, 'reasons' => array, 'period' => array]
      */
-    public function checkEligibility(User $user): array
+    public function checkEligibility(User $user, ?string $type = null): array
     {
         $now = Carbon::now();
         $currentYear = $now->year;
         $currentMonth = $now->month;
 
-        // Determination of academic periods:
-        // Ganjil: Sept (9) to Feb (2)
-        // Genap: March (3) to Aug (8)
-
         if ($currentMonth >= 9 || $currentMonth <= 2) {
-            // We are in Ganjil semester
             $currentSemester = 'ganjil';
             $prevSemester = 'genap';
             $prevYear = ($currentMonth >= 9) ? $currentYear : $currentYear - 1;
         } else {
-            // We are in Genap semester
             $currentSemester = 'genap';
             $prevSemester = 'ganjil';
             $prevYear = $currentYear - 1;
@@ -49,15 +42,18 @@ class LecturerEligibilityService
 
         $reasons = [];
         $memberReasons = [];
-
-        // --- 1. Schedule Validation ---
         $scheduleInfo = $this->getScheduleStatus($user);
-        if (! $scheduleInfo['research_open'] && ! $scheduleInfo['pkm_open']) {
-            $reasons[] = 'Sistem saat ini ditutup untuk pengajuan usulan baru (bukan periode pendaftaran).';
+
+        // --- 1. Schedule Validation (type-aware) ---
+        if ($type === 'research' && ! $scheduleInfo['research_open']) {
+            $reasons[] = 'Jadwal pengajuan Penelitian saat ini ditutup.';
+        } elseif ($type === 'pkm' && ! $scheduleInfo['pkm_open']) {
+            $reasons[] = 'Jadwal pengajuan Pengabdian Masyarakat saat ini ditutup.';
+        } elseif ($type === null && ! $scheduleInfo['research_open'] && ! $scheduleInfo['pkm_open']) {
+            $reasons[] = 'Sistem saat ini ditutup untuk pengajuanusulan baru (bukan periode pendaftaran).';
         }
 
-        // --- 2. Historical Obligation Checks ---
-        // Find all proposals where user was chairperson in the previous period
+        // --- 2. Historical Obligation Checks (always checked, affect all types) ---
         $prevProposals = Proposal::with('outputs')->where('submitter_id', $user->id)
             ->whereIn('status', [ProposalStatus::APPROVED, ProposalStatus::COMPLETED])
             ->where(function ($query) use ($prevYear, $prevSemester) {
@@ -75,17 +71,13 @@ class LecturerEligibilityService
             })
             ->get();
 
-        /** @var Proposal $proposal */
         foreach ($prevProposals as $proposal) {
-            // Check for Final Report
             $hasFinalReport = ProgressReport::where('proposal_id', $proposal->id)->where('reporting_period', 'final')->whereIn('status', ['approved', 'completed'])->exists();
             if (! $hasFinalReport) {
                 $reasons[] = "Proposal '{$proposal->title}' belum memiliki Laporan Akhir yang disetujui.";
             }
 
-            // Check for Mandatory Outputs
             $targets = $proposal->outputs->where('category', 'Wajib');
-            /** @var ProposalOutput $target */
             foreach ($targets as $target) {
                 $isSubmitted = DB::table('mandatory_outputs')->join('progress_reports', 'mandatory_outputs.progress_report_id', '=', 'progress_reports.id')->where('progress_reports.proposal_id', $proposal->id)->where('mandatory_outputs.proposal_output_id', $target->id)->exists();
                 if (! $isSubmitted) {
@@ -94,14 +86,16 @@ class LecturerEligibilityService
             }
         }
 
-        // --- 3. Scheme-Specific Eligibility Check (Quota, Profile, etc.) ---
-        // If dates are open, but the user is eligible for ZERO schemes, they are effectively ineligible.
-        if ($scheduleInfo['research_open'] || $scheduleInfo['pkm_open']) {
+        // --- 3. Scheme-Specific Eligibility Check (type-aware) ---
+        $researchOpen = $type === null || $type === 'research';
+        $pkmOpen = $type === null || $type === 'pkm';
+
+        if (($researchOpen && $scheduleInfo['research_open']) || ($pkmOpen && $scheduleInfo['pkm_open'])) {
             $effectiveEligible = false;
             $identityReasons = [];
             $eligibilityAction = app(IdentityEligibilityAction::class);
 
-            if ($scheduleInfo['research_open']) {
+            if ($researchOpen && $scheduleInfo['research_open']) {
                 foreach (ResearchScheme::all() as $scheme) {
                     $res = $eligibilityAction->execute($user, $scheme);
                     if ($res['is_eligible']) {
@@ -112,8 +106,7 @@ class LecturerEligibilityService
                 }
             }
 
-            // Only check PKM if we haven't already found an eligible research scheme
-            if (! $effectiveEligible && $scheduleInfo['pkm_open']) {
+            if (! $effectiveEligible && $pkmOpen && $scheduleInfo['pkm_open']) {
                 foreach (CommunityServiceScheme::all() as $scheme) {
                     $res = $eligibilityAction->execute($user, $scheme);
                     if ($res['is_eligible']) {
@@ -125,16 +118,20 @@ class LecturerEligibilityService
             }
 
             if (! $effectiveEligible) {
-                // User is not eligible for any currently open schemes.
-                // Avoid adding reasons if the only reason they are ineligible is that 0 schemes exist globally.
-                $totalAvailableSchemes = ResearchScheme::count() + CommunityServiceScheme::count();
+                if ($type === 'research') {
+                    $totalAvailableSchemes = ResearchScheme::count();
+                } elseif ($type === 'pkm') {
+                    $totalAvailableSchemes = CommunityServiceScheme::count();
+                } else {
+                    $totalAvailableSchemes = ResearchScheme::count() + CommunityServiceScheme::count();
+                }
                 if ($totalAvailableSchemes > 0) {
                     $reasons = array_merge($reasons, array_unique($identityReasons));
                 }
             }
 
-            // --- 4. Member Quota Check (informational only, does NOT block submission) ---
-            if ($scheduleInfo['research_open']) {
+            // --- 4. Member Quota Check (type-aware) ---
+            if ($researchOpen && $scheduleInfo['research_open']) {
                 foreach (ResearchScheme::all() as $scheme) {
                     $res = $eligibilityAction->execute($user, $scheme, 'member');
                     if (! $res['is_eligible']) {
@@ -142,7 +139,7 @@ class LecturerEligibilityService
                     }
                 }
             }
-            if ($scheduleInfo['pkm_open']) {
+            if ($pkmOpen && $scheduleInfo['pkm_open']) {
                 foreach (CommunityServiceScheme::all() as $scheme) {
                     $res = $eligibilityAction->execute($user, $scheme, 'member');
                     if (! $res['is_eligible']) {
