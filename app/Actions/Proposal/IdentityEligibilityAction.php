@@ -7,7 +7,6 @@ use App\Models\CommunityServiceScheme;
 use App\Models\Proposal;
 use App\Models\ResearchScheme;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 
 class IdentityEligibilityAction
 {
@@ -82,89 +81,67 @@ class IdentityEligibilityAction
         ];
 
         if ($role === 'leader' && isset($rules['max_proposals_as_head'])) {
-            $query = Proposal::query()->where('submitter_id', '=', $user->id)
-                ->whereIn('status', $activeStatuses, 'and', false);
-
-            if ($scheme instanceof ResearchScheme) {
-                $query->whereNotNull('research_scheme_id', 'and');
-            } elseif ($scheme instanceof CommunityServiceScheme) {
-                $query->whereNotNull('community_service_scheme_id', 'and');
-            }
-
-            $headCount = $query->count('*');
+            $headCount = $this->countActiveLeaderProposals($user, $scheme, $activeStatuses);
 
             if ($headCount >= $rules['max_proposals_as_head']) {
+                $details = $this->getActiveLeaderProposalsDetails($user, $scheme, $activeStatuses);
+
                 return [
                     'is_eligible' => false,
-                    'reason' => 'Anda sudah mencapai batas maksimal usulan sebagai Ketua di skema ini.',
+                    'reason' => "Anda sudah mencapai batas maksimal usulan sebagai Ketua ($headCount dari {$rules['max_proposals_as_head']}). Detail proposal aktif: $details.",
                 ];
             }
         }
 
         // 4.1 Total Quota Check (across all schemes of the same type)
         if ($role === 'leader' && isset($rules['max_total_proposals_as_head'])) {
-            $query = Proposal::query()->where('submitter_id', '=', $user->id)
-                ->whereIn('status', $activeStatuses, 'and', false);
-
-            if ($scheme instanceof ResearchScheme) {
-                $query->whereNotNull('research_scheme_id', 'and');
-            } elseif ($scheme instanceof CommunityServiceScheme) {
-                $query->whereNotNull('community_service_scheme_id', 'and');
-            }
-
-            $totalHeadCount = $query->count('*');
+            $totalHeadCount = $this->countActiveLeaderProposals($user, $scheme, $activeStatuses);
 
             if ($totalHeadCount >= $rules['max_total_proposals_as_head']) {
+                $details = $this->getActiveLeaderProposalsDetails($user, $scheme, $activeStatuses);
+
                 return [
                     'is_eligible' => false,
-                    'reason' => 'Anda sudah mencapai batas maksimal total usulan sebagai Ketua untuk kategori ini.',
+                    'reason' => "Anda sudah mencapai batas maksimal total usulan sebagai Ketua di kategori ini ($totalHeadCount dari {$rules['max_total_proposals_as_head']}). Detail proposal aktif: $details.",
                 ];
             }
         }
 
         if ($role === 'member' && isset($rules['max_proposals_as_member'])) {
-            $query = DB::table('proposal_user')
-                ->join('proposals', 'proposal_user.proposal_id', '=', 'proposals.id')
-                ->where('proposal_user.user_id', $user->id)
-                ->where('proposal_user.role', '!=', 'Ketua')
-                ->whereIn('proposals.status', $activeStatuses);
-
-            if ($scheme instanceof ResearchScheme) {
-                $query->whereNotNull('proposals.research_scheme_id');
-            } elseif ($scheme instanceof CommunityServiceScheme) {
-                $query->whereNotNull('proposals.community_service_scheme_id');
-            }
-
-            $memberCount = $query->count();
+            $proposals = $this->getActiveMemberProposals($user, $scheme, $activeStatuses);
+            $memberCount = $proposals->count();
 
             if ($memberCount >= $rules['max_proposals_as_member']) {
+                $details = $proposals->map(function ($p) {
+                    $type = $p->detailable_type === 'App\Models\Research' ? 'Penelitian' : 'Pengabdian';
+                    $schemeName = $p->researchScheme->name ?? $p->communityServiceScheme->name ?? '-';
+
+                    return "'{$p->title}' ({$type} - {$schemeName})";
+                })->implode(', ');
+
                 return [
                     'is_eligible' => false,
-                    'reason' => 'Dosen ini sudah mencapai batas maksimal keterlibatan sebagai Anggota di skema ini.',
+                    'reason' => "Dosen ini sudah mencapai batas maksimal keterlibatan sebagai Anggota ($memberCount dari {$rules['max_proposals_as_member']}). Detail proposal: $details.",
                 ];
             }
         }
 
         // 4.2 Total Member Quota Check (across all proposals of the same type)
         if ($role === 'member' && isset($rules['max_total_proposals_as_member'])) {
-            $query = DB::table('proposal_user')
-                ->join('proposals', 'proposal_user.proposal_id', '=', 'proposals.id')
-                ->where('proposal_user.user_id', $user->id)
-                ->where('proposal_user.role', '!=', 'Ketua')
-                ->whereIn('proposals.status', $activeStatuses);
-
-            if ($scheme instanceof ResearchScheme) {
-                $query->whereNotNull('proposals.research_scheme_id');
-            } elseif ($scheme instanceof CommunityServiceScheme) {
-                $query->whereNotNull('proposals.community_service_scheme_id');
-            }
-
-            $totalMemberCount = $query->distinct()->count('proposal_user.proposal_id');
+            $proposals = $this->getActiveMemberProposals($user, $scheme, $activeStatuses);
+            $totalMemberCount = $proposals->distinct()->count();
 
             if ($totalMemberCount >= $rules['max_total_proposals_as_member']) {
+                $details = $proposals->map(function ($p) {
+                    $type = $p->detailable_type === 'App\Models\Research' ? 'Penelitian' : 'Pengabdian';
+                    $schemeName = $p->researchScheme->name ?? $p->communityServiceScheme->name ?? '-';
+
+                    return "'{$p->title}' ({$type} - {$schemeName})";
+                })->implode(', ');
+
                 return [
                     'is_eligible' => false,
-                    'reason' => 'Dosen ini sudah mencapai batas maksimal total keterlibatan sebagai Anggota untuk kategori ini.',
+                    'reason' => "Dosen ini sudah mencapai batas maksimal total keterlibatan sebagai Anggota ($totalMemberCount dari {$rules['max_total_proposals_as_member']}). Detail proposal: $details.",
                 ];
             }
         }
@@ -189,5 +166,57 @@ class IdentityEligibilityAction
         }
 
         return ['is_eligible' => true, 'reason' => null];
+    }
+
+    private function countActiveLeaderProposals(User $user, $scheme, array $activeStatuses): int
+    {
+        $query = Proposal::where('submitter_id', $user->id)
+            ->whereIn('status', $activeStatuses);
+
+        if ($scheme instanceof ResearchScheme) {
+            $query->whereNotNull('research_scheme_id');
+        } elseif ($scheme instanceof CommunityServiceScheme) {
+            $query->whereNotNull('community_service_scheme_id');
+        }
+
+        return $query->count();
+    }
+
+    private function getActiveLeaderProposalsDetails(User $user, $scheme, array $activeStatuses): string
+    {
+        $query = Proposal::with(['researchScheme', 'communityServiceScheme'])
+            ->where('submitter_id', $user->id)
+            ->whereIn('status', $activeStatuses);
+
+        if ($scheme instanceof ResearchScheme) {
+            $query->whereNotNull('research_scheme_id');
+        } elseif ($scheme instanceof CommunityServiceScheme) {
+            $query->whereNotNull('community_service_scheme_id');
+        }
+
+        return $query->get()->map(function ($p, $i) {
+            $type = $p->detailable_type === 'App\Models\Research' ? 'Penelitian' : 'Pengabdian';
+            $schemeName = $p->researchScheme->name ?? $p->communityServiceScheme->name ?? '-';
+
+            return ($i + 1).". '{$p->title}' ({$type} - {$schemeName})";
+        })->implode(', ');
+    }
+
+    private function getActiveMemberProposals(User $user, $scheme, array $activeStatuses)
+    {
+        $query = Proposal::with(['researchScheme', 'communityServiceScheme'])
+            ->join('proposal_user', 'proposals.id', '=', 'proposal_user.proposal_id')
+            ->where('proposal_user.user_id', $user->id)
+            ->where('proposal_user.role', '!=', 'Ketua')
+            ->whereIn('proposals.status', $activeStatuses)
+            ->select('proposals.*');
+
+        if ($scheme instanceof ResearchScheme) {
+            $query->whereNotNull('proposals.research_scheme_id');
+        } elseif ($scheme instanceof CommunityServiceScheme) {
+            $query->whereNotNull('proposals.community_service_scheme_id');
+        }
+
+        return $query->get();
     }
 }
