@@ -2088,7 +2088,7 @@
     "src": "node_modules/@tabler/core/dist/img/social/youtube.svg"
   },
   "resources/css/app.css": {
-    "file": "assets/app-BBbKto29.css",
+    "file": "assets/app-K56fqwaE.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "names": [
@@ -2096,7 +2096,7 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-BUyuDKn4.js",
+    "file": "assets/app-CTUKsamg.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
