@@ -9,6 +9,7 @@ use App\Livewire\Actions\CompleteReviewAction;
 use App\Livewire\Actions\DekanApprovalAction;
 use App\Livewire\Actions\SubmitProposalAction;
 use App\Models\CommunityService;
+use App\Models\CommunityServiceScheme;
 use App\Models\Faculty;
 use App\Models\FocusArea;
 use App\Models\Identity;
@@ -361,10 +362,15 @@ class ProposalWorkflowTest extends TestCase
     public function test_community_service_workflow()
     {
         $pkm = CommunityService::factory()->create();
+        $scheme = CommunityServiceScheme::create([
+            'name' => 'PKM Reguler',
+            'strata' => 'mandiri',
+        ]);
         $proposal = Proposal::factory()->create([
             'submitter_id' => $this->dosen->id,
             'detailable_id' => $pkm->id,
             'detailable_type' => CommunityService::class,
+            'community_service_scheme_id' => $scheme->id,
             'status' => ProposalStatus::DRAFT,
         ]);
 

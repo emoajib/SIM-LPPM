@@ -95,9 +95,28 @@ class SubmitProposalAction
             ];
         }
 
+        // Validate scheme selection before submission
+        if ($proposal->detailable_type === 'App\Models\Research' && ! $proposal->research_scheme_id) {
+            return [
+                'success' => false,
+                'message' => 'Skema Penelitian wajib dipilih sebelum mengajukan proposal.',
+            ];
+        }
+
+        if ($proposal->detailable_type === 'App\Models\CommunityService' && ! $proposal->community_service_scheme_id) {
+            return [
+                'success' => false,
+                'message' => 'Skema Pengabdian Masyarakat wajib dipilih sebelum mengajukan proposal.',
+            ];
+        }
+
         try {
             DB::transaction(function () use ($proposal) {
-                $proposal->update(['status' => ProposalStatus::SUBMITTED->value]);
+                $snapshot = app(LecturerEligibilityService::class)->generateSnapshot($proposal->submitter, $proposal);
+                $proposal->update([
+                    'status' => ProposalStatus::SUBMITTED->value,
+                    'qualification_snapshot' => $snapshot,
+                ]);
             });
 
             // Send notifications

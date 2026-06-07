@@ -93,6 +93,46 @@ class LecturerEligibilityService
             }
         }
 
+        // --- 3. Scheme-Specific Eligibility Check (Quota, Profile, etc.) ---
+        // If dates are open, but the user is eligible for ZERO schemes, they are effectively ineligible.
+        if ($scheduleInfo['research_open'] || $scheduleInfo['pkm_open']) {
+            $effectiveEligible = false;
+            $identityReasons = [];
+            $eligibilityAction = app(IdentityEligibilityAction::class);
+
+            if ($scheduleInfo['research_open']) {
+                foreach (ResearchScheme::all() as $scheme) {
+                    $res = $eligibilityAction->execute($user, $scheme);
+                    if ($res['is_eligible']) {
+                        $effectiveEligible = true;
+                        break;
+                    }
+                    $identityReasons[] = $res['reason'];
+                }
+            }
+
+            // Only check PKM if we haven't already found an eligible research scheme
+            if (! $effectiveEligible && $scheduleInfo['pkm_open']) {
+                foreach (CommunityServiceScheme::all() as $scheme) {
+                    $res = $eligibilityAction->execute($user, $scheme);
+                    if ($res['is_eligible']) {
+                        $effectiveEligible = true;
+                        break;
+                    }
+                    $identityReasons[] = $res['reason'];
+                }
+            }
+
+            if (! $effectiveEligible) {
+                // User is not eligible for any currently open schemes.
+                // Avoid adding reasons if the only reason they are ineligible is that 0 schemes exist globally.
+                $totalAvailableSchemes = ResearchScheme::count() + CommunityServiceScheme::count();
+                if ($totalAvailableSchemes > 0) {
+                    $reasons = array_merge($reasons, array_unique($identityReasons));
+                }
+            }
+        }
+
         return [
             'eligible' => empty($reasons),
             'reasons' => $reasons,
@@ -103,6 +143,45 @@ class LecturerEligibilityService
                 'checked_year' => $prevYear,
             ],
             'schedule' => $scheduleInfo,
+        ];
+    }
+
+    /**
+     * Generate a qualification snapshot for a proposal at submission time.
+     * Freezes eligibility data so retroactive rule changes don't affect submitted proposals.
+     */
+    public function generateSnapshot(User $user, Proposal $proposal): array
+    {
+        $identity = $user->identity;
+        $scheme = $proposal->detailable_type === 'App\Models\Research'
+            ? $proposal->researchScheme
+            : $proposal->communityServiceScheme;
+
+        $activeStatuses = [
+            ProposalStatus::DRAFT->value,
+            ProposalStatus::SUBMITTED->value,
+            ProposalStatus::NEED_ASSIGNMENT->value,
+            ProposalStatus::APPROVED->value,
+            ProposalStatus::WAITING_REVIEWER->value,
+            ProposalStatus::UNDER_REVIEW->value,
+            ProposalStatus::REVIEWED->value,
+            ProposalStatus::REVISION_NEEDED->value,
+        ];
+
+        $activeHeadCount = Proposal::where('submitter_id', $user->id)
+            ->whereIn('status', $activeStatuses)
+            ->count();
+
+        return [
+            'functional_position' => $identity?->functional_position,
+            'sinta_score_v3_overall' => $identity?->sinta_score_v3_overall,
+            'scopus_h_index' => $identity?->scopus_h_index,
+            'active_head_proposals_count' => $activeHeadCount,
+            'scheme_type' => $proposal->detailable_type === 'App\Models\Research' ? 'research' : 'community_service',
+            'scheme_id' => $scheme?->getKey(),
+            'scheme_name' => $scheme?->name,
+            'scheme_rules' => $scheme?->eligibility_rules,
+            'submitted_at' => now()->toIso8601String(),
         ];
     }
 

@@ -30,11 +30,11 @@ class CommunityServiceReportExport implements FromView, ShouldAutoSize, WithColu
                         ->orWhereHas('submitter', fn ($u) => $u->where('name', 'like', "%{$this->search}%"));
                 });
             })
-            ->when($this->scheme && $this->scheme !== 'all', fn ($q) => $q->where('research_scheme_id', $this->scheme))
+            ->when($this->scheme && $this->scheme !== 'all', fn ($q) => $q->where('community_service_scheme_id', $this->scheme))
             ->when($this->faculty && $this->faculty !== 'all', function ($q) {
                 $q->whereHas('submitter.identity', fn ($i) => $i->where('faculty_id', $this->faculty));
             })
-            ->with(['submitter.identity.faculty', 'submitter.identity.studyProgram', 'researchScheme', 'budgetItems'])
+            ->with(['submitter.identity.faculty', 'submitter.identity.studyProgram', 'communityServiceScheme', 'budgetItems'])
             ->latest()
             ->get();
 

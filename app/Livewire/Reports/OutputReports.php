@@ -6,6 +6,7 @@ use App\Enums\ProposalStatus;
 use App\Livewire\Concerns\HasToast;
 use App\Livewire\Traits\WithInstitutionalApproval;
 use App\Models\AdditionalOutput;
+use App\Models\CommunityServiceScheme;
 use App\Models\Faculty;
 use App\Models\MandatoryOutput;
 use App\Models\Proposal;
@@ -201,7 +202,8 @@ class OutputReports extends Component
 
         // Filter by scheme
         if ($this->selectedScheme !== 'all') {
-            $query->where('research_scheme_id', $this->selectedScheme);
+            $schemeColumn = $this->activeTab === 'research' ? 'research_scheme_id' : 'community_service_scheme_id';
+            $query->where($schemeColumn, $this->selectedScheme);
         }
 
         // Filter by faculty
@@ -230,7 +232,9 @@ class OutputReports extends Component
             'proposals' => $this->getProposalsWithOutputs(),
             'statistics' => $this->getStatistics(),
             'periods' => $this->availablePeriods(),
-            'allSchemes' => ResearchScheme::orderBy('name')->get(),
+            'allSchemes' => $this->activeTab === 'research'
+                ? ResearchScheme::orderBy('name')->get()
+                : CommunityServiceScheme::orderBy('name')->get(),
             'allFaculties' => Faculty::orderBy('name')->get(),
             'institutionalReport' => $this->getInstitutionalReport('output', (int) $this->period),
         ]);

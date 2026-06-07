@@ -6,6 +6,7 @@ use App\Enums\ProposalStatus;
 use App\Enums\ReportStatus;
 use App\Models\AdditionalOutput;
 use App\Models\BudgetItem;
+use App\Models\CommunityServiceScheme;
 use App\Models\Faculty;
 use App\Models\MandatoryOutput;
 use App\Models\MonevReview;
@@ -13,6 +14,7 @@ use App\Models\ProgressReport;
 use App\Models\Proposal;
 use App\Models\ProposalMonev;
 use App\Models\ProposalOutput;
+use App\Models\ResearchScheme;
 use App\Models\StudyProgram;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -46,6 +48,10 @@ class AdminDashboard extends Component
 
     public $selectedSemester = 'all';
 
+    public $selectedResearchScheme = 'all';
+
+    public $selectedCommunityServiceScheme = 'all';
+
     public $availableYears = [];
 
     public $availableStatuses = [];
@@ -53,6 +59,10 @@ class AdminDashboard extends Component
     public $availableFaculties = [];
 
     public $availableProdis = [];
+
+    public $availableResearchSchemes = [];
+
+    public $availableCommunityServiceSchemes = [];
 
     public function mount(): void
     {
@@ -62,6 +72,8 @@ class AdminDashboard extends Component
         $this->availableYears = $this->getAvailableYears();
         $this->availableStatuses = ProposalStatus::filterOptions();
         $this->availableFaculties = $this->getFaculties();
+        $this->availableResearchSchemes = $this->getResearchSchemes();
+        $this->availableCommunityServiceSchemes = $this->getCommunityServiceSchemes();
 
         $this->loadAnalytics();
     }
@@ -93,14 +105,30 @@ class AdminDashboard extends Component
         $this->loadAnalytics();
     }
 
+    public function updatedSelectedResearchScheme(): void
+    {
+        $this->loadAnalytics();
+    }
+
+    public function updatedSelectedCommunityServiceScheme(): void
+    {
+        $this->loadAnalytics();
+    }
+
     public function exportResearch(): void
     {
-        $this->dispatch('download-file', url: route('admin.dashboard.export-research', ['period' => $this->selectedYear]));
+        $this->dispatch('download-file', url: route('admin.dashboard.export-research', [
+            'period' => $this->selectedYear,
+            'scheme' => $this->selectedResearchScheme,
+        ]));
     }
 
     public function exportCommunityService(): void
     {
-        $this->dispatch('download-file', url: route('admin.dashboard.export-community-service', ['period' => $this->selectedYear]));
+        $this->dispatch('download-file', url: route('admin.dashboard.export-community-service', [
+            'period' => $this->selectedYear,
+            'scheme' => $this->selectedCommunityServiceScheme,
+        ]));
     }
 
     public function exportIkuPdf(): void
@@ -153,6 +181,24 @@ class AdminDashboard extends Component
             ->toArray();
     }
 
+    private function getResearchSchemes(): array
+    {
+        return ResearchScheme::query()
+            ->orderBy('name')
+            ->pluck('name', 'id')
+            ->prepend('Semua Skema Penelitian', 'all')
+            ->toArray();
+    }
+
+    private function getCommunityServiceSchemes(): array
+    {
+        return CommunityServiceScheme::query()
+            ->orderBy('name')
+            ->pluck('name', 'id')
+            ->prepend('Semua Skema PKM', 'all')
+            ->toArray();
+    }
+
     private function applyCommonFilters(Builder $query): Builder
     {
         if ($this->selectedStatus !== 'all') {
@@ -169,6 +215,22 @@ class AdminDashboard extends Component
 
         if ($this->selectedSemester !== 'all') {
             $query->where('semester', $this->selectedSemester);
+        }
+
+        return $query;
+    }
+
+    /**
+     * Apply type-aware scheme filters to a specific query.
+     */
+    private function applySchemeFilter(Builder $query, string $type): Builder
+    {
+        if ($type === 'research' && $this->selectedResearchScheme !== 'all') {
+            $query->where('research_scheme_id', $this->selectedResearchScheme);
+        }
+
+        if ($type === 'community_service' && $this->selectedCommunityServiceScheme !== 'all') {
+            $query->where('community_service_scheme_id', $this->selectedCommunityServiceScheme);
         }
 
         return $query;
@@ -357,21 +419,29 @@ class AdminDashboard extends Component
      */
     private function loadRecentProposals(string $yearFilter): void
     {
-        $query = Proposal::with(['submitter.identity', 'focusArea', 'researchScheme', 'communityServiceScheme'])
+        $baseQuery = Proposal::with(['submitter.identity', 'focusArea', 'researchScheme', 'communityServiceScheme'])
             ->where('start_year', $yearFilter);
 
-        $this->applyCommonFilters($query);
+        $this->applyCommonFilters($baseQuery);
 
-        $recentProposals = $query->latest()->get();
+        // Research proposals with scheme filter
+        $researchQuery = clone $baseQuery;
+        $researchQuery->where('detailable_type', 'App\Models\Research');
+        $this->applySchemeFilter($researchQuery, 'research');
 
-        $this->recentResearch = $recentProposals
-            ->filter(fn ($p) => str_contains($p->detailable_type, 'Research'))
+        $this->recentResearch = $researchQuery->latest()
             ->take(10)
+            ->get()
             ->values();
 
-        $this->recentCommunityService = $recentProposals
-            ->filter(fn ($p) => str_contains($p->detailable_type, 'CommunityService'))
+        // Community Service proposals with scheme filter
+        $csQuery = clone $baseQuery;
+        $csQuery->where('detailable_type', 'App\Models\CommunityService');
+        $this->applySchemeFilter($csQuery, 'community_service');
+
+        $this->recentCommunityService = $csQuery->latest()
             ->take(10)
+            ->get()
             ->values();
     }
 

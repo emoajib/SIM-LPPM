@@ -384,7 +384,7 @@
                                         </td>
                                         <td>
                                             <div class="text-muted small mb-1">
-                                                {{ $pkm->researchScheme->name ?? '-' }}
+                                                {{ $pkm->communityServiceScheme->name ?? '-' }}
                                             </div>
                                             <x-tabler.badge :color="$pkm->status->color()">
                                                 {{ $pkm->status->label() }}

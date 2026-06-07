@@ -94,6 +94,34 @@
                                 </a>
                             </div>
                         </div>
+                        <div class="dropdown">
+                            <a href="#" class="btn-outline-primary btn dropdown-toggle" data-bs-toggle="dropdown">
+                                <i class="ti ti-flask fs-2 me-1"></i>
+                                Skema Penelitian: {{ $availableResearchSchemes[$selectedResearchScheme] ?? 'Semua Skema' }}
+                            </a>
+                            <div class="dropdown-menu" style="max-height: 300px; overflow-y: auto;">
+                                @foreach ($availableResearchSchemes as $value => $label)
+                                    <a href="#" class="dropdown-item {{ $selectedResearchScheme == $value ? 'active' : '' }}"
+                                        wire:click.preserve-scroll="$set('selectedResearchScheme', '{{ $value }}')">
+                                        {{ $label }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                        <div class="dropdown">
+                            <a href="#" class="btn-outline-primary btn dropdown-toggle" data-bs-toggle="dropdown">
+                                <i class="ti ti-users-group fs-2 me-1"></i>
+                                Skema PKM: {{ $availableCommunityServiceSchemes[$selectedCommunityServiceScheme] ?? 'Semua Skema' }}
+                            </a>
+                            <div class="dropdown-menu" style="max-height: 300px; overflow-y: auto;">
+                                @foreach ($availableCommunityServiceSchemes as $value => $label)
+                                    <a href="#" class="dropdown-item {{ $selectedCommunityServiceScheme == $value ? 'active' : '' }}"
+                                        wire:click.preserve-scroll="$set('selectedCommunityServiceScheme', '{{ $value }}')">
+                                        {{ $label }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

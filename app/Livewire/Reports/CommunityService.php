@@ -147,7 +147,7 @@ class CommunityService extends Component
         return Proposal::query()
             ->where('detailable_type', 'App\Models\CommunityService')
             ->where('start_year', $this->period)
-            ->when($this->selectedScheme !== 'all', fn ($q) => $q->where('research_scheme_id', $this->selectedScheme))
+            ->when($this->selectedScheme !== 'all', fn ($q) => $q->where('community_service_scheme_id', $this->selectedScheme))
             ->when($this->selectedFaculty !== 'all', function ($q) {
                 $q->whereHas('submitter.identity', fn ($iq) => $iq->where('faculty_id', $this->selectedFaculty));
             })
@@ -157,7 +157,7 @@ class CommunityService extends Component
                         ->orWhereHas('submitter', fn ($uq) => $uq->where('name', 'like', "%{$this->search}%"));
                 });
             })
-            ->with(['submitter.identity.faculty', 'submitter.identity.studyProgram', 'researchScheme', 'budgetItems'])
+            ->with(['submitter.identity.faculty', 'submitter.identity.studyProgram', 'communityServiceScheme', 'budgetItems'])
             ->latest();
     }
 
@@ -338,14 +338,14 @@ class CommunityService extends Component
                         ->orWhereHas('submitter', fn ($uq) => $uq->where('name', 'like', "%{$this->search}%"));
                 });
             })
-            ->with(['researchScheme', 'budgetItems'])
+            ->with(['communityServiceScheme', 'budgetItems'])
             ->get()
-            ->groupBy('research_scheme_id')
+            ->groupBy('community_service_scheme_id')
             ->map(function ($proposals) {
                 $first = $proposals->first();
 
                 return [
-                    'name' => $first->researchScheme->name ?? __('Tanpa Skema'),
+                    'name' => $first->communityServiceScheme->name ?? __('Tanpa Skema'),
                     'count' => $proposals->count(),
                     'budget' => $proposals->sum(fn ($p) => ($p->sbk_value && $p->sbk_value > 0) ? (float) $p->sbk_value :
                         $p->budgetItems->sum('total_price')),
@@ -362,7 +362,7 @@ class CommunityService extends Component
         return Proposal::query()
             ->where('detailable_type', 'App\Models\CommunityService')
             ->where('start_year', $this->period)
-            ->when($this->selectedScheme !== 'all', fn ($q) => $q->where('research_scheme_id', $this->selectedScheme))
+            ->when($this->selectedScheme !== 'all', fn ($q) => $q->where('community_service_scheme_id', $this->selectedScheme))
             ->when($this->search, function ($q) {
                 $q->where(function ($sq) {
                     $sq->where('title', 'like', "%{$this->search}%")

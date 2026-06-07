@@ -56,7 +56,7 @@
                     {{ $proposal->submitter?->identity?->studyProgram?->name ?? '-' }}
                 </td>
                 <td style="border: 1px solid #000000; text-align: center; vertical-align: top;">
-                    {{ $proposal->researchScheme?->name ?? '-' }}</td>
+                    {{ $proposal->communityServiceScheme?->name ?? '-' }}</td>
                 <td style="border: 1px solid #000000; text-align: center; vertical-align: top;">
                     {{ $proposal->status?->label() ?? '-' }}</td>
                 <td style="border: 1px solid #000000; text-align: right; vertical-align: top;">

@@ -6,11 +6,13 @@ use App\Enums\InstitutionalReportStatus;
 use App\Enums\ProposalStatus;
 use App\Enums\ReportStatus;
 use App\Models\AdditionalOutput;
+use App\Models\CommunityServiceScheme;
 use App\Models\Faculty;
 use App\Models\InstitutionalReport;
 use App\Models\MandatoryOutput;
 use App\Models\ProgressReport;
 use App\Models\Proposal;
+use App\Models\ResearchScheme;
 use App\Models\StudyProgram;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -40,6 +42,10 @@ class ExecDashboard extends Component
 
     public $selectedProdi = 'all';
 
+    public $selectedResearchScheme = 'all';
+
+    public $selectedCommunityServiceScheme = 'all';
+
     public $availableYears = [];
 
     public $availableStatuses = [];
@@ -47,6 +53,10 @@ class ExecDashboard extends Component
     public $availableFaculties = [];
 
     public $availableProdis = [];
+
+    public $availableResearchSchemes = [];
+
+    public $availableCommunityServiceSchemes = [];
 
     public $periodicSummary = [];
 
@@ -66,6 +76,9 @@ class ExecDashboard extends Component
                 $this->availableProdis = $this->getProdiByFaculty();
             }
         }
+
+        $this->availableResearchSchemes = $this->getResearchSchemes();
+        $this->availableCommunityServiceSchemes = $this->getCommunityServiceSchemes();
 
         $this->loadAnalytics();
     }
@@ -93,6 +106,16 @@ class ExecDashboard extends Component
     }
 
     public function updatedSelectedProdi(): void
+    {
+        $this->loadAnalytics();
+    }
+
+    public function updatedSelectedResearchScheme(): void
+    {
+        $this->loadAnalytics();
+    }
+
+    public function updatedSelectedCommunityServiceScheme(): void
     {
         $this->loadAnalytics();
     }
@@ -146,6 +169,44 @@ class ExecDashboard extends Component
             ->toArray();
     }
 
+    /**
+     * Get research schemes, scoped by faculty for Dekan role.
+     */
+    private function getResearchSchemes(): array
+    {
+        $query = ResearchScheme::query()->orderBy('name');
+
+        if ($this->isDekanRestricted()) {
+            $facultyId = $this->user->identity?->faculty_id;
+            if ($facultyId) {
+                $query->whereHas('proposals.submitter.identity', fn ($q) => $q->where('faculty_id', $facultyId));
+            }
+        }
+
+        return $query->pluck('name', 'id')
+            ->prepend('Semua Skema Penelitian', 'all')
+            ->toArray();
+    }
+
+    /**
+     * Get community service schemes, scoped by faculty for Dekan role.
+     */
+    private function getCommunityServiceSchemes(): array
+    {
+        $query = CommunityServiceScheme::query()->orderBy('name');
+
+        if ($this->isDekanRestricted()) {
+            $facultyId = $this->user->identity?->faculty_id;
+            if ($facultyId) {
+                $query->whereHas('proposals.submitter.identity', fn ($q) => $q->where('faculty_id', $facultyId));
+            }
+        }
+
+        return $query->pluck('name', 'id')
+            ->prepend('Semua Skema PKM', 'all')
+            ->toArray();
+    }
+
     public function isDekanRestricted(): bool
     {
         return $this->roleName === 'dekan';
@@ -194,6 +255,22 @@ class ExecDashboard extends Component
         return $query;
     }
 
+    /**
+     * Apply type-aware scheme filters to a specific query.
+     */
+    private function applySchemeFilter(Builder $query, string $type): Builder
+    {
+        if ($type === 'research' && $this->selectedResearchScheme !== 'all') {
+            $query->where('research_scheme_id', $this->selectedResearchScheme);
+        }
+
+        if ($type === 'community_service' && $this->selectedCommunityServiceScheme !== 'all') {
+            $query->where('community_service_scheme_id', $this->selectedCommunityServiceScheme);
+        }
+
+        return $query;
+    }
+
     private function loadStats(int $yearFilter): void
     {
         $statsRaw = Proposal::query()
@@ -234,19 +311,28 @@ class ExecDashboard extends Component
 
     private function loadRecentProposals(int $yearFilter): void
     {
-        $query = Proposal::with(['submitter'])
-            ->tap(fn ($q) => $this->applyCommonFilters($q));
+        $baseQuery = Proposal::with(['submitter', 'researchScheme', 'communityServiceScheme']);
 
-        $recentProposals = $query->latest()->get();
+        $this->applyCommonFilters($baseQuery);
 
-        $this->recentResearch = $recentProposals
-            ->filter(fn ($p) => str_contains($p->detailable_type ?? '', 'Research'))
+        // Research proposals with scheme filter
+        $researchQuery = clone $baseQuery;
+        $researchQuery->where('detailable_type', 'App\Models\Research');
+        $this->applySchemeFilter($researchQuery, 'research');
+
+        $this->recentResearch = $researchQuery->latest()
             ->take(10)
+            ->get()
             ->values();
 
-        $this->recentCommunityService = $recentProposals
-            ->filter(fn ($p) => str_contains($p->detailable_type ?? '', 'CommunityService'))
+        // Community Service proposals with scheme filter
+        $csQuery = clone $baseQuery;
+        $csQuery->where('detailable_type', 'App\Models\CommunityService');
+        $this->applySchemeFilter($csQuery, 'community_service');
+
+        $this->recentCommunityService = $csQuery->latest()
             ->take(10)
+            ->get()
             ->values();
     }
 

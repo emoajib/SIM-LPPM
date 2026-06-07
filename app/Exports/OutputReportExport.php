@@ -44,7 +44,8 @@ class OutputReportExport implements FromView, ShouldAutoSize, WithStyles
         }
 
         if ($this->scheme && $this->scheme !== 'all') {
-            $query->where('research_scheme_id', $this->scheme);
+            $schemeColumn = $this->activeTab === 'research' ? 'research_scheme_id' : 'community_service_scheme_id';
+            $query->where($schemeColumn, $this->scheme);
         }
 
         if ($this->faculty && $this->faculty !== 'all') {

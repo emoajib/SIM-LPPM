@@ -68,8 +68,8 @@
             </div>
         </div>
     </div>
-@elseif (!$schemeEligible && !$hasSubmittableProposals)
-    <!-- Scheme Eligibility Alert -->
+@elseif (!$schemeEligible && !$hasSubmittableProposals && !empty($eligibility['reasons']))
+    <!-- Scheme Eligibility Alert with Specific Reasons -->
     <div class="card bg-warning-lt border-warning shadow-sm mb-4 overflow-hidden border-0 border-start border-4">
         <div class="card-body">
             <div class="row align-items-center">
@@ -81,16 +81,31 @@
                 <div class="col">
                     <h4 class="fw-bold text-warning mb-1">Status Eligibilitas Skema: Tidak Memenuhi Syarat</h4>
                     <div class="text-warning">
-                        Meskipun jadwal pengajuan dibuka, Anda tidak memenuhi syarat untuk skema berikut:
+                        Meskipun jadwal pengajuan dibuka, profil akademik Anda belum memenuhi syarat untuk skema yang tersedia:
                         <ul class="mb-0 mt-2 p-0 ms-3" style="list-style-type: disc;">
-                            @foreach ($schemeReasons as $reason)
+                            @foreach ($eligibility['reasons'] as $reason)
                                 <li wire:key="scheme-reason-{{ $loop->index }}">{{ $reason }}</li>
                             @endforeach
                         </ul>
-                        <div class="mt-2 small">
-                            <strong>Kemungkinan penyebab:</strong> Skor SINTA/Jabatan Fungsional tidak memenuhi ketentuan
-                            skema. Silakan hubungi Admin LPPM untuk informasi lebih lanjut.
-                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@elseif (!$schemeEligible && !$hasSubmittableProposals)
+    <!-- Scheme Eligibility Alert - No schemes at all -->
+    <div class="card bg-warning-lt border-warning shadow-sm mb-4 overflow-hidden border-0 border-start border-4">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <div class="avatar bg-warning text-warning-fg shadow-sm">
+                        <i class="ti ti-school fs-2"></i>
+                    </div>
+                </div>
+                <div class="col">
+                    <h4 class="fw-bold text-warning mb-1">Status Eligibilitas Skema: Tidak Memenuhi Syarat</h4>
+                    <div class="text-warning">
+                        Tidak ada skema yang tersedia untuk diajukan saat ini. Silakan hubungi Admin LPPM untuk informasi lebih lanjut.
                     </div>
                 </div>
             </div>

@@ -16,9 +16,12 @@ class ResearchProposalExport implements FromQuery, WithHeadings, WithMapping
 {
     protected int $year;
 
-    public function __construct(int $year)
+    protected ?string $scheme = null;
+
+    public function __construct(int $year, ?string $scheme = null)
     {
         $this->year = $year;
+        $this->scheme = $scheme;
     }
 
     /**
@@ -28,6 +31,7 @@ class ResearchProposalExport implements FromQuery, WithHeadings, WithMapping
     {
         return Proposal::where('detailable_type', Research::class)
             ->where('start_year', $this->year)
+            ->when($this->scheme && $this->scheme !== 'all', fn ($q) => $q->where('research_scheme_id', $this->scheme))
             ->with([
                 'submitter',
                 'submitter.identity',

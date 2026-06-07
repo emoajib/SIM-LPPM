@@ -388,11 +388,11 @@ class ReportExportController extends Controller
                             ->orWhereHas('submitter', fn ($u) => $u->where('name', 'like', "%{$search}%"));
                     });
                 })
-                ->when($scheme && $scheme !== 'all', fn ($q) => $q->where('research_scheme_id', $scheme))
+                ->when($scheme && $scheme !== 'all', fn ($q) => $q->where('community_service_scheme_id', $scheme))
                 ->when($faculty && $faculty !== 'all', function ($q) use ($faculty) {
                     $q->whereHas('submitter.identity', fn ($i) => $i->where('faculty_id', $faculty));
                 })
-                ->with(['submitter.identity.faculty', 'submitter.identity.studyProgram', 'researchScheme', 'budgetItems'])
+                ->with(['submitter.identity.faculty', 'submitter.identity.studyProgram', 'communityServiceScheme', 'budgetItems'])
                 ->latest()
                 ->get();
 
@@ -598,8 +598,10 @@ class ReportExportController extends Controller
             });
         }
 
+        $schemeColumn = $activeTab === 'research' ? 'research_scheme_id' : 'community_service_scheme_id';
+
         if ($scheme && $scheme !== 'all') {
-            $query->where('research_scheme_id', $scheme);
+            $query->where($schemeColumn, $scheme);
         }
 
         if ($faculty && $faculty !== 'all') {
@@ -752,10 +754,11 @@ class ReportExportController extends Controller
 
         try {
             $period = $request->query('period', date('Y'));
+            $scheme = $request->query('scheme');
             $filename = "research-proposals-{$period}.xlsx";
 
             $download = Excel::download(
-                new ResearchProposalExport((int) $period),
+                new ResearchProposalExport((int) $period, $scheme),
                 $filename
             );
 
@@ -772,10 +775,11 @@ class ReportExportController extends Controller
     {
         try {
             $period = $request->query('period', date('Y'));
+            $scheme = $request->query('scheme');
             $filename = "community-service-proposals-{$period}.xlsx";
 
             $download = Excel::download(
-                new CommunityServiceProposalExport((int) $period),
+                new CommunityServiceProposalExport((int) $period, $scheme),
                 $filename
             );
 

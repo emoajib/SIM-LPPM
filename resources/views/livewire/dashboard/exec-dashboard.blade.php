@@ -86,6 +86,36 @@
                 </div>
             </div>
             @endunless
+            <div class="dropdown">
+                <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2"
+                    data-bs-toggle="dropdown">
+                    <i class="ti ti-flask fs-2"></i>
+                    <span>Skema Penelitian: {{ $availableResearchSchemes[$selectedResearchScheme] ?? 'Semua Skema' }}</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end" style="max-height: 300px; overflow-y: auto;">
+                    @foreach ($availableResearchSchemes as $value => $label)
+                        <a href="#" class="dropdown-item {{ $selectedResearchScheme == $value ? 'active' : '' }}"
+                            wire:click.preserve-scroll="$set('selectedResearchScheme', '{{ $value }}')">
+                            {{ $label }}
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+            <div class="dropdown">
+                <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2"
+                    data-bs-toggle="dropdown">
+                    <i class="ti ti-users-group fs-2"></i>
+                    <span>Skema PKM: {{ $availableCommunityServiceSchemes[$selectedCommunityServiceScheme] ?? 'Semua Skema' }}</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end" style="max-height: 300px; overflow-y: auto;">
+                    @foreach ($availableCommunityServiceSchemes as $value => $label)
+                        <a href="#" class="dropdown-item {{ $selectedCommunityServiceScheme == $value ? 'active' : '' }}"
+                            wire:click.preserve-scroll="$set('selectedCommunityServiceScheme', '{{ $value }}')">
+                            {{ $label }}
+                        </a>
+                    @endforeach
+                </div>
+            </div>
         </div>
     </div>
 

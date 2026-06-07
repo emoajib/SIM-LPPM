@@ -135,6 +135,7 @@ class Proposal extends Model
             'logbook_signed_at' => 'datetime',
             'logbook_approved_at' => 'datetime',
             'student_members' => 'array',
+            'qualification_snapshot' => 'array',
             'is_roadmap_validated_by_kaprodi' => 'boolean',
             'kaprodi_validated_at' => 'datetime',
         ];
