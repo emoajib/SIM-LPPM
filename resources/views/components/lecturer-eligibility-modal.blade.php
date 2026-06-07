@@ -51,6 +51,40 @@
     $pkmOpen = $eligibility['schedule']['pkm_open'] ?? false;
     $hasNoResearchSchemes = $researchOpen && empty($researchSchemes);
     $hasNoPkmSchemes = $pkmOpen && empty($pkmSchemes);
+
+    // Categorize reasons
+    $hasHistoricalObligations = false;
+    $hasQuotaIssue = false;
+    $hasSintaIssue = false;
+    $hasFunctionalPositionIssue = false;
+    $eligAlertTitle = $eligibility['eligible'] ? 'Status Kelayakan: Memenuhi Syarat' : 'Status Kelayakan: Tidak Memenuhi Syarat';
+    $eligSubtitle = '';
+    $eligTindakan = '';
+
+    foreach ($eligibility['reasons'] as $reason) {
+        if (str_contains($reason, 'Laporan Akhir') || str_contains($reason, 'luaran wajib')) $hasHistoricalObligations = true;
+        if (str_contains($reason, 'batas maksimal')) $hasQuotaIssue = true;
+        if (str_contains($reason, 'SINTA')) $hasSintaIssue = true;
+        if (str_contains($reason, 'Jabatan fungsional')) $hasFunctionalPositionIssue = true;
+    }
+
+    if ($hasHistoricalObligations) {
+        $eligSubtitle = 'Sistem mendeteksi kewajiban yang belum terpenuhi dari periode sebelumnya'
+            . ' (' . ucfirst($eligibility['period']['checked_semester']) . ' ' . $eligibility['period']['checked_year'] . '):';
+        $eligTindakan = 'Penuhi laporan akhir dan komponen luaran wajib sebelum mengajukan proposal baru.';
+    } elseif ($hasQuotaIssue) {
+        $eligSubtitle = 'Anda telah mencapai batas maksimal pengajuan proposal sebagai Ketua:';
+        $eligTindakan = 'Tunggu hingga periode berikutnya atau hubungi Admin LPPM untuk informasi lebih lanjut.';
+    } elseif ($hasSintaIssue) {
+        $eligSubtitle = 'Skor SINTA Anda belum memenuhi syarat minimal skema:';
+        $eligTindakan = 'Tingkatkan skor SINTA Anda melalui publikasi ilmiah, lalu hubungi Admin LPPM.';
+    } elseif ($hasFunctionalPositionIssue) {
+        $eligSubtitle = 'Jabatan fungsional Anda belum memenuhi ketentuan skema:';
+        $eligTindakan = 'Ajukan kenaikan jabatan fungsional melalui prosedur yang berlaku.';
+    } elseif (! $eligibility['eligible']) {
+        $eligSubtitle = 'Terdapat kendala yang menghalangi pengajuan proposal:';
+        $eligTindakan = 'Hubungi Admin LPPM untuk informasi lebih lanjut.';
+    }
 @endphp
 
 @if ($user && $user->activeHasRole('dosen'))
@@ -65,6 +99,53 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body bg-light">
+                    <!-- Status Kelayakan -->
+                    <div class="accordion mb-3" id="accordion-eligibility">
+                        <div class="accordion-item {{ $eligibility['eligible'] ? 'border-success' : 'border-danger' }} shadow-sm rounded">
+                            <h2 class="accordion-header" id="heading-eligibility">
+                                <button class="accordion-button {{ $eligibility['eligible'] ? 'text-success' : 'text-danger' }} fw-bold" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#collapse-eligibility" aria-expanded="true">
+                                    <i class="ti ti-{{ $eligibility['eligible'] ? 'circle-check' : 'alert-triangle' }} me-2"></i>
+                                    {{ $eligAlertTitle }}
+                                </button>
+                            </h2>
+                            <div id="collapse-eligibility" class="accordion-collapse collapse show">
+                                <div class="accordion-body bg-white py-3">
+                                    @if (! $eligibility['eligible'])
+                                        @if ($eligSubtitle)
+                                            <div class="text-secondary small mb-1">{{ $eligSubtitle }}</div>
+                                        @endif
+                                        <ul class="mb-1 ps-3 small text-secondary" style="list-style-type: disc;">
+                                            @foreach ($eligibility['reasons'] as $reason)
+                                                <li wire:key="modal-reason-{{ $loop->index }}">{{ $reason }}</li>
+                                            @endforeach
+                                        </ul>
+                                        @if ($eligTindakan)
+                                            <div class="small text-secondary">
+                                                <strong>Tindakan:</strong> {{ $eligTindakan }}
+                                            </div>
+                                        @endif
+                                    @else
+                                        <p class="mb-0 text-secondary">
+                                            <i class="ti ti-check text-success me-1"></i>
+                                            Anda memenuhi syarat untuk mengajukan proposal baru.
+                                        </p>
+                                    @endif
+                                    @if (! empty($eligibility['member_reasons']))
+                                        <div class="border-top pt-2 mt-2 small text-secondary">
+                                            <strong>Status Anggota:</strong>
+                                            <ul class="mb-0 ps-3 mt-1" style="list-style-type: disc;">
+                                                @foreach ($eligibility['member_reasons'] as $reason)
+                                                    <li wire:key="modal-member-reason-{{ $loop->index }}">{{ $reason }}</li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Status Jadwal Pengajuan -->
                     <div class="accordion mb-3" id="accordion-schedule">
                         <div class="accordion-item border-primary shadow-sm rounded">
