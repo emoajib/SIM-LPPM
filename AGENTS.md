@@ -41,42 +41,62 @@ Pastikan:
 ```bash
 cd /home/simlppmi/sim-lppm
 
-# Backup
-cp -r . ../backup-$(date +%Y%m%d-%H%M%S)
+# === SAFETY SETUP ===
+set -euo pipefail
+# Jika ada error di step manapun → otomatis nyalakan site kembali
+trap 'echo "❌ Deploy GAGAL! Menjalankan php artisan up..."; php artisan up; exit 1' ERR
 
-# Maintenance mode ON (cegah akses selama deploy)
+# 1. Backup (ke storage/ yang aman, exclude vendor & git)
+BACKUP_DIR="storage/app/backup"
+mkdir -p "$BACKUP_DIR"
+echo "📦 Membuat backup..."
+tar czf "$BACKUP_DIR/backup-$(date +%Y%m%d-%H%M%S).tar.gz" \
+  --exclude="./storage/app/backup" \
+  --exclude="./node_modules" \
+  --exclude="./.git" \
+  --exclude="./vendor" .
+echo "✅ Backup tersimpan di $BACKUP_DIR"
+
+# 2. Maintenance mode ON
 php artisan down --retry=300
 
-# Pull & install
+# 3. Pull & install
 git pull origin main
 composer install --no-dev --optimize-autoloader
 
-# Migration
+# 4. Preview migration (beri waktu 5 detik untuk review, Ctrl+C jika ada yang salah)
+echo "📋 Pending migrations yang akan dijalankan:"
+php artisan migrate --pretend --force
+echo "⏳ Lanjut dalam 5 detik... (Ctrl+C untuk batal)"
+sleep 5
 php artisan migrate --force
 
-# Cache
+# 5. Cache
 php artisan optimize:clear
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-# Flush PDF cache (akan regenerate otomatis)
+# 6. Flush PDF cache (akan regenerate otomatis)
 find storage/app/public/pdf_cache -type f -name "*.pdf" -delete 2>/dev/null
 echo "PDF cache cleaned"
 
-# OPcache
+# 7. OPcache
 php -r 'if (function_exists("opcache_reset")) { opcache_reset(); echo "OPcache cleared\n"; } else { echo "OPcache not available\n"; }'
 
-# Permissions
+# 8. Permissions
 find . -type f -print0 | xargs -0 chmod 644
 find . -type d -print0 | xargs -0 chmod 755
 chmod -R 775 storage bootstrap/cache
 chmod 755 public
 chmod 644 public/.htaccess
 chmod 644 public/index.php
+chmod 600 .env                    # KRITIS: .env hanya boleh dibaca owner
 
-# Maintenance mode OFF
+# 9. Maintenance mode OFF
+trap - ERR                         # Reset trap sebelum artisan up
 php artisan up
+echo "✅ Deploy selesai!"
 ```
 
 ### 6. Verifikasi di Browser

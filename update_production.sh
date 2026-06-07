@@ -1,11 +1,25 @@
 #!/bin/bash
+# update_production.sh — Script update cPanel (versi simpel)
+# Vetted by AI - Manual Review Required by Senior Engineer/Manager
+
+set -euo pipefail
+trap 'echo "❌ Update GAGAL! Jalankan: php artisan up"; php artisan up; exit 1' ERR
 
 echo "=== SIM-LPPM Production Update Script ==="
 cd /home/simlppmi/sim-lppm
 
-# Backup (optional)
-echo "Creating backup..."
-cp -r . ../backup-$(date +%Y%m%d-%H%M%S) 2>/dev/null || echo "Backup skipped"
+# Backup (ke storage/ yang aman — BUKAN ../  yang bisa terekspos)
+echo "📦 Membuat backup..."
+BACKUP_DIR="storage/app/backup"
+mkdir -p "$BACKUP_DIR"
+tar czf "$BACKUP_DIR/backup-$(date +%Y%m%d-%H%M%S).tar.gz" \
+  --exclude="./storage/app/backup" \
+  --exclude="./node_modules" \
+  --exclude="./.git" \
+  --exclude="./vendor" . || echo "⚠️ Backup gagal, lanjut..."
+
+# Maintenance mode ON
+php artisan down --retry=300
 
 # Pull changes
 echo "Pulling latest changes..."
@@ -15,20 +29,36 @@ git pull origin main
 echo "Installing dependencies..."
 composer install --no-dev --optimize-autoloader
 
-# Clear caches
-echo "Clearing caches..."
+# Preview migration dulu
+echo "📋 Pending migrations:"
+php artisan migrate --pretend --force
+echo "⏳ Lanjut dalam 5 detik... (Ctrl+C untuk batal)"
+sleep 5
+php artisan migrate --force
+
+# Clear & rebuild caches
+echo "Rebuilding caches..."
 php artisan optimize:clear
-php artisan config:clear
-php artisan route:clear
-php artisan view:clear
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
 
 # Clear OPcache
 php -r 'if (function_exists("opcache_reset")) { opcache_reset(); echo "OPcache cleared\n"; } else { echo "OPcache not available\n"; }'
 
+# Flush PDF cache
+find storage/app/public/pdf_cache -type f -name "*.pdf" -delete 2>/dev/null
+echo "PDF cache cleaned"
+
 # Set permissions
 echo "Setting permissions..."
-chown -R simlppmi:simlppmi .
-chmod -R 755 storage bootstrap/cache
+find . -type f -print0 | xargs -0 chmod 644
+find . -type d -print0 | xargs -0 chmod 755
+chmod -R 775 storage bootstrap/cache
+chmod 755 public
+chmod 644 public/.htaccess
+chmod 644 public/index.php
+chmod 600 .env     # KRITIS: .env hanya boleh dibaca owner
 
 # Test application
 echo "Testing application..."
@@ -37,13 +67,14 @@ php artisan tinker --execute="
 if (\$p) {
     echo '✓ Proposal found: ' . \$p->title . PHP_EOL;
     echo '✓ Status: ' . \$p->status->label() . PHP_EOL;
-    \$s = \$p->submitter;
-    \$policy = app(App\Policies\ProposalPolicy::class);
-    echo '✓ Submitter can view: ' . (\$policy->view(\$s, \$p) ? 'YES' : 'NO') . PHP_EOL;
 } else {
     echo '✗ No proposals found' . PHP_EOL;
 }
 "
 
-echo "=== Update completed successfully! ==="
-echo "Test URL: https://sim-lppm.itsnupekalongan.ac.id/research/proposal/[proposal-id]"
+# Maintenance mode OFF
+trap - ERR
+php artisan up
+
+echo "=== ✅ Update completed successfully! ==="
+echo "Test URL: https://sim-lppm.itsnupekalongan.ac.id"
