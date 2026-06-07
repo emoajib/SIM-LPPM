@@ -58,10 +58,11 @@
             @endif
         @endif
         @if (auth()->user()->activeHasRole('dosen'))
-            <button type="button" class="btn btn-outline-info" data-bs-toggle="collapse" data-bs-target="#pkmIndexInfo" aria-expanded="true" aria-controls="pkmIndexInfo">
+            <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#modal-eligibility-info">
                 <x-lucide-info class="icon" />
                 Info Eligibilitas
             </button>
+            <x-lecturer-eligibility-modal />
         @endif
     </div>
 </x-slot:pageActions>
