@@ -64,11 +64,53 @@
 <div>
     <x-tabler.alert />
 
-    <x-lecturer-eligibility-alert type="pkm" />
-
     @php
         $user = auth()->user();
         $isKepala = $user->activeHasRole('kepala lppm');
+        $isDosen = $user->activeHasRole('dosen');
+
+        $pkmEligibility = ['eligible' => true, 'reasons' => [], 'member_reasons' => []];
+        $eligAlertTitle = '';
+        $eligSubtitle = '';
+        $eligTindakan = '';
+
+        if ($isDosen) {
+            $svc = app(\App\Services\LecturerEligibilityService::class);
+            $pkmEligibility = $svc->checkEligibility($user, 'pkm');
+            $scheduleInfo = $svc->getScheduleStatus($user);
+
+            $hasHistoricalObligations = false;
+            $hasQuotaIssue = false;
+            $hasSintaIssue = false;
+            $hasFunctionalPositionIssue = false;
+
+            foreach ($pkmEligibility['reasons'] as $reason) {
+                if (str_contains($reason, 'Laporan Akhir') || str_contains($reason, 'luaran wajib')) $hasHistoricalObligations = true;
+                if (str_contains($reason, 'batas maksimal')) $hasQuotaIssue = true;
+                if (str_contains($reason, 'SINTA')) $hasSintaIssue = true;
+                if (str_contains($reason, 'Jabatan fungsional')) $hasFunctionalPositionIssue = true;
+            }
+
+            $eligAlertTitle = $pkmEligibility['eligible'] ? 'Status Kelayakan: Memenuhi Syarat' : 'Status Kelayakan: Tidak Memenuhi Syarat';
+
+            if ($hasHistoricalObligations) {
+                $eligSubtitle = 'Sistem mendeteksi kewajiban yang belum terpenuhi dari periode sebelumnya'
+                    . ' (' . ucfirst($pkmEligibility['period']['checked_semester']) . ' ' . $pkmEligibility['period']['checked_year'] . '):';
+                $eligTindakan = 'Penuhi laporan akhir dan komponen luaran wajib sebelum mengajukan proposal baru.';
+            } elseif ($hasQuotaIssue) {
+                $eligSubtitle = 'Anda telah mencapai batas maksimal pengajuan proposal Pengabdian sebagai Ketua:';
+                $eligTindakan = 'Tunggu hingga periode berikutnya atau hubungi Admin LPPM untuk informasi lebih lanjut.';
+            } elseif ($hasSintaIssue) {
+                $eligSubtitle = 'Skor SINTA Anda belum memenuhi syarat minimal skema:';
+                $eligTindakan = 'Tingkatkan skor SINTA Anda melalui publikasi ilmiah, lalu hubungi Admin LPPM.';
+            } elseif ($hasFunctionalPositionIssue) {
+                $eligSubtitle = 'Jabatan fungsional Anda belum memenuhi ketentuan skema:';
+                $eligTindakan = 'Ajukan kenaikan jabatan fungsional melalui prosedur yang berlaku.';
+            } elseif (! $pkmEligibility['eligible']) {
+                $eligSubtitle = 'Terdapat kendala yang menghalangi pengajuan proposal:';
+                $eligTindakan = 'Hubungi Admin LPPM untuk informasi lebih lanjut.';
+            }
+        }
     @endphp
 
     <div class="collapse shadow-sm border-0 alert alert-info alert-dismissible fade show" id="pkmIndexInfo"
@@ -89,13 +131,46 @@
                     </div>
                 @else
                     <h4 class="alert-title">Panduan Daftar Pengabdian (PKM)</h4>
-                    <div class="text-secondary">
+                    <div class="text-secondary mb-2">
                         Halaman ini menampilkan seluruh usulan pengabdian masyarakat (PKM) Anda. Anda dapat memantau
                         status usulan,
                         mengedit draft, atau melihat detail usulan yang sedang dalam proses review.
                         Klik tombol <strong>Usulan Pengabdian Baru</strong> untuk mulai membuat usulan jika jadwal
                         sedang dibuka.
                     </div>
+                    @if ($isDosen)
+                        <div class="border-top pt-2 mt-1">
+                            <div class="fw-bold {{ $pkmEligibility['eligible'] ? 'text-success' : 'text-danger' }} fs-sm mb-1">
+                                <i class="ti ti-{{ $pkmEligibility['eligible'] ? 'circle-check' : 'alert-triangle' }} me-1"></i>
+                                {{ $eligAlertTitle }}
+                            </div>
+                            @if (! $pkmEligibility['eligible'])
+                                @if ($eligSubtitle)
+                                    <div class="text-secondary small mb-1">{{ $eligSubtitle }}</div>
+                                @endif
+                                <ul class="mb-1 ps-3 small text-secondary" style="list-style-type: disc;">
+                                    @foreach ($pkmEligibility['reasons'] as $reason)
+                                        <li wire:key="pkm-elig-reason-{{ $loop->index }}">{{ $reason }}</li>
+                                    @endforeach
+                                </ul>
+                                @if ($eligTindakan)
+                                    <div class="small text-secondary">
+                                        <strong>Tindakan:</strong> {{ $eligTindakan }}
+                                    </div>
+                                @endif
+                            @endif
+                            @if (! empty($pkmEligibility['member_reasons']))
+                                <div class="border-top pt-1 mt-1 small text-secondary">
+                                    <strong>Status Anggota:</strong>
+                                    <ul class="mb-0 ps-3 mt-1" style="list-style-type: disc;">
+                                        @foreach ($pkmEligibility['member_reasons'] as $reason)
+                                            <li wire:key="pkm-member-reason-{{ $loop->index }}">{{ $reason }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                        </div>
+                    @endif
                 @endif
             </div>
         </div>

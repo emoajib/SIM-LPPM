@@ -1,5 +1,3 @@
-<x-lecturer-eligibility-alert type="research" />
-
 <!-- Section: Informasi Dasar -->
 <div class="card mb-3">
     <div class="card-body">

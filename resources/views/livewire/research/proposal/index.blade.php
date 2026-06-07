@@ -65,11 +65,53 @@
 <div>
     <x-tabler.alert />
 
-    <x-lecturer-eligibility-alert type="research" />
-
     @php
         $user = auth()->user();
         $isKepala = $user->activeHasRole('kepala lppm');
+        $isDosen = $user->activeHasRole('dosen');
+
+        $researchEligibility = ['eligible' => true, 'reasons' => [], 'member_reasons' => []];
+        $eligAlertTitle = '';
+        $eligSubtitle = '';
+        $eligTindakan = '';
+
+        if ($isDosen) {
+            $svc = app(\App\Services\LecturerEligibilityService::class);
+            $researchEligibility = $svc->checkEligibility($user, 'research');
+            $scheduleInfo = $svc->getScheduleStatus($user);
+
+            $hasHistoricalObligations = false;
+            $hasQuotaIssue = false;
+            $hasSintaIssue = false;
+            $hasFunctionalPositionIssue = false;
+
+            foreach ($researchEligibility['reasons'] as $reason) {
+                if (str_contains($reason, 'Laporan Akhir') || str_contains($reason, 'luaran wajib')) $hasHistoricalObligations = true;
+                if (str_contains($reason, 'batas maksimal')) $hasQuotaIssue = true;
+                if (str_contains($reason, 'SINTA')) $hasSintaIssue = true;
+                if (str_contains($reason, 'Jabatan fungsional')) $hasFunctionalPositionIssue = true;
+            }
+
+            $eligAlertTitle = $researchEligibility['eligible'] ? 'Status Kelayakan: Memenuhi Syarat' : 'Status Kelayakan: Tidak Memenuhi Syarat';
+
+            if ($hasHistoricalObligations) {
+                $eligSubtitle = 'Sistem mendeteksi kewajiban yang belum terpenuhi dari periode sebelumnya'
+                    . ' (' . ucfirst($researchEligibility['period']['checked_semester']) . ' ' . $researchEligibility['period']['checked_year'] . '):';
+                $eligTindakan = 'Penuhi laporan akhir dan komponen luaran wajib sebelum mengajukan proposal baru.';
+            } elseif ($hasQuotaIssue) {
+                $eligSubtitle = 'Anda telah mencapai batas maksimal pengajuan proposal Penelitian sebagai Ketua:';
+                $eligTindakan = 'Tunggu hingga periode berikutnya atau hubungi Admin LPPM untuk informasi lebih lanjut.';
+            } elseif ($hasSintaIssue) {
+                $eligSubtitle = 'Skor SINTA Anda belum memenuhi syarat minimal skema:';
+                $eligTindakan = 'Tingkatkan skor SINTA Anda melalui publikasi ilmiah, lalu hubungi Admin LPPM.';
+            } elseif ($hasFunctionalPositionIssue) {
+                $eligSubtitle = 'Jabatan fungsional Anda belum memenuhi ketentuan skema:';
+                $eligTindakan = 'Ajukan kenaikan jabatan fungsional melalui prosedur yang berlaku.';
+            } elseif (! $researchEligibility['eligible']) {
+                $eligSubtitle = 'Terdapat kendala yang menghalangi pengajuan proposal:';
+                $eligTindakan = 'Hubungi Admin LPPM untuk informasi lebih lanjut.';
+            }
+        }
     @endphp
 
     <div class="collapse shadow-sm border-0 alert alert-info alert-dismissible fade show" id="researchIndexInfo"
@@ -89,12 +131,45 @@
                     </div>
                 @else
                     <h4 class="alert-title">Panduan Daftar Penelitian</h4>
-                    <div class="text-secondary">
+                    <div class="text-secondary mb-2">
                         Halaman ini menampilkan seluruh usulan penelitian Anda. Anda dapat memantau status usulan,
                         mengedit draft, atau melihat detail usulan yang sedang dalam proses review.
                         Klik tombol <strong>Usulan Penelitian Baru</strong> untuk mulai membuat usulan jika jadwal
                         sedang dibuka.
                     </div>
+                    @if ($isDosen)
+                        <div class="border-top pt-2 mt-1">
+                            <div class="fw-bold {{ $researchEligibility['eligible'] ? 'text-success' : 'text-danger' }} fs-sm mb-1">
+                                <i class="ti ti-{{ $researchEligibility['eligible'] ? 'circle-check' : 'alert-triangle' }} me-1"></i>
+                                {{ $eligAlertTitle }}
+                            </div>
+                            @if (! $researchEligibility['eligible'])
+                                @if ($eligSubtitle)
+                                    <div class="text-secondary small mb-1">{{ $eligSubtitle }}</div>
+                                @endif
+                                <ul class="mb-1 ps-3 small text-secondary" style="list-style-type: disc;">
+                                    @foreach ($researchEligibility['reasons'] as $reason)
+                                        <li wire:key="res-elig-reason-{{ $loop->index }}">{{ $reason }}</li>
+                                    @endforeach
+                                </ul>
+                                @if ($eligTindakan)
+                                    <div class="small text-secondary">
+                                        <strong>Tindakan:</strong> {{ $eligTindakan }}
+                                    </div>
+                                @endif
+                            @endif
+                            @if (! empty($researchEligibility['member_reasons']))
+                                <div class="border-top pt-1 mt-1 small text-secondary">
+                                    <strong>Status Anggota:</strong>
+                                    <ul class="mb-0 ps-3 mt-1" style="list-style-type: disc;">
+                                        @foreach ($researchEligibility['member_reasons'] as $reason)
+                                            <li wire:key="res-member-reason-{{ $loop->index }}">{{ $reason }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                        </div>
+                    @endif
                 @endif
             </div>
         </div>
