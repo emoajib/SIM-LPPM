@@ -217,10 +217,10 @@ class LecturerEligibilityService
         }
 
         return [
-            'research_open' => $resStart && $resEnd && $now->between(Carbon::parse($resStart), Carbon::parse($resEnd)),
+            'research_open' => $resStart && $resEnd ? $now->between(Carbon::parse($resStart), Carbon::parse($resEnd)) : true,
             'research_dates' => ['start' => $resStart, 'end' => $resEnd],
             'research_schemes' => $researchSchemes->pluck('name')->toArray(),
-            'pkm_open' => $pkmStart && $pkmEnd && $now->between(Carbon::parse($pkmStart), Carbon::parse($pkmEnd)),
+            'pkm_open' => $pkmStart && $pkmEnd ? $now->between(Carbon::parse($pkmStart), Carbon::parse($pkmEnd)) : true,
             'pkm_dates' => ['start' => $pkmStart, 'end' => $pkmEnd],
             'pkm_schemes' => $pkmSchemes->pluck('name')->toArray(),
         ];
