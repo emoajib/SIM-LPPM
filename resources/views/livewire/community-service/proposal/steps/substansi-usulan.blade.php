@@ -50,7 +50,7 @@
                     @error('form.substance_file')
                         <div class="d-block invalid-feedback">{{ $message }}</div>
                     @enderror
-                    <small class="text-muted">Maksimal 10MB, format PDF, DOC, DOCX</small>
+                    <small class="text-muted">Maksimal 10MB, format PDF</small>
 
                     @if ($form->substance_file)
                         <div class="mt-2">

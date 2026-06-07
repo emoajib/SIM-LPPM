@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Research\Proposal;
 
+// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+
 use App\Livewire\Abstracts\ProposalCreate;
 use App\Models\Proposal;
 
@@ -41,7 +43,7 @@ class Edit extends ProposalCreate
         $rules = array_merge($this->getOutputValidationRules(), [
             'form.author_tasks' => 'required|string',
             'form.macro_research_group_id' => 'required|exists:macro_research_groups,id',
-            'form.substance_file' => 'nullable|file|mimes:pdf,doc,docx|max:10240',
+            'form.substance_file' => 'nullable|file|mimes:pdf|max:10240',
         ]);
 
         $rules['form.tkt_type'] = 'nullable|string';

@@ -189,12 +189,12 @@
                             </label>
                             <input type="file" wire:model="substanceFile"
                                 class="form-control @error('substanceFile') is-invalid @enderror"
-                                accept=".pdf,.doc,.docx" />
+                                accept=".pdf" />
                             @error('substanceFile')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                             <small class="form-hint">
-                                Format: PDF, DOC, DOCX. Maksimal: 10MB.
+                                Format: PDF. Maksimal: 10MB.
                                 @if ($research?->substance_file)
                                     File lama akan diganti dengan file baru.
                                 @endif

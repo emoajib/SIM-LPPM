@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Livewire\Research\ProposalRevision;
 
+// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+
 use App\Livewire\Concerns\HasToast;
 use App\Livewire\Forms\ProposalForm;
 use App\Models\MacroResearchGroup;
@@ -31,7 +33,7 @@ class Show extends Component
     #[Validate('required|exists:macro_research_groups,id')]
     public string $macroResearchGroupId = '';
 
-    #[Validate('nullable|file|mimes:pdf,doc,docx|max:10240')]
+    #[Validate('nullable|file|mimes:pdf|max:10240')]
     public $substanceFile = null;
 
     /**
