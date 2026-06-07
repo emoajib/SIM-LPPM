@@ -57,6 +57,12 @@
                 </button>
             @endif
         @endif
+        @if (auth()->user()->activeHasRole('dosen'))
+            <button type="button" class="btn btn-outline-info" data-bs-toggle="collapse" data-bs-target="#pkmIndexInfo" aria-expanded="true" aria-controls="pkmIndexInfo">
+                <x-lucide-info class="icon" />
+                Info Eligibilitas
+            </button>
+        @endif
     </div>
 </x-slot:pageActions>
 

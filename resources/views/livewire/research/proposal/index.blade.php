@@ -57,6 +57,12 @@
                 </button>
             @endif
         @endif
+        @if (auth()->user()->activeHasRole('dosen'))
+            <button type="button" class="btn btn-outline-info" data-bs-toggle="collapse" data-bs-target="#researchIndexInfo" aria-expanded="true" aria-controls="researchIndexInfo">
+                <x-lucide-info class="icon" />
+                Info Eligibilitas
+            </button>
+        @endif
     </div>
 </x-slot:pageActions>
 
