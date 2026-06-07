@@ -1,14 +1,17 @@
 <x-slot:title>Pengabdian</x-slot:title>
 <x-slot:pageTitle>Daftar Pengabdian kepada Masyarakat</x-slot:pageTitle>
 <x-slot:pageSubtitle>Kelola proposal pengabdian Anda dengan fitur lengkap.</x-slot:pageSubtitle>
+
+@php
+    // Define schedule dates at top level so they're available in BOTH the slot AND main template
+    // (Blade slots are compiled as separate closures - variables inside slots don't leak out)
+    $startDate = \App\Models\Setting::where('key', 'community_service_proposal_start_date')->value('value');
+    $endDate = \App\Models\Setting::where('key', 'community_service_proposal_end_date')->value('value');
+    $isWithinSchedule = \App\Services\LecturerEligibilityService::isWithinSchedule($startDate, $endDate);
+@endphp
+
 <x-slot:pageActions>
     <div class="btn-list">
-        @php
-            $startDate = \App\Models\Setting::where('key', 'community_service_proposal_start_date')->value('value');
-            $endDate = \App\Models\Setting::where('key', 'community_service_proposal_end_date')->value('value');
-            $isWithinSchedule = \App\Services\LecturerEligibilityService::isWithinSchedule($startDate, $endDate);
-        @endphp
-
         @php
             $user = auth()->user();
             $eligibility = ['eligible' => true, 'reasons' => []];

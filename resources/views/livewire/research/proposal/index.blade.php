@@ -1,13 +1,17 @@
 <x-slot:title>Penelitian</x-slot:title>
 <x-slot:pageTitle>Daftar Penelitian</x-slot:pageTitle>
 <x-slot:pageSubtitle>Kelola proposal penelitian Anda dengan fitur lengkap.</x-slot:pageSubtitle>
+
+@php
+    // Define schedule dates at top level so they're available in BOTH the slot AND main template
+    // (Blade slots are compiled as separate closures - variables inside slots don't leak out)
+    $startDate = \App\Models\Setting::where('key', 'research_proposal_start_date')->value('value');
+    $endDate = \App\Models\Setting::where('key', 'research_proposal_end_date')->value('value');
+    $isWithinSchedule = \App\Services\LecturerEligibilityService::isWithinSchedule($startDate, $endDate);
+@endphp
+
 <x-slot:pageActions>
     <div class="btn-list">
-        @php
-            $startDate = \App\Models\Setting::where('key', 'research_proposal_start_date')->value('value');
-            $endDate = \App\Models\Setting::where('key', 'research_proposal_end_date')->value('value');
-            $isWithinSchedule = \App\Services\LecturerEligibilityService::isWithinSchedule($startDate, $endDate);
-        @endphp
 
         @php
             $user = auth()->user();
