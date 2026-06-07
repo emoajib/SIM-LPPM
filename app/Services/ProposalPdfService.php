@@ -72,9 +72,11 @@ class ProposalPdfService
         foreach ($collections as $col) {
             /** @var Model&HasMedia $detailable */
             $detailable = $proposal->detailable;
-            $media = $detailable->getMedia($col)->first();
-            if ($media) {
-                $latestTimestamp = max($latestTimestamp, $media->updated_at->timestamp);
+            if ($detailable) {
+                $media = $detailable->getMedia($col)->first();
+                if ($media) {
+                    $latestTimestamp = max($latestTimestamp, $media->updated_at->timestamp);
+                }
             }
         }
 
@@ -97,6 +99,10 @@ class ProposalPdfService
             $memberIdentity = $member->identity;
             if ($memberIdentity && $memberIdentity->updated_at) {
                 $latestTimestamp = max($latestTimestamp, $memberIdentity->updated_at->timestamp);
+            }
+            // Also check pivot table for team member changes (role, status, tasks)
+            if ($member->relationLoaded('pivot') && $member->pivot && isset($member->pivot->updated_at)) {
+                $latestTimestamp = max($latestTimestamp, $member->pivot->updated_at->timestamp);
             }
         }
 
@@ -368,10 +374,14 @@ class ProposalPdfService
         }
 
         if ($approvalMode === 'upload' || $approvalMode === 'both') {
-            /** @var Research|CommunityService $detailable */
             $detailable = $proposal->detailable;
             /** @var ?Media $approvalFile */
-            $approvalFile = $detailable->getFirstMedia('approval_file');
+            $approvalFile = null;
+            if ($detailable instanceof Research) {
+                $approvalFile = $detailable->getFirstMedia('approval_file');
+            } elseif ($detailable instanceof CommunityService) {
+                $approvalFile = $detailable->getFirstMedia('approval_file');
+            }
             if ($approvalFile) {
                 $approvalPath = $this->getLocalPdfPath($approvalFile, $tempFiles);
                 $isPdf = str_contains($approvalFile->mime_type ?? '', 'pdf');
@@ -405,10 +415,14 @@ class ProposalPdfService
         }
 
         // 3. Add pages from the substance file if it exists
-        /** @var Research|CommunityService $detailableSubstance */
         $detailableSubstance = $proposal->detailable;
         /** @var ?Media $substanceFile */
-        $substanceFile = $detailableSubstance->getFirstMedia('substance_file');
+        $substanceFile = null;
+        if ($detailableSubstance instanceof Research) {
+            $substanceFile = $detailableSubstance->getFirstMedia('substance_file');
+        } elseif ($detailableSubstance instanceof CommunityService) {
+            $substanceFile = $detailableSubstance->getFirstMedia('substance_file');
+        }
         if ($substanceFile) {
             $substancePath = $this->getLocalPdfPath($substanceFile, $tempFiles);
             $isPdf = str_contains($substanceFile->mime_type ?? '', 'pdf');

@@ -47,10 +47,10 @@ abstract class ProposalShow extends Component
     {
         $this->authorize('view', $proposal);
 
-        $this->proposal = $proposal;
-
         try {
             $this->form->setProposal($proposal);
+            // CRITICAL: Use the form's proposal which has detailable & relationships loaded
+            $this->proposal = $this->form->proposal;
         } catch (\Throwable $e) {
             \Log::error('Error in ProposalShow mount', [
                 'proposal_id' => $proposal->id,
