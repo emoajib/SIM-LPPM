@@ -3,6 +3,7 @@ import TomSelect from "@tabler/core/dist/libs/tom-select/dist/js/tom-select.comp
 import * as Tabler from "@tabler/core/js/tabler";
 import NProgress from "nprogress";
 import "./theme-config";
+import countdownTimer from "./countdown-timer";
 
 window.tabler = Tabler;
 window.bootstrap = Tabler.bootstrap;
@@ -639,6 +640,11 @@ document.addEventListener("alpine:init", () => {
             }
         },
     }));
+
+    /**
+     * Alpine component for server-synced countdown timer
+     */
+    Alpine.data("countdownTimer", (config) => countdownTimer(config));
 });
 
 // Fallback: Initialize on page navigation (e.g., wire:navigate)

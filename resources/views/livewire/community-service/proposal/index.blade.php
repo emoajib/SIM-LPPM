@@ -67,6 +67,71 @@
     @php
         $user = auth()->user();
         $isKepala = $user->activeHasRole('kepala lppm');
+
+        // Build countdown timer data
+        $timerData = null;
+        if ($startDate && $endDate) {
+            $endParsed = \App\Services\LecturerEligibilityService::parseScheduleDate($endDate, 'end');
+            $startParsed = \App\Services\LecturerEligibilityService::parseScheduleDate($startDate, 'start');
+            if ($endParsed && $startParsed) {
+                $graceEnd = (clone $endParsed)->addMinutes(\App\Services\LecturerEligibilityService::GRACE_PERIOD_MINUTES);
+                $timerData = [
+                    'serverNow' => \Carbon\Carbon::now(\App\Services\LecturerEligibilityService::SCHEDULE_TIMEZONE)->toIso8601String(),
+                    'startDate' => $startParsed->toIso8601String(),
+                    'endDate' => $endParsed->toIso8601String(),
+                    'graceEnd' => $graceEnd->toIso8601String(),
+                    'type' => 'community-service',
+                ];
+            }
+        }
+    @endphp
+
+    @if ($timerData)
+        <div x-data="countdownTimer(@json($timerData))" x-cloak class="mb-4">
+            <div class="alert border-start border-4 border-0 shadow-sm mb-0"
+                :class="{
+                    'alert-info': state === 'waiting',
+                    'alert-success': state === 'active' && !isUrgent,
+                    'alert-warning': state === 'active' && isUrgent && !isCritical,
+                    'alert-danger': (state === 'active' && isCritical) || state === 'grace',
+                    'alert-secondary': state === 'closed'
+                }"
+                x-show="state !== 'hidden'">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="ti"
+                            :class="{
+                                'ti-clock': state === 'waiting',
+                                'ti-clock-hour-4': state === 'active' && !isUrgent,
+                                'ti-alert-triangle': state === 'active' && isUrgent,
+                                'ti-clock-off': state === 'grace',
+                                'ti-circle-x': state === 'closed'
+                            }"></i>
+                        <span class="fw-semibold">
+                            <span x-show="state === 'waiting'">Pendaftaran dibuka dalam:</span>
+                            <span x-show="state === 'active' && !isUrgent">Sisa waktu pengajuan:</span>
+                            <span x-show="state === 'active' && isUrgent && !isCritical">Segera berakhir:</span>
+                            <span x-show="state === 'active' && isCritical">⚠️ Waktu tersisa:</span>
+                            <span x-show="state === 'grace'">⚠️ Masa tenggang berakhir dalam:</span>
+                            <span x-show="state === 'closed'">Sistem telah ditutup</span>
+                        </span>
+                    </div>
+                    <div class="h4 mb-0 fw-bold font-monospace" x-text="displayTime"
+                        :class="{
+                            'text-success': state === 'active' && !isUrgent,
+                            'text-warning': state === 'active' && isUrgent && !isCritical,
+                            'text-danger pulse-animation': (state === 'active' && isCritical) || state === 'grace',
+                            'text-secondary': state === 'closed'
+                        }">
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @php
+        $user = auth()->user();
+        $isKepala = $user->activeHasRole('kepala lppm');
     @endphp
 
     <div class="collapse shadow-sm border-0 alert alert-info alert-dismissible fade show" id="pkmIndexInfo"
