@@ -27,13 +27,13 @@ trait WithApproval
         $proposal = $this->getProposal();
 
         $this->validate([
-            'approvalDecision' => 'required|in:APPROVED,REJECTED',
-            'approvalNotes' => 'required|string',
+            'approvalDecision' => 'required|in:approved,rejected',
+            'approvalNotes' => 'nullable|string',
         ]);
 
         DB::transaction(function () use ($proposal) {
             $newStatus = match ($this->approvalDecision) {
-                'approved' => ProposalStatus::UNDER_REVIEW,
+                'approved' => ProposalStatus::APPROVED,
                 'rejected' => ProposalStatus::REJECTED,
                 default => throw new \Exception('Keputusan persetujuan tidak valid.'),
             };
@@ -44,37 +44,6 @@ trait WithApproval
 
             $proposal->notes = $this->approvalNotes;
             $proposal->update(['status' => $newStatus->value]);
-
-            if ($newStatus === ProposalStatus::UNDER_REVIEW) {
-                $dean = null;
-                $submitter = $proposal->submitter;
-                $faculty = null;
-
-                if ($submitter && $submitter->identity) {
-                    $faculty = $submitter->identity->faculty;
-                }
-
-                if ($faculty) {
-                    $dean = $faculty->deanUser()->first();
-                }
-
-                if ($dean) {
-                    // Notify Submitter
-                    $this->notificationService()->notifyDekanApprovalDecision(
-                        $proposal,
-                        $newStatus->value,
-                        $dean,
-                        [$proposal->submitter]
-                    );
-
-                    $this->notificationService()->notifyDekanApprovalDecision(
-                        $proposal,
-                        $newStatus->value,
-                        $dean,
-                        [$dean]
-                    );
-                }
-            }
         });
 
         $message = $this->approvalDecision === 'approved'
@@ -97,7 +66,7 @@ trait WithApproval
         $proposal = $this->getProposal();
 
         $this->validate([
-            'approvalDecision' => 'required|in:APPROVED,need_fix,REJECTED',
+            'approvalDecision' => 'required|in:approved,need_fix,rejected',
             'approvalNotes' => 'nullable|string',
         ]);
 
