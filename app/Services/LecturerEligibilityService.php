@@ -18,6 +18,54 @@ use Illuminate\Support\Facades\DB;
  */
 class LecturerEligibilityService
 {
+    const GRACE_PERIOD_MINUTES = 5;
+
+    const SCHEDULE_TIMEZONE = 'Asia/Jakarta';
+
+    /**
+     * Parse a schedule date string into a Carbon instance with timezone.
+     * Handles both date-only (Y-m-d) and datetime (Y-m-d H:i:s) formats.
+     * For date-only end dates, applies endOfDay() for backward compatibility.
+     */
+    public static function parseScheduleDate(?string $value, string $position = 'start'): ?Carbon
+    {
+        if (! $value) {
+            return null;
+        }
+
+        $dt = Carbon::parse($value, self::SCHEDULE_TIMEZONE);
+
+        // Backward compatibility: date-only values (10 chars) get endOfDay for end positions
+        if (strlen($value) === 10 && $position === 'end') {
+            $dt = $dt->endOfDay();
+        }
+
+        return $dt;
+    }
+
+    /**
+     * Check if current time is within the schedule window defined by start and end dates.
+     * Includes a grace period after the end date.
+     */
+    public static function isWithinSchedule(?string $startDate, ?string $endDate): bool
+    {
+        if (! $startDate || ! $endDate) {
+            return true;
+        }
+
+        $now = Carbon::now(self::SCHEDULE_TIMEZONE);
+        $start = static::parseScheduleDate($startDate, 'start');
+        $end = static::parseScheduleDate($endDate, 'end');
+
+        if (! $start || ! $end) {
+            return true;
+        }
+
+        $endWithGrace = (clone $end)->addMinutes(self::GRACE_PERIOD_MINUTES);
+
+        return $now->between($start, $endWithGrace);
+    }
+
     /**
      * Check if a lecturer is eligible to submit a new proposal as Chairperson.
      *
@@ -207,8 +255,6 @@ class LecturerEligibilityService
      */
     public function getScheduleStatus(?User $user = null): array
     {
-        $now = Carbon::now();
-
         $resStart = Setting::where('key', 'research_proposal_start_date')->value('value');
         $resEnd = Setting::where('key', 'research_proposal_end_date')->value('value');
         $pkmStart = Setting::where('key', 'community_service_proposal_start_date')->value('value');
@@ -234,10 +280,10 @@ class LecturerEligibilityService
         }
 
         return [
-            'research_open' => $resStart && $resEnd ? $now->between(Carbon::parse($resStart), Carbon::parse($resEnd)->endOfDay()) : true,
+            'research_open' => static::isWithinSchedule($resStart, $resEnd),
             'research_dates' => ['start' => $resStart, 'end' => $resEnd],
             'research_schemes' => $researchSchemes->pluck('name')->toArray(),
-            'pkm_open' => $pkmStart && $pkmEnd ? $now->between(Carbon::parse($pkmStart), Carbon::parse($pkmEnd)->endOfDay()) : true,
+            'pkm_open' => static::isWithinSchedule($pkmStart, $pkmEnd),
             'pkm_dates' => ['start' => $pkmStart, 'end' => $pkmEnd],
             'pkm_schemes' => $pkmSchemes->pluck('name')->toArray(),
         ];
@@ -248,19 +294,13 @@ class LecturerEligibilityService
      */
     public function isRevisionOpen(string $type): bool
     {
-        $now = Carbon::now();
         $startKey = $type === 'research' ? 'research_revision_start_date' : 'community_service_revision_start_date';
         $endKey = $type === 'research' ? 'research_revision_end_date' : 'community_service_revision_end_date';
 
         $start = Setting::where('key', $startKey)->value('value');
         $end = Setting::where('key', $endKey)->value('value');
 
-        // If dates are not set, default to open (as per plan for flexibility)
-        if (! $start || ! $end) {
-            return true;
-        }
-
-        return $now->between($start, $end);
+        return static::isWithinSchedule($start, $end);
     }
 
     /**
@@ -268,17 +308,12 @@ class LecturerEligibilityService
      */
     public function isFinalReportOpen(string $type): bool
     {
-        $now = Carbon::now();
         $startKey = $type === 'research' ? 'research_final_report_start_date' : 'community_service_final_report_start_date';
         $endKey = $type === 'research' ? 'research_final_report_end_date' : 'community_service_final_report_end_date';
 
         $start = Setting::where('key', $startKey)->value('value');
         $end = Setting::where('key', $endKey)->value('value');
 
-        if (! $start || ! $end) {
-            return true;
-        }
-
-        return $now->between($start, $end);
+        return static::isWithinSchedule($start, $end);
     }
 }

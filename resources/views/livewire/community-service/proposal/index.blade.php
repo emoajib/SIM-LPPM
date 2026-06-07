@@ -6,13 +6,7 @@
         @php
             $startDate = \App\Models\Setting::where('key', 'community_service_proposal_start_date')->value('value');
             $endDate = \App\Models\Setting::where('key', 'community_service_proposal_end_date')->value('value');
-            $isWithinSchedule = false;
-            if ($startDate && $endDate) {
-                $now = now();
-                $start = \Carbon\Carbon::parse($startDate)->startOfDay();
-                $end = \Carbon\Carbon::parse($endDate)->endOfDay();
-                $isWithinSchedule = $now->between($start, $end);
-            }
+            $isWithinSchedule = \App\Services\LecturerEligibilityService::isWithinSchedule($startDate, $endDate);
         @endphp
 
         @php

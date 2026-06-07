@@ -178,9 +178,9 @@
                                                 </div>
                                                 <div class="small text-muted mb-2">
                                                     @if($eligibility['schedule']['research_dates']['start'])
-                                                        {{ $eligibility['schedule']['research_dates']['start'] ? \Carbon\Carbon::parse($eligibility['schedule']['research_dates']['start'])->format('d M') : '-' }}
+                                                        {{ $eligibility['schedule']['research_dates']['start'] ? \Carbon\Carbon::parse($eligibility['schedule']['research_dates']['start'])->format('d M Y H:i') : '-' }}
                                                         -
-                                                        {{ $eligibility['schedule']['research_dates']['end'] ? \Carbon\Carbon::parse($eligibility['schedule']['research_dates']['end'])->format('d M Y') : '-' }}
+                                                        {{ $eligibility['schedule']['research_dates']['end'] ? \Carbon\Carbon::parse($eligibility['schedule']['research_dates']['end'])->format('d M Y H:i') : '-' }}
                                                     @else
                                                         Jadwal belum dikonfigurasi
                                                     @endif
@@ -224,9 +224,9 @@
                                                 </div>
                                                 <div class="small text-muted mb-2">
                                                     @if($eligibility['schedule']['pkm_dates']['start'])
-                                                        {{ \Carbon\Carbon::parse($eligibility['schedule']['pkm_dates']['start'])->format('d M') }}
+                                                        {{ \Carbon\Carbon::parse($eligibility['schedule']['pkm_dates']['start'])->format('d M Y H:i') }}
                                                         -
-                                                        {{ \Carbon\Carbon::parse($eligibility['schedule']['pkm_dates']['end'])->format('d M Y') }}
+                                                        {{ \Carbon\Carbon::parse($eligibility['schedule']['pkm_dates']['end'])->format('d M Y H:i') }}
                                                     @else
                                                         Jadwal belum dikonfigurasi
                                                     @endif

@@ -5,6 +5,7 @@ namespace App\Livewire\Settings;
 use App\Livewire\Concerns\HasToast;
 use App\Models\BudgetCap;
 use App\Models\Setting;
+use Carbon\Carbon;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
@@ -36,21 +37,45 @@ class ProposalSchedule extends Component
 
     public $community_service_final_report_end_date;
 
+    /**
+     * Convert stored value to HTML5 datetime-local format.
+     */
+    private static function toDatetimeLocal(?string $value): ?string
+    {
+        if (! $value) {
+            return null;
+        }
+
+        return Carbon::parse($value)->format('Y-m-d\TH:i');
+    }
+
+    /**
+     * Convert HTML5 datetime-local value to DB storage format.
+     */
+    private static function toStorageFormat(?string $value): ?string
+    {
+        if (! $value) {
+            return null;
+        }
+
+        return Carbon::parse($value)->format('Y-m-d H:i:s');
+    }
+
     public function mount()
     {
-        $this->research_start_date = Setting::where('key', 'research_proposal_start_date')->value('value');
-        $this->research_end_date = Setting::where('key', 'research_proposal_end_date')->value('value');
-        $this->research_revision_start_date = Setting::where('key', 'research_revision_start_date')->value('value');
-        $this->research_revision_end_date = Setting::where('key', 'research_revision_end_date')->value('value');
-        $this->research_final_report_start_date = Setting::where('key', 'research_final_report_start_date')->value('value');
-        $this->research_final_report_end_date = Setting::where('key', 'research_final_report_end_date')->value('value');
+        $this->research_start_date = self::toDatetimeLocal(Setting::where('key', 'research_proposal_start_date')->value('value'));
+        $this->research_end_date = self::toDatetimeLocal(Setting::where('key', 'research_proposal_end_date')->value('value'));
+        $this->research_revision_start_date = self::toDatetimeLocal(Setting::where('key', 'research_revision_start_date')->value('value'));
+        $this->research_revision_end_date = self::toDatetimeLocal(Setting::where('key', 'research_revision_end_date')->value('value'));
+        $this->research_final_report_start_date = self::toDatetimeLocal(Setting::where('key', 'research_final_report_start_date')->value('value'));
+        $this->research_final_report_end_date = self::toDatetimeLocal(Setting::where('key', 'research_final_report_end_date')->value('value'));
 
-        $this->community_service_start_date = Setting::where('key', 'community_service_proposal_start_date')->value('value');
-        $this->community_service_end_date = Setting::where('key', 'community_service_proposal_end_date')->value('value');
-        $this->community_service_revision_start_date = Setting::where('key', 'community_service_revision_start_date')->value('value');
-        $this->community_service_revision_end_date = Setting::where('key', 'community_service_revision_end_date')->value('value');
-        $this->community_service_final_report_start_date = Setting::where('key', 'community_service_final_report_start_date')->value('value');
-        $this->community_service_final_report_end_date = Setting::where('key', 'community_service_final_report_end_date')->value('value');
+        $this->community_service_start_date = self::toDatetimeLocal(Setting::where('key', 'community_service_proposal_start_date')->value('value'));
+        $this->community_service_end_date = self::toDatetimeLocal(Setting::where('key', 'community_service_proposal_end_date')->value('value'));
+        $this->community_service_revision_start_date = self::toDatetimeLocal(Setting::where('key', 'community_service_revision_start_date')->value('value'));
+        $this->community_service_revision_end_date = self::toDatetimeLocal(Setting::where('key', 'community_service_revision_end_date')->value('value'));
+        $this->community_service_final_report_start_date = self::toDatetimeLocal(Setting::where('key', 'community_service_final_report_start_date')->value('value'));
+        $this->community_service_final_report_end_date = self::toDatetimeLocal(Setting::where('key', 'community_service_final_report_end_date')->value('value'));
     }
 
     public function save()
@@ -71,19 +96,19 @@ class ProposalSchedule extends Component
             'community_service_final_report_end_date' => 'nullable|date|after_or_equal:community_service_final_report_start_date',
         ]);
 
-        Setting::updateOrCreate(['key' => 'research_proposal_start_date'], ['value' => $this->research_start_date]);
-        Setting::updateOrCreate(['key' => 'research_proposal_end_date'], ['value' => $this->research_end_date]);
-        Setting::updateOrCreate(['key' => 'research_revision_start_date'], ['value' => $this->research_revision_start_date]);
-        Setting::updateOrCreate(['key' => 'research_revision_end_date'], ['value' => $this->research_revision_end_date]);
-        Setting::updateOrCreate(['key' => 'research_final_report_start_date'], ['value' => $this->research_final_report_start_date]);
-        Setting::updateOrCreate(['key' => 'research_final_report_end_date'], ['value' => $this->research_final_report_end_date]);
+        Setting::updateOrCreate(['key' => 'research_proposal_start_date'], ['value' => self::toStorageFormat($this->research_start_date)]);
+        Setting::updateOrCreate(['key' => 'research_proposal_end_date'], ['value' => self::toStorageFormat($this->research_end_date)]);
+        Setting::updateOrCreate(['key' => 'research_revision_start_date'], ['value' => self::toStorageFormat($this->research_revision_start_date)]);
+        Setting::updateOrCreate(['key' => 'research_revision_end_date'], ['value' => self::toStorageFormat($this->research_revision_end_date)]);
+        Setting::updateOrCreate(['key' => 'research_final_report_start_date'], ['value' => self::toStorageFormat($this->research_final_report_start_date)]);
+        Setting::updateOrCreate(['key' => 'research_final_report_end_date'], ['value' => self::toStorageFormat($this->research_final_report_end_date)]);
 
-        Setting::updateOrCreate(['key' => 'community_service_proposal_start_date'], ['value' => $this->community_service_start_date]);
-        Setting::updateOrCreate(['key' => 'community_service_proposal_end_date'], ['value' => $this->community_service_end_date]);
-        Setting::updateOrCreate(['key' => 'community_service_revision_start_date'], ['value' => $this->community_service_revision_start_date]);
-        Setting::updateOrCreate(['key' => 'community_service_revision_end_date'], ['value' => $this->community_service_revision_end_date]);
-        Setting::updateOrCreate(['key' => 'community_service_final_report_start_date'], ['value' => $this->community_service_final_report_start_date]);
-        Setting::updateOrCreate(['key' => 'community_service_final_report_end_date'], ['value' => $this->community_service_final_report_end_date]);
+        Setting::updateOrCreate(['key' => 'community_service_proposal_start_date'], ['value' => self::toStorageFormat($this->community_service_start_date)]);
+        Setting::updateOrCreate(['key' => 'community_service_proposal_end_date'], ['value' => self::toStorageFormat($this->community_service_end_date)]);
+        Setting::updateOrCreate(['key' => 'community_service_revision_start_date'], ['value' => self::toStorageFormat($this->community_service_revision_start_date)]);
+        Setting::updateOrCreate(['key' => 'community_service_revision_end_date'], ['value' => self::toStorageFormat($this->community_service_revision_end_date)]);
+        Setting::updateOrCreate(['key' => 'community_service_final_report_start_date'], ['value' => self::toStorageFormat($this->community_service_final_report_start_date)]);
+        Setting::updateOrCreate(['key' => 'community_service_final_report_end_date'], ['value' => self::toStorageFormat($this->community_service_final_report_end_date)]);
 
         $message = 'Jadwal proposal berhasil disimpan.';
         session()->flash('success', $message);
