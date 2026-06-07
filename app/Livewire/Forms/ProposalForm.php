@@ -119,8 +119,10 @@ class ProposalForm extends Form
     #[Validate('nullable|exists:macro_research_groups,id')]
     public string $macro_research_group_id = '';
 
+    #[Validate('nullable|file|mimes:pdf|max:20480')]
     public $substance_file;
 
+    #[Validate('nullable|file|mimes:pdf|max:20480')]
     public $approval_file;
 
     #[Validate('nullable|array')]

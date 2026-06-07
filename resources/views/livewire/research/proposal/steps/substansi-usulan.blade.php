@@ -47,7 +47,7 @@
                     </label>
                     <input id="substance_file" type="file" wire:key="substance-file-{{ $fileInputIteration }}"
                         class="form-control @error('form.substance_file') is-invalid @enderror"
-                        wire:model="form.substance_file" accept=".pdf,.doc,.docx">
+                        wire:model="form.substance_file" accept=".pdf">
                     <div wire:loading wire:target="form.substance_file" class="mt-2 text-primary small">
                         <span class="spinner-border spinner-border-sm me-1" role="status"></span>
                         Sedang mengunggah file... Mohon tunggu.
