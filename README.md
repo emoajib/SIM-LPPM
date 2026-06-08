@@ -497,6 +497,97 @@ DIRENCANAKAN (Fase 3 — Maintenance Mode + Pengumuman):
 
 ---
 
+## fix: validasi RAB (budget) wajib sebelum submit proposal
+
+> Dikerjakan: 8 Juni 2026
+> Status: ✅ Selesai
+
+### Root Cause
+
+`SubmitProposalAction::execute()` tidak memvalidasi keberadaan RAB/budget items. Proposal bisa di-submit ke status `submitted` tanpa memiliki satupun `budget_items`. Validasi budget_items hanya ada di wizard step 3 form create, yang bisa dilewati user.
+
+### Ringkasan Perubahan — 5 File
+
+| # | File | Perubahan | Prioritas |
+|---|------|-----------|-----------|
+| 1 | `app/Livewire/Actions/SubmitProposalAction.php:112` | Tambah validasi `budgetItems()->count() === 0` — blokir submit jika RAB kosong | 🔴 WAJIB |
+| 2 | `app/Livewire/Research/Proposal/SubmitButton.php:62` | Tambah `&& budgetItems()->count() > 0` di `canSubmit()` — disable tombol UI | 🔴 WAJIB |
+| 3 | `app/Livewire/CommunityService/Proposal/SubmitButton.php:62` | Sama untuk Community Service | 🔴 WAJIB |
+| 4 | `tests/Feature/ProposalWorkflowTest.php` | Tambah helper `addBudgetItem()` + panggil di 7 test yang submit | 🔴 WAJIB |
+| 5 | `tests/Feature/KaprodiApprovalTest.php:454` | Tambah budget items di 1 test yang submit | 🔴 WAJIB |
+
+### Analisis Keamanan Data Existing
+
+| Skenario | Dampak | Aman? |
+|----------|--------|-------|
+| Draft tanpa RAB → submit | Diblokir validasi baru | ✅ |
+| Draft dengan RAB → submit | Lolos seperti biasa | ✅ |
+| NEED_ASSIGNMENT tanpa RAB → submit | Diblokir, tapi user bisa edit & tambah RAB (Policy sudah allow edit) | ✅ |
+| NEED_ASSIGNMENT dengan RAB → submit | Lolos | ✅ |
+| REVISION_NEEDED tanpa RAB → submit | Diblokir, user bisa edit & tambah RAB | ✅ |
+| Proposal SUBMITTED/APPROVED existing | Tidak tersentuh (tidak lewat SubmitProposalAction) | ✅ |
+| Dekan approve/reject | Pakai `DekanApprovalAction` (beda class) — tidak kena dampak | ✅ |
+
+---
+
+## fix: perbaiki tata letak filter dashboard rektor/dekan
+
+> Dikerjakan: 8 Juni 2026
+> Status: ✅ Selesai — commit `1419e4f`
+
+### Root Cause
+
+Filter section di `exec-dashboard.blade.php` menampilkan 7 dropdown sejajar dalam satu baris tanpa hirarki visual, tidak konsisten dengan pola `page-header` yang digunakan di `monev-dashboard.blade.php`, serta tidak ada indikator filter aktif atau tombol reset.
+
+### Ringkasan Perubahan — 2 File
+
+| # | File | Perubahan | Prioritas |
+|---|------|-----------|-----------| 
+| 1 | `app/Livewire/Dashboard/ExecDashboard.php` | Tambah computed property `getActiveFilterCountProperty()` + method `resetFilters()` | 🔴 WAJIB |
+| 2 | `resources/views/livewire/dashboard/exec-dashboard.blade.php` | Refactor filter ke 2-tier: filter primer (Tahun) di page-header + filter lanjutan dalam collapsible panel | 🔴 WAJIB |
+
+### Perubahan UX
+
+| Aspek | Sebelum | Sesudah |
+|-------|---------|---------|
+| Layout | 7 dropdown berjejer satu baris, bisa meluap | Page-header terstruktur + collapsible panel |
+| Filter primer | Setara semua | Tahun selalu tampil di header |
+| Filter lanjutan | Semua tampil sekaligus | Semester, Status, Fakultas, Prodi, Skema dalam panel collapse |
+| Indikator aktif | ❌ Tidak ada | ✅ Badge angka di tombol toggle |
+| Reset filter | ❌ Tidak ada | ✅ Tombol merah muncul otomatis jika ada filter aktif |
+| Auto-expand | ❌ Tidak ada | ✅ Panel terbuka otomatis jika ada filter aktif |
+
+---
+
+## fix: perbaiki tata letak laporan kerjasama mitra
+
+> Dikerjakan: 8 Juni 2026
+> Status: ✅ Selesai — commit `d4fec73`
+
+### Root Cause
+
+`partner-collaboration.blade.php` memiliki 7 masalah layout yang berbeda dibanding `research.blade.php` sebagai referensi: filter bar di posisi salah, KPI cards desain tidak seragam, typo class icon, tombol reset tidak konsisten, dan penggunaan `card-header` yang salah konteks.
+
+### Ringkasan Perubahan — 1 File (7 Perbaikan)
+
+| # | File | Perubahan | Prioritas |
+|---|------|-----------|-----------| 
+| 1 | `resources/views/livewire/reports/partner-collaboration.blade.php` | Restrukturisasi penuh — 7 perbaikan layout & UX | 🔴 WAJIB |
+
+### Detail 7 Perbaikan
+
+| # | Masalah | Perbaikan |
+|---|---------|-----------|
+| ① | Filter bar di bawah kartu validasi (urutan tidak logis) | Filter dipindahkan ke atas, sebelum kartu validasi |
+| ② | Summary cards & filter tidak dalam `container-xl` | Dibungkus `container-xl` bersama kartu validasi |
+| ③ | KPI cards desain tidak seragam (border indigo semua, tanpa progress bar) | Adopsi desain `research.blade.php`: progress bar berwarna, ikon 56×56px |
+| ④ | Bug typo class icon: `ti-chart-dotsfs-2` (spasi hilang) | Fix: `ti ti-chart-dots fs-1` |
+| ⑤ | Reset button di `col-md-1` bersyarat → layout grid tidak simetris | Ubah ke `col-auto ms-auto`, selalu tampil |
+| ⑥ | `card-header` dipakai sebagai section separator (salah konteks) | Ganti dengan `div.border-top.bg-light-lt` yang semantis |
+| ⑦ | Tombol tutup panel `[X]` tanpa `title` tooltip | Tambah `title="Tutup panel detail"` |
+
+---
+
 ## Deploy Manual (via cPanel)
 
 Gunakan script berikut untuk deploy ke hosting cPanel:
