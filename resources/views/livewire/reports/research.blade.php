@@ -26,7 +26,7 @@
         </div>
     </x-slot:pageActions>
 
-    <div class="container-xl mt-3">
+    <div class="mt-3">
         <!-- Filter Bar (Support System) -->
         <div class="card mb-3 shadow-sm border-0 glass-card">
             <div class="card-body p-3">
@@ -150,9 +150,10 @@
             <div class="col-sm-6 col-xl-4">
                 <div class="card card-stacked shadow-sm border-0">
                     <div class="d-flex align-items-center gap-3 card-body">
-                        <div class="p-3 bg-opacity-10 {{ str_replace('bg-', 'bg-opacity-10 text-', explode(' ', $card['variant'])[0]) }} rounded-3 d-flex align-items-center justify-content-center"
+                        <div class="p-2.5 bg-opacity-10 {{ str_replace('bg-', 'bg-opacity-10 text-', explode(' ', $card['variant'])[0]) }} rounded-3 d-flex align-items-center justify-content-center"
                             style="width: 56px; height: 56px;">
-                            <i class="ti ti-{{ $card['icon'] }} fs-1"></i>
+                            {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                            <i class="ti ti-{{ $card['icon'] }} fs-2"></i>
                         </div>
                         <div>
                             <div class="text-secondary small fw-medium mb-1">{{ $card['label'] }}</div>

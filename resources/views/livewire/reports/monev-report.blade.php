@@ -20,7 +20,7 @@
         </div>
     </x-slot:pageActions>
 
-    <div class="container-xl mt-3">
+    <div class="mt-3">
 
         {{-- ── FILTER BAR ── --}}
         <div class="card mb-3 shadow-sm border-0">

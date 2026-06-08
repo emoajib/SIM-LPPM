@@ -23,7 +23,7 @@
         </div>
     </x-slot:pageActions>
 
-    <div class="container-xl mt-3">
+    <div class="mt-3">
         <!-- Filter Bar (Support System) -->
         <div class="card mb-3 shadow-sm border-0 glass-card">
             <div class="card-body p-3">

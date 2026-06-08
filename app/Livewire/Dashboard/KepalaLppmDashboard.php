@@ -107,6 +107,23 @@ class KepalaLppmDashboard extends Component
         $this->loadAnalytics();
     }
 
+    /**
+     * Reset semua filter ke status default.
+     *
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     */
+    public function resetFilters(): void
+    {
+        $this->selectedSemester = 'all';
+        $this->selectedStatus = 'all';
+        $this->selectedFaculty = 'all';
+        $this->selectedProdi = 'all';
+        $this->availableProdis = $this->getProdiByFaculty();
+        $this->selectedResearchScheme = 'all';
+        $this->selectedCommunityServiceScheme = 'all';
+        $this->loadAnalytics();
+    }
+
     public function exportResearch(): void
     {
         $this->dispatch('download-file', url: route('admin.dashboard.export-research', [

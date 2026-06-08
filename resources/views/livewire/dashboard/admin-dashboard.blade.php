@@ -118,6 +118,17 @@
                 @endforeach
             </div>
         </div>
+        
+        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+        @if ($selectedSemester !== 'all' || $selectedStatus !== 'all' || $selectedFaculty !== 'all' || $selectedProdi !== 'all' || $selectedResearchScheme !== 'all' || $selectedCommunityServiceScheme !== 'all')
+            <button class="btn btn-ghost-danger d-flex align-items-center gap-1 shadow-sm"
+                type="button"
+                wire:click="resetFilters"
+                title="Reset semua filter">
+                <i class="ti ti-x"></i>
+                <span>Reset</span>
+            </button>
+        @endif
     </div>
 
     <div class="row row-deck row-cards">

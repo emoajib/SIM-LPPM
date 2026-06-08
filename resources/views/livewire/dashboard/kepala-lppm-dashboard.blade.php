@@ -1,135 +1,151 @@
 <div>
-    <div class="page-header d-print-none">
-        <div class="container-xl">
-            <div class="align-items-center row g-2">
-                <div class="col-12">
-                    <div class="d-flex gap-2 flex-wrap">
-                        <div class="dropdown">
-                            <a href="#" class="btn btn-success dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
-                                <i class="ti ti-file-spreadsheet"></i>
-                                Export Excel
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-end">
-                                <a href="#" class="dropdown-item" wire:click="exportResearch">
-                                    <i class="ti ti-flask me-2"></i> Penelitian
-                                </a>
-                                <a href="#" class="dropdown-item" wire:click="exportCommunityService">
-                                    <i class="ti ti-users-group me-2"></i> PKM
-                                </a>
-                            </div>
-                        </div>
-                        <div class="dropdown">
-                            <a href="#" class="btn-outline-primary btn dropdown-toggle" data-bs-toggle="dropdown">
-                                <x-lucide-calendar class="me-2 icon" />
-                                Tahun: {{ $selectedYear }}
-                            </a>
-                            <div class="dropdown-menu">
-                                @foreach ($availableYears as $year)
-                                    <a href="#" class="dropdown-item {{ $selectedYear == $year ? 'active' : '' }}"
-                                        wire:click.preserve-scroll="$set('selectedYear', {{ $year }})">
-                                        {{ $year }}
-                                    </a>
-                                @endforeach
-                            </div>
-                        </div>
-                        <div class="dropdown">
-                            <a href="#" class="btn-outline-primary btn dropdown-toggle" data-bs-toggle="dropdown">
-                                <x-lucide-filter class="me-2 icon" />
-                                Status: {{ $availableStatuses[$selectedStatus] ?? 'Semua Status' }}
-                            </a>
-                            <div class="dropdown-menu" style="max-height: 300px; overflow-y: auto;">
-                                @foreach ($availableStatuses as $value => $label)
-                                    <a href="#" class="dropdown-item {{ $selectedStatus === $value ? 'active' : '' }}"
-                                        wire:click.preserve-scroll="$set('selectedStatus', '{{ $value }}')">
-                                        {{ $label }}
-                                    </a>
-                                @endforeach
-                            </div>
-                        </div>
-                        <div class="dropdown">
-                            <a href="#" class="btn-outline-primary btn dropdown-toggle" data-bs-toggle="dropdown">
-                                <x-lucide-building class="me-2 icon" />
-                                Fakultas: {{ $availableFaculties[$selectedFaculty] ?? 'Semua Fakultas' }}
-                            </a>
-                            <div class="dropdown-menu" style="max-height: 300px; overflow-y: auto;">
-                                @foreach ($availableFaculties as $value => $label)
-                                    <a href="#" class="dropdown-item {{ $selectedFaculty == $value ? 'active' : '' }}"
-                                        wire:click.preserve-scroll="$set('selectedFaculty', '{{ $value }}')">
-                                        {{ $label }}
-                                    </a>
-                                @endforeach
-                            </div>
-                        </div>
-                        <div class="dropdown">
-                            <a href="#" class="btn-outline-primary btn dropdown-toggle" data-bs-toggle="dropdown">
-                                <x-lucide-book-open class="me-2 icon" />
-                                Prodi: {{ $availableProdis[$selectedProdi] ?? 'Semua Prodi' }}
-                            </a>
-                            <div class="dropdown-menu" style="max-height: 300px; overflow-y: auto;">
-                                @foreach ($availableProdis as $value => $label)
-                                    <a href="#" class="dropdown-item {{ $selectedProdi == $value ? 'active' : '' }}"
-                                        wire:click.preserve-scroll="$set('selectedProdi', '{{ $value }}')">
-                                        {{ $label }}
-                                    </a>
-                                @endforeach
-                            </div>
-                        </div>
-                        <div class="dropdown">
-                            <a href="#" class="btn-outline-primary btn dropdown-toggle" data-bs-toggle="dropdown">
-                                <x-lucide-calendar-range class="me-2 icon" />
-                                Semester: {{ $selectedSemester === 'all' ? 'Semua' : ($selectedSemester === 'ganjil' ? 'Ganjil' : 'Genap') }}
-                            </a>
-                            <div class="dropdown-menu">
-                                <a href="#" class="dropdown-item {{ $selectedSemester === 'all' ? 'active' : '' }}"
-                                    wire:click.preserve-scroll="$set('selectedSemester', 'all')">
-                                    Semua
-                                </a>
-                                <a href="#" class="dropdown-item {{ $selectedSemester === 'ganjil' ? 'active' : '' }}"
-                                    wire:click.preserve-scroll="$set('selectedSemester', 'ganjil')">
-                                    Ganjil
-                                </a>
-                                <a href="#" class="dropdown-item {{ $selectedSemester === 'genap' ? 'active' : '' }}"
-                                    wire:click.preserve-scroll="$set('selectedSemester', 'genap')">
-                                    Genap
-                                </a>
-                            </div>
-                        </div>
-                        <div class="dropdown">
-                            <a href="#" class="btn-outline-primary btn dropdown-toggle" data-bs-toggle="dropdown">
-                                <i class="ti ti-flask fs-2 me-1"></i>
-                                Skema Penelitian: {{ $availableResearchSchemes[$selectedResearchScheme] ?? 'Semua Skema' }}
-                            </a>
-                            <div class="dropdown-menu" style="max-height: 300px; overflow-y: auto;">
-                                @foreach ($availableResearchSchemes as $value => $label)
-                                    <a href="#" class="dropdown-item {{ $selectedResearchScheme == $value ? 'active' : '' }}"
-                                        wire:click.preserve-scroll="$set('selectedResearchScheme', '{{ $value }}')">
-                                        {{ $label }}
-                                    </a>
-                                @endforeach
-                            </div>
-                        </div>
-                        <div class="dropdown">
-                            <a href="#" class="btn-outline-primary btn dropdown-toggle" data-bs-toggle="dropdown">
-                                <i class="ti ti-users-group fs-2 me-1"></i>
-                                Skema PKM: {{ $availableCommunityServiceSchemes[$selectedCommunityServiceScheme] ?? 'Semua Skema' }}
-                            </a>
-                            <div class="dropdown-menu" style="max-height: 300px; overflow-y: auto;">
-                                @foreach ($availableCommunityServiceSchemes as $value => $label)
-                                    <a href="#" class="dropdown-item {{ $selectedCommunityServiceScheme == $value ? 'active' : '' }}"
-                                        wire:click.preserve-scroll="$set('selectedCommunityServiceScheme', '{{ $value }}')">
-                                        {{ $label }}
-                                    </a>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+    <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+        {{-- Export Dropdown --}}
+        <div class="dropdown">
+            <a href="#" class="btn btn-success dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                <i class="ti ti-file-spreadsheet"></i>
+                <span>Export Excel</span>
+            </a>
+            <div class="dropdown-menu">
+                <a href="#" class="dropdown-item" wire:click="exportResearch">
+                    <i class="ti ti-flask me-2"></i> Penelitian
+                </a>
+                <a href="#" class="dropdown-item" wire:click="exportCommunityService">
+                    <i class="ti ti-users-group me-2"></i> PKM
+                </a>
             </div>
         </div>
-    </div>
 
-    <div class="page-body">
-        <div class="container-xl">
+        {{-- Tahun Dropdown --}}
+        <div class="dropdown">
+            <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                <i class="ti ti-calendar-event"></i>
+                <span>Tahun: {{ $selectedYear }}</span>
+            </a>
+            <div class="dropdown-menu">
+                @foreach ($availableYears as $year)
+                    <a href="#" class="dropdown-item {{ $selectedYear == $year ? 'active' : '' }}"
+                        wire:click.preserve-scroll="$set('selectedYear', {{ $year }})">
+                        {{ $year }}
+                    </a>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- Status Dropdown --}}
+        <div class="dropdown">
+            <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                <i class="ti ti-filter"></i>
+                <span>Status: {{ $availableStatuses[$selectedStatus] ?? 'Semua Status' }}</span>
+            </a>
+            <div class="dropdown-menu" style="max-height: 300px; overflow-y: auto;">
+                @foreach ($availableStatuses as $value => $label)
+                    <a href="#" class="dropdown-item {{ $selectedStatus === $value ? 'active' : '' }}"
+                        wire:click.preserve-scroll="$set('selectedStatus', '{{ $value }}')">
+                        {{ $label }}
+                    </a>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- Fakultas Dropdown --}}
+        <div class="dropdown">
+            <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                <i class="ti ti-building"></i>
+                <span>Fakultas: {{ $availableFaculties[$selectedFaculty] ?? 'Semua Fakultas' }}</span>
+            </a>
+            <div class="dropdown-menu" style="max-height: 300px; overflow-y: auto;">
+                @foreach ($availableFaculties as $value => $label)
+                    <a href="#" class="dropdown-item {{ $selectedFaculty == $value ? 'active' : '' }}"
+                        wire:click.preserve-scroll="$set('selectedFaculty', '{{ $value }}')">
+                        {{ $label }}
+                    </a>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- Prodi Dropdown --}}
+        <div class="dropdown">
+            <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                <i class="ti ti-book"></i>
+                <span>Prodi: {{ $availableProdis[$selectedProdi] ?? 'Semua Prodi' }}</span>
+            </a>
+            <div class="dropdown-menu" style="max-height: 300px; overflow-y: auto;">
+                @foreach ($availableProdis as $value => $label)
+                    <a href="#" class="dropdown-item {{ $selectedProdi == $value ? 'active' : '' }}"
+                        wire:click.preserve-scroll="$set('selectedProdi', '{{ $value }}')">
+                        {{ $label }}
+                    </a>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- Semester Dropdown --}}
+        <div class="dropdown">
+            <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                <i class="ti ti-calendar-stats"></i>
+                <span>Semester: {{ $selectedSemester === 'all' ? 'Semua' : ($selectedSemester === 'ganjil' ? 'Ganjil' : 'Genap') }}</span>
+            </a>
+            <div class="dropdown-menu">
+                <a href="#" class="dropdown-item {{ $selectedSemester === 'all' ? 'active' : '' }}"
+                    wire:click.preserve-scroll="$set('selectedSemester', 'all')">
+                    Semua
+                </a>
+                <a href="#" class="dropdown-item {{ $selectedSemester === 'ganjil' ? 'active' : '' }}"
+                    wire:click.preserve-scroll="$set('selectedSemester', 'ganjil')">
+                    Ganjil
+                </a>
+                <a href="#" class="dropdown-item {{ $selectedSemester === 'genap' ? 'active' : '' }}"
+                    wire:click.preserve-scroll="$set('selectedSemester', 'genap')">
+                    Genap
+                </a>
+            </div>
+        </div>
+
+        {{-- Skema Penelitian Dropdown --}}
+        <div class="dropdown">
+            <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                <i class="ti ti-flask"></i>
+                <span>Skema Penelitian: {{ $availableResearchSchemes[$selectedResearchScheme] ?? 'Semua Skema' }}</span>
+            </a>
+            <div class="dropdown-menu" style="max-height: 300px; overflow-y: auto;">
+                @foreach ($availableResearchSchemes as $value => $label)
+                    <a href="#" class="dropdown-item {{ $selectedResearchScheme == $value ? 'active' : '' }}"
+                        wire:click.preserve-scroll="$set('selectedResearchScheme', '{{ $value }}')">
+                        {{ $label }}
+                    </a>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- Skema PKM Dropdown --}}
+        <div class="dropdown">
+            <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                <i class="ti ti-users-group"></i>
+                <span>Skema PKM: {{ $availableCommunityServiceSchemes[$selectedCommunityServiceScheme] ?? 'Semua Skema' }}</span>
+            </a>
+            <div class="dropdown-menu" style="max-height: 300px; overflow-y: auto;">
+                @foreach ($availableCommunityServiceSchemes as $value => $label)
+                    <a href="#" class="dropdown-item {{ $selectedCommunityServiceScheme == $value ? 'active' : '' }}"
+                        wire:click.preserve-scroll="$set('selectedCommunityServiceScheme', '{{ $value }}')">
+                        {{ $label }}
+                    </a>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- Reset Filter Button --}}
+        @if ($selectedSemester !== 'all' || $selectedStatus !== 'all' || $selectedFaculty !== 'all' || $selectedProdi !== 'all' || $selectedResearchScheme !== 'all' || $selectedCommunityServiceScheme !== 'all')
+            <button class="btn btn-ghost-danger d-flex align-items-center gap-1 shadow-sm"
+                type="button"
+                wire:click="resetFilters"
+                title="Reset semua filter">
+                <i class="ti ti-x"></i>
+                <span>Reset</span>
+            </button>
+        @endif
+    </div>
             <!-- Approval Summary -->
             <div class="row row-deck row-cards mb-3">
                 <div class="col-sm-6 col-lg-3">
@@ -382,8 +398,6 @@
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

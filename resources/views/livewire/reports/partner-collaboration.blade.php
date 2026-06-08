@@ -28,7 +28,7 @@
 
     {{-- ①② container-xl: Filter Bar (dipindahkan ke atas) + Kartu Validasi Institusi --}}
     {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
-    <div class="container-xl mt-3">
+    <div class="mt-3">
 
         {{-- ① Filter Bar — sekarang di atas (sebelum kartu validasi), mengikuti pola research.blade.php --}}
         <div class="card mb-3 shadow-sm border-0 glass-card">
@@ -137,15 +137,16 @@
             <div class="col-sm-6 col-xl-3">
                 <div class="card card-stacked shadow-sm border-0">
                     <div class="d-flex align-items-center gap-3 card-body">
-                        <div class="p-3 {{ explode(' ', $card['variant'])[0] }} bg-opacity-10 rounded-3 d-flex align-items-center justify-content-center"
+                        <div class="p-2.5 {{ explode(' ', $card['variant'])[0] }} bg-opacity-10 rounded-3 d-flex align-items-center justify-content-center"
                             style="width: 56px; height: 56px;">
-                            {{-- ④ Fix typo icon: 'ti-chart-dotsfs-2' → 'ti-chart-dots fs-1' --}}
+                            {{-- ④ Fix typo icon: 'ti-chart-dotsfs-2' → 'ti-chart-dots fs-2' --}}
+                            {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
                             @switch($card['icon'])
-                                @case('handshake')       <i class="ti ti-users-group fs-1"></i>       @break
-                                @case('file-check')      <i class="ti ti-file-certificate fs-1"></i>  @break
-                                @case('users')           <i class="ti ti-user-check fs-1"></i>        @break
-                                @case('currency-dollar') <i class="ti ti-coins fs-1"></i>             @break
-                                @default                 <i class="ti ti-chart-dots fs-1"></i>
+                                @case('handshake')       <i class="ti ti-users-group fs-2"></i>       @break
+                                @case('file-check')      <i class="ti ti-file-certificate fs-2"></i>  @break
+                                @case('users')           <i class="ti ti-user-check fs-2"></i>        @break
+                                @case('currency-dollar') <i class="ti ti-coins fs-2"></i>             @break
+                                @default                 <i class="ti ti-chart-dots fs-2"></i>
                             @endswitch
                         </div>
                         <div>

@@ -34,7 +34,7 @@
 </x-slot:pageActions>
 
 <div>
-<div class="container-xl mt-3">
+<div class="mt-3">
     @if(active_role() === 'kepala lppm' || active_role() === 'rektor')
         <div class="card mb-3 border-primary shadow-sm glass-card">
             <div class="card-body d-flex align-items-center justify-content-between">
