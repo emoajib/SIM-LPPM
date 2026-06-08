@@ -95,6 +95,19 @@ class ProposalWorkflowTest extends TestCase
         ScienceCluster::factory()->create(['level' => 1]);
     }
 
+    protected function addBudgetItem(Proposal $proposal): void
+    {
+        $proposal->budgetItems()->create([
+            'year' => 1,
+            'group' => 'Honorarium',
+            'component' => 'Honor Ketua',
+            'item_description' => 'Biaya operasional',
+            'volume' => 1,
+            'unit_price' => 1000000,
+            'total_price' => 1000000,
+        ]);
+    }
+
     public function test_full_proposal_workflow()
     {
         // 1. Creation Phase
@@ -141,6 +154,7 @@ class ProposalWorkflowTest extends TestCase
 
         // 3. Submission Phase (Dosen)
         $this->actingAs($this->dosen);
+        $this->addBudgetItem($proposal);
         $fakeFile = UploadedFile::fake()->create('substance.pdf', 100, 'application/pdf');
         $proposal->detailable->addMedia($fakeFile)->toMediaCollection('substance');
         $result = $submitAction->execute($proposal->fresh());
@@ -381,6 +395,8 @@ class ProposalWorkflowTest extends TestCase
         // Add a partner so submission passes partner validation
         $proposal->partners()->attach(Partner::factory()->create()->id);
 
+        $this->addBudgetItem($proposal);
+
         $this->actingAs($this->dosen);
         app(SubmitProposalAction::class)->execute($proposal);
 
@@ -467,6 +483,7 @@ class ProposalWorkflowTest extends TestCase
 
         // NOTE: allTeamMembersAccepted() returns true when there are 0 team members
         // So submission actually succeeds without any team members
+        $this->addBudgetItem($proposal);
         $this->actingAs($this->dosen);
         $result = app(SubmitProposalAction::class)->execute($proposal);
 
@@ -486,6 +503,7 @@ class ProposalWorkflowTest extends TestCase
         $proposal->teamMembers()->attach($this->dosen->id, ['role' => 'ketua', 'status' => 'accepted']);
 
         // Substance file check is usually done in the action
+        $this->addBudgetItem($proposal);
         $this->actingAs($this->dosen);
         $result = app(SubmitProposalAction::class)->execute($proposal);
 
@@ -527,6 +545,8 @@ class ProposalWorkflowTest extends TestCase
         $fakeFile = UploadedFile::fake()->create('substance.pdf', 100, 'application/pdf');
         $proposal->detailable->addMedia($fakeFile)->toMediaCollection('substance');
 
+        $this->addBudgetItem($proposal);
+
         $this->actingAs($this->dosen);
         $result = app(SubmitProposalAction::class)->execute($proposal);
 
@@ -547,6 +567,8 @@ class ProposalWorkflowTest extends TestCase
         $fakeFile = UploadedFile::fake()->create('substance.pdf', 100, 'application/pdf');
         $proposal->detailable->addMedia($fakeFile)->toMediaCollection('substance');
 
+        $this->addBudgetItem($proposal);
+
         $this->actingAs($this->dosen);
         $result = app(SubmitProposalAction::class)->execute($proposal);
 
@@ -566,6 +588,8 @@ class ProposalWorkflowTest extends TestCase
         $proposal->teamMembers()->attach($this->dosen->id, ['role' => 'ketua', 'status' => 'accepted']);
         $fakeFile = UploadedFile::fake()->create('substance.pdf', 100, 'application/pdf');
         $proposal->detailable->addMedia($fakeFile)->toMediaCollection('substance');
+
+        $this->addBudgetItem($proposal);
 
         $this->actingAs($this->dosen);
         $result = app(SubmitProposalAction::class)->execute($proposal);

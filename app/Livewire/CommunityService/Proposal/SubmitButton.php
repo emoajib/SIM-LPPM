@@ -58,7 +58,8 @@ class SubmitButton extends Component
         return in_array($proposal->status, $allowedStatuses)
             && $proposal->allTeamMembersAccepted()
             && Auth::id() === $proposal->submitter_id
-            && $isEligible;
+            && $isEligible
+            && $proposal->budgetItems()->count() > 0;
     }
 
     #[Computed]

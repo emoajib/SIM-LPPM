@@ -448,6 +448,16 @@ it('allows submission when kaprodi validation feature is disabled', function () 
         'tasks' => 'Principal Investigator',
     ]);
 
+    $proposal->budgetItems()->create([
+        'year' => 1,
+        'group' => 'Honorarium',
+        'component' => 'Honor Ketua',
+        'item_description' => 'Biaya operasional',
+        'volume' => 1,
+        'unit_price' => 1000000,
+        'total_price' => 1000000,
+    ]);
+
     $submitAction = app(SubmitProposalAction::class);
     $this->actingAs($dosen);
 

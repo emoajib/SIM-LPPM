@@ -110,6 +110,13 @@ class SubmitProposalAction
             ];
         }
 
+        if ($proposal->budgetItems()->count() === 0) {
+            return [
+                'success' => false,
+                'message' => 'RAB (Rencana Anggaran Biaya) wajib diisi sebelum mengajukan proposal.',
+            ];
+        }
+
         try {
             DB::transaction(function () use ($proposal) {
                 $snapshot = app(LecturerEligibilityService::class)->generateSnapshot($proposal->submitter, $proposal);
