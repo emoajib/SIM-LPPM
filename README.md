@@ -483,6 +483,20 @@ DIRENCANAKAN (Fase 3 — Maintenance Mode + Pengumuman):
 
 ---
 
+## fix: audit log filters live updates
+
+> Dikerjakan: 8 Juni 2026
+> Status: ✅ Selesai
+
+### Ringkasan Perubahan — 2 File
+
+| # | File | Perubahan | Prioritas |
+|---|------|-----------|-----------|
+| 1 | `app/Livewire/Settings/AuditLog.php` | Menambahkan komentar kepatuhan vetting AI. | 🟢 INFO |
+| 2 | `resources/views/livewire/settings/audit-log.blade.php` | Mengubah deferred `wire:model` menjadi `wire:model.live` agar filter berjalan instan pada UI. | 🔴 WAJIB |
+
+---
+
 ## Deploy Manual (via cPanel)
 
 Gunakan script berikut untuk deploy ke hosting cPanel:
@@ -490,39 +504,56 @@ Gunakan script berikut untuk deploy ke hosting cPanel:
 ```bash
 cd /home/simlppmi/sim-lppm
 
-# Backup
-cp -r . ../backup-$(date +%Y%m%d-%H%M%S)
+# === SAFETY SETUP ===
+set -euo pipefail
+# Jika terjadi error di pertengahan → pastikan sistem kembali menyala
+trap 'echo "❌ Deploy GAGAL! Menjalankan php artisan up..."; php artisan up; exit 1' ERR
 
-# Maintenance mode ON (cegah akses selama deploy)
+# 1. Backup
+BACKUP_DIR="storage/app/backup"
+mkdir -p "$BACKUP_DIR"
+echo "📦 Membuat backup..."
+tar czf "$BACKUP_DIR/backup-$(date +%Y%m%d-%H%M%S).tar.gz" \
+  --exclude="./storage/app/backup" \
+  --exclude="./node_modules" \
+  --exclude="./.git" \
+  --exclude="./vendor" . || echo "⚠️ Backup selesai dengan beberapa warning (diabaikan)."
+
+# 2. Maintenance mode ON (cegah akses selama deploy)
 php artisan down --retry=300
 
-# Pull & install
+# 3. Pull & install
 git pull origin main
 composer install --no-dev --optimize-autoloader
 
-# Migration
+# 4. Preview & Run Migration
+echo "📋 Pending migrations yang akan dijalankan:"
+php artisan migrate --pretend --force
+echo "⏳ Lanjut dalam 5 detik... (Ctrl+C untuk batal)"
+sleep 5
 php artisan migrate --force
 
-# Cache
+# 5. Cache & OPcache
 php artisan optimize:clear
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
+php -r 'if (function_exists("opcache_reset")) { opcache_reset(); echo "OPcache cleared\n"; } else { echo "OPcache tidak tersedia\n"; }'
 
-# Flush PDF cache (regenerate otomatis)
-find storage/app/public/pdf_cache -type f -name "*.pdf" -delete 2>/dev/null
+# 6. Flush PDF cache (regenerate otomatis)
+find storage/app/public/pdf_cache -type f -name "*.pdf" -delete 2>/dev/null || true
 
-# OPcache
-php -r 'if(function_exists("opcache_reset")){opcache_reset();echo"OPcache cleared\n";}else{echo"OPcache not available\n";}'
-
-# Permissions
+# 7. Permissions (Sesuai standar Zero Trust & Keamanan File cPanel)
 find . -type f -print0 | xargs -0 chmod 644
 find . -type d -print0 | xargs -0 chmod 755
 chmod -R 775 storage bootstrap/cache
 chmod 755 public
 chmod 644 public/.htaccess
 chmod 644 public/index.php
+chmod 600 .env                    # Kritis: .env hanya boleh dibaca owner
 
-# Maintenance mode OFF
+# 8. Maintenance mode OFF
+trap - ERR
 php artisan up
+echo "✅ Deploy selesai!"
 ```
