@@ -8,6 +8,7 @@ use Illuminate\View\View;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+// Vetted by AI - Manual Review Required by Senior Engineer/Manager
 class AuditLog extends Component
 {
     use WithPagination;

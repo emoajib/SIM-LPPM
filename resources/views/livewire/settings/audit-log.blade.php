@@ -1,10 +1,11 @@
 <div>
+    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
     <div class="row mb-3 g-2">
         <div class="col-md-4">
-            <input type="text" wire:model.debounce.500ms="searchUser" class="form-control" placeholder="Cari pengguna…" />
+            <input type="text" wire:model.live.debounce.500ms="searchUser" class="form-control" placeholder="Cari pengguna…" />
         </div>
         <div class="col-md-3">
-            <select wire:model="activity" class="form-select">
+            <select wire:model.live="activity" class="form-select">
                 <option value="all">Semua Aktivitas</option>
                 <option value="login">Login</option>
                 <option value="logout">Logout</option>
@@ -13,13 +14,13 @@
             </select>
         </div>
         <div class="col-md-2">
-            <input type="date" wire:model="dateFrom" class="form-control" placeholder="Dari tanggal" />
+            <input type="date" wire:model.live="dateFrom" class="form-control" placeholder="Dari tanggal" />
         </div>
         <div class="col-md-2">
-            <input type="date" wire:model="dateTo" class="form-control" placeholder="Sampai tanggal" />
+            <input type="date" wire:model.live="dateTo" class="form-control" placeholder="Sampai tanggal" />
         </div>
         <div class="col-md-3 mt-2 mt-md-0">
-            <input type="text" wire:model.debounce.500ms="ipAddress" class="form-control" placeholder="Cari IP…" />
+            <input type="text" wire:model.live.debounce.500ms="ipAddress" class="form-control" placeholder="Cari IP…" />
         </div>
     </div>
 
