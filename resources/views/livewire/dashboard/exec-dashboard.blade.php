@@ -1,125 +1,253 @@
 <div>
-    <div class="d-flex justify-content-end mb-4">
-        <div class="d-flex align-items-center gap-2">
-            <div class="dropdown">
-                <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2"
-                    data-bs-toggle="dropdown">
-                    <i class="ti ti-calendar-event fs-2"></i>
-                    <span>Tahun: {{ $selectedYear }}</span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-end">
-                    @foreach ($availableYears as $year)
-                        <a href="#" class="dropdown-item {{ $selectedYear == $year ? 'active' : '' }}"
-                            wire:click.preserve-scroll="$set('selectedYear', {{ $year }})">
-                            {{ $year }}
-                        </a>
-                    @endforeach
+    {{-- ===================================================================
+         PAGE HEADER — Filter Dashboard Eksekutif (Rektor / Dekan)
+         Vetted by AI - Manual Review Required by Senior Engineer/Manager
+         =================================================================== --}}
+    <div class="page-header d-print-none mb-0">
+        <div class="container-xl">
+            <div class="row g-2 align-items-center">
+                {{-- Judul Halaman --}}
+                <div class="col">
+                    <h2 class="page-title">
+                        Dashboard Eksekutif
+                    </h2>
+                    <div class="text-muted mt-1">
+                        Selamat datang, {{ auth()->user()->name }}
+                        @if ($this->isDekanRestricted())
+                            &mdash; Dekan
+                            @if ($stats['faculty_name'] ?? null)
+                                <span class="badge bg-primary-lt ms-1">{{ $stats['faculty_name'] }}</span>
+                            @endif
+                        @else
+                            &mdash; Rektor
+                        @endif
+                    </div>
+                </div>
+
+                {{-- Filter Primer: Tahun + Tombol Toggle Filter Lanjutan --}}
+                <div class="col-md-auto ms-auto d-print-none">
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        {{-- Filter Tahun --}}
+                        <div class="dropdown">
+                            <a href="#"
+                                class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="ti ti-calendar-event"></i>
+                                <span>Tahun: {{ $selectedYear }}</span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end">
+                                @foreach ($availableYears as $year)
+                                    <a href="#"
+                                        class="dropdown-item {{ $selectedYear == $year ? 'active' : '' }}"
+                                        wire:click.preserve-scroll="$set('selectedYear', {{ $year }})">
+                                        {{ $year }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        {{-- Tombol Toggle Filter Lanjutan --}}
+                        <button class="btn {{ $this->activeFilterCount > 0 ? 'btn-primary' : 'btn-outline-secondary' }} d-flex align-items-center gap-2"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#advancedFilters"
+                            aria-expanded="{{ $this->activeFilterCount > 0 ? 'true' : 'false' }}"
+                            aria-controls="advancedFilters">
+                            <i class="ti ti-adjustments-horizontal"></i>
+                            <span>Filter Lanjutan</span>
+                            @if ($this->activeFilterCount > 0)
+                                <span class="badge bg-white text-primary ms-1">{{ $this->activeFilterCount }}</span>
+                            @endif
+                        </button>
+
+                        {{-- Tombol Reset Filter (muncul hanya bila ada filter aktif) --}}
+                        @if ($this->activeFilterCount > 0)
+                            <button class="btn btn-ghost-danger d-flex align-items-center gap-1"
+                                type="button"
+                                wire:click="resetFilters"
+                                title="Reset semua filter">
+                                <i class="ti ti-x"></i>
+                                <span>Reset</span>
+                            </button>
+                        @endif
+                    </div>
                 </div>
             </div>
-            <div class="dropdown">
-                <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2"
-                    data-bs-toggle="dropdown">
-                    <i class="ti ti-layers-intersect fs-2"></i>
-                    <span>Semester:
-                        {{ $selectedSemester === 'all' ? 'Semua' : 'Semester ' . ucfirst($selectedSemester) }}</span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-end">
-                    <a href="#" class="dropdown-item {{ $selectedSemester === 'all' ? 'active' : '' }}"
-                        wire:click.preserve-scroll="$set('selectedSemester', 'all')">
-                        Semua
-                    </a>
-                    <a href="#" class="dropdown-item {{ $selectedSemester === 'ganjil' ? 'active' : '' }}"
-                        wire:click.preserve-scroll="$set('selectedSemester', 'ganjil')">
-                        Semester Ganjil (Sep-Feb)
-                    </a>
-                    <a href="#" class="dropdown-item {{ $selectedSemester === 'genap' ? 'active' : '' }}"
-                        wire:click.preserve-scroll="$set('selectedSemester', 'genap')">
-                        Semester Genap (Mar-Ags)
-                    </a>
-                </div>
-            </div>
-            <div class="dropdown">
-                <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2"
-                    data-bs-toggle="dropdown">
-                    <i class="ti ti-filter fs-2"></i>
-                    <span>Status:
-                        {{ $availableStatuses[$selectedStatus] ?? 'Semua Status' }}</span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-end" style="max-height: 300px; overflow-y: auto;">
-                    @foreach ($availableStatuses as $value => $label)
-                        <a href="#" class="dropdown-item {{ $selectedStatus === $value ? 'active' : '' }}"
-                            wire:click.preserve-scroll="$set('selectedStatus', '{{ $value }}')">
-                            {{ $label }}
-                        </a>
-                    @endforeach
-                </div>
-            </div>
-            @unless($this->isDekanRestricted())
-            <div class="dropdown">
-                <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2"
-                    data-bs-toggle="dropdown">
-                    <i class="ti ti-building fs-2"></i>
-                    <span>Fakultas: {{ $availableFaculties[$selectedFaculty] ?? 'Semua Fakultas' }}</span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-end" style="max-height: 300px; overflow-y: auto;">
-                    @foreach ($availableFaculties as $value => $label)
-                        <a href="#" class="dropdown-item {{ $selectedFaculty == $value ? 'active' : '' }}"
-                            wire:click.preserve-scroll="$set('selectedFaculty', '{{ $value }}')">
-                            {{ $label }}
-                        </a>
-                    @endforeach
-                </div>
-            </div>
-            <div class="dropdown">
-                <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2"
-                    data-bs-toggle="dropdown">
-                    <i class="ti ti-book fs-2"></i>
-                    <span>Prodi: {{ $availableProdis[$selectedProdi] ?? 'Semua Prodi' }}</span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-end" style="max-height: 300px; overflow-y: auto;">
-                    @foreach ($availableProdis as $value => $label)
-                        <a href="#" class="dropdown-item {{ $selectedProdi == $value ? 'active' : '' }}"
-                            wire:click.preserve-scroll="$set('selectedProdi', '{{ $value }}')">
-                            {{ $label }}
-                        </a>
-                    @endforeach
-                </div>
-            </div>
-            @endunless
-            <div class="dropdown">
-                <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2"
-                    data-bs-toggle="dropdown">
-                    <i class="ti ti-flask fs-2"></i>
-                    <span>Skema Penelitian: {{ $availableResearchSchemes[$selectedResearchScheme] ?? 'Semua Skema' }}</span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-end" style="max-height: 300px; overflow-y: auto;">
-                    @foreach ($availableResearchSchemes as $value => $label)
-                        <a href="#" class="dropdown-item {{ $selectedResearchScheme == $value ? 'active' : '' }}"
-                            wire:click.preserve-scroll="$set('selectedResearchScheme', '{{ $value }}')">
-                            {{ $label }}
-                        </a>
-                    @endforeach
-                </div>
-            </div>
-            <div class="dropdown">
-                <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2"
-                    data-bs-toggle="dropdown">
-                    <i class="ti ti-users-group fs-2"></i>
-                    <span>Skema PKM: {{ $availableCommunityServiceSchemes[$selectedCommunityServiceScheme] ?? 'Semua Skema' }}</span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-end" style="max-height: 300px; overflow-y: auto;">
-                    @foreach ($availableCommunityServiceSchemes as $value => $label)
-                        <a href="#" class="dropdown-item {{ $selectedCommunityServiceScheme == $value ? 'active' : '' }}"
-                            wire:click.preserve-scroll="$set('selectedCommunityServiceScheme', '{{ $value }}')">
-                            {{ $label }}
-                        </a>
-                    @endforeach
+
+            {{-- Panel Filter Lanjutan (Collapsible) --}}
+            <div class="collapse {{ $this->activeFilterCount > 0 ? 'show' : '' }} mt-3" id="advancedFilters">
+                <div class="card card-sm border-0 bg-light">
+                    <div class="card-body py-3">
+                        <div class="row g-2 align-items-center">
+                            <div class="col-auto">
+                                <span class="text-muted small fw-medium">
+                                    <i class="ti ti-filter me-1"></i>Filter Lanjutan:
+                                </span>
+                            </div>
+
+                            {{-- Filter Semester --}}
+                            <div class="col-auto">
+                                <div class="dropdown">
+                                    <a href="#"
+                                        class="btn btn-sm {{ $selectedSemester !== 'all' ? 'btn-primary' : 'btn-outline-secondary' }} dropdown-toggle d-flex align-items-center gap-1"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="ti ti-layers-intersect"></i>
+                                        <span>
+                                            @if ($selectedSemester === 'all')
+                                                Semua Semester
+                                            @elseif ($selectedSemester === 'ganjil')
+                                                Sem. Ganjil
+                                            @else
+                                                Sem. Genap
+                                            @endif
+                                        </span>
+                                    </a>
+                                    <div class="dropdown-menu">
+                                        <a href="#"
+                                            class="dropdown-item {{ $selectedSemester === 'all' ? 'active' : '' }}"
+                                            wire:click.preserve-scroll="$set('selectedSemester', 'all')">
+                                            Semua Semester
+                                        </a>
+                                        <a href="#"
+                                            class="dropdown-item {{ $selectedSemester === 'ganjil' ? 'active' : '' }}"
+                                            wire:click.preserve-scroll="$set('selectedSemester', 'ganjil')">
+                                            Semester Ganjil (Sep–Feb)
+                                        </a>
+                                        <a href="#"
+                                            class="dropdown-item {{ $selectedSemester === 'genap' ? 'active' : '' }}"
+                                            wire:click.preserve-scroll="$set('selectedSemester', 'genap')">
+                                            Semester Genap (Mar–Ags)
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Filter Status --}}
+                            <div class="col-auto">
+                                <div class="dropdown">
+                                    <a href="#"
+                                        class="btn btn-sm {{ $selectedStatus !== 'all' ? 'btn-primary' : 'btn-outline-secondary' }} dropdown-toggle d-flex align-items-center gap-1"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="ti ti-filter"></i>
+                                        <span>{{ $availableStatuses[$selectedStatus] ?? 'Semua Status' }}</span>
+                                    </a>
+                                    <div class="dropdown-menu" style="max-height: 280px; overflow-y: auto;">
+                                        @foreach ($availableStatuses as $value => $label)
+                                            <a href="#"
+                                                class="dropdown-item {{ $selectedStatus === $value ? 'active' : '' }}"
+                                                wire:click.preserve-scroll="$set('selectedStatus', '{{ $value }}')">
+                                                {{ $label }}
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Filter Fakultas & Prodi (hanya untuk Rektor) --}}
+                            @unless($this->isDekanRestricted())
+                                {{-- Pemisah visual --}}
+                                <div class="col-auto">
+                                    <div class="vr" style="height: 28px;"></div>
+                                </div>
+
+                                {{-- Filter Fakultas --}}
+                                <div class="col-auto">
+                                    <div class="dropdown">
+                                        <a href="#"
+                                            class="btn btn-sm {{ $selectedFaculty !== 'all' ? 'btn-primary' : 'btn-outline-secondary' }} dropdown-toggle d-flex align-items-center gap-1"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="ti ti-building"></i>
+                                            <span>{{ $selectedFaculty !== 'all' ? ($availableFaculties[$selectedFaculty] ?? 'Fakultas') : 'Semua Fakultas' }}</span>
+                                        </a>
+                                        <div class="dropdown-menu" style="max-height: 280px; overflow-y: auto;">
+                                            @foreach ($availableFaculties as $value => $label)
+                                                <a href="#"
+                                                    class="dropdown-item {{ $selectedFaculty == $value ? 'active' : '' }}"
+                                                    wire:click.preserve-scroll="$set('selectedFaculty', '{{ $value }}')">
+                                                    {{ $label }}
+                                                </a>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Filter Prodi (opsional, tampil saat Fakultas dipilih) --}}
+                                <div class="col-auto">
+                                    <div class="dropdown">
+                                        <a href="#"
+                                            class="btn btn-sm {{ $selectedProdi !== 'all' ? 'btn-primary' : 'btn-outline-secondary' }} dropdown-toggle d-flex align-items-center gap-1"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="ti ti-book"></i>
+                                            <span>{{ $selectedProdi !== 'all' ? ($availableProdis[$selectedProdi] ?? 'Prodi') : 'Semua Prodi' }}</span>
+                                        </a>
+                                        <div class="dropdown-menu" style="max-height: 280px; overflow-y: auto;">
+                                            @foreach ($availableProdis as $value => $label)
+                                                <a href="#"
+                                                    class="dropdown-item {{ $selectedProdi == $value ? 'active' : '' }}"
+                                                    wire:click.preserve-scroll="$set('selectedProdi', '{{ $value }}')">
+                                                    {{ $label }}
+                                                </a>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            @endunless
+
+                            {{-- Pemisah visual --}}
+                            <div class="col-auto">
+                                <div class="vr" style="height: 28px;"></div>
+                            </div>
+
+                            {{-- Filter Skema Penelitian --}}
+                            <div class="col-auto">
+                                <div class="dropdown">
+                                    <a href="#"
+                                        class="btn btn-sm {{ $selectedResearchScheme !== 'all' ? 'btn-primary' : 'btn-outline-secondary' }} dropdown-toggle d-flex align-items-center gap-1"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="ti ti-flask"></i>
+                                        <span>{{ $selectedResearchScheme !== 'all' ? ($availableResearchSchemes[$selectedResearchScheme] ?? 'Skema') : 'Skema Penelitian' }}</span>
+                                    </a>
+                                    <div class="dropdown-menu" style="max-height: 280px; overflow-y: auto;">
+                                        @foreach ($availableResearchSchemes as $value => $label)
+                                            <a href="#"
+                                                class="dropdown-item {{ $selectedResearchScheme == $value ? 'active' : '' }}"
+                                                wire:click.preserve-scroll="$set('selectedResearchScheme', '{{ $value }}')">
+                                                {{ $label }}
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Filter Skema PKM --}}
+                            <div class="col-auto">
+                                <div class="dropdown">
+                                    <a href="#"
+                                        class="btn btn-sm {{ $selectedCommunityServiceScheme !== 'all' ? 'btn-primary' : 'btn-outline-secondary' }} dropdown-toggle d-flex align-items-center gap-1"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="ti ti-users-group"></i>
+                                        <span>{{ $selectedCommunityServiceScheme !== 'all' ? ($availableCommunityServiceSchemes[$selectedCommunityServiceScheme] ?? 'Skema') : 'Skema PKM' }}</span>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-end" style="max-height: 280px; overflow-y: auto;">
+                                        @foreach ($availableCommunityServiceSchemes as $value => $label)
+                                            <a href="#"
+                                                class="dropdown-item {{ $selectedCommunityServiceScheme == $value ? 'active' : '' }}"
+                                                wire:click.preserve-scroll="$set('selectedCommunityServiceScheme', '{{ $value }}')">
+                                                {{ $label }}
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-
+    <div class="page-body pt-3">
+        <div class="container-xl">
 
     <!-- Executive KPI Cards -->
     <div class="row row-deck row-cards mb-4">
@@ -415,6 +543,8 @@
                             @endforelse
                         </tbody>
                     </table>
+                </div>
+            </div>
                 </div>
             </div>
         </div>

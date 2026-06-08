@@ -212,6 +212,59 @@ class ExecDashboard extends Component
         return $this->roleName === 'dekan';
     }
 
+    /**
+     * Hitung jumlah filter lanjutan yang sedang aktif (selain filter Tahun).
+     * Digunakan untuk menampilkan badge indikator di tombol "Filter Lanjutan".
+     *
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     */
+    public function getActiveFilterCountProperty(): int
+    {
+        $count = 0;
+        if ($this->selectedSemester !== 'all') {
+            $count++;
+        }
+        if ($this->selectedStatus !== 'all') {
+            $count++;
+        }
+        if ($this->selectedFaculty !== 'all') {
+            $count++;
+        }
+        if ($this->selectedProdi !== 'all') {
+            $count++;
+        }
+        if ($this->selectedResearchScheme !== 'all') {
+            $count++;
+        }
+        if ($this->selectedCommunityServiceScheme !== 'all') {
+            $count++;
+        }
+
+        return $count;
+    }
+
+    /**
+     * Reset semua filter lanjutan ke nilai default.
+     * Kembalikan Prodi ke 'all' dan refresh prodis list sesuai state saat ini.
+     *
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     */
+    public function resetFilters(): void
+    {
+        $this->selectedSemester = 'all';
+        $this->selectedStatus = 'all';
+
+        if (! $this->isDekanRestricted()) {
+            $this->selectedFaculty = 'all';
+            $this->selectedProdi = 'all';
+            $this->availableProdis = $this->getProdiByFaculty();
+        }
+
+        $this->selectedResearchScheme = 'all';
+        $this->selectedCommunityServiceScheme = 'all';
+        $this->loadAnalytics();
+    }
+
     public function loadAnalytics(): void
     {
         $yearFilter = $this->selectedYear;
