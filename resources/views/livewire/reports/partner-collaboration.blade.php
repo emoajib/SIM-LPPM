@@ -1,4 +1,5 @@
 <div>
+    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
     <x-slot:pageHeader>
         {{-- Header empty as requested --}}
     </x-slot:pageHeader>
@@ -199,7 +200,7 @@
                                         @endif
                                         @if($partner->email)
                                             <div class="text-muted small">
-                                                <x-lucide-mail class="icon-sm me-1" />
+                                                <x-lucide-mail class="icon icon-sm me-1" />
                                                 {{ $partner->email }}
                                             </div>
                                         @endif
@@ -234,7 +235,7 @@
                                             <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
                                                 download="{{ $media->file_name ?? $media->name ?? 'download' }}" target="_blank"
                                                 class="badge bg-green-lt text-green text-decoration-none" title="Lihat MOU/PKS">
-                                                <x-lucide-file-check class="icon-sm me-1" />
+                                                <x-lucide-file-check class="icon icon-sm me-1" />
                                                 Ada
                                             </a>
                                         @else
@@ -245,7 +246,7 @@
                                         {{-- Surat Kesediaan (Indikator saja) --}}
                                         @if($partner->hasMedia('commitment_letter'))
                                             <span class="badge bg-green-lt text-green" title="Tersedia di rincian proposal">
-                                                <x-lucide-check-circle class="icon-sm me-1" />
+                                                <x-lucide-check-circle class="icon icon-sm me-1" />
                                                 Ada
                                             </span>
                                         @else
@@ -372,7 +373,7 @@
                                                    target="_blank"
                                                    class="btn btn-sm btn-icon btn-ghost-success ms-auto"
                                                    title="Unduh Surat Kesediaan Mitra (Proposal Ini)">
-                                                    <x-lucide-file-check class="icon-sm" />
+                                                    <x-lucide-file-check class="icon icon-sm" />
                                                 </a>
                                             @endif
                                         </div>
