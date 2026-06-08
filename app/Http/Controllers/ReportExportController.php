@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Reports\GetPartnerReportQuery;
+use App\Enums\ProposalStatus;
 use App\Exports\ArchiveDataExport;
 use App\Exports\ArchiveTemplateExport;
 use App\Exports\CommunityServiceProposalExport;
@@ -17,6 +18,7 @@ use App\Models\DocumentSignature;
 use App\Models\Institution;
 use App\Models\InstitutionalReport;
 use App\Models\MonevReview;
+use App\Models\Partner;
 use App\Models\Proposal;
 use App\Models\Research;
 use App\Models\ReviewCriteria;
@@ -631,6 +633,23 @@ class ReportExportController extends Controller
             $periodFilter = $request->query('periodFilter', '');
 
             $partners = $action->handle($search, $typeFilter, $periodFilter, $facultyId !== null ? (string) $facultyId : null)->get();
+
+            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            $partners->each(function (Partner $partner) use ($facultyId, $periodFilter) {
+                $proposals = $partner->proposals()
+                    ->whereIn('status', [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value])
+                    ->when($periodFilter, fn ($q) => $q->where('start_year', $periodFilter))
+                    ->when($facultyId, fn ($q) => $q->whereHas('submitter.identity', fn ($i) => $i->where('faculty_id', $facultyId)))
+                    ->with(['budgetItems'])
+                    ->get();
+
+                $partner->total_budget = $proposals->sum(function ($p) {
+                    /** @var Proposal $p */
+                    return ($p->sbk_value && $p->sbk_value > 0)
+                        ? (float) $p->sbk_value
+                        : $p->budgetItems->sum('total_price');
+                });
+            });
 
             $institutionalReport = InstitutionalReport::where('type', 'partner')
                 ->where('year', $periodFilter ?: date('Y'))

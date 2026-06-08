@@ -86,12 +86,19 @@ class PartnerCollaboration extends Component
             fn ($q) => $q->when($this->periodFilter, fn ($q2) => $q2->where('start_year', $this->periodFilter))
         )->count();
 
-        $activeBudget = Proposal::query()
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        $activeProposals = Proposal::query()
             ->whereHas('partners')
             ->whereIn('status', [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value])
             ->when($facultyId, fn ($q) => $q->whereHas('submitter.identity', fn ($i) => $i->where('faculty_id', $facultyId)))
             ->when($this->periodFilter, fn ($q) => $q->where('start_year', $this->periodFilter))
-            ->sum('sbk_value');
+            ->with(['budgetItems'])
+            ->get();
+
+        $activeBudget = $activeProposals->sum(fn (Proposal $p) => ($p->sbk_value && $p->sbk_value > 0)
+            ? (float) $p->sbk_value
+            : $p->budgetItems->sum('total_price')
+        );
 
         return [
             ['label' => 'Total Mitra Terdaftar', 'value' => $total, 'icon' => 'handshake', 'variant' => 'bg-blue-lt text-blue'],
@@ -141,6 +148,24 @@ class PartnerCollaboration extends Component
         $facultyId = $user->hasRole('dekan') ? $user->identity?->faculty_id : null;
 
         $partners = $action->handle($this->search, $this->typeFilter, $this->periodFilter, $facultyId !== null ? (string) $facultyId : null)->paginate(15);
+
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Hitung total dana secara dinamis dengan fallback ke RAB
+        $partners->getCollection()->each(function (Partner $partner) use ($facultyId) {
+            $proposals = $partner->proposals()
+                ->whereIn('status', [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value])
+                ->when($this->periodFilter, fn ($q) => $q->where('start_year', $this->periodFilter))
+                ->when($facultyId, fn ($q) => $q->whereHas('submitter.identity', fn ($i) => $i->where('faculty_id', $facultyId)))
+                ->with(['budgetItems'])
+                ->get();
+
+            $partner->total_budget = $proposals->sum(function ($p) {
+                /** @var Proposal $p */
+                return ($p->sbk_value && $p->sbk_value > 0)
+                    ? (float) $p->sbk_value
+                    : $p->budgetItems->sum('total_price');
+            });
+        });
 
         $detailProposals = null;
         if ($this->selectedPartnerId) {

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,6 +10,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
+/**
+ * @property string $id
+ * @property string $name
+ * @property string|null $email
+ * @property string|null $institution
+ * @property string|null $country
+ * @property string|null $address
+ * @property string|null $type
+ * @property float|null $total_budget
+ * @property-read Collection|Proposal[] $proposals
+ */
 class Partner extends Model implements HasMedia
 {
     use HasFactory;
