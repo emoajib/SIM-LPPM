@@ -13,18 +13,63 @@
                 <i class="ti ti-eye me-2"></i>
                 <span>{{ __('Tinjau PDF') }}</span>
             </a>
-            <a href="{{ route('reports.partner.excel', $exportParams) }}" class="btn btn-outline-success shadow-sm" data-navigate-ignore="true" title="Unduh Excel">
+            <a href="{{ route('reports.partner.excel', $exportParams) }}" class="btn btn-outline-success shadow-sm"
+                data-navigate-ignore="true" title="Unduh Excel">
                 <i class="ti ti-table me-2"></i>
                 <span>{{ __('Unduh Excel') }}</span>
             </a>
-            <a href="{{ route('reports.partner.pdf', $exportParams) }}" class="btn btn-outline-danger shadow-sm" data-navigate-ignore="true" title="Unduh PDF">
+            <a href="{{ route('reports.partner.pdf', $exportParams) }}" class="btn btn-outline-danger shadow-sm"
+                data-navigate-ignore="true" title="Unduh PDF">
                 <i class="ti ti-file-type-pdf me-2"></i>
                 <span>{{ __('Unduh PDF') }}</span>
             </a>
         </div>
     </x-slot:pageActions>
 
+    {{-- ①② container-xl: Filter Bar (dipindahkan ke atas) + Kartu Validasi Institusi --}}
+    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
     <div class="container-xl mt-3">
+
+        {{-- ① Filter Bar — sekarang di atas (sebelum kartu validasi), mengikuti pola research.blade.php --}}
+        <div class="card mb-3 shadow-sm border-0 glass-card">
+            <div class="card-body p-3">
+                <div class="row g-2 align-items-center">
+                    <div class="col-md-4">
+                        <div class="input-icon">
+                            <span class="input-icon-addon">
+                                <i class="ti ti-search text-primary"></i>
+                            </span>
+                            <input type="text" wire:model.live.debounce.300ms="search"
+                                class="form-control" placeholder="Nama, institusi, atau email...">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select wire:model.live="typeFilter" class="form-select">
+                            <option value="">— Semua Jenis —</option>
+                            @foreach($this->partnerTypes as $type)
+                                <option value="{{ $type }}">{{ $type }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select wire:model.live="periodFilter" class="form-select">
+                            <option value="">— Semua Tahun —</option>
+                            @foreach($this->periods as $year)
+                                <option value="{{ $year }}">{{ $year }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    {{-- ⑤ Reset button selalu tampil di col-auto ms-auto (konsisten dengan research.blade.php) --}}
+                    <div class="col-auto ms-auto">
+                        <button class="btn btn-icon btn-white shadow-sm" wire:click="resetFilters" title="Reset Filter">
+                            <i class="ti ti-refresh text-secondary"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- ② Kartu Validasi Institusi (Kerjasama) — dipindahkan setelah filter --}}
         @if(active_role() === 'kepala lppm' || active_role() === 'rektor')
             <div class="card mb-3 border-primary shadow-sm glass-card">
                 <div class="card-body d-flex align-items-center justify-content-between">
@@ -59,7 +104,8 @@
                         </a>
 
                         @if(active_role() === 'kepala lppm' && (!$institutionalReport || in_array($institutionalReport->status, [\App\Enums\InstitutionalReportStatus::DRAFT, \App\Enums\InstitutionalReportStatus::REJECTED])))
-                            <button class="btn btn-primary shadow-sm" wire:click="submitInstitutionalReport('partner', {{ $periodFilter ?: date('Y') }})"
+                            <button class="btn btn-primary shadow-sm"
+                                wire:click="submitInstitutionalReport('partner', {{ $periodFilter ?: date('Y') }})"
                                 wire:loading.attr="disabled">
                                 <i class="ti ti-send me-2"></i>
                                 Ajukan ke Rektor
@@ -72,10 +118,11 @@
                                 <i class="ti ti-x me-2"></i>
                                 Minta Perbaikan
                             </button>
-                            <button class="btn btn-success shadow-sm" wire:click="approveInstitutionalReport('partner', {{ $periodFilter ?: date('Y') }})"
+                            <button class="btn btn-success shadow-sm"
+                                wire:click="approveInstitutionalReport('partner', {{ $periodFilter ?: date('Y') }})"
                                 wire:loading.attr="disabled">
                                 <i class="ti ti-circle-check me-2"></i>
-                                Setujui & Tanda Tangani
+                                Setujui &amp; Tanda Tangani
                             </button>
                         @endif
                     </div>
@@ -84,80 +131,37 @@
         @endif
     </div>
 
-
-
-    <!-- Summary Cards with Visual Polish -->
-    <div class="row g-3 mb-4">
+    {{-- ③ Summary KPI Cards — desain seragam dengan research.blade.php (progress bar berwarna, tanpa border-start) --}}
+    <div class="row row-deck mb-4">
         @foreach($this->summary as $card)
             <div class="col-sm-6 col-xl-3">
-                <div class="card card-stacked shadow-sm border-0 border-start border-3 border-indigo">
-                    <div class="card-body p-3">
-                        <div class="d-flex align-items-center">
-                            <div class="avatar avatar-md me-3 rounded-3 {{ $card['variant'] }} bg-opacity-10 shadow-none">
-                                @switch($card['icon'])
-                                    @case('handshake')   <i class="ti ti-users-group fs-2"></i>    @break
-                                    @case('file-check')  <i class="ti ti-file-certificate fs-2"></i>   @break
-                                    @case('users')       <i class="ti ti-user-check fs-2"></i>         @break
-                                    @case('currency-dollar') <i class="ti ti-coins fs-2"></i> @break
-                                    @default             <i class="ti ti-chart-dotsfs-2"></i>
-                                @endswitch
-                            </div>
-                            <div>
-                                <div class="h2 mb-0 fw-bold">{{ $card['value'] }}</div>
-                                <div class="text-secondary small fw-medium">{{ $card['label'] }}</div>
-                            </div>
+                <div class="card card-stacked shadow-sm border-0">
+                    <div class="d-flex align-items-center gap-3 card-body">
+                        <div class="p-3 {{ explode(' ', $card['variant'])[0] }} bg-opacity-10 rounded-3 d-flex align-items-center justify-content-center"
+                            style="width: 56px; height: 56px;">
+                            {{-- ④ Fix typo icon: 'ti-chart-dotsfs-2' → 'ti-chart-dots fs-1' --}}
+                            @switch($card['icon'])
+                                @case('handshake')       <i class="ti ti-users-group fs-1"></i>       @break
+                                @case('file-check')      <i class="ti ti-file-certificate fs-1"></i>  @break
+                                @case('users')           <i class="ti ti-user-check fs-1"></i>        @break
+                                @case('currency-dollar') <i class="ti ti-coins fs-1"></i>             @break
+                                @default                 <i class="ti ti-chart-dots fs-1"></i>
+                            @endswitch
                         </div>
+                        <div>
+                            <div class="text-secondary small fw-medium mb-1">{{ $card['label'] }}</div>
+                            <h2 class="mb-0 fw-bold">{{ $card['value'] }}</h2>
+                        </div>
+                    </div>
+                    <div class="progress progress-xs card-progress">
+                        <div class="progress-bar {{ explode(' ', $card['variant'])[0] }}" style="width: 100%"></div>
                     </div>
                 </div>
             </div>
         @endforeach
     </div>
 
-
-
-    {{-- Filter Bar --}}
-    <div class="card mb-4 border-0 shadow-sm overflow-hidden">
-        <div class="card-body bg-light-lt">
-            <div class="row g-3 align-items-end">
-                <div class="col-md-5">
-                    <label class="form-label">Cari Mitra</label>
-                    <div class="input-group">
-                        <span class="input-group-text">
-                            <x-lucide-search class="icon" />
-                        </span>
-                        <input type="text" wire:model.live.debounce.300ms="search"
-                            class="form-control" placeholder="Nama, institusi, atau email...">
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Jenis Mitra</label>
-                    <select wire:model.live="typeFilter" class="form-select">
-                        <option value="">— Semua Jenis —</option>
-                        @foreach($this->partnerTypes as $type)
-                            <option value="{{ $type }}">{{ $type }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Tahun Kerjasama</label>
-                    <select wire:model.live="periodFilter" class="form-select">
-                        <option value="">— Semua Tahun —</option>
-                        @foreach($this->periods as $year)
-                            <option value="{{ $year }}">{{ $year }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-1">
-                    @if($search || $typeFilter || $periodFilter)
-                        <button class="btn btn-icon btn-white shadow-sm" wire:click="resetFilters" title="Reset Filter">
-                            <i class="ti ti-refresh text-secondary"></i>
-                        </button>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
-
+    {{-- ④ Tabel Mitra + Panel Detail --}}
     <div class="row g-3">
         {{-- Tabel Mitra --}}
         <div class="{{ $selectedPartnerId ? 'col-lg-7' : 'col-12' }}">
@@ -167,8 +171,7 @@
                         <x-lucide-handshake class="icon me-2" />
                         Daftar Mitra Kerjasama
                     </h3>
-                        <span class="badge bg-blue-lt">{{ $partners->total() }} mitra</span>
-
+                    <span class="badge bg-blue-lt">{{ $partners->total() }} mitra</span>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-vcenter card-table table-hover">
@@ -227,9 +230,9 @@
                                     <td class="text-center">
                                         @if($partner->hasMedia('mou_pks'))
                                             @php $media = $partner->getFirstMedia('mou_pks'); @endphp
-                                                          <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                                                              download="{{ $media->file_name ?? $media->name ?? 'download' }}" target="_blank"
-                                                              class="badge bg-green-lt text-green text-decoration-none" title="Lihat MOU/PKS">
+                                            <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
+                                                download="{{ $media->file_name ?? $media->name ?? 'download' }}" target="_blank"
+                                                class="badge bg-green-lt text-green text-decoration-none" title="Lihat MOU/PKS">
                                                 <x-lucide-file-check class="icon-sm me-1" />
                                                 Ada
                                             </a>
@@ -289,13 +292,16 @@
                         <div class="d-flex gap-2 align-items-center">
                             @if($selectedPartner?->hasMedia('mou_pks'))
                                 @php $media = $selectedPartner->getFirstMedia('mou_pks'); @endphp
-                                          <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                                              download="{{ $media->file_name ?? $media->name ?? 'download' }}" target="_blank"
-                                              class="btn btn-sm btn-outline-primary" title="Unduh MOU/PKS">
+                                <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
+                                    download="{{ $media->file_name ?? $media->name ?? 'download' }}" target="_blank"
+                                    class="btn btn-sm btn-outline-primary" title="Unduh MOU/PKS">
                                     <x-lucide-file-text class="icon" /> MOU/PKS
                                 </a>
                             @endif
-                            <button type="button" wire:click="$set('selectedPartnerId', null)" class="btn btn-sm btn-ghost-secondary">
+                            {{-- ⑦ Tambah title tooltip pada tombol tutup panel --}}
+                            <button type="button" wire:click="$set('selectedPartnerId', null)"
+                                class="btn btn-sm btn-ghost-secondary"
+                                title="Tutup panel detail">
                                 <x-lucide-x class="icon" />
                             </button>
                         </div>
@@ -331,13 +337,13 @@
                         </div>
                     </div>
 
-                    {{-- Daftar Proposal --}}
-                    <div class="card-header border-top-0 pt-3">
-                        <h5 class="mb-0">
-                            Proposal Terkait
-                            <span class="badge bg-blue-lt ms-1">{{ $detailProposals->count() }}</span>
-                        </h5>
+                    {{-- ⑥ Section divider: ganti card-header salah konteks dengan div separator proper --}}
+                    <div class="border-top px-3 py-2 bg-light-lt d-flex align-items-center">
+                        <span class="small fw-semibold text-muted text-uppercase">Proposal Terkait</span>
+                        <span class="badge bg-blue-lt ms-2">{{ $detailProposals->count() }}</span>
                     </div>
+
+                    {{-- Daftar Proposal --}}
                     <div class="list-group list-group-flush" style="max-height: 450px; overflow-y: auto;">
                         @forelse($detailProposals as $proposal)
                             @php
@@ -358,12 +364,12 @@
                                             <span class="badge {{ $typeColor }}">{{ $typeLabel }}</span>
                                             <span class="text-muted small">{{ $proposal->start_year }}</span>
                                             <span class="text-muted small">{{ $proposal->submitter?->name }}</span>
-                                            
+
                                             {{-- Tombol Surat Kesediaan Spesifik Proposal --}}
                                             @if($selectedPartner->hasCommitmentForProposal($proposal->id))
-                                                <a href="{{ $selectedPartner->getCommitmentUrlForProposal($proposal->id) }}" 
+                                                <a href="{{ $selectedPartner->getCommitmentUrlForProposal($proposal->id) }}"
                                                    target="_blank"
-                                                   class="btn btn-sm btn-icon btn-ghost-success ms-auto" 
+                                                   class="btn btn-sm btn-icon btn-ghost-success ms-auto"
                                                    title="Unduh Surat Kesediaan Mitra (Proposal Ini)">
                                                     <x-lucide-file-check class="icon-sm" />
                                                 </a>
@@ -428,7 +434,7 @@
                             data-bs-dismiss="modal">Batal</button>
                         <button type="button" class="btn btn-danger shadow-sm"
                             wire:click="rejectInstitutionalReport('partner', '{{ $periodFilter ?: date('Y') }}')">
-                            Simpan & Tolak
+                            Simpan &amp; Tolak
                         </button>
                     </div>
                 </div>
