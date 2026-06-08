@@ -368,13 +368,17 @@
                                             <span class="text-muted small">{{ $proposal->submitter?->name }}</span>
 
                                             {{-- Tombol Surat Kesediaan Spesifik Proposal --}}
+                                            {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
                                             @if($selectedPartner->hasCommitmentForProposal($proposal->id))
-                                                <a href="{{ $selectedPartner->getCommitmentUrlForProposal($proposal->id) }}"
-                                                   target="_blank"
-                                                   class="btn btn-sm btn-icon btn-ghost-success ms-auto"
-                                                   title="Unduh Surat Kesediaan Mitra (Proposal Ini)">
-                                                    <x-lucide-file-check class="icon icon-sm" />
-                                                </a>
+                                                @php $commitmentMedia = $selectedPartner->getCommitmentMediaForProposal($proposal->id); @endphp
+                                                @if($commitmentMedia)
+                                                    <a href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $commitmentMedia]) }}"
+                                                       target="_blank"
+                                                       class="btn btn-sm btn-icon btn-ghost-success ms-auto"
+                                                       title="Unduh Surat Kesediaan Mitra (Proposal Ini)">
+                                                        <x-lucide-file-check class="icon icon-sm" />
+                                                    </a>
+                                                @endif
                                             @endif
                                         </div>
                                     </div>

@@ -97,4 +97,17 @@ class Partner extends Model implements HasMedia
             })
             ->first()?->getUrl();
     }
+
+    /**
+     * Get commitment letter media model for specific proposal.
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     */
+    public function getCommitmentMediaForProposal(string $proposalId)
+    {
+        return $this->getMedia('commitment_letter')
+            ->filter(function ($media) use ($proposalId) {
+                return $media->getCustomProperty('proposal_id') === $proposalId;
+            })
+            ->first();
+    }
 }

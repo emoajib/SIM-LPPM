@@ -74,14 +74,17 @@
                                         </x-tabler.badge>
                                     </td>
                                     <td>
-                                        @if ($partner->hasMedia('commitment_letter'))
-                                            @php $media = $partner->getFirstMedia('commitment_letter'); @endphp
+                                        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                                        @if ($partner->hasCommitmentForProposal($proposal->id))
+                                            @php $media = $partner->getCommitmentMediaForProposal($proposal->id); @endphp
+                                            @if ($media)
                                                 <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
                                                     download="{{ $media->file_name ?? $media->name ?? 'download' }}"
                                                     target="_blank" class="btn btn-sm btn-primary">
-                                                <x-lucide-download class="icon" />
-                                                Unduh
-                                            </a>
+                                                    <x-lucide-download class="icon" />
+                                                    Unduh
+                                                </a>
+                                            @endif
                                         @else
                                             <x-tabler.badge color="yellow">
                                                 <x-lucide-file-x class="me-1 icon" />
