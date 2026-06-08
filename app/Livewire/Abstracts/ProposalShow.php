@@ -117,8 +117,9 @@ abstract class ProposalShow extends Component
     {
         $user = Auth::user();
 
-        // Allow editing for draft or revision_needed proposals by submitter
-        if (! in_array($this->proposal->status, [ProposalStatus::DRAFT, ProposalStatus::REVISION_NEEDED])
+        // Allow editing for draft, revision_needed, or need_assignment proposals by submitter
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        if (! in_array($this->proposal->status, [ProposalStatus::DRAFT, ProposalStatus::REVISION_NEEDED, ProposalStatus::NEED_ASSIGNMENT])
             || $this->proposal->submitter_id !== $user->id) {
             return false;
         }

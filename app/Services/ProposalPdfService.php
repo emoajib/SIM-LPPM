@@ -27,7 +27,6 @@ use setasign\Fpdi\Fpdi;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
 class ProposalPdfService
 {
     public function __construct(
@@ -267,26 +266,11 @@ class ProposalPdfService
 
         $lecturerSignedAt = $submissionLog->at ?? $proposal->created_at;
 
-        // Clean up signatures that do not belong to the current status
-        $allowedRoles = [];
-        if (in_array($proposal->status->value, [ProposalStatus::SUBMITTED->value, ProposalStatus::NEED_ASSIGNMENT->value])) {
-            $allowedRoles = ['lecturer'];
-        } elseif (in_array($proposal->status->value, [ProposalStatus::APPROVED->value])) {
-            $allowedRoles = ['lecturer', 'dekan'];
-        } elseif (in_array($proposal->status->value, [ProposalStatus::WAITING_REVIEWER->value, ProposalStatus::UNDER_REVIEW->value, ProposalStatus::REVIEWED->value, ProposalStatus::COMPLETED->value])) {
-            $allowedRoles = ['lecturer', 'dekan', 'kepala_lppm'];
-        }
-
+        // Clean up any existing signatures for draft/revision proposals (should not have signatures)
         if (in_array($proposal->status->value, [ProposalStatus::DRAFT->value, ProposalStatus::REVISION_NEEDED->value])) {
             DocumentSignature::where('document_type', get_class($proposal))
                 ->where('document_id', $proposal->id)
                 ->where('variant', 'final')
-                ->delete();
-        } else {
-            DocumentSignature::where('document_type', get_class($proposal))
-                ->where('document_id', $proposal->id)
-                ->where('variant', 'final')
-                ->whereNotIn('signed_role', $allowedRoles)
                 ->delete();
         }
 

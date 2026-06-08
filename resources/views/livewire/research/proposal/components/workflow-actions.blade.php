@@ -95,7 +95,8 @@
                         </p>
                     </div>
 
-                    @if ($proposal->status === \App\Enums\ProposalStatus::DRAFT)
+                    @if (in_array($proposal->status, [\App\Enums\ProposalStatus::DRAFT, \App\Enums\ProposalStatus::REVISION_NEEDED, \App\Enums\ProposalStatus::NEED_ASSIGNMENT]))
+                        <!-- Vetted by AI - Manual Review Required by Senior Engineer/Manager -->
                         <livewire:research.proposal.submit-button :proposalId="$proposal->id" :key="'submit-button-' . $proposal->id" />
                     @endif
 
