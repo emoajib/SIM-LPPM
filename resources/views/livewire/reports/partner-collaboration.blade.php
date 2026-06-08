@@ -243,12 +243,49 @@
                                         @endif
                                     </td>
                                     <td class="text-center">
-                                        {{-- Surat Kesediaan (Indikator saja) --}}
+                                        {{-- Surat Kesediaan (Indikator & Tautan Unduh/Lihat) --}}
+                                        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
                                         @if($partner->hasMedia('commitment_letter'))
-                                            <span class="badge bg-green-lt text-green" title="Tersedia di rincian proposal">
-                                                <x-lucide-check-circle class="icon icon-sm me-1" />
-                                                Ada
-                                            </span>
+                                            @php 
+                                                $commitmentLetters = $partner->getMedia('commitment_letter');
+                                            @endphp
+                                            @if($commitmentLetters->count() === 1)
+                                                @php $media = $commitmentLetters->first(); @endphp
+                                                <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
+                                                    target="_blank"
+                                                    class="badge bg-green-lt text-green text-decoration-none" 
+                                                    title="Unduh/Lihat Surat Kesediaan ({{ $media->name }})">
+                                                    <x-lucide-check-circle class="icon icon-sm me-1" />
+                                                    Ada
+                                                </a>
+                                            @else
+                                                <div class="dropdown">
+                                                    <a href="#" class="badge bg-green-lt text-green text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <x-lucide-check-circle class="icon icon-sm me-1" />
+                                                        Ada ({{ $commitmentLetters->count() }})
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end" style="max-width: 250px;">
+                                                        <div class="dropdown-header">Pilih Usulan:</div>
+                                                        @foreach($commitmentLetters as $media)
+                                                            @php 
+                                                                $proposalId = $media->getCustomProperty('proposal_id');
+                                                                $proposalTitle = 'Usulan terkait';
+                                                                if($proposalId) {
+                                                                    $prop = \App\Models\Proposal::find($proposalId);
+                                                                    if($prop) {
+                                                                        $proposalTitle = Str::limit($prop->title, 30);
+                                                                    }
+                                                                }
+                                                            @endphp
+                                                            <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
+                                                                target="_blank" class="dropdown-item text-wrap text-sm py-1">
+                                                                <i class="ti ti-file-text me-1 text-secondary"></i>
+                                                                {{ $proposalTitle }}
+                                                            </a>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @endif
                                         @else
                                             <span class="badge bg-muted-lt text-muted" title="Belum ada surat kesediaan">
                                                 -
