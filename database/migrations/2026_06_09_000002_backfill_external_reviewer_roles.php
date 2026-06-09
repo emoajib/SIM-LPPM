@@ -23,7 +23,7 @@ return new class extends Migration
                 $query->select('user_id')->from('reviewer_profiles');
             })
             ->whereNotIn('id', function ($query) {
-                $query->select('model_id')
+                $query->select('model_uuid')
                     ->from('model_has_roles')
                     ->where('model_type', 'App\\Models\\User');
             })
@@ -33,7 +33,7 @@ return new class extends Migration
             DB::table('model_has_roles')->insert([
                 'role_id' => $reviewerRole->id,
                 'model_type' => 'App\\Models\\User',
-                'model_id' => $userId,
+                'model_uuid' => $userId,
             ]);
         }
     }
