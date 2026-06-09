@@ -9,6 +9,10 @@
                 Tambah Institusi
             </button>
         </div>
+        <div class="alert alert-info mb-3">
+            <x-lucide-info class="icon me-2" />
+            Institusi yang memiliki <strong>pengguna, fakultas, atau program studi</strong> tidak dapat dihapus.
+        </div>
         <div class="table-responsive">
             <table class="card-table table table-vcenter">
                 <thead>

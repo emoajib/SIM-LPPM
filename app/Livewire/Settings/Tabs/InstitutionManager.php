@@ -5,7 +5,7 @@ namespace App\Livewire\Settings\Tabs;
 use App\Livewire\Concerns\HasToast;
 use App\Models\Institution;
 use App\Models\User;
-use Livewire\Attributes\Validate;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -13,13 +13,10 @@ class InstitutionManager extends Component
 {
     use HasToast, WithPagination;
 
-    #[Validate('required|min:3|max:255')]
     public string $name = '';
 
-    #[Validate('nullable|min:2|max:20')]
     public ?string $code = '';
 
-    #[Validate('required|min:5|max:500')]
     public string $address = '';
 
     public string $lppmHeadName = '';
@@ -35,6 +32,25 @@ class InstitutionManager extends Component
     public ?int $deleteItemId = null;
 
     public string $deleteItemName = '';
+
+    protected function rules(): array
+    {
+        return [
+            'name' => [
+                'required',
+                'min:3',
+                'max:255',
+                Rule::unique('institutions', 'name')->ignore($this->editingId),
+            ],
+            'code' => [
+                'nullable',
+                'min:2',
+                'max:20',
+                Rule::unique('institutions', 'code')->ignore($this->editingId),
+            ],
+            'address' => ['required', 'min:5', 'max:500'],
+        ];
+    }
 
     public function render()
     {
@@ -92,8 +108,58 @@ class InstitutionManager extends Component
         $this->toastSuccess($message);
     }
 
+    /**
+     * Check if institution has any dependencies that prevent deletion.
+     */
+    private function checkDependencies(Institution $institution): array
+    {
+        $deps = [];
+        $labels = [];
+
+        // Check users/identities
+        $userCount = $institution->identities()->count();
+        if ($userCount > 0) {
+            $deps['identities'] = $userCount;
+            $labels[] = "{$userCount} pengguna";
+        }
+
+        // Check faculties
+        $facultyCount = $institution->faculties()->count();
+        if ($facultyCount > 0) {
+            $deps['faculties'] = $facultyCount;
+            $labels[] = "{$facultyCount} fakultas";
+        }
+
+        // Check study programs
+        $spCount = $institution->studyPrograms()->count();
+        if ($spCount > 0) {
+            $deps['study_programs'] = $spCount;
+            $labels[] = "{$spCount} program studi";
+        }
+
+        // Check reviewer profiles
+        $reviewerCount = $institution->reviewerProfiles()->count();
+        if ($reviewerCount > 0) {
+            $deps['reviewer_profiles'] = $reviewerCount;
+            $labels[] = "{$reviewerCount} reviewer";
+        }
+
+        return [
+            'count' => array_sum($deps),
+            'labels' => implode(', ', $labels),
+        ];
+    }
+
     public function delete(Institution $institution): void
     {
+        $deps = $this->checkDependencies($institution);
+
+        if (! empty($deps)) {
+            $this->toastWarning("Tidak dapat menghapus {$institution->name}: masih digunakan oleh {$deps['labels']}");
+
+            return;
+        }
+
         $institution->delete();
 
         $this->resetForm();
@@ -143,7 +209,16 @@ class InstitutionManager extends Component
     public function handleConfirmDeleteAction(): void
     {
         if ($this->deleteItemId) {
-            Institution::findOrFail($this->deleteItemId)->delete();
+            $institution = Institution::findOrFail($this->deleteItemId);
+            $deps = $this->checkDependencies($institution);
+
+            if (! empty($deps)) {
+                $this->toastWarning("Tidak dapat menghapus {$institution->name}: masih digunakan oleh {$deps['labels']}");
+
+                return;
+            }
+
+            $institution->delete();
 
             $message = 'Institusi berhasil dihapus';
             session()->flash('success', $message);

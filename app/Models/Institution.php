@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property-read Collection|Faculty[] $faculties
  * @property-read Collection|StudyProgram[] $studyPrograms
  * @property-read Collection|Identity[] $identities
+ * @property-read Collection|ReviewerProfile[] $reviewerProfiles
  */
 class Institution extends Model
 {
@@ -79,5 +80,13 @@ class Institution extends Model
     public function identities(): HasMany
     {
         return $this->hasMany(Identity::class);
+    }
+
+    /**
+     * Get all reviewer profiles associated with the institution.
+     */
+    public function reviewerProfiles(): HasMany
+    {
+        return $this->hasMany(ReviewerProfile::class);
     }
 }
