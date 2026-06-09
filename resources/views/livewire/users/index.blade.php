@@ -162,8 +162,9 @@
 
     <div class="card card-stacked">
         <div class="border-bottom card-body">
-            <div class="align-items-end row g-3">
-                <div class="col-md-4">
+            {{-- Row 1: Search + Role + IdentityType + Status + Sort --}}
+            <div class="row g-3 mb-3">
+                <div class="col-md-3">
                     <label for="user-search" class="form-label">{{ __('Cari') }}</label>
                     <div class="input-icon">
                         <span class="input-icon-addon">
@@ -181,10 +182,19 @@
                     </div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label for="role-filter" class="form-label">{{ __('Peran') }}</label>
                     <select id="role-filter" class="form-select" wire:model.live="role">
                         @foreach ($roleOptions as $option)
+                            <option value="{{ $option['value'] }}">{{ $option['label'] }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label for="identity-type-filter" class="form-label">{{ __('Tipe') }}</label>
+                    <select id="identity-type-filter" class="form-select" wire:model.live="identityType">
+                        @foreach ($identityTypeOptions as $option)
                             <option value="{{ $option['value'] }}">{{ $option['label'] }}</option>
                         @endforeach
                     </select>
@@ -200,7 +210,7 @@
                 </div>
 
                 <div class="col-md-3">
-                    <label for="sort-filter" class="form-label">{{ __('Urutkan Berdasarkan') }}</label>
+                    <label for="sort-filter" class="form-label">{{ __('Urutkan') }}</label>
                     <select id="sort-filter" class="form-select" wire:model.live="sort">
                         <option value="latest">{{ __('Terbaru (Z-A)') }}</option>
                         <option value="oldest">{{ __('Terlama (A-Z)') }}</option>
@@ -209,6 +219,61 @@
                     </select>
                 </div>
             </div>
+
+            {{-- Row 2: Institution + Faculty + Prodi (dependent dropdowns) --}}
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label for="institution-filter" class="form-label">{{ __('Institusi') }}</label>
+                    <select id="institution-filter" class="form-select" wire:model.live="institution">
+                        @foreach ($institutionOptions as $option)
+                            <option value="{{ $option['value'] }}">{{ $option['label'] }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="faculty-filter" class="form-label">{{ __('Fakultas') }}</label>
+                    <select id="faculty-filter" class="form-select" wire:model.live="faculty"
+                        @disabled(empty($facultyOptions))>
+                        @if(empty($facultyOptions))
+                            <option value="all">{{ __('Pilih institusi dulu...') }}</option>
+                        @endif
+                        @foreach ($facultyOptions as $option)
+                            <option value="{{ $option['value'] }}">{{ $option['label'] }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="prodi-filter" class="form-label">{{ __('Program Studi') }}</label>
+                    <select id="prodi-filter" class="form-select" wire:model.live="prodi"
+                        @disabled(empty($prodiOptions))>
+                        @if(empty($prodiOptions))
+                            <option value="all">{{ __('Pilih fakultas dulu...') }}</option>
+                        @endif
+                        @foreach ($prodiOptions as $option)
+                            <option value="{{ $option['value'] }}">{{ $option['label'] }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            {{-- Reset Button --}}
+            @if($institution !== 'all' || $faculty !== 'all' || $prodi !== 'all' || $identityType !== 'all' || $search !== '' || $role !== 'all' || $status !== 'all' || $sort !== 'latest')
+                <div class="mt-3">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" wire:click="resetAllFilters">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-inline me-1" width="24" height="24"
+                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
+                            <path d="M12 8l0 4"></path>
+                            <path d="M12 16l.01 0"></path>
+                        </svg>
+                        {{ __('Reset Semua Filter') }}
+                    </button>
+                </div>
+            @endif
         </div>
 
         <div class="table-responsive">
@@ -233,6 +298,17 @@
                             <td class="fw-semibold">
                                 <div>{{ $user->name }}</div>
                                 <div class="text-secondary text-truncate">{{ $user->identity?->identity_id }}</div>
+                                @if($user->identity?->institution)
+                                    <div class="text-muted small mt-1 text-truncate" style="max-width: 250px;">
+                                        {{ $user->identity?->institution?->name }}
+                                        @if($user->identity?->faculty)
+                                            / {{ $user->identity?->faculty?->name }}
+                                        @endif
+                                        @if($user->identity?->studyProgram)
+                                            / {{ $user->identity?->studyProgram?->name }}
+                                        @endif
+                                    </div>
+                                @endif
                             </td>
                             <td>{{ $user->email }}</td>
                             <td>

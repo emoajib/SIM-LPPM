@@ -3,6 +3,10 @@
 namespace App\Livewire\Users;
 
 use App\Livewire\Concerns\HasToast;
+use App\Models\Faculty;
+use App\Models\Identity;
+use App\Models\Institution;
+use App\Models\StudyProgram;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Hash;
@@ -36,6 +40,18 @@ class Index extends Component
 
     #[Url(except: 'latest')]
     public string $sort = 'latest';
+
+    #[Url(except: 'all')]
+    public string $institution = 'all';
+
+    #[Url(except: 'all')]
+    public string $faculty = 'all';
+
+    #[Url(except: 'all')]
+    public string $prodi = 'all';
+
+    #[Url(except: 'all')]
+    public string $identityType = 'all';
 
     public int $perPage = 10;
 
@@ -78,6 +94,57 @@ class Index extends Component
     }
 
     /**
+     * Reset the paginator and cascade filters when institution changes.
+     */
+    public function updatedInstitution(): void
+    {
+        $this->faculty = 'all';
+        $this->prodi = 'all';
+        $this->resetPage();
+    }
+
+    /**
+     * Reset the paginator and cascade prodi when faculty changes.
+     */
+    public function updatedFaculty(): void
+    {
+        $this->prodi = 'all';
+        $this->resetPage();
+    }
+
+    /**
+     * Reset the paginator when prodi filter changes.
+     */
+    public function updatedProdi(): void
+    {
+        $this->resetPage();
+    }
+
+    /**
+     * Reset the paginator when identity type filter changes.
+     */
+    public function updatedIdentityType(): void
+    {
+        $this->resetPage();
+    }
+
+    /**
+     * Reset all filters to their default values.
+     */
+    public function resetAllFilters(): void
+    {
+        $this->search = '';
+        $this->role = 'all';
+        $this->status = 'all';
+        $this->sort = 'latest';
+        $this->institution = 'all';
+        $this->faculty = 'all';
+        $this->prodi = 'all';
+        $this->identityType = 'all';
+        $this->resetPage();
+    }
+
+    /**
      * Render the component view.
      */
     public function render(): View
@@ -86,6 +153,10 @@ class Index extends Component
             'users' => $this->users(),
             'roleOptions' => $this->roleOptions(),
             'statusOptions' => $this->statusOptions(),
+            'identityTypeOptions' => $this->identityTypeOptions(),
+            'institutionOptions' => $this->institutionOptions(),
+            'facultyOptions' => $this->facultyOptions(),
+            'prodiOptions' => $this->prodiOptions(),
             'userCounts' => $this->userCountsByRole(),
         ]);
     }
@@ -99,7 +170,7 @@ class Index extends Component
         $search = trim($this->search);
 
         return User::query()
-            ->with(['roles', 'identity'])
+            ->with(['roles', 'identity.institution', 'identity.faculty', 'identity.studyProgram'])
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($query) use ($search) {
                     $query->where('name', 'like', "%{$search}%")
@@ -116,6 +187,38 @@ class Index extends Component
                 if ($this->status === 'unverified') {
                     $query->whereNull('email_verified_at');
                 }
+            })
+            ->when($this->institution !== 'all', function ($query) {
+                $query->whereHas('identity', function ($q) {
+                    if ($this->institution === 'without') {
+                        $q->whereNull('institution_id');
+                    } else {
+                        $q->where('institution_id', $this->institution);
+                    }
+                });
+            })
+            ->when($this->faculty !== 'all', function ($query) {
+                $query->whereHas('identity', function ($q) {
+                    if ($this->faculty === 'without') {
+                        $q->whereNull('faculty_id');
+                    } else {
+                        $q->where('faculty_id', $this->faculty);
+                    }
+                });
+            })
+            ->when($this->prodi !== 'all', function ($query) {
+                $query->whereHas('identity', function ($q) {
+                    if ($this->prodi === 'without') {
+                        $q->whereNull('study_program_id');
+                    } else {
+                        $q->where('study_program_id', $this->prodi);
+                    }
+                });
+            })
+            ->when($this->identityType !== 'all', function ($query) {
+                $query->whereHas('identity', function ($q) {
+                    $q->where('type', $this->identityType);
+                });
             })
             ->when($this->sort === 'latest', fn ($query) => $query->orderByDesc('created_at'))
             ->when($this->sort === 'oldest', fn ($query) => $query->orderBy('created_at'))
@@ -169,6 +272,131 @@ class Index extends Component
                 'label' => __('Pending verification'),
             ],
         ];
+    }
+
+    /**
+     * Build the available identity type filter options.
+     *
+     * @return array<int, array<string, string>>
+     */
+    protected function identityTypeOptions(): array
+    {
+        return [
+            ['value' => 'all', 'label' => __('Semua Tipe')],
+            ['value' => 'dosen', 'label' => __('Dosen')],
+            ['value' => 'mahasiswa', 'label' => __('Mahasiswa')],
+        ];
+    }
+
+    /**
+     * Build the available institution filter options.
+     *
+     * @return array<int, array<string, string>>
+     */
+    protected function institutionOptions(): array
+    {
+        $options = Institution::query()
+            ->orderBy('name')
+            ->get()
+            ->map(fn ($inst) => [
+                'value' => (string) $inst->id,
+                'label' => $inst->name,
+            ])
+            ->prepend([
+                'value' => 'all',
+                'label' => __('Semua Institusi'),
+            ])
+            ->values()
+            ->all();
+
+        // Add option for users without institution
+        $hasNull = User::has('identity')->whereDoesntHave('identity', fn ($q) => $q->whereNotNull('institution_id'))->exists();
+        if ($hasNull) {
+            $options[] = ['value' => 'without', 'label' => __('Tanpa Institusi')];
+        }
+
+        return $options;
+    }
+
+    /**
+     * Build faculty options based on the selected institution.
+     *
+     * @return array<int, array<string, string>>
+     */
+    protected function facultyOptions(): array
+    {
+        if ($this->institution === 'all') {
+            return [];
+        }
+
+        if ($this->institution === 'without') {
+            return [['value' => 'without', 'label' => __('Tanpa Fakultas')]];
+        }
+
+        $query = Faculty::query()->orderBy('name');
+
+        if ($this->institution !== 'all' && $this->institution !== 'without') {
+            $query->where('institution_id', $this->institution);
+        }
+
+        $options = $query->get()
+            ->map(fn ($f) => [
+                'value' => (string) $f->id,
+                'label' => $f->name,
+            ])
+            ->prepend([
+                'value' => 'all',
+                'label' => __('Semua Fakultas'),
+            ])
+            ->values()
+            ->all();
+
+        // Add option for users without faculty in this institution
+        $hasNull = Identity::where('institution_id', $this->institution)
+            ->whereNull('faculty_id')
+            ->exists();
+        if ($hasNull) {
+            $options[] = ['value' => 'without', 'label' => __('Tanpa Fakultas')];
+        }
+
+        return $options;
+    }
+
+    /**
+     * Build study program options based on the selected faculty.
+     *
+     * @return array<int, array<string, string>>
+     */
+    protected function prodiOptions(): array
+    {
+        if ($this->faculty === 'all' || $this->faculty === 'without') {
+            return $this->faculty === 'without' ? [['value' => 'without', 'label' => __('Tanpa Prodi')]] : [];
+        }
+
+        $options = StudyProgram::query()
+            ->where('faculty_id', $this->faculty)
+            ->orderBy('name')
+            ->get()
+            ->map(fn ($sp) => [
+                'value' => (string) $sp->id,
+                'label' => $sp->name,
+            ])
+            ->prepend([
+                'value' => 'all',
+                'label' => __('Semua Prodi'),
+            ])
+            ->values()
+            ->all();
+
+        // Add option for users without study program in this faculty
+        $hasNull = Identity::where('faculty_id', $this->faculty)
+            ->whereNull('study_program_id')
+            ->exists();
+        if ($hasNull) {
+            $options[] = ['value' => 'without', 'label' => __('Tanpa Prodi')];
+        }
+
+        return $options;
     }
 
     /**
