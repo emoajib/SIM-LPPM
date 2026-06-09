@@ -12,15 +12,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Convert string values to boolean
+        // Convert all string values to boolean
+        // Handle 'Aktif' (Indonesian) and 'Active' (English)
         DB::table('identities')
             ->where('is_active', 'Aktif')
-            ->update(['is_active' => true]);
+            ->update(['is_active' => '1']);
 
         DB::table('identities')
-            ->where('is_active', '!=', true)
-            ->where('is_active', '!=', 'Aktif')
-            ->update(['is_active' => false]);
+            ->where('is_active', 'Active')
+            ->update(['is_active' => '1']);
+
+        // Set any remaining non-true values to false
+        DB::table('identities')
+            ->where('is_active', '!=', '1')
+            ->update(['is_active' => '0']);
 
         // Change column type from string to boolean
         Schema::table('identities', function (Blueprint $table) {
