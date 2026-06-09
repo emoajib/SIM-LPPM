@@ -28,8 +28,8 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $username
  * @property string $email
  * @property string $password
- * @property string|null $original_password
  * @property Carbon|null $email_verified_at
+ * @property Carbon|null $last_active_at
  * @property-read Identity|null $identity
  * @property-read \Illuminate\Database\Eloquent\Collection|Proposal[] $submittedProposals
  * @property-read \Illuminate\Database\Eloquent\Collection|Proposal[] $proposals
@@ -64,8 +64,8 @@ class User extends Authenticatable implements HasMedia
         'username',
         'email',
         'password',
-        'original_password',
         'email_verified_at',
+        'last_active_at',
     ];
 
     /**
@@ -133,6 +133,7 @@ class User extends Authenticatable implements HasMedia
      */
     protected $hidden = [
         'password',
+        'original_password',
         'two_factor_secret',
         'two_factory_recovery_codes',
         'remember_token',
@@ -147,6 +148,7 @@ class User extends Authenticatable implements HasMedia
     {
         return [
             'email_verified_at' => 'datetime',
+            'last_active_at' => 'datetime',
             'password' => 'hashed',
         ];
     }

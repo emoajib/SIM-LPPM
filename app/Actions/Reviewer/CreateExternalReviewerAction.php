@@ -26,9 +26,10 @@ class CreateExternalReviewerAction
                 'name' => $data['name'],
                 'email' => $data['email'],
                 'password' => Hash::make($data['password']),
-                'role' => 'reviewer_external',
-                'is_active' => true,
             ]);
+
+            // Assign reviewer role
+            $user->assignRole('reviewer');
 
             // 2. Handle Institution Logic
             $institutionId = $data['institution_id'] ?? null;

@@ -234,7 +234,6 @@ class Edit extends Component
             // Only update password if provided
             if (! empty($validated['password'])) {
                 $user->password = Hash::make($validated['password']);
-                $user->original_password = $validated['password'];
             }
 
             if ($user->isDirty('email')) {

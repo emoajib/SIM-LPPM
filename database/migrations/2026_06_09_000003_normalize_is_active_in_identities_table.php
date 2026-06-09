@@ -1,0 +1,50 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        // Convert string values to boolean
+        DB::table('identities')
+            ->where('is_active', 'Aktif')
+            ->update(['is_active' => true]);
+
+        DB::table('identities')
+            ->where('is_active', '!=', true)
+            ->where('is_active', '!=', 'Aktif')
+            ->update(['is_active' => false]);
+
+        // Change column type from string to boolean
+        Schema::table('identities', function (Blueprint $table) {
+            $table->boolean('is_active')->default(true)->change();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        // Change column type back to string
+        Schema::table('identities', function (Blueprint $table) {
+            $table->string('is_active')->default('Aktif')->change();
+        });
+
+        // Convert boolean values back to string
+        DB::table('identities')
+            ->where('is_active', true)
+            ->update(['is_active' => 'Aktif']);
+
+        DB::table('identities')
+            ->where('is_active', false)
+            ->update(['is_active' => 'Non Aktif']);
+    }
+};

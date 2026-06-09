@@ -75,7 +75,7 @@ class SintaAuthorImport implements ToCollection, WithHeadingRow
             $garudaCitations = $this->parseNumber($row['sitasi_garuda'] ?? 0);
             $garudaCitedDocs = $this->parseNumber($row['dokumen_tersitasi_garuda'] ?? 0);
 
-            $statusAktif = $row['status_aktif'] ?? 'Aktif';
+            $statusAktif = ($row['status_aktif'] ?? 'Aktif') === 'Aktif';
 
             // Prepare Data Array
             $identityData = [

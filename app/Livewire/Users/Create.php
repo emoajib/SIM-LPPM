@@ -84,7 +84,6 @@ class Create extends Component
                 'username' => ! empty($validated['username']) ? $validated['username'] : null,
                 'email' => $validated['email'],
                 'password' => $validated['password'],
-                'original_password' => $validated['password'],
                 'email_verified_at' => now(),
             ]);
 

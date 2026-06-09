@@ -501,7 +501,6 @@ class Index extends Component
 
             $user->update([
                 'password' => Hash::make($this->massResetPassword),
-                'original_password' => $this->massResetPassword,
             ]);
             $count++;
         }
@@ -538,7 +537,6 @@ class Index extends Component
 
         $user->update([
             'password' => Hash::make($newPassword),
-            'original_password' => $newPassword,
         ]);
 
         $this->toastSuccess(__("Password untuk {$user->name} telah direset menjadi: 'password'"));

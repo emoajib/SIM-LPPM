@@ -172,7 +172,7 @@ class ImportSintaAuthor extends Command
                     'garuda_documents' => (int) $garudaDocs,
                     'garuda_citations' => (int) $garudaCitations,
                     'garuda_cited_documents' => (int) $garudaCitedDocs,
-                    'is_active' => $statusAktif ?? 'Aktif',
+                    'is_active' => ($statusAktif ?? 'Aktif') === 'Aktif',
                 ];
 
                 $this->line("Processing: $name ($nidn)");

@@ -79,47 +79,6 @@
                 <div class="col-12">
                     <hr class="my-3">
                     <h4 class="card-title text-secondary">Manajemen Password</h4>
-                    @if ($this->user->original_password)
-                        <div class="alert alert-warning mb-3">
-                            <div class="d-flex justify-content-between align-items-center" x-data="{ show: false }">
-                                <div>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <strong>Password Asli Tersimpan:</strong>
-                                        <div class="d-flex align-items-center">
-                                            <code class="text-azure"
-                                                x-show="show">{{ $this->user->original_password }}</code>
-                                            <span class="text-muted fst-italic" x-show="!show">********</span>
-                                        </div>
-                                        <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary"
-                                            @click="show = !show" title="Toggle visibility">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
-                                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                                stroke-linecap="round" stroke-linejoin="round" x-show="!show">
-                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
-                                                <path
-                                                    d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" />
-                                            </svg>
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
-                                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                                stroke-linecap="round" stroke-linejoin="round" x-show="show"
-                                                style="display: none;">
-                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                <path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" />
-                                                <path
-                                                    d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 3.145 -3.594 5.27 -4.194" />
-                                                <path d="M7.5 8l12.01 12.01" />
-                                                <path d="M3 3l18 18" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                    <div class="text-muted small mt-1">Ini adalah password yang tersimpan saat
-                                        pembuatan/import user.</div>
-                                </div>
-                                <span class="badge bg-yellow-lt">Visible to Admin</span>
-                            </div>
-                        </div>
-                    @endif
                     <div class="alert alert-info d-flex align-items-center justify-content-between">
                         <div>Kosongkan jika tidak ingin mengubah password pengguna.</div>
                         <button type="button" class="btn btn-sm btn-outline-primary" wire:click="generatePassword">

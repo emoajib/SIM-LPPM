@@ -25,7 +25,6 @@ class UsersImport implements ToCollection, WithHeadingRow, WithValidation
                     'username' => ! empty($row['username']) ? $row['username'] : null,
                     'email' => $row['email'],
                     'password' => Hash::make($row['password']),
-                    'original_password' => $row['password'],
                     'email_verified_at' => now(),
                 ]);
 
