@@ -4,8 +4,12 @@
 
 namespace App\Livewire\Reports;
 
+use App\Enums\InstitutionalReportStatus;
 use App\Enums\ProposalStatus;
+use App\Livewire\Concerns\HasToast;
+use App\Livewire\Traits\WithInstitutionalApproval;
 use App\Models\CommunityService;
+use App\Models\InstitutionalReport;
 use App\Models\Proposal;
 use App\Models\ProposalReviewer;
 use App\Models\Research;
@@ -22,7 +26,7 @@ use Livewire\WithPagination;
 #[Layout('components.layouts.app', ['title' => 'Laporan Reviewer', 'pageTitle' => 'Laporan Penugasan & Reviewer'])]
 class ReviewerReport extends Component
 {
-    use WithPagination;
+    use HasToast, WithInstitutionalApproval, WithPagination;
 
     #[Url(history: true)]
     public string $activeTab = 'assignment'; // assignment, workload, scoring
@@ -250,6 +254,40 @@ class ReviewerReport extends Component
             ->toArray();
 
         return array_filter($years) ?: [(string) date('Y')];
+    }
+
+    #[Computed]
+    public function institutionalReport(): ?InstitutionalReport
+    {
+        return $this->getInstitutionalReport('reviewer', (int) $this->yearFilter);
+    }
+
+    public function submitToRektor(): void
+    {
+        $this->submitInstitutionalReport('reviewer', (int) $this->yearFilter, [
+            'search' => $this->search,
+            'type' => $this->typeFilter,
+            'period' => $this->yearFilter,
+        ]);
+    }
+
+    public function approveReport(): void
+    {
+        $this->approveInstitutionalReport('reviewer', (int) $this->yearFilter);
+    }
+
+    public function rejectReport(): void
+    {
+        $this->rejectInstitutionalReport('reviewer', (int) $this->yearFilter);
+    }
+
+    public function resetReport(): void
+    {
+        $report = $this->institutionalReport();
+        if ($report) {
+            $report->delete();
+            $this->toastSuccess('Status laporan telah di-reset.');
+        }
     }
 
     public function render(): View

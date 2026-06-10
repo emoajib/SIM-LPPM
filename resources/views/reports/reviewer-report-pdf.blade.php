@@ -299,9 +299,19 @@
             <tr>
                 <td width="40%">
                     <div class="sign-block">
-                        <div>Pekalongan, {{ now()->translatedFormat('d F Y') }}</div>
+                        <div>Pekalongan, {{ $institutionalReport?->approved_at?->translatedFormat('d F Y') ?? now()->translatedFormat('d F Y') }}</div>
                         <div>Mengetahui,</div>
-                        <div style="font-weight: bold; margin-bottom: 60px;">Rektor ITSNU Pekalongan</div>
+                        <div style="font-weight: bold; margin-bottom: 5px;">Rektor ITSNU Pekalongan</div>
+                        
+                        @if($institutionalReport && $institutionalReport->status->value === 'approved' && $institutionalReport->signature_path)
+                            <div style="margin: 10px 0;">
+                                <img src="{{ generate_qr_code_data_uri(URL::signedRoute('reports.verify', ['institutionalReport' => $institutionalReport->id]), 120) }}" width="70">
+                            </div>
+                            <div style="font-size: 7pt; color: #1a56db; font-weight: bold; margin-bottom: 5px;">DIGITALLY SIGNED</div>
+                        @else
+                            <div style="height: 70px;"></div>
+                        @endif
+
                         <div class="sign-name">
                             {{ format_name($rektor?->identity?->title_prefix, $rektor?->name ?? 'Rektor', $rektor?->identity?->title_suffix) }}
                         </div>
@@ -311,9 +321,19 @@
                 <td width="20%"></td>
                 <td width="40%">
                     <div class="sign-block">
-                        <div>Pekalongan, {{ now()->translatedFormat('d F Y') }}</div>
+                        <div>Pekalongan, {{ $institutionalReport?->submitted_at?->translatedFormat('d F Y') ?? now()->translatedFormat('d F Y') }}</div>
                         <div>Dibuat oleh,</div>
-                        <div style="font-weight: bold; margin-bottom: 60px;">Kepala LPPM ITSNU Pekalongan</div>
+                        <div style="font-weight: bold; margin-bottom: 5px;">Kepala LPPM ITSNU Pekalongan</div>
+
+                        @if($institutionalReport && in_array($institutionalReport->status->value, ['submitted', 'approved']))
+                            <div style="margin: 10px 0;">
+                                <img src="{{ generate_qr_code_data_uri(URL::signedRoute('reports.verify', ['institutionalReport' => $institutionalReport->id]), 120) }}" width="70">
+                            </div>
+                            <div style="font-size: 7pt; color: #1a56db; font-weight: bold; margin-bottom: 5px;">DIGITALLY SIGNED</div>
+                        @else
+                            <div style="height: 70px;"></div>
+                        @endif
+
                         <div class="sign-name">
                             {{ format_name($lppmHead?->identity?->title_prefix, $lppmHead?->name ?? 'Kepala LPPM', $lppmHead?->identity?->title_suffix) }}
                         </div>

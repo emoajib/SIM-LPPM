@@ -20,6 +20,10 @@ class BackupData extends Component
 
     public ?string $lastStorageFile = null;
 
+    public array $availableFolders = [];
+
+    public array $selectedFolders = [];
+
     public function mount(): void
     {
         abort_unless(Auth::user()?->hasRole('admin lppm'), 403);
@@ -27,6 +31,22 @@ class BackupData extends Component
         $this->lastBackup = cache('backup_last_time', 'Belum pernah');
         $this->lastDbFile = cache('backup_last_db_file');
         $this->lastStorageFile = cache('backup_last_storage_file');
+
+        $this->loadAvailableFolders();
+    }
+
+    private function loadAvailableFolders(): void
+    {
+        $storagePath = storage_path('app/public');
+        if (is_dir($storagePath)) {
+            $folders = glob($storagePath . '/*', GLOB_ONLYDIR);
+            $this->availableFolders = array_map(function($path) {
+                return basename($path);
+            }, $folders);
+            
+            // Default select all
+            $this->selectedFolders = $this->availableFolders;
+        }
     }
 
     public function backupDatabase(): void
@@ -152,8 +172,13 @@ class BackupData extends Component
             return;
         }
 
+        if (empty($this->selectedFolders)) {
+            $this->output = "⚠️ Silakan pilih minimal satu folder untuk di-backup.";
+            return;
+        }
+
         $this->isRunning = true;
-        $this->output = "Membuat backup file storage...\n";
+        $this->output = "Membuat backup file storage (Folder terpilih: " . implode(', ', $this->selectedFolders) . ")...\n";
 
         $backupDir = storage_path('app/backup');
         if (! is_dir($backupDir)) {
@@ -175,12 +200,17 @@ class BackupData extends Component
 
         $this->cleanOldBackups('storage_*');
 
-        // Optimasi: Gunakan perintah native 'zip' jika tersedia (jauh lebih cepat & efisien)
+        // Optimasi: Gunakan perintah native 'zip' jika tersedia
         $zipPath = $this->findZipCommand();
         if ($zipPath) {
             $this->output .= "Menggunakan perintah native zip: {$zipPath}\n";
 
-            $cmd = [$zipPath, '-r', $path, '.'];
+            // Hanya zip folder yang dipilih
+            $cmd = [$zipPath, '-r', $path];
+            foreach ($this->selectedFolders as $folder) {
+                $cmd[] = $folder;
+            }
+
             $result = Process::path($storagePath)->timeout(900)->run($cmd, function ($type, $line) {
                 if (str_contains($line, 'adding:')) {
                     static $count = 0;
@@ -227,31 +257,40 @@ class BackupData extends Component
                 return;
             }
 
-            $files = new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator($storagePath),
-                \RecursiveIteratorIterator::LEAVES_ONLY
-            );
-
             $count = 0;
-            foreach ($files as $file) {
-                if (! $file->isFile()) {
-                    continue;
-                }
-                $relativePath = substr($file->getPathname(), strlen($storagePath) + 1);
-                $zip->addFile($file->getPathname(), $relativePath);
-                $count++;
+            foreach ($this->selectedFolders as $folder) {
+                $targetFolder = $storagePath . '/' . $folder;
+                if (!is_dir($targetFolder)) continue;
 
-                if ($count % 50 === 0) {
-                    $this->output .= "Memasukkan file ke ZIP... ({$count})\n";
+                $this->output .= "Menyiapkan folder: {$folder}...\n";
+
+                $files = new \RecursiveIteratorIterator(
+                    new \RecursiveDirectoryIterator($targetFolder),
+                    \RecursiveIteratorIterator::LEAVES_ONLY
+                );
+
+                foreach ($files as $file) {
+                    if (! $file->isFile()) {
+                        continue;
+                    }
+                    // relative path must include the folder name as the root in ZIP
+                    $relativePath = $folder . '/' . substr($file->getPathname(), strlen($targetFolder) + 1);
+                    $zip->addFile($file->getPathname(), $relativePath);
+                    $count++;
+
+                    if ($count % 50 === 0) {
+                        $this->output .= "Memasukkan file ke ZIP... ({$count})\n";
+                    }
                 }
             }
+            
             $zip->close();
 
             if ($count > 0 && file_exists($path) && filesize($path) > 0) {
                 $this->finalizeStorageBackup($filename, $path);
             } else {
                 @unlink($path);
-                $this->output .= "\n⚠️ Tidak ada file storage untuk di-backup.";
+                $this->output .= "\n⚠️ Tidak ada file dalam folder terpilih untuk di-backup.";
                 $this->isRunning = false;
             }
         } catch (\Exception $e) {

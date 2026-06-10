@@ -133,6 +133,7 @@
                                             'partner' => 'reports.partners',
                                             'iku' => 'reports.iku',
                                             'monev' => 'kepala-lppm.monev.recap',
+                                            'reviewer' => 'reports.reviewer',
                                             default => null
                                         };
                                         $params = ['period' => $report->year];
@@ -173,6 +174,7 @@
                                             'partner' => 'reports.partner.pdf',
                                             'iku' => 'admin.iku.export-pdf',
                                             'monev' => 'reports.monev.pdf',
+                                            'reviewer' => 'reports.reviewer.pdf',
                                             default => null
                                         };
                                         
@@ -183,6 +185,7 @@
                                             'partner' => 'reports.partner.excel',
                                             'iku' => 'admin.iku.export-excel',
                                             'monev' => 'export.monev.recap',
+                                            'reviewer' => 'reports.reviewer.excel',
                                             default => null
                                         };
                                     @endphp

@@ -298,18 +298,23 @@
         <div class="col-lg-6">
             <div class="card glass-card border-0 shadow-sm">
                 <div class="card-header bg-transparent border-0 py-3">
-                    <div class="d-flex align-items-center">
-                        <div class="avatar bg-primary-lt text-primary shadow-sm avatar-sm me-3 border-0">
-                            <i class="ti ti-flask-2"></i>
+                    <div class="d-flex align-items-center justify-content-between w-100">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar bg-primary-lt text-primary shadow-sm avatar-sm me-3 border-0">
+                                <i class="ti ti-flask-2"></i>
+                            </div>
+                            <h3 class="card-title fw-bold mb-0">Penelitian Terbaru</h3>
                         </div>
-                        <h3 class="card-title fw-bold mb-0">Penelitian Terbaru</h3>
+                        <a href="{{ route('reports.research') }}" class="btn btn-sm btn-ghost-primary" wire:navigate>
+                            Lihat Semua <i class="ti ti-chevron-right ms-1"></i>
+                        </a>
                     </div>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-vcenter card-table table-hover table-borderless">
                         <thead class="bg-light-lt">
                             <tr>
-                                <th class="ps-4">Judul & Pengaju</th>
+                                <th class="ps-4">Judul & Pengajuan</th>
                                 <th class="text-center">Status</th>
                                 <th class="text-end pe-4">Waktu</th>
                             </tr>
@@ -330,7 +335,7 @@
                                         <x-tabler.badge :color="$research->status->color()" class="fw-normal">{{ $research->status->label() }}</x-tabler.badge>
                                     </td>
                                     <td class="text-end pe-4 text-muted small">
-                                        {{ $research->created_at->diffForHumans() }}
+                                        {{ $research->updated_at->diffForHumans() }}
                                     </td>
                                 </tr>
                             @empty
@@ -356,18 +361,23 @@
         <div class="col-lg-6">
             <div class="card glass-card border-0 shadow-sm">
                 <div class="card-header bg-transparent border-0 py-3">
-                    <div class="d-flex align-items-center">
-                        <div class="avatar bg-azure-lt text-azure shadow-sm avatar-sm me-3 border-0">
-                            <i class="ti ti-users-group"></i>
+                    <div class="d-flex align-items-center justify-content-between w-100">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar bg-azure-lt text-azure shadow-sm avatar-sm me-3 border-0">
+                                <i class="ti ti-users-group"></i>
+                            </div>
+                            <h3 class="card-title fw-bold mb-0">PKM Terbaru</h3>
                         </div>
-                        <h3 class="card-title fw-bold mb-0">PKM Terbaru</h3>
+                        <a href="{{ route('reports.pkm') }}" class="btn btn-sm btn-ghost-primary" wire:navigate>
+                            Lihat Semua <i class="ti ti-chevron-right ms-1"></i>
+                        </a>
                     </div>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-vcenter card-table table-hover table-borderless">
                         <thead class="bg-light-lt">
                             <tr>
-                                <th class="ps-4">Judul & Pengaju</th>
+                                <th class="ps-4">Judul & Pengajuan</th>
                                 <th class="text-center">Status</th>
                                 <th class="text-end pe-4">Waktu</th>
                             </tr>
@@ -388,7 +398,7 @@
                                         <x-tabler.badge :color="$communityService->status->color()" class="fw-normal">{{ $communityService->status->label() }}</x-tabler.badge>
                                     </td>
                                     <td class="text-end pe-4 text-muted small">
-                                        {{ $communityService->created_at->diffForHumans() }}
+                                        {{ $communityService->updated_at->diffForHumans() }}
                                     </td>
                                 </tr>
                             @empty

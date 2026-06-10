@@ -20,7 +20,7 @@ class StorageRestoreService
 
     protected int $maxCompressionRatio = 100;
 
-    public function restore(string $zipPath): array
+    public function restore(string $zipPath, array $selectedFolders = [], bool $replaceMode = true): array
     {
         if (! file_exists($zipPath)) {
             throw new \RuntimeException('File ZIP tidak ditemukan.');
@@ -56,6 +56,17 @@ class StorageRestoreService
             mkdir($targetDir, 0755, true);
         }
 
+        // If replace mode is on, clean selected folders first
+        if ($replaceMode && ! empty($selectedFolders)) {
+            foreach ($selectedFolders as $folder) {
+                if ($folder === '.') continue;
+                $folderPath = $targetDir . '/' . $folder;
+                if (is_dir($folderPath)) {
+                    $this->deleteDirectory($folderPath);
+                }
+            }
+        }
+
         $extracted = 0;
         $skipped = [];
         $errors = [];
@@ -64,6 +75,24 @@ class StorageRestoreService
             $entry = $zip->getNameIndex($i);
             if ($entry === false) {
                 continue;
+            }
+
+            // Check if entry belongs to selected folders
+            if (!empty($selectedFolders)) {
+                $belongsToSelected = false;
+                foreach ($selectedFolders as $folder) {
+                    if ($folder === '.') {
+                        // Root files
+                        if (!str_contains($entry, '/')) {
+                            $belongsToSelected = true;
+                            break;
+                        }
+                    } elseif (str_starts_with($entry, $folder . '/')) {
+                        $belongsToSelected = true;
+                        break;
+                    }
+                }
+                if (!$belongsToSelected) continue;
             }
 
             if (str_ends_with($entry, '/')) {
@@ -82,12 +111,10 @@ class StorageRestoreService
                 continue;
             }
 
-            $resolvedPath = realpath($targetDir).'/'.$entry;
-            $resolvedReal = realpath(dirname($resolvedPath));
-
-            if ($resolvedReal === false || ! str_starts_with($resolvedReal, realpath($targetDir))) {
-                $errors[] = $entry.' (path traversal)';
-
+            $resolvedPath = $targetDir.'/'.$entry;
+            // Basic security check for path traversal
+            if (str_contains($entry, '..')) {
+                $errors[] = $entry.' (path traversal detected)';
                 continue;
             }
 
@@ -146,6 +173,8 @@ class StorageRestoreService
 
         $entries = [];
         $totalSize = 0;
+        $folders = [];
+        $hasRootFiles = false;
 
         for ($i = 0; $i < $zip->count(); $i++) {
             $entry = $zip->getNameIndex($i);
@@ -155,14 +184,30 @@ class StorageRestoreService
                 continue;
             }
 
-            $entries[] = [
-                'name' => $entry,
-                'size' => $stat['size'] ?? 0,
-                'compressed' => $stat['comp_size'] ?? 0,
-                'is_dir' => str_ends_with($entry, '/'),
-            ];
+            $parts = explode('/', $entry);
+            if (count($parts) > 1) {
+                $topFolder = $parts[0];
+                if (!in_array($topFolder, $folders)) {
+                    $folders[] = $topFolder;
+                }
+            } else {
+                $hasRootFiles = true;
+            }
+
+            if ($i < 100) { // Limit preview items
+                $entries[] = [
+                    'name' => $entry,
+                    'size' => $stat['size'] ?? 0,
+                    'compressed' => $stat['comp_size'] ?? 0,
+                    'is_dir' => str_ends_with($entry, '/'),
+                ];
+            }
 
             $totalSize += $stat['size'] ?? 0;
+        }
+
+        if ($hasRootFiles) {
+            $folders[] = '.'; // Symbol for root files
         }
 
         $totalEntries = $zip->count();
@@ -173,9 +218,34 @@ class StorageRestoreService
             'total_entries' => $totalEntries,
             'total_size' => $totalSize,
             'entries' => $entries,
+            'folders' => $folders,
             'validation' => $validation,
         ];
     }
+
+    private function deleteDirectory(string $dir): bool
+    {
+        if (! file_exists($dir)) {
+            return true;
+        }
+
+        if (! is_dir($dir)) {
+            return unlink($dir);
+        }
+
+        foreach (scandir($dir) as $item) {
+            if ($item == '.' || $item == '..') {
+                continue;
+            }
+
+            if (! $this->deleteDirectory($dir.DIRECTORY_SEPARATOR.$item)) {
+                return false;
+            }
+        }
+
+        return rmdir($dir);
+    }
+
 
     protected function validateZipEntries(ZipArchive $zip): array
     {

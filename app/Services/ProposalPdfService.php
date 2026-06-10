@@ -248,32 +248,6 @@ class ProposalPdfService
             $lppmHeadId = Setting::where('key', 'lppm_head_id')->first()->value ?? $lppmHeadId;
         }
 
-        // Fetch approval logs for signatures
-        $deanLog = ProposalStatusLog::where('proposal_id', $proposal->id)
-            ->where('status_after', ProposalStatus::APPROVED)
-            ->latest('at')
-            ->first();
-
-        $lppmLog = ProposalStatusLog::where('proposal_id', $proposal->id)
-            ->whereIn('status_after', [ProposalStatus::UNDER_REVIEW, ProposalStatus::WAITING_REVIEWER])
-            ->latest('at')
-            ->first();
-
-        $submissionLog = ProposalStatusLog::where('proposal_id', $proposal->id)
-            ->where('status_after', ProposalStatus::SUBMITTED)
-            ->latest('at')
-            ->first();
-
-        $lecturerSignedAt = $submissionLog->at ?? $proposal->created_at;
-
-        // Clean up any existing signatures for draft/revision proposals (should not have signatures)
-        if (in_array($proposal->status->value, [ProposalStatus::DRAFT->value, ProposalStatus::REVISION_NEEDED->value])) {
-            DocumentSignature::where('document_type', get_class($proposal))
-                ->where('document_id', $proposal->id)
-                ->where('variant', 'final')
-                ->delete();
-        }
-
         // Pre-fetch approval mode once (reused for Blade view & FPDI merge)
         $approvalMode = Setting::where('key', 'proposal_approval_mode')->value('value') ?? 'digital';
 
@@ -336,9 +310,6 @@ class ProposalPdfService
             'lppm_head_name' => $lppmHeadName,
             'lppm_head_id' => $lppmHeadId,
             'proposal_approval_mode' => $approvalMode, // reuse already-fetched variable
-            'dean_signed_at' => $deanLog?->at,
-            'lppm_signed_at' => $lppmLog?->at,
-            'lecturer_signed_at' => $lecturerSignedAt,
         ])
             ->setPaper('a4', 'portrait')
             ->setOptions([

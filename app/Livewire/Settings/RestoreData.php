@@ -31,6 +31,14 @@ class RestoreData extends Component
 
     public bool $replaceMode = true;
 
+    public bool $zipReplaceMode = true;
+
+    public array $availableZipFolders = [];
+
+    public array $selectedZipFolders = [];
+
+    public ?string $uploadErrorMessage = null;
+
     public function mount(): void
     {
         abort_unless(Auth::user()?->hasRole('admin lppm'), 403);
@@ -38,16 +46,16 @@ class RestoreData extends Component
 
     public function updatedSqlFile(): void
     {
-        $this->validate([
-            'sqlFile' => 'file|mimes:sql,text,plain|max:204800',
-        ]);
-
-        $this->output = '';
-        $this->hasPreview = false;
-        $this->preview = [];
-        $this->uploadedSqlPath = null;
-        $this->zipFile = null;
-        $this->uploadedZipPath = null;
+        $this->resetStates();
+        
+        try {
+            $this->validate([
+                'sqlFile' => 'file|mimes:sql,text,plain|max:524288',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $this->uploadErrorMessage = $e->getMessage();
+            throw $e;
+        }
 
         $backupDir = storage_path('app/backup');
         if (! is_dir($backupDir)) {
@@ -60,7 +68,6 @@ class RestoreData extends Component
         $sourcePath = $this->sqlFile->getRealPath();
         if ($sourcePath === false || ! copy($sourcePath, $this->uploadedSqlPath)) {
             $this->output = "❌ Gagal menyimpan file ke {$backupDir}.\n";
-
             return;
         }
 
@@ -68,43 +75,24 @@ class RestoreData extends Component
         $this->preview = $service->preview($this->uploadedSqlPath);
         $this->hasPreview = true;
 
-        $mode = $this->replaceMode ? 'Sinkron' : 'Tambah';
-        $this->output = "Mode: {$mode}\n";
-        $this->output .= "File: {$filename}\n";
-        $this->output .= 'Tabel: '.count($this->preview['tables'])."\n";
-        $this->output .= "Baris: {$this->preview['allowed']}\n";
-
-        if ($this->replaceMode) {
-            $preserved = $service->getPreservedTableInfo($this->preview['tables']);
-            if (! empty($preserved)) {
-                $this->output .= 'Tabel sistem dipertahankan: '.implode(', ', array_keys($preserved))."\n";
-            }
-        }
-
-        if ($this->preview['blocked_count'] > 0) {
-            $this->output .= "\n⚠️ Statement diblokir: {$this->preview['blocked_count']}\n";
-            foreach (array_slice($this->preview['blocked'], 0, 5) as $b) {
-                $this->output .= "  [{$b['type']}] {$b['preview']}...\n";
-            }
-        }
-
-        if (! $this->replaceMode) {
-            $this->output .= "\n⚠️ Mode Tambah: data baru akan ditambahkan. Risiko duplikasi jika data sudah ada.\n";
-        }
+        $this->logSqlPreview($filename);
     }
 
     public function updatedZipFile(): void
     {
-        $this->validate([
-            'zipFile' => 'file|mimes:zip|max:512000',
-        ]);
+        \Illuminate\Support\Facades\Log::info('RestoreData: Starting ZIP upload process');
+        $this->resetStates();
 
-        $this->output = '';
-        $this->hasPreview = false;
-        $this->preview = [];
-        $this->uploadedZipPath = null;
-        $this->sqlFile = null;
-        $this->uploadedSqlPath = null;
+        try {
+            \Illuminate\Support\Facades\Log::info('RestoreData: Validating ZIP file');
+            $this->validate([
+                'zipFile' => 'file|mimes:zip|max:524288',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Illuminate\Support\Facades\Log::warning('RestoreData: Validation failed', ['errors' => $e->errors()]);
+            $this->uploadErrorMessage = $e->getMessage();
+            throw $e;
+        }
 
         $backupDir = storage_path('app/backup');
         if (! is_dir($backupDir)) {
@@ -113,19 +101,34 @@ class RestoreData extends Component
 
         $filename = 'upload_restore_'.now()->format('Ymd_His').'.zip';
         $this->uploadedZipPath = $backupDir.'/'.$filename;
+        \Illuminate\Support\Facades\Log::info('RestoreData: Saving ZIP to ' . $this->uploadedZipPath);
 
         $sourcePath = $this->zipFile->getRealPath();
         if ($sourcePath === false || ! copy($sourcePath, $this->uploadedZipPath)) {
             $this->output = "❌ Gagal menyimpan file ke {$backupDir}.\n";
-
+            \Illuminate\Support\Facades\Log::error('RestoreData: Copy failed', ['source' => $sourcePath]);
             return;
         }
 
+        \Illuminate\Support\Facades\Log::info('RestoreData: Starting ZIP preview analysis');
         $service = app(StorageRestoreService::class);
-        $validation = $service->preview($this->uploadedZipPath);
+        try {
+            $validation = $service->preview($this->uploadedZipPath);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('RestoreData: Preview service error', ['msg' => $e->getMessage()]);
+            $this->output = "❌ Error Analysis: " . $e->getMessage();
+            return;
+        }
 
         $this->hasPreview = true;
         $this->preview = $validation['validation'];
+        $this->availableZipFolders = $validation['folders'] ?? [];
+        $this->selectedZipFolders = $this->availableZipFolders;
+
+        \Illuminate\Support\Facades\Log::info('RestoreData: ZIP ready for UI', [
+            'folders' => count($this->availableZipFolders),
+            'entries' => $validation['total_entries']
+        ]);
 
         $this->output = "File: {$filename}\n";
         $this->output .= "Entries: {$validation['total_entries']}\n";
@@ -137,15 +140,50 @@ class RestoreData extends Component
                 $this->output .= "  ❌ {$issue}\n";
             }
         } else {
-            $this->output .= "\n✅ File ZIP aman untuk dipulihkan.";
+            $this->output .= "\n✅ File ZIP siap. Silakan pilih folder dan mode di bawah.";
         }
     }
+
+    private function resetStates(): void
+    {
+        $this->output = '';
+        $this->uploadErrorMessage = null;
+        $this->hasPreview = false;
+        $this->preview = [];
+        $this->uploadedSqlPath = null;
+        $this->uploadedZipPath = null;
+        $this->availableZipFolders = [];
+        $this->selectedZipFolders = [];
+    }
+
+    private function logSqlPreview(string $filename): void
+    {
+        $mode = $this->replaceMode ? 'Sinkron' : 'Tambah';
+        $this->output = "Mode: {$mode}\n";
+        $this->output .= "File: {$filename}\n";
+        $this->output .= 'Tabel: '.count($this->preview['tables'])."\n";
+        $this->output .= "Baris: {$this->preview['allowed']}\n";
+    }
+
+    public function getPhpLimitsProperty(): array
+    {
+        return [
+            'post_max' => ini_get('post_max_size'),
+            'upload_max' => ini_get('upload_max_filesize'),
+        ];
+    }
+
 
     public function executeRestore(): void
     {
         abort_unless(Auth::user()?->hasRole('admin lppm'), 403);
 
         if ($this->isRunning) {
+            return;
+        }
+
+        if ($this->uploadedZipPath && empty($this->selectedZipFolders)) {
+            $this->output = "⚠️ Silakan pilih minimal satu folder storage untuk dipulihkan.";
             return;
         }
 
@@ -172,9 +210,10 @@ class RestoreData extends Component
             }
 
             if ($this->uploadedZipPath) {
-                $this->output .= "\nMemulihkan file storage...\n";
+                $modeLabel = $this->zipReplaceMode ? 'Sinkron' : 'Tambah';
+                $this->output .= "\nMemulihkan file storage (mode: {$modeLabel})...\n";
                 $service = app(StorageRestoreService::class);
-                $result = $service->restore($this->uploadedZipPath);
+                $result = $service->restore($this->uploadedZipPath, $this->selectedZipFolders, $this->zipReplaceMode);
 
                 $this->output .= $result['message']."\n";
 
@@ -204,7 +243,10 @@ class RestoreData extends Component
         $this->preview = [];
         $this->uploadedSqlPath = null;
         $this->uploadedZipPath = null;
+        $this->availableZipFolders = [];
+        $this->selectedZipFolders = [];
     }
+
 
     public function render(): View
     {

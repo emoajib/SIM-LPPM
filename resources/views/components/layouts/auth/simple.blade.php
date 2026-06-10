@@ -23,18 +23,15 @@
     <!-- BEGIN DEMO STYLES -->
     {{-- <link href="./preview/css/demo.css" rel="stylesheet" /> --}}
     <!-- END DEMO STYLES -->
-    <!-- BEGIN CUSTOM FONT -->
-    <style>
-        @import url("https://rsms.me/inter/inter.css");
-    </style>
-    <!-- END CUSTOM FONT -->
 
     {{-- Cloudflareturnstile --}}
-    <script
-        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-        async
-        defer
-    ></script>
+    @if(config('turnstile.site_key'))
+        <script
+            src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+            async
+            defer
+        ></script>
+    @endif
 </head>
 
 <body>

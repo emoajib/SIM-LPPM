@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Rules\Turnstile;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
@@ -43,7 +44,9 @@ class Login extends Component
     public function mount(): void
     {
         $this->generateMathQuestion();
-        $this->loginTitle = Setting::where('key', 'login_title')->value('value') ?? 'Login to your account';
+        $this->loginTitle = Cache::remember('settings.login_title', 3600, function () {
+            return Setting::where('key', 'login_title')->value('value') ?? 'Login to your account';
+        });
     }
 
     public function generateMathQuestion(): void

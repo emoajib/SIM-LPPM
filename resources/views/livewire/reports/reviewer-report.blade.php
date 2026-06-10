@@ -12,6 +12,11 @@
                     </div>
                 </div>
                 <div class="col-auto ms-auto d-flex gap-2">
+                    <a href="{{ route('reports.reviewer.pdf', ['period' => $yearFilter, 'type' => $typeFilter, 'search' => $search, 'preview' => 1]) }}" 
+                       class="btn btn-outline-danger d-flex align-items-center gap-1 shadow-sm" target="_blank">
+                        <i class="ti ti-eye fs-2"></i>
+                        <span>Tinjau PDF</span>
+                    </a>
                     <a href="{{ route('reports.reviewer.pdf', ['period' => $yearFilter, 'type' => $typeFilter, 'search' => $search]) }}" 
                        class="btn btn-danger d-flex align-items-center gap-1 shadow-sm" target="_blank">
                         <i class="ti ti-file-text fs-2"></i>
@@ -22,6 +27,69 @@
                         <i class="ti ti-file-spreadsheet fs-2"></i>
                         <span>Ekspor Excel</span>
                     </a>
+                </div>
+            </div>
+
+            <!-- Workflow Status Banner -->
+            @php $report = $this->institutionalReport; @endphp
+            <div class="mt-3">
+                <div class="card bg-primary-lt border-0 shadow-sm overflow-hidden">
+                    <div class="card-body py-2 px-3">
+                        <div class="row align-items-center g-3">
+                            <div class="col">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="ti ti-info-circle fs-2"></i>
+                                    <div>
+                                        <span class="fw-bold">Status Pelaporan Institutional:</span>
+                                        @if($report)
+                                            <x-tabler.badge :color="$report->status->color()" class="ms-1">{{ $report->status->label() }}</x-tabler.badge>
+                                            <small class="text-muted ms-2">
+                                                @if($report->status->value === 'submitted')
+                                                    Diajukan oleh {{ $report->submitter->name }} pada {{ $report->submitted_at->translatedFormat('d M Y H:i') }}
+                                                @elseif($report->status->value === 'approved')
+                                                    Disetujui oleh {{ $report->approver->name ?? '-' }} pada {{ $report->approved_at?->translatedFormat('d M Y H:i') }}
+                                                @endif
+                                            </small>
+                                        @else
+                                            <span class="badge bg-secondary-lt ms-1">Belum Diajukan</span>
+                                            <small class="text-muted ms-2">Laporan untuk tahun {{ $yearFilter }} belum diserahkan secara formal ke Rektor.</small>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                @if(active_role() === 'kepala lppm')
+                                    @if(!$report || $report->status->value === 'rejected')
+                                        <button class="btn btn-primary btn-sm d-flex align-items-center gap-1" 
+                                                wire:click="submitToRektor"
+                                                wire:confirm="Anda akan mengajukan laporan penugasan reviewer tahun {{ $yearFilter }} secara formal kepada Rektor. Lanjutkan?">
+                                            <i class="ti ti-send"></i> Ajukan ke Rektor
+                                        </button>
+                                    @elseif($report->status->value === 'submitted')
+                                        <button class="btn btn-ghost-danger btn-sm" wire:click="resetReport" wire:confirm="Batalkan pengajuan laporan ini?">
+                                            <i class="ti ti-rotate"></i> Reset Pengajuan
+                                        </button>
+                                    @endif
+                                @elseif(active_role() === 'rektor' && $report && $report->status->value === 'submitted')
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="text" class="form-control form-control-sm" placeholder="Catatan perbaikan..." wire:model="approvalNotes">
+                                        <button class="btn btn-danger btn-sm" wire:click="rejectReport" wire:confirm="Kembalikan laporan ini ke Kepala LPPM?">
+                                            Tolak
+                                        </button>
+                                        <button class="btn btn-success btn-sm" wire:click="approveReport" wire:confirm="Setujui laporan ini secara formal?">
+                                            Setujui
+                                        </button>
+                                    </div>
+                                @endif
+                                
+                                @if($report && $report->status->value === 'approved')
+                                    <a href="{{ route('reports.monitoring') }}" class="btn btn-ghost-primary btn-sm" wire:navigate>
+                                        <i class="ti ti-search"></i> Cek TTD Barcode
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

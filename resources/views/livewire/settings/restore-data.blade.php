@@ -31,7 +31,10 @@
                                 <x-lucide-database class="icon me-1" />
                                 Database
                             </h4>
-                            <p class="text-secondary small">File .sql hasil backup database.</p>
+                            <p class="text-secondary small">
+                                File .sql hasil backup database.<br>
+                                <span class="badge bg-light text-secondary">Limit PHP: {{ $this->phpLimits['upload_max'] }}</span>
+                            </p>
                             <input
                                 type="file"
                                 wire:model.live="sqlFile"
@@ -51,7 +54,10 @@
                                 <x-lucide-archive class="icon me-1" />
                                 Storage
                             </h4>
-                            <p class="text-secondary small">File .zip hasil backup storage.</p>
+                            <p class="text-secondary small">
+                                File .zip hasil backup storage.<br>
+                                <span class="badge bg-light text-secondary">Limit PHP: {{ $this->phpLimits['upload_max'] }}</span>
+                            </p>
                             <input
                                 type="file"
                                 wire:model.live="zipFile"
@@ -64,6 +70,13 @@
                     </div>
                 </div>
             </div>
+
+            @if ($uploadErrorMessage)
+                <div class="alert alert-danger mb-4">
+                    <x-lucide-alert-circle class="icon me-2" />
+                    {{ $uploadErrorMessage }}
+                </div>
+            @endif
 
             @if ($uploadedSqlPath)
                 <div class="mb-4">
@@ -84,7 +97,7 @@
                                     >
                                     <span class="form-check-label">
                                         <strong>Sinkron</strong>
-                                        <small class="d-block text-secondary">Hapus data lama, ganti dengan data backup. Aman untuk sinkronisasi hosting ↔ local.</small>
+                                        <small class="d-block text-secondary">Hapus data lama, ganti dengan data backup.</small>
                                     </span>
                                 </label>
                                 <label class="form-check">
@@ -96,10 +109,66 @@
                                     >
                                     <span class="form-check-label">
                                         <strong>Tambah</strong>
-                                        <small class="d-block text-secondary">INSERT data backup tanpa hapus data lama. Hanya untuk database kosong.</small>
+                                        <small class="d-block text-secondary">INSERT data backup tanpa hapus data lama.</small>
                                     </span>
                                 </label>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            @if ($uploadedZipPath)
+                <div class="mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title mb-2">
+                                <x-lucide-settings-2 class="icon me-1" />
+                                Mode Restore Storage
+                            </h4>
+                            <p class="text-secondary small mb-3">Pilih cara file storage dipulihkan.</p>
+                            <div class="d-flex gap-4 mb-4">
+                                <label class="form-check">
+                                    <input
+                                        type="radio"
+                                        wire:model.live="zipReplaceMode"
+                                        value="1"
+                                        class="form-check-input"
+                                    >
+                                    <span class="form-check-label">
+                                        <strong>Sinkron</strong>
+                                        <small class="d-block text-secondary">Bersihkan folder lokal sebelum mengekstrak backup.</small>
+                                    </span>
+                                </label>
+                                <label class="form-check">
+                                    <input
+                                        type="radio"
+                                        wire:model.live="zipReplaceMode"
+                                        value="0"
+                                        class="form-check-input"
+                                    >
+                                    <span class="form-check-label">
+                                        <strong>Tambah</strong>
+                                        <small class="d-block text-secondary">Gabungkan file backup dengan file lokal.</small>
+                                    </span>
+                                </label>
+                            </div>
+
+                            @if (!empty($availableZipFolders))
+                                <h4 class="subheader mb-3">Pilih Folder untuk Dipulihkan</h4>
+                                <div class="row g-2">
+                                    @foreach($availableZipFolders as $folder)
+                                        <div class="col-6 col-sm-4">
+                                            <label class="form-check form-check-inline m-0 p-2 border rounded w-100 cursor-pointer hover-bg-light transition-all">
+                                                <input type="checkbox" class="form-check-input" wire:model="selectedZipFolders" value="{{ $folder }}">
+                                                <span class="form-check-label text-truncate small" title="{{ $folder === '.' ? 'File di root' : $folder }}">
+                                                    {{ $folder === '.' ? '(File Root)' : $folder }}
+                                                </span>
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -290,3 +359,10 @@ php artisan app:restore-backup --sql=file.sql --storage=file.zip --replace
         </div>
     </div>
 </div>
+
+<style>
+    .cursor-pointer { cursor: pointer; }
+    .hover-bg-light:hover { background-color: var(--tblr-bg-surface-secondary) !important; }
+    .transition-all { transition: all 0.2s ease-in-out; }
+    .icon-sm { width: 1rem; height: 1rem; }
+</style>

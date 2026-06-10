@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use App\Listeners\UserActivityListener;
 use App\Models\Proposal;
+use App\Models\ProposalStatusLog;
 use App\Observers\ProposalObserver;
+use App\Observers\ProposalStatusLogObserver;
 use App\Policies\MediaPolicy;
 use App\Policies\ProposalPolicy;
 use App\View\Composers\MenuComposer;
@@ -66,6 +68,7 @@ class AppServiceProvider extends ServiceProvider
         if ($this->isInstalled()) {
             View::composer('components.layouts.header', MenuComposer::class);
             Proposal::observe(ProposalObserver::class);
+            ProposalStatusLog::observe(ProposalStatusLogObserver::class);
             Event::subscribe(UserActivityListener::class);
 
             // Register Policies

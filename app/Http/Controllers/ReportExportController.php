@@ -1158,6 +1158,7 @@ class ReportExportController extends Controller
     }
 
     // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
     public function reviewerPdf(Request $request)
     {
         try {
@@ -1165,6 +1166,7 @@ class ReportExportController extends Controller
             $search = $request->query('search');
             $type = $request->query('type', 'all');
             $year = (int) $period;
+            $isPreview = $request->boolean('preview');
 
             // Query proposals
             $proposalsQuery = Proposal::query()
@@ -1273,6 +1275,10 @@ class ReportExportController extends Controller
             $rektor = User::role('rektor')->with('identity')->first();
             $lppmHead = User::role('kepala lppm')->with('identity')->first();
 
+            $institutionalReport = InstitutionalReport::where('type', 'reviewer')
+                ->where('year', $period)
+                ->first();
+
             $pdf = Pdf::loadView('reports.reviewer-report-pdf', [
                 'proposals' => $proposals,
                 'reviewers' => $reviewers,
@@ -1281,11 +1287,34 @@ class ReportExportController extends Controller
                 'institution' => $institution,
                 'rektor' => $rektor,
                 'lppmHead' => $lppmHead,
+                'institutionalReport' => $institutionalReport,
+                'isPreview' => $isPreview,
             ])->setPaper('a4', 'landscape');
 
-            $filename = 'laporan-reviewer-'.$period.'-'.now()->format('YmdHis').'.pdf';
+            $filename = ($isPreview ? 'PREVIEW-' : '').'laporan-reviewer-'.$period.'-'.now()->format('YmdHis').'.pdf';
 
-            return $this->pdfDownloadResponse($pdf->output(), $filename);
+            if ($isPreview) {
+                return $this->pdfInlineResponse($pdf->output(), $filename);
+            }
+
+            $variant = $this->institutionalVariant($institutionalReport);
+            if (! $institutionalReport || ! $variant) {
+                return $this->pdfDownloadResponse($pdf->output(), $filename);
+            }
+
+            $cachePath = $this->institutionalPdfCachePath($institutionalReport, $variant);
+            $pdfBinary = Storage::disk('local')->exists($cachePath)
+                ? Storage::disk('local')->get($cachePath)
+                : $pdf->output();
+
+            if (! Storage::disk('local')->exists($cachePath)) {
+                Storage::disk('local')->put($cachePath, $pdfBinary);
+            }
+
+            $hash = hash('sha256', $pdfBinary);
+            $this->upsertInstitutionalSignatures($institutionalReport, $variant, $hash);
+
+            return $this->pdfDownloadResponse($pdfBinary, $filename);
         } catch (\Exception $e) {
             Log::error('Reviewer PDF Export Error: '.$e->getMessage());
 

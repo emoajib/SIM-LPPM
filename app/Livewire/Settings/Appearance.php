@@ -3,6 +3,7 @@
 namespace App\Livewire\Settings;
 
 use App\Models\Setting;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -37,6 +38,8 @@ class Appearance extends Component
             ['key' => 'login_title'],
             ['value' => $this->loginTitle, 'type' => 'string']
         );
+
+        Cache::forget('settings.login_title');
 
         session()->flash('success_settings', 'Pengaturan teks berhasil disimpan.');
     }

@@ -16,6 +16,25 @@
                 <span class="text-secondary">{{ $lastBackup }}</span>
             </div>
 
+            <div class="mb-4">
+                <h4 class="subheader mb-3">Pilih Folder Storage</h4>
+                <div class="row g-2">
+                    @foreach($availableFolders as $folder)
+                        <div class="col-6 col-sm-4 col-md-3">
+                            <label class="form-check form-check-inline m-0 p-2 border rounded w-100 cursor-pointer hover-bg-light transition-all">
+                                <input type="checkbox" class="form-check-input" wire:model="selectedFolders" value="{{ $folder }}">
+                                <span class="form-check-label text-truncate small" title="{{ $folder }}">{{ $folder }}</span>
+                            </label>
+                        </div>
+                    @endforeach
+                </div>
+                @if(empty($selectedFolders))
+                    <div class="text-danger small mt-2">
+                        <x-lucide-alert-circle class="icon-sm me-1" /> Silakan pilih minimal satu folder.
+                    </div>
+                @endif
+            </div>
+
             <div class="d-flex gap-2 flex-wrap">
                 <button
                     type="button"
@@ -92,10 +111,10 @@
                             </div>
                         </li>
                         <li class="py-1 d-flex align-items-center gap-2">
-                            <x-lucide-check-circle class="text-success icon" />
+                            <x-lucide-check-circle class="{{ count($selectedFolders) > 0 ? 'text-success' : 'text-secondary' }} icon" />
                             <div>
-                                File Upload / Storage
-                                <small class="text-secondary d-block ms-0">Folder public storage (.zip)</small>
+                                File Storage ({{ count($selectedFolders) }} folder)
+                                <small class="text-secondary d-block ms-0">Pilihan folder (.zip)</small>
                             </div>
                         </li>
                     </ul>
@@ -108,7 +127,7 @@
                             <div class="d-flex align-items-center gap-2">
                                 <x-lucide-info class="icon" />
                                 <small>
-                                    Backup sebelumnya akan otomatis dihapus saat membuat yang baru.
+                                    Backup storage hanya menyertakan folder yang dicentang.
                                 </small>
                             </div>
                         </div>
@@ -136,3 +155,10 @@
         </div>
     </div>
 </div>
+
+<style>
+    .cursor-pointer { cursor: pointer; }
+    .hover-bg-light:hover { background-color: var(--tblr-bg-surface-secondary) !important; }
+    .transition-all { transition: all 0.2s ease-in-out; }
+    .icon-sm { width: 1rem; height: 1rem; }
+</style>

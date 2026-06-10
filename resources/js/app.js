@@ -2,11 +2,15 @@ import "@tabler/core/dist/libs/nouislider/dist/nouislider.min.js";
 import TomSelect from "@tabler/core/dist/libs/tom-select/dist/js/tom-select.complete.js";
 import * as Tabler from "@tabler/core/js/tabler";
 import NProgress from "nprogress";
+import Swal from "sweetalert2";
+import Chart from "chart.js/auto";
 import "./theme-config";
 import countdownTimer from "./countdown-timer";
 
 window.tabler = Tabler;
 window.bootstrap = Tabler.bootstrap;
+window.Swal = Swal;
+window.Chart = Chart;
 // Make TomSelect available globally
 window.TomSelect = TomSelect;
 

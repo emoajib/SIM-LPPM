@@ -1,3 +1,5 @@
+@import "@fontsource/inter";
+@import "@tabler/icons-webfont/dist/tabler-icons.css";
 @import '@tabler/core/dist/libs/nouislider/dist/nouislider.min.css';
 @import '@tabler/core/dist/libs/tom-select/dist/css/tom-select.bootstrap5.min.css';
 @import '@tabler/core/dist/css/tabler.min.css';

@@ -15,16 +15,8 @@
     <link href="/preview/css/demo.css" rel="stylesheet" /> --}}
     <!-- END DEMO STYLES -->
     <!-- BEGIN CUSTOM FONT -->
-    <link rel="preconnect" href="https://rsms.me" crossorigin>
-    <link rel="stylesheet" href="https://rsms.me/inter/inter.css" media="print" onload="this.media='all'">
-    <noscript>
-        <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-    </noscript>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
     <!-- END CUSTOM FONT -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
