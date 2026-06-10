@@ -114,6 +114,7 @@ class ReviewExportController extends Controller
 
         $qrUrl = URL::signedRoute('signatures.verify', ['documentSignature' => $signature->id]);
 
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         if ($isPreview) {
             $pdf = Pdf::loadView('pdf.review-evaluation', [
                 'isPreview' => true,
@@ -123,7 +124,13 @@ class ReviewExportController extends Controller
                 'totalScore' => $totalScore,
                 'type' => $type,
                 'qrUrl' => $qrUrl,
-            ]);
+            ])
+                ->setPaper('a4', 'portrait')
+                ->setOptions([
+                    'isHtml5ParserEnabled' => true,
+                    'isRemoteEnabled' => true,
+                    'defaultFont' => 'times-roman',
+                ]);
 
             return $this->pdfInlineResponse($pdf->output(), $filename);
         }
@@ -132,6 +139,7 @@ class ReviewExportController extends Controller
             return $this->pdfDownloadResponse(Storage::disk('local')->get($cachePath), $filename);
         }
 
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $pdf = Pdf::loadView('pdf.review-evaluation', [
             'isPreview' => false,
             'assignment' => $proposalReviewer,
@@ -140,7 +148,13 @@ class ReviewExportController extends Controller
             'totalScore' => $totalScore,
             'type' => $type,
             'qrUrl' => $qrUrl,
-        ]);
+        ])
+            ->setPaper('a4', 'portrait')
+            ->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => true,
+                'defaultFont' => 'times-roman',
+            ]);
 
         $pdfBinary = $pdf->output();
         Storage::disk('local')->put($cachePath, $pdfBinary);
