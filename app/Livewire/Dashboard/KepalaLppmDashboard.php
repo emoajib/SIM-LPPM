@@ -56,6 +56,16 @@ class KepalaLppmDashboard extends Component
 
     public $availableCommunityServiceSchemes = [];
 
+    public $focusAreasChartData = [
+        'labels' => [],
+        'datasets' => [],
+    ];
+
+    public $facultyPerformanceChartData = [
+        'labels' => [],
+        'datasets' => [],
+    ];
+
     public function mount(): void
     {
         $this->user = Auth::user();
@@ -253,6 +263,68 @@ class KepalaLppmDashboard extends Component
 
         // Load recent proposals
         $this->loadRecentProposals($yearFilter);
+
+        $this->loadChartData($yearFilter);
+    }
+
+    /**
+     * Load chart data for focus areas and faculties.
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     */
+    private function loadChartData(string $yearFilter): void
+    {
+        // 1. Focus Areas (Doughnut Chart)
+        $focusAreasQuery = Proposal::query()
+            ->tap(fn ($q) => $this->applyCommonFilters($q))
+            ->with('focusArea')
+            ->get()
+            ->groupBy(function ($proposal) {
+                return $proposal->focusArea->name ?? 'Belum Ditentukan';
+            })
+            ->map(fn ($group) => $group->count());
+
+        $focusLabels = $focusAreasQuery->keys()->toArray();
+        $focusCounts = $focusAreasQuery->values()->toArray();
+
+        $this->focusAreasChartData = [
+            'labels' => $focusLabels,
+            'datasets' => [
+                [
+                    'label' => 'Jumlah Proposal',
+                    'data' => $focusCounts,
+                    'backgroundColor' => [
+                        '#206bc4', '#4299e1', '#4263eb', '#ae3ec9', '#d6336c',
+                        '#f76707', '#f59f00', '#74b816', '#2fb344', '#0ca678',
+                    ],
+                ],
+            ],
+        ];
+
+        // 2. Faculty Performance (Bar Chart)
+        $facultyQuery = Proposal::query()
+            ->tap(fn ($q) => $this->applyCommonFilters($q))
+            ->with('submitter.identity.faculty')
+            ->get()
+            ->groupBy(function ($proposal) {
+                return $proposal->submitter->identity->faculty->name ?? 'Lainnya';
+            })
+            ->map(fn ($group) => $group->count());
+
+        $facultyLabels = $facultyQuery->keys()->toArray();
+        $facultyCounts = $facultyQuery->values()->toArray();
+
+        $this->facultyPerformanceChartData = [
+            'labels' => $facultyLabels,
+            'datasets' => [
+                [
+                    'label' => 'Jumlah Proposal',
+                    'data' => $facultyCounts,
+                    'backgroundColor' => '#206bc4',
+                    'borderColor' => '#206bc4',
+                    'borderWidth' => 1,
+                ],
+            ],
+        ];
     }
 
     /**

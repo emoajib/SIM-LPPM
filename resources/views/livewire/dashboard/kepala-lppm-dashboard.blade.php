@@ -146,142 +146,57 @@
             </button>
         @endif
     </div>
-            <!-- Approval Summary -->
-            <div class="row row-deck row-cards mb-3">
+            <!-- Approval Summary KPI Cards -->
+            <div class="row row-deck row-cards mb-4">
                 <div class="col-sm-6 col-lg-3">
-                    <div class="card card-sm border-0 shadow-sm" style="border-radius: 12px;">
-                        <div class="card-body">
-                            <div class="row align-items-center">
-                                <div class="col-auto">
-                                    <span class="bg-primary-lt text-primary avatar border-0 shadow-sm">
-                                        <x-lucide-clipboard-check class="icon" />
-                                    </span>
-                                </div>
-                                <div class="col">
-                                    <div class="font-weight-medium">
-                                        {{ $stats['pending_initial_approval'] ?? 0 }} Usulan
-                                    </div>
-                                    <div class="text-secondary">
-                                        Persetujuan Awal Proposal
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <x-dashboard.kpi-widget 
+                        title="Persetujuan Awal" 
+                        value="{{ $stats['pending_initial_approval'] ?? 0 }}" 
+                        subtitle="Persetujuan awal proposal" 
+                        icon="clipboard-check" 
+                        color="primary" />
                 </div>
                 <div class="col-sm-6 col-lg-3">
-                    <div class="card card-sm border-0 shadow-sm" style="border-radius: 12px;">
-                        <div class="card-body">
-                            <div class="row align-items-center">
-                                <div class="col-auto">
-                                    <span class="bg-success-lt text-success avatar border-0 shadow-sm">
-                                        <x-lucide-check-square class="icon" />
-                                    </span>
-                                </div>
-                                <div class="col">
-                                    <div class="font-weight-medium">
-                                        {{ $stats['pending_final_decision'] ?? 0 }} Usulan
-                                    </div>
-                                    <div class="text-secondary">
-                                        Keputusan Akhir Proposal
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <x-dashboard.kpi-widget 
+                        title="Keputusan Akhir" 
+                        value="{{ $stats['pending_final_decision'] ?? 0 }}" 
+                        subtitle="Keputusan akhir proposal" 
+                        icon="check-square" 
+                        color="success" />
                 </div>
                 <div class="col-sm-6 col-lg-3">
-                    <div class="card card-sm border-0 shadow-sm" style="border-radius: 12px;">
-                        <div class="card-body">
-                            <div class="row align-items-center">
-                                <div class="col-auto">
-                                    <span class="bg-info-lt text-info avatar border-0 shadow-sm">
-                                        <x-lucide-file-check class="icon" />
-                                    </span>
-                                </div>
-                                <div class="col">
-                                    <div class="font-weight-medium">
-                                        {{ $stats['final_report_pending'] ?? 0 }} Laporan
-                                    </div>
-                                    <div class="text-secondary">
-                                        Persetujuan Laporan Akhir
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <x-dashboard.kpi-widget 
+                        title="Persetujuan Laporan" 
+                        value="{{ $stats['final_report_pending'] ?? 0 }}" 
+                        subtitle="Persetujuan laporan akhir" 
+                        icon="file-check" 
+                        color="info" />
                 </div>
                 <div class="col-sm-6 col-lg-3">
-                    <div class="card card-sm border-0 shadow-sm" style="border-radius: 12px;">
-                        <div class="card-body">
-                            <div class="row align-items-center">
-                                <div class="col-auto">
-                                    <span class="bg-purple-lt text-purple avatar border-0 shadow-sm">
-                                        <x-lucide-award class="icon" />
-                                    </span>
-                                </div>
-                                <div class="col">
-                                    <div class="font-weight-medium">
-                                        {{ $stats['total_outputs'] ?? 0 }} Capaian
-                                    </div>
-                                    <div class="text-secondary">
-                                        Monitoring Luaran
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <x-dashboard.kpi-widget 
+                        title="Monitoring Luaran" 
+                        value="{{ $stats['total_outputs'] ?? 0 }}" 
+                        subtitle="Monitoring luaran terarsip" 
+                        icon="award" 
+                        color="purple" />
                 </div>
             </div>
 
-            <!-- General Stats -->
-            <div class="row row-deck row-cards">
-                <div class="col-sm-6 col-lg-3">
-                    <div class="card border-0 shadow-sm h-100" style="border-radius: 12px;">
-                        <div class="card-body">
-                            <div class="subheader">Total Penelitian</div>
-                            <div class="mb-3 h1">{{ $stats['total_research'] ?? 0 }}</div>
-                        </div>
-                    </div>
+            <!-- Analytics Charts -->
+            <div class="row row-cards mb-4">
+                <div class="col-lg-6">
+                    <x-dashboard.analytics-chart 
+                        type="doughnut" 
+                        title="Distribusi Bidang Fokus (Pohon Penelitian)" 
+                        :labels="$focusAreasChartData['labels']" 
+                        :datasets="$focusAreasChartData['datasets']" />
                 </div>
-
-                <div class="col-sm-6 col-lg-3">
-                    <div class="card border-0 shadow-sm h-100" style="border-radius: 12px;">
-                        <div class="card-body">
-                            <div class="subheader">Total PKM</div>
-                            <div class="mb-3 h1">{{ $stats['total_community_service'] ?? 0 }}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 col-lg-3">
-                    <div class="card border-0 shadow-sm h-100" style="border-radius: 12px;">
-                        <div class="card-body">
-                            <div class="subheader">Penelitian Pending</div>
-                            <div class="mb-3 h1">{{ $stats['research_pending'] ?? 0 }}</div>
-                            <div class="progress progress-sm">
-                                @php
-                                    $p = ($stats['total_research'] ?? 0) > 0 ? ($stats['research_pending'] / $stats['total_research']) * 100 : 0;
-                                @endphp
-                                <div class="bg-warning progress-bar" x-data :style="'width: ' + {{ $p }} + '%'"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 col-lg-3">
-                    <div class="card border-0 shadow-sm h-100" style="border-radius: 12px;">
-                        <div class="card-body">
-                            <div class="subheader">PKM Pending</div>
-                            <div class="mb-3 h1">{{ $stats['community_service_pending'] ?? 0 }}</div>
-                            <div class="progress progress-sm">
-                                @php
-                                    $p = ($stats['total_community_service'] ?? 0) > 0 ? ($stats['community_service_pending'] / $stats['total_community_service']) * 100 : 0;
-                                @endphp
-                                <div class="bg-warning progress-bar" x-data :style="'width: ' + {{ $p }} + '%'"></div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="col-lg-6">
+                    <x-dashboard.analytics-chart 
+                        type="bar" 
+                        title="Performa Usulan per Fakultas" 
+                        :labels="$facultyPerformanceChartData['labels']" 
+                        :datasets="$facultyPerformanceChartData['datasets']" />
                 </div>
             </div>
 

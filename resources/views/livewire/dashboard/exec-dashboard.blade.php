@@ -164,67 +164,57 @@
     <!-- Executive KPI Cards -->
     <div class="row row-deck row-cards mb-4">
         <div class="col-sm-6 col-md-3">
-            <div class="card border-0 shadow-sm overflow-hidden h-100" style="border-radius: 12px;">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="subheader text-primary fw-bold">Total Penelitian</div>
-                        <div class="ms-auto text-primary bg-primary-lt rounded-circle p-2 d-flex align-items-center justify-content-center"
-                            style="width: 32px; height: 32px;">
-                            <i class="ti ti-microscope fs-3"></i>
-                        </div>
-                    </div>
-                    <div class="h1 mb-1 fw-bold text-primary">{{ $stats['total_research'] ?? 0 }}</div>
-                    <div class="text-muted small">Proposal terdaftar</div>
-                </div>
-            </div>
+            <x-dashboard.kpi-widget 
+                title="Total Penelitian" 
+                value="{{ $stats['total_research'] ?? 0 }}" 
+                subtitle="Proposal terdaftar" 
+                icon="microscope" 
+                color="primary" />
         </div>
 
         <div class="col-sm-6 col-md-3">
-            <div class="card border-0 shadow-sm overflow-hidden h-100" style="border-radius: 12px;">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="subheader text-azure fw-bold">Total PKM</div>
-                        <div class="ms-auto text-azure bg-azure-lt rounded-circle p-2 d-flex align-items-center justify-content-center"
-                            style="width: 32px; height: 32px;">
-                            <i class="ti ti-users-group fs-3"></i>
-                        </div>
-                    </div>
-                    <div class="h1 mb-1 fw-bold text-azure">{{ $stats['total_community_service'] ?? 0 }}</div>
-                    <div class="text-muted small">Proposal pengabdian</div>
-                </div>
-            </div>
+            <x-dashboard.kpi-widget 
+                title="Total PKM" 
+                value="{{ $stats['total_community_service'] ?? 0 }}" 
+                subtitle="Proposal pengabdian" 
+                icon="users-group" 
+                color="azure" />
         </div>
 
         <div class="col-sm-6 col-md-3">
-            <div class="card border-0 shadow-sm overflow-hidden h-100" style="border-radius: 12px;">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="subheader text-orange fw-bold">Persetujuan Lap. Akhir</div>
-                        <div class="ms-auto text-orange bg-orange-lt rounded-circle p-2 d-flex align-items-center justify-content-center"
-                            style="width: 32px; height: 32px;">
-                            <i class="ti ti-clipboard-check fs-3"></i>
-                        </div>
-                    </div>
-                    <div class="h1 mb-1 fw-bold text-orange">{{ $stats['final_report_pending'] ?? 0 }}</div>
-                    <div class="text-muted small">Laporan menunggu tinjauan</div>
-                </div>
-            </div>
+            <x-dashboard.kpi-widget 
+                title="Persetujuan Lap. Akhir" 
+                value="{{ $stats['final_report_pending'] ?? 0 }}" 
+                subtitle="Laporan menunggu tinjauan" 
+                icon="clipboard-check" 
+                color="orange" />
         </div>
 
         <div class="col-sm-6 col-md-3">
-            <div class="card border-0 shadow-sm overflow-hidden h-100" style="border-radius: 12px;">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="subheader text-purple fw-bold">Total Luaran</div>
-                        <div class="ms-auto text-purple bg-purple-lt rounded-circle p-2 d-flex align-items-center justify-content-center"
-                            style="width: 32px; height: 32px;">
-                            <i class="ti ti-award fs-3"></i>
-                        </div>
-                    </div>
-                    <div class="h1 mb-1 fw-bold text-purple">{{ $stats['total_outputs'] ?? 0 }}</div>
-                    <div class="text-muted small">Capaian luaran terarsip</div>
-                </div>
-            </div>
+            <x-dashboard.kpi-widget 
+                title="Total Luaran" 
+                value="{{ $stats['total_outputs'] ?? 0 }}" 
+                subtitle="Capaian luaran terarsip" 
+                icon="award" 
+                color="purple" />
+        </div>
+    </div>
+
+    <!-- Analytics Charts -->
+    <div class="row row-cards mb-4">
+        <div class="col-lg-6">
+            <x-dashboard.analytics-chart 
+                type="doughnut" 
+                title="Distribusi Bidang Fokus (Pohon Penelitian)" 
+                :labels="$focusAreasChartData['labels']" 
+                :datasets="$focusAreasChartData['datasets']" />
+        </div>
+        <div class="col-lg-6">
+            <x-dashboard.analytics-chart 
+                type="bar" 
+                title="Performa Usulan per Fakultas" 
+                :labels="$facultyPerformanceChartData['labels']" 
+                :datasets="$facultyPerformanceChartData['datasets']" />
         </div>
     </div>
 

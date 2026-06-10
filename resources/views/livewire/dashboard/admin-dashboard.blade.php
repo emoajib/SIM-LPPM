@@ -131,82 +131,24 @@
         @endif
     </div>
 
-    <div class="row row-deck row-cards">
+    <div class="row row-deck row-cards mb-4">
         <!-- KPI Section: Research -->
         <div class="col-sm-6 col-lg-3">
-            <div class="card card-stacked glass-card border-0 shadow-sm overflow-hidden" style="border-left: 4px solid #206bc4 !important;">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="subheader text-primary fw-bold">Penelitian (Total)</div>
-                        <div class="ms-auto text-primary opacity-50">
-                            <i class="ti ti-flask fs-2"></i>
-                        </div>
-                    </div>
-                    <div class="h1 mb-3 fw-bold">{{ $stats['total_research'] ?? 0 }}</div>
-                    <div class="d-flex align-items-baseline flex-wrap gap-2">
-                        @php $resApprOnly = $stats['research_approved'] - ($stats['research_completed'] ?? 0); @endphp
-                        @if($resApprOnly > 0)
-                            <span class="badge bg-success-lt text-success fw-bold">
-                                {{ $resApprOnly }} Disetujui
-                            </span>
-                        @endif
-                        @if(($stats['research_completed'] ?? 0) > 0)
-                            <span class="badge bg-teal-lt text-teal fw-bold">
-                                {{ $stats['research_completed'] }} Selesai
-                            </span>
-                        @endif
-                        @if(($stats['research_pending'] ?? 0) > 0)
-                            <span class="badge bg-warning-lt text-warning fw-bold">
-                                {{ $stats['research_pending'] }} Pending
-                            </span>
-                        @endif
-                    </div>
-                </div>
-                <div class="progress progress-sm card-progress">
-                    @php 
-                        $resPrc = ($stats['total_research'] > 0) ? ($stats['research_approved'] / $stats['total_research'] * 100) : 0;
-                    @endphp
-                    <div class="progress-bar bg-primary" style="width: {{ $resPrc }}%" role="progressbar"></div>
-                </div>
-            </div>
+            <x-dashboard.kpi-widget 
+                title="Penelitian (Total)" 
+                value="{{ $stats['total_research'] ?? 0 }}" 
+                subtitle="Proposal terdaftar" 
+                icon="flask" 
+                color="primary" />
         </div>
 
         <div class="col-sm-6 col-lg-3">
-            <div class="card card-stacked glass-card border-0 shadow-sm overflow-hidden" style="border-left: 4px solid #4591ed !important;">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="subheader text-azure fw-bold">PKM (Total)</div>
-                        <div class="ms-auto text-azure opacity-50">
-                            <i class="ti ti-users-group fs-2"></i>
-                        </div>
-                    </div>
-                    <div class="h1 mb-3 fw-bold">{{ $stats['total_community_service'] ?? 0 }}</div>
-                    <div class="d-flex align-items-baseline flex-wrap gap-2">
-                        @php $pkmApprOnly = $stats['community_service_approved'] - ($stats['community_service_completed'] ?? 0); @endphp
-                        @if($pkmApprOnly > 0)
-                            <span class="badge bg-success-lt text-success fw-bold">
-                                {{ $pkmApprOnly }} Disetujui
-                            </span>
-                        @endif
-                        @if(($stats['community_service_completed'] ?? 0) > 0)
-                            <span class="badge bg-teal-lt text-teal fw-bold">
-                                {{ $stats['community_service_completed'] }} Selesai
-                            </span>
-                        @endif
-                        @if(($stats['community_service_pending'] ?? 0) > 0)
-                            <span class="badge bg-warning-lt text-warning fw-bold">
-                                {{ $stats['community_service_pending'] }} Pending
-                            </span>
-                        @endif
-                    </div>
-                </div>
-                <div class="progress progress-sm card-progress">
-                    @php 
-                        $pkmPrc = ($stats['total_community_service'] > 0) ? ($stats['community_service_approved'] / $stats['total_community_service'] * 100) : 0;
-                    @endphp
-                    <div class="progress-bar bg-azure" style="width: {{ $pkmPrc }}%" role="progressbar"></div>
-                </div>
-            </div>
+            <x-dashboard.kpi-widget 
+                title="PKM (Total)" 
+                value="{{ $stats['total_community_service'] ?? 0 }}" 
+                subtitle="Proposal pengabdian" 
+                icon="users-group" 
+                color="azure" />
         </div>
 
         <!-- KPI Section: Approval Rate -->
@@ -217,59 +159,40 @@
                 $approvalRate = ($totalProp > 0) ? round(($totalAppr / $totalProp) * 100, 1) : 0;
                 $totalBudget = ($stats['research_budget'] ?? 0) + ($stats['pkm_budget'] ?? 0);
             @endphp
-            <div class="card card-stacked glass-card border-0 shadow-sm overflow-hidden" style="border-left: 4px solid #0ca678 !important;">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="subheader text-green fw-bold">Approval Rate</div>
-                        <div class="ms-auto text-green opacity-50">
-                            <i class="ti ti-chart-bar fs-2"></i>
-                        </div>
-                    </div>
-                    <div class="h1 mb-3 fw-bold">{{ $approvalRate }}%</div>
-                    <div class="text-muted small mb-2">{{ $totalAppr }} dari {{ $totalProp }} usulan disetujui</div>
-                    <div class="progress progress-sm">
-                        <div class="progress-bar bg-green" style="width: {{ $approvalRate }}%" role="progressbar"></div>
-                    </div>
-                </div>
-            </div>
+            <x-dashboard.kpi-widget 
+                title="Approval Rate" 
+                value="{{ $approvalRate }}%" 
+                subtitle="{{ $totalAppr }} dari {{ $totalProp }} usulan disetujui" 
+                icon="chart-bar" 
+                color="green" />
         </div>
 
         <!-- KPI Section: Total Budget -->
         <div class="col-sm-6 col-lg-3">
-            <div class="card card-stacked glass-card border-0 shadow-sm overflow-hidden" style="border-left: 4px solid #ae3ec9 !important;">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="subheader text-purple fw-bold">Total Anggaran</div>
-                        <div class="ms-auto text-purple opacity-50">
-                            <i class="ti ti-cash fs-2"></i>
-                        </div>
-                    </div>
-                    <div class="h2 mb-3 fw-bold">Rp {{ number_format($totalBudget, 0, ',', '.') }}</div>
-                    <div class="d-flex flex-column gap-1">
-                        <div class="d-flex justify-content-between small">
-                            <span class="text-muted"><i class="ti ti-flask me-1"></i>Penelitian</span>
-                            <span class="fw-bold">Rp {{ number_format($stats['research_budget'] ?? 0, 0, ',', '.') }}</span>
-                        </div>
-                        <div class="d-flex justify-content-between small">
-                            <span class="text-muted"><i class="ti ti-users-group me-1"></i>PKM</span>
-                            <span class="fw-bold">Rp {{ number_format($stats['pkm_budget'] ?? 0, 0, ',', '.') }}</span>
-                        </div>
-                    </div>
-                    @php
-                        $resBudget = $stats['research_budget'] ?? 0;
-                        $pkmBudget = $stats['pkm_budget'] ?? 0;
-                        $totBudget = $resBudget + $pkmBudget;
-                        $resPrc = $totBudget > 0 ? ($resBudget / $totBudget * 100) : 0;
-                        $pkmPrc = $totBudget > 0 ? ($pkmBudget / $totBudget * 100) : 0;
-                    @endphp
-                    @if($totBudget > 0)
-                        <div class="progress progress-sm mt-3 shadow-sm rounded-pill overflow-hidden">
-                            <div class="progress-bar bg-primary" style="width: {{ $resPrc }}%" role="progressbar" aria-label="Penelitian {{ round($resPrc) }}%" title="Penelitian {{ round($resPrc) }}%"></div>
-                            <div class="progress-bar bg-azure" style="width: {{ $pkmPrc }}%" role="progressbar" aria-label="PKM {{ round($pkmPrc) }}%" title="PKM {{ round($pkmPrc) }}%"></div>
-                        </div>
-                    @endif
-                </div>
-            </div>
+            <x-dashboard.kpi-widget 
+                title="Total Anggaran" 
+                value="Rp {{ number_format($totalBudget, 0, ',', '.') }}" 
+                subtitle="Penelitian & PKM" 
+                icon="cash" 
+                color="purple" />
+        </div>
+    </div>
+
+    <!-- Analytics Charts -->
+    <div class="row row-cards mb-4">
+        <div class="col-lg-6">
+            <x-dashboard.analytics-chart 
+                type="doughnut" 
+                title="Distribusi Bidang Fokus (Pohon Penelitian)" 
+                :labels="$focusAreasChartData['labels']" 
+                :datasets="$focusAreasChartData['datasets']" />
+        </div>
+        <div class="col-lg-6">
+            <x-dashboard.analytics-chart 
+                type="bar" 
+                title="Performa Usulan per Fakultas" 
+                :labels="$facultyPerformanceChartData['labels']" 
+                :datasets="$facultyPerformanceChartData['datasets']" />
         </div>
     </div>
 
