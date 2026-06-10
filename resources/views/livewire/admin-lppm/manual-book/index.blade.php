@@ -37,10 +37,12 @@
                             </td>
                             <td>v{{ $book->version_number }}</td>
                             <td>
-                                @if($book->getFirstMedia('manual_book_file'))
-                                    <span class="text-success">
-                                        <i class="icon icon-tabler icon-tabler-file-check"></i> Terupload
-                                    </span>
+                                @php $media = $book->getFirstMedia('manual_book_file'); @endphp
+                                @if($media)
+                                    <a href="{{ route('media.download', $media) }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                        <i class="icon icon-tabler icon-tabler-download me-1"></i>
+                                        {{ number_format($media->size / 1024, 1) }} KB
+                                    </a>
                                 @else
                                     <span class="text-muted">
                                         <i class="icon icon-tabler icon-tabler-file-off"></i> Tidak ada
