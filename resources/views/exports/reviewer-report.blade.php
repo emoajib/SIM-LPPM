@@ -1,13 +1,17 @@
 {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+@php
+    $requiredReviewers = (int) \App\Models\Setting::get('reviewer_count_required', 2);
+    $totalCols = max(8, 5 + $requiredReviewers);
+@endphp
 <table>
     <thead>
         <tr>
-            <th colspan="7" style="text-align: center; font-size: 16pt; font-weight: bold;">
+            <th colspan="{{ $totalCols }}" style="text-align: center; font-size: 16pt; font-weight: bold;">
                 LAPORAN PENUGASAN &amp; REVIEWER LPPM TAHUN {{ $period }}
             </th>
         </tr>
         <tr>
-            <th colspan="7" style="text-align: center; font-size: 10pt; color: gray;">
+            <th colspan="{{ $totalCols }}" style="text-align: center; font-size: 10pt; color: gray;">
                 Dicetak pada: {{ now()->format('d-m-Y H:i:s') }}
             </th>
         </tr>
@@ -15,7 +19,7 @@
         
         <!-- SECTION 1: IKHTISAR PENUGASAN -->
         <tr>
-            <th colspan="7" style="font-size: 12pt; font-weight: bold; background-color: #f2f2f2;">
+            <th colspan="{{ $totalCols }}" style="font-size: 12pt; font-weight: bold; background-color: #f2f2f2;">
                 I. IKHTISAR PENUGASAN REVIEWER
             </th>
         </tr>
@@ -34,7 +38,7 @@
             @php
                 $identity = $proposal->submitter->identity;
                 $revNames = $proposal->reviewers->map(fn($r) => $r->user->name)->implode(', ');
-                $status = $proposal->reviewers->count() === 0 ? 'Belum Diplot' : ($proposal->reviewers->count() < 2 ? 'Kurang 1 Reviewer' : 'Lengkap');
+                $status = $proposal->reviewers->count() === 0 ? 'Belum Diplot' : ($proposal->reviewers->count() < $requiredReviewers ? 'Kurang Reviewer' : 'Lengkap');
             @endphp
             <tr>
                 <td style="border: 1px solid black; text-align: center;">{{ $index + 1 }}</td>
@@ -56,7 +60,7 @@
 
         <!-- SECTION 2: BEBAN KERJA REVIEWER -->
         <tr>
-            <th colspan="7" style="font-size: 12pt; font-weight: bold; background-color: #f2f2f2;">
+            <th colspan="{{ $totalCols }}" style="font-size: 12pt; font-weight: bold; background-color: #f2f2f2;">
                 II. BEBAN KERJA REVIEWER
             </th>
         </tr>
@@ -86,7 +90,7 @@
 
         <!-- SECTION 3: REKAPITULASI PENILAIAN DOSEN -->
         <tr>
-            <th colspan="7" style="font-size: 12pt; font-weight: bold; background-color: #f2f2f2;">
+            <th colspan="{{ $totalCols }}" style="font-size: 12pt; font-weight: bold; background-color: #f2f2f2;">
                 III. REKAPITULASI HASIL PENILAIAN PROPOSAL DOSEN
             </th>
         </tr>
@@ -94,8 +98,9 @@
             <th style="font-weight: bold; border: 1px solid black; background-color: #d9e1f2;">No</th>
             <th style="font-weight: bold; border: 1px solid black; background-color: #d9e1f2;">Judul Proposal</th>
             <th style="font-weight: bold; border: 1px solid black; background-color: #d9e1f2;">Dosen Pengaju</th>
-            <th style="font-weight: bold; border: 1px solid black; background-color: #d9e1f2; text-align: center;">Skor Rev 1</th>
-            <th style="font-weight: bold; border: 1px solid black; background-color: #d9e1f2; text-align: center;">Skor Rev 2</th>
+            @for ($i = 0; $i < $requiredReviewers; $i++)
+                <th style="font-weight: bold; border: 1px solid black; background-color: #d9e1f2; text-align: center;">Skor Rev {{ $i + 1 }}</th>
+            @endfor
             <th style="font-weight: bold; border: 1px solid black; background-color: #d9e1f2; text-align: center;">Nilai Rata-rata</th>
             <th style="font-weight: bold; border: 1px solid black; background-color: #d9e1f2; text-align: center;">Status Review</th>
         </tr>
@@ -104,17 +109,19 @@
         @foreach($proposals as $index => $proposal)
             @php
                 // Vetted by AI - Manual Review Required by Senior Engineer/Manager
-                $r1 = $proposal->reviewers[0] ?? null;
-                $r2 = $proposal->reviewers[1] ?? null;
-                $r1Score = $r1 && $r1->isCompleted() ? ($proposal->reviewers[0]->latestLog()->total_score ?? '-') : '-';
-                $r2Score = $r2 && $r2->isCompleted() ? ($proposal->reviewers[1]->latestLog()->total_score ?? '-') : '-';
+                $reviewersList = $proposal->reviewers;
             @endphp
             <tr>
                 <td style="border: 1px solid black; text-align: center;">{{ $index + 1 }}</td>
                 <td style="border: 1px solid black;">{{ $proposal->title }}</td>
                 <td style="border: 1px solid black;">{{ $proposal->submitter->name }}</td>
-                <td style="border: 1px solid black; text-align: center;">{{ $r1Score }}</td>
-                <td style="border: 1px solid black; text-align: center;">{{ $r2Score }}</td>
+                @for ($i = 0; $i < $requiredReviewers; $i++)
+                    @php
+                        $r = $reviewersList[$i] ?? null;
+                        $rScore = $r && $r->isCompleted() ? ($r->latestLog()->total_score ?? '-') : '-';
+                    @endphp
+                    <td style="border: 1px solid black; text-align: center;">{{ $rScore }}</td>
+                @endfor
                 <td style="border: 1px solid black; text-align: center; font-weight: bold; color: blue;">{{ $proposal->score ?? '-' }}</td>
                 <td style="border: 1px solid black; text-align: center;">
                     {{ $proposal->status === \App\Enums\ProposalStatus::REVIEWED ? 'Selesai' : ($proposal->status === \App\Enums\ProposalStatus::UNDER_REVIEW ? 'Proses' : $proposal->status->label()) }}
@@ -127,7 +134,7 @@
 
         <!-- SECTION 4: DETAIL KOMPONEN KRITERIA PENILAIAN -->
         <tr>
-            <th colspan="8" style="font-size: 12pt; font-weight: bold; background-color: #f2f2f2;">
+            <th colspan="{{ $totalCols }}" style="font-size: 12pt; font-weight: bold; background-color: #f2f2f2;">
                 IV. RINCIAN KOMPONEN NILAI KRITERIA PENILAIAN
             </th>
         </tr>

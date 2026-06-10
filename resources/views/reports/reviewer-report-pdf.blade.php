@@ -201,16 +201,21 @@
     </table>
 
     <!-- SECTION I: IKHTISAR PENUGASAN & NILAI REKAP -->
+    @php
+        $requiredReviewers = (int) \App\Models\Setting::get('reviewer_count_required', 2);
+        $titleWidth = 46 - ($requiredReviewers * 8);
+    @endphp
     <div class="section-header">I. Rekapitulasi Penugasan & Hasil Penilaian Proposal</div>
     <table class="data-table">
         <thead>
             <tr>
                 <th style="width: 4%;">No</th>
-                <th style="width: 38%;">Judul Proposal & Pengaju</th>
+                <th style="width: {{ $titleWidth }}%;">Judul Proposal & Pengaju</th>
                 <th style="width: 10%;">Jenis</th>
                 <th style="width: 25%;">Reviewer Ditugaskan</th>
-                <th style="width: 8%; text-align: center;">Skor Rev 1</th>
-                <th style="width: 8%; text-align: center;">Skor Rev 2</th>
+                @for ($i = 0; $i < $requiredReviewers; $i++)
+                    <th style="width: 8%; text-align: center;">Skor Rev {{ $i + 1 }}</th>
+                @endfor
                 <th style="width: 7%; text-align: center;">Rata-rata</th>
             </tr>
         </thead>
@@ -218,10 +223,7 @@
             @forelse($proposals as $index => $proposal)
                 @php
                     // Vetted by AI - Manual Review Required by Senior Engineer/Manager
-                    $r1 = $proposal->reviewers[0] ?? null;
-                    $r2 = $proposal->reviewers[1] ?? null;
-                    $r1Score = $r1 && $r1->isCompleted() ? ($proposal->reviewers[0]->latestLog()->total_score ?? '-') : '-';
-                    $r2Score = $r2 && $r2->isCompleted() ? ($proposal->reviewers[1]->latestLog()->total_score ?? '-') : '-';
+                    $reviewersList = $proposal->reviewers;
                 @endphp
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
@@ -237,13 +239,18 @@
                             <div style="color: red; font-style: italic;">Belum Diplot</div>
                         @endforelse
                     </td>
-                    <td class="text-center">{{ $r1Score }}</td>
-                    <td class="text-center">{{ $r2Score }}</td>
+                    @for ($i = 0; $i < $requiredReviewers; $i++)
+                        @php
+                            $r = $reviewersList[$i] ?? null;
+                            $rScore = $r && $r->isCompleted() ? ($r->latestLog()->total_score ?? '-') : '-';
+                        @endphp
+                        <td class="text-center">{{ $rScore }}</td>
+                    @endfor
                     <td class="text-center font-bold" style="color: blue;">{{ $proposal->score ?? '-' }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="7" class="text-center" style="padding: 15px; color: #888; font-style: italic;">
+                    <td colspan="{{ 5 + $requiredReviewers }}" class="text-center" style="padding: 15px; color: #888; font-style: italic;">
                         Tidak ada proposal pada periode ini.
                     </td>
                 </tr>

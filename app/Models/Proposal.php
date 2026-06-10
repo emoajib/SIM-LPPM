@@ -493,13 +493,15 @@ class Proposal extends Model
 
     /**
      * Check if all reviewers have completed their reviews.
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
      */
     public function allReviewsCompleted(): bool
     {
+        $requiredCount = (int) Setting::get('reviewer_count_required', 1);
         $total = $this->reviewers()->count();
         $completed = $this->reviewers()->where('status', ReviewStatus::COMPLETED)->count();
 
-        return $total > 0 && $completed === $total;
+        return $total >= $requiredCount && $completed === $total;
     }
 
     /**

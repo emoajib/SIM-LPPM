@@ -276,13 +276,17 @@
             </div>
 
         @elseif ($activeTab === 'scoring')
+            @php
+                $requiredReviewers = (int) \App\Models\Setting::get('reviewer_count_required', 2);
+            @endphp
             <div class="table-responsive">
                 <table class="table table-vcenter card-table table-hover table-borderless">
                     <thead class="bg-light-lt">
                         <tr>
                             <th class="ps-4">Judul & Dosen Pengaju</th>
-                            <th class="text-center">Skor Rev 1</th>
-                            <th class="text-center">Skor Rev 2</th>
+                            @for ($i = 0; $i < $requiredReviewers; $i++)
+                                <th class="text-center">Skor Rev {{ $i + 1 }}</th>
+                            @endfor
                             <th class="text-center">Nilai Rata-rata</th>
                             <th class="text-center">Status Review</th>
                             <th class="text-center pe-4">Aksi</th>
@@ -292,10 +296,7 @@
                         @forelse ($this->proposals as $proposal)
                             @php
                                 // Vetted by AI - Manual Review Required by Senior Engineer/Manager
-                                $r1 = $proposal->reviewers[0] ?? null;
-                                $r2 = $proposal->reviewers[1] ?? null;
-                                $r1Score = $r1 && $r1->isCompleted() ? ($proposal->reviewers[0]->latestLog()->total_score ?? '-') : '-';
-                                $r2Score = $r2 && $r2->isCompleted() ? ($proposal->reviewers[1]->latestLog()->total_score ?? '-') : '-';
+                                $reviewersList = $proposal->reviewers;
                             @endphp
                             <tr>
                                 <td class="ps-4">
@@ -304,8 +305,13 @@
                                         <span class="fw-medium text-dark">{{ $proposal->submitter->name }}</span> ({{ $proposal->submitter->identity->faculty->name ?? '-' }})
                                     </div>
                                 </td>
-                                <td class="text-center font-monospace">{{ $r1Score }}</td>
-                                <td class="text-center font-monospace">{{ $r2Score }}</td>
+                                @for ($i = 0; $i < $requiredReviewers; $i++)
+                                    @php
+                                        $r = $reviewersList[$i] ?? null;
+                                        $rScore = $r && $r->isCompleted() ? ($r->latestLog()->total_score ?? '-') : '-';
+                                    @endphp
+                                    <td class="text-center font-monospace">{{ $rScore }}</td>
+                                @endfor
                                 <td class="text-center font-monospace fw-bold text-primary">
                                     {{ $proposal->score ?? '-' }}
                                 </td>

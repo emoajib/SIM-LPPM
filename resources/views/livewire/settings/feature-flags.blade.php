@@ -71,5 +71,29 @@
                 </div>
             </div>
         </div>
+
+        <div class="list-group-item px-0">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <span class="avatar bg-orange-lt">
+                        <x-lucide-users class="icon" />
+                    </span>
+                </div>
+                <div class="col text-truncate">
+                    <div class="text-body d-block font-weight-medium">Jumlah Reviewer per Proposal</div>
+                    <div class="text-muted text-truncate mt-n1">
+                        Menentukan jumlah minimal reviewer yang wajib ditugaskan ke setiap usulan proposal.
+                    </div>
+                </div>
+                <div class="col-auto">
+                    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                    <select class="form-select form-select-sm" style="width: auto;" wire:model.live="reviewerCountRequired">
+                        <option value="1">1 Reviewer</option>
+                        <option value="2">2 Reviewer</option>
+                        <option value="3">3 Reviewer</option>
+                    </select>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

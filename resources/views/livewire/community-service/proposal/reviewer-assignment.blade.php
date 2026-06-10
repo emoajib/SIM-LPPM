@@ -50,8 +50,20 @@
     @if ($this->currentReviewers->count() > 0)
         <div class="card">
 
-            <div class="card-header">
+            {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+            <div class="card-header d-flex justify-content-between align-items-center">
                 <h3 class="card-title">Reviewer yang Ditugaskan</h3>
+                <div>
+                    @if ($this->currentReviewers->count() < $this->requiredReviewerCount)
+                        <span class="badge bg-warning-lt">
+                            Penugasan: {{ $this->currentReviewers->count() }} dari {{ $this->requiredReviewerCount }} Reviewer Wajib
+                        </span>
+                    @else
+                        <span class="badge bg-success-lt">
+                            Penugasan: {{ $this->currentReviewers->count() }} dari {{ $this->requiredReviewerCount }} Reviewer Wajib (Lengkap)
+                        </span>
+                    @endif
+                </div>
             </div>
             <div class="table-responsive">
                 <table class="card-table table table-vcenter">

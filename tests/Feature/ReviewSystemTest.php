@@ -10,10 +10,12 @@ use App\Models\Proposal;
 use App\Models\ProposalReviewer;
 use App\Models\Research;
 use App\Models\ReviewCriteria;
+use App\Models\Setting;
 use App\Models\User;
 use Database\Seeders\InstitutionSeeder;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -181,5 +183,88 @@ class ReviewSystemTest extends TestCase
         $this->assertDatabaseMissing('review_scores', [
             'proposal_reviewer_id' => $this->reviewAssignment->id,
         ]);
+    }
+
+    /**
+     * Test dynamic reviewer count requirements for status transition.
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     */
+    public function test_dynamic_reviewer_count_requirements()
+    {
+        // 1. When reviewer_count_required = 1
+        Setting::set('reviewer_count_required', 1, 'integer');
+
+        $this->actingAs($this->reviewer);
+        $component = Livewire::test(ReviewerForm::class, ['proposalId' => $this->proposal->id]);
+
+        // Submit the review with scores for both criteria
+        $component->set('reviewNotes', 'Catatan review yang valid dan lengkap.')
+            ->set('recommendation', 'approved')
+            ->set('scores.1.score', 5)
+            ->set('scores.1.acuan', 'Acuan 1')
+            ->set('scores.2.score', 4)
+            ->set('scores.2.acuan', 'Acuan 2')
+            ->call('submitReview', app(CompleteReviewAction::class));
+
+        // Proposal status should transition to REVIEWED immediately since requirement is 1
+        $this->assertEquals(ProposalStatus::REVIEWED, $this->proposal->fresh()->status);
+
+        // Reset the proposal for the next scenario
+        DB::table('proposals')
+            ->where('id', $this->proposal->id)
+            ->update(['status' => ProposalStatus::UNDER_REVIEW->value]);
+
+        DB::table('proposal_reviewer')
+            ->where('id', $this->reviewAssignment->id)
+            ->update([
+                'status' => ReviewStatus::PENDING->value,
+                'completed_at' => null,
+                'review_notes' => null,
+                'recommendation' => null,
+            ]);
+
+        DB::table('review_logs')->where('proposal_id', $this->proposal->id)->delete();
+        DB::table('review_scores')->where('proposal_reviewer_id', $this->reviewAssignment->id)->delete();
+
+        // 2. When reviewer_count_required = 2
+        Setting::set('reviewer_count_required', 2, 'integer');
+
+        // Submit the first reviewer's review again
+        $component = Livewire::test(ReviewerForm::class, ['proposalId' => $this->proposal->id]);
+        $component->set('reviewNotes', 'Catatan review yang valid dan lengkap.')
+            ->set('recommendation', 'approved')
+            ->set('scores.1.score', 5)
+            ->set('scores.1.acuan', 'Acuan 1')
+            ->set('scores.2.score', 4)
+            ->set('scores.2.acuan', 'Acuan 2')
+            ->call('submitReview', app(CompleteReviewAction::class));
+
+        // Proposal status should remain UNDER_REVIEW because requiredCount = 2 and only 1 is assigned/completed
+        $this->assertEquals(ProposalStatus::UNDER_REVIEW, $this->proposal->fresh()->status);
+
+        // Assign a second reviewer
+        $reviewer2 = User::factory()->create();
+        $reviewer2->assignRole('reviewer');
+        $reviewAssignment2 = ProposalReviewer::create([
+            'proposal_id' => $this->proposal->id,
+            'user_id' => $reviewer2->id,
+            'status' => 'pending',
+            'round' => 1,
+            'deadline_at' => now()->addDays(7),
+        ]);
+
+        // Submit the second reviewer's review
+        $this->actingAs($reviewer2);
+        $component2 = Livewire::test(ReviewerForm::class, ['proposalId' => $this->proposal->id]);
+        $component2->set('reviewNotes', 'Catatan review kedua yang valid.')
+            ->set('recommendation', 'approved')
+            ->set('scores.1.score', 4)
+            ->set('scores.1.acuan', 'Acuan 1')
+            ->set('scores.2.score', 5)
+            ->set('scores.2.acuan', 'Acuan 2')
+            ->call('submitReview', app(CompleteReviewAction::class));
+
+        // Now that 2 reviewers have been assigned and completed their review, status should transition to REVIEWED
+        $this->assertEquals(ProposalStatus::REVIEWED, $this->proposal->fresh()->status);
     }
 }

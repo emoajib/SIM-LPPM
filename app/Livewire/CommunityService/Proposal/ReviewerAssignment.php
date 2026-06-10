@@ -6,6 +6,7 @@ use App\Livewire\Actions\AssignReviewersAction;
 use App\Livewire\Concerns\HasToast;
 use App\Models\Proposal;
 use App\Models\ProposalReviewer;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
@@ -56,6 +57,13 @@ class ReviewerAssignment extends Component
         return $this->proposal->reviewers()
             ->with('user')
             ->get();
+    }
+
+    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    #[Computed]
+    public function requiredReviewerCount(): int
+    {
+        return (int) Setting::get('reviewer_count_required', 2);
     }
 
     public function assignReviewers(): void
