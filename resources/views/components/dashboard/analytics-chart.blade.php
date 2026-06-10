@@ -38,12 +38,25 @@
                     datasets: datasets.map(ds => ({
                         ...ds,
                         hoverOffset: {{ $type === 'doughnut' ? 15 : 0 }},
+                        hoverBorderWidth: {{ $type === 'bar' ? 2 : 0 }},
+                        hoverBorderColor: '#ffffff',
                         hoverBackgroundColor: ds.backgroundColor ? (Array.isArray(ds.backgroundColor) ? ds.backgroundColor.map(c => c + 'cc') : ds.backgroundColor + 'cc') : undefined
                     }))
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    animation: {
+                        duration: 800,
+                        easing: 'easeOutQuart'
+                    },
+                    transitions: {
+                        active: {
+                            animation: {
+                                duration: 300
+                            }
+                        }
+                    },
                     plugins: {
                         legend: {
                             display: {{ $type === 'doughnut' ? 'true' : 'false' }},
