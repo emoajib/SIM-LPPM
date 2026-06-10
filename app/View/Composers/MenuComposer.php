@@ -381,6 +381,12 @@ class MenuComposer
                         'icon' => 'file-download',
                         'route' => 'settings.proposal-template',
                     ],
+                    [
+                        'title' => 'Manual Book',
+                        'icon' => 'book',
+                        'route' => 'settings.manual-books',
+                        'roles' => ['admin lppm', 'superadmin'],
+                    ],
                 ],
             ],
         ];

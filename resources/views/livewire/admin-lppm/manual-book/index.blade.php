@@ -1,16 +1,16 @@
 <div>
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div class="d-flex gap-2">
-            <input type="text" class="form-control" placeholder="Cari manual book..." wire:model.live.debounce.300ms="search">
-            <select class="form-select" wire:model.live="statusFilter">
-                <option value="">Semua Status</option>
-                <option value="active">Aktif</option>
-                <option value="inactive">Nonaktif</option>
-            </select>
-        </div>
-        <a href="{{ route('admin-lppm.manual-books.create') }}" class="btn btn-primary" wire:navigate>
-            <i class="icon icon-tabler icon-tabler-plus me-1"></i> Tambah Manual Book
-        </a>
+    <div class="d-flex gap-2 mb-3">
+        <input type="text" class="form-control" style="max-width:300px" placeholder="Cari manual book..." wire:model.live.debounce.300ms="search">
+        <select class="form-select" style="max-width:200px" wire:model.live="statusFilter">
+            <option value="">Semua Status</option>
+            <option value="active">Aktif</option>
+            <option value="inactive">Nonaktif</option>
+        </select>
+    </div>
+
+    <div class="alert alert-info d-flex align-items-center mb-3 py-2" role="alert">
+        <i class="icon icon-tabler icon-tabler-info-circle me-2"></i>
+        <span>Pengelolaan manual book dilakukan di <a href="{{ route('settings.manual-books') }}" wire:navigate class="fw-medium">Pengaturan &rarr; Manual Book</a>.</span>
     </div>
 
     <div class="card">
@@ -24,7 +24,6 @@
                         <th>File</th>
                         <th>Status</th>
                         <th>Dibuat Oleh</th>
-                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -49,29 +48,17 @@
                                 @endif
                             </td>
                             <td>
-                                <button class="btn btn-sm {{ $book->status === 'active' ? 'btn-success' : 'btn-secondary' }}"
-                                    wire:click="toggleStatus('{{ $book->id }}')"
-                                    wire:confirm="Ubah status manual book ini?">
-                                    {{ $book->status === 'active' ? 'Aktif' : 'Nonaktif' }}
-                                </button>
+                                @if($book->status === 'active')
+                                    <span class="badge bg-success">Aktif</span>
+                                @else
+                                    <span class="badge bg-secondary">Nonaktif</span>
+                                @endif
                             </td>
                             <td>{{ $book->creator?->name ?? '-' }}</td>
-                            <td>
-                                <div class="btn-group btn-group-sm">
-                                    <a href="{{ route('admin-lppm.manual-books.edit', $book) }}" class="btn btn-outline-primary" wire:navigate>
-                                        <i class="icon icon-tabler icon-tabler-edit"></i>
-                                    </a>
-                                    <button class="btn btn-outline-danger"
-                                        wire:click="delete('{{ $book->id }}')"
-                                        wire:confirm="Yakin ingin menghapus manual book ini?">
-                                        <i class="icon icon-tabler icon-tabler-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center py-4 text-muted">
+                            <td colspan="6" class="text-center py-4 text-muted">
                                 <i class="icon icon-tabler icon-tabler-book-off icon-lg mb-2"></i>
                                 <p class="mb-0">Belum ada manual book.</p>
                             </td>
