@@ -5,11 +5,15 @@ namespace App\Livewire\Dashboard;
 use App\Enums\ProposalStatus;
 use App\Enums\ReportStatus;
 use App\Models\AdditionalOutput;
+use App\Models\BudgetItem;
 use App\Models\CommunityServiceScheme;
 use App\Models\Faculty;
 use App\Models\MandatoryOutput;
+use App\Models\MonevReview;
 use App\Models\ProgressReport;
 use App\Models\Proposal;
+use App\Models\ProposalMonev;
+use App\Models\ProposalOutput;
 use App\Models\ResearchScheme;
 use App\Models\StudyProgram;
 use Illuminate\Database\Eloquent\Builder;
@@ -25,6 +29,8 @@ class KepalaLppmDashboard extends Component
     public $roleName;
 
     public $stats = [];
+
+    public $processStats = [];
 
     public $recentResearch = [];
 
@@ -261,6 +267,8 @@ class KepalaLppmDashboard extends Component
         // OPTIMIZED: Single aggregated query for all stats
         $this->loadStats($yearFilter);
 
+        $this->loadProcessStats((string) $yearFilter);
+
         // Load recent proposals
         $this->loadRecentProposals($yearFilter);
 
@@ -352,16 +360,32 @@ class KepalaLppmDashboard extends Component
         $this->stats = $this->transformStats($statsRaw, $yearFilter);
     }
 
-    /**
-     * Transform raw stats query result into stats array.
-     */
     private function transformStats(Collection $raw, string $yearFilter): array
     {
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $research = $raw->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'Research'));
         $communityService = $raw->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'CommunityService'));
 
         $researchPending = $research->filter(fn ($r) => ($r->status->value ?? '') === 'reviewed')->sum('count');
         $communityServicePending = $communityService->filter(fn ($r) => ($r->status->value ?? '') === 'reviewed')->sum('count');
+
+        $researchBudget = (int) BudgetItem::query()
+            ->whereHas(
+                'proposal',
+                fn ($q) => $q
+                    ->where('detailable_type', 'App\Models\Research')
+                    ->whereIn('status', ['approved', 'completed'])
+                    ->tap(fn ($subQ) => $this->applyCommonFilters($subQ))
+            )->sum('total_price');
+
+        $pkmBudget = (int) BudgetItem::query()
+            ->whereHas(
+                'proposal',
+                fn ($q) => $q
+                    ->where('detailable_type', 'App\Models\CommunityService')
+                    ->whereIn('status', ['approved', 'completed'])
+                    ->tap(fn ($subQ) => $this->applyCommonFilters($subQ))
+            )->sum('total_price');
 
         return [
             'total_research' => $research->sum('count'),
@@ -385,6 +409,8 @@ class KepalaLppmDashboard extends Component
                 AdditionalOutput::whereHas('progressReport', function ($q) use ($yearFilter) {
                     $q->whereYear('created_at', $yearFilter);
                 })->count(),
+            'research_budget' => $researchBudget,
+            'pkm_budget' => $pkmBudget,
         ];
     }
 
@@ -417,6 +443,85 @@ class KepalaLppmDashboard extends Component
             ->take(10)
             ->get()
             ->values();
+    }
+
+    private function loadProcessStats(string $yearFilter): void
+    {
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Baseline: Retrieve all proposals for the selected start_year
+        $proposalsThisYear = Proposal::where('start_year', $yearFilter)
+            ->tap(fn ($q) => $this->applyCommonFilters($q))
+            ->get();
+        $proposalsThisYearIds = $proposalsThisYear->pluck('id');
+
+        // New Metrics: Draft & Approval Stages
+        $totalDraft = $proposalsThisYear->filter(fn ($p) => ($p->status->value ?? '') === 'draft')->count();
+        $waitingDean = $proposalsThisYear->filter(fn ($p) => ($p->status->value ?? '') === 'submitted')->count();
+        $waitingLppm = $proposalsThisYear->filter(fn ($p) => in_array($p->status->value ?? '', ['approved', 'reviewed']))->count();
+
+        // 1. Review Status
+        $totalReview = Proposal::whereIn('id', $proposalsThisYearIds)
+            ->whereIn('status', ['reviewed', 'approved', 'rejected', 'completed'])
+            ->count();
+
+        $completedReview = Proposal::whereIn('id', $proposalsThisYearIds)
+            ->whereIn('status', ['approved', 'rejected', 'completed'])
+            ->count();
+
+        // 2 & 3. activeProposals: Only funded proposals (approved/completed) require Monev, Reports, and Outputs
+        $activeProposals = $proposalsThisYear->filter(function ($p) {
+            return in_array($p->status->value, ['approved', 'completed']);
+        });
+        $activeProposalIds = $activeProposals->pluck('id');
+
+        // 2. Monev Status (Integrated with new MonevReview system)
+        $totalMonev = $activeProposals->count();
+        $completedMonev = MonevReview::whereIn('proposal_id', $activeProposalIds)
+            ->whereNotNull('reviewed_at')
+            ->distinct()
+            ->count('proposal_id');
+
+        if ($completedMonev === 0) {
+            $completedMonev = ProposalMonev::whereIn('proposal_id', $activeProposalIds)->distinct()->count('proposal_id');
+        }
+
+        // 3. Reporting Status (Progress & Final Report)
+        $totalReports = $activeProposals->count();
+        $submittedReports = ProgressReport::whereIn('proposal_id', $activeProposalIds)
+            ->whereIn('status', [ReportStatus::SUBMITTED, ReportStatus::APPROVED, ReportStatus::APPROVED_BY_DEKAN])
+            ->distinct()
+            ->count('proposal_id');
+
+        // 4. Output Tracking (Luaran)
+        $targetOutputs = ProposalOutput::whereIn('proposal_id', $activeProposalIds)->count();
+
+        $progressReportIds = ProgressReport::whereIn('proposal_id', $activeProposalIds)->pluck('id');
+        $achievedOutputs = MandatoryOutput::whereIn('progress_report_id', $progressReportIds)->count()
+            + AdditionalOutput::whereIn('progress_report_id', $progressReportIds)->count();
+
+        $this->processStats = [
+            'draft_total' => $totalDraft,
+            'dean_waiting' => $waitingDean,
+            'lppm_waiting' => $waitingLppm,
+
+            'review_total' => $totalReview,
+            'review_completed' => $completedReview,
+            'review_progress' => $totalReview > 0 ? ($completedReview / $totalReview) * 100 : 0,
+
+            'monev_total' => $totalMonev,
+            'monev_completed' => $completedMonev,
+            'monev_progress' => $totalMonev > 0 ? ($completedMonev / $totalMonev) * 100 : 0,
+
+            'report_total' => $totalReports,
+            'report_submitted' => $submittedReports,
+            'report_progress' => $totalReports > 0 ? ($submittedReports / $totalReports) * 100 : 0,
+
+            'output_target' => $targetOutputs,
+            'output_achieved' => $achievedOutputs,
+            'output_progress' => $targetOutputs > 0 ? min(100, ($achievedOutputs / $targetOutputs) * 100) : 0,
+
+            'total_proposals' => $proposalsThisYear->count(),
+        ];
     }
 
     public function render()

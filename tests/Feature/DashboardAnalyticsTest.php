@@ -7,6 +7,7 @@ namespace Tests\Feature;
 use App\Livewire\Dashboard\AdminDashboard;
 use App\Livewire\Dashboard\ExecDashboard;
 use App\Livewire\Dashboard\KepalaLppmDashboard;
+use App\Models\StudyProgram;
 use App\Models\User;
 use Database\Seeders\InstitutionSeeder;
 use Database\Seeders\RoleSeeder;
@@ -68,6 +69,23 @@ class DashboardAnalyticsTest extends TestCase
     {
         $this->actingAs($this->rektor);
         Session::put('active_role', 'rektor');
+
+        $component = Livewire::test(ExecDashboard::class);
+        $component->assertStatus(200);
+        $this->assertTrue(is_array($component->get('focusAreasChartData')));
+        $this->assertTrue(is_array($component->get('facultyPerformanceChartData')));
+    }
+
+    public function test_kaprodi_dashboard_loads_analytics()
+    {
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        $kaprodi = User::factory()->create(['name' => 'Kaprodi']);
+        $kaprodi->assignRole('kaprodi');
+
+        $studyProgram = StudyProgram::factory()->create(['kaprodi_user_id' => $kaprodi->id]);
+
+        $this->actingAs($kaprodi);
+        Session::put('active_role', 'kaprodi');
 
         $component = Livewire::test(ExecDashboard::class);
         $component->assertStatus(200);

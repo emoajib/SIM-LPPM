@@ -377,14 +377,14 @@ class AdminDashboard extends Component
         $totalDosen = User::role('dosen')->count();
 
         // Budget from budget_items (sbk_value is always null/0, real budget lives in budget_items)
-        // Filter by start_year (tahun pelaksanaan) — konsisten dengan filter utama
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $researchBudget = (int) BudgetItem::query()
             ->whereHas(
                 'proposal',
                 fn ($q) => $q
                     ->where('detailable_type', 'App\Models\Research')
-                    ->where('start_year', $this->selectedYear)
                     ->whereIn('status', ['approved', 'completed'])
+                    ->tap(fn ($subQ) => $this->applyCommonFilters($subQ))
             )->sum('total_price');
 
         $pkmBudget = (int) BudgetItem::query()
@@ -392,8 +392,8 @@ class AdminDashboard extends Component
                 'proposal',
                 fn ($q) => $q
                     ->where('detailable_type', 'App\Models\CommunityService')
-                    ->where('start_year', $this->selectedYear)
                     ->whereIn('status', ['approved', 'completed'])
+                    ->tap(fn ($subQ) => $this->applyCommonFilters($subQ))
             )->sum('total_price');
 
         // FIX ENUM BUG: Laravel Collection whereIn compares by ==, but status

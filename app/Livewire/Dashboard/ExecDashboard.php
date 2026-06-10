@@ -6,12 +6,16 @@ use App\Enums\InstitutionalReportStatus;
 use App\Enums\ProposalStatus;
 use App\Enums\ReportStatus;
 use App\Models\AdditionalOutput;
+use App\Models\BudgetItem;
 use App\Models\CommunityServiceScheme;
 use App\Models\Faculty;
 use App\Models\InstitutionalReport;
 use App\Models\MandatoryOutput;
+use App\Models\MonevReview;
 use App\Models\ProgressReport;
 use App\Models\Proposal;
+use App\Models\ProposalMonev;
+use App\Models\ProposalOutput;
 use App\Models\ResearchScheme;
 use App\Models\StudyProgram;
 use Illuminate\Database\Eloquent\Builder;
@@ -27,6 +31,8 @@ class ExecDashboard extends Component
     public $roleName;
 
     public $stats = [];
+
+    public $processStats = [];
 
     public $recentResearch = [];
 
@@ -84,6 +90,14 @@ class ExecDashboard extends Component
             if ($facultyId) {
                 $this->selectedFaculty = (string) $facultyId;
                 $this->availableProdis = $this->getProdiByFaculty();
+            }
+        } elseif ($this->roleName === 'kaprodi') {
+            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            $studyProgram = StudyProgram::where('kaprodi_user_id', $this->user->id)->first();
+            if ($studyProgram) {
+                $this->selectedProdi = (string) $studyProgram->id;
+                $this->selectedFaculty = (string) $studyProgram->faculty_id;
+                $this->availableProdis = [$studyProgram->id => $studyProgram->name];
             }
         }
 
@@ -222,6 +236,11 @@ class ExecDashboard extends Component
         return $this->roleName === 'dekan';
     }
 
+    public function isKaprodiRestricted(): bool
+    {
+        return $this->roleName === 'kaprodi';
+    }
+
     /**
      * Hitung jumlah filter lanjutan yang sedang aktif (selain filter Tahun).
      * Digunakan untuk menampilkan badge indikator di tombol "Filter Lanjutan".
@@ -264,7 +283,7 @@ class ExecDashboard extends Component
         $this->selectedSemester = 'all';
         $this->selectedStatus = 'all';
 
-        if (! $this->isDekanRestricted()) {
+        if (! $this->isDekanRestricted() && ! $this->isKaprodiRestricted()) {
             $this->selectedFaculty = 'all';
             $this->selectedProdi = 'all';
             $this->availableProdis = $this->getProdiByFaculty();
@@ -280,6 +299,8 @@ class ExecDashboard extends Component
         $yearFilter = $this->selectedYear;
 
         $this->loadStats($yearFilter);
+
+        $this->loadProcessStats((string) $yearFilter);
 
         $this->loadRecentProposals($yearFilter);
 
@@ -368,6 +389,14 @@ class ExecDashboard extends Component
             } else {
                 $query->whereHas('submitter.identity', fn ($q) => $q->where('faculty_id', $facultyId));
             }
+        } elseif ($this->isKaprodiRestricted()) {
+            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            $studyProgram = StudyProgram::where('kaprodi_user_id', $this->user->id)->first();
+            if (! $studyProgram) {
+                $query->whereRaw('1 = 0');
+            } else {
+                $query->whereHas('submitter.identity', fn ($q) => $q->where('study_program_id', $studyProgram->id));
+            }
         } else {
             if ($this->selectedFaculty !== 'all') {
                 $query->whereHas('submitter.identity', fn ($q) => $q->where('faculty_id', $this->selectedFaculty));
@@ -418,8 +447,27 @@ class ExecDashboard extends Component
 
     private function transformStats(Collection $raw): array
     {
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $research = $raw->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'Research'));
         $communityService = $raw->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'CommunityService'));
+
+        $researchBudget = (int) BudgetItem::query()
+            ->whereHas(
+                'proposal',
+                fn ($q) => $q
+                    ->where('detailable_type', 'App\Models\Research')
+                    ->whereIn('status', ['approved', 'completed'])
+                    ->tap(fn ($subQ) => $this->applyCommonFilters($subQ))
+            )->sum('total_price');
+
+        $pkmBudget = (int) BudgetItem::query()
+            ->whereHas(
+                'proposal',
+                fn ($q) => $q
+                    ->where('detailable_type', 'App\Models\CommunityService')
+                    ->whereIn('status', ['approved', 'completed'])
+                    ->tap(fn ($subQ) => $this->applyCommonFilters($subQ))
+            )->sum('total_price');
 
         return [
             'total_research' => $research->sum('count'),
@@ -436,6 +484,8 @@ class ExecDashboard extends Component
                     ->count(),
             'total_outputs' => MandatoryOutput::whereHas('progressReport', fn ($q) => $q->whereYear('created_at', $this->selectedYear))->count()
                 + AdditionalOutput::whereHas('progressReport', fn ($q) => $q->whereYear('created_at', $this->selectedYear))->count(),
+            'research_budget' => $researchBudget,
+            'pkm_budget' => $pkmBudget,
         ];
     }
 
@@ -535,6 +585,85 @@ class ExecDashboard extends Component
         }
 
         return $summary;
+    }
+
+    private function loadProcessStats(string $yearFilter): void
+    {
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Baseline: Retrieve all proposals for the selected start_year
+        $proposalsThisYear = Proposal::where('start_year', $yearFilter)
+            ->tap(fn ($q) => $this->applyCommonFilters($q))
+            ->get();
+        $proposalsThisYearIds = $proposalsThisYear->pluck('id');
+
+        // New Metrics: Draft & Approval Stages
+        $totalDraft = $proposalsThisYear->filter(fn ($p) => ($p->status->value ?? '') === 'draft')->count();
+        $waitingDean = $proposalsThisYear->filter(fn ($p) => ($p->status->value ?? '') === 'submitted')->count();
+        $waitingLppm = $proposalsThisYear->filter(fn ($p) => in_array($p->status->value ?? '', ['approved', 'reviewed']))->count();
+
+        // 1. Review Status
+        $totalReview = Proposal::whereIn('id', $proposalsThisYearIds)
+            ->whereIn('status', ['reviewed', 'approved', 'rejected', 'completed'])
+            ->count();
+
+        $completedReview = Proposal::whereIn('id', $proposalsThisYearIds)
+            ->whereIn('status', ['approved', 'rejected', 'completed'])
+            ->count();
+
+        // 2 & 3. activeProposals: Only funded proposals (approved/completed) require Monev, Reports, and Outputs
+        $activeProposals = $proposalsThisYear->filter(function ($p) {
+            return in_array($p->status->value, ['approved', 'completed']);
+        });
+        $activeProposalIds = $activeProposals->pluck('id');
+
+        // 2. Monev Status (Integrated with new MonevReview system)
+        $totalMonev = $activeProposals->count();
+        $completedMonev = MonevReview::whereIn('proposal_id', $activeProposalIds)
+            ->whereNotNull('reviewed_at')
+            ->distinct()
+            ->count('proposal_id');
+
+        if ($completedMonev === 0) {
+            $completedMonev = ProposalMonev::whereIn('proposal_id', $activeProposalIds)->distinct()->count('proposal_id');
+        }
+
+        // 3. Reporting Status (Progress & Final Report)
+        $totalReports = $activeProposals->count();
+        $submittedReports = ProgressReport::whereIn('proposal_id', $activeProposalIds)
+            ->whereIn('status', [ReportStatus::SUBMITTED, ReportStatus::APPROVED, ReportStatus::APPROVED_BY_DEKAN])
+            ->distinct()
+            ->count('proposal_id');
+
+        // 4. Output Tracking (Luaran)
+        $targetOutputs = ProposalOutput::whereIn('proposal_id', $activeProposalIds)->count();
+
+        $progressReportIds = ProgressReport::whereIn('proposal_id', $activeProposalIds)->pluck('id');
+        $achievedOutputs = MandatoryOutput::whereIn('progress_report_id', $progressReportIds)->count()
+            + AdditionalOutput::whereIn('progress_report_id', $progressReportIds)->count();
+
+        $this->processStats = [
+            'draft_total' => $totalDraft,
+            'dean_waiting' => $waitingDean,
+            'lppm_waiting' => $waitingLppm,
+
+            'review_total' => $totalReview,
+            'review_completed' => $completedReview,
+            'review_progress' => $totalReview > 0 ? ($completedReview / $totalReview) * 100 : 0,
+
+            'monev_total' => $totalMonev,
+            'monev_completed' => $completedMonev,
+            'monev_progress' => $totalMonev > 0 ? ($completedMonev / $totalMonev) * 100 : 0,
+
+            'report_total' => $totalReports,
+            'report_submitted' => $submittedReports,
+            'report_progress' => $totalReports > 0 ? ($submittedReports / $totalReports) * 100 : 0,
+
+            'output_target' => $targetOutputs,
+            'output_achieved' => $achievedOutputs,
+            'output_progress' => $targetOutputs > 0 ? min(100, ($achievedOutputs / $targetOutputs) * 100) : 0,
+
+            'total_proposals' => $proposalsThisYear->count(),
+        ];
     }
 
     public function render()

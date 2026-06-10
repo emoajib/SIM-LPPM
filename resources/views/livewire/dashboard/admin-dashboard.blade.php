@@ -172,7 +172,7 @@
             <x-dashboard.kpi-widget 
                 title="Total Anggaran" 
                 value="Rp {{ number_format($totalBudget, 0, ',', '.') }}" 
-                subtitle="Penelitian & PKM" 
+                subtitle="Penelitian: Rp {{ number_format($stats['research_budget'] ?? 0, 0, ',', '.') }} • PKM: Rp {{ number_format($stats['pkm_budget'] ?? 0, 0, ',', '.') }}" 
                 icon="cash" 
                 color="purple" />
         </div>

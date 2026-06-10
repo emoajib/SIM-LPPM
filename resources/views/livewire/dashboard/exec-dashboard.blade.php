@@ -163,39 +163,48 @@
 
     <!-- Executive KPI Cards -->
     <div class="row row-deck row-cards mb-4">
-        <div class="col-sm-6 col-md-3">
+        <div class="col-sm-6 col-lg-3">
             <x-dashboard.kpi-widget 
                 title="Total Penelitian" 
                 value="{{ $stats['total_research'] ?? 0 }}" 
                 subtitle="Proposal terdaftar" 
-                icon="microscope" 
+                icon="flask" 
                 color="primary" />
         </div>
 
-        <div class="col-sm-6 col-md-3">
+        <div class="col-sm-6 col-lg-3">
             <x-dashboard.kpi-widget 
-                title="Total PKM" 
+                title="PKM (Total)" 
                 value="{{ $stats['total_community_service'] ?? 0 }}" 
                 subtitle="Proposal pengabdian" 
                 icon="users-group" 
                 color="azure" />
         </div>
 
-        <div class="col-sm-6 col-md-3">
+        <!-- KPI Section: Approval Rate -->
+        <div class="col-sm-6 col-lg-3">
+            @php
+                // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+                $totalProp = $stats['total_research'] + $stats['total_community_service'];
+                $totalAppr = $stats['research_approved'] + $stats['community_service_approved'];
+                $approvalRate = ($totalProp > 0) ? round(($totalAppr / $totalProp) * 100, 1) : 0;
+                $totalBudget = ($stats['research_budget'] ?? 0) + ($stats['pkm_budget'] ?? 0);
+            @endphp
             <x-dashboard.kpi-widget 
-                title="Persetujuan Lap. Akhir" 
-                value="{{ $stats['final_report_pending'] ?? 0 }}" 
-                subtitle="Laporan menunggu tinjauan" 
-                icon="clipboard-check" 
-                color="orange" />
+                title="Approval Rate" 
+                value="{{ $approvalRate }}%" 
+                subtitle="{{ $totalAppr }} dari {{ $totalProp }} usulan disetujui" 
+                icon="chart-bar" 
+                color="green" />
         </div>
 
-        <div class="col-sm-6 col-md-3">
+        <!-- KPI Section: Total Budget -->
+        <div class="col-sm-6 col-lg-3">
             <x-dashboard.kpi-widget 
-                title="Total Luaran" 
-                value="{{ $stats['total_outputs'] ?? 0 }}" 
-                subtitle="Capaian luaran terarsip" 
-                icon="award" 
+                title="Total Anggaran" 
+                value="Rp {{ number_format($totalBudget, 0, ',', '.') }}" 
+                subtitle="Penelitian: Rp {{ number_format($stats['research_budget'] ?? 0, 0, ',', '.') }} • PKM: Rp {{ number_format($stats['pkm_budget'] ?? 0, 0, ',', '.') }}" 
+                icon="cash" 
                 color="purple" />
         </div>
     </div>
@@ -215,6 +224,69 @@
                 title="Performa Usulan per Fakultas" 
                 :labels="$facultyPerformanceChartData['labels']" 
                 :datasets="$facultyPerformanceChartData['datasets']" />
+        </div>
+    </div>
+
+    <!-- Process Monitoring (Progress Styles) -->
+    <div class="row row-cards mb-4">
+        <!-- Review Progress Details -->
+        <div class="col-md-4">
+            <div class="card glass-card border-0 shadow-sm overflow-hidden" style="border-left: 4px solid #f59f00 !important;">
+                <div class="card-body py-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="subheader text-warning fw-bold">Progress Review</div>
+                        <div class="ms-auto">
+                            <span class="badge bg-warning-lt">{{ $processStats['review_progress'] ?? 0 }}%</span>
+                        </div>
+                    </div>
+                    <div class="progress progress-sm shadow-none bg-warning-lt">
+                        <div class="progress-bar bg-warning" style="width: {{ $processStats['review_progress'] ?? 0 }}%"></div>
+                    </div>
+                    <div class="mt-2 small text-muted">
+                        {{ $processStats['review_completed'] ?? 0 }} dari {{ $processStats['review_total'] ?? 0 }} proposal selesai direview
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monev Progress Details -->
+        <div class="col-md-4">
+            <div class="card glass-card border-0 shadow-sm overflow-hidden" style="border-left: 4px solid #00b8d4 !important;">
+                <div class="card-body py-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="subheader text-info fw-bold">Progress Monev</div>
+                        <div class="ms-auto">
+                            <span class="badge bg-info-lt">{{ $processStats['monev_progress'] ?? 0 }}%</span>
+                        </div>
+                    </div>
+                    <div class="progress progress-sm shadow-none bg-info-lt">
+                        <div class="progress-bar bg-info" style="width: {{ $processStats['monev_progress'] ?? 0 }}%"></div>
+                    </div>
+                    <div class="mt-2 small text-muted">
+                        {{ $processStats['monev_completed'] ?? 0 }} dari {{ $processStats['monev_total'] ?? 0 }} proposal selesai dimonitoring
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- IKU Progress Details -->
+        <div class="col-md-4">
+            <div class="card glass-card border-0 shadow-sm overflow-hidden" style="border-left: 4px solid #206bc4 !important;">
+                <div class="card-body py-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="subheader text-primary fw-bold">Progress IKU (Luaran)</div>
+                        <div class="ms-auto">
+                            <span class="badge bg-primary-lt">{{ number_format($processStats['output_progress'] ?? 0, 1) }}%</span>
+                        </div>
+                    </div>
+                    <div class="progress progress-sm shadow-none bg-primary-lt">
+                        <div class="progress-bar bg-primary" style="width: {{ $processStats['output_progress'] ?? 0 }}%"></div>
+                    </div>
+                    <div class="mt-2 small text-muted">
+                        {{ $processStats['output_achieved'] ?? 0 }} dari {{ $processStats['output_target'] ?? 0 }} target luaran tercapai
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

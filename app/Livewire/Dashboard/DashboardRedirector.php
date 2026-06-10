@@ -17,12 +17,13 @@ class DashboardRedirector extends Component
         $this->user = Auth::user();
         $this->roleName = active_role();
 
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $dashboardComponent = match ($this->roleName) {
             'superadmin', 'admin lppm' => 'dashboard.admin-dashboard',
             'kepala lppm' => 'dashboard.kepala-lppm-dashboard',
             'dosen' => 'dashboard.dosen-dashboard',
             'reviewer' => 'dashboard.reviewer-dashboard',
-            'rektor', 'dekan' => 'dashboard.exec-dashboard',
+            'rektor', 'dekan', 'kaprodi' => 'dashboard.exec-dashboard',
             default => 'dashboard.default-dashboard',
         };
 
