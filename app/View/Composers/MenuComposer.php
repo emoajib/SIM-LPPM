@@ -42,6 +42,13 @@ class MenuComposer
                 'icon' => 'smart-home',
                 'route' => 'dashboard',
             ],
+            // Manual Book / Panduan - available for all authenticated roles
+            [
+                'title' => 'Panduan',
+                'icon' => 'book',
+                'route' => 'manual-books.index',
+                'roles' => ['dosen', 'kepala lppm', 'admin lppm', 'superadmin', 'rektor', 'dekan', 'kaprodi', 'reviewer'],
+            ],
             // Dosen menu (+ dekan for monitoring their faculty proposals)
             [
                 'title' => 'Penelitian',

@@ -59,6 +59,7 @@ class RoleSeeder extends Seeder
             'module_arsip_data' => ['admin lppm'],
             'module_export_sinta' => ['admin lppm'],
             'module_pengaturan' => ['admin lppm'],
+            'module_manual_book' => ['admin lppm', 'superadmin'],
         ];
 
         foreach ($mappings as $permissionName => $roleNames) {

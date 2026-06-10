@@ -1,6 +1,7 @@
 <?php
 
 use App\Exports\UsersTemplateExport;
+use App\Http\Controllers\AdminLppm\ManualBookUploadController;
 use App\Http\Controllers\DailyNoteExportController;
 use App\Http\Controllers\DocumentSignatureVerificationController;
 use App\Http\Controllers\HealthCheckController;
@@ -16,6 +17,8 @@ use App\Http\Controllers\SintaExportController;
 use App\Livewire\Admin\Archive\ManageArchives;
 use App\Livewire\Admin\EligibilityDashboard;
 use App\Livewire\AdminLppm\ExportSinta;
+use App\Livewire\AdminLppm\ManualBook\Form as ManualBookForm;
+use App\Livewire\AdminLppm\ManualBook\Index as ManualBookIndex;
 use App\Livewire\AdminLppm\Monev\MonevIndex;
 use App\Livewire\AdminLppm\ReviewerAssignment;
 use App\Livewire\AdminLppm\ReviewerWorkload;
@@ -33,6 +36,7 @@ use App\Livewire\KepalaLppm\FinalDecision;
 use App\Livewire\KepalaLppm\InitialApproval;
 use App\Livewire\KepalaLppm\Monev\MonevRecap;
 use App\Livewire\KepalaLppm\ReportApproval;
+use App\Livewire\ManualBook\Index as ManualBookUserIndex;
 use App\Livewire\Notifications\NotificationCenter;
 use App\Livewire\Rektor\MonevDashboard;
 use App\Livewire\Reports\CommunityService;
@@ -256,6 +260,20 @@ Route::middleware(['auth'])->group(function () {
         // route for global audit log access outside settings tab
         Route::get('audit-log', AuditLog::class)
             ->name('audit-log');
+
+        // Manual Books CRUD (Admin LPPM)
+        Route::middleware(['permission:module_manual_book'])->prefix('manual-books')->name('manual-books.')->group(function () {
+            Route::get('/', ManualBookIndex::class)->name('index');
+            Route::get('create', ManualBookForm::class)->name('create');
+            Route::get('{manualBook}/edit', ManualBookForm::class)->name('edit');
+            Route::post('{manualBook}/upload', [ManualBookUploadController::class, 'upload'])
+                ->name('upload');
+        });
+    });
+
+    // Manual Books - Per-role view (all authenticated users)
+    Route::middleware(['auth', 'verified'])->prefix('manual-books')->name('manual-books.')->group(function () {
+        Route::get('/', ManualBookUserIndex::class)->name('index');
     });
 
     Route::get('settings', SettingsIndex::class)

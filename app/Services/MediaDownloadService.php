@@ -6,6 +6,7 @@ use App\Models\AdditionalOutput;
 use App\Models\CommunityService;
 use App\Models\DailyNote;
 use App\Models\MandatoryOutput;
+use App\Models\ManualBook;
 use App\Models\Partner;
 use App\Models\ProgressReport;
 use App\Models\Proposal;
@@ -66,6 +67,16 @@ class MediaDownloadService
             }
         } elseif ($model instanceof Proposal) {
             $proposalId = $model->id;
+        }
+
+        // 3b. ManualBook - check assigned roles
+        if ($model instanceof ManualBook) {
+            $role = active_role();
+            if ($user->hasAnyRole(['admin lppm', 'superadmin', 'kepala lppm', 'rektor'])) {
+                return true;
+            }
+
+            return in_array($role, $model->assigned_roles ?? []);
         }
 
         if (! $proposalId) {
