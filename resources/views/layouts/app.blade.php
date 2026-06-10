@@ -19,6 +19,8 @@
         <noscript>
             <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
         </noscript>
+        <!-- Vetted by AI - Manual Review Required by Senior Engineer/Manager -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <!-- END CUSTOM FONT -->
     </head>
