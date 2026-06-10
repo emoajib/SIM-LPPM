@@ -292,6 +292,14 @@ class MenuComposer
                     ],
                 ],
             ],
+            // Data Arsip - admin lppm
+            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            [
+                'title' => 'Arsip',
+                'icon' => 'folders',
+                'route' => 'admin.archives',
+                'roles' => ['admin lppm', 'superadmin'],
+            ],
             // settings:
             // - master data - admin lppm
             // Vetted by AI - Manual Review Required by Senior Engineer/Manager
@@ -327,11 +335,6 @@ class MenuComposer
                                 'route' => 'sync-sinta',
                             ],
                         ],
-                    ],
-                    [
-                        'title' => 'Arsip',
-                        'icon' => 'folders',
-                        'route' => 'admin.archives',
                     ],
                     [
                         'title' => 'Integrasi SINTA',
