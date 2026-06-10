@@ -6,14 +6,20 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Lembar Penilaian Reviewer - {{ $proposal->id }}</title>
     <style>
-        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            border: 0;
+        }
+
         @page {
-            margin: 3cm 3cm 3cm 4cm;
+            margin: 2.5cm;
         }
 
         body {
             font-family: Arial, Helvetica, sans-serif;
-            font-size: 9pt;
+            font-size: 9.5pt;
             line-height: 1.4;
             color: #000;
             text-align: justify;
@@ -21,9 +27,9 @@
 
         .header-table {
             width: 100%;
-            border-bottom: 2px solid #000;
-            margin-bottom: 12px;
-            padding-bottom: 5px;
+            border-bottom: 3.5pt double #000;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
         }
 
         .header-table td {
@@ -33,19 +39,11 @@
         }
 
         .logo {
-            width: 60px;
+            width: 65px;
         }
 
         .header-text {
-            text-align: left;
-            padding-left: 10px;
-        }
-
-        .header-text div {
-            font-weight: bold;
-            font-size: 11pt;
-            line-height: 1.2;
-            margin-bottom: 2px;
+            text-align: center;
         }
 
         .no-border,
@@ -70,10 +68,10 @@
         }
 
         .info-table.no-border td {
-            padding: 3px 0 !important;
+            padding: 3.5px 0 !important;
             vertical-align: top;
             border: none !important;
-            font-size: 9pt;
+            font-size: 9.5pt;
         }
 
         .scoring-table {
@@ -86,7 +84,7 @@
         .scoring-table td {
             border: 0.5pt solid #000;
             padding: 6px;
-            font-size: 8.5pt;
+            font-size: 9pt;
             line-height: 1.3;
             vertical-align: top;
         }
@@ -127,18 +125,25 @@
 <body>
     <table class="header-table no-border">
         <tr>
-            <td class="logo" style="width: 60px;">
+            <td class="logo" style="width: 65px; text-align: left; border: none !important; padding: 0 !important; vertical-align: middle;">
                 @if (get_logo_base64())
-                    <img src="{{ get_logo_base64() }}" alt="Logo" style="width: 50px;">
+                    <img src="{{ get_logo_base64() }}" alt="Logo" style="width: 55px;">
                 @endif
             </td>
-            <td class="header-text">
-                <div>Lembaga Penelitian dan Pengabdian kepada Masyarakat (LPPM)</div>
-                <div>Institut Teknologi dan Sains Nahdlatul Ulama (ITSNU) Pekalongan</div>
-                <div style="font-weight: normal; font-size: 8pt; line-height: 1.3; margin-top: 4px;">
+            <td class="header-text" style="border: none !important; padding: 0 0 0 10px !important; vertical-align: middle; text-align: center;">
+                <div style="font-size: 12pt; font-weight: bold; text-transform: uppercase; line-height: 1.25;">
+                    Lembaga Penelitian dan Pengabdian kepada Masyarakat (LPPM)
+                </div>
+                <div style="font-size: 13pt; font-weight: bold; text-transform: uppercase; line-height: 1.25; margin-top: 2px;">
+                    Institut Teknologi dan Sains Nahdlatul Ulama (ITSNU)
+                </div>
+                <div style="font-size: 13pt; font-weight: bold; text-transform: uppercase; line-height: 1.25;">
+                    Pekalongan
+                </div>
+                <div style="font-size: 8.5pt; font-weight: normal; line-height: 1.3; margin-top: 6px;">
                     Jl. Karangdowo No. 9, Karangdowo, Kec. Kedungwuni, Kab. Pekalongan, Jawa Tengah 51173
                 </div>
-                <div style="font-weight: normal; font-size: 8pt; line-height: 1.3;">
+                <div style="font-size: 8.5pt; font-weight: normal; line-height: 1.3;">
                     Email: lppmitsnupkl@gmail.com | Website: https://lppm.itsnupekalongan.ac.id/
                 </div>
             </td>
@@ -225,7 +230,7 @@
         </tfoot>
     </table>
 
-    <div style="font-size: 8.5pt; margin-top: 15px; margin-bottom: 15px; border: 0.5pt solid #000; padding: 8px 10px; background-color: #fafafa; line-height: 1.4;">
+    <div style="font-size: 8.5pt; margin-top: 15px; margin-bottom: 15px; border: 0.5pt solid #000; padding: 8px 12px; background-color: #fafafa; line-height: 1.4;">
         <strong>Keterangan Skor:</strong> 1 = Sangat Kurang, 2 = Kurang, 3 = Cukup Baik, 4 = Baik, 5 = Sangat Baik. <br>
         <strong>Passing Grade:</strong> 300 &nbsp;|&nbsp; 
         <strong>Total Nilai:</strong> {{ number_format($totalScore, 0) }} &nbsp;|&nbsp; 
@@ -235,8 +240,8 @@
         </span>
     </div>
 
-    <div class="fw-bold" style="font-size: 9pt; margin-bottom: 5px;">Komentar / Saran Reviewer:</div>
-    <div style="border: 0.5pt solid #000; padding: 10px; min-height: 80px; margin-bottom: 20px; text-align: justify; font-size: 8.5pt; line-height: 1.4; background-color: #ffffff;">
+    <div class="fw-bold" style="font-size: 9.5pt; margin-bottom: 5px;">Komentar / Saran Reviewer:</div>
+    <div style="border: 0.5pt solid #000; padding: 10px; min-height: 80px; margin-bottom: 20px; text-align: justify; font-size: 9pt; line-height: 1.4; background-color: #ffffff;">
         {!! nl2br(e($assignment->review_notes)) !!}
     </div>
 
