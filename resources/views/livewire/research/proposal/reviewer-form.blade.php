@@ -76,6 +76,12 @@
                                                                                                                 Total Skor:
                                                                                                                 {{ number_format($review->scores->where('round', $review->round)->sum('value'), 0) }}
                                                                                                             </div>
+                                                                                                            <a data-navigate-ignore="true" href="{{ route('reviewers.export-pdf', [$review->id, 'preview' => 1]) }}"
+                                                                                                                target="_blank"
+                                                                                                                class="px-2 py-1 btn btn-sm btn-ghost-danger">
+                                                                                                                <x-lucide-eye class="me-1 icon icon-sm" />
+                                                                                                                Tinjau PDF
+                                                                                                            </a>
                                                                                                             <a data-navigate-ignore="true" href="{{ route('reviewers.export-pdf', $review->id) }}"
                                                                                                                 target="_blank"
                                                                                                                 class="px-2 py-1 btn btn-sm btn-ghost-danger">
