@@ -86,7 +86,50 @@
                             }
                         }
                     }
-                }
+                },
+                plugins: [
+                    {
+                        id: 'datalabels',
+                        afterDraw(chart) {
+                            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+                            const { ctx } = chart;
+                            ctx.save();
+                            chart.data.datasets.forEach((dataset, i) => {
+                                const meta = chart.getDatasetMeta(i);
+                                meta.data.forEach((element, index) => {
+                                    const dataVal = dataset.data[index];
+                                    if (dataVal === undefined || dataVal === null || dataVal === 0) return;
+                                    
+                                    let x, y;
+                                    if (chart.config.type === 'doughnut') {
+                                        if (typeof element.getCenterPoint === 'function') {
+                                            const center = element.getCenterPoint();
+                                            x = center.x;
+                                            y = center.y;
+                                        } else {
+                                            return;
+                                        }
+                                        ctx.fillStyle = '#ffffff';
+                                        ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+                                        ctx.shadowBlur = 4;
+                                        ctx.font = 'bold 12px Inter, sans-serif';
+                                    } else {
+                                        x = element.x;
+                                        y = element.y - 8;
+                                        ctx.fillStyle = 'var(--tblr-body-color, #333)';
+                                        ctx.shadowBlur = 0;
+                                        ctx.font = 'bold 11px Inter, sans-serif';
+                                    }
+                                    
+                                    ctx.textAlign = 'center';
+                                    ctx.textBaseline = 'middle';
+                                    ctx.fillText(dataVal, x, y);
+                                });
+                            });
+                            ctx.restore();
+                        }
+                    }
+                ]
             });
         }
      }"
