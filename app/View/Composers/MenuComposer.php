@@ -292,57 +292,56 @@ class MenuComposer
                     ],
                 ],
             ],
-            // kelola pengguna - admin lppm
-            [
-                'title' => 'Pengguna',
-                'icon' => 'users-group',
-                'roles' => ['admin lppm', 'superadmin'],
-                'children' => [
-                    [
-                        'title' => 'Daftar Pengguna',
-                        'icon' => 'list',
-                        'route' => 'users.index',
-                        'active' => ['users.index', 'users.show', 'users.edit'],
-                        'expand_index' => false,
-                    ],
-                    [
-                        'title' => 'Buat Pengguna',
-                        'icon' => 'user-plus',
-                        'route' => 'users.create',
-                    ],
-                    [
-                        'title' => 'Import Pengguna',
-                        'icon' => 'upload',
-                        'route' => 'users.import',
-                    ],
-                    [
-                        'title' => 'Sinkronisasi SINTA',
-                        'icon' => 'database-import',
-                        'route' => 'sync-sinta',
-                    ],
-                ],
-            ],
-            // Data Arsip - admin lppm
-            [
-                'title' => 'Arsip',
-                'icon' => 'folders',
-                'route' => 'admin.archives',
-                'roles' => ['admin lppm', 'superadmin'],
-            ],
-            // Export SINTA - admin lppm
-            [
-                'title' => 'SINTA',
-                'icon' => 'database-export',
-                'route' => 'export-sinta',
-                'roles' => ['admin lppm', 'superadmin'],
-            ],
             // settings:
             // - master data - admin lppm
+            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             [
                 'title' => 'Pengaturan',
                 'icon' => 'settings-2',
                 'roles' => ['admin lppm', 'superadmin'],
                 'children' => [
+                    [
+                        'title' => 'Pengguna',
+                        'icon' => 'users-group',
+                        'children' => [
+                            [
+                                'title' => 'Daftar Pengguna',
+                                'icon' => 'list',
+                                'route' => 'users.index',
+                                'active' => ['users.index', 'users.show', 'users.edit'],
+                                'expand_index' => false,
+                            ],
+                            [
+                                'title' => 'Buat Pengguna',
+                                'icon' => 'user-plus',
+                                'route' => 'users.create',
+                            ],
+                            [
+                                'title' => 'Import Pengguna',
+                                'icon' => 'upload',
+                                'route' => 'users.import',
+                            ],
+                            [
+                                'title' => 'Sinkronisasi SINTA',
+                                'icon' => 'database-import',
+                                'route' => 'sync-sinta',
+                            ],
+                        ],
+                    ],
+                    [
+                        'title' => 'Arsip',
+                        'icon' => 'folders',
+                        'route' => 'admin.archives',
+                    ],
+                    [
+                        'title' => 'Integrasi SINTA',
+                        'icon' => 'database-export',
+                        'route' => 'export-sinta',
+                    ],
+                    [
+                        'title' => 'Divider',
+                        'type' => 'divider',
+                    ],
                     [
                         'title' => 'Master Data',
                         'icon' => 'layers',
@@ -447,6 +446,7 @@ class MenuComposer
         return $formatted;
     }
 
+    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
     protected function formatDropdownItem(array $item, ?User $user): ?array
     {
         $allowedRoles = $item['roles'] ?? null;
@@ -466,14 +466,25 @@ class MenuComposer
             )));
         }
 
+        $hasActiveChild = false;
+        if ($children) {
+            foreach ($children as $child) {
+                if ($child['active'] ?? false) {
+                    $hasActiveChild = true;
+                    break;
+                }
+            }
+        }
+
         $formatted = [
+            'type' => $item['type'] ?? ($children ? 'dropend' : 'link'),
             'label' => $item['title'],
             'href' => $this->resolveHref($item),
             'prefix_icon' => $item['icon'] ?? null,
             'prefix_icon_class' => 'icon icon-2 icon-inline me-1',
             'route' => $routeName,
             'params' => $params,
-            'active' => $this->isActive($item, $routeName),
+            'active' => $this->isActive($item, $routeName) || $hasActiveChild,
             'navigate' => $item['navigate'] ?? true,
         ];
 

@@ -2,8 +2,12 @@
     $itemType = $item['type'] ?? 'link';
     $isActive = $item['active'] ?? false;
 @endphp
-
-@if ($itemType === 'dropend')
+{{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+@if ($itemType === 'divider')
+    <div class="dropdown-divider"></div>
+@elseif ($itemType === 'header')
+    <h6 class="dropdown-header">{{ $item['label'] }}</h6>
+@elseif ($itemType === 'dropend')
     <div class="dropend">
         <a class="{{ $item['toggle_class'] ?? 'dropdown-item dropdown-toggle' }}{{ $isActive ? ' active' : '' }}"
             href="{{ $item['href'] ?? '#' }}" data-bs-toggle="{{ $item['toggle']['data-bs-toggle'] ?? 'dropdown' }}"
