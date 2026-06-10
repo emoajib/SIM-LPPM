@@ -66,7 +66,7 @@
             margin: 15px 0;
             font-weight: bold;
             text-transform: uppercase;
-            font-size: 10pt;
+            font-size: 11pt;
             line-height: 1.3;
         }
 
@@ -75,7 +75,7 @@
             margin-bottom: 15px;
         }
 
-        .info-table td {
+        .info-table.no-border td {
             padding: 3px 0 !important;
             vertical-align: top;
             border: none !important;
@@ -122,35 +122,6 @@
 
         .fw-bold {
             font-weight: bold;
-        }
-
-        .footer {
-            margin-top: 20px;
-            width: 100%;
-            page-break-inside: avoid;
-        }
-
-        .footer::after {
-            content: "";
-            display: table;
-            clear: both;
-        }
-
-        .signature-box {
-            float: right;
-            width: 250px;
-            text-align: left;
-        }
-
-        .signature-box p {
-            margin: 0;
-            padding: 1.5px 0;
-            line-height: 1.25;
-            font-size: 9pt;
-        }
-
-        .signature-space {
-            height: 50px;
         }
 
         .page-break {
@@ -230,12 +201,12 @@
     <table class="scoring-table">
         <thead>
             <tr>
-                <th style="width: 5%;">No</th>
-                <th style="width: 25%;">Kriteria Penilaian</th>
-                <th style="width: 45%;">Catatan / Justifikasi Reviewer</th>
-                <th style="width: 10%;">Bobot (%)</th>
-                <th style="width: 7%;">Skor</th>
-                <th style="width: 8%;">Nilai</th>
+                <th style="width: 5%; padding: 6px 4px;">No</th>
+                <th style="width: 25%; padding: 6px 4px;">Kriteria Penilaian</th>
+                <th style="width: 45%; padding: 6px 4px;">Catatan / Justifikasi Reviewer</th>
+                <th style="width: 10%; padding: 6px 4px;">Bobot (%)</th>
+                <th style="width: 7%; padding: 6px 4px;">Skor</th>
+                <th style="width: 8%; padding: 6px 4px;">Nilai</th>
             </tr>
         </thead>
         <tbody>
@@ -275,25 +246,28 @@
         {!! nl2br(e($assignment->review_notes)) !!}
     </div>
 
-    <div class="footer">
-        <div class="signature-box">
-            <p>Pekalongan, {{ $assignment->completed_at?->translatedFormat('d F Y') ?? now()->translatedFormat('d F Y') }}</p>
-            <p>Reviewer,</p>
-            @if($qrUrl ?? null)
-                <div style="margin: 6px 0; margin-left: 10px;">
-                    <img src="{{ generate_qr_code_data_uri($qrUrl, 160) }}" alt="QR Verifikasi" style="width: 65px; height: 65px;">
-                </div>
-                <div style="font-size: 7.5pt; color: #333; margin-top: 1px; margin-bottom: 8px; line-height: 1.2;">
-                    Terverifikasi sistem (QR)<br>
-                    Ditandatangani: {{ $assignment->completed_at?->format('d/m/Y H:i') ?? '-' }}
-                </div>
-            @else
-                <div class="signature-space"></div>
-            @endif
-            <p style="margin-top: 5px;"><strong>({{ format_name($assignment->user->identity?->title_prefix, $assignment->user->name, $assignment->user->identity?->title_suffix) }})</strong></p>
-            <p>NIDN. {{ $assignment->user->identity?->identity_id ?? '..........................' }}</p>
-        </div>
-    </div>
+    <table class="no-border" style="width: 100%; margin-top: 25px; page-break-inside: avoid;">
+        <tr>
+            <td style="width: 60%; border: none !important;"></td>
+            <td style="width: 40%; border: none !important; text-align: left; vertical-align: top; padding: 0 !important;">
+                <p style="margin: 0; padding: 1.5px 0;">Pekalongan, {{ $assignment->completed_at?->translatedFormat('d F Y') ?? now()->translatedFormat('d F Y') }}</p>
+                <p style="margin: 0; padding: 1.5px 0;">Reviewer,</p>
+                @if($qrUrl ?? null)
+                    <div style="margin: 6px 0; margin-left: 10px;">
+                        <img src="{{ generate_qr_code_data_uri($qrUrl, 160) }}" alt="QR Verifikasi" style="width: 65px; height: 65px;">
+                    </div>
+                    <div style="font-size: 7.5pt; color: #333; margin-top: 1px; margin-bottom: 8px; line-height: 1.2;">
+                        Terverifikasi sistem (QR)<br>
+                        Ditandatangani: {{ $assignment->completed_at?->format('d/m/Y H:i') ?? '-' }}
+                    </div>
+                @else
+                    <div style="height: 50px;"></div>
+                @endif
+                <p style="margin: 0; padding: 1.5px 0; margin-top: 5px;"><strong>({{ format_name($assignment->user->identity?->title_prefix, $assignment->user->name, $assignment->user->identity?->title_suffix) }})</strong></p>
+                <p style="margin: 0; padding: 1.5px 0;">NIDN. {{ $assignment->user->identity?->identity_id ?? '..........................' }}</p>
+            </td>
+        </tr>
+    </table>
 </body>
 
 </html>
