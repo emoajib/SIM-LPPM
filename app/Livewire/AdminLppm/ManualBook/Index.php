@@ -19,6 +19,7 @@ class Index extends Component
         return view('livewire.admin-lppm.manual-book.index', [
             'manualBooks' => ManualBook::query()
                 ->with('media')
+                ->whereJsonContains('assigned_roles', active_role())
                 ->when($this->search, fn ($q) => $q->where('title', 'like', '%'.$this->search.'%'))
                 ->latest()
                 ->paginate(20),
