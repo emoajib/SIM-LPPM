@@ -1,78 +1,67 @@
 <div>
-    <div class="d-flex gap-2 mb-3">
-        <input type="text" class="form-control" style="max-width:300px" placeholder="Cari manual book..." wire:model.live.debounce.300ms="search">
-        <select class="form-select" style="max-width:200px" wire:model.live="statusFilter">
-            <option value="">Semua Status</option>
-            <option value="active">Aktif</option>
-            <option value="inactive">Nonaktif</option>
-        </select>
-    </div>
-
-    <div class="alert alert-info d-flex align-items-center mb-3 py-2" role="alert">
-        <i class="icon icon-tabler icon-tabler-info-circle me-2"></i>
-        <span>Pengelolaan manual book dilakukan di <a href="{{ route('settings.manual-books') }}" wire:navigate class="fw-medium">Pengaturan &rarr; Manual Book</a>.</span>
-    </div>
-
-    <div class="card">
-        <div class="card-body p-0">
-            <table class="table table-striped table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th>Judul</th>
-                        <th>Role</th>
-                        <th>Versi</th>
-                        <th>File</th>
-                        <th>Status</th>
-                        <th>Dibuat Oleh</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($manualBooks as $book)
-                        <tr>
-                            <td class="fw-medium">{{ $book->title }}</td>
-                            <td>
-                                @foreach($book->assigned_roles as $role)
-                                    <span class="badge bg-secondary me-1">{{ format_role_name($role) }}</span>
-                                @endforeach
-                            </td>
-                            <td>v{{ $book->version_number }}</td>
-                            <td>
-                                @php $media = $book->getFirstMedia('manual_book_file'); @endphp
-                                @if($media)
-                                    <a href="{{ route('media.download', $media) }}" class="btn btn-sm btn-outline-primary" target="_blank">
-                                        <i class="icon icon-tabler icon-tabler-download me-1"></i>
-                                        {{ number_format($media->size / 1024, 1) }} KB
-                                    </a>
-                                @else
-                                    <span class="text-muted">
-                                        <i class="icon icon-tabler icon-tabler-file-off"></i> Tidak ada
-                                    </span>
-                                @endif
-                            </td>
-                            <td>
-                                @if($book->status === 'active')
-                                    <span class="badge bg-success">Aktif</span>
-                                @else
-                                    <span class="badge bg-secondary">Nonaktif</span>
-                                @endif
-                            </td>
-                            <td>{{ $book->creator?->name ?? '-' }}</td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="text-center py-4 text-muted">
-                                <i class="icon icon-tabler icon-tabler-book-off icon-lg mb-2"></i>
-                                <p class="mb-0">Belum ada manual book.</p>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h3 class="mb-0">Daftar Manual Book</h3>
+        <div>
+            <input type="text" class="form-control" style="max-width:300px" placeholder="Cari manual book..." wire:model.live.debounce.300ms="search">
         </div>
-        @if($manualBooks->hasPages())
-            <div class="card-footer">
-                {{ $manualBooks->links() }}
-            </div>
-        @endif
     </div>
+
+    <div class="row row-cards">
+        @forelse($manualBooks as $book)
+            @php $media = $book->getFirstMedia('manual_book_file'); @endphp
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="flex-shrink-0 me-3">
+                                <div class="avatar avatar-lg bg-primary text-white">
+                                    <i class="icon icon-tabler icon-tabler-book icon-lg"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 min-width-0">
+                                <h4 class="card-title mb-1 text-truncate">{{ $book->title }}</h4>
+                                <p class="text-muted small mb-0">Versi {{ $book->version_number }}</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-2">
+                            @foreach($book->assigned_roles as $role)
+                                <span class="badge bg-secondary me-1">{{ format_role_name($role) }}</span>
+                            @endforeach
+                        </div>
+
+                        <div class="mt-auto">
+                            @if($media)
+                                <a href="{{ route('media.download', $media) }}" class="btn btn-primary w-100" target="_blank">
+                                    <i class="icon icon-tabler icon-tabler-download me-1"></i>
+                                    Download ({{ number_format($media->size / 1024, 1) }} KB)
+                                </a>
+                            @else
+                                <div class="alert alert-warning mb-0 py-2 text-center small">
+                                    <i class="icon icon-tabler icon-tabler-file-off me-1"></i>
+                                    File PDF belum tersedia
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @empty
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center py-5">
+                        <i class="icon icon-tabler icon-tabler-book-off icon-lg mb-3 text-muted"></i>
+                        <h4 class="text-muted">Belum Ada Manual Book</h4>
+                        <p class="text-muted mb-0">Belum ada manual book yang tersedia.</p>
+                    </div>
+                </div>
+            </div>
+        @endforelse
+    </div>
+
+    @if($manualBooks->hasPages())
+        <div class="mt-3">
+            {{ $manualBooks->links() }}
+        </div>
+    @endif
 </div>
