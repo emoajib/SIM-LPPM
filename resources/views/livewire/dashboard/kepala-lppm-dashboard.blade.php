@@ -199,7 +199,7 @@
                 <div class="col-lg-6">
                     <x-dashboard.analytics-chart 
                         type="bar" 
-                        title="Distribusi Bidang Fokus (Pohon Penelitian)" 
+                        title="Distribusi Bidang Fokus" 
                         :labels="$focusAreasChartData['labels']" 
                         :datasets="$focusAreasChartData['datasets']" />
                 </div>
@@ -216,7 +216,7 @@
                 <div class="col-lg-6">
                     <x-dashboard.analytics-chart 
                         type="bar" 
-                        title="Distribusi Rumpun Ilmu" 
+                        title="Distribusi Rumpun Ilmu dan PKM" 
                         :labels="$scienceClustersChartData['labels']" 
                         :datasets="$scienceClustersChartData['datasets']" />
                 </div>
@@ -234,14 +234,14 @@
                 <div class="col-lg-6">
                     <x-dashboard.analytics-chart 
                         type="bar" 
-                        title="Distribusi Tema Penelitian" 
+                        title="Distribusi Tema Penelitian dan PKM" 
                         :labels="$themesChartData['labels']" 
                         :datasets="$themesChartData['datasets']" />
                 </div>
                 <div class="col-lg-6">
                     <x-dashboard.analytics-chart 
                         type="bar" 
-                        title="Distribusi Topik Penelitian" 
+                        title="Distribusi Topik Penelitian dan PKM" 
                         :labels="$topicsChartData['labels']" 
                         :datasets="$topicsChartData['datasets']" />
                 </div>
