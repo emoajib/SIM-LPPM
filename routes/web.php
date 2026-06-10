@@ -46,6 +46,7 @@ use App\Livewire\Reports\MonevReport;
 use App\Livewire\Reports\OutputReports;
 use App\Livewire\Reports\PartnerCollaboration;
 use App\Livewire\Reports\Research;
+use App\Livewire\Reports\ReviewerReport;
 use App\Livewire\Reports\Show;
 use App\Livewire\Research\Proposal\Create;
 use App\Livewire\Research\Proposal\Edit;
@@ -113,6 +114,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('laporan-monev', MonevReport::class)
         ->middleware(['permission:module_laporan'])
         ->name('reports.monev');
+
+    Route::get('laporan-reviewer', ReviewerReport::class)
+        ->middleware(['permission:module_laporan'])
+        ->name('reports.reviewer');
 
     // User Management Routes
     Route::middleware(['role:admin lppm|superadmin'])->prefix('users')->name('users.')->group(function () {
@@ -388,8 +393,8 @@ Route::group(['middleware' => ['auth', 'verified', 'permission:module_laporan']]
     Route::get('/laporan-mitra/export/excel', [ReportExportController::class, 'partnerExcel'])->name('reports.partner.excel');
 });
 
-// Rute Ekspor Admin (dashboard, monev, IKU)
-Route::group(['middleware' => ['auth', 'verified', 'role:admin lppm|rektor|kepala lppm']], function () {
+// Rute Ekspor Admin (dashboard, monev, IKU, reviewer)
+Route::group(['middleware' => ['auth', 'verified', 'role:admin lppm|rektor|kepala lppm|superadmin']], function () {
     Route::get('/admin/dashboard/export-research', [ReportExportController::class, 'dashboardResearchExport'])->name('admin.dashboard.export-research');
     Route::get('/admin/dashboard/export-community-service', [ReportExportController::class, 'dashboardCommunityServiceExport'])->name('admin.dashboard.export-community-service');
 
@@ -399,6 +404,11 @@ Route::group(['middleware' => ['auth', 'verified', 'role:admin lppm|rektor|kepal
     // IKU Exports
     Route::get('/admin/iku/export-pdf', [ReportExportController::class, 'ikuPdf'])->name('admin.iku.export-pdf');
     Route::get('/admin/iku/export-excel', [ReportExportController::class, 'ikuExcel'])->name('admin.iku.export-excel');
+
+    // Reviewer Report Exports
+    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    Route::get('/admin/reviewer/export-pdf', [ReportExportController::class, 'reviewerPdf'])->name('reports.reviewer.pdf');
+    Route::get('/admin/reviewer/export-excel', [ReportExportController::class, 'reviewerExcel'])->name('reports.reviewer.excel');
 });
 
 // Archive Export Routes - Should match archive module permission

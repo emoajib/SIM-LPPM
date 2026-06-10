@@ -278,6 +278,13 @@ class MenuComposer
                         'icon' => 'clipboard-data',
                         'route' => 'reports.monev',
                     ],
+                    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+                    [
+                        'title' => 'Laporan Reviewer',
+                        'icon' => 'users-group',
+                        'route' => 'reports.reviewer',
+                        'roles' => ['admin lppm', 'superadmin', 'rektor', 'kepala lppm'],
+                    ],
                     [
                         'title' => 'Rekap Monev',
                         'icon' => 'chart-dots',

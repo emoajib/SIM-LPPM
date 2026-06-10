@@ -14,12 +14,15 @@ use App\Exports\OutputReportExport;
 use App\Exports\PartnerCollaborationExport;
 use App\Exports\ResearchProposalExport;
 use App\Exports\ResearchReportExport;
+use App\Exports\ReviewerReportExport;
+use App\Models\CommunityService;
 use App\Models\DocumentSignature;
 use App\Models\Institution;
 use App\Models\InstitutionalReport;
 use App\Models\MonevReview;
 use App\Models\Partner;
 use App\Models\Proposal;
+use App\Models\ProposalReviewer;
 use App\Models\Research;
 use App\Models\ReviewCriteria;
 use App\Models\User;
@@ -1150,6 +1153,158 @@ class ReportExportController extends Controller
             Log::error('Monev PDF Export Error: '.$e->getMessage());
 
             return back()->with('error', 'Gagal mengunduh PDF: '.$e->getMessage());
+        }
+    }
+
+    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    public function reviewerPdf(Request $request)
+    {
+        try {
+            $period = $request->query('period', date('Y'));
+            $search = $request->query('search');
+            $type = $request->query('type', 'all');
+            $year = (int) $period;
+
+            // Query proposals
+            $proposalsQuery = Proposal::query()
+                ->whereIn('status', [
+                    ProposalStatus::WAITING_REVIEWER,
+                    ProposalStatus::UNDER_REVIEW,
+                    ProposalStatus::REVIEWED,
+                    ProposalStatus::APPROVED,
+                    ProposalStatus::COMPLETED,
+                ])
+                ->when($year, fn ($q) => $q->whereYear('created_at', $year))
+                ->when($search, function ($q) use ($search) {
+                    $q->where(function ($sub) use ($search) {
+                        $sub->where('title', 'like', "%{$search}%")
+                            ->orWhereHas('submitter', fn ($u) => $u->where('name', 'like', "%{$search}%"));
+                    });
+                })
+                ->when($type && $type !== 'all', function ($q) use ($type) {
+                    $detailableType = $type === 'research'
+                        ? Research::class
+                        : CommunityService::class;
+                    $q->where('detailable_type', $detailableType);
+                });
+
+            $proposals = $proposalsQuery
+                ->with([
+                    'submitter.identity.faculty',
+                    'submitter.identity.studyProgram',
+                    'detailable',
+                    'researchScheme',
+                    'communityServiceScheme',
+                    'reviewers.user',
+                ])
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            // Query reviewers
+            $reviewers = User::role('reviewer')
+                ->withCount([
+                    'reviews as total_assigned' => function ($query) use ($year) {
+                        if ($year) {
+                            $query->whereHas('proposal', function ($pq) use ($year) {
+                                $pq->whereYear('created_at', $year);
+                            });
+                        }
+                    },
+                    'reviews as pending_count' => function ($query) use ($year) {
+                        $query->where('status', 'pending');
+                        if ($year) {
+                            $query->whereHas('proposal', function ($pq) use ($year) {
+                                $pq->whereYear('created_at', $year);
+                            });
+                        }
+                    },
+                    'reviews as completed_count' => function ($query) use ($year) {
+                        $query->where('status', 'completed');
+                        if ($year) {
+                            $query->whereHas('proposal', function ($pq) use ($year) {
+                                $pq->whereYear('created_at', $year);
+                            });
+                        }
+                    },
+                ])
+                ->with(['identity.faculty'])
+                ->get();
+
+            // Summary stats
+            $totalProposals = $proposals->count();
+            $assigned = $proposals->filter(fn ($p) => $p->reviewers->count() > 0)->count();
+
+            $totalReviews = ProposalReviewer::query()
+                ->whereHas('proposal', function ($q) use ($year) {
+                    $q->when($year, fn ($sub) => $sub->whereYear('created_at', $year));
+                })
+                ->count();
+
+            $completedReviews = ProposalReviewer::query()
+                ->whereHas('proposal', function ($q) use ($year) {
+                    $q->when($year, fn ($sub) => $sub->whereYear('created_at', $year));
+                })
+                ->where('status', 'completed')
+                ->count();
+
+            $progressPercent = $totalReviews > 0 ? round(($completedReviews / $totalReviews) * 100) : 0;
+
+            $avgScore = round(Proposal::query()
+                ->whereIn('status', [
+                    ProposalStatus::REVIEWED,
+                    ProposalStatus::APPROVED,
+                    ProposalStatus::COMPLETED,
+                ])
+                ->when($year, fn ($q) => $q->whereYear('created_at', $year))
+                ->avg('score') ?? 0, 1);
+
+            $summaryStats = [
+                'total_proposals' => $totalProposals,
+                'assigned' => $assigned,
+                'progress_percent' => $progressPercent,
+                'avg_score' => $avgScore,
+            ];
+
+            $institution = Institution::first();
+            $rektor = User::role('rektor')->with('identity')->first();
+            $lppmHead = User::role('kepala lppm')->with('identity')->first();
+
+            $pdf = Pdf::loadView('reports.reviewer-report-pdf', [
+                'proposals' => $proposals,
+                'reviewers' => $reviewers,
+                'period' => $period,
+                'summaryStats' => $summaryStats,
+                'institution' => $institution,
+                'rektor' => $rektor,
+                'lppmHead' => $lppmHead,
+            ])->setPaper('a4', 'landscape');
+
+            $filename = 'laporan-reviewer-'.$period.'-'.now()->format('YmdHis').'.pdf';
+
+            return $this->pdfDownloadResponse($pdf->output(), $filename);
+        } catch (\Exception $e) {
+            Log::error('Reviewer PDF Export Error: '.$e->getMessage());
+
+            return back()->with('error', 'Gagal mengunduh PDF: '.$e->getMessage());
+        }
+    }
+
+    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    public function reviewerExcel(Request $request)
+    {
+        try {
+            $period = $request->query('period', date('Y'));
+            $search = $request->query('search');
+            $type = $request->query('type', 'all');
+
+            return Excel::download(
+                new ReviewerReportExport($period, $type, $search),
+                'laporan-reviewer-'.$period.'-'.now()->format('YmdHis').'.xlsx'
+            );
+        } catch (\Exception $e) {
+            Log::error('Reviewer Excel Export Error: '.$e->getMessage());
+
+            return back()->with('error', 'Gagal mengunduh Excel: '.$e->getMessage());
         }
     }
 }
