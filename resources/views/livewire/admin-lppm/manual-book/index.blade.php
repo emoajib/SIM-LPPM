@@ -15,7 +15,7 @@
                         <div class="d-flex align-items-center mb-3">
                             <div class="flex-shrink-0 me-3">
                                 <div class="avatar avatar-lg bg-primary text-white">
-                                    <i class="icon icon-tabler icon-tabler-file-text icon-lg"></i>
+                                    <i class="icon icon-tabler icon-tabler-notebook icon-lg"></i>
                                 </div>
                             </div>
                             <div class="flex-grow-1 min-width-0">
@@ -50,7 +50,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body text-center py-5">
-                        <i class="icon icon-tabler icon-tabler-book-off icon-lg mb-3 text-muted"></i>
+                        <i class="icon icon-tabler icon-tabler-notebook-off icon-lg mb-3 text-muted"></i>
                         <h4 class="text-muted">Belum Ada Manual Book</h4>
                         <p class="text-muted mb-0">Belum ada manual book yang tersedia.</p>
                     </div>
