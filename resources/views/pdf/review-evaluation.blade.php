@@ -6,15 +6,9 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Lembar Penilaian Reviewer - {{ $proposal->id }}</title>
     <style>
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            border: 0;
-        }
-
+        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
         @page {
-            margin: 2.5cm;
+            margin: 2cm;
         }
 
         body {
@@ -123,30 +117,32 @@
 </head>
 
 <body>
+    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
     <table class="header-table no-border">
         <tr>
-            <td class="logo" style="width: 65px; text-align: left; border: none !important; padding: 0 !important; vertical-align: middle;">
+            <td style="width: 70px; text-align: left; vertical-align: middle; border: none !important; padding: 0 !important;">
                 @if (get_logo_base64())
-                    <img src="{{ get_logo_base64() }}" alt="Logo" style="width: 55px;">
+                    <img src="{{ get_logo_base64() }}" alt="Logo" style="width: 60px; height: auto;">
                 @endif
             </td>
-            <td class="header-text" style="border: none !important; padding: 0 0 0 10px !important; vertical-align: middle; text-align: center;">
-                <div style="font-size: 12pt; font-weight: bold; text-transform: uppercase; line-height: 1.25;">
+            <td class="header-text" style="border: none !important; padding: 0 !important; vertical-align: middle; text-align: center;">
+                <div style="font-size: 11pt; font-weight: bold; text-transform: uppercase; line-height: 1.25; letter-spacing: 0.2px;">
                     Lembaga Penelitian dan Pengabdian kepada Masyarakat (LPPM)
                 </div>
-                <div style="font-size: 13pt; font-weight: bold; text-transform: uppercase; line-height: 1.25; margin-top: 2px;">
-                    Institut Teknologi dan Sains Nahdlatul Ulama (ITSNU)
+                <div style="font-size: 12.5pt; font-weight: bold; text-transform: uppercase; line-height: 1.25; margin-top: 2px; letter-spacing: 0.2px;">
+                    Institut Teknologi dan Sains Nahdlatul Ulama
                 </div>
-                <div style="font-size: 13pt; font-weight: bold; text-transform: uppercase; line-height: 1.25;">
-                    Pekalongan
+                <div style="font-size: 12.5pt; font-weight: bold; text-transform: uppercase; line-height: 1.25; letter-spacing: 0.2px;">
+                    (ITSNU) Pekalongan
                 </div>
-                <div style="font-size: 8.5pt; font-weight: normal; line-height: 1.3; margin-top: 6px;">
+                <div style="font-size: 8pt; font-weight: normal; line-height: 1.3; margin-top: 6px; color: #111;">
                     Jl. Karangdowo No. 9, Karangdowo, Kec. Kedungwuni, Kab. Pekalongan, Jawa Tengah 51173
                 </div>
-                <div style="font-size: 8.5pt; font-weight: normal; line-height: 1.3;">
+                <div style="font-size: 8pt; font-weight: normal; line-height: 1.3; color: #111;">
                     Email: lppmitsnupkl@gmail.com | Website: https://lppm.itsnupekalongan.ac.id/
                 </div>
             </td>
+            <td style="width: 70px; border: none !important; padding: 0 !important; vertical-align: middle;"></td>
         </tr>
     </table>
 
