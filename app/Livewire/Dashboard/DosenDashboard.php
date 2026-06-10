@@ -3,7 +3,9 @@
 namespace App\Livewire\Dashboard;
 
 use App\Livewire\Concerns\HasToast;
+use App\Models\CommunityServiceScheme;
 use App\Models\Proposal;
+use App\Models\ResearchScheme;
 use App\Services\SintaService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -21,6 +23,8 @@ class DosenDashboard extends Component
 
     public $stats = [];
 
+    public $chartData = [];
+
     // Edit Metrics State
     public $showEditMetricsModal = false;
 
@@ -31,6 +35,8 @@ class DosenDashboard extends Component
     public $gs_h_index;
 
     public $wos_h_index;
+
+    public $gender;
 
     // Zero Trust: Pastikan proses save mencakup validasi tipe data numerik
 
@@ -85,7 +91,67 @@ class DosenDashboard extends Component
         // Load recent proposals
         $this->loadRecentProposals($yearFilter);
 
-        // Pending invitations moved to NotificationCenter
+        // Load historical chart data
+        $this->loadChartData();
+    }
+
+    /**
+     * Load historical chart data for the last 5 years.
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     */
+    private function loadChartData(): void
+    {
+        $currentYear = (int) date('Y');
+        $startYear = $currentYear - 4; // Last 5 years
+        $years = range($startYear, $currentYear);
+
+        $proposalsData = Proposal::query()
+            ->where('submitter_id', $this->user->id)
+            ->whereYear('created_at', '>=', $startYear)
+            ->select([
+                DB::raw(sql_year().' as year'),
+                'status',
+                DB::raw('COUNT(*) as count'),
+            ])
+            ->groupBy('year', 'status')
+            ->get();
+
+        $usulanData = [];
+        $didanaiData = [];
+
+        foreach ($years as $year) {
+            $yearStr = (string) $year;
+
+            // Total Usulan in this year
+            $usulanCount = $proposalsData->filter(fn ($p) => (int) $p->getAttribute('year') === $year)->sum('count');
+            $usulanData[] = $usulanCount;
+
+            // Didanai (status: approved) in this year
+            $didanaiCount = $proposalsData->filter(fn ($p) => (int) $p->getAttribute('year') === $year && ($p->status->value ?? '') === 'approved')->sum('count');
+            $didanaiData[] = $didanaiCount;
+        }
+
+        $this->chartData = [
+            'labels' => array_map('strval', $years),
+            'datasets' => [
+                [
+                    'label' => 'Usulan',
+                    'data' => $usulanData,
+                    'borderColor' => '#206bc4',
+                    'backgroundColor' => 'rgba(32, 107, 196, 0.1)',
+                    'fill' => true,
+                    'tension' => 0.4,
+                ],
+                [
+                    'label' => 'Didanai',
+                    'data' => $didanaiData,
+                    'borderColor' => '#2fb344',
+                    'backgroundColor' => 'rgba(47, 179, 68, 0.1)',
+                    'fill' => true,
+                    'tension' => 0.4,
+                ],
+            ],
+        ];
     }
 
     /**
@@ -115,6 +181,8 @@ class DosenDashboard extends Component
             'community_service_pending' => $communityService->filter(fn ($r) => ($r->status->value ?? '') === 'submitted')->sum('count'),
             'research_approved' => $research->filter(fn ($r) => ($r->status->value ?? '') === 'approved')->sum('count'),
             'community_service_approved' => $communityService->filter(fn ($r) => ($r->status->value ?? '') === 'approved')->sum('count'),
+            'research_schemes_count' => ResearchScheme::count(),
+            'community_service_schemes_count' => CommunityServiceScheme::count(),
         ];
     }
 
@@ -190,6 +258,7 @@ class DosenDashboard extends Component
         $this->scopus_h_index = $identity->scopus_h_index;
         $this->gs_h_index = $identity->gs_h_index;
         $this->wos_h_index = $identity->wos_h_index;
+        $this->gender = $identity->gender;
 
         $this->showEditMetricsModal = true;
     }
@@ -201,6 +270,7 @@ class DosenDashboard extends Component
             'scopus_h_index' => 'nullable|numeric|min:0',
             'gs_h_index' => 'nullable|numeric|min:0',
             'wos_h_index' => 'nullable|numeric|min:0',
+            'gender' => 'nullable|in:L,P',
         ]);
 
         $identity = $this->user->identity;
@@ -210,6 +280,7 @@ class DosenDashboard extends Component
                 'scopus_h_index' => $this->scopus_h_index,
                 'gs_h_index' => $this->gs_h_index,
                 'wos_h_index' => $this->wos_h_index,
+                'gender' => $this->gender,
             ]);
             $this->toastSuccess('Metrik publikasi berhasil diperbarui secara manual.');
             $this->showEditMetricsModal = false;

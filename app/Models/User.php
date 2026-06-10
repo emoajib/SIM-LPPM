@@ -165,6 +165,54 @@ class User extends Authenticatable implements HasMedia
             ->implode('');
     }
 
+    /**
+     * Check if the user is female based on gender column or common Indonesian female names.
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     */
+    public function isFemale(): bool
+    {
+        $gender = $this->identity?->gender;
+        if ($gender === 'P') {
+            return true;
+        }
+        if ($gender === 'L') {
+            return false;
+        }
+
+        // Fallback: Smart Indonesian name-based gender guesser
+        $name = strtolower($this->name);
+        $femaleIndicators = [
+            'siti', 'sri', 'dewi', 'putri', 'fitria', 'fitri', 'ani', 'rina', 'nurul',
+            'diah', 'retno', 'indah', 'kartika', 'mega', 'wulan', 'lilis', 'endang',
+            'yuni', 'tri', 'ria', 'ike', 'ita', 'lia', 'anisa', 'annisa', 'rara',
+            'ulfa', 'restu', 'irma', 'ningsih', 'sulastri', 'atika', 'estu', 'ida',
+            'mira', 'novi', 'novita', 'wahyu', 'luluk', 'triana', 'nita', 'dina',
+            'dian', 'sartika', 'puji', 'tutik', 'lia', 'erni', 'hartati', 'ratna',
+        ];
+
+        $identity = $this->identity;
+        $prefix = strtolower($identity ? ($identity->title_prefix ?? '') : '');
+        if (str_contains($prefix, 'ny.') || str_contains($prefix, 'ibu')) {
+            return true;
+        }
+
+        $firstWord = explode(' ', $name)[0] ?? '';
+        foreach ($femaleIndicators as $indicator) {
+            if ($firstWord === $indicator || Str::startsWith($firstWord, $indicator)) {
+                return true;
+            }
+        }
+
+        $words = array_slice(explode(' ', $name), 0, 2);
+        foreach ($words as $word) {
+            if (in_array($word, $femaleIndicators, true)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     // attributes
     public function profilePicture(): Attribute
     {

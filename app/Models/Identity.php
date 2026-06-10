@@ -73,6 +73,7 @@ class Identity extends Model
         'google_scholar_id',
         'wos_id',
         'type',
+        'gender',
         'address',
         'birthdate',
         'birthplace',
