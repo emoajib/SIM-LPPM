@@ -103,10 +103,11 @@
     <tbody>
         @foreach($proposals as $index => $proposal)
             @php
+                // Vetted by AI - Manual Review Required by Senior Engineer/Manager
                 $r1 = $proposal->reviewers[0] ?? null;
                 $r2 = $proposal->reviewers[1] ?? null;
-                $r1Score = $r1 && $r1->isCompleted() ? ($proposal->reviewers[0]->latestLog()->score ?? '-') : '-';
-                $r2Score = $r2 && $r2->isCompleted() ? ($proposal->reviewers[1]->latestLog()->score ?? '-') : '-';
+                $r1Score = $r1 && $r1->isCompleted() ? ($proposal->reviewers[0]->latestLog()->total_score ?? '-') : '-';
+                $r2Score = $r2 && $r2->isCompleted() ? ($proposal->reviewers[1]->latestLog()->total_score ?? '-') : '-';
             @endphp
             <tr>
                 <td style="border: 1px solid black; text-align: center;">{{ $index + 1 }}</td>

@@ -712,4 +712,23 @@ class Proposal extends Model
             default => 'danger',
         };
     }
+
+    /**
+     * Get the dynamic average score of completed reviewer logs.
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     */
+    public function getScoreAttribute(): ?float
+    {
+        $completedLogs = $this->reviewers()
+            ->where('status', 'completed')
+            ->get()
+            ->map(fn ($r) => $r->latestLog()?->total_score)
+            ->filter(fn ($score) => ! is_null($score));
+
+        if ($completedLogs->isEmpty()) {
+            return null;
+        }
+
+        return round($completedLogs->average(), 1);
+    }
 }

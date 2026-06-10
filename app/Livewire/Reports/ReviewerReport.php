@@ -9,6 +9,7 @@ use App\Models\CommunityService;
 use App\Models\Proposal;
 use App\Models\ProposalReviewer;
 use App\Models\Research;
+use App\Models\ReviewLog;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -216,14 +217,17 @@ class ReviewerReport extends Component
         $progressPercent = $totalReviews > 0 ? round(($completedReviews / $totalReviews) * 100) : 0;
 
         // Calculate average score of completed reviews
-        $avgScore = round(Proposal::query()
-            ->whereIn('status', [
-                ProposalStatus::REVIEWED,
-                ProposalStatus::APPROVED,
-                ProposalStatus::COMPLETED,
-            ])
-            ->when($year, fn ($q) => $q->whereYear('created_at', $year))
-            ->avg('score') ?? 0, 1);
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        $avgScore = round(ReviewLog::query()
+            ->whereHas('proposal', function ($q) use ($year) {
+                $q->whereIn('status', [
+                    ProposalStatus::REVIEWED,
+                    ProposalStatus::APPROVED,
+                    ProposalStatus::COMPLETED,
+                ])->when($year, fn ($sub) => $sub->whereYear('created_at', $year));
+            })
+            ->whereNotNull('completed_at')
+            ->avg('total_score') ?? 0, 1);
 
         return [
             'total_proposals' => $totalProposals,
