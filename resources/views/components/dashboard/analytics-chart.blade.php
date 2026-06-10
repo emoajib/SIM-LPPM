@@ -96,6 +96,14 @@
             initChart($event.detail.focusAreas.labels, $event.detail.focusAreas.datasets);
         } else if ($event.detail.facultyPerformance && '{{ $title }}'.includes('Fakultas')) {
             initChart($event.detail.facultyPerformance.labels, $event.detail.facultyPerformance.datasets);
+        } else if ($event.detail.scienceClusters && '{{ $title }}'.includes('Rumpun')) {
+            initChart($event.detail.scienceClusters.labels, $event.detail.scienceClusters.datasets);
+        } else if ($event.detail.tkt && '{{ $title }}'.includes('TKT')) {
+            initChart($event.detail.tkt.labels, $event.detail.tkt.datasets);
+        } else if ($event.detail.themes && '{{ $title }}'.includes('Tema')) {
+            initChart($event.detail.themes.labels, $event.detail.themes.datasets);
+        } else if ($event.detail.topics && '{{ $title }}'.includes('Topik')) {
+            initChart($event.detail.topics.labels, $event.detail.topics.datasets);
         }
      "
      style="position: relative; min-height: 320px;">

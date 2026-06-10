@@ -52,6 +52,10 @@ class DashboardAnalyticsTest extends TestCase
         $component->assertStatus(200);
         $this->assertTrue(is_array($component->get('focusAreasChartData')));
         $this->assertTrue(is_array($component->get('facultyPerformanceChartData')));
+        $this->assertTrue(is_array($component->get('scienceClustersChartData')));
+        $this->assertTrue(is_array($component->get('tktChartData')));
+        $this->assertTrue(is_array($component->get('themesChartData')));
+        $this->assertTrue(is_array($component->get('topicsChartData')));
     }
 
     public function test_kepala_lppm_dashboard_loads_analytics()
@@ -63,6 +67,10 @@ class DashboardAnalyticsTest extends TestCase
         $component->assertStatus(200);
         $this->assertTrue(is_array($component->get('focusAreasChartData')));
         $this->assertTrue(is_array($component->get('facultyPerformanceChartData')));
+        $this->assertTrue(is_array($component->get('scienceClustersChartData')));
+        $this->assertTrue(is_array($component->get('tktChartData')));
+        $this->assertTrue(is_array($component->get('themesChartData')));
+        $this->assertTrue(is_array($component->get('topicsChartData')));
     }
 
     public function test_exec_dashboard_loads_analytics()
@@ -74,6 +82,10 @@ class DashboardAnalyticsTest extends TestCase
         $component->assertStatus(200);
         $this->assertTrue(is_array($component->get('focusAreasChartData')));
         $this->assertTrue(is_array($component->get('facultyPerformanceChartData')));
+        $this->assertTrue(is_array($component->get('scienceClustersChartData')));
+        $this->assertTrue(is_array($component->get('tktChartData')));
+        $this->assertTrue(is_array($component->get('themesChartData')));
+        $this->assertTrue(is_array($component->get('topicsChartData')));
     }
 
     public function test_kaprodi_dashboard_loads_analytics()
@@ -91,5 +103,9 @@ class DashboardAnalyticsTest extends TestCase
         $component->assertStatus(200);
         $this->assertTrue(is_array($component->get('focusAreasChartData')));
         $this->assertTrue(is_array($component->get('facultyPerformanceChartData')));
+        $this->assertTrue(is_array($component->get('scienceClustersChartData')));
+        $this->assertTrue(is_array($component->get('tktChartData')));
+        $this->assertTrue(is_array($component->get('themesChartData')));
+        $this->assertTrue(is_array($component->get('topicsChartData')));
     }
 }

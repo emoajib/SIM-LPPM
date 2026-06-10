@@ -74,6 +74,26 @@ class AdminDashboard extends Component
         'datasets' => [],
     ];
 
+    public $scienceClustersChartData = [
+        'labels' => [],
+        'datasets' => [],
+    ];
+
+    public $tktChartData = [
+        'labels' => [],
+        'datasets' => [],
+    ];
+
+    public $themesChartData = [
+        'labels' => [],
+        'datasets' => [],
+    ];
+
+    public $topicsChartData = [
+        'labels' => [],
+        'datasets' => [],
+    ];
+
     public function mount(): void
     {
         $this->user = Auth::user();
@@ -280,7 +300,11 @@ class AdminDashboard extends Component
 
         $this->dispatch('chart-updated',
             focusAreas: $this->focusAreasChartData,
-            facultyPerformance: $this->facultyPerformanceChartData
+            facultyPerformance: $this->facultyPerformanceChartData,
+            scienceClusters: $this->scienceClustersChartData,
+            tkt: $this->tktChartData,
+            themes: $this->themesChartData,
+            topics: $this->topicsChartData
         );
     }
 
@@ -339,6 +363,118 @@ class AdminDashboard extends Component
                     'backgroundColor' => '#206bc4',
                     'borderColor' => '#206bc4',
                     'borderWidth' => 1,
+                ],
+            ],
+        ];
+
+        // 3. Rumpun Ilmu (Science Clusters)
+        $scienceClustersQuery = Proposal::query()
+            ->tap(fn ($q) => $this->applyCommonFilters($q))
+            ->with('clusterLevel1')
+            ->get()
+            ->groupBy(function ($proposal) {
+                return $proposal->clusterLevel1->name ?? 'Belum Ditentukan';
+            })
+            ->map(fn ($group) => $group->count());
+
+        $scienceLabels = $scienceClustersQuery->keys()->toArray();
+        $scienceCounts = $scienceClustersQuery->values()->toArray();
+
+        $this->scienceClustersChartData = [
+            'labels' => $scienceLabels,
+            'datasets' => [
+                [
+                    'label' => 'Jumlah Proposal',
+                    'data' => $scienceCounts,
+                    'backgroundColor' => [
+                        '#2fb344', '#ae3ec9', '#d6336c', '#f76707', '#206bc4',
+                        '#f59f00', '#74b816', '#4299e1', '#4263eb', '#0ca678',
+                    ],
+                ],
+            ],
+        ];
+
+        // 4. TKT Levels (TKT)
+        $tktQuery = Proposal::query()
+            ->tap(fn ($q) => $this->applyCommonFilters($q))
+            ->where('detailable_type', 'App\Models\Research')
+            ->with('detailable.tktLevels')
+            ->get()
+            ->flatMap(function ($proposal) {
+                return $proposal->detailable->tktLevels ?? collect();
+            })
+            ->groupBy(function ($tktLevel) {
+                return 'TKT '.($tktLevel->level ?? $tktLevel->name);
+            })
+            ->map(fn ($group) => $group->count());
+
+        $tktLabels = $tktQuery->keys()->toArray();
+        $tktCounts = $tktQuery->values()->toArray();
+
+        $this->tktChartData = [
+            'labels' => $tktLabels,
+            'datasets' => [
+                [
+                    'label' => 'Jumlah Proposal',
+                    'data' => $tktCounts,
+                    'backgroundColor' => '#f76707',
+                    'borderColor' => '#f76707',
+                    'borderWidth' => 1,
+                ],
+            ],
+        ];
+
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // 5. Themes (Tema)
+        $themesQuery = Proposal::query()
+            ->tap(fn ($q) => $this->applyCommonFilters($q))
+            ->with('theme')
+            ->get()
+            ->groupBy(function ($proposal) {
+                return $proposal->theme->name ?? 'Belum Ditentukan';
+            })
+            ->map(fn ($group) => $group->count());
+
+        $themeLabels = $themesQuery->keys()->toArray();
+        $themeCounts = $themesQuery->values()->toArray();
+
+        $this->themesChartData = [
+            'labels' => $themeLabels,
+            'datasets' => [
+                [
+                    'label' => 'Jumlah Proposal',
+                    'data' => $themeCounts,
+                    'backgroundColor' => [
+                        '#4263eb', '#f59f00', '#ae3ec9', '#2fb344', '#d6336c',
+                        '#f76707', '#74b816', '#4299e1', '#206bc4', '#0ca678',
+                    ],
+                ],
+            ],
+        ];
+
+        // 6. Topics (Topik)
+        $topicsQuery = Proposal::query()
+            ->tap(fn ($q) => $this->applyCommonFilters($q))
+            ->with('topic')
+            ->get()
+            ->groupBy(function ($proposal) {
+                return $proposal->topic->name ?? 'Belum Ditentukan';
+            })
+            ->map(fn ($group) => $group->count());
+
+        $topicLabels = $topicsQuery->keys()->toArray();
+        $topicCounts = $topicsQuery->values()->toArray();
+
+        $this->topicsChartData = [
+            'labels' => $topicLabels,
+            'datasets' => [
+                [
+                    'label' => 'Jumlah Proposal',
+                    'data' => $topicCounts,
+                    'backgroundColor' => [
+                        '#d6336c', '#f76707', '#4299e1', '#0ca678', '#206bc4',
+                        '#f59f00', '#74b816', '#4263eb', '#2fb344', '#ae3ec9',
+                    ],
                 ],
             ],
         ];

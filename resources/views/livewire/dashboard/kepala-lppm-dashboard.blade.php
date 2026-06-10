@@ -212,6 +212,41 @@
                 </div>
             </div>
 
+            <div class="row row-cards mb-4">
+                <div class="col-lg-6">
+                    <x-dashboard.analytics-chart 
+                        type="doughnut" 
+                        title="Distribusi Rumpun Ilmu" 
+                        :labels="$scienceClustersChartData['labels']" 
+                        :datasets="$scienceClustersChartData['datasets']" />
+                </div>
+                <div class="col-lg-6">
+                    <x-dashboard.analytics-chart 
+                        type="bar" 
+                        title="Distribusi Tingkat Kesiapterapan Teknologi (TKT)" 
+                        :labels="$tktChartData['labels']" 
+                        :datasets="$tktChartData['datasets']" />
+                </div>
+            </div>
+
+            {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+            <div class="row row-cards mb-4">
+                <div class="col-lg-6">
+                    <x-dashboard.analytics-chart 
+                        type="doughnut" 
+                        title="Distribusi Tema Penelitian" 
+                        :labels="$themesChartData['labels']" 
+                        :datasets="$themesChartData['datasets']" />
+                </div>
+                <div class="col-lg-6">
+                    <x-dashboard.analytics-chart 
+                        type="bar" 
+                        title="Distribusi Topik Penelitian" 
+                        :labels="$topicsChartData['labels']" 
+                        :datasets="$topicsChartData['datasets']" />
+                </div>
+            </div>
+
             <!-- Process Monitoring (Progress Styles) -->
             <div class="row row-cards mb-4">
                 <!-- Review Progress Details -->
