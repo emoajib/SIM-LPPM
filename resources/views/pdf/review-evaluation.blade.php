@@ -120,16 +120,19 @@
     {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
     <table class="header-table no-border">
         <tr>
-            <td style="width: 85px; text-align: left; vertical-align: middle; border: none !important; padding: 0 !important;">
+            <td style="width: 95px; text-align: left; vertical-align: middle; border: none !important; padding: 0 !important;">
                 @if (get_logo_base64())
-                    <img src="{{ get_logo_base64() }}" alt="Logo" style="width: 75px; height: auto;">
+                    <img src="{{ get_logo_base64() }}" alt="Logo" style="width: 85px; height: auto;">
                 @endif
             </td>
             <td class="header-text" style="border: none !important; padding: 0 !important; vertical-align: middle; text-align: center;">
-                <div style="font-size: 11pt; font-weight: bold; text-transform: uppercase; line-height: 1.25; letter-spacing: 0.2px;">
-                    Lembaga Penelitian dan Pengabdian kepada Masyarakat (LPPM)
+                <div style="font-size: 12.5pt; font-weight: bold; text-transform: uppercase; line-height: 1.2; letter-spacing: 0.2px;">
+                    Lembaga Penelitian dan Pengabdian kepada
                 </div>
-                <div style="font-size: 12.5pt; font-weight: bold; text-transform: uppercase; line-height: 1.25; margin-top: 2px; letter-spacing: 0.2px;">
+                <div style="font-size: 12.5pt; font-weight: bold; text-transform: uppercase; line-height: 1.2; letter-spacing: 0.2px;">
+                    Masyarakat (LPPM)
+                </div>
+                <div style="font-size: 14pt; font-weight: bold; text-transform: uppercase; line-height: 1.25; margin-top: 4px; letter-spacing: 0.2px;">
                     Institut Teknologi dan Sains Nahdlatul Ulama Pekalongan
                 </div>
                 <div style="font-size: 8pt; font-weight: normal; line-height: 1.3; margin-top: 6px; color: #111;">
@@ -139,7 +142,7 @@
                     Email: lppmitsnupkl@gmail.com | Website: https://lppm.itsnupekalongan.ac.id/
                 </div>
             </td>
-            <td style="width: 85px; border: none !important; padding: 0 !important; vertical-align: middle;"></td>
+            <td style="width: 95px; border: none !important; padding: 0 !important; vertical-align: middle;"></td>
         </tr>
     </table>
 
