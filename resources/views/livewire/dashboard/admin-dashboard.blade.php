@@ -176,13 +176,11 @@
                 icon="cash" 
                 color="purple" />
         </div>
-    </div>
-
-    <!-- Analytics Charts -->
+    </div>    <!-- Analytics Charts -->
     <div class="row row-cards mb-4">
         <div class="col-lg-6">
             <x-dashboard.analytics-chart 
-                type="doughnut" 
+                type="bar" 
                 title="Distribusi Bidang Fokus (Pohon Penelitian)" 
                 :labels="$focusAreasChartData['labels']" 
                 :datasets="$focusAreasChartData['datasets']" />
@@ -195,11 +193,11 @@
                 :datasets="$facultyPerformanceChartData['datasets']" />
         </div>
     </div>
-
+ 
     <div class="row row-cards mb-4">
         <div class="col-lg-6">
             <x-dashboard.analytics-chart 
-                type="doughnut" 
+                type="bar" 
                 title="Distribusi Rumpun Ilmu" 
                 :labels="$scienceClustersChartData['labels']" 
                 :datasets="$scienceClustersChartData['datasets']" />
@@ -212,12 +210,12 @@
                 :datasets="$tktChartData['datasets']" />
         </div>
     </div>
-
+ 
     {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
     <div class="row row-cards mb-4">
         <div class="col-lg-6">
             <x-dashboard.analytics-chart 
-                type="doughnut" 
+                type="bar" 
                 title="Distribusi Tema Penelitian" 
                 :labels="$themesChartData['labels']" 
                 :datasets="$themesChartData['datasets']" />

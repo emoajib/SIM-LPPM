@@ -213,7 +213,7 @@
     <div class="row row-cards mb-4">
         <div class="col-lg-6">
             <x-dashboard.analytics-chart 
-                type="doughnut" 
+                type="bar" 
                 title="Distribusi Bidang Fokus (Pohon Penelitian)" 
                 :labels="$focusAreasChartData['labels']" 
                 :datasets="$focusAreasChartData['datasets']" />
@@ -230,7 +230,7 @@
     <div class="row row-cards mb-4">
         <div class="col-lg-6">
             <x-dashboard.analytics-chart 
-                type="doughnut" 
+                type="bar" 
                 title="Distribusi Rumpun Ilmu" 
                 :labels="$scienceClustersChartData['labels']" 
                 :datasets="$scienceClustersChartData['datasets']" />
@@ -248,7 +248,7 @@
     <div class="row row-cards mb-4">
         <div class="col-lg-6">
             <x-dashboard.analytics-chart 
-                type="doughnut" 
+                type="bar" 
                 title="Distribusi Tema Penelitian" 
                 :labels="$themesChartData['labels']" 
                 :datasets="$themesChartData['datasets']" />
