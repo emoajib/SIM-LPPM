@@ -59,6 +59,7 @@ chmod 755 public
 chmod 644 public/.htaccess
 chmod 644 public/index.php
 chmod 600 .env     # KRITIS: .env hanya boleh dibaca owner
+chmod +x update_production.sh # Agar script ini tetap bisa dieksekusi langsung
 
 # Test application
 echo "Testing application..."
