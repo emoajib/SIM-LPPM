@@ -6,13 +6,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Lembar Penilaian Reviewer - {{ $proposal->id }}</title>
     <style>
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            border: 0;
-        }
-
+        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
         @page {
             margin: 3cm 3cm 3cm 4cm;
         }
