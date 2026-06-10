@@ -43,8 +43,16 @@
                                 <div class="text-secondary small">{{ $proposal->submitter?->name }}</div>
                             </td>
                             <td>
+                                {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                                @php
+                                    $requiredCount = (int) \App\Models\Setting::get('reviewer_count_required', 1);
+                                    $assignedCount = $proposal->reviewers->count();
+                                @endphp
                                 @if ($proposal->reviewers->isEmpty())
                                     <span class="text-danger small">Belum ada reviewer ditugaskan</span>
+                                    <div class="mt-1">
+                                        <span class="badge bg-danger-lt">Butuh {{ $requiredCount }} Reviewer</span>
+                                    </div>
                                 @else
                                     <div class="mb-2 avatar-list-stacked avatar-list">
                                         @foreach ($proposal->reviewers as $reviewer)
@@ -54,7 +62,7 @@
                                             </span>
                                         @endforeach
                                     </div>
-                                    <div class="small">
+                                    <div class="small mb-1">
                                         @foreach ($proposal->reviewers as $reviewer)
                                             <div class="d-flex align-items-center mb-1">
                                                 @if ($reviewer->isCompleted())
@@ -66,20 +74,26 @@
                                             </div>
                                         @endforeach
                                     </div>
+                                    @if ($assignedCount < $requiredCount)
+                                        <div>
+                                            <span class="badge bg-warning-lt">Kurang {{ $requiredCount - $assignedCount }} Reviewer</span>
+                                        </div>
+                                    @endif
                                 @endif
                             </td>
                             <td>
+                                {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
                                 @php
-                                    $totalRev = $proposal->reviewers->count();
+                                    $totalToCompare = max($assignedCount, $requiredCount);
                                     $doneRev = $proposal->reviewers->filter(fn($r) => $r->isCompleted())->count();
-                                    $percentage = $totalRev > 0 ? round(($doneRev / $totalRev) * 100) : 0;
+                                    $percentage = $totalToCompare > 0 ? round(($doneRev / $totalToCompare) * 100) : 0;
                                 @endphp
                                 <div class="d-flex align-items-center">
                                     <div class="me-2 w-100 progress progress-xs">
-                                        <div class="progress-bar bg-{{ $percentage == 100 ? 'success' : 'primary' }}"
+                                        <div class="progress-bar bg-{{ $percentage == 100 && $assignedCount >= $requiredCount ? 'success' : 'primary' }}"
                                             x-data :style="'width: ' + {{ $percentage }} + '%'"></div>
                                     </div>
-                                    <span class="small">{{ $doneRev }}/{{ $totalRev }}</span>
+                                    <span class="small">{{ $doneRev }}/{{ $totalToCompare }}</span>
                                 </div>
                             </td>
                             <td>
