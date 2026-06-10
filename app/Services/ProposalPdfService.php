@@ -323,6 +323,7 @@ class ProposalPdfService
             'partners',
             'detailable.macroResearchGroup',
             'outputs',
+            'sdgs',
             'signatures',
         ]);
 
@@ -792,6 +793,16 @@ class ProposalPdfService
                 'teamMembers.identity.scienceCluster',
                 'clusterLevel1',
                 'researchScheme',
+                'focusArea',
+                'theme',
+                'topic',
+                'keywords',
+                'budgetItems.budgetGroup',
+                'budgetItems.budgetComponent',
+                'partners',
+                'outputs',
+                'sdgs',
+                'signatures',
             ]),
             'report' => $report->load([
                 'mandatoryOutputs.proposalOutput',

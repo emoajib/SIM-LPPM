@@ -1,12 +1,6 @@
 @import '@tabler/core/dist/libs/nouislider/dist/nouislider.min.css';
 @import '@tabler/core/dist/libs/tom-select/dist/css/tom-select.bootstrap5.min.css';
 @import '@tabler/core/dist/css/tabler.min.css';
-@import '@tabler/core/dist/css/tabler-flags.min.css';
-@import '@tabler/core/dist/css/tabler-socials.min.css';
-@import '@tabler/core/dist/css/tabler-payments.min.css';
-@import '@tabler/core/dist/css/tabler-vendors.min.css';
-@import '@tabler/core/dist/css/tabler-marketing.min.css';
-@import '@tabler/core/dist/css/tabler-themes.min.css';
 @import 'nprogress/nprogress.css';
 
 .ts-dropdown {

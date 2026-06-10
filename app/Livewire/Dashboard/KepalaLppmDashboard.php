@@ -19,6 +19,7 @@ use App\Models\StudyProgram;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
@@ -282,17 +283,50 @@ class KepalaLppmDashboard extends Component
 
     public function loadAnalytics(): void
     {
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $yearFilter = $this->selectedYear;
+        $version = Cache::rememberForever('dashboard.cache_version', fn () => time());
 
-        // OPTIMIZED: Single aggregated query for all stats
-        $this->loadStats($yearFilter);
+        $cacheKey = "dashboard.kepala_lppm.v{$version}.".md5(serialize([
+            $yearFilter,
+            $this->selectedStatus,
+            $this->selectedFaculty,
+            $this->selectedProdi,
+            $this->selectedSemester,
+            $this->selectedResearchScheme,
+            $this->selectedCommunityServiceScheme,
+        ]));
 
-        $this->loadProcessStats((string) $yearFilter);
+        $data = Cache::remember($cacheKey, 180, function () use ($yearFilter) {
+            $this->loadStats($yearFilter);
+            $this->loadProcessStats((string) $yearFilter);
+            $this->loadRecentProposals($yearFilter);
+            $this->loadChartData($yearFilter);
 
-        // Load recent proposals
-        $this->loadRecentProposals($yearFilter);
+            return [
+                'stats' => $this->stats,
+                'processStats' => $this->processStats,
+                'recentResearch' => $this->recentResearch,
+                'recentCommunityService' => $this->recentCommunityService,
+                'focusAreasChartData' => $this->focusAreasChartData,
+                'facultyPerformanceChartData' => $this->facultyPerformanceChartData,
+                'scienceClustersChartData' => $this->scienceClustersChartData,
+                'tktChartData' => $this->tktChartData,
+                'themesChartData' => $this->themesChartData,
+                'topicsChartData' => $this->topicsChartData,
+            ];
+        });
 
-        $this->loadChartData($yearFilter);
+        $this->stats = $data['stats'];
+        $this->processStats = $data['processStats'];
+        $this->recentResearch = $data['recentResearch'];
+        $this->recentCommunityService = $data['recentCommunityService'];
+        $this->focusAreasChartData = $data['focusAreasChartData'];
+        $this->facultyPerformanceChartData = $data['facultyPerformanceChartData'];
+        $this->scienceClustersChartData = $data['scienceClustersChartData'];
+        $this->tktChartData = $data['tktChartData'];
+        $this->themesChartData = $data['themesChartData'];
+        $this->topicsChartData = $data['topicsChartData'];
 
         $this->dispatch('chart-updated',
             focusAreas: $this->focusAreasChartData,

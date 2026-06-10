@@ -317,7 +317,8 @@
                     Kepala LPPM ITSNU Pekalongan
                 </td>
                 <td width="50%" class="text-center" style="vertical-align: top; border: none;">
-                    Pekalongan, {{ date('d F Y') }}<br>
+                    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                    Pekalongan, {{ $proposal->logbook_signed_at ? \Carbon\Carbon::parse($proposal->logbook_signed_at)->format('d F Y') : now()->format('d F Y') }}<br>
                     Ketua {{ $proposal->detailable_type === 'App\Models\Research' ? 'Peneliti' : 'Pelaksana' }}
                 </td>
             </tr>

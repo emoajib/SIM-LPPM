@@ -744,7 +744,8 @@
                         Dekan {{ $proposal->submitter->identity?->faculty?->name ?? '.......................' }}
                     </td>
                     <td width="50%" class="text-center" style="vertical-align: top;">
-                        Pekalongan, @if(isset($report->updated_at)) {{ $report->updated_at->format('d F Y') }} @else {{ date('d F Y') }} @endif<br>
+                        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                        Pekalongan, @if(isset($lecturer_signed_at)) {{ \Carbon\Carbon::parse($lecturer_signed_at)->format('d F Y') }} @else {{ date('d F Y') }} @endif<br>
                         Ketua {{ $proposal->detailable_type === 'App\Models\Research' ? 'Peneliti' : 'Pelaksana' }}
                     </td>
                 </tr>

@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\ProposalStatus;
 use App\Models\DocumentSignature;
 use App\Models\ProgressReport;
 use App\Models\Proposal;
-use App\Models\ProposalStatusLog;
 use App\Models\User;
 use App\Services\DocumentSignatureService;
 use App\Services\ProposalPdfService;
@@ -231,90 +229,6 @@ class ProposalExportController extends Controller
                     'signed_role' => $role,
                     'action' => $action,
                     'variant' => $variant,
-                ],
-                [
-                    'signed_by' => $user->id,
-                    'signed_at' => $signedAt,
-                    'hash_alg' => 'sha256',
-                    'document_hash' => $hash,
-                    'kid' => $kid,
-                    'payload' => $payload,
-                    'signature' => $this->signatureService->signPayload($payload, $kid),
-                ]
-            );
-        }
-    }
-
-    /**
-     * Upsert digital signatures for the proposal.
-     */
-    protected function upsertProposalSignatures(Proposal $proposal, string $pdfBinary): void
-    {
-        $hash = hash('sha256', $pdfBinary);
-        $kid = config('document-signatures.current_kid', 'v1');
-
-        // Signatories mapping: role => [action, condition]
-        // Lecturer signature appears ONLY IF proposal is submitted (not draft)
-        $signatories = [
-            'lecturer' => ['submitted', in_array($proposal->status->value, [ProposalStatus::SUBMITTED->value, ProposalStatus::NEED_ASSIGNMENT->value, ProposalStatus::APPROVED->value, ProposalStatus::WAITING_REVIEWER->value, ProposalStatus::UNDER_REVIEW->value, ProposalStatus::REVIEWED->value, ProposalStatus::COMPLETED->value])],
-            'dekan' => ['approved', in_array($proposal->status->value, [ProposalStatus::APPROVED->value, ProposalStatus::WAITING_REVIEWER->value, ProposalStatus::UNDER_REVIEW->value, ProposalStatus::REVIEWED->value, ProposalStatus::COMPLETED->value])],
-            'kepala_lppm' => ['finalized', in_array($proposal->status->value, [ProposalStatus::WAITING_REVIEWER->value, ProposalStatus::UNDER_REVIEW->value, ProposalStatus::REVIEWED->value, ProposalStatus::COMPLETED->value])],
-        ];
-
-        /** @var Collection<string, DocumentSignature> $proposalSigs */
-        $proposalSigs = $proposal->signatures()
-            ->get()
-            ->keyBy(function (Model $s) {
-                /** @var DocumentSignature $s */
-                return (string) "{$s->action}|{$s->signed_role}";
-            });
-
-        foreach ($signatories as $role => $config) {
-            [$action, $condition] = $config;
-
-            if (! $condition) {
-                continue;
-            }
-
-            $user = [
-                'lecturer' => $proposal->submitter,
-                'dekan' => $proposal->submitter->identity?->faculty?->deanUser,
-                'kepala_lppm' => User::role('kepala lppm')->first(),
-            ][$role] ?? null;
-
-            if (! $user) {
-                continue;
-            }
-
-            $signatureRecord = $proposalSigs->get("{$action}|{$role}");
-
-            $nonce = $signatureRecord?->payload['nonce'] ?? Str::random(32);
-            $signedAt = [
-                'lecturer' => ProposalStatusLog::where('proposal_id', $proposal->id)->where('status_after', ProposalStatus::SUBMITTED)->value('at') ?? $proposal->created_at ?? now(),
-                'dekan' => ProposalStatusLog::where('proposal_id', $proposal->id)->where('status_after', ProposalStatus::APPROVED)->value('at') ?? now(),
-                'kepala_lppm' => ProposalStatusLog::where('proposal_id', $proposal->id)->whereIn('status_after', [ProposalStatus::WAITING_REVIEWER, ProposalStatus::UNDER_REVIEW])->value('at') ?? now(),
-            ][$role];
-
-            $payload = [
-                'ver' => 1,
-                'doc_type' => 'proposal',
-                'doc_id' => (string) $proposal->id,
-                'variant' => 'final',
-                'action' => $action,
-                'signed_role' => $role,
-                'signed_by' => (string) $user->id,
-                'signed_at' => Carbon::parse($signedAt)->copy()->utc()->toIso8601ZuluString(),
-                'pdf_hash_alg' => 'SHA-256',
-                'pdf_hash' => $hash,
-                'kid' => $kid,
-                'nonce' => $nonce,
-            ];
-
-            $proposal->signatures()->updateOrCreate(
-                [
-                    'signed_role' => $role,
-                    'action' => $action,
-                    'variant' => 'final',
                 ],
                 [
                     'signed_by' => $user->id,
