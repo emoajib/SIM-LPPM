@@ -7,7 +7,17 @@
     'loading' => false
 ])
 
-<div class="card border-0 shadow-sm overflow-hidden h-100" style="border-radius: 12px;"
+<style wire:ignore>
+    .hover-scale {
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    .hover-scale:hover {
+        transform: translateY(-4px) scale(1.008);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06) !important;
+    }
+</style>
+
+<div class="card border-0 shadow-sm overflow-hidden h-100 hover-scale" style="border-radius: 12px;"
      x-data="{
         chart: null,
         initChart(labels, datasets) {
@@ -25,7 +35,11 @@
                 type: '{{ $type }}',
                 data: {
                     labels: labels,
-                    datasets: datasets
+                    datasets: datasets.map(ds => ({
+                        ...ds,
+                        hoverOffset: {{ $type === 'doughnut' ? 15 : 0 }},
+                        hoverBackgroundColor: ds.backgroundColor ? (Array.isArray(ds.backgroundColor) ? ds.backgroundColor.map(c => c + 'cc') : ds.backgroundColor + 'cc') : undefined
+                    }))
                 },
                 options: {
                     responsive: true,
@@ -40,6 +54,15 @@
                                     family: 'Inter, sans-serif'
                                 }
                             }
+                        },
+                        tooltip: {
+                            enabled: true,
+                            backgroundColor: 'rgba(30, 41, 59, 0.9)',
+                            titleFont: { family: 'Inter, sans-serif', size: 13, weight: 'bold' },
+                            bodyFont: { family: 'Inter, sans-serif', size: 12 },
+                            padding: 10,
+                            cornerRadius: 8,
+                            displayColors: true
                         }
                     },
                     scales: {
