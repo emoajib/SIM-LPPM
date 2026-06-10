@@ -25,13 +25,14 @@ class Dashboard extends Component
             'kepala lppm' => 'dashboard.kepala-lppm-dashboard',
             'dosen' => 'dashboard.dosen-dashboard',
             'reviewer' => 'dashboard.reviewer-dashboard',
-            'rektor', 'dekan' => 'dashboard.exec-dashboard',
+            'rektor', 'dekan', 'kaprodi' => 'dashboard.exec-dashboard',
             default => 'dashboard.default-dashboard',
         };
     }
 
     public function render()
     {
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $titles = match ($this->roleName) {
             'superadmin', 'admin lppm', 'admin lppm saintek', 'admin lppm dekabita' => [
                 'title' => 'Dashboard Admin',
@@ -49,7 +50,7 @@ class Dashboard extends Component
                 'title' => 'Dashboard Reviewer',
                 'subtitle' => 'Pantau tugas review proposal yang sedang berjalan.',
             ],
-            'rektor', 'dekan' => [
+            'rektor', 'dekan', 'kaprodi' => [
                 'title' => 'Dashboard Eksekutif',
                 'subtitle' => 'Laporan ringkasan institusional dan pencapaian target.',
             ],
