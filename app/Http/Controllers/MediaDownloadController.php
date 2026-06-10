@@ -12,12 +12,12 @@ class MediaDownloadController extends Controller
 {
     public function download(Request $request, Media $media)
     {
+        $obLevel = ob_get_level();
         ob_start();
 
         try {
             // 1. Strict UUID Validation
             if (! preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i', $media->uuid)) {
-                ob_end_clean();
                 abort(400, 'Malformed Identifier');
             }
 
@@ -31,7 +31,6 @@ class MediaDownloadController extends Controller
             // getPath() already returns full path, don't double-prepend disk root
             $path = $media->getPath();
             if (str_contains($path, '..')) {
-                ob_end_clean();
                 abort(403, 'Invalid file path.');
             }
             $realPath = realpath($path);
@@ -40,12 +39,10 @@ class MediaDownloadController extends Controller
             $diskRoot = $disk->path('');
 
             if ($realPath === false || $diskRoot === false || ! str_starts_with($realPath, $diskRoot)) {
-                ob_end_clean();
                 abort(403, 'Path traversal detected or illegal file path access.');
             }
 
             if (! file_exists($realPath)) {
-                ob_end_clean();
                 abort(404, 'File fisik tidak ditemukan di server.');
             }
 
@@ -77,12 +74,11 @@ class MediaDownloadController extends Controller
                     'actual_mime' => $actualMime,
                     'user_id' => Auth::id(),
                 ]);
-                ob_end_clean();
                 abort(422, 'Data integrity policy violated. File content does not match expected format.');
             }
 
             // 5. Clean Buffer & Stream Download with Secure Headers
-            if (ob_get_level() > 0) {
+            while (ob_get_level() > $obLevel) {
                 ob_end_clean();
             }
 
@@ -103,7 +99,7 @@ class MediaDownloadController extends Controller
                 'Cache-Control' => 'no-cache, no-store, must-revalidate',
             ]);
         } catch (\Exception $e) {
-            if (ob_get_level() > 0) {
+            while (ob_get_level() > $obLevel) {
                 ob_end_clean();
             }
             throw $e;
