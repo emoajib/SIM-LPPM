@@ -286,6 +286,11 @@ class ExecDashboard extends Component
         $this->periodicSummary = $this->getPeriodicSummary();
 
         $this->loadChartData($yearFilter);
+
+        $this->dispatch('chart-updated',
+            focusAreas: $this->focusAreasChartData,
+            facultyPerformance: $this->facultyPerformanceChartData
+        );
     }
 
     /**

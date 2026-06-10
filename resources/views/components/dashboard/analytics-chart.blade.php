@@ -7,11 +7,11 @@
     'loading' => false
 ])
 
-
 <div class="card border-0 shadow-sm overflow-hidden h-100" style="border-radius: 12px;"
      x-data="{
         chart: null,
-        initChart() {
+        initChart(labels, datasets) {
+            if (!labels || !datasets) return;
             const ctx = this.$refs.canvas.getContext('2d');
             if (this.chart) {
                 this.chart.destroy();
@@ -19,8 +19,8 @@
             this.chart = new Chart(ctx, {
                 type: '{{ $type }}',
                 data: {
-                    labels: @json($labels),
-                    datasets: @json($datasets)
+                    labels: labels,
+                    datasets: datasets
                 },
                 options: {
                     responsive: true,
@@ -62,7 +62,14 @@
             });
         }
      }"
-     x-init="initChart(); $watch('labels', () => initChart()); $watch('datasets', () => initChart());"
+     x-init="initChart(@js($labels), @js($datasets))"
+     @chart-updated.window="
+        if ($event.detail.focusAreas && '{{ $title }}'.includes('Fokus')) {
+            initChart($event.detail.focusAreas.labels, $event.detail.focusAreas.datasets);
+        } else if ($event.detail.facultyPerformance && '{{ $title }}'.includes('Fakultas')) {
+            initChart($event.detail.facultyPerformance.labels, $event.detail.facultyPerformance.datasets);
+        }
+     "
      style="position: relative; min-height: 320px;">
     
     @if($loading)
@@ -78,7 +85,7 @@
     </div>
     
     <div class="card-body d-flex flex-column justify-content-between p-3" style="position: relative; flex-grow: 1;">
-        <div style="position: relative; height: 220px; width: 100%;">
+        <div style="position: relative; height: 220px; width: 100%;" wire:ignore>
             <canvas x-ref="canvas" aria-label="Grafik: {{ $title }}" role="img"></canvas>
         </div>
         

@@ -265,6 +265,11 @@ class KepalaLppmDashboard extends Component
         $this->loadRecentProposals($yearFilter);
 
         $this->loadChartData($yearFilter);
+
+        $this->dispatch('chart-updated',
+            focusAreas: $this->focusAreasChartData,
+            facultyPerformance: $this->facultyPerformanceChartData
+        );
     }
 
     /**
