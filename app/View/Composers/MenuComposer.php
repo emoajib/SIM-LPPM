@@ -42,11 +42,13 @@ class MenuComposer
                 'icon' => 'smart-home',
                 'route' => 'dashboard',
             ],
-            // Manual Book / Panduan - available for all authenticated roles
+            // Manual Book / Panduan - admin/superadmin ke CRUD, lainnya ke viewer
             [
                 'title' => 'Panduan',
                 'icon' => 'book',
-                'route' => 'manual-books.index',
+                'route' => active_has_any_role(['admin lppm', 'superadmin'])
+                    ? 'admin-lppm.manual-books.index'
+                    : 'manual-books.index',
                 'roles' => ['dosen', 'kepala lppm', 'admin lppm', 'superadmin', 'rektor', 'dekan', 'kaprodi', 'reviewer'],
             ],
             // Dosen menu (+ dekan for monitoring their faculty proposals)
