@@ -31,11 +31,19 @@
                         </div>
 
                         <div class="mt-auto">
+                            {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
                             @if($media)
-                                <a href="{{ route('media.download', $media) }}" class="btn btn-primary w-100" target="_blank">
-                                    @include('components.layouts.partials.menu.icon', ['name' => 'download', 'class' => 'icon me-1'])
-                                    Download ({{ number_format($media->size / 1024, 1) }} KB)
-                                </a>
+                                <div class="d-flex gap-2">
+                                    <a href="{{ route('media.download', $media) }}?view=1" class="btn btn-outline-primary w-50" target="_blank">
+                                        @include('components.layouts.partials.menu.icon', ['name' => 'eye', 'class' => 'icon me-1']) Lihat
+                                    </a>
+                                    <a href="{{ route('media.download', $media) }}" class="btn btn-primary w-50" target="_blank">
+                                        @include('components.layouts.partials.menu.icon', ['name' => 'download', 'class' => 'icon me-1']) Unduh
+                                    </a>
+                                </div>
+                                <p class="text-muted small mt-2 mb-0 text-center">
+                                    {{ number_format($media->size / 1024, 1) }} KB
+                                </p>
                             @else
                                 <div class="alert alert-warning mb-0 py-2 text-center small">
                                     @include('components.layouts.partials.menu.icon', ['name' => 'book-off', 'class' => 'icon me-1'])

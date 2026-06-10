@@ -86,6 +86,15 @@ class MediaDownloadController extends Controller
                 ob_end_clean();
             }
 
+            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            if ($request->has('preview') || $request->has('view')) {
+                return response()->file($realPath, [
+                    'Content-Type' => $media->mime_type ?? 'application/pdf',
+                    'X-Content-Type-Options' => 'nosniff',
+                    'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                ]);
+            }
+
             return response()->download($realPath, $media->file_name, [
                 'Content-Type' => $media->mime_type ?? 'application/octet-stream',
                 'X-Content-Type-Options' => 'nosniff',

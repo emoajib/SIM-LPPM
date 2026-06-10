@@ -21,10 +21,14 @@
                         @endif
 
                         <div class="mt-auto">
+                            {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
                             @if($book['hasFile'])
                                 <div class="d-flex gap-2">
-                                    <a href="{{ $book['downloadUrl'] }}" class="btn btn-primary w-100" target="_blank">
-                                        @include('components.layouts.partials.menu.icon', ['name' => 'download', 'class' => 'icon me-1']) Download PDF
+                                    <a href="{{ $book['downloadUrl'] }}?view=1" class="btn btn-outline-primary w-50" target="_blank">
+                                        @include('components.layouts.partials.menu.icon', ['name' => 'eye', 'class' => 'icon me-1']) Lihat
+                                    </a>
+                                    <a href="{{ $book['downloadUrl'] }}" class="btn btn-primary w-50" target="_blank">
+                                        @include('components.layouts.partials.menu.icon', ['name' => 'download', 'class' => 'icon me-1']) Unduh
                                     </a>
                                 </div>
                                 <p class="text-muted small mt-2 mb-0 text-center">
