@@ -24,11 +24,15 @@ class ReviewExportController extends Controller
         ]);
     }
 
+    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
     protected function pdfInlineResponse(string $pdfBinary, string $filename): Response
     {
         return response($pdfBinary, 200, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="'.$filename.'"',
+            'Cache-Control' => 'no-cache, no-store, must-revalidate',
+            'Pragma' => 'no-cache',
+            'Expires' => '0',
         ]);
     }
 
