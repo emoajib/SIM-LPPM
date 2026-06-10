@@ -7,11 +7,6 @@
     'loading' => false
 ])
 
-@once
-    @push('scripts')
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    @endpush
-@endonce
 
 <div class="card border-0 shadow-sm overflow-hidden h-100" style="border-radius: 12px;"
      x-data="{
