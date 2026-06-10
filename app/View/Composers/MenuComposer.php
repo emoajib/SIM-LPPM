@@ -45,7 +45,7 @@ class MenuComposer
             // Manual Book / Panduan - admin/superadmin ke CRUD, lainnya ke viewer
             [
                 'title' => 'Panduan',
-                'icon' => 'book',
+                'icon' => 'book-2',
                 'route' => active_has_any_role(['admin lppm', 'superadmin'])
                     ? 'admin-lppm.manual-books.index'
                     : 'manual-books.index',
@@ -383,7 +383,7 @@ class MenuComposer
                     ],
                     [
                         'title' => 'Manual Book',
-                        'icon' => 'book',
+                        'icon' => 'book-upload',
                         'route' => 'settings.manual-books',
                         'roles' => ['admin lppm', 'superadmin'],
                     ],

@@ -3,7 +3,7 @@
         <div class="d-flex align-items-center justify-content-between card-header">
             <h3 class="card-title">Manual Book</h3>
             <button type="button" class="btn btn-primary" wire:click='create'>
-                <x-lucide-plus class="icon" />
+                <i class="icon icon-tabler icon-tabler-plus"></i>
                 Tambah Manual Book
             </button>
         </div>
@@ -41,21 +41,22 @@
                                 @endif
                             </td>
                             <td>
-                                <button class="btn btn-sm {{ $item->status === 'active' ? 'btn-success' : 'btn-secondary' }}"
-                                    wire:click="toggleStatus('{{ $item->id }}')"
-                                    wire:confirm="Ubah status manual book ini?">
-                                    {{ $item->status === 'active' ? 'Aktif' : 'Nonaktif' }}
-                                </button>
+                                    <button class="btn btn-sm {{ $item->status === 'active' ? 'btn-success' : 'btn-secondary' }}"
+                                        wire:click="toggleStatus('{{ $item->id }}')"
+                                        wire:confirm="Ubah status manual book ini?">
+                                        <i class="icon icon-tabler {{ $item->status === 'active' ? 'icon-tabler-toggle-right' : 'icon-tabler-toggle-left' }} me-1"></i>
+                                        {{ $item->status === 'active' ? 'Aktif' : 'Nonaktif' }}
+                                    </button>
                             </td>
                             <td>
                                 <div class="btn-list">
                                     <button type="button" class="btn-outline-warning btn btn-sm"
                                         wire:click="edit('{{ $item->id }}')">
-                                        Edit
+                                        <i class="icon icon-tabler icon-tabler-edit me-1"></i>Edit
                                     </button>
                                     <button type="button" class="btn-outline-danger btn btn-sm"
                                         wire:click="confirmDelete('{{ $item->id }}')" wire:loading.attr="disabled">
-                                        Hapus
+                                        <i class="icon icon-tabler icon-tabler-trash me-1"></i>Hapus
                                     </button>
                                 </div>
                             </td>

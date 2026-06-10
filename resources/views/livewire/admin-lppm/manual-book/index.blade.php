@@ -15,7 +15,7 @@
                         <div class="d-flex align-items-center mb-3">
                             <div class="flex-shrink-0 me-3">
                                 <div class="avatar avatar-lg bg-primary text-white">
-                                    <i class="icon icon-tabler icon-tabler-book icon-lg"></i>
+                                    <i class="icon icon-tabler icon-tabler-file-text icon-lg"></i>
                                 </div>
                             </div>
                             <div class="flex-grow-1 min-width-0">
