@@ -210,7 +210,7 @@
                                         </a>
                                     @else
                                         <button class="btn btn-sm btn-icon btn-outline-secondary" disabled title="Belum direview">
-                                            <i class="ti ti-file-off"></i>
+                                            <i class="ti ti-book-off"></i>
                                         </button>
                                     @endif
                                 </td>

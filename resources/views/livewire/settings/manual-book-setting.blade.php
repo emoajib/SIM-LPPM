@@ -36,7 +36,7 @@
                                     </span>
                                 @else
                                     <span class="text-muted">
-                                        <i class="icon icon-tabler icon-tabler-file-off"></i> Tidak ada
+                                        <i class="icon icon-tabler icon-tabler-book-off"></i> Tidak ada
                                     </span>
                                 @endif
                             </td>
