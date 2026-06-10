@@ -59,8 +59,10 @@ class StorageRestoreService
         // If replace mode is on, clean selected folders first
         if ($replaceMode && ! empty($selectedFolders)) {
             foreach ($selectedFolders as $folder) {
-                if ($folder === '.') continue;
-                $folderPath = $targetDir . '/' . $folder;
+                if ($folder === '.') {
+                    continue;
+                }
+                $folderPath = $targetDir.'/'.$folder;
                 if (is_dir($folderPath)) {
                     $this->deleteDirectory($folderPath);
                 }
@@ -78,21 +80,23 @@ class StorageRestoreService
             }
 
             // Check if entry belongs to selected folders
-            if (!empty($selectedFolders)) {
+            if (! empty($selectedFolders)) {
                 $belongsToSelected = false;
                 foreach ($selectedFolders as $folder) {
                     if ($folder === '.') {
                         // Root files
-                        if (!str_contains($entry, '/')) {
+                        if (! str_contains($entry, '/')) {
                             $belongsToSelected = true;
                             break;
                         }
-                    } elseif (str_starts_with($entry, $folder . '/')) {
+                    } elseif (str_starts_with($entry, $folder.'/')) {
                         $belongsToSelected = true;
                         break;
                     }
                 }
-                if (!$belongsToSelected) continue;
+                if (! $belongsToSelected) {
+                    continue;
+                }
             }
 
             if (str_ends_with($entry, '/')) {
@@ -115,6 +119,7 @@ class StorageRestoreService
             // Basic security check for path traversal
             if (str_contains($entry, '..')) {
                 $errors[] = $entry.' (path traversal detected)';
+
                 continue;
             }
 
@@ -187,7 +192,7 @@ class StorageRestoreService
             $parts = explode('/', $entry);
             if (count($parts) > 1) {
                 $topFolder = $parts[0];
-                if (!in_array($topFolder, $folders)) {
+                if (! in_array($topFolder, $folders)) {
                     $folders[] = $topFolder;
                 }
             } else {
@@ -245,7 +250,6 @@ class StorageRestoreService
 
         return rmdir($dir);
     }
-
 
     protected function validateZipEntries(ZipArchive $zip): array
     {

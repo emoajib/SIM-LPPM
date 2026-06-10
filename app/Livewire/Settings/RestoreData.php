@@ -5,6 +5,8 @@ namespace App\Livewire\Settings;
 use App\Services\DatabaseRestoreService;
 use App\Services\StorageRestoreService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -47,12 +49,12 @@ class RestoreData extends Component
     public function updatedSqlFile(): void
     {
         $this->resetStates();
-        
+
         try {
             $this->validate([
                 'sqlFile' => 'file|mimes:sql,text,plain|max:524288',
             ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             $this->uploadErrorMessage = $e->getMessage();
             throw $e;
         }
@@ -68,6 +70,7 @@ class RestoreData extends Component
         $sourcePath = $this->sqlFile->getRealPath();
         if ($sourcePath === false || ! copy($sourcePath, $this->uploadedSqlPath)) {
             $this->output = "❌ Gagal menyimpan file ke {$backupDir}.\n";
+
             return;
         }
 
@@ -80,16 +83,16 @@ class RestoreData extends Component
 
     public function updatedZipFile(): void
     {
-        \Illuminate\Support\Facades\Log::info('RestoreData: Starting ZIP upload process');
+        Log::info('RestoreData: Starting ZIP upload process');
         $this->resetStates();
 
         try {
-            \Illuminate\Support\Facades\Log::info('RestoreData: Validating ZIP file');
+            Log::info('RestoreData: Validating ZIP file');
             $this->validate([
                 'zipFile' => 'file|mimes:zip|max:524288',
             ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            \Illuminate\Support\Facades\Log::warning('RestoreData: Validation failed', ['errors' => $e->errors()]);
+        } catch (ValidationException $e) {
+            Log::warning('RestoreData: Validation failed', ['errors' => $e->errors()]);
             $this->uploadErrorMessage = $e->getMessage();
             throw $e;
         }
@@ -101,22 +104,24 @@ class RestoreData extends Component
 
         $filename = 'upload_restore_'.now()->format('Ymd_His').'.zip';
         $this->uploadedZipPath = $backupDir.'/'.$filename;
-        \Illuminate\Support\Facades\Log::info('RestoreData: Saving ZIP to ' . $this->uploadedZipPath);
+        Log::info('RestoreData: Saving ZIP to '.$this->uploadedZipPath);
 
         $sourcePath = $this->zipFile->getRealPath();
         if ($sourcePath === false || ! copy($sourcePath, $this->uploadedZipPath)) {
             $this->output = "❌ Gagal menyimpan file ke {$backupDir}.\n";
-            \Illuminate\Support\Facades\Log::error('RestoreData: Copy failed', ['source' => $sourcePath]);
+            Log::error('RestoreData: Copy failed', ['source' => $sourcePath]);
+
             return;
         }
 
-        \Illuminate\Support\Facades\Log::info('RestoreData: Starting ZIP preview analysis');
+        Log::info('RestoreData: Starting ZIP preview analysis');
         $service = app(StorageRestoreService::class);
         try {
             $validation = $service->preview($this->uploadedZipPath);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('RestoreData: Preview service error', ['msg' => $e->getMessage()]);
-            $this->output = "❌ Error Analysis: " . $e->getMessage();
+            Log::error('RestoreData: Preview service error', ['msg' => $e->getMessage()]);
+            $this->output = '❌ Error Analysis: '.$e->getMessage();
+
             return;
         }
 
@@ -125,9 +130,9 @@ class RestoreData extends Component
         $this->availableZipFolders = $validation['folders'] ?? [];
         $this->selectedZipFolders = $this->availableZipFolders;
 
-        \Illuminate\Support\Facades\Log::info('RestoreData: ZIP ready for UI', [
+        Log::info('RestoreData: ZIP ready for UI', [
             'folders' => count($this->availableZipFolders),
-            'entries' => $validation['total_entries']
+            'entries' => $validation['total_entries'],
         ]);
 
         $this->output = "File: {$filename}\n";
@@ -173,7 +178,6 @@ class RestoreData extends Component
         ];
     }
 
-
     public function executeRestore(): void
     {
         abort_unless(Auth::user()?->hasRole('admin lppm'), 403);
@@ -183,7 +187,8 @@ class RestoreData extends Component
         }
 
         if ($this->uploadedZipPath && empty($this->selectedZipFolders)) {
-            $this->output = "⚠️ Silakan pilih minimal satu folder storage untuk dipulihkan.";
+            $this->output = '⚠️ Silakan pilih minimal satu folder storage untuk dipulihkan.';
+
             return;
         }
 
@@ -246,7 +251,6 @@ class RestoreData extends Component
         $this->availableZipFolders = [];
         $this->selectedZipFolders = [];
     }
-
 
     public function render(): View
     {

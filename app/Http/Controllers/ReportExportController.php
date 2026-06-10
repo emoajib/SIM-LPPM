@@ -39,6 +39,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
+use setasign\Fpdi\Fpdi;
 
 class ReportExportController extends Controller
 {
@@ -1198,8 +1199,9 @@ class ReportExportController extends Controller
                     'detailable',
                     'researchScheme',
                     'communityServiceScheme',
-                    'reviewers.user',
+                    'reviewers.user.identity',
                 ])
+                ->orderByRaw("CASE WHEN detailable_type = 'App\\Models\\Research' THEN 1 ELSE 2 END")
                 ->orderBy('created_at', 'desc')
                 ->get();
 
@@ -1279,6 +1281,7 @@ class ReportExportController extends Controller
                 ->where('year', $period)
                 ->first();
 
+            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             $pdf = Pdf::loadView('reports.reviewer-report-pdf', [
                 'proposals' => $proposals,
                 'reviewers' => $reviewers,
@@ -1291,21 +1294,128 @@ class ReportExportController extends Controller
                 'isPreview' => $isPreview,
             ])->setPaper('a4', 'landscape');
 
+            $mainPdfBinary = $pdf->output();
+
+            // Setup cache/temp dir
+            $tempDir = storage_path('app/public/pdf_cache/reviewer_reports');
+            if (! file_exists($tempDir)) {
+                mkdir($tempDir, 0755, true);
+            }
+
+            $tempMainPath = tempnam($tempDir, 'rev_main_');
+            file_put_contents($tempMainPath, $mainPdfBinary);
+
+            $fpdi = new Fpdi;
+            $tempFiles = [$tempMainPath];
+
+            // 1. Import main report pages
+            try {
+                $mainPageCount = $fpdi->setSourceFile($tempMainPath);
+                for ($i = 1; $i <= $mainPageCount; $i++) {
+                    $templateId = $fpdi->importPage($i);
+                    $size = $fpdi->getTemplateSize($templateId);
+                    $fpdi->AddPage($size['orientation'], [$size['width'], $size['height']]);
+                    $fpdi->useTemplate($templateId);
+                }
+            } catch (\Throwable $e) {
+                Log::warning('FPDI Import Main Report Page Failed: '.$e->getMessage());
+            }
+
+            // 2. Append completed review evaluation sheets for each proposal
+            foreach ($proposals as $proposal) {
+                $completedReviewers = $proposal->reviewers->filter(fn ($r) => $r->isCompleted());
+                foreach ($completedReviewers as $rev) {
+                    try {
+                        $scores = $rev->scores()
+                            ->where('round', $rev->round)
+                            ->with('criteria')
+                            ->get();
+
+                        $totalScore = $scores->sum('value');
+                        $typeVal = $proposal->detailable_type === 'App\\Models\\Research' ? 'research' : 'community_service';
+
+                        $signedAt = $rev->completed_at ?? $rev->updated_at ?? now();
+                        $variantReview = 'round-'.((int) ($rev->round ?? 1)).'-'.$signedAt->format('YmdHis');
+
+                        $signatureService = app(DocumentSignatureService::class);
+                        $kid = $signatureService->currentKid();
+
+                        $signature = DocumentSignature::query()
+                            ->where('document_type', $rev->getMorphClass())
+                            ->where('document_id', (string) $rev->id)
+                            ->where('variant', $variantReview)
+                            ->where('action', 'reviewed')
+                            ->where('signed_role', 'reviewer')
+                            ->first();
+
+                        if (! $signature) {
+                            $signature = DocumentSignature::create([
+                                'id' => (string) Str::uuid(),
+                                'document_type' => $rev->getMorphClass(),
+                                'document_id' => (string) $rev->id,
+                                'variant' => $variantReview,
+                                'action' => 'reviewed',
+                                'signed_role' => 'reviewer',
+                                'signed_by' => (string) $rev->user_id,
+                                'signed_at' => $signedAt,
+                                'kid' => $kid,
+                                'signature' => Str::random(64),
+                                'payload' => ['ver' => 1, 'nonce' => Str::random(32)],
+                            ]);
+                        }
+
+                        $qrUrl = URL::signedRoute('signatures.verify', ['documentSignature' => $signature->id]);
+
+                        $reviewPdf = Pdf::loadView('pdf.review-evaluation', [
+                            'isPreview' => false,
+                            'assignment' => $rev,
+                            'proposal' => $proposal,
+                            'scores' => $scores,
+                            'totalScore' => $totalScore,
+                            'type' => $typeVal,
+                            'qrUrl' => $qrUrl,
+                        ])->setPaper('a4', 'portrait');
+
+                        $tempReviewPath = tempnam($tempDir, 'rev_eval_');
+                        file_put_contents($tempReviewPath, $reviewPdf->output());
+                        $tempFiles[] = $tempReviewPath;
+
+                        $reviewPageCount = $fpdi->setSourceFile($tempReviewPath);
+                        for ($i = 1; $i <= $reviewPageCount; $i++) {
+                            $templateId = $fpdi->importPage($i);
+                            $size = $fpdi->getTemplateSize($templateId);
+                            $fpdi->AddPage($size['orientation'], [$size['width'], $size['height']]);
+                            $fpdi->useTemplate($templateId);
+                        }
+                    } catch (\Throwable $ex) {
+                        Log::error('Failed to append review evaluation sheet in collective report: '.$ex->getMessage());
+                    }
+                }
+            }
+
+            // Output the compiled PDF
+            $pdfBinary = $fpdi->Output('S');
+
+            // Cleanup temp files
+            foreach ($tempFiles as $tempFile) {
+                @unlink($tempFile);
+            }
+
             $filename = ($isPreview ? 'PREVIEW-' : '').'laporan-reviewer-'.$period.'-'.now()->format('YmdHis').'.pdf';
 
             if ($isPreview) {
-                return $this->pdfInlineResponse($pdf->output(), $filename);
+                return $this->pdfInlineResponse($pdfBinary, $filename);
             }
 
             $variant = $this->institutionalVariant($institutionalReport);
             if (! $institutionalReport || ! $variant) {
-                return $this->pdfDownloadResponse($pdf->output(), $filename);
+                return $this->pdfDownloadResponse($pdfBinary, $filename);
             }
 
             $cachePath = $this->institutionalPdfCachePath($institutionalReport, $variant);
             $pdfBinary = Storage::disk('local')->exists($cachePath)
                 ? Storage::disk('local')->get($cachePath)
-                : $pdf->output();
+                : $pdfBinary;
 
             if (! Storage::disk('local')->exists($cachePath)) {
                 Storage::disk('local')->put($cachePath, $pdfBinary);

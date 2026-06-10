@@ -39,11 +39,11 @@ class BackupData extends Component
     {
         $storagePath = storage_path('app/public');
         if (is_dir($storagePath)) {
-            $folders = glob($storagePath . '/*', GLOB_ONLYDIR);
-            $this->availableFolders = array_map(function($path) {
+            $folders = glob($storagePath.'/*', GLOB_ONLYDIR);
+            $this->availableFolders = array_map(function ($path) {
                 return basename($path);
             }, $folders);
-            
+
             // Default select all
             $this->selectedFolders = $this->availableFolders;
         }
@@ -173,12 +173,13 @@ class BackupData extends Component
         }
 
         if (empty($this->selectedFolders)) {
-            $this->output = "⚠️ Silakan pilih minimal satu folder untuk di-backup.";
+            $this->output = '⚠️ Silakan pilih minimal satu folder untuk di-backup.';
+
             return;
         }
 
         $this->isRunning = true;
-        $this->output = "Membuat backup file storage (Folder terpilih: " . implode(', ', $this->selectedFolders) . ")...\n";
+        $this->output = 'Membuat backup file storage (Folder terpilih: '.implode(', ', $this->selectedFolders).")...\n";
 
         $backupDir = storage_path('app/backup');
         if (! is_dir($backupDir)) {
@@ -259,8 +260,10 @@ class BackupData extends Component
 
             $count = 0;
             foreach ($this->selectedFolders as $folder) {
-                $targetFolder = $storagePath . '/' . $folder;
-                if (!is_dir($targetFolder)) continue;
+                $targetFolder = $storagePath.'/'.$folder;
+                if (! is_dir($targetFolder)) {
+                    continue;
+                }
 
                 $this->output .= "Menyiapkan folder: {$folder}...\n";
 
@@ -274,7 +277,7 @@ class BackupData extends Component
                         continue;
                     }
                     // relative path must include the folder name as the root in ZIP
-                    $relativePath = $folder . '/' . substr($file->getPathname(), strlen($targetFolder) + 1);
+                    $relativePath = $folder.'/'.substr($file->getPathname(), strlen($targetFolder) + 1);
                     $zip->addFile($file->getPathname(), $relativePath);
                     $count++;
 
@@ -283,7 +286,7 @@ class BackupData extends Component
                     }
                 }
             }
-            
+
             $zip->close();
 
             if ($count > 0 && file_exists($path) && filesize($path) > 0) {

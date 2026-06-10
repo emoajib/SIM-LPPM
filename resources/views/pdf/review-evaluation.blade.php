@@ -114,6 +114,7 @@
         .footer {
             margin-top: 20px;
             width: 100%;
+            page-break-inside: avoid;
         }
 
         .signature-box {
@@ -249,17 +250,18 @@
         <div class="signature-box">
             <p>Pekalongan, {{ $assignment->completed_at?->translatedFormat('d F Y') ?? now()->translatedFormat('d F Y') }}</p>
             <p>Reviewer,</p>
-            <div class="signature-space"></div>
             @if($qrUrl ?? null)
                 <div style="margin: 6px 0;">
                     <img src="{{ generate_qr_code_data_uri($qrUrl, 160) }}" alt="QR Verifikasi" style="width: 70px; height: 70px;">
                 </div>
-                <div style="font-size: 8pt; color: #333; margin-top: 2px;">
+                <div style="font-size: 8pt; color: #333; margin-top: 2px; margin-bottom: 10px;">
                     Terverifikasi sistem (QR)<br>
                     Ditandatangani: {{ $assignment->completed_at?->format('d/m/Y H:i') ?? '-' }}
                 </div>
+            @else
+                <div class="signature-space"></div>
             @endif
-            <p><strong>({{ $assignment->user->name }})</strong></p>
+            <p><strong>({{ format_name($assignment->user->identity?->title_prefix, $assignment->user->name, $assignment->user->identity?->title_suffix) }})</strong></p>
             <p>NIDN. {{ $assignment->user->identity?->identity_id ?? '..........................' }}</p>
         </div>
     </div>

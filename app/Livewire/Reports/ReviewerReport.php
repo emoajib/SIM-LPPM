@@ -4,7 +4,6 @@
 
 namespace App\Livewire\Reports;
 
-use App\Enums\InstitutionalReportStatus;
 use App\Enums\ProposalStatus;
 use App\Livewire\Concerns\HasToast;
 use App\Livewire\Traits\WithInstitutionalApproval;

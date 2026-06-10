@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -15,7 +15,7 @@ return new class extends Migration
         // Add indexes to proposals table
         // We use raw SQL to support ALGORITHM=INPLACE LOCK=NONE for MySQL/MariaDB (zero downtime)
         // If using other DBs like PostgreSQL, this might need fallback or specific syntax
-        
+
         $driver = DB::getDriverName();
 
         if ($driver === 'mysql') {

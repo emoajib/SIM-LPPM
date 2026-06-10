@@ -7,90 +7,91 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style>
         @page {
-            margin: 2cm;
+            margin: 1.5cm 1cm;
         }
         body {
             font-family: Arial, Helvetica, sans-serif;
-            font-size: 8pt;
-            line-height: 1.4;
+            font-size: 7pt;
+            line-height: 1.3;
             color: #000;
             text-align: left;
         }
         .kop-surat {
-            border-bottom: 2pt solid #000;
-            padding-bottom: 2px;
-            margin-bottom: 5px;
+            border-bottom: 1.5pt solid #000;
+            padding-bottom: 1px;
+            margin-bottom: 3px;
             position: relative;
         }
         .kop-surat-inner {
             border-bottom: 0.5pt solid #000;
-            padding-bottom: 5px;
+            padding-bottom: 3px;
         }
         .logo {
             position: absolute;
             left: 0;
             top: 0;
-            width: 55px;
+            width: 45px;
         }
         .header-text {
             text-align: center;
-            margin-left: 60px;
+            margin-left: 50px;
         }
         .inst-name {
-            font-size: 11pt;
+            font-size: 10pt;
             font-weight: bold;
-            margin-bottom: 2px;
+            margin-bottom: 1px;
         }
         .lppm-name {
-            font-size: 9pt;
+            font-size: 8pt;
             font-weight: bold;
-            margin-bottom: 2px;
+            margin-bottom: 1px;
         }
         .inst-address {
-            font-size: 7.5pt;
+            font-size: 6.5pt;
             color: #333;
+            line-height: 1.2;
         }
         .report-title-container {
             text-align: center;
-            margin: 10px 0;
+            margin: 6px 0 4px 0;
         }
         .report-title {
-            font-size: 10pt;
+            font-size: 9pt;
             font-weight: bold;
             text-decoration: underline;
             text-transform: uppercase;
         }
         .report-subtitle {
-            font-size: 8pt;
-            margin-top: 3px;
+            font-size: 7pt;
+            margin-top: 2px;
         }
         .section-header {
-            font-size: 9pt;
+            font-size: 8pt;
             font-weight: bold;
-            margin-top: 15px;
-            margin-bottom: 5px;
+            margin-top: 10px;
+            margin-bottom: 3px;
             text-transform: uppercase;
             border-bottom: 1px solid #ddd;
-            padding-bottom: 2px;
+            padding-bottom: 1px;
         }
         table.data-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 5px 0 15px 0;
+            margin: 3px 0 10px 0;
         }
         table.data-table th {
             background-color: #f2f2f2;
             border: 0.5pt solid #000;
-            padding: 4px 6px;
+            padding: 2px 3px;
             font-weight: bold;
             text-align: center;
-            font-size: 8pt;
+            font-size: 6.5pt;
         }
         table.data-table td {
             border: 0.5pt solid #000;
-            padding: 4px 6px;
+            padding: 2px 3px;
             vertical-align: top;
-            font-size: 7.5pt;
+            font-size: 6.5pt;
         }
         .text-center { text-align: center; }
         .text-right { text-align: right; }
@@ -100,29 +101,29 @@
         table.metrics-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
         }
         table.metrics-table td {
             border: 0.5pt solid #ccc;
-            padding: 6px;
+            padding: 4px;
             background-color: #f9f9f9;
             text-align: center;
             width: 25%;
         }
         .metric-value {
-            font-size: 12pt;
+            font-size: 10pt;
             font-weight: bold;
             color: #206bc4;
         }
         .metric-label {
-            font-size: 7.5pt;
+            font-size: 6pt;
             text-transform: uppercase;
             color: #666;
-            margin-top: 2px;
+            margin-top: 1px;
         }
 
         .signature-wrapper {
-            margin-top: 20px;
+            margin-top: 15px;
             page-break-inside: avoid;
         }
         table.signature-table {
@@ -131,7 +132,7 @@
         }
         table.signature-table td {
             border: none;
-            padding: 0;
+            padding: 0 10px;
             vertical-align: top;
             text-align: center;
         }
@@ -142,16 +143,31 @@
         .sign-name {
             font-weight: bold;
             text-decoration: underline;
-            margin-top: 50px;
+            margin-top: 40px;
+            font-size: 7pt;
+        }
+        .sign-nip {
+            font-size: 6pt;
+            margin-top: 2px;
         }
         .footer {
             position: fixed;
-            bottom: -1cm;
+            bottom: -1.2cm;
             left: 0;
             right: 0;
-            font-size: 7pt;
+            font-size: 6pt;
             text-align: center;
             color: #888;
+        }
+        
+        /* Prevent table row break across pages */
+        tr {
+            page-break-inside: avoid;
+        }
+        
+        /* Page break before section II */
+        .page-break-before {
+            page-break-before: always;
         }
     </style>
 </head>
@@ -203,18 +219,24 @@
     <!-- SECTION I: IKHTISAR PENUGASAN & NILAI REKAP -->
     @php
         $requiredReviewers = (int) \App\Models\Setting::get('reviewer_count_required', 2);
-        $titleWidth = 46 - ($requiredReviewers * 8);
+        // Calculate column widths dynamically to sum to 100%
+        // Fixed: No(3%) + Jenis(8%) + Rata-rata(7%) = 18%
+        // Variable: Reviewer column (15%) + Score columns (6% each)
+        $fixedWidth = 18; // No + Jenis + Rata-rata
+        $scoreColumnWidth = 6; // each score column
+        $reviewerColumnWidth = 15; // reviewer names column
+        $titleWidth = 100 - $fixedWidth - $reviewerColumnWidth - ($requiredReviewers * $scoreColumnWidth);
     @endphp
     <div class="section-header">I. Rekapitulasi Penugasan & Hasil Penilaian Proposal</div>
     <table class="data-table">
         <thead>
             <tr>
-                <th style="width: 4%;">No</th>
+                <th style="width: 3%;">No</th>
                 <th style="width: {{ $titleWidth }}%;">Judul Proposal & Pengaju</th>
-                <th style="width: 10%;">Jenis</th>
-                <th style="width: 25%;">Reviewer Ditugaskan</th>
+                <th style="width: 8%;">Jenis</th>
+                <th style="width: {{ $reviewerColumnWidth }}%;">Reviewer Ditugaskan</th>
                 @for ($i = 0; $i < $requiredReviewers; $i++)
-                    <th style="width: 8%; text-align: center;">Skor Rev {{ $i + 1 }}</th>
+                    <th style="width: {{ $scoreColumnWidth }}%; text-align: center;">Skor Rev {{ $i + 1 }}</th>
                 @endfor
                 <th style="width: 7%; text-align: center;">Rata-rata</th>
             </tr>
@@ -229,14 +251,14 @@
                     <td class="text-center">{{ $index + 1 }}</td>
                     <td>
                         <div class="font-bold">{{ $proposal->title }}</div>
-                        <div style="color: #666; margin-top: 2px;">Dosen: {{ $proposal->submitter->name }} ({{ $proposal->submitter->identity->faculty->name ?? '-' }})</div>
+                        <div style="color: #666; margin-top: 2px; font-size: 6pt;">Dosen: {{ format_name($proposal->submitter->identity?->title_prefix, $proposal->submitter->name, $proposal->submitter->identity?->title_suffix) }} ({{ $proposal->submitter->identity->faculty->name ?? '-' }})</div>
                     </td>
                     <td class="text-center">{{ $proposal->detailable_type === 'App\Models\Research' ? 'Penelitian' : 'PKM' }}</td>
                     <td>
                         @forelse($proposal->reviewers as $rev)
-                            <div style="margin-bottom: 2px;">• {{ $rev->user->name }}</div>
+                            <div style="margin-bottom: 1px; font-size: 6pt;">• {{ format_name($rev->user->identity?->title_prefix, $rev->user->name, $rev->user->identity?->title_suffix) }}</div>
                         @empty
-                            <div style="color: red; font-style: italic;">Belum Diplot</div>
+                            <div style="color: red; font-style: italic; font-size: 6pt;">Belum Diplot</div>
                         @endforelse
                     </td>
                     @for ($i = 0; $i < $requiredReviewers; $i++)
@@ -265,12 +287,12 @@
     <table class="data-table">
         <thead>
             <tr>
-                <th style="width: 5%;">No</th>
-                <th style="width: 35%;">Nama Reviewer</th>
-                <th style="width: 30%;">Fakultas / Instansi</th>
-                <th style="width: 10%; text-align: center;">Total Ditugaskan</th>
-                <th style="width: 10%; text-align: center;">Selesai (Completed)</th>
-                <th style="width: 10%; text-align: center;">Tertunda (Pending)</th>
+                <th style="width: 4%;">No</th>
+                <th style="width: 28%;">Nama Reviewer</th>
+                <th style="width: 28%;">Fakultas / Instansi</th>
+                <th style="width: 12%; text-align: center;">Total Ditugaskan</th>
+                <th style="width: 12%; text-align: center;">Selesai (Completed)</th>
+                <th style="width: 12%; text-align: center;">Tertunda (Pending)</th>
             </tr>
         </thead>
         <tbody>
@@ -297,19 +319,31 @@
     <div class="signature-wrapper">
         <table class="signature-table">
             <tr>
-                <td width="40%">
+                <td width="45%">
                     <div class="sign-block">
-                        <div>Pekalongan, {{ $institutionalReport?->approved_at?->translatedFormat('d F Y') ?? now()->translatedFormat('d F Y') }}</div>
-                        <div>Mengetahui,</div>
-                        <div style="font-weight: bold; margin-bottom: 5px;">Rektor ITSNU Pekalongan</div>
+                        <div style="font-size: 6pt; margin-bottom: 3px;">Pekalongan, {{ $institutionalReport?->approved_at?->translatedFormat('d F Y') ?? now()->translatedFormat('d F Y') }}</div>
+                        <div style="font-size: 6pt; margin-bottom: 2px;">Mengetahui,</div>
+                        <div style="font-weight: bold; margin-bottom: 3px; font-size: 7pt;">Rektor ITSNU Pekalongan</div>
                         
-                        @if($institutionalReport && $institutionalReport->status->value === 'approved' && $institutionalReport->signature_path)
-                            <div style="margin: 10px 0;">
-                                <img src="{{ generate_qr_code_data_uri(URL::signedRoute('reports.verify', ['institutionalReport' => $institutionalReport->id]), 120) }}" width="70">
+                        @if($institutionalReport && $institutionalReport->status->value === 'approved')
+                            @php
+                                $rektorSig = $institutionalReport->signatures()
+                                    ->where('variant', 'approved')
+                                    ->where('action', 'approved')
+                                    ->where('signed_role', 'rektor')
+                                    ->first();
+                                $qrRektorUrl = $rektorSig 
+                                    ? URL::signedRoute('signatures.verify', ['documentSignature' => $rektorSig->id]) 
+                                    : null;
+                            @endphp
+                            <div style="margin: 5px 0;">
+                                @if($qrRektorUrl)
+                                    <img src="{{ generate_qr_code_data_uri($qrRektorUrl, 100) }}" width="60" style="display: block; margin: 0 auto;">
+                                @endif
                             </div>
-                            <div style="font-size: 7pt; color: #1a56db; font-weight: bold; margin-bottom: 5px;">DIGITALLY SIGNED</div>
+                            <div style="font-size: 6pt; color: #1a56db; font-weight: bold; margin-bottom: 3px;">DIGITALLY SIGNED</div>
                         @else
-                            <div style="height: 70px;"></div>
+                            <div style="height: 60px;"></div>
                         @endif
 
                         <div class="sign-name">
@@ -318,20 +352,32 @@
                         <div class="sign-nip">NPP. {{ $rektor?->identity?->identity_id ?? '-' }}</div>
                     </div>
                 </td>
-                <td width="20%"></td>
-                <td width="40%">
+                <td width="10%"></td>
+                <td width="45%">
                     <div class="sign-block">
-                        <div>Pekalongan, {{ $institutionalReport?->submitted_at?->translatedFormat('d F Y') ?? now()->translatedFormat('d F Y') }}</div>
-                        <div>Dibuat oleh,</div>
-                        <div style="font-weight: bold; margin-bottom: 5px;">Kepala LPPM ITSNU Pekalongan</div>
+                        <div style="font-size: 6pt; margin-bottom: 3px;">Pekalongan, {{ $institutionalReport?->submitted_at?->translatedFormat('d F Y') ?? now()->translatedFormat('d F Y') }}</div>
+                        <div style="font-size: 6pt; margin-bottom: 2px;">Dibuat oleh,</div>
+                        <div style="font-weight: bold; margin-bottom: 3px; font-size: 7pt;">Kepala LPPM ITSNU Pekalongan</div>
 
                         @if($institutionalReport && in_array($institutionalReport->status->value, ['submitted', 'approved']))
-                            <div style="margin: 10px 0;">
-                                <img src="{{ generate_qr_code_data_uri(URL::signedRoute('reports.verify', ['institutionalReport' => $institutionalReport->id]), 120) }}" width="70">
+                            @php
+                                $lppmSig = $institutionalReport->signatures()
+                                    ->where('variant', in_array($institutionalReport->status->value, ['approved']) ? 'approved' : 'submitted')
+                                    ->where('action', 'submitted')
+                                    ->where('signed_role', 'kepala_lppm')
+                                    ->first();
+                                $qrLppmUrl = $lppmSig 
+                                    ? URL::signedRoute('signatures.verify', ['documentSignature' => $lppmSig->id]) 
+                                    : null;
+                            @endphp
+                            <div style="margin: 5px 0;">
+                                @if($qrLppmUrl)
+                                    <img src="{{ generate_qr_code_data_uri($qrLppmUrl, 100) }}" width="60" style="display: block; margin: 0 auto;">
+                                @endif
                             </div>
-                            <div style="font-size: 7pt; color: #1a56db; font-weight: bold; margin-bottom: 5px;">DIGITALLY SIGNED</div>
+                            <div style="font-size: 6pt; color: #1a56db; font-weight: bold; margin-bottom: 3px;">DIGITALLY SIGNED</div>
                         @else
-                            <div style="height: 70px;"></div>
+                            <div style="height: 60px;"></div>
                         @endif
 
                         <div class="sign-name">
@@ -346,7 +392,7 @@
 
     <!-- FOOTER -->
     <div class="footer">
-        SIM-LPPM ITSNU Pekalongan | Dicetak oleh: {{ auth()->user()->name ?? 'Administrator' }} | Halaman 2 dari 2
+        SIM-LPPM ITSNU Pekalongan | Dicetak oleh: {{ auth()->user()->name ?? 'Administrator' }} | {{ now()->format('d/m/Y H:i') }}
     </div>
 </body>
 
