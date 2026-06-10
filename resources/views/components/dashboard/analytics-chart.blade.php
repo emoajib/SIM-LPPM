@@ -11,7 +11,12 @@
      x-data="{
         chart: null,
         initChart(labels, datasets) {
+            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             if (!labels || !datasets) return;
+            if (typeof Chart === 'undefined') {
+                setTimeout(() => this.initChart(labels, datasets), 100);
+                return;
+            }
             const ctx = this.$refs.canvas.getContext('2d');
             if (this.chart) {
                 this.chart.destroy();
