@@ -314,82 +314,116 @@ class AdminDashboard extends Component
      */
     private function loadChartData(string $yearFilter): void
     {
-        // 1. Focus Areas (Doughnut Chart)
-        $focusAreasQuery = Proposal::query()
+        // Fetch filtered proposals eager loading relations
+        $proposals = Proposal::query()
             ->tap(fn ($q) => $this->applyCommonFilters($q))
-            ->with('focusArea')
-            ->get()
-            ->groupBy(function ($proposal) {
-                return $proposal->focusArea->name ?? 'Belum Ditentukan';
-            })
-            ->map(fn ($group) => $group->count());
+            ->with(['focusArea', 'submitter.identity.faculty', 'clusterLevel1', 'theme', 'topic'])
+            ->get();
 
-        $focusLabels = $focusAreasQuery->keys()->toArray();
-        $focusCounts = $focusAreasQuery->values()->toArray();
+        // 1. Focus Areas (Pohon Penelitian)
+        $focusResearch = $proposals->filter(fn ($p) => str_contains($p->detailable_type, 'Research'))
+            ->groupBy(fn ($p) => $p->focusArea->name ?? 'Belum Ditentukan')
+            ->map(fn ($g) => $g->count());
+        $focusPkm = $proposals->filter(fn ($p) => str_contains($p->detailable_type, 'CommunityService'))
+            ->groupBy(fn ($p) => $p->focusArea->name ?? 'Belum Ditentukan')
+            ->map(fn ($g) => $g->count());
+
+        $focusLabels = $proposals->groupBy(fn ($p) => $p->focusArea->name ?? 'Belum Ditentukan')->keys()->toArray();
+        if (empty($focusLabels)) {
+            $focusLabels = ['Belum Ditentukan'];
+        }
+
+        $focusResearchCounts = [];
+        $focusPkmCounts = [];
+        foreach ($focusLabels as $label) {
+            $focusResearchCounts[] = $focusResearch->get($label, 0);
+            $focusPkmCounts[] = $focusPkm->get($label, 0);
+        }
 
         $this->focusAreasChartData = [
             'labels' => $focusLabels,
             'datasets' => [
                 [
-                    'label' => 'Jumlah Proposal',
-                    'data' => $focusCounts,
-                    'backgroundColor' => [
-                        '#206bc4', '#4299e1', '#4263eb', '#ae3ec9', '#d6336c',
-                        '#f76707', '#f59f00', '#74b816', '#2fb344', '#0ca678',
-                    ],
+                    'label' => 'Penelitian',
+                    'data' => $focusResearchCounts,
+                    'backgroundColor' => '#206bc4',
+                ],
+                [
+                    'label' => 'Pengabdian (PKM)',
+                    'data' => $focusPkmCounts,
+                    'backgroundColor' => '#2fb344',
                 ],
             ],
         ];
 
         // 2. Faculty Performance (Bar Chart)
-        $facultyQuery = Proposal::query()
-            ->tap(fn ($q) => $this->applyCommonFilters($q))
-            ->with('submitter.identity.faculty')
-            ->get()
-            ->groupBy(function ($proposal) {
-                return $proposal->submitter->identity->faculty->name ?? 'Lainnya';
-            })
-            ->map(fn ($group) => $group->count());
+        $facultyResearch = $proposals->filter(fn ($p) => str_contains($p->detailable_type, 'Research'))
+            ->groupBy(fn ($p) => $p->submitter->identity->faculty->name ?? 'Lainnya')
+            ->map(fn ($g) => $g->count());
+        $facultyPkm = $proposals->filter(fn ($p) => str_contains($p->detailable_type, 'CommunityService'))
+            ->groupBy(fn ($p) => $p->submitter->identity->faculty->name ?? 'Lainnya')
+            ->map(fn ($g) => $g->count());
 
-        $facultyLabels = $facultyQuery->keys()->toArray();
-        $facultyCounts = $facultyQuery->values()->toArray();
+        $facultyLabels = $proposals->groupBy(fn ($p) => $p->submitter->identity->faculty->name ?? 'Lainnya')->keys()->toArray();
+        if (empty($facultyLabels)) {
+            $facultyLabels = ['Lainnya'];
+        }
+
+        $facultyResearchCounts = [];
+        $facultyPkmCounts = [];
+        foreach ($facultyLabels as $label) {
+            $facultyResearchCounts[] = $facultyResearch->get($label, 0);
+            $facultyPkmCounts[] = $facultyPkm->get($label, 0);
+        }
 
         $this->facultyPerformanceChartData = [
             'labels' => $facultyLabels,
             'datasets' => [
                 [
-                    'label' => 'Jumlah Proposal',
-                    'data' => $facultyCounts,
+                    'label' => 'Penelitian',
+                    'data' => $facultyResearchCounts,
                     'backgroundColor' => '#206bc4',
-                    'borderColor' => '#206bc4',
-                    'borderWidth' => 1,
+                ],
+                [
+                    'label' => 'Pengabdian (PKM)',
+                    'data' => $facultyPkmCounts,
+                    'backgroundColor' => '#2fb344',
                 ],
             ],
         ];
 
         // 3. Rumpun Ilmu (Science Clusters)
-        $scienceClustersQuery = Proposal::query()
-            ->tap(fn ($q) => $this->applyCommonFilters($q))
-            ->with('clusterLevel1')
-            ->get()
-            ->groupBy(function ($proposal) {
-                return $proposal->clusterLevel1->name ?? 'Belum Ditentukan';
-            })
-            ->map(fn ($group) => $group->count());
+        $scienceResearch = $proposals->filter(fn ($p) => str_contains($p->detailable_type, 'Research'))
+            ->groupBy(fn ($p) => $p->clusterLevel1->name ?? 'Belum Ditentukan')
+            ->map(fn ($g) => $g->count());
+        $sciencePkm = $proposals->filter(fn ($p) => str_contains($p->detailable_type, 'CommunityService'))
+            ->groupBy(fn ($p) => $p->clusterLevel1->name ?? 'Belum Ditentukan')
+            ->map(fn ($g) => $g->count());
 
-        $scienceLabels = $scienceClustersQuery->keys()->toArray();
-        $scienceCounts = $scienceClustersQuery->values()->toArray();
+        $scienceLabels = $proposals->groupBy(fn ($p) => $p->clusterLevel1->name ?? 'Belum Ditentukan')->keys()->toArray();
+        if (empty($scienceLabels)) {
+            $scienceLabels = ['Belum Ditentukan'];
+        }
+
+        $scienceResearchCounts = [];
+        $sciencePkmCounts = [];
+        foreach ($scienceLabels as $label) {
+            $scienceResearchCounts[] = $scienceResearch->get($label, 0);
+            $sciencePkmCounts[] = $sciencePkm->get($label, 0);
+        }
 
         $this->scienceClustersChartData = [
             'labels' => $scienceLabels,
             'datasets' => [
                 [
-                    'label' => 'Jumlah Proposal',
-                    'data' => $scienceCounts,
-                    'backgroundColor' => [
-                        '#2fb344', '#ae3ec9', '#d6336c', '#f76707', '#206bc4',
-                        '#f59f00', '#74b816', '#4299e1', '#4263eb', '#0ca678',
-                    ],
+                    'label' => 'Penelitian',
+                    'data' => $scienceResearchCounts,
+                    'backgroundColor' => '#206bc4',
+                ],
+                [
+                    'label' => 'Pengabdian (PKM)',
+                    'data' => $sciencePkmCounts,
+                    'backgroundColor' => '#2fb344',
                 ],
             ],
         ];
@@ -415,7 +449,7 @@ class AdminDashboard extends Component
             'labels' => $tktLabels,
             'datasets' => [
                 [
-                    'label' => 'Jumlah Proposal',
+                    'label' => 'Penelitian',
                     'data' => $tktCounts,
                     'backgroundColor' => '#f76707',
                     'borderColor' => '#f76707',
@@ -424,57 +458,74 @@ class AdminDashboard extends Component
             ],
         ];
 
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         // 5. Themes (Tema)
-        $themesQuery = Proposal::query()
-            ->tap(fn ($q) => $this->applyCommonFilters($q))
-            ->with('theme')
-            ->get()
-            ->groupBy(function ($proposal) {
-                return $proposal->theme->name ?? 'Belum Ditentukan';
-            })
-            ->map(fn ($group) => $group->count());
+        $themesResearch = $proposals->filter(fn ($p) => str_contains($p->detailable_type, 'Research'))
+            ->groupBy(fn ($p) => $p->theme->name ?? 'Belum Ditentukan')
+            ->map(fn ($g) => $g->count());
+        $themesPkm = $proposals->filter(fn ($p) => str_contains($p->detailable_type, 'CommunityService'))
+            ->groupBy(fn ($p) => $p->theme->name ?? 'Belum Ditentukan')
+            ->map(fn ($g) => $g->count());
 
-        $themeLabels = $themesQuery->keys()->toArray();
-        $themeCounts = $themesQuery->values()->toArray();
+        $themeLabels = $proposals->groupBy(fn ($p) => $p->theme->name ?? 'Belum Ditentukan')->keys()->toArray();
+        if (empty($themeLabels)) {
+            $themeLabels = ['Belum Ditentukan'];
+        }
+
+        $themeResearchCounts = [];
+        $themePkmCounts = [];
+        foreach ($themeLabels as $label) {
+            $themeResearchCounts[] = $themesResearch->get($label, 0);
+            $themePkmCounts[] = $themesPkm->get($label, 0);
+        }
 
         $this->themesChartData = [
             'labels' => $themeLabels,
             'datasets' => [
                 [
-                    'label' => 'Jumlah Proposal',
-                    'data' => $themeCounts,
-                    'backgroundColor' => [
-                        '#4263eb', '#f59f00', '#ae3ec9', '#2fb344', '#d6336c',
-                        '#f76707', '#74b816', '#4299e1', '#206bc4', '#0ca678',
-                    ],
+                    'label' => 'Penelitian',
+                    'data' => $themeResearchCounts,
+                    'backgroundColor' => '#206bc4',
+                ],
+                [
+                    'label' => 'Pengabdian (PKM)',
+                    'data' => $themePkmCounts,
+                    'backgroundColor' => '#2fb344',
                 ],
             ],
         ];
 
         // 6. Topics (Topik)
-        $topicsQuery = Proposal::query()
-            ->tap(fn ($q) => $this->applyCommonFilters($q))
-            ->with('topic')
-            ->get()
-            ->groupBy(function ($proposal) {
-                return $proposal->topic->name ?? 'Belum Ditentukan';
-            })
-            ->map(fn ($group) => $group->count());
+        $topicsResearch = $proposals->filter(fn ($p) => str_contains($p->detailable_type, 'Research'))
+            ->groupBy(fn ($p) => $p->topic->name ?? 'Belum Ditentukan')
+            ->map(fn ($g) => $g->count());
+        $topicsPkm = $proposals->filter(fn ($p) => str_contains($p->detailable_type, 'CommunityService'))
+            ->groupBy(fn ($p) => $p->topic->name ?? 'Belum Ditentukan')
+            ->map(fn ($g) => $g->count());
 
-        $topicLabels = $topicsQuery->keys()->toArray();
-        $topicCounts = $topicsQuery->values()->toArray();
+        $topicLabels = $proposals->groupBy(fn ($p) => $p->topic->name ?? 'Belum Ditentukan')->keys()->toArray();
+        if (empty($topicLabels)) {
+            $topicLabels = ['Belum Ditentukan'];
+        }
+
+        $topicResearchCounts = [];
+        $topicPkmCounts = [];
+        foreach ($topicLabels as $label) {
+            $topicResearchCounts[] = $topicsResearch->get($label, 0);
+            $topicPkmCounts[] = $topicsPkm->get($label, 0);
+        }
 
         $this->topicsChartData = [
             'labels' => $topicLabels,
             'datasets' => [
                 [
-                    'label' => 'Jumlah Proposal',
-                    'data' => $topicCounts,
-                    'backgroundColor' => [
-                        '#d6336c', '#f76707', '#4299e1', '#0ca678', '#206bc4',
-                        '#f59f00', '#74b816', '#4263eb', '#2fb344', '#ae3ec9',
-                    ],
+                    'label' => 'Penelitian',
+                    'data' => $topicResearchCounts,
+                    'backgroundColor' => '#206bc4',
+                ],
+                [
+                    'label' => 'Pengabdian (PKM)',
+                    'data' => $topicPkmCounts,
+                    'backgroundColor' => '#2fb344',
                 ],
             ],
         ];

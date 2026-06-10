@@ -59,7 +59,7 @@
                     },
                     plugins: {
                         legend: {
-                            display: {{ $type === 'doughnut' ? 'true' : 'false' }},
+                            display: true,
                             position: 'bottom',
                             labels: {
                                 color: 'var(--tblr-body-color, #333)',
@@ -107,7 +107,9 @@
                             // Vetted by AI - Manual Review Required by Senior Engineer/Manager
                             const { ctx } = chart;
                             ctx.save();
+                            const visibleDatasetsCount = chart.data.datasets.filter((_, idx) => chart.isDatasetVisible(idx)).length;
                             chart.data.datasets.forEach((dataset, i) => {
+                                if (!chart.isDatasetVisible(i)) return;
                                 const meta = chart.getDatasetMeta(i);
                                 meta.data.forEach((element, index) => {
                                     const dataVal = dataset.data[index];
@@ -131,7 +133,8 @@
                                         y = element.y - 8;
                                         ctx.fillStyle = 'var(--tblr-body-color, #333)';
                                         ctx.shadowBlur = 0;
-                                        ctx.font = 'bold 11px Inter, sans-serif';
+                                        // Vetted by AI - Adjust font size when multiple datasets are shown to avoid overlap
+                                        ctx.font = visibleDatasetsCount > 1 ? 'bold 9px Inter, sans-serif' : 'bold 11px Inter, sans-serif';
                                     }
                                     
                                     ctx.textAlign = 'center';
