@@ -76,20 +76,7 @@ class ReviewExportController extends Controller
         $title = preg_replace('/[^A-Za-z0-9_\-]/', '_', substr($proposal->title, 0, 30));
         $filename = ($isPreview ? 'PREVIEW-' : '').'Penilaian_Reviewer_'.$title.'.pdf';
 
-        if ($isPreview) {
-            $pdf = Pdf::loadView('pdf.review-evaluation', [
-                'isPreview' => true,
-                'assignment' => $proposalReviewer,
-                'proposal' => $proposal,
-                'scores' => $scores,
-                'totalScore' => $totalScore,
-                'type' => $type,
-                'qrUrl' => null,
-            ]);
-
-            return $this->pdfInlineResponse($pdf->output(), $filename);
-        }
-
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $signedAt = $proposalReviewer->completed_at ?? $proposalReviewer->updated_at ?? now();
         $variant = 'round-'.((int) ($proposalReviewer->round ?? 1)).'-'.$signedAt->format('YmdHis');
         $cachePath = 'review-evaluations/'.$proposalReviewer->id.'/'.$variant.'.pdf';
@@ -122,6 +109,20 @@ class ReviewExportController extends Controller
         }
 
         $qrUrl = URL::signedRoute('signatures.verify', ['documentSignature' => $signature->id]);
+
+        if ($isPreview) {
+            $pdf = Pdf::loadView('pdf.review-evaluation', [
+                'isPreview' => true,
+                'assignment' => $proposalReviewer,
+                'proposal' => $proposal,
+                'scores' => $scores,
+                'totalScore' => $totalScore,
+                'type' => $type,
+                'qrUrl' => $qrUrl,
+            ]);
+
+            return $this->pdfInlineResponse($pdf->output(), $filename);
+        }
 
         if (Storage::disk('local')->exists($cachePath) && $signature->document_hash) {
             return $this->pdfDownloadResponse(Storage::disk('local')->get($cachePath), $filename);

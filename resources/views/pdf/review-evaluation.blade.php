@@ -1,3 +1,4 @@
+{{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
 <!DOCTYPE html>
 <html>
 
@@ -17,9 +18,9 @@
         }
 
         body {
-            font-family: "Times New Roman", Times, serif;
-            font-size: 12pt;
-            line-height: 1.5;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 9pt;
+            line-height: 1.4;
             color: #000;
             text-align: justify;
         }
@@ -27,8 +28,14 @@
         .header-table {
             width: 100%;
             border-bottom: 2px solid #000;
-            margin-bottom: 5px;
+            margin-bottom: 12px;
             padding-bottom: 5px;
+        }
+
+        .header-table td {
+            border: none !important;
+            vertical-align: middle;
+            padding: 0 !important;
         }
 
         .logo {
@@ -43,21 +50,24 @@
         .header-text div {
             font-weight: bold;
             font-size: 11pt;
+            line-height: 1.2;
+            margin-bottom: 2px;
         }
 
         .no-border,
         .no-border td,
         .no-border th {
             border: none !important;
+            padding: 2px !important;
         }
 
         .main-title {
             text-align: center;
             margin: 15px 0;
             font-weight: bold;
-            text-decoration: underline;
             text-transform: uppercase;
-            font-size: 12pt;
+            font-size: 10pt;
+            line-height: 1.3;
         }
 
         .info-table {
@@ -66,17 +76,10 @@
         }
 
         .info-table td {
-            padding: 1px 0;
+            padding: 3px 0 !important;
             vertical-align: top;
             border: none !important;
-        }
-
-        .info-table td:first-child {
-            width: 180px;
-        }
-
-        .info-table td:nth-child(2) {
-            width: 10px;
+            font-size: 9pt;
         }
 
         .scoring-table {
@@ -87,16 +90,18 @@
 
         .scoring-table th,
         .scoring-table td {
-            border: 1px solid #000;
-            padding: 3px 5px;
-            font-size: 11pt;
-            line-height: 1.5;
+            border: 0.5pt solid #000;
+            padding: 6px;
+            font-size: 8.5pt;
+            line-height: 1.3;
+            vertical-align: top;
         }
 
         .scoring-table th {
             background-color: #f2f2f2;
             text-align: center;
             font-weight: bold;
+            text-transform: uppercase;
         }
 
         .text-center {
@@ -105,6 +110,14 @@
 
         .text-right {
             text-align: right;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+
+        .text-justify {
+            text-align: justify;
         }
 
         .fw-bold {
@@ -117,10 +130,23 @@
             page-break-inside: avoid;
         }
 
+        .footer::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
         .signature-box {
             float: right;
             width: 250px;
             text-align: left;
+        }
+
+        .signature-box p {
+            margin: 0;
+            padding: 1.5px 0;
+            line-height: 1.25;
+            font-size: 9pt;
         }
 
         .signature-space {
@@ -130,7 +156,6 @@
         .page-break {
             page-break-after: always;
         }
-
     </style>
 </head>
 
@@ -138,43 +163,45 @@
     <table class="header-table no-border">
         <tr>
             <td class="logo" style="width: 60px;">
-                @if (file_exists(public_path('logo.png')))
-                    <img src="{{ public_path('logo.png') }}" alt="Logo" style="width: 50px;">
+                @if (get_logo_base64())
+                    <img src="{{ get_logo_base64() }}" alt="Logo" style="width: 50px;">
                 @endif
             </td>
             <td class="header-text">
                 <div>Lembaga Penelitian dan Pengabdian kepada Masyarakat (LPPM)</div>
                 <div>Institut Teknologi dan Sains Nahdlatul Ulama (ITSNU) Pekalongan</div>
-                <div style="font-weight: normal; font-size: 8pt;">Jl. Karangdowo No. 9, Karangdowo, Kec. Kedungwuni,
-                    Kab. Pekalongan, Jawa Tengah 51173</div>
-                <div style="font-weight: normal; font-size: 8pt;">Email: lppmitsnupkl@gmail.com | Website:
-                    https://lppm.itsnupekalongan.ac.id/</div>
+                <div style="font-weight: normal; font-size: 8pt; line-height: 1.3; margin-top: 4px;">
+                    Jl. Karangdowo No. 9, Karangdowo, Kec. Kedungwuni, Kab. Pekalongan, Jawa Tengah 51173
+                </div>
+                <div style="font-weight: normal; font-size: 8pt; line-height: 1.3;">
+                    Email: lppmitsnupkl@gmail.com | Website: https://lppm.itsnupekalongan.ac.id/
+                </div>
             </td>
         </tr>
     </table>
 
     <div class="main-title">
         LEMBAR PENILAIAN PROPOSAL {{ $type === 'research' ? 'PENELITIAN' : 'PENGABDIAN MASYARAKAT' }}<br>
-        TAHUN ANGGARAN {{ date('Y') }}
+        TAHUN ANGGARAN {{ $proposal->start_year ?? date('Y') }}
     </div>
 
     <table class="info-table no-border">
         <tr>
-            <td>Fakultas / Program Studi</td>
-            <td>:</td>
-            <td>{{ $proposal->submitter->identity?->faculty?->name ?? '-' }} /
+            <td style="width: 25%;">Fakultas / Program Studi</td>
+            <td style="width: 3%;">:</td>
+            <td style="width: 72%;">{{ $proposal->submitter->identity?->faculty?->name ?? '-' }} /
                 {{ $proposal->submitter->identity?->studyProgram?->name ?? '-' }}
             </td>
         </tr>
         <tr>
             <td>Judul {{ $type === 'research' ? 'Penelitian' : 'PkM' }}</td>
             <td>:</td>
-            <td><strong>{{ $proposal->title }}</strong></td>
+            <td><strong>{{ clean_proposal_title($proposal->title) }}</strong></td>
         </tr>
         <tr>
             <td>Ketua {{ $type === 'research' ? 'Peneliti' : 'PkM' }}</td>
             <td>:</td>
-            <td>{{ $proposal->submitter->name }}</td>
+            <td>{{ format_name($proposal->submitter->identity?->title_prefix, $proposal->submitter->name, $proposal->submitter->identity?->title_suffix) }}</td>
         </tr>
         <tr>
             <td>Jumlah Anggota</td>
@@ -203,12 +230,12 @@
     <table class="scoring-table">
         <thead>
             <tr>
-                <th width="25">No</th>
-                <th width="100">Kriteria</th>
-                <th>Catatan / Justifikasi Reviewer</th>
-                <th width="50">Bobot (%)</th>
-                <th width="40">Skor</th>
-                <th width="70">Nilai</th>
+                <th style="width: 5%;">No</th>
+                <th style="width: 25%;">Kriteria Penilaian</th>
+                <th style="width: 45%;">Catatan / Justifikasi Reviewer</th>
+                <th style="width: 10%;">Bobot (%)</th>
+                <th style="width: 7%;">Skor</th>
+                <th style="width: 8%;">Nilai</th>
             </tr>
         </thead>
         <tbody>
@@ -233,17 +260,19 @@
         </tfoot>
     </table>
 
-    <div style="font-size: 8pt; margin-bottom: 10px; border: 1px solid #000; padding: 4px;">
-        <strong>Keterangan Skor:</strong> 1=Sangat Kurang, 2=Kurang, 3=Cukup Baik, 4=Baik, 5=Sangat Baik.
-        <strong>Passing Grade:</strong> 300.
-        <br><strong>Rekomendasi:</strong>
-        {{ strtoupper($assignment->recommendation === 'approved' ? 'DITERIMA' : ($assignment->recommendation === 'rejected' ? 'DITOLAK' : 'PERLU REVISI')) }}
+    <div style="font-size: 8.5pt; margin-top: 15px; margin-bottom: 15px; border: 0.5pt solid #000; padding: 8px 10px; background-color: #fafafa; line-height: 1.4;">
+        <strong>Keterangan Skor:</strong> 1 = Sangat Kurang, 2 = Kurang, 3 = Cukup Baik, 4 = Baik, 5 = Sangat Baik. <br>
+        <strong>Passing Grade:</strong> 300 &nbsp;|&nbsp; 
+        <strong>Total Nilai:</strong> {{ number_format($totalScore, 0) }} &nbsp;|&nbsp; 
+        <strong>Rekomendasi:</strong>
+        <span class="fw-bold" style="color: {{ $assignment->recommendation === 'approved' ? '#1a4d2e' : ($assignment->recommendation === 'rejected' ? '#7f1d1d' : '#854d0e') }}">
+            {{ strtoupper($assignment->recommendation === 'approved' ? 'DITERIMA' : ($assignment->recommendation === 'rejected' ? 'DITOLAK' : 'PERLU REVISI')) }}
+        </span>
     </div>
 
-    <div class="fw-bold" style="margin-bottom: 3px;">Komentar / Saran Reviewer:</div>
-    <div
-        style="border: 1px solid #000; padding: 5px 10px; min-height: 80px; margin-bottom: 15px; text-align: justify; font-size: 8pt;">
-        {{ $assignment->review_notes }}
+    <div class="fw-bold" style="font-size: 9pt; margin-bottom: 5px;">Komentar / Saran Reviewer:</div>
+    <div style="border: 0.5pt solid #000; padding: 10px; min-height: 80px; margin-bottom: 20px; text-align: justify; font-size: 8.5pt; line-height: 1.4; background-color: #ffffff;">
+        {!! nl2br(e($assignment->review_notes)) !!}
     </div>
 
     <div class="footer">
@@ -251,17 +280,17 @@
             <p>Pekalongan, {{ $assignment->completed_at?->translatedFormat('d F Y') ?? now()->translatedFormat('d F Y') }}</p>
             <p>Reviewer,</p>
             @if($qrUrl ?? null)
-                <div style="margin: 6px 0;">
-                    <img src="{{ generate_qr_code_data_uri($qrUrl, 160) }}" alt="QR Verifikasi" style="width: 70px; height: 70px;">
+                <div style="margin: 6px 0; margin-left: 10px;">
+                    <img src="{{ generate_qr_code_data_uri($qrUrl, 160) }}" alt="QR Verifikasi" style="width: 65px; height: 65px;">
                 </div>
-                <div style="font-size: 8pt; color: #333; margin-top: 2px; margin-bottom: 10px;">
+                <div style="font-size: 7.5pt; color: #333; margin-top: 1px; margin-bottom: 8px; line-height: 1.2;">
                     Terverifikasi sistem (QR)<br>
                     Ditandatangani: {{ $assignment->completed_at?->format('d/m/Y H:i') ?? '-' }}
                 </div>
             @else
                 <div class="signature-space"></div>
             @endif
-            <p><strong>({{ format_name($assignment->user->identity?->title_prefix, $assignment->user->name, $assignment->user->identity?->title_suffix) }})</strong></p>
+            <p style="margin-top: 5px;"><strong>({{ format_name($assignment->user->identity?->title_prefix, $assignment->user->name, $assignment->user->identity?->title_suffix) }})</strong></p>
             <p>NIDN. {{ $assignment->user->identity?->identity_id ?? '..........................' }}</p>
         </div>
     </div>
