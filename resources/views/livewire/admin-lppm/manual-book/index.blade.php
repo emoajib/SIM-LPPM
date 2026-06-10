@@ -15,7 +15,7 @@
                         <div class="d-flex align-items-center mb-3">
                             <div class="flex-shrink-0 me-3">
                                 <div class="avatar avatar-lg bg-primary text-white">
-                                    <i class="icon icon-tabler icon-tabler-file-text icon-lg"></i>
+                                    @include('components.layouts.partials.menu.icon', ['name' => 'file-text', 'class' => 'icon icon-lg'])
                                 </div>
                             </div>
                             <div class="flex-grow-1 min-width-0">
@@ -33,12 +33,12 @@
                         <div class="mt-auto">
                             @if($media)
                                 <a href="{{ route('media.download', $media) }}" class="btn btn-primary w-100" target="_blank">
-                                    <i class="icon icon-tabler icon-tabler-download me-1"></i>
+                                    @include('components.layouts.partials.menu.icon', ['name' => 'download', 'class' => 'icon me-1'])
                                     Download ({{ number_format($media->size / 1024, 1) }} KB)
                                 </a>
                             @else
                                 <div class="alert alert-warning mb-0 py-2 text-center small">
-                                    <i class="icon icon-tabler icon-tabler-book-off me-1"></i>
+                                    @include('components.layouts.partials.menu.icon', ['name' => 'book-off', 'class' => 'icon me-1'])
                                     File PDF belum tersedia
                                 </div>
                             @endif
@@ -50,7 +50,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body text-center py-5">
-                        <i class="icon icon-tabler icon-tabler-book-off icon-lg mb-3 text-muted"></i>
+                        @include('components.layouts.partials.menu.icon', ['name' => 'book-off', 'class' => 'icon icon-lg mb-3 text-muted'])
                         <h4 class="text-muted">Belum Ada Manual Book</h4>
                         <p class="text-muted mb-0">Belum ada manual book yang tersedia.</p>
                     </div>

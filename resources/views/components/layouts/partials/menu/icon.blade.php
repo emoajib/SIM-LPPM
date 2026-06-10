@@ -410,6 +410,173 @@
                         </svg>
                         SVG;
         },
+        'book-off' => static function (string $class): string {
+            return <<<SVG
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{$class}">
+                            <path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" />
+                            <path d="M3 6a9 9 0 0 1 4.289 1.039" />
+                            <path d="M12.211 6.021a9 9 0 0 1 8.789 -.021" />
+                            <path d="M3 6v13" />
+                            <path d="M12 6v1.211" />
+                            <path d="M12 11.211v1.789" />
+                            <path d="M12 19v-2" />
+                            <path d="M21 6v10" />
+                            <path d="M3 3l18 18" />
+                        </svg>
+                        SVG;
+        },
+        'download' => static function (string $class): string {
+            return <<<SVG
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{$class}">
+                            <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" />
+                            <path d="M7 11l5 5l5 -5" />
+                            <path d="M12 4l0 12" />
+                        </svg>
+                        SVG;
+        },
+        'edit' => static function (string $class): string {
+            return <<<SVG
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{$class}">
+                            <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
+                            <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
+                            <path d="M16 5l3 3" />
+                        </svg>
+                        SVG;
+        },
+        'file-check' => static function (string $class): string {
+            return <<<SVG
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{$class}">
+                            <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                            <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+                            <path d="M9 15l2 2l4 -4" />
+                        </svg>
+                        SVG;
+        },
+        'loader' => static function (string $class): string {
+            return <<<SVG
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{$class}">
+                            <path d="M12 6l0 -3" />
+                            <path d="M16.25 7.75l2.15 -2.15" />
+                            <path d="M18 12l3 0" />
+                            <path d="M16.25 16.25l2.15 2.15" />
+                            <path d="M12 18l0 3" />
+                            <path d="M7.75 16.25l-2.15 2.15" />
+                            <path d="M6 12l-3 0" />
+                            <path d="M7.75 7.75l-2.15 -2.15" />
+                        </svg>
+                        SVG;
+        },
+        'plus' => static function (string $class): string {
+            return <<<SVG
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{$class}">
+                            <path d="M12 5l0 14" />
+                            <path d="M5 12l14 0" />
+                        </svg>
+                        SVG;
+        },
+        'toggle-right' => static function (string $class): string {
+            return <<<SVG
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{$class}">
+                            <path d="M15 7a5 5 0 0 1 0 10h-6a5 5 0 0 1 0 -10z" />
+                            <path d="M15 12m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                        </svg>
+                        SVG;
+        },
+        'toggle-left' => static function (string $class): string {
+            return <<<SVG
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{$class}">
+                            <path d="M15 7a5 5 0 0 1 0 10h-6a5 5 0 0 1 0 -10z" />
+                            <path d="M9 12m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                        </svg>
+                        SVG;
+        },
+        'trash' => static function (string $class): string {
+            return <<<SVG
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{$class}">
+                            <path d="M4 7l16 0" />
+                            <path d="M10 11l0 6" />
+                            <path d="M14 11l0 6" />
+                            <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                            <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                        </svg>
+                        SVG;
+        },
+        'device-floppy' => static function (string $class): string {
+            return <<<SVG
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{$class}">
+                            <path d="M6 4h10l4 4v10a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2" />
+                            <path d="M12 14m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                            <path d="M14 4l0 4l-6 0l0 -4" />
+                        </svg>
+                        SVG;
+        },
+        'book-upload' => static function (string $class): string {
+            return <<<SVG
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{$class}">
+                            <path d="M14 20a9 9 0 0 0 -9 0v-13a9 9 0 0 1 9 0" />
+                            <path d="M3 7a9 9 0 0 1 9 0v13" />
+                            <path d="M21 7v6" />
+                            <path d="M18 10l3 -3l3 3" />
+                        </svg>
+                        SVG;
+        },
+        'book-2' => static function (string $class): string {
+            return <<<SVG
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{$class}">
+                            <path d="M19 4v16h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12z" />
+                            <path d="M19 16h-12a2 2 0 0 0 -2 2" />
+                            <path d="M9 8h6" />
+                        </svg>
+                        SVG;
+        },
+        'smart-home' => static function (string $class): string {
+            return <<<SVG
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{$class}">
+                            <path d="M19 8.71l-5.333 -4.148a2.666 2.666 0 0 0 -3.274 0l-5.334 4.148a2.665 2.665 0 0 0 -1.059 2.13v6.979a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-6.979a2.665 2.665 0 0 0 -1.059 -2.13" />
+                            <path d="M9 15a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4h-6v-4z" />
+                        </svg>
+                        SVG;
+        },
+        'settings-2' => static function (string $class): string {
+            return <<<SVG
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{$class}">
+                            <path d="M19.875 6.27a2.225 2.225 0 0 1 1.125 1.948v7.284c0 .809 -.443 1.555 -1.158 1.948l-6.75 4.27a2.269 2.269 0 0 1 -2.184 0l-6.75 -4.27a2.225 2.225 0 0 1 -1.158 -1.948v-7.285c0 -.809 .443 -1.554 1.158 -1.947l6.75 -4.27a2.269 2.269 0 0 1 2.184 0l6.75 4.27z" />
+                            <path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
+                        </svg>
+                        SVG;
+        },
+        'database-import' => static function (string $class): string {
+            return <<<SVG
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{$class}">
+                            <path d="M4 6c0 1.657 3.582 3 8 3s8 -1.343 8 -3s-3.582 -3 -8 -3s-8 1.343 -8 3" />
+                            <path d="M4 6v6c0 1.657 3.582 3 8 3c.856 0 1.68 -.05 2.454 -.144" />
+                            <path d="M20 12v-6" />
+                            <path d="M4 12v6c0 1.657 3.582 3 8 3c.171 0 .341 -.003 .51 -.009" />
+                            <path d="M19 19m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
+                            <path d="M22 22l-1.5 -1.5" />
+                        </svg>
+                        SVG;
+        },
+        'database-export' => static function (string $class): string {
+            return <<<SVG
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{$class}">
+                            <path d="M4 6c0 1.657 3.582 3 8 3s8 -1.343 8 -3s-3.582 -3 -8 -3s-8 1.343 -8 3" />
+                            <path d="M4 6v6c0 1.657 3.582 3 8 3c.162 0 .324 -.004 .483 -.011" />
+                            <path d="M20 12v-6" />
+                            <path d="M4 12v6c0 1.657 3.582 3 8 3c.166 0 .331 -.005 .494 -.014" />
+                            <path d="M15 18h6" />
+                            <path d="M18 15l3 3l-3 3" />
+                        </svg>
+                        SVG;
+        },
+        'folders' => static function (string $class): string {
+            return <<<SVG
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{$class}">
+                            <path d="M9 4h3l2 2h5a2 2 0 0 1 2 2v7a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2" />
+                            <path d="M17 17v2a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2h2" />
+                        </svg>
+                        SVG;
+        },
     ];
 
     $renderer =

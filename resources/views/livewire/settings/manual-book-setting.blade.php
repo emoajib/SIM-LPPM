@@ -3,7 +3,7 @@
         <div class="d-flex align-items-center justify-content-between card-header">
             <h3 class="card-title">Manual Book</h3>
             <button type="button" class="btn btn-primary" wire:click='create'>
-                <i class="icon icon-tabler icon-tabler-plus"></i>
+                @include('components.layouts.partials.menu.icon', ['name' => 'plus', 'class' => 'icon'])
                 Tambah Manual Book
             </button>
         </div>
@@ -32,11 +32,11 @@
                             <td>
                                 @if($item->getFirstMedia('manual_book_file'))
                                     <span class="text-success">
-                                        <i class="icon icon-tabler icon-tabler-file-check"></i> Terupload
+                                        @include('components.layouts.partials.menu.icon', ['name' => 'file-check', 'class' => 'icon']) Terupload
                                     </span>
                                 @else
                                     <span class="text-muted">
-                                        <i class="icon icon-tabler icon-tabler-book-off"></i> Tidak ada
+                                        @include('components.layouts.partials.menu.icon', ['name' => 'book-off', 'class' => 'icon']) Tidak ada
                                     </span>
                                 @endif
                             </td>
@@ -44,7 +44,11 @@
                                     <button class="btn btn-sm {{ $item->status === 'active' ? 'btn-success' : 'btn-secondary' }}"
                                         wire:click="toggleStatus('{{ $item->id }}')"
                                         wire:confirm="Ubah status manual book ini?">
-                                        <i class="icon icon-tabler {{ $item->status === 'active' ? 'icon-tabler-toggle-right' : 'icon-tabler-toggle-left' }} me-1"></i>
+                                        @if($item->status === 'active')
+                                            @include('components.layouts.partials.menu.icon', ['name' => 'toggle-right', 'class' => 'icon me-1'])
+                                        @else
+                                            @include('components.layouts.partials.menu.icon', ['name' => 'toggle-left', 'class' => 'icon me-1'])
+                                        @endif
                                         {{ $item->status === 'active' ? 'Aktif' : 'Nonaktif' }}
                                     </button>
                             </td>
@@ -52,11 +56,11 @@
                                 <div class="btn-list">
                                     <button type="button" class="btn-outline-warning btn btn-sm"
                                         wire:click="edit('{{ $item->id }}')">
-                                        <i class="icon icon-tabler icon-tabler-edit me-1"></i>Edit
+                                        @include('components.layouts.partials.menu.icon', ['name' => 'edit', 'class' => 'icon me-1'])Edit
                                     </button>
                                     <button type="button" class="btn-outline-danger btn btn-sm"
                                         wire:click="confirmDelete('{{ $item->id }}')" wire:loading.attr="disabled">
-                                        <i class="icon icon-tabler icon-tabler-trash me-1"></i>Hapus
+                                        @include('components.layouts.partials.menu.icon', ['name' => 'trash', 'class' => 'icon me-1'])Hapus
                                     </button>
                                 </div>
                             </td>
@@ -136,7 +140,7 @@
                         <div class="mb-2 p-2 border rounded">
                             <div class="d-flex align-items-center justify-content-between">
                                 <div>
-                                    <i class="icon icon-tabler icon-tabler-file-check text-success me-1"></i>
+                                    @include('components.layouts.partials.menu.icon', ['name' => 'file-check', 'class' => 'icon text-success me-1'])
                                     <span class="small">{{ $existingFile['name'] }}</span>
                                     <span class="text-muted small ms-2">
                                         ({{ number_format($existingFile['size'] / 1024, 1) }} KB)
@@ -144,7 +148,7 @@
                                 </div>
                                 <button type="button" class="btn btn-sm btn-outline-danger"
                                     wire:click="removeFile" wire:confirm="Hapus file ini?">
-                                    <i class="icon icon-tabler icon-tabler-trash"></i>
+                                    @include('components.layouts.partials.menu.icon', ['name' => 'trash', 'class' => 'icon'])
                                 </button>
                             </div>
                         </div>
@@ -152,7 +156,7 @@
                     <input type="file" wire:model="file" class="form-control" accept=".pdf">
                     <small class="text-muted">Format: PDF, maks 10 MB</small>
                     <div wire:loading wire:target="file" class="text-info small mt-1">
-                        <i class="icon icon-tabler icon-tabler-loader icon-spin"></i> Mengupload...
+                        @include('components.layouts.partials.menu.icon', ['name' => 'loader', 'class' => 'icon icon-spin']) Mengupload...
                     </div>
                     @error('file')
                         <div class="d-block invalid-feedback">{{ $message }}</div>
