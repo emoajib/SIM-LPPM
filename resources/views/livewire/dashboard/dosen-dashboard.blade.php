@@ -1,6 +1,7 @@
+{{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
 <div>
-    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
-    <div class="d-flex justify-content-end mb-4">
+    <!-- Year Filter Bar -->
+    <div class="d-flex justify-content-end mb-3">
         <div class="dropdown">
             <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2"
                 data-bs-toggle="dropdown">
@@ -18,123 +19,113 @@
         </div>
     </div>
 
-    <div class="row row-cards">
-        <!-- Kolom Kiri: Main Stats, Banner & Chart (75% lebar di Desktop) -->
-        <div class="col-lg-9 col-12 d-flex flex-column gap-4">
-            <!-- Greeting Card Banner -->
-            <div class="bima-welcome-card p-4 position-relative">
-                <div class="row align-items-center">
-                    <div class="col-md-8 col-12">
-                        <div class="text-white-50 small fw-bold mb-2">
-                            <i class="ti ti-calendar me-1"></i>
-                            {{ \Carbon\Carbon::now()->isoFormat('D MMMM Y') }}
-                        </div>
-                        <h1 class="text-white fw-bold mb-1">Selamat Datang, {{ auth()->user()->name }}!</h1>
-                        <p class="text-white-50 mb-0">Have a nice {{ \Carbon\Carbon::now()->isoFormat('dddd') }}! Kelola usulan, publikasi, dan kolaborasi riset Anda di SIM-LPPM.</p>
-                    </div>
-                </div>
-                <img src="{{ asset(auth()->user()->isFemale() ? 'images/dashboard_avatar_female.png' : 'images/dashboard_avatar_male.png') }}" class="bima-welcome-avatar" alt="Lecturer Avatar">
+    <!-- Main Grid Content -->
+    <div class="dash-grid pt-0">
+        <!-- Left Side: Welcome Banner, Stat Cards, Chart, and Recent Tables -->
+        <div>
+            <!-- Welcome Banner (No avatar) -->
+            <div class="welcome">
+                <span class="welcome-date">📅 {{ \Carbon\Carbon::now()->isoFormat('D MMMM Y') }}</span>
+                <h2>Selamat Datang, {{ auth()->user()->name }} !</h2>
+                <p>Have a nice {{ \Carbon\Carbon::now()->isoFormat('dddd') }}!</p>
             </div>
 
-            <!-- Premium Stat Cards (Grid of 4) -->
+            <!-- Stat Cards Grid (4 Cards) -->
+            <div class="stat-grid">
+                <!-- Penelitian -->
+                <div class="stat-card pink">
+                    <div class="stat-left">
+                        <div class="stat-num">{{ $stats['my_research'] }}</div>
+                        <div class="stat-lbl">Penelitian</div>
+                        <div class="stat-sub">Didanai oleh Simlitabmas/SIM LPPM</div>
+                    </div>
+                    <div class="stat-ico">🔍</div>
+                </div>
+
+                <!-- Pengabdian -->
+                <div class="stat-card teal">
+                    <div class="stat-left">
+                        <div class="stat-num">{{ $stats['my_community_service'] }}</div>
+                        <div class="stat-lbl">Pengabdian</div>
+                        <div class="stat-sub">Didanai oleh Simlitabmas/SIM LPPM</div>
+                    </div>
+                    <div class="stat-ico">📋</div>
+                </div>
+
+                <!-- Skema Penelitian (Purple) -->
+                <div class="stat-card purple">
+                    <div class="stat-left">
+                        <div class="stat-num">{{ $stats['research_schemes_count'] }}</div>
+                        <div class="stat-lbl">Skema Penelitian</div>
+                        <div class="stat-sub">Terdaftar di SIM-LPPM</div>
+                    </div>
+                    <div class="stat-ico">🔬</div>
+                </div>
+
+                <!-- Skema PKM (Green) -->
+                <div class="stat-card green">
+                    <div class="stat-left">
+                        <div class="stat-num">{{ $stats['community_service_schemes_count'] }}</div>
+                        <div class="stat-lbl">Skema PKM</div>
+                        <div class="stat-sub">Terdaftar di SIM-LPPM</div>
+                    </div>
+                    <div class="stat-ico">📦</div>
+                </div>
+            </div>
+
+            <!-- Chart Section -->
+            <div class="chart-box mb-4">
+                <div class="chart-title">Penelitian & Pengabdian</div>
+                <div class="legend mb-3">
+                    <span><span class="ldot" style="background:#206bc4"></span>Usulan</span>
+                    <span><span class="ldot" style="background:#2fb344"></span>Didanai</span>
+                </div>
+                <div style="position: relative; height: 220px; width: 100%;" wire:ignore>
+                    <canvas id="dosenAnalyticsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Recent Proposal Tables (Left Column Bottom) -->
             <div class="row g-3">
-                <!-- Penelitian Card -->
-                <div class="col-sm-6 col-md-3">
-                    <div class="bima-stat-card bima-card-penelitian p-3">
-                        <div class="h2 fw-bold mb-1 text-white">{{ $stats['my_research'] }}</div>
-                        <div class="fw-bold small mb-1 text-white">Penelitian</div>
-                        <div class="text-white-50 small" style="font-size: 0.72rem;">Didanai oleh Simlitabmas/BIMA</div>
-                        <div class="bima-stat-icon-wrapper">
-                            <i class="ti ti-search text-white"></i>
-                        </div>
-                    </div>
-                </div>
-                <!-- Pengabdian Card -->
-                <div class="col-sm-6 col-md-3">
-                    <div class="bima-stat-card bima-card-pengabdian p-3">
-                        <div class="h2 fw-bold mb-1 text-white">{{ $stats['my_community_service'] }}</div>
-                        <div class="fw-bold small mb-1 text-white">Pengabdian</div>
-                        <div class="text-white-50 small" style="font-size: 0.72rem;">Didanai oleh Simlitabmas/BIMA</div>
-                        <div class="bima-stat-icon-wrapper">
-                            <i class="ti ti-file-text text-white"></i>
-                        </div>
-                    </div>
-                </div>
-                <!-- Skema Penelitian Card -->
-                <div class="col-sm-6 col-md-3">
-                    <div class="bima-stat-card bima-card-konsorsium p-3">
-                        <div class="h2 fw-bold mb-1 text-white">{{ $stats['research_schemes_count'] }}</div>
-                        <div class="fw-bold small mb-1 text-white">Skema Penelitian</div>
-                        <div class="text-white-50 small" style="font-size: 0.72rem;">Terdaftar di SIM-LPPM</div>
-                        <div class="bima-stat-icon-wrapper">
-                            <i class="ti ti-hierarchy text-white"></i>
-                        </div>
-                    </div>
-                </div>
-                <!-- Skema PKM Card -->
-                <div class="col-sm-6 col-md-3">
-                    <div class="bima-stat-card bima-card-prototipe p-3">
-                        <div class="h2 fw-bold mb-1 text-white">{{ $stats['community_service_schemes_count'] }}</div>
-                        <div class="fw-bold small mb-1 text-white">Skema PKM</div>
-                        <div class="text-white-50 small" style="font-size: 0.72rem;">Terdaftar di SIM-LPPM</div>
-                        <div class="bima-stat-icon-wrapper">
-                            <i class="ti ti-box text-white"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Trend Line Chart -->
-            <div>
-                <x-dashboard.analytics-chart
-                    type="line"
-                    title="Tren Pengajuan Usulan (5 Tahun Terakhir)"
-                    :labels="$chartData['labels']"
-                    :datasets="$chartData['datasets']"
-                />
-            </div>
-
-            <!-- Tables Section (Penelitian & PKM Terbaru) -->
-            <div class="row row-cards">
-                <div class="col-lg-6">
-                    <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+                <div class="col-md-6 col-12">
+                    <div class="card border-0 shadow-sm" style="border-radius: 10px; border: 1px solid #e5e7eb;">
                         <div class="card-header bg-transparent border-0 py-3 d-flex align-items-center">
                             <div class="avatar bg-primary-lt text-primary shadow-sm avatar-sm me-3 border-0">
                                 <i class="ti ti-flask-2"></i>
                             </div>
-                            <h3 class="card-title fw-bold mb-0">Penelitian Terbaru</h3>
+                            <h3 class="card-title fw-bold mb-0" style="font-size: 13px;">Penelitian Terbaru</h3>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-vcenter card-table table-hover table-borderless">
                                 <thead class="bg-transparent text-muted">
                                     <tr>
-                                        <th class="ps-4">Judul</th>
-                                        <th class="text-center">Status</th>
-                                        <th class="text-end pe-4">Waktu</th>
+                                        <th class="ps-4" style="font-size: 11px;">Judul</th>
+                                        <th class="text-center" style="font-size: 11px;">Status</th>
+                                        <th class="text-end pe-4" style="font-size: 11px;">Waktu</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @forelse($recentResearch as $research)
                                         <tr>
-                                            <td class="ps-4">
+                                            <td class="ps-4" style="font-size: 12px;">
                                                 <div class="fw-bold text-wrap lh-base" title="{{ $research->title }}">
                                                     {{ $research->title }}
                                                 </div>
-                                                <div class="small text-muted mt-1">
+                                                <div class="small text-muted mt-1" style="font-size: 10.5px;">
                                                     Skema: {{ $research->researchScheme?->name ?? '-' }}
                                                 </div>
                                             </td>
-                                            <td class="text-center">
+                                            <td class="text-center" style="font-size: 12px;">
                                                 <span class="badge bg-{{ $research->status->color() }}-lt fw-bold px-2 py-1"><span
                                                         class="badge bg-{{ $research->status->color() }} me-1"></span>{{ $research->status->label() }}</span>
                                             </td>
-                                            <td class="text-end pe-4 text-muted small">
+                                            <td class="text-end pe-4 text-muted small" style="font-size: 10.5px;">
                                                 {{ $research->created_at->diffForHumans() }}
                                             </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="3" class="text-center py-5 text-muted">Belum ada penelitian</td>
+                                            <td colspan="3" class="text-center py-5 text-muted" style="font-size: 12px;">Belum ada penelitian</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
@@ -143,46 +134,46 @@
                     </div>
                 </div>
 
-                <div class="col-lg-6">
-                    <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+                <div class="col-md-6 col-12">
+                    <div class="card border-0 shadow-sm" style="border-radius: 10px; border: 1px solid #e5e7eb;">
                         <div class="card-header bg-transparent border-0 py-3 d-flex align-items-center">
                             <div class="avatar bg-azure-lt text-azure shadow-sm avatar-sm me-3 border-0">
                                 <i class="ti ti-users-group"></i>
                             </div>
-                            <h3 class="card-title fw-bold mb-0">PKM Terbaru</h3>
+                            <h3 class="card-title fw-bold mb-0" style="font-size: 13px;">PKM Terbaru</h3>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-vcenter card-table table-hover table-borderless">
                                 <thead class="bg-transparent text-muted">
                                     <tr>
-                                        <th class="ps-4">Judul</th>
-                                        <th class="text-center">Status</th>
-                                        <th class="text-end pe-4">Waktu</th>
+                                        <th class="ps-4" style="font-size: 11px;">Judul</th>
+                                        <th class="text-center" style="font-size: 11px;">Status</th>
+                                        <th class="text-end pe-4" style="font-size: 11px;">Waktu</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @forelse($recentCommunityService as $communityService)
                                         <tr>
-                                            <td class="ps-4">
+                                            <td class="ps-4" style="font-size: 12px;">
                                                 <div class="fw-bold text-wrap lh-base" title="{{ $communityService->title }}">
                                                     {{ $communityService->title }}
                                                 </div>
-                                                <div class="small text-muted mt-1">
+                                                <div class="small text-muted mt-1" style="font-size: 10.5px;">
                                                     Skema: {{ $communityService->communityServiceScheme?->name ?? '-' }}
                                                 </div>
                                             </td>
-                                            <td class="text-center">
+                                            <td class="text-center" style="font-size: 12px;">
                                                 <span
                                                     class="badge bg-{{ $communityService->status->color() }}-lt fw-bold px-2 py-1"><span
                                                         class="badge bg-{{ $communityService->status->color() }} me-1"></span>{{ $communityService->status->label() }}</span>
                                             </td>
-                                            <td class="text-end pe-4 text-muted small">
+                                            <td class="text-end pe-4 text-muted small" style="font-size: 10.5px;">
                                                 {{ $communityService->created_at->diffForHumans() }}
                                             </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="3" class="text-center py-5 text-muted">Belum ada PKM</td>
+                                            <td colspan="3" class="text-center py-5 text-muted" style="font-size: 12px;">Belum ada PKM</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
@@ -193,133 +184,118 @@
             </div>
         </div>
 
-        <!-- Kolom Kanan: Profile & Quick Links (25% lebar di Desktop) -->
-        <div class="col-lg-3 col-12 d-flex flex-column gap-4">
-            <!-- Widget Profil Saya -->
-            <div class="card bima-profile-card">
-                <div class="card-header bg-transparent border-0 py-3 d-flex align-items-center justify-content-between">
-                    <h3 class="card-title fw-bold text-dark mb-0">Profil Saya</h3>
+        <!-- Right Side: Sidebar Panel -->
+        <div class="sidebar">
+            <!-- Profil Saya Card -->
+            <div class="s-card">
+                <div class="s-head">
+                    <span>Profil Saya</span>
                     <div class="d-flex align-items-center gap-1">
                         @if(auth()->user()->identity?->sinta_id)
                             <button wire:click.prevent="syncSinta" wire:loading.attr="disabled"
-                                class="btn btn-icon btn-ghost-primary btn-sm rounded-circle"
-                                title="Sinkronkan Data SINTA">
+                                class="btn btn-icon btn-sm text-white bg-transparent border-0 p-0 me-1"
+                                title="Sinkronkan Data SINTA" style="font-size: 12px;">
                                 <i wire:loading.remove class="ti ti-refresh"></i>
                                 <div wire:loading class="spinner-border spinner-border-sm" role="status"></div>
                             </button>
                         @endif
-                        <button wire:click.prevent="openEditMetricsModal" class="btn btn-icon btn-ghost-secondary btn-sm rounded-circle" title="Edit Metrik Publikasi">
-                            <i class="ti ti-pencil"></i>
-                        </button>
+                        <span style="cursor:pointer; font-size: 12px;" wire:click.prevent="openEditMetricsModal">✏️</span>
                     </div>
                 </div>
-                <div class="card-body pt-0 text-center">
-                    <div class="avatar avatar-xl mb-3 rounded-circle shadow-sm bg-primary-lt">
-                        {{ substr(auth()->user()->name, 0, 2) }}
-                    </div>
-                    <h4 class="fw-bold mb-1 text-dark">{{ auth()->user()->name }}</h4>
-                    <p class="text-muted small mb-2">{{ auth()->user()->identity?->studyProgram?->name ?? 'Teknologi Informasi' }}</p>
-                    <div class="d-flex justify-content-center mb-3">
-                        <span class="badge bg-green-lt fw-bold px-3 py-1">Aktif Mengajar</span>
-                    </div>
-                    
-                    <hr class="my-3">
-                    
-                    <div class="row text-center g-2">
-                        <div class="col-4">
-                            <a href="{{ auth()->user()->identity?->sinta_id ? auth()->user()->identity->getSintaUrl() : 'https://sinta.kemdikbud.go.id/authors' }}" target="_blank" class="text-decoration-none d-block">
-                                <div class="h3 fw-bold text-primary mb-0">
-                                    {{ number_format(auth()->user()->identity?->sinta_score_v3_overall ?? 0, 0, ',', '.') }}
-                                </div>
-                                <div class="text-muted" style="font-size: 0.7rem;">Sinta Score</div>
-                            </a>
+                
+                <div class="s-body">
+                    <div class="av-row">
+                        <div class="av">
+                            @if (auth()->user()->profile_picture)
+                                <img src="{{ auth()->user()->profile_picture }}" style="width:100%; height:100%; object-fit:cover;">
+                            @else
+                                👤
+                            @endif
                         </div>
-                        <div class="col-4 border-start border-end">
-                            <div class="h3 fw-bold text-dark mb-0">
-                                {{ auth()->user()->identity?->last_education ?? 'S2' }}
+                        <div style="min-width:0">
+                            <div class="av-name">{{ auth()->user()->name }}</div>
+                            <div class="av-dept">
+                                {{ auth()->user()->identity?->studyProgram?->name ?? 'Teknologi Informasi' }}<br>
+                                ITSNU Pekalongan
                             </div>
-                            <div class="text-muted" style="font-size: 0.7rem;">Pendidikan</div>
+                            <span class="badge-aktif">Aktif Mengajar</span>
                         </div>
-                        <div class="col-4">
-                            <div class="h3 fw-bold text-dark mb-0 text-truncate px-1" style="font-size: 0.85rem; font-weight: 700;" title="{{ auth()->user()->identity?->functional_position ?? 'Lektor' }}">
-                                {{ auth()->user()->identity?->functional_position ?? 'Lektor' }}
-                            </div>
-                            <div class="text-muted" style="font-size: 0.7rem;">Jabatan</div>
+                    </div>
+
+                    <div class="stats-row">
+                        <div class="st-item">
+                            <div class="st-val">{{ number_format(auth()->user()->identity?->sinta_score_v3_overall ?? 0, 0, ',', '.') }}</div>
+                            <div class="st-lbl">Sinta Score<br>overall</div>
+                        </div>
+                        <div class="st-item">
+                            <div class="st-val">{{ auth()->user()->identity?->last_education ?? 'S2' }}</div>
+                            <div class="st-lbl">Jenjang<br>Pendidikan</div>
+                        </div>
+                        <div class="st-item">
+                            <div class="st-val" style="color:#d97706">{{ auth()->user()->identity?->functional_position ?? 'Lektor' }}</div>
+                            <div class="st-lbl">Jabatan<br>Akademik</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Widget Riwayat Usulan -->
-            <div class="card bima-riwayat-card">
-                <div class="card-header bg-transparent border-0 py-3">
-                    <h3 class="card-title fw-bold text-dark mb-0">Riwayat Usulan</h3>
-                </div>
-                <div class="card-body pt-0">
-                    <!-- Penelitian -->
-                    <div class="mb-3">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="fw-bold text-dark small">Penelitian</span>
-                            <a href="{{ route('research.proposal.index') }}" class="small text-primary text-decoration-none">more..</a>
+            <!-- Riwayat Usulan Card -->
+            <div class="s-card">
+                <div class="s-head">Riwayat Usulan</div>
+                <div class="rw-body">
+                    <div class="rw-group">
+                        <div class="rw-cat">
+                            <span class="rw-cat-lbl">Penelitian</span>
+                            <a href="{{ route('research.proposal.index') }}" class="rw-more text-decoration-none">more...</a>
                         </div>
-                        <ul class="list-unstyled mb-0">
-                            @forelse($recentResearch->take(2) as $research)
-                                <li class="text-truncate small mb-1" style="max-width: 100%;" title="{{ $research->title }}">
-                                    <i class="ti ti-dot text-primary"></i>
-                                    {{ $research->title }}
-                                </li>
-                            @empty
-                                <li class="text-muted small">Tidak ada</li>
-                            @endforelse
-                        </ul>
+                        @forelse($recentResearch->take(2) as $research)
+                            <div class="rw-item text-truncate mb-1" title="{{ $research->title }}">
+                                {{ $research->title }}
+                            </div>
+                        @empty
+                            <div class="rw-none">Tidak ada</div>
+                        @endforelse
                     </div>
 
-                    <!-- Pengabdian -->
-                    <div class="mb-3">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="fw-bold text-dark small">Pengabdian kepada Masyarakat</span>
-                            <a href="{{ route('community-service.proposal.index') }}" class="small text-primary text-decoration-none">more..</a>
+                    <div class="rw-group">
+                        <div class="rw-cat">
+                            <span class="rw-cat-lbl">Pengabdian Masyarakat</span>
+                            <a href="{{ route('community-service.proposal.index') }}" class="rw-more text-decoration-none">more...</a>
                         </div>
-                        <ul class="list-unstyled mb-0">
-                            @forelse($recentCommunityService->take(2) as $communityService)
-                                <li class="text-truncate small mb-1" style="max-width: 100%;" title="{{ $communityService->title }}">
-                                    <i class="ti ti-dot text-cyan"></i>
-                                    {{ $communityService->title }}
-                                </li>
-                            @empty
-                                <li class="text-muted small">Tidak ada</li>
-                            @endforelse
-                        </ul>
+                        @forelse($recentCommunityService->take(2) as $communityService)
+                            <div class="rw-item text-truncate mb-1" title="{{ $communityService->title }}">
+                                {{ $communityService->title }}
+                            </div>
+                        @empty
+                            <div class="rw-none">Tidak ada</div>
+                        @endforelse
                     </div>
 
-                    <!-- Skema Penelitian -->
-                    <div class="mb-3">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="fw-bold text-dark small">Skema Penelitian</span>
-                            <span class="small text-muted">more..</span>
+                    <div class="rw-group">
+                        <div class="rw-cat">
+                            <span class="rw-cat-lbl">Skema Penelitian</span>
+                            <span class="rw-more text-muted" style="cursor:default">more...</span>
                         </div>
-                        <ul class="list-unstyled mb-0">
-                            <li class="text-muted small">Terdaftar di SIM-LPPM</li>
-                        </ul>
+                        <div class="rw-item">
+                            Terdaftar di SIM-LPPM
+                        </div>
                     </div>
 
-                    <!-- Skema PKM -->
-                    <div>
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="fw-bold text-dark small">Skema PKM</span>
-                            <span class="small text-muted">more..</span>
+                    <div class="rw-group">
+                        <div class="rw-cat">
+                            <span class="rw-cat-lbl">Skema PKM</span>
+                            <span class="rw-more text-muted" style="cursor:default">more...</span>
                         </div>
-                        <ul class="list-unstyled mb-0">
-                            <li class="text-muted small">Terdaftar di SIM-LPPM</li>
-                        </ul>
+                        <div class="rw-item">
+                            Terdaftar di SIM-LPPM
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-
-    <!-- Modal Modal Form Update Metrik -->
+    <!-- Modal Form Update Metrik -->
     <div class="modal modal-blur fade @if($showEditMetricsModal) show @endif" id="modal-edit-metrics" tabindex="-1"
         role="dialog" aria-hidden="true" style="@if($showEditMetricsModal) display: block; @endif">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -421,3 +397,86 @@
         <div class="modal-backdrop fade show"></div>
     @endif
 </div>
+
+<!-- Chart Script -->
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('livewire:navigated', function () {
+        initDosenChart();
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        initDosenChart();
+    });
+
+    function initDosenChart() {
+        const canvas = document.getElementById('dosenAnalyticsChart');
+        if (!canvas) return;
+        
+        const chartData = @js($chartData);
+        if (!chartData || !chartData.labels) return;
+
+        const ctx = canvas.getContext('2d');
+        
+        // Destroy existing chart instance if exists
+        const existingChart = Chart.getChart(canvas);
+        if (existingChart) {
+            existingChart.destroy();
+        }
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartData.labels,
+                datasets: chartData.datasets.map(ds => ({
+                    ...ds,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }))
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false // We show a custom HTML legend
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(30, 41, 59, 0.9)',
+                        padding: 10,
+                        cornerRadius: 8
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#9ca3af',
+                            font: {
+                                size: 10
+                            }
+                        }
+                    },
+                    y: {
+                        grid: {
+                            color: 'rgba(229, 231, 235, 0.5)'
+                        },
+                        ticks: {
+                            color: '#9ca3af',
+                            font: {
+                                size: 10
+                            },
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+@endpush
