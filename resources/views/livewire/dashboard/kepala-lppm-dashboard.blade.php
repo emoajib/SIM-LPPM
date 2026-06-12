@@ -515,7 +515,7 @@
                                                 </span>
                                             </td>
                                             <td class="text-end pe-4 text-muted small">
-                                                {{ $communityService->created_at->format('d/m/Y') }}
+                                                {{ $communityService->updated_at->format('d/m/Y H:i') }}
                                             </td>
                                         </tr>
                                     @empty
