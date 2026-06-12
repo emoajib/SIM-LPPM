@@ -162,6 +162,7 @@
                 </div>
             </div>
         </div>
+        </div>
     @endif
 
     <!-- Reviewer KPI Rails -->

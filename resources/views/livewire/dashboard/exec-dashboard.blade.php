@@ -357,6 +357,7 @@
                 </div>
             </div>
         </div>
+        </div>
     @endif
 
     <!-- Process Monitoring (Progress Styles) -->
