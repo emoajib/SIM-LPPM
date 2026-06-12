@@ -130,13 +130,40 @@
                                          data: {
                                              labels: data.labels,
                                              datasets: data.datasets.map(function(ds) {
-                                                 return { label: ds.label, data: ds.data, borderColor: ds.borderColor, backgroundColor: ds.backgroundColor, fill: true, tension: 0.4, pointRadius: 4, pointHoverRadius: 6 };
+                                                 return { 
+                                                     label: ds.label, 
+                                                     data: ds.data, 
+                                                     borderColor: ds.borderColor, 
+                                                     backgroundColor: ds.backgroundColor, 
+                                                     fill: true, 
+                                                     tension: 0.4, 
+                                                     pointRadius: 5, 
+                                                     pointHoverRadius: 9, 
+                                                     pointHoverBorderWidth: 3, 
+                                                     pointHoverBorderColor: '#ffffff' 
+                                                 };
                                              }),
                                          },
                                          options: {
-                                             responsive: true, maintainAspectRatio: false,
+                                             responsive: true, 
+                                             maintainAspectRatio: false,
                                              animation: { duration: isReinit ? 0 : 800 },
-                                             plugins: { legend: { display: true, position: 'bottom' }, tooltip: { backgroundColor: 'rgba(30,41,59,0.9)', padding: 10, cornerRadius: 8 } },
+                                             hover: { mode: 'index', intersect: false },
+                                             plugins: {
+                                                 legend: { display: true, position: 'bottom' },
+                                                 tooltip: {
+                                                     enabled: true,
+                                                     backgroundColor: 'rgba(30,41,59,0.95)',
+                                                     padding: 12, 
+                                                     cornerRadius: 8,
+                                                     titleFont: { weight: 'bold', size: 13 },
+                                                     bodyFont: { size: 12 },
+                                                     callbacks: {
+                                                         title: function(items) { return 'Tahun ' + items[0].label; },
+                                                         label: function(item) { return item.dataset.label + ': ' + item.formattedValue + ' proposal'; }
+                                                     }
+                                                 }
+                                             },
                                              scales: {
                                                  x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 10 } } },
                                                  y: { grid: { color: 'rgba(229,231,235,0.5)' }, ticks: { color: '#9ca3af', font: { size: 10 }, stepSize: 1 } },

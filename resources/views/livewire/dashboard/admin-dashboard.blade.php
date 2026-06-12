@@ -258,19 +258,28 @@
                                          this.chart.destroy();
                                          this.chart = null;
                                      }
-                                     if (typeof ChartDataLabels !== 'undefined' && !Chart.registry.plugins.get('datalabels')) {
-                                         Chart.register(ChartDataLabels);
-                                     }
                                      this.chart = new Chart(ctx, {
                                          type: 'line',
                                          data: {
                                              labels: data.labels,
                                              datasets: data.datasets.map(function(ds) {
-                                                 return { label: ds.label, data: ds.data, borderColor: ds.borderColor, backgroundColor: ds.backgroundColor, fill: true, tension: 0.4, pointRadius: 5, pointHoverRadius: 9, pointHoverBorderWidth: 3, pointHoverBorderColor: '#ffffff' };
+                                                 return { 
+                                                     label: ds.label, 
+                                                     data: ds.data, 
+                                                     borderColor: ds.borderColor, 
+                                                     backgroundColor: ds.backgroundColor, 
+                                                     fill: true, 
+                                                     tension: 0.4, 
+                                                     pointRadius: 5, 
+                                                     pointHoverRadius: 9, 
+                                                     pointHoverBorderWidth: 3, 
+                                                     pointHoverBorderColor: '#ffffff' 
+                                                 };
                                              }),
                                          },
                                          options: {
-                                             responsive: true, maintainAspectRatio: false,
+                                             responsive: true, 
+                                             maintainAspectRatio: false,
                                              animation: { duration: isReinit ? 0 : 800 },
                                              hover: { mode: 'index', intersect: false },
                                              plugins: {
@@ -278,25 +287,14 @@
                                                  tooltip: {
                                                      enabled: true,
                                                      backgroundColor: 'rgba(30,41,59,0.95)',
-                                                     padding: 12, cornerRadius: 8,
+                                                     padding: 12, 
+                                                     cornerRadius: 8,
                                                      titleFont: { weight: 'bold', size: 13 },
                                                      bodyFont: { size: 12 },
                                                      callbacks: {
                                                          title: function(items) { return 'Tahun ' + items[0].label; },
                                                          label: function(item) { return item.dataset.label + ': ' + item.formattedValue + ' proposal'; }
                                                      }
-                                                 },
-                                                 datalabels: {
-                                                     display: function(context) {
-                                                         return context.dataset.data[context.dataIndex] > 0;
-                                                     },
-                                                     color: function(context) {
-                                                         return context.dataset.borderColor;
-                                                     },
-                                                     font: { weight: 'bold', size: 11 },
-                                                     anchor: 'end',
-                                                     align: 'end',
-                                                     offset: 2
                                                  }
                                              },
                                              scales: {
