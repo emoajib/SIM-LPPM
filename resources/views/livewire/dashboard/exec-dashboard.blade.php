@@ -71,7 +71,7 @@
         </div>
 
         {{-- Filter Fakultas & Prodi (hanya untuk Rektor) --}}
-        @unless($this->isDekanRestricted())
+        @if(! $this->isDekanRestricted() && ! $this->isKaprodiRestricted())
             {{-- Filter Fakultas --}}
             <div class="dropdown">
                 <a href="#"
@@ -109,7 +109,7 @@
                     @endforeach
                 </div>
             </div>
-        @endunless
+        @endif
 
         {{-- Filter Skema Penelitian --}}
         <div class="dropdown">
@@ -259,6 +259,7 @@
                 title="Distribusi Topik Penelitian dan PKM" 
                 :labels="$topicsChartData['labels']" 
                 :datasets="$topicsChartData['datasets']" />
+        </div>
     </div>
     
     {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
