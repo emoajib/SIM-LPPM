@@ -74,7 +74,7 @@ class DefaultDashboard extends Component
         $this->recentResearch = Proposal::with(['submitter'])
             ->whereYear('created_at', $yearFilter)
             ->where('detailable_type', 'App\Models\Research')
-            ->latest()
+            ->latest('updated_at')
             ->limit(5)
             ->get();
 
@@ -82,7 +82,7 @@ class DefaultDashboard extends Component
         $this->recentCommunityService = Proposal::with(['submitter'])
             ->whereYear('created_at', $yearFilter)
             ->where('detailable_type', 'App\Models\CommunityService')
-            ->latest()
+            ->latest('updated_at')
             ->limit(5)
             ->get();
     }
