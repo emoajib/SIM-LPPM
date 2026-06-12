@@ -262,7 +262,9 @@
                                 Didanai
                             </span>
                         </div>
-                        <div class="card-body">
+                    </div>
+                    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                    <div class="card-body">
                         <div style="position:relative;height:250px;width:100%;"
                              wire:ignore
                              x-data="{
