@@ -27,7 +27,8 @@
                 setTimeout(() => this.initChart(labels, datasets), 100);
                 return;
             }
-            const ctx = this.$refs.canvas.getContext('2d');
+            const ctx = this.$refs.canvas?.getContext('2d');
+            if (!ctx) return;
             if (this.chart) {
                 this.chart.destroy();
             }
@@ -147,6 +148,9 @@
                     }
                 ]
             });
+        },
+        destroy() {
+            if (this.chart) { this.chart.destroy(); this.chart = null; }
         }
      }"
      x-init="initChart(@js($labels), @js($datasets))"

@@ -277,16 +277,20 @@
                     <div class="card-body">
                         <div style="position:relative;height:250px;width:100%;"
                              wire:ignore
-                             x-data='{
-                                chart: null,
-                                init() {
-                                    this.$nextTick(() => this.render(@json($chartData)));
-                                },
-                                render(data) {
-                                    if (!data || !data.labels || !data.labels.length) return;
-                                    if (typeof Chart === "undefined") { setTimeout(() => this.render(data), 100); return; }
-                                    const ctx = this.$refs.canvas.getContext("2d");
-                                    if (this.chart) this.chart.destroy();
+                              x-data='{
+                                 chart: null,
+                                 init() {
+                                     this.$nextTick(() => this.render(@json($chartData)));
+                                 },
+                                 destroy() {
+                                     if (this.chart) { this.chart.destroy(); this.chart = null; }
+                                 },
+                                 render(data) {
+                                     if (!data || !data.labels || !data.labels.length) return;
+                                     if (typeof Chart === "undefined") { setTimeout(() => this.render(data), 100); return; }
+                                     const ctx = this.$refs.canvas?.getContext("2d");
+                                     if (!ctx) return;
+                                     if (this.chart) this.chart.destroy();
                                     Chart.register(ChartDataLabels);
                                  this.chart = new Chart(ctx, {
                                         type: "line",
