@@ -273,10 +273,13 @@
                                     </div>
                                 </td>
                                 <td class="text-center">
+                                    @php
+                                        $reqReviewers = (int) \App\Models\Setting::get('reviewer_count_required', 1);
+                                    @endphp
                                     @if ($proposal->reviewers->count() === 0)
                                         <span class="badge bg-danger-lt">Belum Diplot</span>
-                                    @elseif ($proposal->reviewers->count() < 2)
-                                        <span class="badge bg-warning-lt">Kurang 1 Reviewer</span>
+                                    @elseif ($proposal->reviewers->count() < $reqReviewers)
+                                        <span class="badge bg-warning-lt">Kurang {{ $reqReviewers - $proposal->reviewers->count() }} Reviewer</span>
                                     @else
                                         <span class="badge bg-success-lt">Lengkap</span>
                                     @endif
