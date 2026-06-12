@@ -20,18 +20,27 @@
 <div class="card border-0 shadow-sm overflow-hidden h-100 hover-scale"
      x-data="{
         chart: null,
-        initChart(labels, datasets) {
+        initChart(labels, datasets, isReinit = false) {
             // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             if (!labels || !datasets) return;
             if (typeof Chart === 'undefined') {
-                setTimeout(() => this.initChart(labels, datasets), 100);
+                setTimeout(() => this.initChart(labels, datasets, isReinit), 100);
                 return;
             }
+            // Guard: if this component is being destroyed, skip
+            if (this._destroying) return;
+
             const ctx = this.$refs.canvas?.getContext('2d');
             if (!ctx) return;
             if (this.chart) {
                 this.chart.destroy();
+                this.chart = null;
             }
+            
+            // CRITICAL: On re-init (chart-updated), disable animation to prevent stale rAF callbacks
+            // that could fire after chart.ctx is nulled by destroy(). Animation on initial render only.
+            const animDuration = isReinit ? 0 : 800;
+
             this.chart = new Chart(ctx, {
                 type: '{{ $type }}',
                 data: {
@@ -48,7 +57,7 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     animation: {
-                        duration: 800,
+                        duration: animDuration,
                         easing: 'easeOutQuart'
                     },
                     transitions: {
@@ -103,70 +112,79 @@
                 },
                 plugins: [
                     {
-                        id: 'datalabels',
+                                id: 'datalabels',
                         afterDraw(chart) {
                             // Vetted by AI - Manual Review Required by Senior Engineer/Manager
-                            const { ctx } = chart;
-                            ctx.save();
-                            const visibleDatasetsCount = chart.data.datasets.filter((_, idx) => chart.isDatasetVisible(idx)).length;
-                            chart.data.datasets.forEach((dataset, i) => {
-                                if (!chart.isDatasetVisible(i)) return;
-                                const meta = chart.getDatasetMeta(i);
-                                meta.data.forEach((element, index) => {
-                                    const dataVal = dataset.data[index];
-                                    if (dataVal === undefined || dataVal === null || dataVal === 0) return;
-                                    
-                                    let x, y;
-                                    if (chart.config.type === 'doughnut') {
-                                        if (typeof element.getCenterPoint === 'function') {
-                                            const center = element.getCenterPoint();
-                                            x = center.x;
-                                            y = center.y;
+                            const ctx = chart.ctx;
+                            // CRITICAL: ctx CAN be null if chart was destroyed during a pending draw cycle
+                            // or if the canvas context was released. Guard EVERY usage.
+                            if (!ctx) return;
+                            try {
+                                ctx.save();
+                                const visibleDatasetsCount = chart.data.datasets.filter((_, idx) => chart.isDatasetVisible(idx)).length;
+                                chart.data.datasets.forEach((dataset, i) => {
+                                    if (!chart.isDatasetVisible(i)) return;
+                                    const meta = chart.getDatasetMeta(i);
+                                    meta.data.forEach((element, index) => {
+                                        const dataVal = dataset.data[index];
+                                        if (dataVal === undefined || dataVal === null || dataVal === 0) return;
+                                        
+                                        let x, y;
+                                        if (chart.config.type === 'doughnut') {
+                                            if (typeof element.getCenterPoint === 'function') {
+                                                const center = element.getCenterPoint();
+                                                x = center.x;
+                                                y = center.y;
+                                            } else {
+                                                return;
+                                            }
+                                            ctx.fillStyle = '#ffffff';
+                                            ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+                                            ctx.shadowBlur = 4;
+                                            ctx.font = 'bold 12px Inter, sans-serif';
                                         } else {
-                                            return;
+                                            x = element.x;
+                                            y = element.y - 8;
+                                            ctx.fillStyle = 'var(--tblr-body-color, #333)';
+                                            ctx.shadowBlur = 0;
+                                            // Vetted by AI - Adjust font size when multiple datasets are shown to avoid overlap
+                                            ctx.font = visibleDatasetsCount > 1 ? 'bold 9px Inter, sans-serif' : 'bold 11px Inter, sans-serif';
                                         }
-                                        ctx.fillStyle = '#ffffff';
-                                        ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
-                                        ctx.shadowBlur = 4;
-                                        ctx.font = 'bold 12px Inter, sans-serif';
-                                    } else {
-                                        x = element.x;
-                                        y = element.y - 8;
-                                        ctx.fillStyle = 'var(--tblr-body-color, #333)';
-                                        ctx.shadowBlur = 0;
-                                        // Vetted by AI - Adjust font size when multiple datasets are shown to avoid overlap
-                                        ctx.font = visibleDatasetsCount > 1 ? 'bold 9px Inter, sans-serif' : 'bold 11px Inter, sans-serif';
-                                    }
-                                    
-                                    ctx.textAlign = 'center';
-                                    ctx.textBaseline = 'middle';
-                                    ctx.fillText(dataVal, x, y);
+                                        
+                                        ctx.textAlign = 'center';
+                                        ctx.textBaseline = 'middle';
+                                        ctx.fillText(dataVal, x, y);
+                                    });
                                 });
-                            });
-                            ctx.restore();
+                                ctx.restore();
+                            } catch (e) {
+                                // Silently fail if canvas context is lost mid-draw
+                                console.warn('Chart datalabels draw error:', e);
+                            }
                         }
                     }
                 ]
             });
         },
         destroy() {
+            this._destroying = true;
             if (this.chart) { this.chart.destroy(); this.chart = null; }
         }
      }"
      x-init="initChart(@js($labels), @js($datasets))"
      @chart-updated.window="
         if ($event.detail.focusAreas && '{{ $title }}'.includes('Fokus')) {
-            initChart($event.detail.focusAreas.labels, $event.detail.focusAreas.datasets);
+            initChart($event.detail.focusAreas.labels, $event.detail.focusAreas.datasets, true);
         } else if ($event.detail.facultyPerformance && '{{ $title }}'.includes('Fakultas')) {
-            initChart($event.detail.facultyPerformance.labels, $event.detail.facultyPerformance.datasets);
+            initChart($event.detail.facultyPerformance.labels, $event.detail.facultyPerformance.datasets, true);
         } else if ($event.detail.scienceClusters && '{{ $title }}'.includes('Rumpun')) {
-            initChart($event.detail.scienceClusters.labels, $event.detail.scienceClusters.datasets);
+            initChart($event.detail.scienceClusters.labels, $event.detail.scienceClusters.datasets, true);
         } else if ($event.detail.tkt && '{{ $title }}'.includes('TKT')) {
-            initChart($event.detail.tkt.labels, $event.detail.tkt.datasets);
+            initChart($event.detail.tkt.labels, $event.detail.tkt.datasets, true);
         } else if ($event.detail.themes && '{{ $title }}'.includes('Tema')) {
-            initChart($event.detail.themes.labels, $event.detail.themes.datasets);
+            initChart($event.detail.themes.labels, $event.detail.themes.datasets, true);
         } else if ($event.detail.topics && '{{ $title }}'.includes('Topik')) {
-            initChart($event.detail.topics.labels, $event.detail.topics.datasets);
+            initChart($event.detail.topics.labels, $event.detail.topics.datasets, true);
         }
      "
      style="border-radius: 12px; position: relative; min-height: 320px;">

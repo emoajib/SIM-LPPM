@@ -465,7 +465,6 @@
 </div>
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener('livewire:navigated', function () {
         initDosenChart();
@@ -478,9 +477,13 @@
         if (!canvas) return;
         const chartData = @json($chartData);
         if (!chartData || !chartData.labels || !chartData.labels.length) return;
+        if (typeof Chart === 'undefined') { setTimeout(initDosenChart, 100); return; }
         const ctx = canvas.getContext('2d');
-        const existing = Chart.getChart(canvas);
-        if (existing) existing.destroy();
+        if (!ctx) return;
+        try {
+            const existing = Chart.getChart(canvas);
+            if (existing) existing.destroy();
+        } catch (e) { /* ignore if no existing chart */ }
         new Chart(ctx, {
             type: 'line',
             data: {
