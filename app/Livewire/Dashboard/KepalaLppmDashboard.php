@@ -691,7 +691,7 @@ class KepalaLppmDashboard extends Component
         $researchQuery->where('detailable_type', 'App\Models\Research');
         $this->applySchemeFilter($researchQuery, 'research');
 
-        $this->recentResearch = $researchQuery->latest()
+        $this->recentResearch = $researchQuery->latest('updated_at')
             ->take(10)
             ->get()
             ->values();
@@ -701,7 +701,7 @@ class KepalaLppmDashboard extends Component
         $csQuery->where('detailable_type', 'App\Models\CommunityService');
         $this->applySchemeFilter($csQuery, 'community_service');
 
-        $this->recentCommunityService = $csQuery->latest()
+        $this->recentCommunityService = $csQuery->latest('updated_at')
             ->take(10)
             ->get()
             ->values();
