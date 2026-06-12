@@ -32,8 +32,6 @@ class ReviewMonitoring extends Component
     {
         $this->reset(['search', 'typeFilter']);
         $this->resetPage();
-        // @phpstan-ignore-next-line
-        $media = $review->getFirstMedia('ba_monev');
     }
 
     #[Computed]
