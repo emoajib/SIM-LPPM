@@ -605,21 +605,64 @@ class ExecDashboard extends Component
         ];
     }
 
+    /**
+     * Apply common filters for trend chart (excluding year filter).
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     */
+    private function applyTrendFilters(Builder $query): Builder
+    {
+        if ($this->selectedStatus !== 'all') {
+            $query->where('status', $this->selectedStatus);
+        }
+
+        if ($this->isDekanRestricted()) {
+            $facultyId = $this->user->identity?->faculty_id;
+            if (! $facultyId) {
+                $query->whereRaw('1 = 0');
+            } else {
+                $query->whereHas('submitter.identity', fn ($q) => $q->where('faculty_id', $facultyId));
+            }
+        } elseif ($this->isKaprodiRestricted()) {
+            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            $studyProgram = StudyProgram::where('kaprodi_user_id', $this->user->id)->first();
+            if (! $studyProgram) {
+                $query->whereRaw('1 = 0');
+            } else {
+                $query->whereHas('submitter.identity', fn ($q) => $q->where('study_program_id', $studyProgram->id));
+            }
+        } else {
+            if ($this->selectedFaculty !== 'all') {
+                $query->whereHas('submitter.identity', fn ($q) => $q->where('faculty_id', $this->selectedFaculty));
+            }
+
+            if ($this->selectedProdi !== 'all') {
+                $query->whereHas('submitter.identity', fn ($q) => $q->where('study_program_id', $this->selectedProdi));
+            }
+        }
+
+        if ($this->selectedSemester !== 'all') {
+            $query->where('semester', $this->selectedSemester);
+        }
+
+        return $query;
+    }
+
     private function loadTrendChartData(): void
     {
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $currentYear = (int) date('Y');
         $startYear = $currentYear - 4;
         $years = range($startYear, $currentYear);
 
         $proposalsData = Proposal::query()
-            ->tap(fn ($q) => $this->applyCommonFilters($q))
-            ->whereYear('start_year', '>=', $startYear)
+            ->tap(fn ($q) => $this->applyTrendFilters($q))
+            ->where('start_year', '>=', $startYear)
             ->select([
-                DB::raw(sql_year('start_year').' as year'),
+                'start_year as year',
                 'status',
                 DB::raw('COUNT(*) as count'),
             ])
-            ->groupBy('year', 'status')
+            ->groupBy('start_year', 'status')
             ->get();
 
         $usulanData = [];
@@ -866,12 +909,13 @@ class ExecDashboard extends Component
         $waitingLppm = $proposalsThisYear->filter(fn ($p) => in_array($p->status->value ?? '', ['approved', 'reviewed']))->count();
 
         // 1. Review Status
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $totalReview = Proposal::whereIn('id', $proposalsThisYearIds)
-            ->whereIn('status', ['reviewed', 'approved', 'rejected', 'completed'])
+            ->whereIn('status', ['approved', 'waiting_reviewer', 'under_review', 'reviewed', 'revision_needed', 'completed', 'rejected'])
             ->count();
 
         $completedReview = Proposal::whereIn('id', $proposalsThisYearIds)
-            ->whereIn('status', ['approved', 'rejected', 'completed'])
+            ->whereIn('status', ['reviewed', 'revision_needed', 'completed', 'rejected'])
             ->count();
 
         // 2 & 3. activeProposals: Only funded proposals (approved/completed) require Monev, Reports, and Outputs

@@ -573,19 +573,20 @@ class AdminDashboard extends Component
 
     private function loadTrendChartData(): void
     {
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $currentYear = (int) date('Y');
         $startYear = $currentYear - 4;
         $years = range($startYear, $currentYear);
 
         $proposalsData = Proposal::query()
             ->tap(fn ($q) => $this->applyCommonFilters($q))
-            ->whereYear('start_year', '>=', $startYear)
+            ->where('start_year', '>=', $startYear)
             ->select([
-                DB::raw(sql_year('start_year').' as year'),
+                'start_year as year',
                 'status',
                 DB::raw('COUNT(*) as count'),
             ])
-            ->groupBy('year', 'status')
+            ->groupBy('start_year', 'status')
             ->get();
 
         $usulanData = [];
@@ -698,14 +699,13 @@ class AdminDashboard extends Component
         $waitingLppm = $proposalsThisYear->filter(fn ($p) => in_array($p->status->value ?? '', ['approved', 'reviewed']))->count();
 
         // 1. Review Status
-        // Total Review = Proposals that have progressed past submission (i.e. currently in review or decided)
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $totalReview = Proposal::whereIn('id', $proposalsThisYearIds)
-            ->whereIn('status', ['reviewed', 'approved', 'rejected', 'completed'])
+            ->whereIn('status', ['approved', 'waiting_reviewer', 'under_review', 'reviewed', 'revision_needed', 'completed', 'rejected'])
             ->count();
 
-        // Completed Review = Proposals that have a final decision
         $completedReview = Proposal::whereIn('id', $proposalsThisYearIds)
-            ->whereIn('status', ['approved', 'rejected', 'completed'])
+            ->whereIn('status', ['reviewed', 'revision_needed', 'completed', 'rejected'])
             ->count();
 
         // 2 & 3. activeProposals: Only funded proposals (approved/completed) require Monev, Reports, and Outputs
