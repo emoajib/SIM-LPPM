@@ -244,50 +244,43 @@
                     <div class="card-body">
                         <div style="position:relative;height:250px;width:100%;"
                              wire:ignore
-                              x-data='{
-                                  chart: null,
-                                  _destroying: false,
-                                  init() {
-                                      this.$nextTick(() => this.render(@json($chartData)));
-                                  },
-                                  destroy() {
-                                      this._destroying = true;
-                                      if (this.chart) { this.chart.destroy(); this.chart = null; }
-                                  },
-                                  render(data, isReinit = false) {
-                                      if (this._destroying) return;
-                                      if (!data || !data.labels || !data.labels.length) return;
-                                      if (typeof Chart === "undefined") { setTimeout(() => this.render(data, isReinit), 100); return; }
-                                      const ctx = this.$refs.canvas?.getContext("2d");
-                                      if (!ctx) return;
-                                      if (this.chart) { this.chart.destroy(); this.chart = null; }
-                                      // Register ChartDataLabels globally once (already done in app.js, but ensure it exists)
-                                      if (typeof ChartDataLabels !== "undefined" && !Chart.registry.plugins.get("datalabels")) {
-                                          Chart.register(ChartDataLabels);
-                                      }
-                                      this.chart = new Chart(ctx, {
-                                         type: "line",
+                             x-data="{}"
+                             x-init="
+                                 let chart = null;
+                                 let _destroying = false;
+                                 const renderTrendChart = (data, isReinit = false) => {
+                                     if (_destroying) return;
+                                     if (!data || !data.labels || !data.labels.length || !data.datasets || !data.datasets.length) return;
+                                     if (typeof Chart === 'undefined') { setTimeout(() => renderTrendChart(data, isReinit), 100); return; }
+                                     const ctx = document.querySelector('[x-ref=trend-canvas]')?.getContext('2d');
+                                     if (!ctx) return;
+                                     if (chart) { chart.destroy(); chart = null; }
+                                     if (typeof ChartDataLabels !== 'undefined' && !Chart.registry.plugins.get('datalabels')) {
+                                         Chart.register(ChartDataLabels);
+                                     }
+                                     chart = new Chart(ctx, {
+                                         type: 'line',
                                          data: {
                                              labels: data.labels,
                                              datasets: data.datasets.map(function(ds) {
-                                                 return { label: ds.label, data: ds.data, borderColor: ds.borderColor, backgroundColor: ds.backgroundColor, fill: true, tension: 0.4, pointRadius: 5, pointHoverRadius: 9, pointHoverBorderWidth: 3, pointHoverBorderColor: "#ffffff" };
+                                                 return { label: ds.label, data: ds.data, borderColor: ds.borderColor, backgroundColor: ds.backgroundColor, fill: true, tension: 0.4, pointRadius: 5, pointHoverRadius: 9, pointHoverBorderWidth: 3, pointHoverBorderColor: '#ffffff' };
                                              }),
                                          },
                                          options: {
                                              responsive: true, maintainAspectRatio: false,
                                              animation: { duration: isReinit ? 0 : 800 },
-                                             hover: { mode: "index", intersect: false },
+                                             hover: { mode: 'index', intersect: false },
                                              plugins: {
-                                                 legend: { display: true, position: "bottom" },
+                                                 legend: { display: true, position: 'bottom' },
                                                  tooltip: {
                                                      enabled: true,
-                                                     backgroundColor: "rgba(30,41,59,0.95)",
+                                                     backgroundColor: 'rgba(30,41,59,0.95)',
                                                      padding: 12, cornerRadius: 8,
-                                                     titleFont: { weight: "bold", size: 13 },
+                                                     titleFont: { weight: 'bold', size: 13 },
                                                      bodyFont: { size: 12 },
                                                      callbacks: {
-                                                         title: function(items) { return "Tahun " + items[0].label; },
-                                                         label: function(item) { return item.dataset.label + ": " + item.formattedValue + " proposal"; }
+                                                         title: function(items) { return 'Tahun ' + items[0].label; },
+                                                         label: function(item) { return item.dataset.label + ': ' + item.formattedValue + ' proposal'; }
                                                      }
                                                  },
                                                  datalabels: {
@@ -297,23 +290,25 @@
                                                      color: function(context) {
                                                          return context.dataset.borderColor;
                                                      },
-                                                     font: { weight: "bold", size: 11 },
-                                                     anchor: "end",
-                                                     align: "end",
+                                                     font: { weight: 'bold', size: 11 },
+                                                     anchor: 'end',
+                                                     align: 'end',
                                                      offset: 2
                                                  }
                                              },
                                              scales: {
-                                                 x: { grid: { display: false }, ticks: { color: "#9ca3af", font: { size: 10 } } },
-                                                 y: { grid: { color: "rgba(229,231,235,0.5)" }, ticks: { color: "#9ca3af", font: { size: 10 }, stepSize: 1 } },
+                                                 x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 10 } } },
+                                                 y: { grid: { color: 'rgba(229,231,235,0.5)' }, ticks: { color: '#9ca3af', font: { size: 10 }, stepSize: 1 } },
                                              },
                                          },
                                      });
-                                 }
-                              }'
-                              @chart-updated.window="if ($event.detail.trendChart) render($event.detail.trendChart, true)">
-                            <canvas x-ref="canvas"></canvas>
-                        </div>
+                                 };
+                                 window.addEventListener('chart-updated', (e) => {
+                                     if (e.detail.trendChart) renderTrendChart(e.detail.trendChart, true);
+                                 });
+                                 this.$nextTick(() => renderTrendChart(@js($chartData)));
+                             ">
+                            <canvas x-ref="trend-canvas"></canvas>
                     </div>
                 </div>
             </div>
