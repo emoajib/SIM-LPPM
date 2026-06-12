@@ -1,4 +1,5 @@
 <div>
+    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
     <div class="d-flex justify-content-end mb-4">
         <div class="d-flex align-items-center gap-2">
             <div class="dropdown">
@@ -263,8 +264,88 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <div style="position:relative;height:250px;width:100%;" wire:ignore>
-                            <canvas id="dosenAnalyticsChart"></canvas>
+                        <div style="position:relative;height:250px;width:100%;"
+                             wire:ignore
+                             x-data="{
+                                 chart: null,
+                                 renderTrendChart(data, isReinit = false) {
+                                     if (!data || !data.labels || !data.labels.length || !data.datasets || !data.datasets.length) return;
+                                     if (typeof Chart === 'undefined') {
+                                         setTimeout(() => this.renderTrendChart(data, isReinit), 100);
+                                         return;
+                                     }
+                                     const ctx = this.$refs.trendCanvas?.getContext('2d');
+                                     if (!ctx) return;
+                                     if (this.chart) {
+                                         this.chart.destroy();
+                                         this.chart = null;
+                                     }
+                                     this.chart = new Chart(ctx, {
+                                         type: 'line',
+                                         data: {
+                                             labels: data.labels,
+                                             datasets: data.datasets.map(function(ds) {
+                                                 return {
+                                                     label: ds.label,
+                                                     data: ds.data,
+                                                     borderColor: ds.borderColor,
+                                                     backgroundColor: ds.backgroundColor,
+                                                     fill: true,
+                                                     tension: 0.4,
+                                                     pointRadius: 5,
+                                                     pointHoverRadius: 9,
+                                                     pointHoverBorderWidth: 3,
+                                                     pointHoverBorderColor: '#ffffff'
+                                                 };
+                                             }),
+                                         },
+                                         options: {
+                                             responsive: true,
+                                             maintainAspectRatio: false,
+                                             animation: { duration: isReinit ? 0 : 800 },
+                                             hover: { mode: 'index', intersect: false },
+                                             plugins: {
+                                                 legend: { display: false },
+                                                 tooltip: {
+                                                     enabled: true,
+                                                     backgroundColor: 'rgba(30,41,59,0.95)',
+                                                     padding: 12,
+                                                     cornerRadius: 8,
+                                                     titleFont: { weight: 'bold', size: 13 },
+                                                     bodyFont: { size: 12 },
+                                                     callbacks: {
+                                                         title: function(items) { return 'Tahun ' + items[0].label; },
+                                                         label: function(item) { return item.dataset.label + ': ' + item.formattedValue + ' proposal'; }
+                                                     }
+                                                 }
+                                             },
+                                             scales: {
+                                                 x: {
+                                                     grid: { display: false },
+                                                     ticks: { color: '#9ca3af', font: { size: 10 } }
+                                                 },
+                                                 y: {
+                                                     grid: { color: 'rgba(229,231,235,0.5)' },
+                                                     ticks: { color: '#9ca3af', font: { size: 10 }, stepSize: 1 }
+                                                 },
+                                             },
+                                         },
+                                     });
+                                 },
+                                 destroy() {
+                                     if (this.chart) {
+                                         this.chart.destroy();
+                                         this.chart = null;
+                                     }
+                                 }
+                             }"
+                             x-init="$nextTick(() => $data.renderTrendChart(@js($chartData)))"
+                             @chart-updated.window="
+                                 if ($event.detail.trendChart) {
+                                     renderTrendChart($event.detail.trendChart, true);
+                                 }
+                             ">
+                            <canvas x-ref="trendCanvas" aria-label="Grafik Tren Usulan & Pendanaan" role="img"></canvas>
                         </div>
                     </div>
                 </div>
@@ -307,7 +388,7 @@
                                                 class="badge bg-{{ $research->status->color() }} me-1"></span>{{ $research->status->label() }}</span>
                                     </td>
                                     <td class="text-end pe-4 text-muted small">
-                                        {{ $research->created_at->diffForHumans() }}
+                                        {{ $research->updated_at->diffForHumans() }}
                                     </td>
                                 </tr>
                             @empty
@@ -355,7 +436,7 @@
                                                 class="badge bg-{{ $communityService->status->color() }} me-1"></span>{{ $communityService->status->label() }}</span>
                                     </td>
                                     <td class="text-end pe-4 text-muted small">
-                                        {{ $communityService->created_at->diffForHumans() }}
+                                        {{ $communityService->updated_at->diffForHumans() }}
                                     </td>
                                 </tr>
                             @empty
@@ -463,67 +544,3 @@
         <div class="modal-backdrop fade show"></div>
     @endif
 </div>
-
-@push('scripts')
-<script>
-    document.addEventListener('livewire:navigated', function () {
-        initDosenChart();
-    });
-    document.addEventListener('DOMContentLoaded', function () {
-        initDosenChart();
-    });
-    function initDosenChart() {
-        const canvas = document.getElementById('dosenAnalyticsChart');
-        if (!canvas) return;
-        const chartData = @json($chartData);
-        if (!chartData || !chartData.labels || !chartData.labels.length) return;
-        if (typeof Chart === 'undefined') { setTimeout(initDosenChart, 100); return; }
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-        try {
-            const existing = Chart.getChart(canvas);
-            if (existing) existing.destroy();
-        } catch (e) { /* ignore if no existing chart */ }
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: chartData.labels,
-                datasets: chartData.datasets.map(function(ds) {
-                    return {
-                        label: ds.label,
-                        data: ds.data,
-                        borderColor: ds.borderColor,
-                        backgroundColor: ds.backgroundColor,
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 4,
-                        pointHoverRadius: 6,
-                    };
-                }),
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: 'rgba(30,41,59,0.9)',
-                        padding: 10,
-                        cornerRadius: 8,
-                    },
-                },
-                scales: {
-                    x: {
-                        grid: { display: false },
-                        ticks: { color: '#9ca3af', font: { size: 10 } },
-                    },
-                    y: {
-                        grid: { color: 'rgba(229,231,235,0.5)' },
-                        ticks: { color: '#9ca3af', font: { size: 10 }, stepSize: 1 },
-                    },
-                },
-            },
-        });
-    }
-</script>
-@endpush

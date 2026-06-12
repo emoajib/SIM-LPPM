@@ -3,8 +3,12 @@
 namespace App\Livewire\Dashboard;
 
 use App\Livewire\Concerns\HasToast;
+use App\Models\AdditionalOutput;
 use App\Models\CommunityServiceScheme;
+use App\Models\MandatoryOutput;
+use App\Models\ProgressReport;
 use App\Models\Proposal;
+use App\Models\ProposalOutput;
 use App\Models\ResearchScheme;
 use App\Services\SintaService;
 use Illuminate\Support\Facades\Auth;
@@ -24,6 +28,9 @@ class DosenDashboard extends Component
     public $stats = [];
 
     public $chartData = [];
+
+    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    public $processStats = [];
 
     // Edit Metrics State
     public $showEditMetricsModal = false;
@@ -80,6 +87,7 @@ class DosenDashboard extends Component
 
     public function loadAnalytics(): void
     {
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $yearFilter = $this->selectedYear;
 
         // OPTIMIZED: Single aggregated query for own proposals stats
@@ -88,11 +96,17 @@ class DosenDashboard extends Component
         // Load as member counts (2 separate queries needed due to relationship)
         $this->loadMemberStats($yearFilter);
 
+        // Load process monitoring stats
+        $this->loadProcessStats($yearFilter);
+
         // Load recent proposals
         $this->loadRecentProposals($yearFilter);
 
         // Load historical chart data
         $this->loadChartData();
+
+        // Dispatch updated chart event for Alpine.js reactive listener
+        $this->dispatch('chart-updated', trendChart: $this->chartData);
     }
 
     /**
@@ -218,13 +232,17 @@ class DosenDashboard extends Component
     /**
      * Load recent proposals in a single query.
      */
+    /**
+     * Load recent proposals ordered by updated_at descending.
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     */
     private function loadRecentProposals(string $yearFilter): void
     {
         $recentProposals = Proposal::query()
             ->with(['researchScheme', 'communityServiceScheme'])
             ->where('submitter_id', $this->user->id)
             ->whereYear('created_at', $yearFilter)
-            ->latest()
+            ->latest('updated_at')
             ->limit(20)
             ->get();
 
@@ -237,6 +255,82 @@ class DosenDashboard extends Component
             ->filter(fn ($p) => str_contains($p->detailable_type, 'CommunityService'))
             ->take(10)
             ->values();
+    }
+
+    /**
+     * Load process stats (review progress, monev progress, outputs achieved).
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     */
+    private function loadProcessStats(string $yearFilter): void
+    {
+        $proposalsThisYear = Proposal::where('submitter_id', $this->user->id)
+            ->whereYear('created_at', $yearFilter)
+            ->get();
+        $proposalsThisYearIds = $proposalsThisYear->pluck('id');
+
+        // 1. Review Status based on proposal_reviewer table
+        $totalReview = DB::table('proposal_reviewer')
+            ->whereIn('proposal_id', $proposalsThisYearIds)
+            ->count();
+
+        $completedReview = DB::table('proposal_reviewer')
+            ->whereIn('proposal_id', $proposalsThisYearIds)
+            ->where('status', 'completed')
+            ->count();
+
+        // 2 & 3. activeProposals: Only funded proposals (approved/completed) require Monev, Reports, and Outputs
+        $activeProposals = $proposalsThisYear->filter(function ($p) {
+            return in_array($p->status->value, ['approved', 'completed']);
+        });
+        $activeProposalIds = $activeProposals->pluck('id');
+
+        // 2. Monev Status
+        $totalMonev = $activeProposals->count();
+
+        $monevReviewCompleted = DB::table('monev_reviews')
+            ->whereIn('proposal_id', $activeProposalIds)
+            ->whereNotNull('reviewed_at')
+            ->distinct()
+            ->count('proposal_id');
+
+        $monevReviewAny = DB::table('monev_reviews')
+            ->whereIn('proposal_id', $activeProposalIds)
+            ->distinct()
+            ->count('proposal_id');
+
+        $monevLegacy = DB::table('proposal_monevs')
+            ->whereIn('proposal_id', $activeProposalIds)
+            ->distinct()
+            ->count('proposal_id');
+
+        $completedMonev = max($monevReviewCompleted, $monevReviewAny, $monevLegacy);
+
+        // 3. Output Tracking (Luaran)
+        $targetOutputs = ProposalOutput::whereIn('proposal_id', $activeProposalIds)->count();
+
+        $progressReportIds = ProgressReport::whereIn('proposal_id', $activeProposalIds)->pluck('id');
+        $achievedViaReport = MandatoryOutput::whereIn('progress_report_id', $progressReportIds)->count()
+            + AdditionalOutput::whereIn('progress_report_id', $progressReportIds)->count();
+
+        $targetOutputIds = ProposalOutput::whereIn('proposal_id', $activeProposalIds)->pluck('id');
+        $achievedViaOutput = MandatoryOutput::whereIn('proposal_output_id', $targetOutputIds)->count()
+            + AdditionalOutput::whereIn('progress_output_id', $targetOutputIds)->count();
+
+        $achievedOutputs = max($achievedViaReport, $achievedViaOutput);
+
+        $this->processStats = [
+            'review_total' => $totalReview,
+            'review_completed' => $completedReview,
+            'review_progress' => $totalReview > 0 ? ($completedReview / $totalReview) * 100 : 0,
+
+            'monev_total' => $totalMonev,
+            'monev_completed' => $completedMonev,
+            'monev_progress' => $totalMonev > 0 ? ($completedMonev / $totalMonev) * 100 : 0,
+
+            'output_target' => $targetOutputs,
+            'output_achieved' => $achievedOutputs,
+            'output_progress' => $targetOutputs > 0 ? min(100, ($achievedOutputs / $targetOutputs) * 100) : 0,
+        ];
     }
 
     public function syncSinta(SintaService $sintaService): void
