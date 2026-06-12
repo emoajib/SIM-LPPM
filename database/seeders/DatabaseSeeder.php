@@ -45,6 +45,7 @@ class DatabaseSeeder extends Seeder
             // 5. Users & Identities
             AdminUserSeeder::class,
             ManualBookSeeder::class,
+            LetterModuleSeeder::class,
         ]);
 
         if (! app()->isProduction()) {
