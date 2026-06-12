@@ -26,21 +26,10 @@ class ReviewerWorkload extends Component
         $this->yearFilter = (string) date('Y');
     }
 
-    public function updatedYearFilter(): void
-    {
-        $this->resetPage();
-    }
-
-    public function updatedSemesterFilter(): void
-    {
-        $this->resetPage();
-    }
-
     public function resetFilters(): void
     {
         $this->yearFilter = (string) date('Y');
         $this->semesterFilter = 'all';
-        $this->resetPage();
     }
 
     #[Computed]
