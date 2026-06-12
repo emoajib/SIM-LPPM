@@ -17,7 +17,7 @@
     }
 </style>
 
-<div class="card border-0 shadow-sm overflow-hidden h-100 hover-scale"
+<div class="card border-0 shadow-sm h-100 hover-scale"
      x-data="{
         chart: null,
         initChart(labels, datasets, isReinit = false) {
@@ -27,9 +27,6 @@
                 setTimeout(() => this.initChart(labels, datasets, isReinit), 100);
                 return;
             }
-            // Guard: if this component is being destroyed, skip
-            if (this._destroying) return;
-
             const ctx = this.$refs.canvas?.getContext('2d');
             if (!ctx) return;
             if (this.chart) {
@@ -167,25 +164,26 @@
             });
         },
         destroy() {
-            this._destroying = true;
             if (this.chart) { this.chart.destroy(); this.chart = null; }
         }
      }"
      x-init="initChart(@js($labels), @js($datasets))"
      @chart-updated.window="
-        if ($event.detail.focusAreas && '{{ $title }}'.includes('Fokus')) {
-            initChart($event.detail.focusAreas.labels, $event.detail.focusAreas.datasets, true);
-        } else if ($event.detail.facultyPerformance && '{{ $title }}'.includes('Fakultas')) {
-            initChart($event.detail.facultyPerformance.labels, $event.detail.facultyPerformance.datasets, true);
-        } else if ($event.detail.scienceClusters && '{{ $title }}'.includes('Rumpun')) {
-            initChart($event.detail.scienceClusters.labels, $event.detail.scienceClusters.datasets, true);
-        } else if ($event.detail.tkt && '{{ $title }}'.includes('TKT')) {
-            initChart($event.detail.tkt.labels, $event.detail.tkt.datasets, true);
-        } else if ($event.detail.themes && '{{ $title }}'.includes('Tema')) {
-            initChart($event.detail.themes.labels, $event.detail.themes.datasets, true);
-        } else if ($event.detail.topics && '{{ $title }}'.includes('Topik')) {
-            initChart($event.detail.topics.labels, $event.detail.topics.datasets, true);
-        }
+        requestAnimationFrame(() => {
+            if ($event.detail.focusAreas && '{{ $title }}'.includes('Fokus')) {
+                initChart($event.detail.focusAreas.labels, $event.detail.focusAreas.datasets, true);
+            } else if ($event.detail.facultyPerformance && '{{ $title }}'.includes('Fakultas')) {
+                initChart($event.detail.facultyPerformance.labels, $event.detail.facultyPerformance.datasets, true);
+            } else if ($event.detail.scienceClusters && '{{ $title }}'.includes('Rumpun')) {
+                initChart($event.detail.scienceClusters.labels, $event.detail.scienceClusters.datasets, true);
+            } else if ($event.detail.tkt && '{{ $title }}'.includes('TKT')) {
+                initChart($event.detail.tkt.labels, $event.detail.tkt.datasets, true);
+            } else if ($event.detail.themes && '{{ $title }}'.includes('Tema')) {
+                initChart($event.detail.themes.labels, $event.detail.themes.datasets, true);
+            } else if ($event.detail.topics && '{{ $title }}'.includes('Topik')) {
+                initChart($event.detail.topics.labels, $event.detail.topics.datasets, true);
+            }
+        });
      "
      style="border-radius: 12px; position: relative; min-height: 320px;">
     
@@ -201,7 +199,7 @@
         <h3 class="card-title fw-bold text-dark mb-0">{{ $title }}</h3>
     </div>
     
-    <div class="card-body d-flex flex-column justify-content-between p-3" style="position: relative; flex-grow: 1;">
+    <div class="card-body d-flex flex-column p-3" style="position: relative; flex-grow: 1;">
         <div style="position: relative; height: 220px; width: 100%;" wire:ignore>
             <canvas x-ref="canvas" aria-label="Grafik: {{ $title }}" role="img"></canvas>
         </div>

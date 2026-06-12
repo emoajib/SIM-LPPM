@@ -277,21 +277,24 @@
                     <div class="card-body">
                         <div style="position:relative;height:250px;width:100%;"
                              wire:ignore
-                             x-data="{}"
-                             x-init="
-                                 let chart = null;
-                                 let _destroying = false;
-                                 const renderTrendChart = (data, isReinit = false) => {
-                                     if (_destroying) return;
+                             x-data="{
+                                 chart: null,
+                                 renderTrendChart(data, isReinit = false) {
                                      if (!data || !data.labels || !data.labels.length || !data.datasets || !data.datasets.length) return;
-                                     if (typeof Chart === 'undefined') { setTimeout(() => renderTrendChart(data, isReinit), 100); return; }
-                                     const ctx = document.querySelector('[x-ref=trend-canvas]')?.getContext('2d');
+                                     if (typeof Chart === 'undefined') {
+                                         setTimeout(() => this.renderTrendChart(data, isReinit), 100);
+                                         return;
+                                     }
+                                     const ctx = this.$refs.trendCanvas?.getContext('2d');
                                      if (!ctx) return;
-                                     if (chart) { chart.destroy(); chart = null; }
+                                     if (this.chart) {
+                                         this.chart.destroy();
+                                         this.chart = null;
+                                     }
                                      if (typeof ChartDataLabels !== 'undefined' && !Chart.registry.plugins.get('datalabels')) {
                                          Chart.register(ChartDataLabels);
                                      }
-                                     chart = new Chart(ctx, {
+                                     this.chart = new Chart(ctx, {
                                          type: 'line',
                                          data: {
                                              labels: data.labels,
@@ -335,13 +338,21 @@
                                              },
                                          },
                                      });
-                                 };
-                                 window.addEventListener('chart-updated', (e) => {
-                                     if (e.detail.trendChart) renderTrendChart(e.detail.trendChart, true);
-                                 });
-                                 this.$nextTick(() => renderTrendChart(@js($chartData)));
+                                 },
+                                 destroy() {
+                                     if (this.chart) {
+                                         this.chart.destroy();
+                                         this.chart = null;
+                                     }
+                                 }
+                             }"
+                             x-init="$nextTick(() => $data.renderTrendChart(@js($chartData)))"
+                             @chart-updated.window="
+                                 if ($event.detail.trendChart) {
+                                     renderTrendChart($event.detail.trendChart, true);
+                                 }
                              ">
-                            <canvas x-ref="trend-canvas"></canvas>
+                            <canvas x-ref="trendCanvas" aria-label="Grafik Tren Usulan & Pendanaan" role="img"></canvas>
                     </div>
                 </div>
             </div>
