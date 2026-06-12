@@ -3,6 +3,31 @@
 <x-slot:pageSubtitle>Pantau beban kerja dan progres review dari setiap reviewer yang terdaftar.</x-slot:pageSubtitle>
 
 <div>
+    <div class="mb-3">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <select class="form-select" wire:model.live="yearFilter">
+                    <option value="">Semua Tahun</option>
+                    @foreach ($this->availableYears as $year)
+                        <option value="{{ $year }}">{{ $year }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" wire:model.live="semesterFilter">
+                    <option value="all">Semua Semester</option>
+                    <option value="ganjil">Ganjil</option>
+                    <option value="genap">Genap</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-outline-secondary w-100" wire:click="resetFilters">
+                    <i class="ti ti-rotate"></i> Reset
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div class="card">
         <div class="table-responsive">
             <table class="card-table table table-vcenter">
