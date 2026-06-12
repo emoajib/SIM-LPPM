@@ -92,6 +92,43 @@ class DatabaseRestoreService
         ];
     }
 
+    protected function fixIdentityStatement(string $statement): string
+    {
+        if (! preg_match('/INSERT\s+(IGNORE\s+)?INTO\s+[`"\']?identities[`"\']?\s/i', $statement)) {
+            return $statement;
+        }
+
+        $columns = [
+            'id', 'identity_id', 'user_id', 'sinta_id', 'scopus_id',
+            'google_scholar_id', 'wos_id', 'type',
+            'is_external', 'address', 'birthdate', 'birthplace',
+            'institution_id', 'institution_name', 'study_program_id',
+            'science_cluster_id', 'profile_picture', 'faculty_id',
+            'created_at', 'updated_at', 'last_education', 'functional_position',
+            'title_prefix', 'title_suffix',
+            'sinta_score_v2_overall', 'sinta_score_v2_3yr',
+            'sinta_score_v3_overall', 'sinta_score_v3_3yr',
+            'affil_score_v3_overall', 'affil_score_v3_3yr',
+            'scopus_documents', 'scopus_citations', 'scopus_cited_documents',
+            'scopus_h_index', 'scopus_g_index', 'scopus_i10_index',
+            'gs_documents', 'gs_citations', 'gs_cited_documents',
+            'gs_h_index', 'gs_g_index', 'gs_i10_index',
+            'wos_documents', 'wos_citations', 'wos_cited_documents',
+            'wos_h_index', 'wos_g_index', 'wos_i10_index',
+            'garuda_documents', 'garuda_citations', 'garuda_cited_documents',
+            'is_active',
+        ];
+
+        $quoted = array_map(fn ($c) => "`{$c}`", $columns);
+        $colList = implode(',', $quoted);
+
+        return preg_replace(
+            '/(INSERT\s+(IGNORE\s+)?INTO\s+[`"\']?identities[`"\']?\s*)\s*VALUES\s/i',
+            '$1('.$colList.') VALUES ',
+            $statement
+        );
+    }
+
     public function restore(string $sqlPath, bool $backupFirst = true): array
     {
         if (! file_exists($sqlPath)) {
@@ -125,7 +162,7 @@ class DatabaseRestoreService
 
             foreach ($statements as $stmt) {
                 try {
-                    DB::unprepared($stmt);
+                    DB::unprepared($this->fixIdentityStatement($stmt));
                     $inserted++;
                 } catch (\Throwable $e) {
                     $errors[] = [
@@ -233,7 +270,7 @@ class DatabaseRestoreService
                 }
 
                 try {
-                    DB::unprepared($stmt);
+                    DB::unprepared($this->fixIdentityStatement($stmt));
                     $inserted++;
                 } catch (\Throwable $e) {
                     $errors[] = [
