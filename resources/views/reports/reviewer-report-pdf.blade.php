@@ -218,7 +218,7 @@
 
     <!-- SECTION I: IKHTISAR PENUGASAN & NILAI REKAP -->
     @php
-        $requiredReviewers = (int) \App\Models\Setting::get('reviewer_count_required', 2);
+        $requiredReviewers = (int) \App\Models\Setting::get('reviewer_count_required', 1);
         // Calculate column widths dynamically to sum to 100%
         // Fixed: No(3%) + Jenis(8%) + Rata-rata(7%) = 18%
         // Variable: Reviewer column (15%) + Score columns (6% each)

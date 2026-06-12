@@ -63,7 +63,7 @@ class ReviewerAssignment extends Component
     #[Computed]
     public function requiredReviewerCount(): int
     {
-        return (int) Setting::get('reviewer_count_required', 2);
+        return (int) Setting::get('reviewer_count_required', 1);
     }
 
     public function assignReviewers(): void

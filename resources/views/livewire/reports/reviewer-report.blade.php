@@ -350,7 +350,7 @@
 
         @elseif ($activeTab === 'scoring')
             @php
-                $requiredReviewers = (int) \App\Models\Setting::get('reviewer_count_required', 2);
+                $requiredReviewers = (int) \App\Models\Setting::get('reviewer_count_required', 1);
             @endphp
             <div class="table-responsive">
                 <table class="table table-vcenter card-table table-hover table-borderless">
