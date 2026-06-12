@@ -239,8 +239,8 @@
     {{-- 1. SKELETON LOADER (Shimmer Effect) --}}
     <div x-show="isLoading" 
          x-transition.opacity.duration.300ms
-         class="position-absolute top-0 start-0 w-100 h-100 bg-white p-3 z-3 placeholder-glow d-flex flex-column" 
-         style="border-radius: 12px;">
+         class="position-absolute top-0 start-0 w-100 h-100 bg-white p-3 z-3 placeholder-glow flex-column" 
+         style="border-radius: 12px; display: flex;">
         <div class="placeholder col-6 mb-4" style="height: 24px; border-radius: 4px;"></div>
         <div class="d-flex align-items-end justify-content-between h-100 gap-3 pb-3 px-2">
             <div class="placeholder w-100" style="height: 40%; border-radius: 4px;"></div>
@@ -255,8 +255,8 @@
     {{-- 2. EMPTY STATE (Edge Case Handling) --}}
     <div x-show="!isLoading && isEmpty" 
          x-transition.opacity.duration.300ms
-         class="position-absolute top-0 start-0 w-100 h-100 bg-white d-flex flex-column align-items-center justify-content-center z-2" 
-         style="border-radius: 12px;">
+         class="position-absolute top-0 start-0 w-100 h-100 bg-white flex-column align-items-center justify-content-center z-2" 
+         style="border-radius: 12px; display: flex;">
         <div class="bg-light rounded-circle p-3 mb-3 d-flex align-items-center justify-content-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="icon text-muted" width="32" height="32" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
