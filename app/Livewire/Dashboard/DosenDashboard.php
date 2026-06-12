@@ -314,7 +314,7 @@ class DosenDashboard extends Component
 
         $targetOutputIds = ProposalOutput::whereIn('proposal_id', $activeProposalIds)->pluck('id');
         $achievedViaOutput = MandatoryOutput::whereIn('proposal_output_id', $targetOutputIds)->count()
-            + AdditionalOutput::whereIn('progress_output_id', $targetOutputIds)->count();
+            + AdditionalOutput::whereIn('proposal_output_id', $targetOutputIds)->count();
 
         $achievedOutputs = max($achievedViaReport, $achievedViaOutput);
 
