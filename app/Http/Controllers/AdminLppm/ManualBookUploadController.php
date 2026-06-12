@@ -27,7 +27,7 @@ class ManualBookUploadController extends Controller
             ->toMediaCollection('manual_book_file');
 
         return redirect()
-            ->route('admin-lppm.manual-books.edit', $manualBook)
+            ->route('admin-lppm.manual-books.admin.edit', $manualBook)
             ->with('success', 'File berhasil diunggah: '.$request->file('file')->getClientOriginalName());
     }
 }

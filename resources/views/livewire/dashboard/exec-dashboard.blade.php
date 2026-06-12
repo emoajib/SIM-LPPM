@@ -262,6 +262,57 @@
         </div>
     </div>
 
+    @if(!empty($chartData['labels']))
+        <div class="row row-cards mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+                    <div class="card-header bg-transparent border-0 py-3 d-flex align-items-center">
+                        <div class="avatar bg-primary-lt text-primary shadow-sm avatar-sm me-3 border-0">
+                            <i class="ti ti-chart-line"></i>
+                        </div>
+                        <h3 class="card-title fw-bold mb-0">Tren Usulan & Pendanaan</h3>
+                    </div>
+                    <div class="card-body">
+                        <div style="position:relative;height:250px;width:100%;"
+                             wire:ignore
+                             x-data='{
+                                chart: null,
+                                init() {
+                                    this.$nextTick(() => this.render(@json($chartData)));
+                                },
+                                render(data) {
+                                    if (!data || !data.labels || !data.labels.length) return;
+                                    if (typeof Chart === "undefined") { setTimeout(() => this.render(data), 100); return; }
+                                    const ctx = this.$refs.canvas.getContext("2d");
+                                    if (this.chart) this.chart.destroy();
+                                    this.chart = new Chart(ctx, {
+                                        type: "line",
+                                        data: {
+                                            labels: data.labels,
+                                            datasets: data.datasets.map(function(ds) {
+                                                return { label: ds.label, data: ds.data, borderColor: ds.borderColor, backgroundColor: ds.backgroundColor, fill: true, tension: 0.4, pointRadius: 4, pointHoverRadius: 6 };
+                                            }),
+                                        },
+                                        options: {
+                                            responsive: true, maintainAspectRatio: false,
+                                            plugins: { legend: { display: true, position: "bottom" }, tooltip: { backgroundColor: "rgba(30,41,59,0.9)", padding: 10, cornerRadius: 8 } },
+                                            scales: {
+                                                x: { grid: { display: false }, ticks: { color: "#9ca3af", font: { size: 10 } } },
+                                                y: { grid: { color: "rgba(229,231,235,0.5)" }, ticks: { color: "#9ca3af", font: { size: 10 }, stepSize: 1 } },
+                                            },
+                                        },
+                                    });
+                                }
+                             }'
+                             @chart-updated.window="if ($event.detail.trendChart) render($event.detail.trendChart)">
+                            <canvas x-ref="canvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <!-- Process Monitoring (Progress Styles) -->
     <div class="row row-cards mb-4">
         <!-- Review Progress Details -->

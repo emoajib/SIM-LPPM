@@ -191,7 +191,7 @@
     <!-- TITLE -->
     <div class="report-title-container">
         <div class="report-title">LAPORAN PENUGASAN & EVALUASI REVIEWER</div>
-        <div class="report-subtitle">Tahun Anggaran / Periode: <strong>{{ $period }}</strong></div>
+        <div class="report-subtitle">Tahun Anggaran / Periode: <strong>{{ $period }}</strong>@if($semester && $semester !== 'all') | Semester: <strong>{{ ucfirst($semester) }}</strong>@endif</div>
     </div>
 
     <!-- SUMMARY METRICS -->
@@ -336,20 +336,20 @@
                                     ? URL::signedRoute('signatures.verify', ['documentSignature' => $rektorSig->id]) 
                                     : null;
                             @endphp
-                            <div style="margin: 5px 0;">
-                                @if($qrRektorUrl)
-                                    <img src="{{ generate_qr_code_data_uri($qrRektorUrl, 100) }}" width="60" style="display: block; margin: 0 auto;">
-                                @endif
+                            @if($qrRektorUrl)
+                            <div class="digital-signature" style="display: inline-block; text-align: center; margin: 10px auto 5px;">
+                                <img src="{{ generate_qr_code_data_uri($qrRektorUrl, 60) }}" alt="QR Code" style="width: 50px; height: 50px;">
+                                <div style="font-size: 6pt; color: #1a56db; font-weight: bold; margin-top: 3px;">DIGITALLY SIGNED</div>
                             </div>
-                            <div style="font-size: 6pt; color: #1a56db; font-weight: bold; margin-bottom: 3px;">DIGITALLY SIGNED</div>
+                            @endif
                         @else
-                            <div style="height: 60px;"></div>
+                            <div style="margin-bottom: 45px;"></div>
                         @endif
 
-                        <div class="sign-name">
+                        <div class="sign-name" style="font-size: 8pt; margin-top: 5px;">
                             {{ format_name($rektor?->identity?->title_prefix, $rektor?->name ?? 'Rektor', $rektor?->identity?->title_suffix) }}
                         </div>
-                        <div class="sign-nip">NPP. {{ $rektor?->identity?->identity_id ?? '-' }}</div>
+                        <div class="sign-nip" style="font-size: 7pt;">NPP. {{ $rektor?->identity?->identity_id ?? '-' }}</div>
                     </div>
                 </td>
                 <td width="10%"></td>
@@ -370,20 +370,20 @@
                                     ? URL::signedRoute('signatures.verify', ['documentSignature' => $lppmSig->id]) 
                                     : null;
                             @endphp
-                            <div style="margin: 5px 0;">
-                                @if($qrLppmUrl)
-                                    <img src="{{ generate_qr_code_data_uri($qrLppmUrl, 100) }}" width="60" style="display: block; margin: 0 auto;">
-                                @endif
+                            @if($qrLppmUrl)
+                            <div class="digital-signature" style="display: inline-block; text-align: center; margin: 10px auto 5px;">
+                                <img src="{{ generate_qr_code_data_uri($qrLppmUrl, 60) }}" alt="QR Code" style="width: 50px; height: 50px;">
+                                <div style="font-size: 6pt; color: #059669; font-weight: bold; margin-top: 3px;">VERIFIED BY LPPM</div>
                             </div>
-                            <div style="font-size: 6pt; color: #1a56db; font-weight: bold; margin-bottom: 3px;">DIGITALLY SIGNED</div>
+                            @endif
                         @else
-                            <div style="height: 60px;"></div>
+                            <div style="margin-bottom: 45px;"></div>
                         @endif
 
-                        <div class="sign-name">
+                        <div class="sign-name" style="font-size: 8pt; margin-top: 5px;">
                             {{ format_name($lppmHead?->identity?->title_prefix, $lppmHead?->name ?? 'Kepala LPPM', $lppmHead?->identity?->title_suffix) }}
                         </div>
-                        <div class="sign-nip">NPP. {{ $lppmHead?->identity?->identity_id ?? '-' }}</div>
+                        <div class="sign-nip" style="font-size: 7pt;">NPP. {{ $lppmHead?->identity?->identity_id ?? '-' }}</div>
                     </div>
                 </td>
             </tr>

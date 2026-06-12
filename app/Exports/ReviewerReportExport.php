@@ -20,7 +20,8 @@ class ReviewerReportExport implements FromView, ShouldAutoSize, WithStyles
     public function __construct(
         protected string $period,
         protected ?string $type = null,
-        protected ?string $search = null
+        protected ?string $search = null,
+        protected ?string $semester = null
     ) {}
 
     public function view(): View
@@ -37,6 +38,7 @@ class ReviewerReportExport implements FromView, ShouldAutoSize, WithStyles
                 ProposalStatus::COMPLETED,
             ])
             ->when($year, fn ($q) => $q->whereYear('created_at', $year))
+            ->when($this->semester && $this->semester !== 'all', fn ($q) => $q->where('semester', $this->semester))
             ->when($this->search, function ($q) {
                 $search = (string) $this->search;
                 $q->where(function ($sub) use ($search) {
@@ -71,6 +73,9 @@ class ReviewerReportExport implements FromView, ShouldAutoSize, WithStyles
                     if ($year) {
                         $query->whereHas('proposal', function ($pq) use ($year) {
                             $pq->whereYear('created_at', $year);
+                            if ($this->semester && $this->semester !== 'all') {
+                                $pq->where('semester', $this->semester);
+                            }
                         });
                     }
                 },
@@ -79,6 +84,9 @@ class ReviewerReportExport implements FromView, ShouldAutoSize, WithStyles
                     if ($year) {
                         $query->whereHas('proposal', function ($pq) use ($year) {
                             $pq->whereYear('created_at', $year);
+                            if ($this->semester && $this->semester !== 'all') {
+                                $pq->where('semester', $this->semester);
+                            }
                         });
                     }
                 },
@@ -87,6 +95,9 @@ class ReviewerReportExport implements FromView, ShouldAutoSize, WithStyles
                     if ($year) {
                         $query->whereHas('proposal', function ($pq) use ($year) {
                             $pq->whereYear('created_at', $year);
+                            if ($this->semester && $this->semester !== 'all') {
+                                $pq->where('semester', $this->semester);
+                            }
                         });
                     }
                 },
@@ -99,6 +110,7 @@ class ReviewerReportExport implements FromView, ShouldAutoSize, WithStyles
             'reviewers' => $reviewers,
             'period' => $this->period,
             'type' => $this->type,
+            'semester' => $this->semester,
         ]);
     }
 

@@ -207,6 +207,14 @@
     </table>
     
         <table style="width: 100%; border: none;">
+            @php
+                $rektorSig = $institutionalReport && $institutionalReport->status === \App\Enums\InstitutionalReportStatus::APPROVED
+                    ? $institutionalReport->signatures()->where('variant', 'approved')->where('action', 'approved')->where('signed_role', 'rektor')->first()
+                    : null;
+                $lppmSig = $institutionalReport && in_array($institutionalReport->status->value, ['submitted', 'approved'])
+                    ? $institutionalReport->signatures()->where('variant', $institutionalReport->status->value === 'approved' ? 'approved' : 'submitted')->where('action', 'submitted')->where('signed_role', 'kepala_lppm')->first()
+                    : null;
+            @endphp
             <tr>
                 <td width="33%" style="border: none; text-align: center; padding: 0;">
                     <div style="margin-top: 10px; margin-bottom: 4px;">Pekalongan,
@@ -214,14 +222,14 @@
                     </div>
                     <div style="margin-bottom: 4px;">Mengetahui,</div>
                     <div style="margin-bottom: 4px;"><strong>Rektor ITSNU Pekalongan</strong></div>
-                    @if($institutionalReport && $institutionalReport->status === \App\Enums\InstitutionalReportStatus::APPROVED)
-                        <div class="digital-signature">
-                            <img src="{{ generate_qr_code_data_uri(\Illuminate\Support\Facades\URL::signedRoute('reports.verify', ['institutionalReport' => $institutionalReport->id, 'variant' => 'approved'])) }}" alt="QR Code">
-                            <span class="signature-label">DIGITALLY SIGNED</span>
+                    @if($rektorSig)
+                        <div class="digital-signature" style="display: inline-block; text-align: center; margin: 15px auto 5px;">
+                            <img src="{{ generate_qr_code_data_uri(\Illuminate\Support\Facades\URL::signedRoute('signatures.verify', ['documentSignature' => $rektorSig->id]), 60) }}" alt="QR Code" style="width: 50px; height: 50px;">
+                            <div class="signature-label" style="font-size: 7pt; margin-top: 3px;">DIGITALLY SIGNED</div>
+                            <div class="text-muted" style="font-size: 6pt;">Ditandatangani: {{ $institutionalReport->approved_at?->translatedFormat('d F Y H:i') ?? '-' }}</div>
                         </div>
-                        <div class="text-muted">Ditandatangani: {{ $institutionalReport->approved_at?->translatedFormat('d F Y H:i') ?? '-' }}</div>
                     @else
-                        <div style="margin-bottom: 75px;"></div>
+                        <div style="margin-bottom: 60px;"></div>
                     @endif
                     <div style="font-weight: bold; text-decoration: underline;">{{ format_name($rektor?->identity?->title_prefix, $rektor?->name ?? 'Rektor', $rektor?->identity?->title_suffix) }}</div>
                     <div style="font-size: 9pt;">NPP. {{ $rektor?->identity?->identity_id ?? '-' }}</div>
@@ -233,14 +241,14 @@
                     </div>
                     <div style="margin-bottom: 4px;">Dibuat oleh,</div>
                     <div style="margin-bottom: 4px;"><strong>Kepala LPPM ITSNU Pekalongan</strong></div>
-                    @if($institutionalReport && in_array($institutionalReport->status, [\App\Enums\InstitutionalReportStatus::SUBMITTED, \App\Enums\InstitutionalReportStatus::APPROVED]))
-                        <div class="digital-signature" style="border-color: #059669; color: #059669;">
-                            <img src="{{ generate_qr_code_data_uri(\Illuminate\Support\Facades\URL::signedRoute('reports.verify', ['institutionalReport' => $institutionalReport->id, 'variant' => ((string) ($institutionalReport->status?->value) === 'approved' ? 'approved' : 'submitted')])) }}" alt="QR Code">
-                            <span class="signature-label" style="color: #059669;">VERIFIED BY LPPM</span>
+                    @if($lppmSig)
+                        <div class="digital-signature" style="display: inline-block; text-align: center; margin: 15px auto 5px; border-color: #059669; color: #059669;">
+                            <img src="{{ generate_qr_code_data_uri(\Illuminate\Support\Facades\URL::signedRoute('signatures.verify', ['documentSignature' => $lppmSig->id]), 60) }}" alt="QR Code" style="width: 50px; height: 50px;">
+                            <div class="signature-label" style="font-size: 7pt; margin-top: 3px; color: #059669;">VERIFIED BY LPPM</div>
+                            <div class="text-muted" style="font-size: 6pt;">Ditandatangani: {{ $institutionalReport->submitted_at?->translatedFormat('d F Y H:i') ?? '-' }}</div>
                         </div>
-                        <div class="text-muted">Ditandatangani: {{ $institutionalReport->submitted_at?->translatedFormat('d F Y H:i') ?? '-' }}</div>
                     @else
-                        <div style="margin-bottom: 75px;"></div>
+                        <div style="margin-bottom: 60px;"></div>
                     @endif
                     <div style="font-weight: bold; text-decoration: underline;">{{ format_name($lppmHead?->identity?->title_prefix, $lppmHead?->name ?? 'Kepala LPPM', $lppmHead?->identity?->title_suffix) }}</div>
                     <div style="font-size: 9pt;">NPP. {{ $lppmHead?->identity?->identity_id ?? '-' }}</div>

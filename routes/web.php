@@ -267,8 +267,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('audit-log', AuditLog::class)
             ->name('audit-log');
 
+        // Manual Books - Per-role view (all authenticated users)
+        Route::middleware(['auth', 'verified'])->prefix('manual-books')->name('manual-books.')->group(function () {
+            Route::get('/', ManualBookUserIndex::class)->name('index');
+        });
+
         // Manual Books CRUD (Admin LPPM)
-        Route::middleware(['permission:module_manual_book'])->prefix('manual-books')->name('manual-books.')->group(function () {
+        Route::middleware(['permission:module_manual_book'])->prefix('manual-books/admin')->name('manual-books.admin.')->group(function () {
             Route::get('/', ManualBookIndex::class)->name('index');
             Route::get('create', ManualBookForm::class)->name('create');
             Route::get('{manualBook}/edit', ManualBookForm::class)->name('edit');

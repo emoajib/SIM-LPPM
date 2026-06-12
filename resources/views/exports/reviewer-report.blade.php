@@ -1,13 +1,13 @@
 {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
 @php
-    $requiredReviewers = (int) \App\Models\Setting::get('reviewer_count_required', 2);
+    $requiredReviewers = (int) \App\Models\Setting::get('reviewer_count_required', 1);
     $totalCols = max(8, 5 + $requiredReviewers);
 @endphp
 <table>
     <thead>
         <tr>
             <th colspan="{{ $totalCols }}" style="text-align: center; font-size: 16pt; font-weight: bold;">
-                LAPORAN PENUGASAN &amp; REVIEWER LPPM TAHUN {{ $period }}
+                LAPORAN PENUGASAN &amp; REVIEWER LPPM TAHUN {{ $period }}@if($semester && $semester !== 'all') (Semester {{ ucfirst($semester) }})@endif
             </th>
         </tr>
         <tr>

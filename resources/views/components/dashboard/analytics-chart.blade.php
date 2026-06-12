@@ -17,7 +17,7 @@
     }
 </style>
 
-<div class="card border-0 shadow-sm overflow-hidden h-100 hover-scale" style="border-radius: 12px;"
+<div class="card border-0 shadow-sm overflow-hidden h-100 hover-scale"
      x-data="{
         chart: null,
         initChart(labels, datasets) {
@@ -165,7 +165,7 @@
             initChart($event.detail.topics.labels, $event.detail.topics.datasets);
         }
      "
-     style="position: relative; min-height: 320px;">
+     style="border-radius: 12px; position: relative; min-height: 320px;">
     
     @if($loading)
         <div class="position-absolute top-0 start-0 w-100 h-100 bg-white bg-opacity-75 d-flex align-items-center justify-content-center" style="z-index: 10;">

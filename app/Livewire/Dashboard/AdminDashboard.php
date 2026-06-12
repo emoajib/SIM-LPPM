@@ -95,6 +95,8 @@ class AdminDashboard extends Component
         'datasets' => [],
     ];
 
+    public $chartData = [];
+
     public function mount(): void
     {
         $this->user = Auth::user();
@@ -300,6 +302,8 @@ class AdminDashboard extends Component
             $this->selectedCommunityServiceScheme,
         ]));
 
+        $this->loadTrendChartData();
+
         $data = Cache::remember($cacheKey, 180, function () use ($yearFilter) {
             $this->loadStats($yearFilter);
             $this->loadProcessStats($yearFilter);
@@ -317,6 +321,7 @@ class AdminDashboard extends Component
                 'tktChartData' => $this->tktChartData,
                 'themesChartData' => $this->themesChartData,
                 'topicsChartData' => $this->topicsChartData,
+                'chartData' => $this->chartData,
             ];
         });
 
@@ -330,6 +335,7 @@ class AdminDashboard extends Component
         $this->tktChartData = $data['tktChartData'];
         $this->themesChartData = $data['themesChartData'];
         $this->topicsChartData = $data['topicsChartData'];
+        $this->chartData = $data['chartData'] ?? $this->chartData;
 
         $this->dispatch('chart-updated',
             focusAreas: $this->focusAreasChartData,
@@ -337,7 +343,8 @@ class AdminDashboard extends Component
             scienceClusters: $this->scienceClustersChartData,
             tkt: $this->tktChartData,
             themes: $this->themesChartData,
-            topics: $this->topicsChartData
+            topics: $this->topicsChartData,
+            trendChart: $this->chartData
         );
     }
 
@@ -560,6 +567,39 @@ class AdminDashboard extends Component
                     'data' => $topicPkmCounts,
                     'backgroundColor' => '#2fb344',
                 ],
+            ],
+        ];
+    }
+
+    private function loadTrendChartData(): void
+    {
+        $currentYear = (int) date('Y');
+        $startYear = $currentYear - 4;
+        $years = range($startYear, $currentYear);
+
+        $proposalsData = Proposal::query()
+            ->tap(fn ($q) => $this->applyCommonFilters($q))
+            ->whereYear('start_year', '>=', $startYear)
+            ->select([
+                DB::raw(sql_year('start_year').' as year'),
+                'status',
+                DB::raw('COUNT(*) as count'),
+            ])
+            ->groupBy('year', 'status')
+            ->get();
+
+        $usulanData = [];
+        $didanaiData = [];
+        foreach ($years as $year) {
+            $usulanData[] = $proposalsData->filter(fn ($p) => (int) $p->getAttribute('year') === $year)->sum('count');
+            $didanaiData[] = $proposalsData->filter(fn ($p) => (int) $p->getAttribute('year') === $year && ($p->status->value ?? '') === 'approved')->sum('count');
+        }
+
+        $this->chartData = [
+            'labels' => array_map('strval', $years),
+            'datasets' => [
+                ['label' => 'Usulan', 'data' => $usulanData, 'borderColor' => '#206bc4', 'backgroundColor' => 'rgba(32, 107, 196, 0.1)', 'fill' => true, 'tension' => 0.4],
+                ['label' => 'Didanai', 'data' => $didanaiData, 'borderColor' => '#2fb344', 'backgroundColor' => 'rgba(47, 179, 68, 0.1)', 'fill' => true, 'tension' => 0.4],
             ],
         ];
     }

@@ -30,6 +30,8 @@ class CommunityService extends Component
 
     public string $selectedFaculty = 'all';
 
+    public string $selectedSemester = 'all';
+
     public function updatedSearch(): void
     {
         $this->resetPage();
@@ -48,10 +50,16 @@ class CommunityService extends Component
         $this->resetPage();
     }
 
+    public function updatedSelectedSemester(): void
+    {
+        $this->resetPage();
+    }
+
     public function resetFilters(): void
     {
         $this->search = '';
         $this->selectedScheme = 'all';
+        $this->selectedSemester = 'all';
 
         if (active_role() === 'dekan' || auth()->user()->activeHasRole('dekan')) {
             $this->selectedFaculty = (string) (auth()->user()->identity->faculty_id ?? 'all');
@@ -76,6 +84,7 @@ class CommunityService extends Component
         if ($report && $report->metadata) {
             $this->search = $report->metadata['search'] ?? '';
             $this->selectedScheme = $report->metadata['scheme'] ?? 'all';
+            $this->selectedSemester = $report->metadata['semester'] ?? 'all';
 
             // Only override faculty if not dekan
             if (active_role() !== 'dekan' && ! auth()->user()->activeHasRole('dekan')) {
@@ -85,6 +94,7 @@ class CommunityService extends Component
             // Check query params if no report metadata
             $this->search = request()->query('search', '');
             $this->selectedScheme = request()->query('scheme', 'all');
+            $this->selectedSemester = request()->query('semester', 'all');
 
             // Only override faculty if not dekan
             if (active_role() !== 'dekan' && ! auth()->user()->activeHasRole('dekan')) {
@@ -107,6 +117,7 @@ class CommunityService extends Component
     {
         $params = [
             'period' => $this->period,
+            'semester' => $this->selectedSemester,
             'search' => $this->search,
             'scheme' => $this->selectedScheme,
             'faculty' => $this->selectedFaculty,
@@ -120,6 +131,7 @@ class CommunityService extends Component
     {
         $params = [
             'period' => $this->period,
+            'semester' => $this->selectedSemester,
             'search' => $this->search,
             'scheme' => $this->selectedScheme,
             'faculty' => $this->selectedFaculty,
@@ -134,6 +146,7 @@ class CommunityService extends Component
     {
         $params = [
             'period' => $this->period,
+            'semester' => $this->selectedSemester,
             'search' => $this->search,
             'scheme' => $this->selectedScheme,
             'faculty' => $this->selectedFaculty,
@@ -147,6 +160,7 @@ class CommunityService extends Component
         return Proposal::query()
             ->where('detailable_type', 'App\Models\CommunityService')
             ->where('start_year', $this->period)
+            ->when($this->selectedSemester !== 'all', fn ($q) => $q->where('semester', $this->selectedSemester))
             ->when($this->selectedScheme !== 'all', fn ($q) => $q->where('community_service_scheme_id', $this->selectedScheme))
             ->when($this->selectedFaculty !== 'all', function ($q) {
                 $q->whereHas('submitter.identity', fn ($iq) => $iq->where('faculty_id', $this->selectedFaculty));
@@ -329,6 +343,7 @@ class CommunityService extends Component
         return Proposal::query()
             ->where('detailable_type', 'App\Models\CommunityService')
             ->where('start_year', $this->period)
+            ->when($this->selectedSemester !== 'all', fn ($q) => $q->where('semester', $this->selectedSemester))
             ->when($this->selectedFaculty !== 'all', function ($q) {
                 $q->whereHas('submitter.identity', fn ($iq) => $iq->where('faculty_id', $this->selectedFaculty));
             })
@@ -362,6 +377,7 @@ class CommunityService extends Component
         return Proposal::query()
             ->where('detailable_type', 'App\Models\CommunityService')
             ->where('start_year', $this->period)
+            ->when($this->selectedSemester !== 'all', fn ($q) => $q->where('semester', $this->selectedSemester))
             ->when($this->selectedScheme !== 'all', fn ($q) => $q->where('community_service_scheme_id', $this->selectedScheme))
             ->when($this->search, function ($q) {
                 $q->where(function ($sq) {

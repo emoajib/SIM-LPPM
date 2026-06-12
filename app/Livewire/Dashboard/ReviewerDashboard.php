@@ -34,6 +34,8 @@ class ReviewerDashboard extends Component
 
     public $reReviewNeeded = [];
 
+    public $chartData = [];
+
     public $selectedYear;
 
     public $availableYears = [];
@@ -83,11 +85,39 @@ class ReviewerDashboard extends Component
 
         // Load recent proposals needing review
         $this->loadRecentProposals($yearFilter);
+
+        $this->loadChartData();
+
+        $this->dispatch('chart-updated',
+            trendChart: $this->chartData
+        );
+    }
+
+    private function loadChartData(): void
+    {
+        $currentYear = (int) date('Y');
+        $startYear = $currentYear - 4;
+        $years = range($startYear, $currentYear);
+
+        $reviewCounts = [];
+        foreach ($years as $year) {
+            $reviewCounts[] = ProposalReviewer::query()
+                ->where('user_id', $this->user->id)
+                ->whereHas('proposal', fn ($q) => $q->whereYear('created_at', (string) $year))
+                ->where('status', ReviewStatus::COMPLETED)
+                ->count();
+        }
+
+        $this->chartData = [
+            'labels' => array_map('strval', $years),
+            'datasets' => [
+                ['label' => 'Review Selesai', 'data' => $reviewCounts, 'borderColor' => '#206bc4', 'backgroundColor' => 'rgba(32, 107, 196, 0.1)', 'fill' => true, 'tension' => 0.4],
+            ],
+        ];
     }
 
     /**
-     * Load all stats in a single aggregated query.
-     * Replaces 8 separate count queries with 1 grouped query.
+     * Single aggregated query for all reviewer stats.
      */
     private function loadStats(string $yearFilter): void
     {

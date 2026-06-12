@@ -1,7 +1,7 @@
 <x-slot:pageActions>
     <div class="btn-list">
         @php
-            $exportParams = ['period' => $period, 'search' => $search, 'scheme' => $selectedScheme, 'faculty' => $selectedFaculty];
+            $exportParams = ['period' => $period, 'semester' => $selectedSemester, 'search' => $search, 'scheme' => $selectedScheme, 'faculty' => $selectedFaculty];
         @endphp
         <a href="{{ route('reports.pkm.pdf', array_merge($exportParams, ['preview' => 1])) }}"
             class="btn btn-outline-info shadow-sm" target="_blank" title="Tinjau PDF">
@@ -56,6 +56,13 @@
                         </select>
                     </div>
                     <div class="col-md-2">
+                        <select wire:model.live="selectedSemester" class="form-select">
+                            <option value="all">Semua Semester</option>
+                            <option value="ganjil">Ganjil</option>
+                            <option value="genap">Genap</option>
+                        </select>
+                    </div>  
+                    <div class="col-md-2">
                         <select wire:model.live="period" class="form-select">
                             @foreach($periods as $p)
                                 <option value="{{ $p }}">Periode {{ $p }}</option>
@@ -101,6 +108,7 @@
                             $currentFilters = [
                                 'search' => $search,
                                 'period' => $period,
+                                'semester' => $selectedSemester,
                                 'scheme' => $selectedScheme,
                                 'faculty' => $selectedFaculty
                             ];

@@ -103,7 +103,7 @@
                                 <i class="icon icon-tabler icon-tabler-device-floppy me-1"></i>
                                 {{ $isEdit ? 'Simpan Perubahan' : 'Buat Manual Book' }}
                             </button>
-                            <a href="{{ route('admin-lppm.manual-books.index') }}" class="btn btn-outline-secondary" wire:navigate>
+                            <a href="{{ route('admin-lppm.manual-books.admin.index') }}" class="btn btn-outline-secondary" wire:navigate>
                                 Batal
                             </a>
                         </div>

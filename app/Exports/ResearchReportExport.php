@@ -16,7 +16,8 @@ class ResearchReportExport implements FromView, ShouldAutoSize, WithColumnFormat
         protected string $period,
         protected ?string $search = null,
         protected ?string $scheme = null,
-        protected ?string $faculty = null
+        protected ?string $faculty = null,
+        protected ?string $semester = null
     ) {}
 
     public function view(): View
@@ -24,6 +25,7 @@ class ResearchReportExport implements FromView, ShouldAutoSize, WithColumnFormat
         $proposals = Proposal::query()
             ->where('detailable_type', 'App\Models\Research')
             ->when($this->period, fn ($q) => $q->where('start_year', $this->period))
+            ->when($this->semester && $this->semester !== 'all', fn ($q) => $q->where('semester', $this->semester))
             ->when($this->search, function ($q) {
                 $q->where(function ($sub) {
                     $sub->where('title', 'like', "%{$this->search}%")
@@ -41,6 +43,7 @@ class ResearchReportExport implements FromView, ShouldAutoSize, WithColumnFormat
         return view('exports.research', [
             'proposals' => $proposals,
             'period' => $this->period,
+            'semester' => $this->semester,
         ]);
     }
 

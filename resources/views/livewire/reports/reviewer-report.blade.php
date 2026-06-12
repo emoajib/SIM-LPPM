@@ -12,17 +12,17 @@
                     </div>
                 </div>
                 <div class="col-auto ms-auto d-flex gap-2">
-                    <a href="{{ route('reports.reviewer.pdf', ['period' => $yearFilter, 'type' => $typeFilter, 'search' => $search, 'preview' => 1]) }}" 
+                    <a href="{{ route('reports.reviewer.pdf', ['period' => $yearFilter, 'semester' => $semesterFilter, 'type' => $typeFilter, 'search' => $search, 'preview' => 1]) }}" 
                        class="btn btn-outline-danger d-flex align-items-center gap-1 shadow-sm" target="_blank">
                         <i class="ti ti-eye fs-2"></i>
                         <span>Tinjau PDF</span>
                     </a>
-                    <a href="{{ route('reports.reviewer.pdf', ['period' => $yearFilter, 'type' => $typeFilter, 'search' => $search]) }}" 
+                    <a href="{{ route('reports.reviewer.pdf', ['period' => $yearFilter, 'semester' => $semesterFilter, 'type' => $typeFilter, 'search' => $search]) }}" 
                        class="btn btn-danger d-flex align-items-center gap-1 shadow-sm" target="_blank">
                         <i class="ti ti-file-text fs-2"></i>
                         <span>Unduh PDF</span>
                     </a>
-                    <a href="{{ route('reports.reviewer.excel', ['period' => $yearFilter, 'type' => $typeFilter, 'search' => $search]) }}" 
+                    <a href="{{ route('reports.reviewer.excel', ['period' => $yearFilter, 'semester' => $semesterFilter, 'type' => $typeFilter, 'search' => $search]) }}" 
                        class="btn btn-success d-flex align-items-center gap-1 shadow-sm">
                         <i class="ti ti-file-spreadsheet fs-2"></i>
                         <span>Ekspor Excel</span>
@@ -210,6 +210,11 @@
                         @foreach ($this->availableYears as $year)
                             <option value="{{ $year }}">Tahun: {{ $year }}</option>
                         @endforeach
+                    </select>
+                    <select class="form-select w-auto" wire:model.live="semesterFilter">
+                        <option value="all">Semua Semester</option>
+                        <option value="ganjil">Ganjil</option>
+                        <option value="genap">Genap</option>
                     </select>
                     @if ($search || $typeFilter !== 'all')
                         <button class="btn btn-ghost-danger p-2" wire:click="resetFilters" title="Reset filter">

@@ -18,7 +18,8 @@ class OutputReportExport implements FromView, ShouldAutoSize, WithStyles
         protected string $outputType = 'all',
         protected ?string $period = null,
         protected ?string $scheme = null,
-        protected ?string $faculty = null
+        protected ?string $faculty = null,
+        protected ?string $semester = null
     ) {}
 
     public function view(): View
@@ -29,6 +30,7 @@ class OutputReportExport implements FromView, ShouldAutoSize, WithStyles
             ->with(['submitter.identity.faculty', 'submitter.identity.studyProgram', 'progressReports.mandatoryOutputs.proposalOutput', 'progressReports.additionalOutputs.proposalOutput'])
             ->where('detailable_type', $detailableType)
             ->when($this->period, fn ($q) => $q->where('start_year', $this->period))
+            ->when($this->semester && $this->semester !== 'all', fn ($q) => $q->where('semester', $this->semester))
             ->where(function (Builder $query) {
                 $query->whereHas('progressReports.mandatoryOutputs')
                     ->orWhereHas('progressReports.additionalOutputs');
@@ -66,6 +68,7 @@ class OutputReportExport implements FromView, ShouldAutoSize, WithStyles
             'proposals' => $proposals,
             'activeTab' => $this->activeTab,
             'outputType' => $this->outputType,
+            'semester' => $this->semester,
         ]);
     }
 

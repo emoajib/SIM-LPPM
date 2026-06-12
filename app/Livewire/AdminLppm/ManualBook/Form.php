@@ -103,7 +103,7 @@ class Form extends Component
                 : 'Manual book berhasil dibuat.'
         );
 
-        $this->redirect(route('admin-lppm.manual-books.index'), navigate: true);
+        $this->redirect(route('admin-lppm.manual-books.admin.index'), navigate: true);
     }
 
     public function removeFile(): void
