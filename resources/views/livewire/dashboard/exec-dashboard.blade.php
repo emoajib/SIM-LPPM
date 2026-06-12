@@ -278,20 +278,38 @@
                     <div style="position:relative;height:250px;width:100%;"
                          wire:ignore
                          x-data="{
-                             chart: null,
+                             initStarted: false,
                              renderTrendChart(data, isReinit = false) {
+                                 this.initStarted = true;
                                  if (!data || !data.labels || !data.labels.length || !data.datasets || !data.datasets.length) return;
                                  if (typeof Chart === 'undefined') {
                                      setTimeout(() => this.renderTrendChart(data, isReinit), 100);
                                      return;
                                  }
-                                 const ctx = this.$refs.trendCanvas?.getContext('2d');
+                                 const canvasEl = this.$refs.trendCanvas;
+                                 if (!canvasEl) return;
+                                 const ctx = canvasEl.getContext('2d');
                                  if (!ctx) return;
-                                 if (this.chart) {
-                                     this.chart.destroy();
-                                     this.chart = null;
+                                 if (canvasEl.chartInstance) {
+                                     canvasEl.chartInstance.data.labels = data.labels;
+                                     canvasEl.chartInstance.data.datasets = data.datasets.map(function(ds) {
+                                         return { 
+                                             label: ds.label, 
+                                             data: ds.data, 
+                                             borderColor: ds.borderColor, 
+                                             backgroundColor: ds.backgroundColor, 
+                                             fill: true, 
+                                             tension: 0.4, 
+                                             pointRadius: 5, 
+                                             pointHoverRadius: 9, 
+                                             pointHoverBorderWidth: 3, 
+                                             pointHoverBorderColor: '#ffffff' 
+                                         };
+                                     });
+                                     canvasEl.chartInstance.update(isReinit ? 'none' : 'default');
+                                     return;
                                  }
-                                 this.chart = new Chart(ctx, {
+                                 canvasEl.chartInstance = new Chart(ctx, {
                                      type: 'line',
                                      data: {
                                          labels: data.labels,

@@ -72,14 +72,18 @@ class DosenDashboard extends Component
 
     private function getAvailableYears(): array
     {
-        $years = Proposal::select(DB::raw(sql_year().' as year'))
+        // Use start_year (tahun pelaksanaan) as filter basis, not created_at
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        $years = Proposal::query()
             ->distinct()
-            ->orderBy('year', 'desc')
-            ->pluck('year')
+            ->whereNotNull('start_year')
+            ->orderBy('start_year', 'desc')
+            ->pluck('start_year')
+            ->map(fn ($y) => (string) $y)
             ->toArray();
 
         if (empty($years)) {
-            $years = [date('Y')];
+            $years = [(string) date('Y')];
         }
 
         return $years;
@@ -115,33 +119,32 @@ class DosenDashboard extends Component
      */
     private function loadChartData(): void
     {
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $currentYear = (int) date('Y');
         $startYear = $currentYear - 4; // Last 5 years
         $years = range($startYear, $currentYear);
 
         $proposalsData = Proposal::query()
             ->where('submitter_id', $this->user->id)
-            ->whereYear('created_at', '>=', $startYear)
+            ->where('start_year', '>=', $startYear)
             ->select([
-                DB::raw(sql_year().' as year'),
+                'start_year as year',
                 'status',
                 DB::raw('COUNT(*) as count'),
             ])
-            ->groupBy('year', 'status')
+            ->groupBy('start_year', 'status')
             ->get();
 
         $usulanData = [];
         $didanaiData = [];
 
         foreach ($years as $year) {
-            $yearStr = (string) $year;
-
             // Total Usulan in this year
             $usulanCount = $proposalsData->filter(fn ($p) => (int) $p->getAttribute('year') === $year)->sum('count');
             $usulanData[] = $usulanCount;
 
-            // Didanai (status: approved) in this year
-            $didanaiCount = $proposalsData->filter(fn ($p) => (int) $p->getAttribute('year') === $year && ($p->status->value ?? '') === 'approved')->sum('count');
+            // Didanai (status: approved or completed) in this year
+            $didanaiCount = $proposalsData->filter(fn ($p) => (int) $p->getAttribute('year') === $year && in_array($p->status->value ?? '', ['approved', 'completed']))->sum('count');
             $didanaiData[] = $didanaiCount;
         }
 
@@ -174,9 +177,10 @@ class DosenDashboard extends Component
      */
     private function loadStats(string $yearFilter): void
     {
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $statsRaw = Proposal::query()
             ->where('submitter_id', $this->user->id)
-            ->whereYear('created_at', $yearFilter)
+            ->where('start_year', $yearFilter)
             ->select([
                 'detailable_type',
                 'status',
@@ -193,8 +197,8 @@ class DosenDashboard extends Component
             'my_community_service' => $communityService->sum('count'),
             'research_pending' => $research->filter(fn ($r) => ($r->status->value ?? '') === 'submitted')->sum('count'),
             'community_service_pending' => $communityService->filter(fn ($r) => ($r->status->value ?? '') === 'submitted')->sum('count'),
-            'research_approved' => $research->filter(fn ($r) => ($r->status->value ?? '') === 'approved')->sum('count'),
-            'community_service_approved' => $communityService->filter(fn ($r) => ($r->status->value ?? '') === 'approved')->sum('count'),
+            'research_approved' => $research->filter(fn ($r) => in_array($r->status->value ?? '', ['approved', 'completed']))->sum('count'),
+            'community_service_approved' => $communityService->filter(fn ($r) => in_array($r->status->value ?? '', ['approved', 'completed']))->sum('count'),
             'research_schemes_count' => ResearchScheme::count(),
             'community_service_schemes_count' => CommunityServiceScheme::count(),
         ];
@@ -207,12 +211,13 @@ class DosenDashboard extends Component
     private function loadMemberStats(string $yearFilter): void
     {
         // Use raw query builder to avoid pivot columns being auto-included
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $memberStats = DB::table('proposals')
             ->join('proposal_user', 'proposals.id', '=', 'proposal_user.proposal_id')
             ->where('proposal_user.user_id', $this->user->id)
             ->where('proposal_user.role', '!=', 'ketua') // Hanya hitung jika sebagai Anggota
             ->where('proposal_user.status', 'accepted') // Hanya hitung yang sudah dikonfirmasi
-            ->whereYear('proposals.created_at', $yearFilter)
+            ->where('proposals.start_year', $yearFilter)
             ->select([
                 'proposals.detailable_type',
                 DB::raw('COUNT(*) as count'),
@@ -238,10 +243,11 @@ class DosenDashboard extends Component
      */
     private function loadRecentProposals(string $yearFilter): void
     {
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $recentProposals = Proposal::query()
             ->with(['researchScheme', 'communityServiceScheme'])
             ->where('submitter_id', $this->user->id)
-            ->whereYear('created_at', $yearFilter)
+            ->where('start_year', $yearFilter)
             ->latest('updated_at')
             ->limit(20)
             ->get();
@@ -263,8 +269,9 @@ class DosenDashboard extends Component
      */
     private function loadProcessStats(string $yearFilter): void
     {
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $proposalsThisYear = Proposal::where('submitter_id', $this->user->id)
-            ->whereYear('created_at', $yearFilter)
+            ->where('start_year', $yearFilter)
             ->get();
         $proposalsThisYearIds = $proposalsThisYear->pluck('id');
 

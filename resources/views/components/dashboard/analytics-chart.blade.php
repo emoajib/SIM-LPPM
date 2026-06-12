@@ -4,7 +4,8 @@
     'labels' => [],
     'datasets' => [],
     'title' => '',
-    'loading' => false
+    'loading' => false,
+    'height' => '320px'
 ])
 
 <style wire:ignore>
@@ -15,30 +16,81 @@
         transform: translateY(-4px) scale(1.008);
         box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06) !important;
     }
+    .chart-container-relative {
+        border-radius: 12px; 
+        position: relative; 
+        min-height: {{ $height }};
+        overflow: hidden;
+    }
 </style>
 
-<div class="card border-0 shadow-sm h-100 hover-scale"
+<div class="card border-0 shadow-sm h-100 hover-scale chart-container-relative"
      x-data="{
-        chart: null,
+        isLoading: {{ $loading ? 'true' : 'false' }},
+        isEmpty: false,
+        a11yData: [],
+        
         initChart(labels, datasets, isReinit = false) {
             // Vetted by AI - Manual Review Required by Senior Engineer/Manager
-            if (!labels || !datasets) return;
+            
+            // 1. Edge Case Handling: Data Kosong
+            if (!labels || !datasets || labels.length === 0 || datasets.length === 0) {
+                this.isEmpty = true;
+                this.isLoading = false;
+                return;
+            }
+            
+            // Periksa jika seluruh dataset bernilai 0 (untuk bar/line chart)
+            const hasData = datasets.some(ds => ds.data && ds.data.some(val => val > 0));
+            if (!hasData) {
+                this.isEmpty = true;
+                this.isLoading = false;
+                return;
+            }
+
+            this.isEmpty = false;
+            this.isLoading = false;
+
+            // 2. Aksesibilitas Dinamis (WCAG)
+            this.a11yData = labels.map((label, i) => {
+                return {
+                    label: label,
+                    values: datasets.map(ds => ({
+                        name: ds.label || 'Dataset',
+                        value: ds.data[i] || 0
+                    }))
+                };
+            });
+
+            // 3. Render Chart
             if (typeof Chart === 'undefined') {
                 setTimeout(() => this.initChart(labels, datasets, isReinit), 100);
                 return;
             }
-            const ctx = this.$refs.canvas?.getContext('2d');
-            if (!ctx) return;
-            if (this.chart) {
-                this.chart.destroy();
-                this.chart = null;
-            }
             
-            // CRITICAL: On re-init (chart-updated), disable animation to prevent stale rAF callbacks
-            // that could fire after chart.ctx is nulled by destroy(). Animation on initial render only.
+            const canvasEl = this.$refs.canvas;
+            if (!canvasEl) return;
+            const ctx = canvasEl.getContext('2d');
+            if (!ctx) return;
+            
+            // CRITICAL: Matikan animasi pada update untuk hindari stale rAF callbacks
             const animDuration = isReinit ? 0 : 800;
 
-            this.chart = new Chart(ctx, {
+            // DOM-based Chart Reference (Mengatasi proxy Alpine stack overflow)
+            if (canvasEl.chartInstance) {
+                canvasEl.chartInstance.data.labels = labels;
+                canvasEl.chartInstance.data.datasets = datasets.map(ds => ({
+                    ...ds,
+                    hoverOffset: {{ $type === 'doughnut' ? 15 : 0 }},
+                    hoverBorderWidth: {{ $type === 'bar' ? 2 : 0 }},
+                    hoverBorderColor: '#ffffff',
+                    hoverBackgroundColor: ds.backgroundColor ? (Array.isArray(ds.backgroundColor) ? ds.backgroundColor.map(c => c + 'cc') : ds.backgroundColor + 'cc') : undefined
+                }));
+                canvasEl.chartInstance.update(isReinit ? 'none' : 'default');
+                return;
+            }
+
+            canvasEl.chartInstance = new Chart(ctx, {
                 type: '{{ $type }}',
                 data: {
                     labels: labels,
@@ -77,12 +129,17 @@
                         },
                         tooltip: {
                             enabled: true,
-                            backgroundColor: 'rgba(30, 41, 59, 0.9)',
+                            backgroundColor: 'rgba(30, 41, 59, 0.95)',
+                            padding: 12,
+                            cornerRadius: 8,
                             titleFont: { family: 'Inter, sans-serif', size: 13, weight: 'bold' },
                             bodyFont: { family: 'Inter, sans-serif', size: 12 },
-                            padding: 10,
-                            cornerRadius: 8,
-                            displayColors: true
+                            displayColors: true,
+                            callbacks: {
+                                label: function(item) { 
+                                    return item.dataset.label + ': ' + item.formattedValue; 
+                                }
+                            }
                         }
                     },
                     scales: {
@@ -112,10 +169,7 @@
                         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
                         id: 'customDatalabels',
                         afterDraw(chart) {
-                            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
                             const ctx = chart.ctx;
-                            // CRITICAL: ctx CAN be null if chart was destroyed during a pending draw cycle
-                            // or if the canvas context was released. Guard EVERY usage.
                             if (!ctx) return;
                             try {
                                 ctx.save();
@@ -145,7 +199,6 @@
                                             y = element.y - 8;
                                             ctx.fillStyle = 'var(--tblr-body-color, #333)';
                                             ctx.shadowBlur = 0;
-                                            // Vetted by AI - Adjust font size when multiple datasets are shown to avoid overlap
                                             ctx.font = visibleDatasetsCount > 1 ? 'bold 9px Inter, sans-serif' : 'bold 11px Inter, sans-serif';
                                         }
                                         
@@ -156,16 +209,12 @@
                                 });
                                 ctx.restore();
                             } catch (e) {
-                                // Silently fail if canvas context is lost mid-draw
                                 console.warn('Chart datalabels draw error:', e);
                             }
                         }
                     }
                 ]
             });
-        },
-        destroy() {
-            if (this.chart) { this.chart.destroy(); this.chart = null; }
         }
      }"
      x-init="initChart(@js($labels), @js($datasets))"
@@ -185,17 +234,43 @@
                 initChart($event.detail.topics.labels, $event.detail.topics.datasets, true);
             }
         });
-     "
-     style="border-radius: 12px; position: relative; min-height: 320px;">
+     ">
     
-    @if($loading)
-        <div class="position-absolute top-0 start-0 w-100 h-100 bg-white bg-opacity-75 d-flex align-items-center justify-content-center" style="z-index: 10;">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
+    {{-- 1. SKELETON LOADER (Shimmer Effect) --}}
+    <div x-show="isLoading" 
+         x-transition.opacity.duration.300ms
+         class="position-absolute top-0 start-0 w-100 h-100 bg-white p-3 z-3 placeholder-glow d-flex flex-column" 
+         style="border-radius: 12px;">
+        <div class="placeholder col-6 mb-4" style="height: 24px; border-radius: 4px;"></div>
+        <div class="d-flex align-items-end justify-content-between h-100 gap-3 pb-3 px-2">
+            <div class="placeholder w-100" style="height: 40%; border-radius: 4px;"></div>
+            <div class="placeholder w-100" style="height: 80%; border-radius: 4px;"></div>
+            <div class="placeholder w-100" style="height: 60%; border-radius: 4px;"></div>
+            <div class="placeholder w-100" style="height: 90%; border-radius: 4px;"></div>
+            <div class="placeholder w-100" style="height: 30%; border-radius: 4px;"></div>
+            <div class="placeholder w-100" style="height: 70%; border-radius: 4px;"></div>
         </div>
-    @endif
+    </div>
 
+    {{-- 2. EMPTY STATE (Edge Case Handling) --}}
+    <div x-show="!isLoading && isEmpty" 
+         x-transition.opacity.duration.300ms
+         class="position-absolute top-0 start-0 w-100 h-100 bg-white d-flex flex-column align-items-center justify-content-center z-2" 
+         style="border-radius: 12px;">
+        <div class="bg-light rounded-circle p-3 mb-3 d-flex align-items-center justify-content-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon text-muted" width="32" height="32" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <circle cx="12" cy="12" r="9" />
+                <line x1="9" y1="10" x2="9.01" y2="10" />
+                <line x1="15" y1="10" x2="15.01" y2="10" />
+                <path d="M9 15a3 3 0 0 0 6 0" />
+            </svg>
+        </div>
+        <span class="text-dark fw-bold mb-1">Belum Ada Data</span>
+        <span class="text-muted small">Data untuk grafik ini masih kosong.</span>
+    </div>
+
+    {{-- 3. CHART UI --}}
     <div class="card-header bg-transparent border-0 py-3">
         <h3 class="card-title fw-bold text-dark mb-0">{{ $title }}</h3>
     </div>
@@ -205,7 +280,7 @@
             <canvas x-ref="canvas" aria-label="Grafik: {{ $title }}" role="img"></canvas>
         </div>
         
-        {{-- Screen Reader Alternative (WCAG Accessibility) --}}
+        {{-- 4. SCREEN READER ACCESSIBILITY TABLE (Dynamic WCAG) --}}
         <div class="visually-hidden">
             <h4>Data Alternatif untuk Grafik: {{ $title }}</h4>
             <table class="table">
@@ -216,16 +291,18 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($labels as $index => $label)
+                    <template x-for="item in a11yData" :key="item.label">
                         <tr>
-                            <td>{{ $label }}</td>
+                            <td x-text="item.label"></td>
                             <td>
-                                @foreach($datasets as $dataset)
-                                    {{ $dataset['label'] ?? '' }}: {{ $dataset['data'][$index] ?? 0 }} 
-                                @endforeach
+                                <ul>
+                                    <template x-for="val in item.values" :key="val.name">
+                                        <li x-text="val.name + ': ' + val.value"></li>
+                                    </template>
+                                </ul>
                             </td>
                         </tr>
-                    @endforeach
+                    </template>
                 </tbody>
             </table>
         </div>

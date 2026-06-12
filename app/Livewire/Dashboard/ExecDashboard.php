@@ -669,7 +669,7 @@ class ExecDashboard extends Component
         $didanaiData = [];
         foreach ($years as $year) {
             $usulanData[] = $proposalsData->filter(fn ($p) => (int) $p->getAttribute('year') === $year)->sum('count');
-            $didanaiData[] = $proposalsData->filter(fn ($p) => (int) $p->getAttribute('year') === $year && ($p->status->value ?? '') === 'approved')->sum('count');
+            $didanaiData[] = $proposalsData->filter(fn ($p) => (int) $p->getAttribute('year') === $year && in_array($p->status->value ?? '', ['approved', 'completed']))->sum('count');
         }
 
         $this->chartData = [

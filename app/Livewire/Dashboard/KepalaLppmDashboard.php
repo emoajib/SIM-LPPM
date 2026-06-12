@@ -590,7 +590,7 @@ class KepalaLppmDashboard extends Component
         $didanaiData = [];
         foreach ($years as $year) {
             $usulanData[] = $proposalsData->filter(fn ($p) => (int) $p->getAttribute('year') === $year)->sum('count');
-            $didanaiData[] = $proposalsData->filter(fn ($p) => (int) $p->getAttribute('year') === $year && ($p->status->value ?? '') === 'approved')->sum('count');
+            $didanaiData[] = $proposalsData->filter(fn ($p) => (int) $p->getAttribute('year') === $year && in_array($p->status->value ?? '', ['approved', 'completed']))->sum('count');
         }
 
         $this->chartData = [
@@ -654,8 +654,8 @@ class KepalaLppmDashboard extends Component
             'total_community_service' => $communityService->sum('count'),
             'research_pending' => $researchPending,
             'community_service_pending' => $communityServicePending,
-            'research_approved' => $research->filter(fn ($r) => ($r->status->value ?? '') === 'approved')->sum('count'),
-            'community_service_approved' => $communityService->filter(fn ($r) => ($r->status->value ?? '') === 'approved')->sum('count'),
+            'research_approved' => $research->filter(fn ($r) => in_array($r->status->value ?? '', ['approved', 'completed']))->sum('count'),
+            'community_service_approved' => $communityService->filter(fn ($r) => in_array($r->status->value ?? '', ['approved', 'completed']))->sum('count'),
             'research_completed' => $research->filter(fn ($r) => ($r->status->value ?? '') === 'completed')->sum('count'),
             'community_service_completed' => $communityService->filter(fn ($r) => ($r->status->value ?? '') === 'completed')->sum('count'),
             'pending_initial_approval' => $raw->filter(fn ($r) => ($r->status->value ?? '') === 'submitted')->sum('count'),
