@@ -882,14 +882,21 @@ class ExecDashboard extends Component
 
         // 2. Monev Status (Integrated with new MonevReview system)
         $totalMonev = $activeProposals->count();
-        $completedMonev = MonevReview::whereIn('proposal_id', $activeProposalIds)
+
+        $monevReviewCompleted = MonevReview::whereIn('proposal_id', $activeProposalIds)
             ->whereNotNull('reviewed_at')
             ->distinct()
             ->count('proposal_id');
 
-        if ($completedMonev === 0) {
-            $completedMonev = ProposalMonev::whereIn('proposal_id', $activeProposalIds)->distinct()->count('proposal_id');
-        }
+        $monevReviewAny = MonevReview::whereIn('proposal_id', $activeProposalIds)
+            ->distinct()
+            ->count('proposal_id');
+
+        $monevLegacy = ProposalMonev::whereIn('proposal_id', $activeProposalIds)
+            ->distinct()
+            ->count('proposal_id');
+
+        $completedMonev = max($monevReviewCompleted, $monevReviewAny, $monevLegacy);
 
         // 3. Reporting Status (Progress & Final Report)
         $totalReports = $activeProposals->count();
@@ -902,8 +909,14 @@ class ExecDashboard extends Component
         $targetOutputs = ProposalOutput::whereIn('proposal_id', $activeProposalIds)->count();
 
         $progressReportIds = ProgressReport::whereIn('proposal_id', $activeProposalIds)->pluck('id');
-        $achievedOutputs = MandatoryOutput::whereIn('progress_report_id', $progressReportIds)->count()
+        $achievedViaReport = MandatoryOutput::whereIn('progress_report_id', $progressReportIds)->count()
             + AdditionalOutput::whereIn('progress_report_id', $progressReportIds)->count();
+
+        $targetOutputIds = ProposalOutput::whereIn('proposal_id', $activeProposalIds)->pluck('id');
+        $achievedViaOutput = MandatoryOutput::whereIn('proposal_output_id', $targetOutputIds)->count()
+            + AdditionalOutput::whereIn('proposal_output_id', $targetOutputIds)->count();
+
+        $achievedOutputs = max($achievedViaReport, $achievedViaOutput);
 
         $this->processStats = [
             'draft_total' => $totalDraft,

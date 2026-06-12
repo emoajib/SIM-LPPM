@@ -716,15 +716,26 @@ class AdminDashboard extends Component
 
         // 2. Monev Status (Integrated with new MonevReview system)
         $totalMonev = $activeProposals->count();
-        $completedMonev = MonevReview::whereIn('proposal_id', $activeProposalIds)
+
+        // Count proposals with submitted MonevReview (reviewer submitted evaluation)
+        $monevReviewCompleted = MonevReview::whereIn('proposal_id', $activeProposalIds)
             ->whereNotNull('reviewed_at')
             ->distinct()
             ->count('proposal_id');
 
-        // If no new reviews, fallback to legacy ProposalMonev for backward compatibility
-        if ($completedMonev === 0) {
-            $completedMonev = ProposalMonev::whereIn('proposal_id', $activeProposalIds)->distinct()->count('proposal_id');
-        }
+        // Count proposals with any MonevReview activity (assigned or draft)
+        $monevReviewAny = MonevReview::whereIn('proposal_id', $activeProposalIds)
+            ->distinct()
+            ->count('proposal_id');
+
+        // Count proposals with legacy ProposalMonev records (admin monitoring logs)
+        $monevLegacy = ProposalMonev::whereIn('proposal_id', $activeProposalIds)
+            ->distinct()
+            ->count('proposal_id');
+
+        // Combined: a proposal is "selesai dimonitoring" if it has
+        // submitted review, any review activity, or legacy monitoring
+        $completedMonev = max($monevReviewCompleted, $monevReviewAny, $monevLegacy);
 
         // 3. Reporting Status (Progress & Final Report)
         $totalReports = $activeProposals->count();
@@ -737,10 +748,18 @@ class AdminDashboard extends Component
         // Target: Total outputs promised in funded proposals
         $targetOutputs = ProposalOutput::whereIn('proposal_id', $activeProposalIds)->count();
 
-        // Achieved: Total outputs uploaded for funded proposals (via progress reports)
+        // Achieved Path A: via ProgressReport -> proposal_id (submitted progress reports)
         $progressReportIds = ProgressReport::whereIn('proposal_id', $activeProposalIds)->pluck('id');
-        $achievedOutputs = MandatoryOutput::whereIn('progress_report_id', $progressReportIds)->count()
+        $achievedViaReport = MandatoryOutput::whereIn('progress_report_id', $progressReportIds)->count()
             + AdditionalOutput::whereIn('progress_report_id', $progressReportIds)->count();
+
+        // Achieved Path B: via ProposalOutput -> proposal_id (direct link)
+        $targetOutputIds = ProposalOutput::whereIn('proposal_id', $activeProposalIds)->pluck('id');
+        $achievedViaOutput = MandatoryOutput::whereIn('proposal_output_id', $targetOutputIds)->count()
+            + AdditionalOutput::whereIn('proposal_output_id', $targetOutputIds)->count();
+
+        // Combined: use the larger of the two (they overlap but one may find more)
+        $achievedOutputs = max($achievedViaReport, $achievedViaOutput);
 
         $this->processStats = [
             'draft_total' => $totalDraft,
