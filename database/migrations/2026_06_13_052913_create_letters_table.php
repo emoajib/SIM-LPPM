@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('letter_number')->nullable()->unique();
             $table->foreignId('letter_type_id')->constrained()->cascadeOnDelete();
             $table->foreignUuid('user_id')->constrained()->cascadeOnDelete();
-            
+
             // Polymorphic relation to Proposal or ProposalReviewer
             $table->string('reference_type');
             $table->uuid('reference_id');
@@ -24,12 +24,12 @@ return new class extends Migration
 
             $table->string('signature_mode'); // tte, manual
             $table->string('status'); // draft, pending_verification, pending_approval, ready_to_print, published, rejected
-            
+
             $table->json('metadata')->nullable();
             $table->json('team_snapshot')->nullable();
             $table->string('file_path')->nullable();
             $table->boolean('is_stamped')->default(false);
-            
+
             $table->timestamp('published_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
