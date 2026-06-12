@@ -217,7 +217,7 @@
             });
         }
      }"
-     x-init="initChart(@js($labels), @js($datasets))"
+     x-init="$nextTick(() => initChart(@js($labels), @js($datasets)))"
      @chart-updated.window="
         requestAnimationFrame(() => {
             if ($event.detail.focusAreas && '{{ $title }}'.includes('Fokus')) {
