@@ -265,7 +265,9 @@
     @if(!empty($chartData['labels']))
         <div class="row row-cards mb-4">
             <div class="col-12">
-                <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+                <div class="card border-0 shadow-sm" style="border-radius: 12px; transition: transform 0.2s ease, box-shadow 0.2s ease; cursor: default;"
+                     onmouseover="this.style.transform='scale(1.015)';this.style.boxShadow='0 8px 25px rgba(0,0,0,0.12)'"
+                     onmouseout="this.style.transform='scale(1)';this.style.boxShadow='none'">
                     <div class="card-header bg-transparent border-0 py-3 d-flex align-items-center">
                         <div class="avatar bg-primary-lt text-primary shadow-sm avatar-sm me-3 border-0">
                             <i class="ti ti-chart-line"></i>
@@ -290,12 +292,25 @@
                                         data: {
                                             labels: data.labels,
                                             datasets: data.datasets.map(function(ds) {
-                                                return { label: ds.label, data: ds.data, borderColor: ds.borderColor, backgroundColor: ds.backgroundColor, fill: true, tension: 0.4, pointRadius: 4, pointHoverRadius: 6 };
+                                                return { label: ds.label, data: ds.data, borderColor: ds.borderColor, backgroundColor: ds.backgroundColor, fill: true, tension: 0.4, pointRadius: 4, pointHoverRadius: 8, pointHoverBorderWidth: 3, pointHoverBorderColor: "#ffffff" };
                                             }),
                                         },
                                         options: {
                                             responsive: true, maintainAspectRatio: false,
-                                            plugins: { legend: { display: true, position: "bottom" }, tooltip: { backgroundColor: "rgba(30,41,59,0.9)", padding: 10, cornerRadius: 8 } },
+                                            hover: { mode: "index", intersect: false },
+                                            plugins: {
+                                                legend: { display: true, position: "bottom" },
+                                                tooltip: {
+                                                    backgroundColor: "rgba(30,41,59,0.95)",
+                                                    padding: 12, cornerRadius: 8,
+                                                    titleFont: { weight: "bold", size: 13 },
+                                                    bodyFont: { size: 12 },
+                                                    callbacks: {
+                                                        title: function(items) { return "Tahun " + items[0].label; },
+                                                        label: function(item) { return item.dataset.label + ": " + item.raw; }
+                                                    }
+                                                }
+                                            },
                                             scales: {
                                                 x: { grid: { display: false }, ticks: { color: "#9ca3af", font: { size: 10 } } },
                                                 y: { grid: { color: "rgba(229,231,235,0.5)" }, ticks: { color: "#9ca3af", font: { size: 10 }, stepSize: 1 } },
