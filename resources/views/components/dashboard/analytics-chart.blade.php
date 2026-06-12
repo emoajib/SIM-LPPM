@@ -109,7 +109,8 @@
                 },
                 plugins: [
                     {
-                                id: 'datalabels',
+                        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+                        id: 'customDatalabels',
                         afterDraw(chart) {
                             // Vetted by AI - Manual Review Required by Senior Engineer/Manager
                             const ctx = chart.ctx;

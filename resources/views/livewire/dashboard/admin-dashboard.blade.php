@@ -229,101 +229,100 @@
         </div>
     </div>
 
-    @if(!empty($chartData['labels']))
-        <div class="row row-cards mb-4">
-            <div class="col-12">
-                <div class="card border-0 shadow-sm" style="border-radius: 12px; transition: transform 0.2s ease, box-shadow 0.2s ease; cursor: default;"
-                     onmouseover="this.style.transform='scale(1.015)';this.style.boxShadow='0 8px 25px rgba(0,0,0,0.12)'"
-                     onmouseout="this.style.transform='scale(1)';this.style.boxShadow='none'">
-                    <div class="card-header bg-transparent border-0 py-3 d-flex align-items-center">
-                        <div class="avatar bg-primary-lt text-primary shadow-sm avatar-sm me-3 border-0">
-                            <i class="ti ti-chart-line"></i>
-                        </div>
-                        <h3 class="card-title fw-bold mb-0">Tren Usulan & Pendanaan</h3>
+    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+    <div class="row row-cards mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm" style="border-radius: 12px; transition: transform 0.2s ease, box-shadow 0.2s ease; cursor: default;"
+                 onmouseover="this.style.transform='scale(1.015)';this.style.boxShadow='0 8px 25px rgba(0,0,0,0.12)'"
+                 onmouseout="this.style.transform='scale(1)';this.style.boxShadow='none'">
+                <div class="card-header bg-transparent border-0 py-3 d-flex align-items-center">
+                    <div class="avatar bg-primary-lt text-primary shadow-sm avatar-sm me-3 border-0">
+                        <i class="ti ti-chart-line"></i>
                     </div>
-                    <div class="card-body">
-                        <div style="position:relative;height:250px;width:100%;"
-                             wire:ignore
-                             x-data="{
-                                 chart: null,
-                                 renderTrendChart(data, isReinit = false) {
-                                     if (!data || !data.labels || !data.labels.length || !data.datasets || !data.datasets.length) return;
-                                     if (typeof Chart === 'undefined') {
-                                         setTimeout(() => this.renderTrendChart(data, isReinit), 100);
-                                         return;
-                                     }
-                                     const ctx = this.$refs.trendCanvas?.getContext('2d');
-                                     if (!ctx) return;
-                                     if (this.chart) {
-                                         this.chart.destroy();
-                                         this.chart = null;
-                                     }
-                                     this.chart = new Chart(ctx, {
-                                         type: 'line',
-                                         data: {
-                                             labels: data.labels,
-                                             datasets: data.datasets.map(function(ds) {
-                                                 return { 
-                                                     label: ds.label, 
-                                                     data: ds.data, 
-                                                     borderColor: ds.borderColor, 
-                                                     backgroundColor: ds.backgroundColor, 
-                                                     fill: true, 
-                                                     tension: 0.4, 
-                                                     pointRadius: 5, 
-                                                     pointHoverRadius: 9, 
-                                                     pointHoverBorderWidth: 3, 
-                                                     pointHoverBorderColor: '#ffffff' 
-                                                 };
-                                             }),
-                                         },
-                                         options: {
-                                             responsive: true, 
-                                             maintainAspectRatio: false,
-                                             animation: { duration: isReinit ? 0 : 800 },
-                                             hover: { mode: 'index', intersect: false },
-                                             plugins: {
-                                                 legend: { display: true, position: 'bottom' },
-                                                 tooltip: {
-                                                     enabled: true,
-                                                     backgroundColor: 'rgba(30,41,59,0.95)',
-                                                     padding: 12, 
-                                                     cornerRadius: 8,
-                                                     titleFont: { weight: 'bold', size: 13 },
-                                                     bodyFont: { size: 12 },
-                                                     callbacks: {
-                                                         title: function(items) { return 'Tahun ' + items[0].label; },
-                                                         label: function(item) { return item.dataset.label + ': ' + item.formattedValue + ' proposal'; }
-                                                     }
+                    <h3 class="card-title fw-bold mb-0">Tren Usulan & Pendanaan</h3>
+                </div>
+                <div class="card-body">
+                    <div style="position:relative;height:250px;width:100%;"
+                         wire:ignore
+                         x-data="{
+                             chart: null,
+                             renderTrendChart(data, isReinit = false) {
+                                 if (!data || !data.labels || !data.labels.length || !data.datasets || !data.datasets.length) return;
+                                 if (typeof Chart === 'undefined') {
+                                     setTimeout(() => this.renderTrendChart(data, isReinit), 100);
+                                     return;
+                                 }
+                                 const ctx = this.$refs.trendCanvas?.getContext('2d');
+                                 if (!ctx) return;
+                                 if (this.chart) {
+                                     this.chart.destroy();
+                                     this.chart = null;
+                                 }
+                                 this.chart = new Chart(ctx, {
+                                     type: 'line',
+                                     data: {
+                                         labels: data.labels,
+                                         datasets: data.datasets.map(function(ds) {
+                                             return { 
+                                                 label: ds.label, 
+                                                 data: ds.data, 
+                                                 borderColor: ds.borderColor, 
+                                                 backgroundColor: ds.backgroundColor, 
+                                                 fill: true, 
+                                                 tension: 0.4, 
+                                                 pointRadius: 5, 
+                                                 pointHoverRadius: 9, 
+                                                 pointHoverBorderWidth: 3, 
+                                                 pointHoverBorderColor: '#ffffff' 
+                                             };
+                                         }),
+                                     },
+                                     options: {
+                                         responsive: true, 
+                                         maintainAspectRatio: false,
+                                         animation: { duration: isReinit ? 0 : 800 },
+                                         hover: { mode: 'index', intersect: false },
+                                         plugins: {
+                                             legend: { display: true, position: 'bottom' },
+                                             tooltip: {
+                                                 enabled: true,
+                                                 backgroundColor: 'rgba(30,41,59,0.95)',
+                                                 padding: 12, 
+                                                 cornerRadius: 8,
+                                                 titleFont: { weight: 'bold', size: 13 },
+                                                 bodyFont: { size: 12 },
+                                                 callbacks: {
+                                                     title: function(items) { return 'Tahun ' + items[0].label; },
+                                                     label: function(item) { return item.dataset.label + ': ' + item.formattedValue + ' proposal'; }
                                                  }
-                                             },
-                                             scales: {
-                                                 x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 10 } } },
-                                                 y: { grid: { color: 'rgba(229,231,235,0.5)' }, ticks: { color: '#9ca3af', font: { size: 10 }, stepSize: 1 } },
-                                             },
+                                             }
                                          },
-                                     });
-                                 },
-                                 destroy() {
-                                     if (this.chart) {
-                                         this.chart.destroy();
-                                         this.chart = null;
-                                     }
+                                         scales: {
+                                             x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 10 } } },
+                                             y: { grid: { color: 'rgba(229,231,235,0.5)' }, ticks: { color: '#9ca3af', font: { size: 10 }, stepSize: 1 } },
+                                         },
+                                     },
+                                 });
+                             },
+                             destroy() {
+                                 if (this.chart) {
+                                     this.chart.destroy();
+                                     this.chart = null;
                                  }
-                             }"
-                             x-init="$nextTick(() => $data.renderTrendChart(@js($chartData)))"
-                             @chart-updated.window="
-                                 if ($event.detail.trendChart) {
-                                     renderTrendChart($event.detail.trendChart, true);
-                                 }
-                             ">
-                            <canvas x-ref="trendCanvas" aria-label="Grafik Tren Usulan & Pendanaan" role="img"></canvas>
+                             }
+                         }"
+                         x-init="$nextTick(() => $data.renderTrendChart(@js($chartData)))"
+                         @chart-updated.window="
+                             if ($event.detail.trendChart) {
+                                 renderTrendChart($event.detail.trendChart, true);
+                             }
+                         ">
+                        <canvas x-ref="trendCanvas" aria-label="Grafik Tren Usulan & Pendanaan" role="img"></canvas>
                     </div>
                 </div>
             </div>
         </div>
-        </div>
-    @endif
+    </div>
 
     <!-- Process Monitoring (Progress Styles) -->
     <div class="row row-cards mb-4">
