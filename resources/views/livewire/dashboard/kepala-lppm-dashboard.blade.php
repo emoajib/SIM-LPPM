@@ -431,45 +431,42 @@
                             <h3 class="card-title fw-bold mb-0">Penelitian Terbaru</h3>
                         </div>
                         <div class="table-responsive">
-                            <table class="card-table table table-vcenter table-borderless table-hover">
+                            {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                            <table class="table table-vcenter card-table table-hover table-borderless">
                                 <thead class="bg-transparent text-muted">
                                     <tr>
-                                        <th>Judul</th>
-                                        <th>Pengaju</th>
-                                        <th>Status</th>
-                                        <th>Tanggal</th>
+                                        <th class="ps-4">Judul & Peneliti</th>
+                                        <th class="text-center">Status</th>
+                                        <th class="text-end pe-4">Tanggal</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @forelse($recentResearch as $research)
                                         <tr wire:key="res-{{ $research->id }}">
-                                            <td>
-                                                <div class="text-wrap lh-base">
+                                            <td class="ps-4">
+                                                <div class="fw-bold text-wrap lh-base" title="{{ $research->title }}">
                                                     {{ $research->title }}
                                                 </div>
-                                            </td>
-                                            <td>
-                                                <div class="d-flex align-items-center py-1">
-                                                    <span
-                                                        class="avatar avatar-sm me-2">{{ $research->submitter?->initials() }}</span>
-                                                    <div class="flex-fill">
-                                                        <div class="font-weight-medium">{{ $research->submitter?->name }}
-                                                        </div>
+                                                <div class="small text-muted d-flex align-items-center mt-1">
+                                                    <div class="avatar avatar-xs me-2 border-0 shadow-sm bg-primary-lt">
+                                                        {{ $research->submitter?->initials() }}
                                                     </div>
+                                                    {{ $research->submitter?->name }}
                                                 </div>
                                             </td>
                                             <td class="text-center">
-                                                <span
-                                                    class="badge bg-{{ $research->status->color() }}-lt fw-bold px-2 py-1"><span
-                                                        class="badge bg-{{ $research->status->color() }} me-1"></span>{{ $research->status->label() }}</span>
+                                                <span class="badge bg-{{ $research->status->color() }}-lt fw-bold px-2 py-1">
+                                                    <span class="badge bg-{{ $research->status->color() }} me-1"></span>
+                                                    {{ $research->status->label() }}
+                                                </span>
                                             </td>
-                                            <td class="text-muted">
+                                            <td class="text-end pe-4 text-muted small">
                                                 {{ $research->created_at->format('d/m/Y') }}
                                             </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="4" class="py-4 text-muted text-center">Belum ada penelitian</td>
+                                            <td colspan="3" class="py-5 text-muted text-center">Belum ada penelitian</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
@@ -488,46 +485,42 @@
                             <h3 class="card-title fw-bold mb-0">PKM Terbaru</h3>
                         </div>
                         <div class="table-responsive">
-                            <table class="card-table table table-vcenter table-borderless table-hover">
+                            {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                            <table class="table table-vcenter card-table table-hover table-borderless">
                                 <thead class="bg-transparent text-muted">
                                     <tr>
-                                        <th>Judul</th>
-                                        <th>Pengaju</th>
-                                        <th>Status</th>
-                                        <th>Tanggal</th>
+                                        <th class="ps-4">Judul & Pengaju</th>
+                                        <th class="text-center">Status</th>
+                                        <th class="text-end pe-4">Tanggal</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @forelse($recentCommunityService as $communityService)
                                         <tr wire:key="pkm-{{ $communityService->id }}">
-                                            <td>
-                                                <div class="text-wrap lh-base">
+                                            <td class="ps-4">
+                                                <div class="fw-bold text-wrap lh-base" title="{{ $communityService->title }}">
                                                     {{ $communityService->title }}
                                                 </div>
-                                            </td>
-                                            <td>
-                                                <div class="d-flex align-items-center py-1">
-                                                    <span
-                                                        class="avatar avatar-sm me-2">{{ $communityService->submitter?->initials() }}</span>
-                                                    <div class="flex-fill">
-                                                        <div class="font-weight-medium">
-                                                            {{ $communityService->submitter?->name }}
-                                                        </div>
+                                                <div class="small text-muted d-flex align-items-center mt-1">
+                                                    <div class="avatar avatar-xs me-2 border-0 shadow-sm bg-azure-lt">
+                                                        {{ $communityService->submitter?->initials() }}
                                                     </div>
+                                                    {{ $communityService->submitter?->name }}
                                                 </div>
                                             </td>
                                             <td class="text-center">
-                                                <span
-                                                    class="badge bg-{{ $communityService->status->color() }}-lt fw-bold px-2 py-1"><span
-                                                        class="badge bg-{{ $communityService->status->color() }} me-1"></span>{{ $communityService->status->label() }}</span>
+                                                <span class="badge bg-{{ $communityService->status->color() }}-lt fw-bold px-2 py-1">
+                                                    <span class="badge bg-{{ $communityService->status->color() }} me-1"></span>
+                                                    {{ $communityService->status->label() }}
+                                                </span>
                                             </td>
-                                            <td class="text-muted">
+                                            <td class="text-end pe-4 text-muted small">
                                                 {{ $communityService->created_at->format('d/m/Y') }}
                                             </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="4" class="py-4 text-muted text-center">Belum ada PKM</td>
+                                            <td colspan="3" class="py-5 text-muted text-center">Belum ada PKM</td>
                                         </tr>
                                     @endforelse
                                 </tbody>

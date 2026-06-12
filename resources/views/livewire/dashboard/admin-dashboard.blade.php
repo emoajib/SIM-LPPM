@@ -423,12 +423,13 @@
                     </div>
                 </div>
                 <div class="table-responsive">
+                    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
                     <table class="table table-vcenter card-table table-hover table-borderless">
-                        <thead class="bg-light-lt">
+                        <thead class="bg-transparent text-muted">
                             <tr>
-                                <th class="ps-4">Judul & Pengajuan</th>
+                                <th class="ps-4">Judul & Peneliti</th>
                                 <th class="text-center">Status</th>
-                                <th class="text-end pe-4">Waktu</th>
+                                <th class="text-end pe-4">Tanggal</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -439,15 +440,20 @@
                                             {{ $research->title }}
                                         </div>
                                         <div class="small text-muted d-flex align-items-center mt-1">
-                                            <div class="avatar avatar-xs me-2 border-0 shadow-sm" style="background-image: url({{ $research->submitter->profile_picture }})"></div>
-                                            {{ $research->submitter->name }}
+                                            <div class="avatar avatar-xs me-2 border-0 shadow-sm bg-primary-lt">
+                                                {{ $research->submitter?->initials() }}
+                                            </div>
+                                            {{ $research->submitter?->name }}
                                         </div>
                                     </td>
                                     <td class="text-center">
-                                        <x-tabler.badge :color="$research->status->color()" class="fw-normal">{{ $research->status->label() }}</x-tabler.badge>
+                                        <span class="badge bg-{{ $research->status->color() }}-lt fw-bold px-2 py-1">
+                                            <span class="badge bg-{{ $research->status->color() }} me-1"></span>
+                                            {{ $research->status->label() }}
+                                        </span>
                                     </td>
                                     <td class="text-end pe-4 text-muted small">
-                                        {{ $research->updated_at->diffForHumans() }}
+                                        {{ $research->created_at->format('d/m/Y') }}
                                     </td>
                                 </tr>
                             @empty
@@ -486,12 +492,13 @@
                     </div>
                 </div>
                 <div class="table-responsive">
+                    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
                     <table class="table table-vcenter card-table table-hover table-borderless">
-                        <thead class="bg-light-lt">
+                        <thead class="bg-transparent text-muted">
                             <tr>
-                                <th class="ps-4">Judul & Pengajuan</th>
+                                <th class="ps-4">Judul & Pengaju</th>
                                 <th class="text-center">Status</th>
-                                <th class="text-end pe-4">Waktu</th>
+                                <th class="text-end pe-4">Tanggal</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -502,15 +509,20 @@
                                             {{ $communityService->title }}
                                         </div>
                                         <div class="small text-muted d-flex align-items-center mt-1">
-                                            <div class="avatar avatar-xs me-2 border-0 shadow-sm" style="background-image: url({{ $communityService->submitter->profile_picture }})"></div>
-                                            {{ $communityService->submitter->name }}
+                                            <div class="avatar avatar-xs me-2 border-0 shadow-sm bg-azure-lt">
+                                                {{ $communityService->submitter?->initials() }}
+                                            </div>
+                                            {{ $communityService->submitter?->name }}
                                         </div>
                                     </td>
                                     <td class="text-center">
-                                        <x-tabler.badge :color="$communityService->status->color()" class="fw-normal">{{ $communityService->status->label() }}</x-tabler.badge>
+                                        <span class="badge bg-{{ $communityService->status->color() }}-lt fw-bold px-2 py-1">
+                                            <span class="badge bg-{{ $communityService->status->color() }} me-1"></span>
+                                            {{ $communityService->status->label() }}
+                                        </span>
                                     </td>
                                     <td class="text-end pe-4 text-muted small">
-                                        {{ $communityService->updated_at->diffForHumans() }}
+                                        {{ $communityService->created_at->format('d/m/Y') }}
                                     </td>
                                 </tr>
                             @empty

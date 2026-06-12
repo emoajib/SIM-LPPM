@@ -245,7 +245,7 @@ class DosenDashboard extends Component
     {
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $recentProposals = Proposal::query()
-            ->with(['researchScheme', 'communityServiceScheme'])
+            ->with(['submitter.identity', 'researchScheme', 'communityServiceScheme'])
             ->where('submitter_id', $this->user->id)
             ->where('start_year', $yearFilter)
             ->latest('updated_at')
