@@ -31,6 +31,12 @@
                 Hapus
             </button>
         @endif
+        @if ($this->isLetteringModuleActive && in_array($proposal->status->value, ['approved', 'completed']) && $proposal->submitter_id === auth()->id())
+            <button type="button" class="btn btn-azure shadow-sm" wire:click="requestLetter">
+                <x-lucide-mail-plus class="icon" />
+                Ajukan Surat
+            </button>
+        @endif
         <a href="{{ route('proposals.preview-pdf', $proposal) }}" target="_blank" class="btn btn-outline-info">
             <x-lucide-eye class="icon" />
             Pratinjau Proposal
@@ -143,6 +149,8 @@
         <!-- Section 5: Workflow & Aksi -->
         <div id="section-workflow" x-show="currentStep === 5">
             @include('livewire.community-service.proposal.components.workflow-actions', ['proposal' => $proposal])
+            
+            <livewire:dashboard.letters.letter-list :proposal="$proposal" />
 
             <!-- History Section -->
             <div class="row mt-4">
@@ -186,4 +194,5 @@
     </div>
 
     @include('livewire.proposals.components.modals', ['proposal' => $proposal])
+    <livewire:dashboard.dosen.letter-request :proposal="$proposal" />
 </div>

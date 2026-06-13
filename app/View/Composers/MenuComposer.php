@@ -34,6 +34,7 @@ class MenuComposer
 
         $roadmapActive = Setting::get('feature_roadmap_active', false);
         $kaprodiValidationActive = Setting::get('feature_kaprodi_validation', false);
+        $letteringActive = Setting::get('module_persuratan_active', false);
 
         $items = [
             // Dashboard - available for all roles
@@ -166,6 +167,12 @@ class MenuComposer
                 'route' => 'kepala-lppm.report-approval',
                 'roles' => ['kepala lppm'],
             ],
+            ...($letteringActive ? [[
+                'title' => 'Persetujuan Surat',
+                'icon' => 'mail-check',
+                'route' => 'kepala-lppm.letter-approval',
+                'roles' => ['kepala lppm'],
+            ]] : []),
             // Admin LPPM - Reviewer Management Group
             [
                 'title' => 'Reviewer',

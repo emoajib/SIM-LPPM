@@ -7,6 +7,7 @@ use App\Livewire\Forms\ProposalForm;
 use App\Livewire\Traits\WithApproval;
 use App\Livewire\Traits\WithTeamManagement;
 use App\Models\Proposal;
+use App\Models\Setting;
 use App\Services\LecturerEligibilityService;
 use App\Services\ProposalService;
 use Illuminate\Support\Facades\Auth;
@@ -98,6 +99,23 @@ abstract class ProposalShow extends Component
     public function review(): void
     {
         $this->redirectRoute($this->getReviewRoute($this->proposal->id));
+    }
+
+    #[Computed]
+    public function isLetteringModuleActive(): bool
+    {
+        return (bool) Setting::get('module_persuratan_active', false);
+    }
+
+    public function requestLetter(): void
+    {
+        if (! $this->isLetteringModuleActive()) {
+            $this->toastError('Modul persuratan sedang tidak aktif.');
+
+            return;
+        }
+
+        $this->dispatch('openLetterRequest')->to('dashboard.dosen.letter-request');
     }
 
     #[Computed]

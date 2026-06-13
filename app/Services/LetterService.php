@@ -73,7 +73,7 @@ class LetterService
 
         $pdf = Pdf::loadView((string) $letterType->template_view, $data);
 
-        $filename = 'letters/' . $letterType->code . '-' . Str::slug($letter->letter_number ?? (string) $letter->id) . '.pdf';
+        $filename = 'letters/'.$letterType->code.'-'.Str::slug($letter->letter_number ?? (string) $letter->id).'.pdf';
         Storage::disk('public')->put($filename, $pdf->output());
 
         $letter->update(['file_path' => $filename]);

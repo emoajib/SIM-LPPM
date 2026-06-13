@@ -12,6 +12,10 @@ class FeatureFlags extends Component
 
     public bool $featureKaprodiValidation = false;
 
+    public bool $modulePersuratanActive = false;
+
+    public string $suratSignatureMode = 'tte';
+
     public bool $featureCommunityPartnerRequired = true;
 
     // Vetted by AI - Manual Review Required by Senior Engineer/Manager
@@ -21,6 +25,8 @@ class FeatureFlags extends Component
     {
         $this->featureRoadmapActive = Setting::get('feature_roadmap_active', false);
         $this->featureKaprodiValidation = Setting::get('feature_kaprodi_validation', false);
+        $this->modulePersuratanActive = Setting::get('module_persuratan_active', false);
+        $this->suratSignatureMode = Setting::get('surat_signature_mode', 'tte');
         $this->featureCommunityPartnerRequired = Setting::get('feature_community_partner_required', true);
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $this->reviewerCountRequired = (int) Setting::get('reviewer_count_required', 1);
@@ -34,6 +40,14 @@ class FeatureFlags extends Component
 
         if ($property === 'featureKaprodiValidation') {
             Setting::set('feature_kaprodi_validation', $value, 'boolean');
+        }
+
+        if ($property === 'modulePersuratanActive') {
+            Setting::set('module_persuratan_active', $value, 'boolean');
+        }
+
+        if ($property === 'suratSignatureMode') {
+            Setting::set('surat_signature_mode', $value, 'string');
         }
 
         if ($property === 'featureCommunityPartnerRequired') {

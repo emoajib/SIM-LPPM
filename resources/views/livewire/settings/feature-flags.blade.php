@@ -96,4 +96,57 @@
             </div>
         </div>
     </div>
+
+    <h3 class="card-title mb-3 mt-4">
+        <x-lucide-mail class="icon me-1" />
+        Modul Persuratan Terintegrasi
+    </h3>
+    <p class="text-secondary mb-3">
+        Kelola aktivasi modul surat tugas dan surat izin serta metode penandatanganan resmi LPPM.
+    </p>
+
+    <div class="list-group list-group-flush">
+        <div class="list-group-item px-0">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <span class="avatar bg-azure-lt">
+                        <x-lucide-toggle-right class="icon" />
+                    </span>
+                </div>
+                <div class="col text-truncate">
+                    <div class="text-body d-block font-weight-medium">Status Modul Persuratan</div>
+                    <div class="text-muted text-truncate mt-n1">
+                        Aktifkan untuk memunculkan menu persuratan bagi Dosen dan Kepala LPPM.
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <label class="form-check form-switch m-0">
+                        <input class="form-check-input" type="checkbox" wire:model.live="modulePersuratanActive">
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="list-group-item px-0">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <span class="avatar bg-indigo-lt">
+                        <x-lucide-pen-tool class="icon" />
+                    </span>
+                </div>
+                <div class="col text-truncate">
+                    <div class="text-body d-block font-weight-medium">Metode Tanda Tangan Utama</div>
+                    <div class="text-muted text-truncate mt-n1">
+                        Pilih antara tanda tangan digital dengan QR Code atau ruang kosong untuk tanda tangan basah.
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <select class="form-select form-select-sm" style="width: auto;" wire:model.live="suratSignatureMode">
+                        <option value="tte">TTE (QR Code / Barcode)</option>
+                        <option value="manual">Tanda Tangan Basah (Cetak)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

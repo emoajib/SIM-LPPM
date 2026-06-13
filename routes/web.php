@@ -25,6 +25,7 @@ use App\Livewire\AdminLppm\ReviewerWorkload;
 use App\Livewire\AdminLppm\ReviewMonitoring;
 use App\Livewire\AdminLppm\SyncSinta;
 use App\Livewire\Dashboard;
+use App\Livewire\Dashboard\KepalaLppm\LetterApproval;
 use App\Livewire\Dekan\ApprovalHistory;
 use App\Livewire\Dekan\ProposalIndex as DekanProposalIndex;
 use App\Livewire\Dekan\ReportIndex;
@@ -245,7 +246,8 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:kepala lppm|rektor'])->prefix('kepala-lppm')->name('kepala-lppm.')->group(function () {
         Route::get('persetujuan-awal', InitialApproval::class)->name('initial-approval');
         Route::get('persetujuan-akhir', FinalDecision::class)->name('final-decision');
-        Route::get('persetujuan-laporan', ReportApproval::class)->name('report-approval');
+        Route::get('report-approval', ReportApproval::class)->name('report-approval');
+        Route::get('persetujuan-surat', LetterApproval::class)->name('letter-approval');
         Route::get('monev/recap', MonevRecap::class)->name('monev.recap');
         Route::get('monev/dashboard', MonevDashboard::class)->name('rektor.monev-dashboard');
     });
