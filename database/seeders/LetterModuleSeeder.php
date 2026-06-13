@@ -22,26 +22,32 @@ class LetterModuleSeeder extends Seeder
             [
                 'code' => 'ST',
                 'name' => 'Surat Tugas',
+                'description' => 'Surat tugas untuk pelaksanaan kegiatan penelitian atau PKM',
                 'category' => 'pelaksanaan',
                 'numbering_format' => '{NOMOR}/ST/LPPM/ITSNU.Pkl/{BULAN-ROMAWI}/{TAHUN}',
                 'template_view' => 'pdf.letters.surat-tugas',
                 'is_uploadable' => false,
+                'is_active' => true,
             ],
             [
                 'code' => 'SP',
                 'name' => 'Surat Permohonan Izin',
+                'description' => 'Surat permohonan izin kegiatan penelitian atau PKM',
                 'category' => 'persiapan',
                 'numbering_format' => '{NOMOR}/SP/LPPM/ITSNU.Pkl/{BULAN-ROMAWI}/{TAHUN}',
                 'template_view' => 'pdf.letters.surat-permohonan-izin',
                 'is_uploadable' => false,
+                'is_active' => true,
             ],
             [
                 'code' => 'SKET',
                 'name' => 'Surat Keterangan Selesai',
+                'description' => 'Surat keterangan bahwa kegiatan telah selesai dilaksanakan',
                 'category' => 'pelaporan',
                 'numbering_format' => '{NOMOR}/SKET/LPPM/ITSNU.Pkl/{BULAN-ROMAWI}/{TAHUN}',
                 'template_view' => 'pdf.letters.surat-keterangan',
                 'is_uploadable' => false,
+                'is_active' => true,
             ],
         ];
 

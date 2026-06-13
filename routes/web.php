@@ -5,6 +5,8 @@ use App\Http\Controllers\AdminLppm\ManualBookUploadController;
 use App\Http\Controllers\DailyNoteExportController;
 use App\Http\Controllers\DocumentSignatureVerificationController;
 use App\Http\Controllers\HealthCheckController;
+use App\Http\Controllers\LetterTypeController;
+use App\Http\Controllers\LetterVerificationController;
 use App\Http\Controllers\MediaDownloadController;
 use App\Http\Controllers\ProposalExportController;
 use App\Http\Controllers\ReportExportController;
@@ -17,6 +19,8 @@ use App\Http\Controllers\SintaExportController;
 use App\Livewire\Admin\Archive\ManageArchives;
 use App\Livewire\Admin\EligibilityDashboard;
 use App\Livewire\AdminLppm\ExportSinta;
+use App\Livewire\AdminLppm\Letter\Archive;
+use App\Livewire\AdminLppm\Letter\LetterTypeManagement;
 use App\Livewire\AdminLppm\ManualBook\Form as ManualBookForm;
 use App\Livewire\AdminLppm\ManualBook\Index as ManualBookIndex;
 use App\Livewire\AdminLppm\Monev\MonevIndex;
@@ -25,6 +29,8 @@ use App\Livewire\AdminLppm\ReviewerWorkload;
 use App\Livewire\AdminLppm\ReviewMonitoring;
 use App\Livewire\AdminLppm\SyncSinta;
 use App\Livewire\Dashboard;
+use App\Livewire\Dashboard\Dosen\LetterHistory;
+use App\Livewire\Dashboard\Dosen\LetterManualRequest;
 use App\Livewire\Dashboard\KepalaLppm\LetterApproval;
 use App\Livewire\Dekan\ApprovalHistory;
 use App\Livewire\Dekan\ProposalIndex as DekanProposalIndex;
@@ -69,7 +75,9 @@ use App\Livewire\Users\Edit as UsersEdit;
 use App\Livewire\Users\Import;
 use App\Livewire\Users\Index as UsersIndex;
 use App\Livewire\Users\Show as UsersShow;
+use App\Models\Letter;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Fortify\Features;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -242,12 +250,39 @@ Route::middleware(['auth'])->group(function () {
         Route::get('monev', App\Livewire\Reviewer\Monev\Index::class)->name('monev');
     });
 
+    // Letter Download
+    Route::get('letters/{letter}/download', function (Letter $letter) {
+        abort_unless(auth()->user()->can('download', $letter), 403);
+        abort_unless($letter->file_path, 404, 'File PDF belum tersedia.');
+
+        return Storage::disk('public')->download($letter->file_path, ($letter->letter_number ?? 'surat').'.pdf');
+    })->name('letter.download');
+
+    // Dosen - Persuratan Routes
+    Route::middleware(['auth', 'letter.active'])->prefix('surat')->name('letters.')->group(function () {
+        Route::get('/buat', LetterManualRequest::class)->name('manual-request');
+        Route::get('/riwayat', LetterHistory::class)->name('history');
+    });
+
+    // Admin LPPM - Persuratan Routes
+    Route::middleware(['auth', 'role:admin lppm', 'letter.active'])->prefix('admin-lppm/persuratan')->name('admin-lppm.letters.')->group(function () {
+        Route::get('/', App\Livewire\AdminLppm\Letter\Dashboard::class)->name('dashboard');
+        Route::get('/arsip', Archive::class)->name('archive');
+    });
+
+    Route::middleware(['auth', 'role:admin lppm', 'letter.active'])->prefix('admin-lppm/persuratan/jenis')->name('admin-lppm.letter-types.')->group(function () {
+        Route::get('/', LetterTypeManagement::class)->name('index');
+        Route::post('/{letterType}/upload-template', [LetterTypeController::class, 'uploadTemplate'])->name('upload-template');
+        Route::get('/{letterType}/download-template', [LetterTypeController::class, 'downloadTemplate'])->name('download-template');
+        Route::delete('/{letterType}/delete-template', [LetterTypeController::class, 'deleteTemplate'])->name('delete-template');
+    });
+
     // Kepala LPPM Routes
     Route::middleware(['role:kepala lppm|rektor'])->prefix('kepala-lppm')->name('kepala-lppm.')->group(function () {
         Route::get('persetujuan-awal', InitialApproval::class)->name('initial-approval');
         Route::get('persetujuan-akhir', FinalDecision::class)->name('final-decision');
         Route::get('report-approval', ReportApproval::class)->name('report-approval');
-        Route::get('persetujuan-surat', LetterApproval::class)->name('letter-approval');
+        Route::get('persetujuan-surat', LetterApproval::class)->middleware('letter.active')->name('letter-approval');
         Route::get('monev/recap', MonevRecap::class)->name('monev.recap');
         Route::get('monev/dashboard', MonevDashboard::class)->name('rektor.monev-dashboard');
     });
@@ -384,6 +419,10 @@ Route::get('/verify/reports/{institutionalReport}', [ReportVerificationControlle
 Route::get('/verify/signatures/{documentSignature}', [DocumentSignatureVerificationController::class, 'show'])
     ->middleware(['signed'])
     ->name('signatures.verify');
+
+Route::get('/verify/letters/{letter}', [LetterVerificationController::class, 'show'])
+    ->middleware(['signed'])
+    ->name('letters.verify');
 
 // Rute Ekspor Laporan (Dekan & Role dengan module_laporan)
 Route::group(['middleware' => ['auth', 'verified', 'permission:module_laporan']], function () {

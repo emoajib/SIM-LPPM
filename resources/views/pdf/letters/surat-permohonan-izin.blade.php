@@ -183,15 +183,14 @@
                 
                 <div class="qr-code">
                     @if($letter->signature_mode === 'tte' && $letter->status === 'published')
-                        {{-- In real implementation, this would be a QR code image --}}
-                        <div style="border: 1px solid #ccc; width: 80px; height: 80px; text-align: center; line-height: 80px; font-size: 8pt;">QR CODE</div>
+                        <img src="{{ $qrDataUri }}" alt="QR Code" style="width: 80px; height: 80px;">
                     @else
                         <br><br><br>
                     @endif
                 </div>
 
-                <strong>{{ $metadata['signer_name'] ?? 'Aria Mulyapradana, S.Psi., M.A.' }}</strong><br>
-                NIDN. {{ $metadata['signer_nidn'] ?? '0612118401' }}
+                <strong>{{ $metadata['signer_name'] ?? '' }}</strong><br>
+                NIDN. {{ $metadata['signer_nidn'] ?? '' }}
             </td>
         </tr>
     </table>

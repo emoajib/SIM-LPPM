@@ -24,26 +24,8 @@
                             <div class="text-muted small">{{ $letter->letterType->name }}</div>
                         </td>
                         <td>
-                            @php
-                                $color = match($letter->status) {
-                                    'draft' => 'secondary',
-                                    'pending_approval' => 'warning',
-                                    'published' => 'success',
-                                    'ready_to_print' => 'info',
-                                    'rejected' => 'danger',
-                                    default => 'secondary'
-                                };
-                                $label = match($letter->status) {
-                                    'draft' => 'Draft',
-                                    'pending_approval' => 'Menunggu TTD',
-                                    'published' => 'Selesai (Digital)',
-                                    'ready_to_print' => 'Siap Cetak',
-                                    'rejected' => 'Ditolak',
-                                    default => $letter->status
-                                };
-                            @endphp
-                            <span class="badge bg-{{ $color }}-lt">
-                                {{ $label }}
+                            <span class="badge bg-{{ \App\Models\Letter::statusColor($letter->status) }}-lt">
+                                {{ \App\Models\Letter::statusLabel($letter->status) }}
                             </span>
                         </td>
                         <td>
@@ -53,7 +35,7 @@
                         </td>
                         <td>
                             @if(in_array($letter->status, ['published', 'ready_to_print']))
-                            <a href="{{ Storage::url($letter->file_path) }}" target="_blank" class="btn btn-sm btn-ghost-primary">
+                            <a href="{{ route('letter.download', $letter->id) }}" target="_blank" class="btn btn-sm btn-ghost-primary">
                                 <i class="ti ti-download"></i> Unduh PDF
                             </a>
                             @endif

@@ -3,10 +3,12 @@
 namespace App\Providers;
 
 use App\Listeners\UserActivityListener;
+use App\Models\Letter;
 use App\Models\Proposal;
 use App\Models\ProposalStatusLog;
 use App\Observers\ProposalObserver;
 use App\Observers\ProposalStatusLogObserver;
+use App\Policies\LetterPolicy;
 use App\Policies\MediaPolicy;
 use App\Policies\ProposalPolicy;
 use App\View\Composers\MenuComposer;
@@ -74,6 +76,7 @@ class AppServiceProvider extends ServiceProvider
             // Register Policies
             Gate::policy(Proposal::class, ProposalPolicy::class);
             Gate::policy(Media::class, MediaPolicy::class);
+            Gate::policy(Letter::class, LetterPolicy::class);
 
             // Global Password Policy
             Password::defaults(function () {

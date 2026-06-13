@@ -4,9 +4,14 @@ namespace App\Services;
 
 use App\Models\Letter;
 use App\Models\LetterType;
+use App\Models\Proposal;
 use App\Models\Setting;
+use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 
 class LetterService
@@ -16,33 +21,40 @@ class LetterService
      */
     public function generateNextNumber(LetterType $type): string
     {
-        $year = date('Y');
-        $month = (int) date('n');
-        $romanMonth = $this->getRomanMonth($month);
+        return DB::transaction(function () use ($type) {
+            $year = date('Y');
+            $month = (int) date('n');
+            $romanMonth = $this->getRomanMonth($month);
 
-        // Find the last sequence number for this year
-        $lastLetter = Letter::where('letter_type_id', $type->id)
-            ->whereYear('created_at', $year)
-            ->whereNotNull('letter_number')
-            ->orderByRaw('CAST(SUBSTRING_INDEX(letter_number, "/", 1) AS UNSIGNED) DESC')
-            ->first();
+            // Find the last sequence number for this year with row lock
+            $letters = Letter::where('letter_type_id', $type->id)
+                ->whereYear('created_at', $year)
+                ->whereNotNull('letter_number')
+                ->lockForUpdate()
+                ->get();
 
-        $nextSequence = 1;
-        if ($lastLetter) {
-            $parts = explode('/', (string) $lastLetter->letter_number);
-            $nextSequence = (int) $parts[0] + 1;
-        }
+            $nextSequence = 1;
+            if ($letters->isNotEmpty()) {
+                $maxSequence = $letters->map(function ($l) {
+                    $parts = explode('/', (string) $l->letter_number);
 
-        $formattedNumber = str_pad((string) $nextSequence, 3, '0', STR_PAD_LEFT);
+                    return (int) ($parts[0] ?? 0);
+                })->max();
 
-        // Replace placeholders in format
-        $format = $type->numbering_format ?? '{NOMOR}/{CODE}/LPPM/ITSNU.Pkl/{BULAN-ROMAWI}/{TAHUN}';
+                $nextSequence = $maxSequence + 1;
+            }
 
-        return str_replace(
-            ['{NOMOR}', '{CODE}', '{BULAN-ROMAWI}', '{TAHUN}'],
-            [$formattedNumber, (string) $type->code, $romanMonth, $year],
-            $format
-        );
+            $formattedNumber = str_pad((string) $nextSequence, 3, '0', STR_PAD_LEFT);
+
+            // Replace placeholders in format
+            $format = $type->numbering_format ?? '{NOMOR}/{CODE}/LPPM/ITSNU.Pkl/{BULAN-ROMAWI}/{TAHUN}';
+
+            return str_replace(
+                ['{NOMOR}', '{CODE}', '{BULAN-ROMAWI}', '{TAHUN}'],
+                [$formattedNumber, (string) $type->code, $romanMonth, $year],
+                $format
+            );
+        });
     }
 
     /**
@@ -65,10 +77,20 @@ class LetterService
         /** @var LetterType $letterType */
         $letterType = $letter->letterType;
 
+        $metadata = array_merge([
+            'signer_name' => Setting::get('lppm_head_name', ''),
+            'signer_position' => Setting::get('lppm_head_position', ''),
+            'signer_nidn' => Setting::get('lppm_head_nidn', ''),
+        ], $letter->metadata ?? []);
+
+        $qrUrl = URL::signedRoute('letters.verify', ['letter' => $letter->id]);
+        $qrDataUri = generate_qr_code_data_uri($qrUrl);
+
         $data = [
             'letter' => $letter,
-            'metadata' => $letter->metadata ?? [],
+            'metadata' => $metadata,
             'team' => $letter->team_snapshot ?? [],
+            'qrDataUri' => $qrDataUri,
         ];
 
         $pdf = Pdf::loadView((string) $letterType->template_view, $data);
@@ -87,5 +109,303 @@ class LetterService
     public function isActive(): bool
     {
         return (bool) Setting::get('module_persuratan_active', false);
+    }
+
+    /**
+     * Check if a duplicate letter type exists for the given proposal.
+     */
+    public function hasDuplicateLetter(Proposal $proposal, int $letterTypeId): bool
+    {
+        return Letter::where('letter_type_id', $letterTypeId)
+            ->where('reference_type', get_class($proposal))
+            ->where('reference_id', $proposal->id)
+            ->where('status', '!=', 'rejected')
+            ->exists();
+    }
+
+    /**
+     * Create a new letter request from a proposal.
+     */
+    public function requestLetter(Proposal $proposal, User $user, array $data): Letter
+    {
+        $metadata = [
+            'activity_type' => $data['activityType'],
+            'title' => $proposal->title,
+            'date_string' => $data['dateString'],
+            'time_string' => $data['timeString'],
+            'location' => $data['location'],
+            'destination_name' => $data['destinationName'] ?? null,
+            'tembusan' => array_map('trim', explode("\n", $data['tembusan'] ?? '1. Arsip')),
+            'signer_name' => Setting::get('lppm_head_name', ''),
+            'signer_position' => Setting::get('lppm_head_position', ''),
+            'signer_nidn' => Setting::get('lppm_head_nidn', ''),
+        ];
+
+        return Letter::create([
+            'letter_type_id' => $data['letterTypeId'],
+            'user_id' => $user->id,
+            'reference_type' => get_class($proposal),
+            'reference_id' => $proposal->id,
+            'source' => 'proposal',
+            'signature_mode' => Setting::get('surat_signature_mode', 'tte'),
+            'status' => 'pending_approval',
+            'metadata' => $metadata,
+            'team_snapshot' => $this->buildTeamSnapshot($proposal),
+        ]);
+    }
+
+    /**
+     * Create a new manual letter request (without proposal).
+     */
+    public function requestManualLetter(User $user, array $data): Letter
+    {
+        return DB::transaction(function () use ($user, $data) {
+            // Lock to prevent duplicate submissions
+            $exists = Letter::where('letter_type_id', $data['letterTypeId'])
+                ->where('user_id', $user->id)
+                ->whereNull('reference_id')
+                ->where('source', 'manual')
+                ->where('status', '!=', 'cancelled')
+                ->lockForUpdate()
+                ->exists();
+
+            if ($exists) {
+                throw new \DomainException('Anda sudah mengajukan surat jenis ini yang sedang diproses.');
+            }
+
+            $metadata = [
+                'title' => $data['title'],
+                'activity_type' => $data['activityType'],
+                'date_string' => $data['dateString'],
+                'time_string' => $data['timeString'],
+                'location' => $data['location'],
+                'destination_name' => $data['destinationName'] ?? null,
+                'tembusan' => array_map('trim', explode("\n", $data['tembusan'] ?? '1. Arsip')),
+                'signer_name' => Setting::get('lppm_head_name', ''),
+                'signer_position' => Setting::get('lppm_head_position', ''),
+                'signer_nidn' => Setting::get('lppm_head_nidn', ''),
+            ];
+
+            return Letter::create([
+                'letter_type_id' => $data['letterTypeId'],
+                'user_id' => $user->id,
+                'reference_type' => null,
+                'reference_id' => null,
+                'source' => 'manual',
+                'signature_mode' => Setting::get('surat_signature_mode', 'tte'),
+                'status' => 'pending_approval',
+                'metadata' => $metadata,
+                'team_snapshot' => $data['team'] ?? [],
+            ]);
+        });
+    }
+
+    /**
+     * Approve a letter: generate number, set status, create PDF, log.
+     */
+    public function approveLetter(Letter $letter): string
+    {
+        return DB::transaction(function () use ($letter) {
+            // Lock the letter row to prevent double-approve
+            $lockedLetter = Letter::where('id', $letter->id)
+                ->where('status', 'pending_approval')
+                ->lockForUpdate()
+                ->first();
+
+            if (! $lockedLetter) {
+                throw new \DomainException('Surat sudah diproses atau tidak ditemukan.');
+            }
+
+            /** @var LetterType $letterType */
+            $letterType = $lockedLetter->letterType;
+
+            $lockedLetter->update([
+                'letter_number' => $this->generateNextNumber($letterType),
+                'published_at' => now(),
+                'status' => $lockedLetter->signature_mode === 'tte' ? 'published' : 'ready_to_print',
+            ]);
+
+            try {
+                $this->generatePdf($lockedLetter);
+
+                return $lockedLetter->file_path;
+            } catch (\Exception $e) {
+                $lockedLetter->update([
+                    'status' => 'pending_approval',
+                    'letter_number' => null,
+                    'published_at' => null,
+                    'file_path' => null,
+                ]);
+
+                throw $e;
+            }
+        });
+    }
+
+    /**
+     * Reject a letter with optional reason.
+     */
+    public function rejectLetter(Letter $letter, ?string $reason = null): void
+    {
+        if (in_array($letter->status, Letter::STATUS_IMMUTABLE)) {
+            throw new \DomainException('Cannot reject immutable letter.');
+        }
+
+        $letter->update([
+            'status' => 'rejected',
+            'rejection_reason' => $reason,
+        ]);
+    }
+
+    /**
+     * Cancel a letter (by owner, only if not immutable).
+     */
+    public function cancelLetter(Letter $letter): void
+    {
+        if (in_array($letter->status, Letter::STATUS_IMMUTABLE)) {
+            throw new \DomainException('Surat yang sudah diterbitkan tidak bisa dibatalkan.');
+        }
+
+        if ($letter->user_id !== auth()->id()) {
+            throw new \DomainException('Bukan surat Anda.');
+        }
+
+        $letter->update(['status' => 'cancelled']);
+    }
+
+    /**
+     * Resubmit a rejected letter with updated data.
+     */
+    public function resubmitLetter(Letter $letter, array $data): void
+    {
+        if ($letter->status !== 'rejected') {
+            throw new \DomainException('Hanya surat yang ditolak yang bisa diajukan ulang.');
+        }
+
+        if ($letter->user_id !== auth()->id()) {
+            throw new \DomainException('Bukan surat Anda.');
+        }
+
+        $metadata = array_merge($letter->metadata ?? [], [
+            'title' => $data['title'] ?? $letter->metadata['title'] ?? null,
+            'activity_type' => $data['activityType'] ?? $letter->metadata['activity_type'] ?? null,
+            'date_string' => $data['dateString'] ?? $letter->metadata['date_string'] ?? null,
+            'time_string' => $data['timeString'] ?? $letter->metadata['time_string'] ?? null,
+            'location' => $data['location'] ?? $letter->metadata['location'] ?? null,
+            'destination_name' => $data['destinationName'] ?? $letter->metadata['destination_name'] ?? null,
+            'tembusan' => isset($data['tembusan']) ? array_map('trim', explode("\n", $data['tembusan'])) : ($letter->metadata['tembusan'] ?? []),
+        ]);
+
+        $letter->update([
+            'status' => 'pending_approval',
+            'rejection_reason' => null,
+            'metadata' => $metadata,
+            'team_snapshot' => $data['team'] ?? $letter->team_snapshot,
+        ]);
+    }
+
+    /**
+     * Batch approve multiple letters.
+     */
+    public function batchApprove(Collection $letters): array
+    {
+        $results = ['succeeded' => [], 'failed' => []];
+
+        foreach ($letters as $letter) {
+            try {
+                $this->approveLetter($letter);
+                $results['succeeded'][] = $letter->id;
+            } catch (\Exception $e) {
+                $results['failed'][$letter->id] = $e->getMessage();
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * Batch reject multiple letters.
+     */
+    public function batchReject(Collection $letters, string $reason): array
+    {
+        $results = ['succeeded' => [], 'failed' => []];
+
+        foreach ($letters as $letter) {
+            try {
+                $this->rejectLetter($letter, $reason);
+                $results['succeeded'][] = $letter->id;
+            } catch (\Exception $e) {
+                $results['failed'][$letter->id] = $e->getMessage();
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * Get letter statistics for dashboard.
+     */
+    public function getLetterStats(): array
+    {
+        return [
+            'total' => Letter::count(),
+            'pending' => Letter::where('status', 'pending_approval')->count(),
+            'published' => Letter::where('status', 'published')->count(),
+            'rejected' => Letter::where('status', 'rejected')->count(),
+            'cancelled' => Letter::where('status', 'cancelled')->count(),
+            'ready_to_print' => Letter::where('status', 'ready_to_print')->count(),
+        ];
+    }
+
+    /**
+     * Search dosen users for autocomplete.
+     */
+    public function searchDosen(string $query): Collection
+    {
+        return User::whereHas('roles', fn ($q) => $q->where('name', 'dosen'))
+            ->where(function ($q) use ($query) {
+                $q->where('name', 'like', "%{$query}%")
+                    ->orWhere('email', 'like', "%{$query}%");
+            })
+            ->select('id', 'name', 'email')
+            ->limit(10)
+            ->get();
+    }
+
+    /**
+     * Build team snapshot from proposal.
+     */
+    private function buildTeamSnapshot(Proposal $proposal): array
+    {
+        $team = [];
+
+        $team[] = [
+            'name' => $proposal->submitter->name,
+            'role' => 'Ketua',
+            'identifier' => $proposal->submitter->identity->identity_id ?? '-',
+        ];
+
+        foreach ($proposal->teamMembers as $member) {
+            $pivot = $member->pivot;
+            if ($pivot && $pivot->getAttribute('status') === 'accepted') {
+                $team[] = [
+                    'name' => $member->name,
+                    'role' => 'Anggota',
+                    'identifier' => $member->identity->identity_id ?? '-',
+                ];
+            }
+        }
+
+        if ($proposal->student_members) {
+            foreach ($proposal->student_members as $student) {
+                $team[] = [
+                    'name' => $student['name'],
+                    'role' => 'Mahasiswa',
+                    'identifier' => $student['nim'] ?? '-',
+                ];
+            }
+        }
+
+        return $team;
     }
 }

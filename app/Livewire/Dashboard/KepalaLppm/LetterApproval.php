@@ -4,6 +4,7 @@ namespace App\Livewire\Dashboard\KepalaLppm;
 
 use App\Models\Letter;
 use App\Services\LetterService;
+use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -15,31 +16,60 @@ class LetterApproval extends Component
 
     public $search = '';
 
+    public $statusFilter = 'pending_approval';
+
     public $selectedLetter;
 
     public $showPreviewModal = false;
 
+    public $selectedIds = [];
+
+    public $rejectReason = '';
+
+    public $showRejectModal = false;
+
+    public $rejectingLetterId = null;
+
+    protected $listeners = ['batchApprove' => 'batchApprove', 'batchReject' => 'batchReject'];
+
     public function render()
     {
         $letters = Letter::with(['letterType', 'user'])
-            ->whereIn('status', ['pending_approval', 'published', 'ready_to_print'])
+            ->when($this->statusFilter, function ($query) {
+                if ($this->statusFilter === 'all') {
+                    return;
+                }
+                $query->where('status', $this->statusFilter);
+            })
             ->when($this->search, function ($query) {
                 $query->where('letter_number', 'like', '%'.$this->search.'%')
                     ->orWhereHas('user', function ($q) {
+                        $q->where('name', 'like', '%'.$this->search.'%');
+                    })
+                    ->orWhereHas('letterType', function ($q) {
                         $q->where('name', 'like', '%'.$this->search.'%');
                     });
             })
             ->latest()
             ->paginate(10);
 
+        $stats = (new LetterService)->getLetterStats();
+
         return view('livewire.dashboard.kepala-lppm.letter-approval', [
             'letters' => $letters,
+            'stats' => $stats,
         ]);
+    }
+
+    public function updatedStatusFilter(): void
+    {
+        $this->resetPage();
+        $this->selectedIds = [];
     }
 
     public function preview($id): void
     {
-        $this->selectedLetter = Letter::with(['letterType', 'user'])->find($id);
+        $this->selectedLetter = Letter::with(['letterType', 'user', 'logs.user'])->find($id);
         $this->showPreviewModal = true;
     }
 
@@ -47,33 +77,32 @@ class LetterApproval extends Component
     {
         $letter = Letter::find($id);
 
+        if (! $letter) {
+            $this->dispatch('swal', title: 'Gagal', text: 'Surat tidak ditemukan.', icon: 'error');
+
+            return;
+        }
+
+        $this->authorize('approve', $letter);
+
         if ($letter->status !== 'pending_approval') {
             $this->dispatch('swal', title: 'Gagal', text: 'Surat ini sudah diproses.', icon: 'error');
 
             return;
         }
 
-        // 1. Generate Letter Number
-        /** @var \App\Models\LetterType $letterType */
-        $letterType = $letter->letterType;
-        $letter->letter_number = $service->generateNextNumber($letterType);
+        try {
+            $service->approveLetter($letter);
+        } catch (\Exception $e) {
+            Log::error('Letter approval failed', [
+                'letter_id' => $letter->id, 'error' => $e->getMessage(),
+            ]);
 
-        // 2. Set Publication Info
-        $letter->published_at = now();
+            $this->dispatch('swal', title: 'Gagal', text: 'Gagal menerbitkan surat. Surat dikembalikan ke status menunggu.', icon: 'error');
 
-        // 3. Set Status based on mode
-        if ($letter->signature_mode === 'tte') {
-            $letter->status = 'published';
-        } else {
-            $letter->status = 'ready_to_print';
+            return;
         }
 
-        $letter->save();
-
-        // 4. Generate PDF
-        $service->generatePdf($letter);
-
-        // 5. Log activity
         $letter->logs()->create([
             'user_id' => auth()->id(),
             'action' => 'approved_and_signed',
@@ -85,19 +114,122 @@ class LetterApproval extends Component
         $this->dispatch('swal', title: 'Berhasil', text: 'Surat berhasil ditandatangani dan diterbitkan.', icon: 'success');
     }
 
-    public function reject($id, $notes): void
+    public function openRejectModal($id): void
     {
-        $letter = Letter::find($id);
-        $letter->update(['status' => 'rejected']);
+        $this->rejectingLetterId = $id;
+        $this->rejectReason = '';
+        $this->showRejectModal = true;
+    }
+
+    public function confirmReject(LetterService $service): void
+    {
+        $letter = Letter::find($this->rejectingLetterId);
+
+        if (! $letter) {
+            $this->dispatch('swal', title: 'Gagal', text: 'Surat tidak ditemukan.', icon: 'error');
+
+            return;
+        }
+
+        $this->authorize('reject', $letter);
+
+        if ($letter->status !== 'pending_approval') {
+            $this->dispatch('swal', title: 'Gagal', text: 'Surat ini sudah diproses.', icon: 'error');
+
+            return;
+        }
+
+        $service->rejectLetter($letter, $this->rejectReason);
 
         $letter->logs()->create([
             'user_id' => auth()->id(),
             'action' => 'rejected',
-            'notes' => $notes,
+            'notes' => $this->rejectReason,
             'created_at' => now(),
         ]);
 
+        $this->showRejectModal = false;
         $this->showPreviewModal = false;
+        $this->rejectingLetterId = null;
+        $this->rejectReason = '';
         $this->dispatch('swal', title: 'Berhasil', text: 'Surat telah ditolak.', icon: 'info');
+    }
+
+    public function toggleSelect($id): void
+    {
+        if (in_array($id, $this->selectedIds)) {
+            $this->selectedIds = array_filter($this->selectedIds, fn ($i) => $i !== $id);
+        } else {
+            $this->selectedIds[] = $id;
+        }
+    }
+
+    public function toggleSelectAll(): void
+    {
+        $pendingIds = Letter::where('status', 'pending_approval')->pluck('id')->toArray();
+
+        if (count($this->selectedIds) === count($pendingIds)) {
+            $this->selectedIds = [];
+        } else {
+            $this->selectedIds = $pendingIds;
+        }
+    }
+
+    public function batchApprove(LetterService $service): void
+    {
+        if (empty($this->selectedIds)) {
+            $this->dispatch('swal', title: 'Gagal', text: 'Pilih surat terlebih dahulu.', icon: 'warning');
+
+            return;
+        }
+
+        $letters = Letter::whereIn('id', $this->selectedIds)->where('status', 'pending_approval')->get();
+
+        $results = $service->batchApprove($letters);
+
+        foreach ($results['succeeded'] as $letterId) {
+            Letter::find($letterId)?->logs()->create([
+                'user_id' => auth()->id(),
+                'action' => 'approved_and_signed',
+                'notes' => 'Surat disetujui secara batch oleh Kepala LPPM.',
+                'created_at' => now(),
+            ]);
+        }
+
+        $this->selectedIds = [];
+
+        $successCount = count($results['succeeded']);
+        $failCount = count($results['failed']);
+
+        $this->dispatch('swal', title: 'Selesai', text: "{$successCount} surat berhasil disetujui. {$failCount} gagal.", icon: $failCount > 0 ? 'warning' : 'success');
+    }
+
+    public function batchReject(LetterService $service): void
+    {
+        if (empty($this->selectedIds)) {
+            $this->dispatch('swal', title: 'Gagal', text: 'Pilih surat terlebih dahulu.', icon: 'warning');
+
+            return;
+        }
+
+        $letters = Letter::whereIn('id', $this->selectedIds)->where('status', 'pending_approval')->get();
+
+        $results = $service->batchReject($letters, 'Ditolak secara batch oleh Kepala LPPM.');
+
+        foreach ($results['succeeded'] as $letterId) {
+            Letter::find($letterId)?->logs()->create([
+                'user_id' => auth()->id(),
+                'action' => 'rejected',
+                'notes' => 'Ditolak secara batch oleh Kepala LPPM.',
+                'created_at' => now(),
+            ]);
+        }
+
+        $this->selectedIds = [];
+
+        $successCount = count($results['succeeded']);
+        $failCount = count($results['failed']);
+
+        $this->dispatch('swal', title: 'Selesai', text: "{$successCount} surat ditolak. {$failCount} gagal.", icon: $failCount > 0 ? 'warning' : 'info');
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\ActiveRoleMiddleware;
+use App\Http\Middleware\EnsureLetterModuleActive;
 use App\Http\Middleware\RecordActivity;
 use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use Illuminate\Foundation\Application;
@@ -34,6 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role_or_permission' => RoleOrPermissionMiddleware::class,
             'verified' => EnsureEmailIsVerified::class,
             'active.role' => ActiveRoleMiddleware::class,
+            'letter.active' => EnsureLetterModuleActive::class,
         ]);
 
         $middleware->appendToGroup('web', [

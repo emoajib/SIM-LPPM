@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Surat Tugas - {{ $letter->letter_number ?? 'Draft' }}</title>
+    <title>Surat Keterangan - {{ $letter->letter_number ?? 'Draft' }}</title>
     <style>
         @page {
             margin: 2cm 2cm 2cm 2.5cm;
@@ -91,23 +91,6 @@
         .qr-code {
             margin: 10px 0;
         }
-        .travel-table {
-            width: 100%;
-            border-top: 1px solid #000;
-            margin-top: 40px;
-            padding-top: 10px;
-            font-size: 9pt;
-        }
-        .travel-table td {
-            border: none;
-            padding: 2px;
-            vertical-align: top;
-        }
-        .line-dots {
-            border-bottom: 1px dotted #000;
-            display: inline-block;
-            width: 150px;
-        }
     </style>
 </head>
 <body>
@@ -125,7 +108,7 @@
         </tr>
     </table>
 
-    <div class="title">SURAT TUGAS</div>
+    <div class="title">SURAT KETERANGAN</div>
     <div class="number">Nomor: {{ $letter->letter_number ?? '...........................................' }}</div>
 
     <div class="bismillah">BISMILLAHIRRAHMANIRRAHIM</div>
@@ -143,14 +126,9 @@
                 <td style="border:none;">:</td>
                 <td style="border:none;">{{ $metadata['signer_position'] ?? '' }}</td>
             </tr>
-            <tr>
-                <td style="border:none;">Alamat</td>
-                <td style="border:none;">:</td>
-                <td style="border:none;">{{ $metadata['signer_address'] ?? '' }}</td>
-            </tr>
         </table>
 
-        <p>Dengan ini memberikan tugas kepada perwakilan ITSNU Pekalongan dengan nama sebagai berikut:</p>
+        <p>Dengan ini menerangkan bahwa:</p>
 
         <table class="table-data">
             <thead>
@@ -173,7 +151,7 @@
             </tbody>
         </table>
 
-        <p>Untuk melakukan kegiatan <strong>{{ $metadata['activity_type'] ?? 'Pengabdian kepada Masyarakat' }}</strong> tentang “{{ $metadata['title'] }}” pada:</p>
+        <p>Telah melaksanakan kegiatan <strong>{{ $metadata['activity_type'] ?? 'Pengabdian kepada Masyarakat' }}</strong> tentang “{{ $metadata['title'] }}” pada:</p>
 
         <table class="no-border" style="width: 100%; margin-left: 20px;">
             <tr>
@@ -193,7 +171,7 @@
             </tr>
         </table>
 
-        <p>Demikian Surat Tugas ini dikeluarkan agar dapat digunakan sebagaimana mestinya.</p>
+        <p>Demikian Surat Keterangan ini dibuat untuk dapat dipergunakan sebagaimana mestinya.</p>
     </div>
 
     <table class="signature-table">
@@ -214,25 +192,8 @@
                     @endif
                 </div>
 
-                <strong>{{ $metadata['signer_name'] ?? 'Aria Mulyapradana, S.Psi., M.A.' }}</strong><br>
+                <strong>{{ $metadata['signer_name'] ?? '' }}</strong><br>
                 NIDN. {{ $metadata['signer_nidn'] ?? '' }}
-            </td>
-        </tr>
-    </table>
-
-    <table class="travel-table">
-        <tr>
-            <td width="50%">
-                Tiba di : …………………………<br>
-                Pada hari & Tgl : …………………………<br>
-                Koordinator<br><br><br><br>
-                (……………………………………………..)
-            </td>
-            <td>
-                Tiba kembali di : ITSNU Pekalongan<br>
-                Pada hari & Tgl : ……………………<br>
-                Pejabat yang berwenang ditunjuk<br><br><br><br>
-                (……………………………………………..)
             </td>
         </tr>
     </table>
