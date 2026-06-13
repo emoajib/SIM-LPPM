@@ -112,9 +112,16 @@
                                     {{ $letter->created_at->format('d/m/Y H:i') }}
                                 </td>
                                 <td>
-                                    <a href="{{ route('letter.download', $letter->id) }}" target="_blank" class="btn btn-outline-info btn-sm">
-                                        <i class="ti ti-download"></i>
-                                    </a>
+                                    <div class="btn-list flex-nowrap">
+                                        @if($letter->file_path)
+                                        <a href="{{ route('letter.view', $letter->id) }}" target="_blank" class="btn btn-outline-info btn-sm" title="Lihat PDF">
+                                            <i class="ti ti-eye"></i>
+                                        </a>
+                                        @endif
+                                        <a href="{{ route('letter.download', $letter->id) }}" target="_blank" class="btn btn-outline-info btn-sm" title="Unduh PDF">
+                                            <i class="ti ti-download"></i>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                             @empty

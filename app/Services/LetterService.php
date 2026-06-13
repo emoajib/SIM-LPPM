@@ -98,7 +98,7 @@ class LetterService
         $filename = 'letters/'.$letterType->code.'-'.Str::slug($letter->letter_number ?? (string) $letter->id).'.pdf';
         Storage::disk('public')->put($filename, $pdf->output());
 
-        $letter->update(['file_path' => $filename]);
+        Letter::where('id', $letter->id)->update(['file_path' => $filename]);
 
         return $filename;
     }

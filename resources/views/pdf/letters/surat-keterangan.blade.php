@@ -5,12 +5,12 @@
     <title>Surat Keterangan - {{ $letter->letter_number ?? 'Draft' }}</title>
     <style>
         @page {
-            margin: 2cm 2cm 2cm 2.5cm;
+            margin: 2cm 2cm 2cm 2cm;
         }
         body {
             font-family: "Times New Roman", Times, serif;
             font-size: 11pt;
-            line-height: 1.5;
+            line-height: 1;
             color: #000;
         }
         .header-table {
@@ -20,7 +20,7 @@
             padding-bottom: 5px;
         }
         .logo {
-            width: 80px;
+            width: 90px;
         }
         .header-text {
             text-align: center;
@@ -188,7 +188,7 @@
                     @if($letter->signature_mode === 'tte' && $letter->status === 'published')
                         <img src="{{ $qrDataUri }}" alt="QR Code" style="width: 80px; height: 80px;">
                     @else
-                        <br><br><br>
+                        <br><br><br><br><br>
                     @endif
                 </div>
 

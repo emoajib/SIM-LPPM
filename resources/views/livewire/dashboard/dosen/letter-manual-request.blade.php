@@ -39,14 +39,21 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label required">Hari/Tanggal</label>
-                                        <input type="text" class="form-control" wire:model="dateString" placeholder="Contoh: Senin, 15 Juni 2026" required>
+                                        <input type="date" class="form-control" wire:model="date" required>
+                                        @error('date')
+                                        <span class="text-danger small">{{ $message }}</span>
+                                        @enderror
                                     </div>
                                 </div>
 
                                 <div class="row mb-4">
-                                    <div class="col-md-6">
-                                        <label class="form-label required">Waktu</label>
-                                        <input type="text" class="form-control" wire:model="timeString" placeholder="Contoh: 08:00 - 12:00 WIB" required>
+                                    <div class="col-md-3">
+                                        <label class="form-label required">Waktu Mulai</label>
+                                        <input type="time" class="form-control" wire:model="timeStart" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label required">Waktu Selesai</label>
+                                        <input type="time" class="form-control" wire:model="timeEnd" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label required">Lokasi</label>

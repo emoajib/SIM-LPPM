@@ -78,6 +78,7 @@ use App\Livewire\Users\Show as UsersShow;
 use App\Models\Letter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Laravel\Fortify\Features;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -255,8 +256,26 @@ Route::middleware(['auth'])->group(function () {
         abort_unless(auth()->user()->can('download', $letter), 403);
         abort_unless($letter->file_path, 404, 'File PDF belum tersedia.');
 
-        return Storage::disk('public')->download($letter->file_path, ($letter->letter_number ?? 'surat').'.pdf');
+        $filePath = Storage::disk('public')->path($letter->file_path);
+        $fileName = 'surat-'.Str::slug($letter->id).'.pdf';
+
+        return response()->download($filePath, $fileName, [
+            'Content-Type' => 'application/pdf',
+        ]);
     })->name('letter.download');
+
+    // Letter View (inline PDF in browser)
+    Route::get('letters/{letter}/view', function (Letter $letter) {
+        abort_unless(auth()->user()->can('download', $letter), 403);
+        abort_unless($letter->file_path, 404, 'File PDF belum tersedia. Surat belum disetujui oleh Kepala LPPM.');
+
+        $filePath = Storage::disk('public')->path($letter->file_path);
+        $pdfContent = file_get_contents($filePath);
+
+        return response($pdfContent, 200, [
+            'Content-Type' => 'application/pdf',
+        ]);
+    })->name('letter.view');
 
     // Dosen - Persuratan Routes
     Route::middleware(['auth', 'letter.active'])->prefix('surat')->name('letters.')->group(function () {

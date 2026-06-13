@@ -101,13 +101,18 @@
                             {{ $letter->created_at->format('d/m/Y H:i') }}
                         </td>
                         <td>
-                            <div class="btn-list flex-nowrap">
+<div class="btn-list flex-nowrap">
                                 @if($letter->status === 'pending_approval')
                                 <button class="btn btn-primary btn-sm shadow-sm" wire:click="preview('{{ $letter->id }}')">
                                     <i class="ti ti-signature me-1"></i> Proses
                                 </button>
                                 @else
-                                <a href="{{ route('letter.download', $letter->id) }}" target="_blank" class="btn btn-outline-info btn-sm">
+                                @if($letter->file_path)
+                                <a href="{{ route('letter.view', $letter->id) }}" target="_blank" class="btn btn-outline-info btn-sm" title="Lihat PDF">
+                                    <i class="ti ti-eye me-1"></i>
+                                </a>
+                                @endif
+                                <a href="{{ route('letter.download', $letter->id) }}" target="_blank" class="btn btn-outline-info btn-sm" title="Unduh PDF">
                                     <i class="ti ti-download me-1"></i>
                                 </a>
                                 @endif

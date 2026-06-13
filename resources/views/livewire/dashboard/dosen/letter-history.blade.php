@@ -72,10 +72,15 @@
                                 </td>
                                 <td>
                                     <div class="btn-list flex-nowrap">
-                                        @if(in_array($letter->status, ['published', 'ready_to_print']))
-                                        <a href="{{ route('letter.download', $letter->id) }}" target="_blank" class="btn btn-outline-info btn-sm">
+                                        @if(in_array($letter->status, ['published', 'ready_to_print']) && $letter->file_path)
+                                        <a href="{{ route('letter.view', $letter->id) }}" target="_blank" class="btn btn-outline-info btn-sm" title="Lihat PDF">
+                                            <i class="ti ti-eye"></i>
+                                        </a>
+                                        <a href="{{ route('letter.download', $letter->id) }}" target="_blank" class="btn btn-outline-info btn-sm" title="Unduh PDF">
                                             <i class="ti ti-download"></i>
                                         </a>
+                                        @elseif(in_array($letter->status, ['published', 'ready_to_print']))
+                                        <span class="text-muted small">PDF belum tersedia</span>
                                         @endif
 
                                         @if($letter->status === 'pending_approval')

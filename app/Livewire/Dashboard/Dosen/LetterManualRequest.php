@@ -4,6 +4,7 @@ namespace App\Livewire\Dashboard\Dosen;
 
 use App\Models\LetterType;
 use App\Services\LetterService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -17,9 +18,11 @@ class LetterManualRequest extends Component
 
     public $activityType = 'Penelitian';
 
-    public $dateString = '';
+    public $date = '';
 
-    public $timeString = '';
+    public $timeStart = '';
+
+    public $timeEnd = '';
 
     public $location = '';
 
@@ -91,8 +94,9 @@ class LetterManualRequest extends Component
             'letterTypeId' => 'required|exists:letter_types,id',
             'title' => 'required|string|min:3',
             'activityType' => 'required|in:Penelitian,PKM',
-            'dateString' => 'required|string',
-            'timeString' => 'required|string',
+            'date' => 'required|date',
+            'timeStart' => 'required',
+            'timeEnd' => 'required',
             'location' => 'required|string',
             'destinationName' => 'required_if:selectedLetterType.code,SP|nullable|string',
             'tembusan' => 'nullable|string',
@@ -105,19 +109,21 @@ class LetterManualRequest extends Component
                 'identifier' => $m['identifier'] ?? '-',
             ], $this->team);
 
-            // Add the requester as ketua
             array_unshift($teamData, [
                 'name' => auth()->user()->name,
                 'role' => 'Ketua',
                 'identifier' => auth()->user()->identity->identity_id ?? '-',
             ]);
 
+            $dateString = Carbon::parse($this->date)->translatedFormat('l, d F Y');
+            $timeString = $this->timeStart.' - '.$this->timeEnd.' WIB';
+
             $service->requestManualLetter(auth()->user(), [
                 'letterTypeId' => $this->letterTypeId,
                 'title' => $this->title,
                 'activityType' => $this->activityType,
-                'dateString' => $this->dateString,
-                'timeString' => $this->timeString,
+                'dateString' => $dateString,
+                'timeString' => $timeString,
                 'location' => $this->location,
                 'destinationName' => $this->destinationName,
                 'tembusan' => $this->tembusan,
