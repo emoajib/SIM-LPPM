@@ -59,7 +59,14 @@ build/phpstan/
 
 # AI / IDE agent artifacts
 /.opencode/
-/.kilo/
+/.kilo/*
+!/.kilo/agent/
+!/.kilo/agent/agent-v3.md
+!/.kilo/skills/
+!/.kilo/skills/agent-v3/
+!/.kilo/skills/agent-v3/SKILL.md
+!/.kilo/command/
+!/.kilo/command/agent-v3-selfcheck.md
 /.kilocode/
 /.agent_cache/
 /.agents/
