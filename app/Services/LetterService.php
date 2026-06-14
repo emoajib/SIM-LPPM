@@ -358,7 +358,7 @@ class LetterService
     /**
      * Get letter statistics for a specific user dashboard.
      */
-    public function getLetterStatsForUser(int $userId): array
+    public function getLetterStatsForUser(string $userId): array
     {
         return [
             'total' => Letter::where('user_id', $userId)->count(),
