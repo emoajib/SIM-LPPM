@@ -3,9 +3,11 @@
 namespace App\Livewire\AdminLppm\Letter;
 
 use App\Models\Letter;
+use App\Models\LetterCategory;
 use App\Models\LetterType;
 use App\Services\LetterService;
 use App\Services\LetterTypeService;
+use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -14,7 +16,7 @@ class Dashboard extends Component
 {
     use WithPagination;
 
-    // Active main tab ('letters' or 'types')
+    // Active main tab ('letters', 'types', or 'categories')
     public string $activeTab = 'letters';
 
     // Letter Archive/List Properties
@@ -55,20 +57,26 @@ class Dashboard extends Component
 
     public $deletingLetterType;
 
+    // Letter Category CRUD Properties
+    public $showCategoryModal = false;
+
+    public $categoryEditMode = false;
+
+    public $categoryId;
+
+    public $categoryName = '';
+
+    public $showDeleteCategoryModal = false;
+
+    public $deletingCategory;
+
     protected $listeners = ['refreshList' => '$refresh'];
 
     public function updatedActiveTab(): void
     {
         $this->resetPage('lettersPage');
         $this->resetPage('typesPage');
-    }
-
-    public function setTab(string $tab, string $status = 'all'): void
-    {
-        $this->activeTab = $tab;
-        $this->statusFilter = $status;
-        $this->resetPage('lettersPage');
-        $this->resetPage('typesPage');
+        $this->resetPage('categoriesPage');
     }
 
     public function updatedSearch(): void
@@ -96,10 +104,27 @@ class Dashboard extends Component
         $this->resetPage('lettersPage');
     }
 
+    public function setTab(string $tab, string $status = 'all'): void
+    {
+        $this->activeTab = $tab;
+        $this->statusFilter = $status;
+        $this->resetPage('lettersPage');
+        $this->resetPage('typesPage');
+        $this->resetPage('categoriesPage');
+    }
+
+    // Letter Type CRUD Methods
     public function openCreateModal(): void
     {
         $this->resetForm();
         $this->editMode = false;
+
+        // Default category dynamically to the first Category slug
+        $firstCategory = LetterCategory::first();
+        if ($firstCategory) {
+            $this->category = $firstCategory->slug;
+        }
+
         $this->showModal = true;
     }
 
@@ -128,7 +153,7 @@ class Dashboard extends Component
         $this->validate([
             'code' => 'required|string|max:10|unique:letter_types,code,'.$this->letterTypeId,
             'name' => 'required|string|max:255',
-            'category' => 'required|in:persiapan,etik,pelaksanaan,pelaporan',
+            'category' => 'required|string|exists:letter_categories,slug',
             'numberingFormat' => 'required|string',
         ]);
 
@@ -195,6 +220,111 @@ class Dashboard extends Component
         $this->isActive = true;
     }
 
+    // Letter Category CRUD Methods
+    public function openCreateCategoryModal(): void
+    {
+        $this->resetCategoryForm();
+        $this->categoryEditMode = false;
+        $this->showCategoryModal = true;
+    }
+
+    public function openEditCategoryModal($id): void
+    {
+        $category = LetterCategory::find($id);
+        if (! $category) {
+            return;
+        }
+
+        $this->categoryId = $category->id;
+        $this->categoryName = $category->name;
+        $this->categoryEditMode = true;
+        $this->showCategoryModal = true;
+    }
+
+    public function saveCategory(): void
+    {
+        $this->validate([
+            'categoryName' => 'required|string|max:255',
+        ]);
+
+        $slug = Str::slug($this->categoryName);
+
+        $existing = LetterCategory::where('slug', $slug)
+            ->when($this->categoryId, fn ($q) => $q->where('id', '!=', $this->categoryId))
+            ->first();
+
+        if ($existing) {
+            $this->addError('categoryName', 'Kategori dengan nama serupa sudah terdaftar.');
+
+            return;
+        }
+
+        try {
+            if ($this->categoryEditMode) {
+                $category = LetterCategory::find($this->categoryId);
+                $oldSlug = $category->slug;
+                $category->update([
+                    'name' => $this->categoryName,
+                    'slug' => $slug,
+                ]);
+
+                if ($oldSlug !== $slug) {
+                    LetterType::where('category', $oldSlug)->update(['category' => $slug]);
+                }
+
+                $this->dispatch('swal', title: 'Berhasil', text: 'Kategori berhasil diperbarui.', icon: 'success');
+            } else {
+                LetterCategory::create([
+                    'name' => $this->categoryName,
+                    'slug' => $slug,
+                ]);
+                $this->dispatch('swal', title: 'Berhasil', text: 'Kategori berhasil ditambahkan.', icon: 'success');
+            }
+
+            $this->showCategoryModal = false;
+            $this->resetCategoryForm();
+        } catch (\Exception $e) {
+            $this->dispatch('swal', title: 'Gagal', text: $e->getMessage(), icon: 'error');
+        }
+    }
+
+    public function confirmDeleteCategory($id): void
+    {
+        $this->deletingCategory = LetterCategory::find($id);
+        $this->showDeleteCategoryModal = true;
+    }
+
+    public function deleteCategory(): void
+    {
+        if (! $this->deletingCategory) {
+            return;
+        }
+
+        $typesCount = LetterType::where('category', $this->deletingCategory->slug)->count();
+        if ($typesCount > 0) {
+            $this->dispatch('swal', title: 'Gagal', text: 'Kategori ini tidak dapat dihapus karena masih digunakan oleh '.$typesCount.' jenis surat.', icon: 'error');
+            $this->showDeleteCategoryModal = false;
+            $this->deletingCategory = null;
+
+            return;
+        }
+
+        try {
+            $this->deletingCategory->delete();
+            $this->showDeleteCategoryModal = false;
+            $this->deletingCategory = null;
+            $this->dispatch('swal', title: 'Berhasil', text: 'Kategori berhasil dihapus.', icon: 'success');
+        } catch (\Exception $e) {
+            $this->dispatch('swal', title: 'Gagal', text: $e->getMessage(), icon: 'error');
+        }
+    }
+
+    private function resetCategoryForm(): void
+    {
+        $this->categoryId = null;
+        $this->categoryName = '';
+    }
+
     public function resetFilters(): void
     {
         $this->search = '';
@@ -237,13 +367,20 @@ class Dashboard extends Component
             ->orderBy('code')
             ->paginate(10, ['*'], 'typesPage');
 
+        $letterCategoriesList = LetterCategory::withCount('letterTypes')
+            ->orderBy('name')
+            ->paginate(10, ['*'], 'categoriesPage');
+
         $letterTypes = LetterType::orderBy('code')->get();
+        $letterCategories = LetterCategory::orderBy('name')->get();
 
         return view('livewire.admin-lppm.letter.dashboard', [
             'stats' => $stats,
             'letters' => $letters,
             'letterTypesList' => $letterTypesList,
+            'letterCategoriesList' => $letterCategoriesList,
             'letterTypes' => $letterTypes,
+            'letterCategories' => $letterCategories,
         ]);
     }
 }

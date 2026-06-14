@@ -1,6 +1,30 @@
-<x-slot:title>Dashboard Persuratan</x-slot:title>
-<x-slot:pageTitle>Dashboard Persuratan</x-slot:pageTitle>
-<x-slot:pageSubtitle>Statistik, arsip, dan manajemen jenis surat LPPM</x-slot:pageSubtitle>
+<x-slot:title>
+    @if($activeTab === 'letters')
+        Dashboard Persuratan
+    @elseif($activeTab === 'types')
+        Kelola Jenis Surat
+    @else
+        Kelola Kategori Surat
+    @endif
+</x-slot:title>
+<x-slot:pageTitle>
+    @if($activeTab === 'letters')
+        Dashboard Persuratan
+    @elseif($activeTab === 'types')
+        Kelola Jenis Surat
+    @else
+        Kelola Kategori Surat
+    @endif
+</x-slot:pageTitle>
+<x-slot:pageSubtitle>
+    @if($activeTab === 'letters')
+        Statistik, arsip, dan overview surat LPPM
+    @elseif($activeTab === 'types')
+        Daftar jenis surat dan konfigurasi format penomoran
+    @else
+        Manajemen kategori surat dinamis untuk jenis surat
+    @endif
+</x-slot:pageSubtitle>
 
 {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
 <div>
@@ -118,12 +142,21 @@
                             <i class="ti ti-settings me-1"></i> Kelola Jenis Surat
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link @if($activeTab === 'categories') active @endif" href="#" wire:click.prevent="setTab('categories')">
+                            <i class="ti ti-tags me-1"></i> Kelola Kategori
+                        </a>
+                    </li>
                 </ul>
 
-                {{-- Action Button inside Livewire DOM --}}
+                {{-- Action Buttons inside Livewire DOM --}}
                 @if($activeTab === 'types')
                     <button class="btn btn-primary btn-sm shadow-sm" wire:click="openCreateModal">
                         <i class="ti ti-plus me-1"></i> Tambah Jenis Surat
+                    </button>
+                @elseif($activeTab === 'categories')
+                    <button class="btn btn-primary btn-sm shadow-sm" wire:click="openCreateCategoryModal">
+                        <i class="ti ti-plus me-1"></i> Tambah Kategori
                     </button>
                 @endif
             </div>
@@ -249,6 +282,7 @@
                 <table class="table table-vcenter card-table table-hover">
                     <thead>
                         <tr>
+                            <th>No.</th>
                             <th>Kode</th>
                             <th>Nama</th>
                             <th>Kategori</th>
@@ -262,6 +296,7 @@
                     <tbody>
                         @forelse($letterTypesList as $type)
                         <tr>
+                            <td class="text-muted">{{ $letterTypesList->firstItem() + $loop->index }}</td>
                             <td><span class="badge bg-primary-lt">{{ $type->code }}</span></td>
                             <td>
                                 <div class="fw-bold">{{ $type->name }}</div>
@@ -269,7 +304,7 @@
                                 <div class="text-muted small">{{ Str::limit($type->description, 50) }}</div>
                                 @endif
                             </td>
-                            <td><span class="badge bg-secondary-lt">{{ ucfirst($type->category) }}</span></td>
+                            <td><span class="badge bg-secondary-lt">{{ $type->letterCategory?->name ?? ucfirst($type->category) }}</span></td>
                             <td><code class="small">{{ $type->numbering_format }}</code></td>
                             <td>
                                 <span class="badge bg-{{ $type->is_uploadable ? 'info' : 'secondary' }}-lt">
@@ -295,7 +330,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="text-center py-5 text-muted">
+                            <td colspan="9" class="text-center py-5 text-muted">
                                 Belum ada jenis surat.
                             </td>
                         </tr>
@@ -305,6 +340,51 @@
             </div>
             <div class="card-footer bg-transparent border-0 pb-4">
                 {{ $letterTypesList->links() }}
+            </div>
+
+        @elseif($activeTab === 'categories')
+            {{-- Categories Table --}}
+            <div class="table-responsive mt-3">
+                <table class="table table-vcenter card-table table-hover">
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Nama Kategori</th>
+                            <th>Slug (Kode Sistem)</th>
+                            <th>Jumlah Jenis Surat</th>
+                            <th class="w-1"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($letterCategoriesList as $cat)
+                        <tr>
+                            <td class="text-muted">{{ $letterCategoriesList->firstItem() + $loop->index }}</td>
+                            <td><span class="fw-bold">{{ $cat->name }}</span></td>
+                            <td><code class="small">{{ $cat->slug }}</code></td>
+                            <td><span class="badge bg-secondary-lt">{{ $cat->letter_types_count }}</span></td>
+                            <td>
+                                <div class="btn-list flex-nowrap">
+                                    <button class="btn btn-outline-primary btn-sm shadow-sm" wire:click="openEditCategoryModal('{{ $cat->id }}')">
+                                        <i class="ti ti-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger btn-sm shadow-sm" wire:click="confirmDeleteCategory('{{ $cat->id }}')" {{ $cat->letter_types_count > 0 ? 'disabled' : '' }}>
+                                        <i class="ti ti-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                Belum ada kategori surat.
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer bg-transparent border-0 pb-4">
+                {{ $letterCategoriesList->links() }}
             </div>
         @endif
     </div>
@@ -344,10 +424,9 @@
                             <div class="col-md-6">
                                 <label class="form-label required">Kategori</label>
                                 <select class="form-select" wire:model="category" required>
-                                    <option value="persiapan">Persiapan</option>
-                                    <option value="etik">Etik</option>
-                                    <option value="pelaksanaan">Pelaksanaan</option>
-                                    <option value="pelaporan">Pelaporan</option>
+                                    @foreach($letterCategories as $cat)
+                                        <option value="{{ $cat->slug }}">{{ $cat->name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="col-md-6">
@@ -435,6 +514,66 @@
         </div>
     </div>
     @if($showDeleteModal)
+    <div class="modal-backdrop fade show" style="z-index: 1040;"></div>
+    @endif
+
+    {{-- Create/Edit Category Modal --}}
+    <div class="modal modal-blur fade @if($showCategoryModal) show @endif" 
+         style="display: @if($showCategoryModal) block @else none @endif;" 
+         tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-sm">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ $categoryEditMode ? 'Edit' : 'Tambah' }} Kategori Surat</h5>
+                    <button type="button" class="btn-close" wire:click="$set('showCategoryModal', false)"></button>
+                </div>
+                <div class="modal-body">
+                    <form wire:submit.prevent="saveCategory">
+                        <div class="mb-3">
+                            <label class="form-label required">Nama Kategori</label>
+                            <input type="text" class="form-control" wire:model="categoryName" placeholder="Contoh: Ethical Clearance" required>
+                            @error('categoryName')
+                            <span class="text-danger small">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-link" wire:click="$set('showCategoryModal', false)">Batal</button>
+                            <button type="submit" class="btn btn-primary shadow-sm">
+                                <i class="ti ti-check me-1"></i> {{ $categoryEditMode ? 'Simpan' : 'Tambah' }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    @if($showCategoryModal)
+    <div class="modal-backdrop fade show"></div>
+    @endif
+
+    {{-- Delete Category Confirmation Modal --}}
+    <div class="modal modal-blur fade @if($showDeleteCategoryModal) show @endif" 
+         style="display: @if($showDeleteCategoryModal) block @else none @endif;" 
+         tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-sm">
+                <div class="modal-status bg-danger"></div>
+                <div class="modal-body text-center py-4">
+                    <i class="ti ti-alert-triangle icon-lg text-danger mb-2"></i>
+                    <h3>Hapus Kategori Surat?</h3>
+                    <p class="text-muted">Yakin ingin menghapus kategori <strong>{{ $deletingCategory?->name }}</strong>?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link" wire:click="$set('showDeleteCategoryModal', false)">Batal</button>
+                    <button type="button" class="btn btn-danger shadow-sm" wire:click="deleteCategory">
+                        <i class="ti ti-trash me-1"></i> Hapus
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @if($showDeleteCategoryModal)
     <div class="modal-backdrop fade show" style="z-index: 1040;"></div>
     @endif
 </div>
