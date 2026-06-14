@@ -12,11 +12,16 @@
         z-index: 1000;
         padding: 0;
     }
+    .section-form { display: none; }
+    .section-form.active { display: block; }
+    .section-table { display: block; }
+    .section-table.hidden { display: none; }
+    .fab-hidden { display: none !important; }
 </style>
 
-<div x-data x-cloak>
+<div>
     {{-- Tabs + Table --}}
-    <div class="card border-0 shadow-sm" x-show="!$wire.showForm">
+    <div class="card border-0 shadow-sm section-table" id="sectionTable">
         <div class="card-header bg-transparent border-0 pt-4 pb-0">
             <ul class="nav nav-tabs card-header-tabs">
                 @php
@@ -48,7 +53,7 @@
                     </div>
                 </div>
                 <div class="col-auto">
-                    <button class="btn btn-primary btn-sm" wire:click="$set('showForm', true)">
+                    <button class="btn btn-primary btn-sm" onclick="showSectionForm()">
                         <i class="ti ti-plus me-1"></i> Ajukan Surat
                     </button>
                 </div>
@@ -125,7 +130,7 @@
                         <td colspan="6" class="text-center py-5 text-muted">
                             <i class="ti ti-mail-opened icon-lg mb-2"></i>
                             <div>Belum ada surat dengan status ini.</div>
-                            <button class="btn btn-primary btn-sm mt-2" wire:click="$set('showForm', true)">
+                            <button class="btn btn-primary btn-sm mt-2" onclick="showSectionForm()">
                                 <i class="ti ti-plus me-1"></i> Ajukan Surat Baru
                             </button>
                         </td>
@@ -140,15 +145,15 @@
     </div>
 
     {{-- FAB --}}
-    <button class="btn btn-primary btn-fab shadow-lg" title="Ajukan Surat Baru" wire:click="$set('showForm', true)" x-show="!$wire.showForm">
+    <button class="btn btn-primary btn-fab shadow-lg" id="fabAjukan" title="Ajukan Surat Baru" onclick="showSectionForm()">
         <i class="ti ti-plus" style="font-size: 1.5rem;"></i>
     </button>
 
     {{-- Form --}}
-    <div class="card border-0 shadow-sm" x-show="$wire.showForm">
+    <div class="card border-0 shadow-sm section-form" id="sectionForm">
         <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center py-3">
             <h5 class="card-title mb-0"><i class="ti ti-file-plus me-2"></i> Ajukan Surat Baru</h5>
-            <button class="btn btn-outline-secondary btn-sm" wire:click="$set('showForm', false)">
+            <button class="btn btn-outline-secondary btn-sm" onclick="showSectionTable()">
                 <i class="ti ti-arrow-left me-1"></i> Kembali
             </button>
         </div>
@@ -278,7 +283,7 @@
                 </div>
 
                 <div class="d-flex justify-content-end gap-2">
-                    <button type="button" class="btn btn-link" wire:click="$set('showForm', false)">Batal</button>
+                    <button type="button" class="btn btn-link" onclick="showSectionTable()">Batal</button>
                     <button type="submit" class="btn btn-primary px-4" wire:loading.attr="disabled">
                         <i class="ti ti-send me-1"></i> Kirim ke Kepala LPPM
                     </button>
@@ -343,3 +348,16 @@
     <div class="modal-backdrop fade show"></div>
     @endif
 </div>
+
+<script>
+    function showSectionForm() {
+        document.getElementById('sectionTable').classList.add('hidden');
+        document.getElementById('sectionForm').classList.add('active');
+        document.getElementById('fabAjukan').classList.add('fab-hidden');
+    }
+    function showSectionTable() {
+        document.getElementById('sectionTable').classList.remove('hidden');
+        document.getElementById('sectionForm').classList.remove('active');
+        document.getElementById('fabAjukan').classList.remove('fab-hidden');
+    }
+</script>
