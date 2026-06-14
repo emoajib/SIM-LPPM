@@ -5,7 +5,7 @@
     <title>Surat Keterangan - {{ $letter->letter_number ?? 'Draft' }}</title>
     <style>
         @page {
-            margin: 2cm 2cm 2cm 2cm;
+            margin: 0.5cm 2cm 0.5cm 2cm;
         }
         body {
             font-family: "Times New Roman", Times, serif;
