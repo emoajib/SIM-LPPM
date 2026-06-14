@@ -29,6 +29,7 @@ use App\Livewire\AdminLppm\ReviewerWorkload;
 use App\Livewire\AdminLppm\ReviewMonitoring;
 use App\Livewire\AdminLppm\SyncSinta;
 use App\Livewire\Dashboard;
+use App\Livewire\Dashboard\Dosen\LetterDashboard;
 use App\Livewire\Dashboard\Dosen\LetterHistory;
 use App\Livewire\Dashboard\Dosen\LetterManualRequest;
 use App\Livewire\Dashboard\KepalaLppm\LetterApproval;
@@ -281,6 +282,13 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['auth', 'letter.active'])->prefix('surat')->name('letters.')->group(function () {
         Route::get('/buat', LetterManualRequest::class)->name('manual-request');
         Route::get('/riwayat', LetterHistory::class)->name('history');
+    });
+
+    // Dosen - Dashboard Surat Routes
+    Route::middleware(['auth', 'letter.active'])->prefix('dosen/persuratan')->name('dashboard.dosen.surat.')->group(function () {
+        Route::get('/', LetterDashboard::class)->name('dashboard');
+        Route::get('/buat', LetterManualRequest::class)->name('buat');
+        Route::get('/riwayat', LetterHistory::class)->name('riwayat');
     });
 
     // Admin LPPM - Persuratan Routes

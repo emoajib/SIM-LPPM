@@ -226,9 +226,7 @@ class LetterService
             ]);
 
             try {
-                $this->generatePdf($lockedLetter);
-
-                return $lockedLetter->file_path;
+                return $this->generatePdf($lockedLetter);
             } catch (\Exception $e) {
                 $lockedLetter->update([
                     'status' => 'pending_approval',
@@ -354,6 +352,21 @@ class LetterService
             'rejected' => Letter::where('status', 'rejected')->count(),
             'cancelled' => Letter::where('status', 'cancelled')->count(),
             'ready_to_print' => Letter::where('status', 'ready_to_print')->count(),
+        ];
+    }
+
+    /**
+     * Get letter statistics for a specific user dashboard.
+     */
+    public function getLetterStatsForUser(int $userId): array
+    {
+        return [
+            'total' => Letter::where('user_id', $userId)->count(),
+            'pending' => Letter::where('user_id', $userId)->where('status', 'pending_approval')->count(),
+            'published' => Letter::where('user_id', $userId)->where('status', 'published')->count(),
+            'rejected' => Letter::where('user_id', $userId)->where('status', 'rejected')->count(),
+            'cancelled' => Letter::where('user_id', $userId)->where('status', 'cancelled')->count(),
+            'ready_to_print' => Letter::where('user_id', $userId)->where('status', 'ready_to_print')->count(),
         ];
     }
 

@@ -109,13 +109,16 @@ class LetterManualRequest extends Component
                 'identifier' => $m['identifier'] ?? '-',
             ], $this->team);
 
+            // Add the requester as ketua
             array_unshift($teamData, [
                 'name' => auth()->user()->name,
                 'role' => 'Ketua',
                 'identifier' => auth()->user()->identity->identity_id ?? '-',
             ]);
 
-            $dateString = Carbon::parse($this->date)->translatedFormat('l, d F Y');
+            // Format date and time for PDF
+            $dateObj = Carbon::parse($this->date);
+            $dateString = $dateObj->translatedFormat('l, d F Y');
             $timeString = $this->timeStart.' - '.$this->timeEnd.' WIB';
 
             $service->requestManualLetter(auth()->user(), [
