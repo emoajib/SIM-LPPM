@@ -1,3 +1,4 @@
+{{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
 <style>
     .btn-fab {
         position: fixed;
@@ -64,6 +65,7 @@
             <table class="table table-vcenter card-table table-hover">
                 <thead>
                     <tr>
+                        <th>No</th>
                         <th>Nomor Surat</th>
                         <th>Jenis</th>
                         <th>Sumber</th>
@@ -75,6 +77,7 @@
                 <tbody>
                     @forelse($letters as $letter)
                     <tr>
+                        <td class="text-muted">{{ $letters->firstItem() + $loop->index }}</td>
                         <td>
                             <div class="fw-bold">{{ $letter->letter_number ?? 'Sedang Diproses' }}</div>
                         </td>
@@ -127,7 +130,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="text-center py-5 text-muted">
+                        <td colspan="7" class="text-center py-5 text-muted">
                             <i class="ti ti-mail-opened icon-lg mb-2"></i>
                             <div>Belum ada surat dengan status ini.</div>
                             <button class="btn btn-primary btn-sm mt-2" onclick="showSectionForm()">
