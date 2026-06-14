@@ -1,4 +1,5 @@
 <style>
+    [x-cloak] { display: none !important; }
     .btn-fab {
         position: fixed;
         bottom: 2rem;
@@ -14,12 +15,10 @@
     }
 </style>
 
-<div>
-    {{-- When showForm is FALSE: Show Tabs + Table --}}
-    @if(!$showForm)
-    <div class="card border-0 shadow-sm">
+<div x-data="{ get showForm() { return $wire.showForm } }">
+    {{-- Tabs + Table --}}
+    <div class="card border-0 shadow-sm" x-show="!showForm" x-cloak>
         <div class="card-header bg-transparent border-0 pt-4 pb-0">
-            {{-- Status Tabs --}}
             <ul class="nav nav-tabs card-header-tabs">
                 @php
                     $tabs = [
@@ -40,7 +39,6 @@
                 @endforeach
             </ul>
 
-            {{-- Search & Buat Surat --}}
             <div class="row align-items-center mt-3">
                 <div class="col">
                     <div class="input-icon">
@@ -52,7 +50,7 @@
                 </div>
                 <div class="col-auto">
                     <button class="btn btn-primary btn-sm" wire:click="$set('showForm', true)">
-                        <i class="ti ti-plus me-1"></i> Buat Surat
+                        <i class="ti ti-plus me-1"></i> Ajukan Surat
                     </button>
                 </div>
             </div>
@@ -129,7 +127,7 @@
                             <i class="ti ti-mail-opened icon-lg mb-2"></i>
                             <div>Belum ada surat dengan status ini.</div>
                             <button class="btn btn-primary btn-sm mt-2" wire:click="$set('showForm', true)">
-                                <i class="ti ti-plus me-1"></i> Buat Surat Baru
+                                <i class="ti ti-plus me-1"></i> Ajukan Surat Baru
                             </button>
                         </td>
                     </tr>
@@ -142,24 +140,21 @@
         </div>
     </div>
 
-    {{-- FAB: Buat Surat --}}
-    <button class="btn btn-primary btn-fab shadow-lg" title="Buat Surat Baru" wire:click="$set('showForm', true)">
+    {{-- FAB --}}
+    <button class="btn btn-primary btn-fab shadow-lg" title="Ajukan Surat Baru" wire:click="$set('showForm', true)" x-show="!showForm" x-cloak>
         <i class="ti ti-plus" style="font-size: 1.5rem;"></i>
     </button>
-    @endif
 
-    {{-- When showForm is TRUE: Show Form --}}
-    @if($showForm)
-    <div class="card border-0 shadow-sm">
+    {{-- Form --}}
+    <div class="card border-0 shadow-sm" x-show="showForm" x-cloak>
         <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center py-3">
-            <h5 class="card-title mb-0"><i class="ti ti-file-plus me-2"></i> Buat Surat Baru</h5>
+            <h5 class="card-title mb-0"><i class="ti ti-file-plus me-2"></i> Ajukan Surat Baru</h5>
             <button class="btn btn-outline-secondary btn-sm" wire:click="$set('showForm', false)">
                 <i class="ti ti-arrow-left me-1"></i> Kembali
             </button>
         </div>
         <div class="card-body p-4">
-            <form wire:submit="submitLetter">
-                {{-- Pilih Jenis Surat --}}
+            <form wire:submit.prevent="submitLetter">
                 <div class="mb-4">
                     <label class="form-label required">Jenis Surat</label>
                     <select class="form-select" wire:model="letterTypeId" required>
@@ -173,7 +168,6 @@
                     @enderror
                 </div>
 
-                {{-- Detail Kegiatan --}}
                 <div class="mb-4">
                     <label class="form-label required">Judul Kegiatan</label>
                     <input type="text" class="form-control" wire:model="title" placeholder="Judul kegiatan..." required>
@@ -229,7 +223,6 @@
                     <textarea class="form-control" wire:model="tembusan" rows="2" placeholder="1. Arsip&#10;2. ..."></textarea>
                 </div>
 
-                {{-- Tim Pelaksana --}}
                 <div class="mb-4">
                     <label class="form-label">Tim Pelaksana</label>
                     <div class="input-icon mb-2">
@@ -285,7 +278,6 @@
                     @endif
                 </div>
 
-                {{-- Submit --}}
                 <div class="d-flex justify-content-end gap-2">
                     <button type="button" class="btn btn-link" wire:click="$set('showForm', false)">Batal</button>
                     <button type="submit" class="btn btn-primary px-4" wire:loading.attr="disabled">
@@ -295,7 +287,6 @@
             </form>
         </div>
     </div>
-    @endif
 
     {{-- Resubmit Modal --}}
     <div class="modal modal-blur fade @if($showResubmitModal) show @endif"
