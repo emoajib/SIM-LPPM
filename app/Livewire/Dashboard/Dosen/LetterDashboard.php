@@ -11,7 +11,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-#[Layout('components.layouts.app', ['title' => 'Dashboard Persuratan', 'pageTitle' => 'Dashboard Surat Saya', 'pageSubtitle' => 'Ringkasan pengajuan dan status surat'])]
+#[Layout('components.layouts.app', ['title' => 'Dashboard Persuratan'])]
 class LetterDashboard extends Component
 {
     use WithPagination;
