@@ -3,7 +3,10 @@
 namespace App\Livewire\Dashboard\Dosen;
 
 use App\Models\Letter;
+use App\Models\LetterType;
 use App\Services\LetterService;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -13,10 +16,44 @@ class LetterDashboard extends Component
 {
     use WithPagination;
 
+    // Tab & Search
     public $statusFilter = '';
 
     public $search = '';
 
+    // Form visibility
+    public $showForm = false;
+
+    // Form fields
+    public $letterTypeId;
+
+    public $title = '';
+
+    public $activityType = 'Penelitian';
+
+    public $date = '';
+
+    public $timeStart = '';
+
+    public $timeEnd = '';
+
+    public $location = '';
+
+    public $destinationName = '';
+
+    public $tembusan = '1. Arsip';
+
+    public $team = [];
+
+    public $searchQuery = '';
+
+    public $searchResults = [];
+
+    public $letterTypes = [];
+
+    public $selectedLetterType;
+
+    // Resubmit modal
     public $showResubmitModal = false;
 
     public $resubmitLetterId = null;
@@ -31,25 +68,107 @@ class LetterDashboard extends Component
         'tembusan' => '1. Arsip',
     ];
 
-    public function render()
+    public function mount(): void
     {
+        $this->letterTypes = LetterType::where('is_active', true)->orderBy('code')->get();
+    }
+
+    public function updatedLetterTypeId(): void
+    {
+        $this->selectedLetterType = LetterType::find($this->letterTypeId);
+    }
+
+    public function searchDosen(): void
+    {
+        if (strlen($this->searchQuery) < 2) {
+            $this->searchResults = [];
+
+            return;
+        }
+
         $service = new LetterService;
-        $stats = $service->getLetterStatsForUser(auth()->id());
+        $this->searchResults = $service->searchDosen($this->searchQuery)->toArray();
+    }
 
-        $letters = Letter::with(['letterType', 'user.identity'])
-            ->where('user_id', auth()->id())
-            ->when($this->statusFilter, fn ($q) => $q->where('status', $this->statusFilter))
-            ->when($this->search, function ($q) {
-                $q->where('letter_number', 'like', '%'.$this->search.'%')
-                    ->orWhereHas('letterType', fn ($tq) => $tq->where('name', 'like', '%'.$this->search.'%'));
-            })
-            ->latest()
-            ->paginate(10);
+    public function addTeamMember(array $dosen): void
+    {
+        foreach ($this->team as $member) {
+            if ($member['id'] === $dosen['id']) {
+                return;
+            }
+        }
 
-        return view('livewire.dashboard.dosen.letter-dashboard', [
-            'stats' => $stats,
-            'letters' => $letters,
+        $this->team[] = [
+            'id' => $dosen['id'],
+            'name' => $dosen['name'],
+            'role' => 'Anggota',
+            'identifier' => '',
+        ];
+
+        $this->searchQuery = '';
+        $this->searchResults = [];
+    }
+
+    public function removeTeamMember(int $index): void
+    {
+        unset($this->team[$index]);
+        $this->team = array_values($this->team);
+    }
+
+    public function submitLetter(LetterService $service): void
+    {
+        $this->validate([
+            'letterTypeId' => 'required|exists:letter_types,id',
+            'title' => 'required|string|min:3',
+            'activityType' => 'required|in:Penelitian,PKM',
+            'date' => 'required|date',
+            'timeStart' => 'required',
+            'timeEnd' => 'required',
+            'location' => 'required|string',
+            'destinationName' => 'required_if:selectedLetterType.code,SP|nullable|string',
+            'tembusan' => 'nullable|string',
         ]);
+
+        try {
+            $teamData = array_map(fn ($m) => [
+                'name' => $m['name'],
+                'role' => $m['role'],
+                'identifier' => $m['identifier'] ?? '-',
+            ], $this->team);
+
+            array_unshift($teamData, [
+                'name' => auth()->user()->name,
+                'role' => 'Ketua',
+                'identifier' => auth()->user()->identity->identity_id ?? '-',
+            ]);
+
+            $dateObj = Carbon::parse($this->date);
+            $dateString = $dateObj->translatedFormat('l, d F Y');
+            $timeString = $this->timeStart.' - '.$this->timeEnd.' WIB';
+
+            $service->requestManualLetter(auth()->user(), [
+                'letterTypeId' => $this->letterTypeId,
+                'title' => $this->title,
+                'activityType' => $this->activityType,
+                'dateString' => $dateString,
+                'timeString' => $timeString,
+                'location' => $this->location,
+                'destinationName' => $this->destinationName,
+                'tembusan' => $this->tembusan,
+                'team' => $teamData,
+            ]);
+
+            $this->resetForm();
+            $this->dispatch('swal', title: 'Berhasil', text: 'Surat berhasil diajukan ke Kepala LPPM.', icon: 'success');
+        } catch (\DomainException $e) {
+            $this->dispatch('swal', title: 'Gagal', text: $e->getMessage(), icon: 'error');
+        } catch (\Exception $e) {
+            Log::error('Manual letter request failed', [
+                'user_id' => auth()->id(),
+                'error' => $e->getMessage(),
+            ]);
+            $this->dispatch('swal', title: 'Gagal', text: 'Terjadi kesalahan. Silakan coba lagi.', icon: 'error');
+        }
     }
 
     public function cancel($id, LetterService $service): void
@@ -130,5 +249,42 @@ class LetterDashboard extends Component
         } catch (\DomainException $e) {
             $this->dispatch('swal', title: 'Gagal', text: $e->getMessage(), icon: 'error');
         }
+    }
+
+    public function render()
+    {
+        $service = new LetterService;
+        $stats = $service->getLetterStatsForUser(auth()->id());
+
+        $letters = Letter::with(['letterType', 'user.identity'])
+            ->where('user_id', auth()->id())
+            ->when($this->statusFilter, fn ($q) => $q->where('status', $this->statusFilter))
+            ->when($this->search, function ($q) {
+                $q->where('letter_number', 'like', '%'.$this->search.'%')
+                    ->orWhereHas('letterType', fn ($tq) => $tq->where('name', 'like', '%'.$this->search.'%'));
+            })
+            ->latest()
+            ->paginate(10);
+
+        return view('livewire.dashboard.dosen.letter-dashboard', [
+            'stats' => $stats,
+            'letters' => $letters,
+        ]);
+    }
+
+    private function resetForm(): void
+    {
+        $this->showForm = false;
+        $this->letterTypeId = null;
+        $this->title = '';
+        $this->activityType = 'Penelitian';
+        $this->date = '';
+        $this->timeStart = '';
+        $this->timeEnd = '';
+        $this->location = '';
+        $this->destinationName = '';
+        $this->tembusan = '1. Arsip';
+        $this->team = [];
+        $this->selectedLetterType = null;
     }
 }
