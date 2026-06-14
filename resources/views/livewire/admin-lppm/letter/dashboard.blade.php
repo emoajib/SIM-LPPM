@@ -397,7 +397,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">{{ $editMode ? 'Edit' : 'Tambah' }} Jenis Surat</h5>
-                    <button type="button" class="btn-close" wire:click="$set('showModal', false)"></button>
+                    <button type="button" class="btn-close" wire:click="closeTypeModal"></button>
                 </div>
                 <div class="modal-body">
                     <form wire:submit="save">
@@ -478,7 +478,7 @@
                         </div>
 
                         <div class="d-flex justify-content-end gap-2">
-                            <button type="button" class="btn btn-link" wire:click="$set('showModal', false)">Batal</button>
+                            <button type="button" class="btn btn-link" wire:click="closeTypeModal">Batal</button>
                             <button type="submit" class="btn btn-primary shadow-sm">
                                 <i class="ti ti-check me-1"></i> {{ $editMode ? 'Simpan Perubahan' : 'Tambah' }}
                             </button>
@@ -505,7 +505,7 @@
                     <p class="text-muted">Yakin ingin menghapus <strong>{{ $deletingLetterType?->name }} ({{ $deletingLetterType?->code }})</strong>?</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-link" wire:click="$set('showDeleteModal', false)">Batal</button>
+                    <button type="button" class="btn btn-link" wire:click="closeDeleteModal">Batal</button>
                     <button type="button" class="btn btn-danger shadow-sm" wire:click="delete">
                         <i class="ti ti-trash me-1"></i> Hapus
                     </button>
@@ -525,7 +525,7 @@
             <div class="modal-content shadow-sm">
                 <div class="modal-header">
                     <h5 class="modal-title">{{ $categoryEditMode ? 'Edit' : 'Tambah' }} Kategori Surat</h5>
-                    <button type="button" class="btn-close" wire:click="$set('showCategoryModal', false)"></button>
+                    <button type="button" class="btn-close" wire:click="closeCategoryModal"></button>
                 </div>
                 <div class="modal-body">
                     <form wire:submit.prevent="saveCategory">
@@ -538,7 +538,7 @@
                         </div>
 
                         <div class="d-flex justify-content-end gap-2">
-                            <button type="button" class="btn btn-link" wire:click="$set('showCategoryModal', false)">Batal</button>
+                            <button type="button" class="btn btn-link" wire:click="closeCategoryModal">Batal</button>
                             <button type="submit" class="btn btn-primary shadow-sm">
                                 <i class="ti ti-check me-1"></i> {{ $categoryEditMode ? 'Simpan' : 'Tambah' }}
                             </button>
@@ -565,7 +565,7 @@
                     <p class="text-muted">Yakin ingin menghapus kategori <strong>{{ $deletingCategory?->name }}</strong>?</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-link" wire:click="$set('showDeleteCategoryModal', false)">Batal</button>
+                    <button type="button" class="btn btn-link" wire:click="closeDeleteCategoryModal">Batal</button>
                     <button type="button" class="btn btn-danger shadow-sm" wire:click="deleteCategory">
                         <i class="ti ti-trash me-1"></i> Hapus
                     </button>

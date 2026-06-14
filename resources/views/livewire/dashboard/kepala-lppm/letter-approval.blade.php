@@ -15,7 +15,7 @@
                 @endphp
                 @foreach($tabs as $key => $tab)
                 <li class="nav-item">
-                    <a class="nav-link {{ $statusFilter === $key ? 'active' : '' }}" href="#" wire:click.prevent="$set('statusFilter', '{{ $key }}')">
+                    <a class="nav-link {{ $statusFilter === $key ? 'active' : '' }}" href="#" wire:click.prevent="setFilter('{{ $key }}')">
                         <i class="ti {{ $tab['icon'] }} me-1"></i> {{ $tab['label'] }}
                         <span class="badge bg-secondary-lt ms-1">{{ $tab['count'] }}</span>
                     </a>
@@ -145,7 +145,7 @@
             <div class="modal-content shadow-lg">
                 <div class="modal-header bg-dark text-white">
                     <h5 class="modal-title">Preview & Persetujuan Surat</h5>
-                    <button type="button" class="btn-close btn-close-white" wire:click="$set('showPreviewModal', false)"></button>
+                    <button type="button" class="btn-close btn-close-white" wire:click="closePreviewModal"></button>
                 </div>
                 <div class="modal-body p-0 bg-light" style="height: 70vh; overflow-y: auto;">
                     @if($selectedLetter)
@@ -217,7 +217,7 @@
                         Tolak Surat
                     </button>
                     @endif
-                    <button type="button" class="btn btn-link link-secondary" wire:click="$set('showPreviewModal', false)">Batal</button>
+                    <button type="button" class="btn btn-link link-secondary" wire:click="closePreviewModal">Batal</button>
                     @if($selectedLetter && $selectedLetter->status === 'pending_approval')
                     <button type="button" class="btn btn-success px-4 shadow-sm" wire:click="approve('{{ $selectedLetter?->id }}')">
                         <i class="ti ti-check me-2"></i> Tanda Tangani & Publish
@@ -239,7 +239,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Alasan Penolakan</h5>
-                    <button type="button" class="btn-close" wire:click="$set('showRejectModal', false)"></button>
+                    <button type="button" class="btn-close" wire:click="closeRejectModal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
@@ -261,7 +261,7 @@
                     @endif
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-link" wire:click="$set('showRejectModal', false)">Batal</button>
+                    <button type="button" class="btn btn-link" wire:click="closeRejectModal">Batal</button>
                     <button type="button" class="btn btn-danger" wire:click="confirmReject" {{ empty($rejectReason) ? 'disabled' : '' }}>
                         <i class="ti ti-x me-1"></i> Tolak Surat
                     </button>

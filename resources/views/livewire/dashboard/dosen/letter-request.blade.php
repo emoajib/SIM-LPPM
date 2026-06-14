@@ -11,7 +11,7 @@
                     <h5 class="modal-title">
                         <i class="ti ti-mail-forward me-2"></i> Ajukan Surat Terintegrasi
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" wire:click="$set('showModal', false)" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" wire:click="closeModal" aria-label="Close"></button>
                 </div>
                 <form wire:submit.prevent="submit">
                     <div class="modal-body">
@@ -36,7 +36,7 @@
                                 @error('letterTypeId') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
 
-                            @if($letterTypeId == 2) {{-- Surat Permohonan Izin --}}
+                            @if($selectedType?->code === 'SP')
                             <div class="col-md-12">
                                 <label class="form-label required">Tujuan Surat (Nama Pimpinan Mitra)</label>
                                 <input type="text" class="form-control @error('destinationName') is-invalid @enderror" 
@@ -74,7 +74,7 @@
                         </div>
                     </div>
                     <div class="modal-footer bg-light">
-                        <button type="button" class="btn btn-link link-secondary me-auto" wire:click="$set('showModal', false)">
+                        <button type="button" class="btn btn-link link-secondary me-auto" wire:click="closeModal">
                             Batal
                         </button>
                         <button type="submit" class="btn btn-primary shadow-sm px-4">

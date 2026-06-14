@@ -72,6 +72,26 @@ class Dashboard extends Component
 
     protected $listeners = ['refreshList' => '$refresh'];
 
+    public function closeTypeModal(): void
+    {
+        $this->showModal = false;
+    }
+
+    public function closeDeleteModal(): void
+    {
+        $this->showDeleteModal = false;
+    }
+
+    public function closeCategoryModal(): void
+    {
+        $this->showCategoryModal = false;
+    }
+
+    public function closeDeleteCategoryModal(): void
+    {
+        $this->showDeleteCategoryModal = false;
+    }
+
     public function updatedActiveTab(): void
     {
         $this->resetPage('lettersPage');

@@ -31,6 +31,8 @@ class LetterRequest extends Component
 
     public $tembusan = '1. Arsip';
 
+    public $selectedType;
+
     protected $listeners = ['openLetterRequest' => 'open'];
 
     public function mount(Proposal $proposal): void
@@ -41,6 +43,16 @@ class LetterRequest extends Component
         // Default data from proposal
         $this->location = $proposal->location ?? '';
         $this->activityType = str_contains($proposal->detailable_type, 'Research') ? 'Penelitian' : 'Pengabdian kepada Masyarakat';
+    }
+
+    public function updatedLetterTypeId(): void
+    {
+        $this->selectedType = LetterType::find($this->letterTypeId);
+    }
+
+    public function closeModal(): void
+    {
+        $this->showModal = false;
     }
 
     public function open(): void
@@ -62,7 +74,7 @@ class LetterRequest extends Component
             'dateString' => 'required|string',
             'timeString' => 'required|string',
             'location' => 'required|string',
-            'destinationName' => 'required_if:letterTypeId,2|nullable|string',
+            'destinationName' => 'required_if:selectedType.code,SP|nullable|string',
         ]);
 
         if (! Setting::get('module_persuratan_active', false)) {

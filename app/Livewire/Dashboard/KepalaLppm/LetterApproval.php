@@ -33,6 +33,23 @@ class LetterApproval extends Component
 
     protected $listeners = ['batchApprove' => 'batchApprove', 'batchReject' => 'batchReject'];
 
+    public function setFilter(string $status): void
+    {
+        $this->statusFilter = $status;
+        $this->resetPage();
+        $this->selectedIds = [];
+    }
+
+    public function closePreviewModal(): void
+    {
+        $this->showPreviewModal = false;
+    }
+
+    public function closeRejectModal(): void
+    {
+        $this->showRejectModal = false;
+    }
+
     public function render()
     {
         $letters = Letter::with(['letterType', 'user'])

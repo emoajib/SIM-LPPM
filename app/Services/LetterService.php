@@ -10,6 +10,7 @@ use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
@@ -228,6 +229,12 @@ class LetterService
             try {
                 return $this->generatePdf($lockedLetter);
             } catch (\Exception $e) {
+                Log::error('PDF generation failed during letter approval', [
+                    'letter_id' => $lockedLetter->id,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
+
                 $lockedLetter->update([
                     'status' => 'pending_approval',
                     'letter_number' => null,
@@ -375,10 +382,12 @@ class LetterService
      */
     public function searchDosen(string $query): Collection
     {
+        $escaped = str_replace(['%', '_'], ['\\%', '\\_'], $query);
+
         return User::whereHas('roles', fn ($q) => $q->where('name', 'dosen'))
-            ->where(function ($q) use ($query) {
-                $q->where('name', 'like', "%{$query}%")
-                    ->orWhere('email', 'like', "%{$query}%");
+            ->where(function ($q) use ($escaped) {
+                $q->where('name', 'like', '%'.$escaped.'%')
+                    ->orWhere('email', 'like', '%'.$escaped.'%');
             })
             ->select('id', 'name', 'email')
             ->limit(10)
