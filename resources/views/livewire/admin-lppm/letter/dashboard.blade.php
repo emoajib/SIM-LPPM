@@ -23,7 +23,7 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
-                                    <span class="text-muted small">Menunggu Persetujuan</span>
+                                    <span class="text-muted small">Perlu Diproses</span>
                                     <h2 class="mb-0 mt-1 text-warning">{{ $stats['pending'] }}</h2>
                                 </div>
                                 <div class="avatar avatar-lg bg-warning-lt">

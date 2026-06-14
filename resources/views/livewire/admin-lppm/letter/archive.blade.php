@@ -17,7 +17,7 @@
                             <label class="form-label">Status</label>
                             <select class="form-select" wire:model="statusFilter">
                                 <option value="">Semua</option>
-                                <option value="pending_approval">Menunggu Persetujuan</option>
+                                <option value="pending_approval">Perlu Diproses</option>
                                 <option value="published">Diterbitkan</option>
                                 <option value="rejected">Ditolak</option>
                                 <option value="cancelled">Dibatalkan</option>

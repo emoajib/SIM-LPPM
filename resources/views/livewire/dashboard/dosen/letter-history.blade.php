@@ -15,10 +15,11 @@
                         <div class="col-auto">
                             <select class="form-select form-select-sm" wire:model="statusFilter">
                                 <option value="">Semua Status</option>
-                                <option value="pending_approval">Menunggu Persetujuan</option>
+                                <option value="pending_approval">Perlu Diproses</option>
                                 <option value="published">Diterbitkan</option>
                                 <option value="rejected">Ditolak</option>
                                 <option value="cancelled">Dibatalkan</option>
+                                <option value="ready_to_print">Siap Cetak</option>
                             </select>
                         </div>
                         <div class="col-auto">
