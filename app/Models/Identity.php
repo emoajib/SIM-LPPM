@@ -16,6 +16,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $google_scholar_id
  * @property string|null $wos_id
  * @property string|null $type
+ * @property string|null $gender
  * @property string|null $address
  * @property Carbon|null $birthdate
  * @property string|null $birthplace
