@@ -112,4 +112,7 @@
         display: inline-block;
         width: 150px;
     }
+    .sig-spacer {
+        height: 60px;
+    }
 </style>

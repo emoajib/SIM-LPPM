@@ -85,15 +85,19 @@
         <tr>
             <td width="50%">
                 Tiba di : …………………………<br>
-                Pada hari & Tgl : …………………………<br>
-                Koordinator<br><br><br><br>
-                (……………………………………………..)
+                Pada hari & Tgl : …………………………<br><br>
+                Koordinator<br>
+                <div class="sig-spacer"></div>
+                (………………………)<br>
+                Nama : ……………………………………………<br>
             </td>
             <td>
                 Tiba kembali di : ITSNU Pekalongan<br>
-                Pada hari & Tgl : ……………………<br>
-                Pejabat yang berwenang ditunjuk<br><br><br><br>
-                (……………………………………………..)
+                Pada hari & Tgl : ……………………<br><br>
+                Pejabat yang berwenang ditunjuk<br>
+                <div class="sig-spacer"></div>
+                (………………………)<br>
+                Nama : ……………………………………………<br>
             </td>
         </tr>
     </table>
