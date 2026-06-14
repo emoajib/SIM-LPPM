@@ -235,7 +235,7 @@
                         <span class="input-icon-addon">
                             <i class="ti ti-search"></i>
                         </span>
-                        <input type="text" class="form-control" wire:model.live.debounce.500ms="searchQuery" placeholder="Ketik nama dosen untuk mencari...">
+                        <input type="text" class="form-control" wire:model.live.debounce.500ms="searchQuery" @keydown.enter.prevent placeholder="Ketik nama dosen untuk mencari...">
                     </div>
 
                     @if(count($searchResults) > 0)
