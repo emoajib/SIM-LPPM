@@ -177,19 +177,8 @@ class MenuComposer
             ...($letteringActive ? [[
                 'title' => 'Persuratan',
                 'icon' => 'mail',
+                'route' => 'dashboard.dosen.surat.dashboard',
                 'roles' => ['dosen'],
-                'children' => [
-                    [
-                        'title' => 'Dashboard Surat',
-                        'icon' => 'chart-bar',
-                        'route' => 'dashboard.dosen.surat.dashboard',
-                    ],
-                    [
-                        'title' => 'Buat Surat',
-                        'icon' => 'pencil',
-                        'route' => 'letters.manual-request',
-                    ],
-                ],
             ]] : []),
             // Admin LPPM - Persuratan
             ...($letteringActive ? [[
