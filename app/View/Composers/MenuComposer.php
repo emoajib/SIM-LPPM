@@ -181,27 +181,12 @@ class MenuComposer
                 'roles' => ['dosen'],
             ]] : []),
             // Admin LPPM - Persuratan
+            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             ...($letteringActive ? [[
                 'title' => 'Persuratan',
                 'icon' => 'mail',
+                'route' => 'admin-lppm.letters.dashboard',
                 'roles' => ['admin lppm'],
-                'children' => [
-                    [
-                        'title' => 'Dashboard',
-                        'icon' => 'chart-bar',
-                        'route' => 'admin-lppm.letters.dashboard',
-                    ],
-                    [
-                        'title' => 'Kelola Jenis Surat',
-                        'icon' => 'settings',
-                        'route' => 'admin-lppm.letter-types.index',
-                    ],
-                    [
-                        'title' => 'Arsip Surat',
-                        'icon' => 'folders',
-                        'route' => 'admin-lppm.letters.archive',
-                    ],
-                ],
             ]] : []),
             // Admin LPPM - Reviewer Management Group
             [

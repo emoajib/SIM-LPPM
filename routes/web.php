@@ -20,7 +20,6 @@ use App\Livewire\Admin\Archive\ManageArchives;
 use App\Livewire\Admin\EligibilityDashboard;
 use App\Livewire\AdminLppm\ExportSinta;
 use App\Livewire\AdminLppm\Letter\Archive;
-use App\Livewire\AdminLppm\Letter\LetterTypeManagement;
 use App\Livewire\AdminLppm\ManualBook\Form as ManualBookForm;
 use App\Livewire\AdminLppm\ManualBook\Index as ManualBookIndex;
 use App\Livewire\AdminLppm\Monev\MonevIndex;
@@ -290,13 +289,14 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Admin LPPM - Persuratan Routes
+    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
     Route::middleware(['auth', 'role:admin lppm', 'letter.active'])->prefix('admin-lppm/persuratan')->name('admin-lppm.letters.')->group(function () {
         Route::get('/', App\Livewire\AdminLppm\Letter\Dashboard::class)->name('dashboard');
-        Route::get('/arsip', Archive::class)->name('archive');
+        Route::get('/arsip', fn () => redirect()->route('admin-lppm.letters.dashboard'))->name('archive');
     });
 
     Route::middleware(['auth', 'role:admin lppm', 'letter.active'])->prefix('admin-lppm/persuratan/jenis')->name('admin-lppm.letter-types.')->group(function () {
-        Route::get('/', LetterTypeManagement::class)->name('index');
+        Route::get('/', fn () => redirect()->route('admin-lppm.letters.dashboard'))->name('index');
         Route::post('/{letterType}/upload-template', [LetterTypeController::class, 'uploadTemplate'])->name('upload-template');
         Route::get('/{letterType}/download-template', [LetterTypeController::class, 'downloadTemplate'])->name('download-template');
         Route::delete('/{letterType}/delete-template', [LetterTypeController::class, 'deleteTemplate'])->name('delete-template');
