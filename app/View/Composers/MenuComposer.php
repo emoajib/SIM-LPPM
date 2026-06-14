@@ -189,11 +189,6 @@ class MenuComposer
                         'icon' => 'pencil',
                         'route' => 'letters.manual-request',
                     ],
-                    [
-                        'title' => 'Riwayat Surat',
-                        'icon' => 'history',
-                        'route' => 'letters.history',
-                    ],
                 ],
             ]] : []),
             // Admin LPPM - Persuratan

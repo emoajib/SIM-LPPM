@@ -134,7 +134,7 @@
 
                                 {{-- Submit --}}
                                 <div class="d-flex justify-content-end gap-2">
-                                    <a href="{{ route('letters.history') }}" class="btn btn-link">Batal</a>
+                                    <a href="{{ route('dashboard.dosen.surat.dashboard') }}" class="btn btn-link">Batal</a>
                                     <button type="submit" class="btn btn-primary px-4" wire:loading.attr="disabled">
                                         <i class="ti ti-send me-1"></i> Kirim ke Kepala LPPM
                                     </button>

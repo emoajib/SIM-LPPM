@@ -135,7 +135,7 @@ class LetterManualRequest extends Component
 
             session()->flash('success', 'Surat berhasil diajukan ke Kepala LPPM.');
 
-            $this->redirect(route('letters.history'), navigate: true);
+            $this->redirect(route('dashboard.dosen.surat.dashboard'), navigate: true);
         } catch (\DomainException $e) {
             $this->dispatch('swal', title: 'Gagal', text: $e->getMessage(), icon: 'error');
         } catch (\Exception $e) {
