@@ -9,6 +9,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+// Vetted by AI - Manual Review Required by Senior Engineer/Manager
 #[Layout('components.layouts.app', ['title' => 'Riwayat Surat', 'pageTitle' => 'Riwayat Surat Saya', 'pageSubtitle' => 'Lihat status dan riwayat pengajuan surat'])]
 class LetterHistory extends Component
 {
@@ -16,7 +17,7 @@ class LetterHistory extends Component
 
     public $search = '';
 
-    public $statusFilter = '';
+    public $statusFilter = 'pending_approval';
 
     public $typeFilter = '';
 
@@ -41,8 +42,10 @@ class LetterHistory extends Component
             ->when($this->statusFilter, fn ($q) => $q->where('status', $this->statusFilter))
             ->when($this->typeFilter, fn ($q) => $q->where('letter_type_id', $this->typeFilter))
             ->when($this->search, function ($q) {
-                $q->where('letter_number', 'like', '%'.$this->search.'%')
-                    ->orWhereHas('letterType', fn ($tq) => $tq->where('name', 'like', '%'.$this->search.'%'));
+                $q->where(function ($sub) {
+                    $sub->where('letter_number', 'like', '%'.$this->search.'%')
+                        ->orWhereHas('letterType', fn ($tq) => $tq->where('name', 'like', '%'.$this->search.'%'));
+                });
             })
             ->latest()
             ->paginate(10);

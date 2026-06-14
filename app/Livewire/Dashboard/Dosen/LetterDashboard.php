@@ -11,13 +11,14 @@ use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+// Vetted by AI - Manual Review Required by Senior Engineer/Manager
 #[Layout('components.layouts.app', ['title' => 'Dashboard Persuratan'])]
 class LetterDashboard extends Component
 {
     use WithPagination;
 
     // Tab & Search
-    public $statusFilter = '';
+    public $statusFilter = 'pending_approval';
 
     public $search = '';
 
@@ -278,8 +279,10 @@ class LetterDashboard extends Component
             ->where('user_id', auth()->id())
             ->when($this->statusFilter, fn ($q) => $q->where('status', $this->statusFilter))
             ->when($this->search, function ($q) {
-                $q->where('letter_number', 'like', '%'.$this->search.'%')
-                    ->orWhereHas('letterType', fn ($tq) => $tq->where('name', 'like', '%'.$this->search.'%'));
+                $q->where(function ($sub) {
+                    $sub->where('letter_number', 'like', '%'.$this->search.'%')
+                        ->orWhereHas('letterType', fn ($tq) => $tq->where('name', 'like', '%'.$this->search.'%'));
+                });
             })
             ->latest()
             ->paginate(10);
