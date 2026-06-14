@@ -1,13 +1,6 @@
 <x-slot:title>Dashboard Persuratan</x-slot:title>
 <x-slot:pageTitle>Dashboard Persuratan</x-slot:pageTitle>
 <x-slot:pageSubtitle>Statistik, arsip, dan manajemen jenis surat LPPM</x-slot:pageSubtitle>
-<x-slot:pageActions>
-    @if($activeTab === 'types')
-        <button class="btn btn-primary shadow-sm" wire:click="openCreateModal">
-            <i class="ti ti-plus me-1"></i> Tambah Jenis Surat
-        </button>
-    @endif
-</x-slot:pageActions>
 
 {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
 <div>
@@ -81,50 +74,59 @@
 
     {{-- Main Container Card --}}
     <div class="card border-0 shadow-sm">
-        {{-- Single Level Tabs (All features aligned horizontally in one row) --}}
+        {{-- Card Header (Dynamic based on active tab for Livewire reactivity) --}}
         <div class="card-header bg-transparent border-0 pt-4 pb-0">
-            <ul class="nav nav-tabs card-header-tabs">
-                <li class="nav-item">
-                    <a class="nav-link @if($activeTab === 'letters' && $statusFilter === 'all') active @endif" href="#" wire:click.prevent="setTab('letters', 'all')">
-                        <i class="ti ti-mail me-1"></i> Semua
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link @if($activeTab === 'letters' && $statusFilter === 'pending_approval') active @endif" href="#" wire:click.prevent="setTab('letters', 'pending_approval')">
-                        <i class="ti ti-clock me-1"></i> Perlu Diproses
-                        <span class="badge bg-warning-lt ms-1">{{ $stats['pending'] }}</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link @if($activeTab === 'letters' && $statusFilter === 'published') active @endif" href="#" wire:click.prevent="setTab('letters', 'published')">
-                        <i class="ti ti-check me-1"></i> Diterbitkan
-                        <span class="badge bg-success-lt ms-1">{{ $stats['published'] }}</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link @if($activeTab === 'letters' && $statusFilter === 'rejected') active @endif" href="#" wire:click.prevent="setTab('letters', 'rejected')">
-                        <i class="ti ti-x me-1"></i> Ditolak
-                        <span class="badge bg-danger-lt ms-1">{{ $stats['rejected'] }}</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link @if($activeTab === 'letters' && $statusFilter === 'cancelled') active @endif" href="#" wire:click.prevent="setTab('letters', 'cancelled')">
-                        <i class="ti ti-ban me-1"></i> Dibatalkan
-                        <span class="badge bg-secondary-lt ms-1">{{ $stats['cancelled'] }}</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link @if($activeTab === 'letters' && $statusFilter === 'ready_to_print') active @endif" href="#" wire:click.prevent="setTab('letters', 'ready_to_print')">
-                        <i class="ti ti-printer me-1"></i> Siap Cetak
-                        <span class="badge bg-info-lt ms-1">{{ $stats['ready_to_print'] }}</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link @if($activeTab === 'types') active @endif" href="#" wire:click.prevent="setTab('types')">
-                        <i class="ti ti-settings me-1"></i> Kelola Jenis Surat
-                    </a>
-                </li>
-            </ul>
+            <div class="d-flex justify-content-between align-items-center w-100 flex-wrap gap-3">
+                <ul class="nav nav-tabs card-header-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link @if($activeTab === 'letters' && $statusFilter === 'all') active @endif" href="#" wire:click.prevent="setTab('letters', 'all')">
+                            <i class="ti ti-mail me-1"></i> Semua
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @if($activeTab === 'letters' && $statusFilter === 'pending_approval') active @endif" href="#" wire:click.prevent="setTab('letters', 'pending_approval')">
+                            <i class="ti ti-clock me-1"></i> Perlu Diproses
+                            <span class="badge bg-warning-lt ms-1">{{ $stats['pending'] }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @if($activeTab === 'letters' && $statusFilter === 'published') active @endif" href="#" wire:click.prevent="setTab('letters', 'published')">
+                            <i class="ti ti-check me-1"></i> Diterbitkan
+                            <span class="badge bg-success-lt ms-1">{{ $stats['published'] }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @if($activeTab === 'letters' && $statusFilter === 'rejected') active @endif" href="#" wire:click.prevent="setTab('letters', 'rejected')">
+                            <i class="ti ti-x me-1"></i> Ditolak
+                            <span class="badge bg-danger-lt ms-1">{{ $stats['rejected'] }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @if($activeTab === 'letters' && $statusFilter === 'cancelled') active @endif" href="#" wire:click.prevent="setTab('letters', 'cancelled')">
+                            <i class="ti ti-ban me-1"></i> Dibatalkan
+                            <span class="badge bg-secondary-lt ms-1">{{ $stats['cancelled'] }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @if($activeTab === 'letters' && $statusFilter === 'ready_to_print') active @endif" href="#" wire:click.prevent="setTab('letters', 'ready_to_print')">
+                            <i class="ti ti-printer me-1"></i> Siap Cetak
+                            <span class="badge bg-info-lt ms-1">{{ $stats['ready_to_print'] }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @if($activeTab === 'types') active @endif" href="#" wire:click.prevent="setTab('types')">
+                            <i class="ti ti-settings me-1"></i> Kelola Jenis Surat
+                        </a>
+                    </li>
+                </ul>
+
+                {{-- Action Button inside Livewire DOM --}}
+                @if($activeTab === 'types')
+                    <button class="btn btn-primary btn-sm shadow-sm" wire:click="openCreateModal">
+                        <i class="ti ti-plus me-1"></i> Tambah Jenis Surat
+                    </button>
+                @endif
+            </div>
         </div>
 
         {{-- Tab Content --}}
