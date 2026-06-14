@@ -100,21 +100,41 @@ class LetterDashboard extends Component
 
     public function updatedSearchQuery(): void
     {
-        if (strlen($this->searchQuery) < 2) {
+        try {
+            $query = (string) $this->searchQuery;
+            if (strlen($query) < 2) {
+                $this->searchResults = [];
+
+                return;
+            }
+
+            $service = new LetterService;
+            $this->searchResults = $service->searchDosen($query)->toArray();
+        } catch (\Exception $e) {
+            Log::error('Search dosen failed in dashboard', [
+                'user_id' => auth()->id(),
+                'error' => $e->getMessage(),
+            ]);
             $this->searchResults = [];
-
-            return;
         }
+    }
 
-        $service = new LetterService;
-        $this->searchResults = $service->searchDosen($this->searchQuery)->toArray();
+    public function showSectionForm(): void
+    {
+        $this->showForm = true;
+    }
+
+    public function showSectionTable(): void
+    {
+        $this->showForm = false;
+        $this->resetForm();
     }
 
     public function addTeamMember(string $dosenId): void
     {
         $dosen = User::whereHas('roles', fn ($q) => $q->where('name', 'dosen'))
             ->where('id', $dosenId)
-            ->select('id', 'name')
+            ->with('identity')
             ->first();
 
         if (! $dosen) {
@@ -133,7 +153,7 @@ class LetterDashboard extends Component
             'id' => $dosen->id,
             'name' => $dosen->name,
             'role' => 'Anggota',
-            'identifier' => '',
+            'identifier' => $dosen->identity->identity_id ?? '-',
         ];
 
         $this->searchQuery = '';

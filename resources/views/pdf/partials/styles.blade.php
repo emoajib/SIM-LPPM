@@ -1,6 +1,6 @@
 <style>
     @page {
-        margin: 0.5cm 2cm 0.5cm 2cm;
+        margin: 0cm 2cm 0.5cm 2cm;
     }
     body {
         font-family: "Times New Roman", Times, serif;
@@ -11,11 +11,16 @@
     .header-table {
         width: 100%;
         border-bottom: 2px solid #000;
-        margin-bottom: 15px;
-        padding-bottom: 5px;
+        margin-bottom: 8px;
+        padding-bottom: 0px;
+        border-collapse: collapse;
+    }
+    .header-table td {
+        padding: 0;
+        vertical-align: bottom;
     }
     .logo {
-        width: 90px;
+        width: 110px;
     }
     .header-text {
         text-align: center;
@@ -23,17 +28,22 @@
     .header-text .univ {
         font-size: 14pt;
         font-weight: bold;
+        margin: 0;
     }
     .header-text .dept {
         font-size: 13pt;
         font-weight: bold;
+        margin: 0;
     }
     .header-text .address {
         font-size: 9pt;
         font-style: italic;
+        margin: 0;
     }
     .header-text .contact {
         font-size: 9pt;
+        margin: 0;
+        margin-bottom: 3px; /* Memberikan jarak sedikit dari garis */
     }
     .title {
         text-align: center;

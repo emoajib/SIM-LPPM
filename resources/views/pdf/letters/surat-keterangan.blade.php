@@ -3,10 +3,10 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Surat Keterangan - {{ $letter->letter_number ?? 'Draft' }}</title>
-    @include('pdf.letters.partials.letter-styles')
+    @include('pdf.partials.styles')
 </head>
 <body>
-    @include('pdf.letters.partials.letter-header')
+    @include('pdf.partials.header')
 
     <div class="title">SURAT KETERANGAN</div>
     <div class="number">Nomor: {{ $letter->letter_number ?? '...........................................' }}</div>
@@ -36,7 +36,7 @@
                     <th width="5%">No</th>
                     <th>Nama</th>
                     <th width="20%">Jabatan</th>
-                    <th width="25%">NIDN/NIM</th>
+                    <th width="25%">NIDN/NUPTK/NIM</th>
                 </tr>
             </thead>
             <tbody>
@@ -44,8 +44,8 @@
                 <tr>
                     <td align="center">{{ $index + 1 }}</td>
                     <td>{{ $member['name'] }}</td>
-                    <td>{{ $member['role'] }}</td>
-                    <td>{{ $member['identifier'] }}</td>
+                    <td style="text-align: center;">{{ $member['role'] }}</td>
+                    <td style="text-align: center;">{{ $member['identifier'] }}</td>
                 </tr>
                 @endforeach
             </tbody>

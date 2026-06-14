@@ -170,7 +170,7 @@
                                     <tr>
                                         <th>Nama</th>
                                         <th>Jabatan</th>
-                                        <th>NIDN/NIM</th>
+                                        <th>NIDN/NUPTK/NIM</th>
                                     </tr>
                                 </thead>
                                 <tbody>

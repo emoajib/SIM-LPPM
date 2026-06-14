@@ -56,7 +56,7 @@
                                     <th>{{ __('No') }}</th>
                                     <th>{{ __('Nama') }}</th>
                                     <th>{{ __('Email') }}</th>
-                                    <th>{{ __('NIDN/NIM') }}</th>
+                                    <th>{{ __('NIDN/NUPTK/NIM') }}</th>
                                     <th>{{ __('Tipe') }}</th>
                                     <th>{{ __('Fakutas') }}</th>
                                     <th>{{ __('Prodi') }}</th>

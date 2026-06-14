@@ -18,33 +18,14 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Catatan Harian - {{ $proposal->id }}</title>
+    @include('pdf.partials.styles')
     <style>
         @page {
-            margin: 3cm 3cm 3cm 4cm;
+            margin: 0cm 2.5cm 1cm 3cm;
         }
         body {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 9pt;
-            line-height: 1.4;
-            color: #000;
-            text-align: justify;
-        }
-        .header-table {
-            width: 100%;
-            border-bottom: 2px solid #000;
-            margin-bottom: 5px;
-            padding-bottom: 5px;
-        }
-        .logo {
-            width: 60px;
-        }
-        .header-text {
-            text-align: left;
-            padding-left: 10px;
-        }
-        .header-text div {
-            font-weight: bold;
-            font-size: 11pt;
+            font-size: 10pt;
+            line-height: 1.5;
         }
         .protection-box {
             text-align: center;
@@ -73,7 +54,7 @@
             padding: 6px;
             text-align: left;
             vertical-align: top;
-            font-size: 8.5pt;
+            font-size: 9pt;
         }
         th {
             background-color: #f2f2f2;
@@ -118,6 +99,10 @@
             font-size: 8.5pt;
             text-align: justify;
             white-space: pre-wrap;
+        }
+    </style>
+</head>
+
             line-height: 1.5;
         }
         .signature-section {
@@ -193,23 +178,8 @@
             TAHUN {{ $proposal->start_year }}
         </div>
     </div>
-    <table class="header-table no-border">
-        <tr>
-            <td class="logo" style="width: 60px; border: none;">
-                @if (file_exists(public_path('logo.png')))
-                    <img src="{{ get_logo_base64() }}" alt="Logo" style="width: 50px;">
-                @endif
-            </td>
-            <td class="header-text" style="border: none;">
-                <div>Lembaga Penelitian dan Pengabdian kepada Masyarakat (LPPM)</div>
-                <div>Institut Teknologi dan Sains Nahdlatul Ulama (ITSNU) Pekalongan</div>
-                <div style="font-weight: normal; font-size: 8pt;">Jl. Karangdowo No. 9, Karangdowo, Kec. Kedungwuni,
-                    Kab. Pekalongan, Jawa Tengah 51173</div>
-                <div style="font-weight: normal; font-size: 8pt;">Email: lppmitsnupkl@gmail.com | Website:
-                    https://lppm.itsnupekalongan.ac.id/</div>
-            </td>
-        </tr>
-    </table>
+    {{-- Standardized Header --}}
+    @include('pdf.partials.header')
 
     <div class="document-title"
         style="margin-top: 1cm; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px;">

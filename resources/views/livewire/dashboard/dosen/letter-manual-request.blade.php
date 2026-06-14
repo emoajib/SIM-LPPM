@@ -9,10 +9,10 @@
                                 {{-- Pilih Jenis Surat --}}
                                 <div class="mb-4">
                                     <label class="form-label required">Jenis Surat</label>
-                                    <select class="form-select" wire:model="letterTypeId" required>
+                                    <select class="form-select" wire:model.live="letterTypeId" required>
                                         <option value="">-- Pilih Jenis Surat --</option>
                                         @foreach($letterTypes as $type)
-                                        <option value="{{ $type->id }}">{{ $type->code }} - {{ $type->name }}</option>
+                                        <option value="{{ $type->id }}" wire:key="type-{{ $type->id }}">{{ $type->code }} - {{ $type->name }}</option>
                                         @endforeach
                                     </select>
                                     @error('letterTypeId')
@@ -109,7 +109,7 @@
                                             </thead>
                                             <tbody>
                                                 @foreach($team as $index => $member)
-                                                <tr>
+                                                <tr wire:key="team-member-{{ $index }}">
                                                     <td>{{ $member['name'] }}</td>
                                                     <td>
                                                         <select class="form-select form-select-sm" wire:model.lazy="team.{{ $index }}.role">

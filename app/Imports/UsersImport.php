@@ -89,7 +89,7 @@ class UsersImport implements ToCollection, WithHeadingRow, WithValidation
     {
         return [
             'email.unique' => 'Email sudah terdaftar.',
-            'nidn.unique' => 'NIDN/NIM sudah terdaftar.',
+            'nidn.unique' => 'NIDN/NUPTK/NIM sudah terdaftar.',
             'type.in' => "Tipe harus 'dosen' atau 'mahasiswa'.",
         ];
     }

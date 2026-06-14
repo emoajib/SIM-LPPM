@@ -137,9 +137,10 @@ class LetterService
             'location' => $data['location'],
             'destination_name' => $data['destinationName'] ?? null,
             'tembusan' => array_map('trim', explode("\n", $data['tembusan'] ?? '1. Arsip')),
-            'signer_name' => Setting::get('lppm_head_name', ''),
-            'signer_position' => Setting::get('lppm_head_position', ''),
-            'signer_nidn' => Setting::get('lppm_head_nidn', ''),
+            'signer_name' => Setting::get('lppm_head_name', 'Aria Mulyapradana, S.Psi., M.A.'),
+            'signer_position' => Setting::get('lppm_head_position', 'Kepala LPPM'),
+            'signer_nidn' => Setting::get('lppm_head_nidn', '0612118401'),
+            'signer_address' => Setting::get('lppm_head_address', 'Jl. Rowolaku No. 01 Kajen, Pekalongan'),
         ];
 
         return Letter::create([
@@ -182,9 +183,10 @@ class LetterService
                 'location' => $data['location'],
                 'destination_name' => $data['destinationName'] ?? null,
                 'tembusan' => array_map('trim', explode("\n", $data['tembusan'] ?? '1. Arsip')),
-                'signer_name' => Setting::get('lppm_head_name', ''),
-                'signer_position' => Setting::get('lppm_head_position', ''),
-                'signer_nidn' => Setting::get('lppm_head_nidn', ''),
+                'signer_name' => Setting::get('lppm_head_name', 'Aria Mulyapradana, S.Psi., M.A.'),
+                'signer_position' => Setting::get('lppm_head_position', 'Kepala LPPM'),
+                'signer_nidn' => Setting::get('lppm_head_nidn', '0612118401'),
+                'signer_address' => Setting::get('lppm_head_address', 'Jl. Rowolaku No. 01 Kajen, Pekalongan'),
             ];
 
             return Letter::create([

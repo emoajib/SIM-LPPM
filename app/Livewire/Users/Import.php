@@ -89,9 +89,9 @@ class Import extends Component
         }
 
         if (empty($data['identity_id'])) {
-            $errors[] = 'NIDN/NIM wajib diisi.';
+            $errors[] = 'NIDN/NUPTK/NIM wajib diisi.';
         } elseif (Identity::where('identity_id', $data['identity_id'])->exists()) {
-            $errors[] = 'NIDN/NIM sudah terdaftar.';
+            $errors[] = 'NIDN/NUPTK/NIM sudah terdaftar.';
         }
 
         if (! in_array($data['type'], ['dosen', 'mahasiswa'])) {

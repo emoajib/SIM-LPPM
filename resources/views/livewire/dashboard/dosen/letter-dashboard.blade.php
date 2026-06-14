@@ -21,7 +21,7 @@
         .fab-hidden { display: none !important; }
     </style>
     {{-- Tabs + Table --}}
-    <div class="card border-0 shadow-sm section-table" id="sectionTable">
+    <div class="card border-0 shadow-sm section-table @if($showForm) hidden @endif" id="sectionTable">
         <div class="card-header bg-transparent border-0 pt-4 pb-0">
             <ul class="nav nav-tabs card-header-tabs">
                 @php
@@ -34,7 +34,7 @@
                     ];
                 @endphp
                 @foreach($tabs as $key => $tab)
-                <li class="nav-item">
+                <li class="nav-item" wire:key="tab-{{ $key }}">
                     <a class="nav-link {{ $statusFilter === $key ? 'active' : '' }}" href="#" wire:click.prevent="setFilter('{{ $key }}')">
                         <i class="ti {{ $tab['icon'] }} me-1"></i> {{ $tab['label'] }}
                         <span class="badge bg-secondary-lt ms-1">{{ $tab['count'] }}</span>
@@ -53,7 +53,7 @@
                     </div>
                 </div>
                 <div class="col-auto">
-                    <button class="btn btn-primary btn-sm" onclick="showSectionForm()">
+                    <button class="btn btn-primary btn-sm" wire:click="showSectionForm">
                         <i class="ti ti-plus me-1"></i> Ajukan Surat
                     </button>
                 </div>
@@ -75,7 +75,7 @@
                 </thead>
                 <tbody>
                     @forelse($letters as $letter)
-                    <tr>
+                    <tr wire:key="letter-row-{{ $letter->id }}">
                         <td class="text-muted">{{ $letters->firstItem() + $loop->index }}</td>
                         <td>
                             <div class="fw-bold">{{ $letter->letter_number ?? 'Sedang Diproses' }}</div>
@@ -132,7 +132,7 @@
                         <td colspan="7" class="text-center py-5 text-muted">
                             <i class="ti ti-mail-opened icon-lg mb-2"></i>
                             <div>Belum ada surat dengan status ini.</div>
-                            <button class="btn btn-primary btn-sm mt-2" onclick="showSectionForm()">
+                            <button class="btn btn-primary btn-sm mt-2" wire:click="showSectionForm">
                                 <i class="ti ti-plus me-1"></i> Ajukan Surat Baru
                             </button>
                         </td>
@@ -147,15 +147,15 @@
     </div>
 
     {{-- FAB --}}
-    <button class="btn btn-primary btn-fab shadow-lg" id="fabAjukan" title="Ajukan Surat Baru" onclick="showSectionForm()">
+    <button class="btn btn-primary btn-fab shadow-lg @if($showForm) fab-hidden @endif" id="fabAjukan" title="Ajukan Surat Baru" wire:click="showSectionForm">
         <i class="ti ti-plus" style="font-size: 1.5rem;"></i>
     </button>
 
     {{-- Form --}}
-    <div class="card border-0 shadow-sm section-form" id="sectionForm">
+    <div class="card border-0 shadow-sm section-form @if($showForm) active @endif" id="sectionForm">
         <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center py-3">
             <h5 class="card-title mb-0"><i class="ti ti-file-plus me-2"></i> Ajukan Surat Baru</h5>
-            <button class="btn btn-outline-secondary btn-sm" onclick="showSectionTable()">
+            <button class="btn btn-outline-secondary btn-sm" wire:click="showSectionTable">
                 <i class="ti ti-arrow-left me-1"></i> Kembali
             </button>
         </div>
@@ -163,10 +163,10 @@
             <form wire:submit.prevent="submitLetter" onsubmit="return false">
                 <div class="mb-4">
                     <label class="form-label required">Jenis Surat</label>
-                    <select class="form-select" wire:model="letterTypeId" required>
+                    <select class="form-select" wire:model.live="letterTypeId" required>
                         <option value="">-- Pilih Jenis Surat --</option>
                         @foreach($letterTypes as $type)
-                        <option value="{{ $type->id }}">{{ $type->code }} - {{ $type->name }}</option>
+                        <option value="{{ $type->id }}" wire:key="type-{{ $type->id }}">{{ $type->code }} - {{ $type->name }}</option>
                         @endforeach
                     </select>
                     @error('letterTypeId')
@@ -261,7 +261,7 @@
                             </thead>
                             <tbody>
                                 @foreach($team as $index => $member)
-                                <tr>
+                                <tr wire:key="team-member-{{ $index }}">
                                     <td>{{ $member['name'] }}</td>
                                     <td>
                                         <select class="form-select form-select-sm" wire:model.lazy="team.{{ $index }}.role">
@@ -349,17 +349,4 @@
     @if($showResubmitModal)
     <div class="modal-backdrop fade show"></div>
     @endif
-
-    <script>
-        function showSectionForm() {
-            document.getElementById('sectionTable').classList.add('hidden');
-            document.getElementById('sectionForm').classList.add('active');
-            document.getElementById('fabAjukan').classList.add('fab-hidden');
-        }
-        function showSectionTable() {
-            document.getElementById('sectionTable').classList.remove('hidden');
-            document.getElementById('sectionForm').classList.remove('active');
-            document.getElementById('fabAjukan').classList.remove('fab-hidden');
-        }
-    </script>
 </div>

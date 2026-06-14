@@ -100,7 +100,7 @@ class DatabaseRestoreService
 
         $columns = [
             'id', 'identity_id', 'user_id', 'sinta_id', 'scopus_id',
-            'google_scholar_id', 'wos_id', 'type',
+            'google_scholar_id', 'wos_id', 'type', 'gender',
             'is_external', 'address', 'birthdate', 'birthplace',
             'institution_id', 'institution_name', 'study_program_id',
             'science_cluster_id', 'profile_picture', 'faculty_id',
