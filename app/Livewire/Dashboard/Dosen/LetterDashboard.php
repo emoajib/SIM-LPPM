@@ -24,6 +24,24 @@ class LetterDashboard extends Component
     // Form visibility
     public $showForm = false;
 
+    public function setFilter(string $status): void
+    {
+        $this->statusFilter = $status;
+        $this->resetPage();
+    }
+
+    public function resetFilter(): void
+    {
+        $this->statusFilter = '';
+        $this->search = '';
+        $this->resetPage();
+    }
+
+    public function closeResubmitModal(): void
+    {
+        $this->showResubmitModal = false;
+    }
+
     // Form fields
     public $letterTypeId;
 

@@ -35,7 +35,7 @@
                 @endphp
                 @foreach($tabs as $key => $tab)
                 <li class="nav-item">
-                    <a class="nav-link {{ $statusFilter === $key ? 'active' : '' }}" href="#" wire:click.prevent="$set('statusFilter', '{{ $key }}')">
+                    <a class="nav-link {{ $statusFilter === $key ? 'active' : '' }}" href="#" wire:click.prevent="setFilter('{{ $key }}')">
                         <i class="ti {{ $tab['icon'] }} me-1"></i> {{ $tab['label'] }}
                         <span class="badge bg-secondary-lt ms-1">{{ $tab['count'] }}</span>
                     </a>
@@ -300,7 +300,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Ajukan Ulang Surat</h5>
-                    <button type="button" class="btn-close" wire:click="$set('showResubmitModal', false)"></button>
+                    <button type="button" class="btn-close" wire:click="closeResubmitModal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
@@ -336,7 +336,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-link" wire:click="$set('showResubmitModal', false)">Batal</button>
+                    <button type="button" class="btn btn-link" wire:click="closeResubmitModal">Batal</button>
                     <button type="button" class="btn btn-primary" wire:click="confirmResubmit">
                         <i class="ti ti-send me-1"></i> Kirim Ulang
                     </button>
