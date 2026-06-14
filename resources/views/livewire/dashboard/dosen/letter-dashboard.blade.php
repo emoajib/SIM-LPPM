@@ -1,26 +1,25 @@
 {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
-<style>
-    .btn-fab {
-        position: fixed;
-        bottom: 2rem;
-        right: 2rem;
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        padding: 0;
-    }
-    .section-form { display: none; }
-    .section-form.active { display: block; }
-    .section-table { display: block; }
-    .section-table.hidden { display: none; }
-    .fab-hidden { display: none !important; }
-</style>
-
 <div>
+    <style>
+        .btn-fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 0;
+        }
+        .section-form { display: none; }
+        .section-form.active { display: block; }
+        .section-table { display: block; }
+        .section-table.hidden { display: none; }
+        .fab-hidden { display: none !important; }
+    </style>
     {{-- Tabs + Table --}}
     <div class="card border-0 shadow-sm section-table" id="sectionTable">
         <div class="card-header bg-transparent border-0 pt-4 pb-0">
@@ -350,17 +349,17 @@
     @if($showResubmitModal)
     <div class="modal-backdrop fade show"></div>
     @endif
-</div>
 
-<script>
-    function showSectionForm() {
-        document.getElementById('sectionTable').classList.add('hidden');
-        document.getElementById('sectionForm').classList.add('active');
-        document.getElementById('fabAjukan').classList.add('fab-hidden');
-    }
-    function showSectionTable() {
-        document.getElementById('sectionTable').classList.remove('hidden');
-        document.getElementById('sectionForm').classList.remove('active');
-        document.getElementById('fabAjukan').classList.remove('fab-hidden');
-    }
-</script>
+    <script>
+        function showSectionForm() {
+            document.getElementById('sectionTable').classList.add('hidden');
+            document.getElementById('sectionForm').classList.add('active');
+            document.getElementById('fabAjukan').classList.add('fab-hidden');
+        }
+        function showSectionTable() {
+            document.getElementById('sectionTable').classList.remove('hidden');
+            document.getElementById('sectionForm').classList.remove('active');
+            document.getElementById('fabAjukan').classList.remove('fab-hidden');
+        }
+    </script>
+</div>

@@ -1,3 +1,4 @@
+{{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
 <div>
     <div class="card border-0 shadow-sm">
         <div class="card-header bg-transparent border-0 pt-4 pb-0">
@@ -58,6 +59,7 @@
                             <input type="checkbox" class="form-check-input" wire:click="toggleSelectAll" {{ count($selectedIds) === $letters->total() && $letters->total() > 0 ? 'checked' : '' }}>
                         </th>
                         @endif
+                        <th>No.</th>
                         <th>Jenis Surat</th>
                         <th>Dosen Pengaju</th>
                         <th>Sumber</th>
@@ -74,6 +76,7 @@
                             <input type="checkbox" class="form-check-input" value="{{ $letter->id }}" wire:click="toggleSelect('{{ $letter->id }}')" {{ in_array($letter->id, $selectedIds) ? 'checked' : '' }}>
                         </td>
                         @endif
+                        <td class="text-muted">{{ $letters->firstItem() + $loop->index }}</td>
                         <td>
                             <div class="fw-bold">{{ $letter->letterType->name }}</div>
                             <div class="text-muted small">{{ $letter->letter_number ?? 'Nomor belum terbit' }}</div>
@@ -121,7 +124,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="{{ $statusFilter === 'pending_approval' ? 7 : 6 }}" class="text-center py-5 text-muted">
+                        <td colspan="{{ $statusFilter === 'pending_approval' ? 8 : 7 }}" class="text-center py-5 text-muted">
                             Tidak ada surat dalam kategori ini.
                         </td>
                     </tr>

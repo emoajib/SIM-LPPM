@@ -9,6 +9,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+// Vetted by AI - Manual Review Required by Senior Engineer/Manager
 #[Layout('components.layouts.app', ['title' => 'Persetujuan Surat', 'pageTitle' => 'Persetujuan Surat', 'pageSubtitle' => 'Penandatanganan dokumen legal LPPM'])]
 class LetterApproval extends Component
 {
@@ -42,13 +43,15 @@ class LetterApproval extends Component
                 $query->where('status', $this->statusFilter);
             })
             ->when($this->search, function ($query) {
-                $query->where('letter_number', 'like', '%'.$this->search.'%')
-                    ->orWhereHas('user', function ($q) {
-                        $q->where('name', 'like', '%'.$this->search.'%');
-                    })
-                    ->orWhereHas('letterType', function ($q) {
-                        $q->where('name', 'like', '%'.$this->search.'%');
-                    });
+                $query->where(function ($sub) {
+                    $sub->where('letter_number', 'like', '%'.$this->search.'%')
+                        ->orWhereHas('user', function ($q) {
+                            $q->where('name', 'like', '%'.$this->search.'%');
+                        })
+                        ->orWhereHas('letterType', function ($q) {
+                            $q->where('name', 'like', '%'.$this->search.'%');
+                        });
+                });
             })
             ->latest()
             ->paginate(10);
