@@ -1,5 +1,4 @@
 <style>
-    [x-cloak] { display: none !important; }
     .btn-fab {
         position: fixed;
         bottom: 2rem;
@@ -15,9 +14,9 @@
     }
 </style>
 
-<div x-data="{ get showForm() { return $wire.showForm } }">
+<div x-data x-cloak>
     {{-- Tabs + Table --}}
-    <div class="card border-0 shadow-sm" x-show="!showForm" x-cloak>
+    <div class="card border-0 shadow-sm" x-show="!$wire.showForm">
         <div class="card-header bg-transparent border-0 pt-4 pb-0">
             <ul class="nav nav-tabs card-header-tabs">
                 @php
@@ -141,12 +140,12 @@
     </div>
 
     {{-- FAB --}}
-    <button class="btn btn-primary btn-fab shadow-lg" title="Ajukan Surat Baru" wire:click="$set('showForm', true)" x-show="!showForm" x-cloak>
+    <button class="btn btn-primary btn-fab shadow-lg" title="Ajukan Surat Baru" wire:click="$set('showForm', true)" x-show="!$wire.showForm">
         <i class="ti ti-plus" style="font-size: 1.5rem;"></i>
     </button>
 
     {{-- Form --}}
-    <div class="card border-0 shadow-sm" x-show="showForm" x-cloak>
+    <div class="card border-0 shadow-sm" x-show="$wire.showForm">
         <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center py-3">
             <h5 class="card-title mb-0"><i class="ti ti-file-plus me-2"></i> Ajukan Surat Baru</h5>
             <button class="btn btn-outline-secondary btn-sm" wire:click="$set('showForm', false)">
