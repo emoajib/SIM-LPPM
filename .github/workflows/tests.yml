@@ -111,7 +111,7 @@ jobs:
       - name: Install Dependencies
         run: |
           composer install --no-interaction --prefer-dist --optimize-autoloader
-          bun install --frozen-lockfile
+          bun install
 
       - name: Copy .env & Setup SQLite
         run: |
