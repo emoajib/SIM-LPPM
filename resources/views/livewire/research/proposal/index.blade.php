@@ -384,7 +384,7 @@
                                     <td>
                                         <div>{{ $proposal->submitter->name }}</div>
                                         <small
-                                            class="text-secondary">{{ $proposal->submitter->identity->identity_id }}</small>
+                                            class="text-secondary">                                             {{ $proposal->submitter->identity?->identity_id ?? '—' }}</small>
                                     </td>
                                     <td>
                                         <x-tabler.badge :color="$proposal->status->color()" class="fw-normal">

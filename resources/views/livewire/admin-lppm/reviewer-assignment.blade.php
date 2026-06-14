@@ -199,7 +199,7 @@
                             <td>
                                 <div>{{ $proposal->submitter?->name }}</div>
                                 <small class="text-secondary">
-                                    {{ $proposal->submitter?->identity->identity_id }} &middot;
+                                    {{ $proposal->submitter?->identity?->identity_id ?? '-' }} &middot;
                                     {{ $proposal->updated_at?->format('d M Y') }}
                                 </small>
                             </td>

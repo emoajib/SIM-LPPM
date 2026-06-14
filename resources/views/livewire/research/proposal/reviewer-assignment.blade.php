@@ -20,7 +20,7 @@
                                 @foreach ($this->availableReviewers as $reviewer)
                                     <option wire:key="reviewer-{{ $reviewer->id }}" value="{{ $reviewer->id }}">
                                         {{ $reviewer->name }}
-                                        ({{ $reviewer->identity->identity_id }})
+                                        ({{ $reviewer->identity?->identity_id ?? '-' }})
                                     </option>
                                 @endforeach
                             </select>

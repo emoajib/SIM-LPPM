@@ -88,7 +88,7 @@
                             </td>
                             <td>
                                 <div>{{ $proposal->submitter?->name }}</div>
-                                <small class="text-secondary">{{ $proposal->submitter?->identity->identity_id }}</small>
+                                <small class="text-secondary">{{ $proposal->submitter?->identity?->identity_id ?? '-' }}</small>
                             </td>
                             {{-- <td>
                                 <x-tabler.badge variant="outline">

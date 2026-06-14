@@ -134,7 +134,6 @@ class Login extends Component
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
 
-        $user->syncRoles($user->roles);
         $firstRole = $user->getRoleNames()->first();
         if ($firstRole) {
             session(['active_role' => $firstRole]);
