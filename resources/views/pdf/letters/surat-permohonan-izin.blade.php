@@ -3,98 +3,10 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Surat Permohonan Izin - {{ $letter->letter_number ?? 'Draft' }}</title>
-    <style>
-        @page {
-            margin: 0.5cm 2cm 0.5cm 2cm;
-        }
-        body {
-            font-family: "Times New Roman", Times, serif;
-            font-size: 11pt;
-            line-height: 1;
-            color: #000;
-        }
-        .header-table {
-            width: 100%;
-            border-bottom: 2px solid #000;
-            margin-bottom: 15px;
-            padding-bottom: 5px;
-        }
-        .logo {
-            width: 90px;
-        }
-        .header-text {
-            text-align: center;
-        }
-        .header-text .univ {
-            font-size: 14pt;
-            font-weight: bold;
-        }
-        .header-text .dept {
-            font-size: 13pt;
-            font-weight: bold;
-        }
-        .header-text .address {
-            font-size: 9pt;
-            font-style: italic;
-        }
-        .header-text .contact {
-            font-size: 9pt;
-        }
-        .meta-table {
-            width: 100%;
-            margin-top: 10px;
-        }
-        .meta-table td {
-            border: none;
-            padding: 1px;
-            vertical-align: top;
-        }
-        .content {
-            margin-top: 20px;
-            text-align: justify;
-        }
-        .table-data {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-        }
-        .table-data th, .table-data td {
-            border: 1px solid #000;
-            padding: 5px 8px;
-            text-align: left;
-            font-size: 10.5pt;
-        }
-        .table-data th {
-            text-align: center;
-            background-color: #f2f2f2;
-        }
-        .signature-table {
-            width: 100%;
-            margin-top: 30px;
-        }
-        .signature-box.right {
-            text-align: left;
-            padding-left: 10%;
-        }
-        .qr-code {
-            margin: 10px 0;
-        }
-    </style>
+    @include('pdf.letters.partials.letter-styles')
 </head>
 <body>
-    <table class="header-table">
-        <tr>
-            <td width="15%" style="border:none;">
-                <img src="{{ public_path('logo.png') }}" class="logo">
-            </td>
-            <td width="85%" class="header-text" style="border:none;">
-                <div class="dept">LEMBAGA PENELITIAN DAN PENGABDIAN MASYARAKAT</div>
-                <div class="univ">ITSNU PEKALONGAN</div>
-                <div class="address">Jl. Karangdowo No. 9 Kedungwuni Kab. Pekalongan Kode Pos 51173</div>
-                <div class="contact">Telp/Fax. (0285) 7831614 email: lppmitsnupkl@gmail.com #SantriHighTech</div>
-            </td>
-        </tr>
-    </table>
+    @include('pdf.letters.partials.letter-header')
 
     <table class="meta-table">
         <tr>
@@ -174,29 +86,7 @@
         <p>Wassalamu’alaikum Wr.Wb.</p>
     </div>
 
-    <table class="signature-table">
-        <tr>
-            <td width="50%" style="border:none;"></td>
-            <td class="signature-box right" style="border:none;">
-                Ditetapkan di : Pekalongan<br>
-                Pada tanggal : {{ $letter->published_at ? $letter->published_at->translatedFormat('d F Y') : '....................' }}
-                <br><br>
-                Kepala LPPM<br>
-                ITSNU Pekalongan
-                
-                <div class="qr-code">
-                    @if($letter->signature_mode === 'tte' && $letter->status === 'published')
-                        <img src="{{ $qrDataUri }}" alt="QR Code" style="width: 80px; height: 80px;">
-                    @else
-                        <br><br><br><br><br>
-                    @endif
-                </div>
-
-                <strong>{{ $metadata['signer_name'] ?? '' }}</strong><br>
-                NIDN. {{ $metadata['signer_nidn'] ?? '' }}
-            </td>
-        </tr>
-    </table>
+    @include('pdf.letters.partials.letter-signature')
 
     <div style="margin-top: 20px; font-size: 9pt;">
         Tembusan:<br>
