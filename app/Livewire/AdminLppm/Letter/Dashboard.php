@@ -63,6 +63,14 @@ class Dashboard extends Component
         $this->resetPage('typesPage');
     }
 
+    public function setTab(string $tab, string $status = 'all'): void
+    {
+        $this->activeTab = $tab;
+        $this->statusFilter = $status;
+        $this->resetPage('lettersPage');
+        $this->resetPage('typesPage');
+    }
+
     public function updatedSearch(): void
     {
         $this->resetPage('lettersPage');
