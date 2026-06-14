@@ -382,7 +382,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Backup Download Routes (Bypass Livewire WAF issues — safe approach: filename from cache, not URL)
-    Route::middleware(['auth', 'verified'])->prefix('settings')->name('settings.')->group(function () {
+    Route::middleware(['auth', 'verified', 'role:admin lppm|superadmin'])->prefix('settings')->name('settings.')->group(function () {
         Route::get('download-backup-db', [BackupDownloadController::class, 'downloadDatabaseBackup'])
             ->name('download-backup-db');
         Route::get('download-db', [BackupDownloadController::class, 'downloadDatabase'])

@@ -14,10 +14,10 @@ class SettingsIndex extends Component
      */
     public function setActiveTab(string $tab): void
     {
-        $adminOnlyTabs = ['appearance', 'audit', 'sync'];
+        $adminOnlyTabs = ['appearance', 'audit', 'sync', 'feature-flags', 'backup', 'restore'];
 
-        if (in_array($tab, $adminOnlyTabs) && ! Auth::user()->hasRole('admin lppm')) {
-            return;
+        if (in_array($tab, $adminOnlyTabs) && ! (Auth::user()?->hasRole('admin lppm') || Auth::user()?->hasRole('superadmin'))) {
+            abort(403, 'Maaf Anda tidak memiliki akses ke tab ini.');
         }
 
         $this->activeTab = $tab;

@@ -3,6 +3,7 @@
 namespace App\Livewire\Settings;
 
 use App\Models\Setting;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Livewire\Component;
 
@@ -23,6 +24,8 @@ class FeatureFlags extends Component
 
     public function mount(): void
     {
+        abort_unless(Auth::user()?->hasRole('admin lppm') || Auth::user()?->hasRole('superadmin'), 403);
+
         $this->featureRoadmapActive = Setting::get('feature_roadmap_active', false);
         $this->featureKaprodiValidation = Setting::get('feature_kaprodi_validation', false);
         $this->modulePersuratanActive = Setting::get('module_persuratan_active', false);

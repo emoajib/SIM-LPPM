@@ -3,6 +3,7 @@
 namespace App\Livewire\Settings;
 
 use App\Models\Setting;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -19,13 +20,21 @@ class MasterData extends Component
 
     public function mount(): void
     {
-        $user = auth()->user();
+        $user = Auth::user();
+
+        // Base authorization: hanya admin lppm, superadmin, dekan, kaprodi
+        abort_unless(
+            $user?->hasRole('admin lppm') || $user?->hasRole('superadmin') || $user?->hasRole('dekan') || $user?->hasRole('kaprodi'),
+            403,
+            'Maaf Anda tidak memiliki akses ini'
+        );
+
         $roadmapActive = Setting::get('feature_roadmap_active', false);
 
         // Jika fitur roadmap nonaktif, Dekan & Kaprodi dilarang akses (kecuali mereka juga admin)
         if (! $roadmapActive && ($user->hasRole('dekan') || $user->hasRole('kaprodi'))) {
             if (! $user->hasRole('admin lppm') && ! $user->hasRole('superadmin')) {
-                abort(403, 'Maaf Anda tidak memiliki akses ini');
+                abort(403, 'Maaf Anda tidak memiliki akses ini. Fitur roadmap tidak aktif.');
             }
         }
 

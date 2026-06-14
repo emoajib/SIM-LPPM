@@ -6,6 +6,7 @@ use App\Livewire\Concerns\HasToast;
 use App\Models\BudgetCap;
 use App\Models\Setting;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
@@ -63,6 +64,8 @@ class ProposalSchedule extends Component
 
     public function mount()
     {
+        abort_unless(Auth::user()?->hasRole('admin lppm') || Auth::user()?->hasRole('superadmin'), 403);
+
         $this->research_start_date = self::toDatetimeLocal(Setting::where('key', 'research_proposal_start_date')->value('value'));
         $this->research_end_date = self::toDatetimeLocal(Setting::where('key', 'research_proposal_end_date')->value('value'));
         $this->research_revision_start_date = self::toDatetimeLocal(Setting::where('key', 'research_revision_start_date')->value('value'));

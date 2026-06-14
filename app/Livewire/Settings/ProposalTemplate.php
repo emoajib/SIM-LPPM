@@ -4,6 +4,7 @@ namespace App\Livewire\Settings;
 
 use App\Livewire\Concerns\HasToast;
 use App\Models\Setting;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
@@ -30,6 +31,8 @@ class ProposalTemplate extends Component
 
     public function mount(): void
     {
+        abort_unless(Auth::user()?->hasRole('admin lppm') || Auth::user()?->hasRole('superadmin'), 403);
+
         $this->proposal_approval_mode = Setting::where('key', 'proposal_approval_mode')->value('value') ?? 'digital';
         $this->report_approval_mode = Setting::where('key', 'report_approval_mode')->value('value') ?? 'digital';
         $this->logbook_approval_mode = Setting::where('key', 'logbook_approval_mode')->value('value') ?? 'digital';

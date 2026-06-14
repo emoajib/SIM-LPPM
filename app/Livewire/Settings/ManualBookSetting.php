@@ -14,6 +14,11 @@ class ManualBookSetting extends Component
 {
     use HasToast, WithFileUploads, WithPagination;
 
+    public function mount(): void
+    {
+        abort_unless(Auth::user()?->hasRole('admin lppm') || Auth::user()?->hasRole('superadmin'), 403);
+    }
+
     public $title = '';
 
     public $description = '';
