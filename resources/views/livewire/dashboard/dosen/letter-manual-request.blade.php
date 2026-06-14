@@ -5,7 +5,7 @@
                 <div class="col-lg-8 mx-auto">
                     <div class="card border-0 shadow-sm">
                         <div class="card-body p-4">
-                            <form wire:submit.prevent="submit">
+                            <form wire:submit.prevent="submit" onsubmit="return false">
                                 {{-- Pilih Jenis Surat --}}
                                 <div class="mb-4">
                                     <label class="form-label required">Jenis Surat</label>
@@ -83,7 +83,7 @@
                                         <span class="input-icon-addon">
                                             <i class="ti ti-search"></i>
                                         </span>
-                                        <input type="text" class="form-control" wire:model.live.debounce.500ms="searchQuery" @keydown.enter.prevent placeholder="Ketik nama dosen untuk mencari...">
+                                        <input type="text" class="form-control" wire:model.live.debounce.500ms="searchQuery" wire:keydown.enter.prevent wire:keydown.enter.stop placeholder="Ketik nama dosen untuk mencari...">
                                     </div>
 
                                     @if(count($searchResults) > 0)

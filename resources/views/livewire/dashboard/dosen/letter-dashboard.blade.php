@@ -160,7 +160,7 @@
             </button>
         </div>
         <div class="card-body p-4">
-            <form wire:submit.prevent="submitLetter">
+            <form wire:submit.prevent="submitLetter" onsubmit="return false">
                 <div class="mb-4">
                     <label class="form-label required">Jenis Surat</label>
                     <select class="form-select" wire:model="letterTypeId" required>
@@ -235,7 +235,7 @@
                         <span class="input-icon-addon">
                             <i class="ti ti-search"></i>
                         </span>
-                        <input type="text" class="form-control" wire:model.live.debounce.500ms="searchQuery" @keydown.enter.prevent placeholder="Ketik nama dosen untuk mencari...">
+                        <input type="text" class="form-control" wire:model.live.debounce.500ms="searchQuery" wire:keydown.enter.prevent wire:keydown.enter.stop placeholder="Ketik nama dosen untuk mencari...">
                     </div>
 
                     @if(count($searchResults) > 0)
