@@ -235,13 +235,13 @@
                         <span class="input-icon-addon">
                             <i class="ti ti-search"></i>
                         </span>
-                        <input type="text" class="form-control" wire:model.live.debounce.300ms="searchQuery" wire:input="searchDosen" placeholder="Ketik nama dosen untuk mencari...">
+                        <input type="text" class="form-control" wire:model.live.debounce.500ms="searchQuery" placeholder="Ketik nama dosen untuk mencari...">
                     </div>
 
                     @if(count($searchResults) > 0)
                     <div class="list-group mb-2" style="max-height: 200px; overflow-y: auto;">
                         @foreach($searchResults as $dosen)
-                        <button type="button" class="list-group-item list-group-item-action" wire:click="addTeamMember({{ json_encode($dosen) }})">
+                        <button type="button" class="list-group-item list-group-item-action" wire:key="search-result-{{ $dosen['id'] }}" wire:click="addTeamMember('{{ $dosen['id'] }}')">
                             <div class="fw-bold">{{ $dosen['name'] }}</div>
                             <small class="text-muted">{{ $dosen['email'] }}</small>
                         </button>
@@ -264,7 +264,7 @@
                                 <tr>
                                     <td>{{ $member['name'] }}</td>
                                     <td>
-                                        <select class="form-select form-select-sm" wire:model="team.{{ $index }}.role">
+                                        <select class="form-select form-select-sm" wire:model.lazy="team.{{ $index }}.role">
                                             <option value="Ketua">Ketua</option>
                                             <option value="Anggota">Anggota</option>
                                         </select>

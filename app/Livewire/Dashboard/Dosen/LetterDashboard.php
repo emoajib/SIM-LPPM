@@ -4,6 +4,7 @@ namespace App\Livewire\Dashboard\Dosen;
 
 use App\Models\Letter;
 use App\Models\LetterType;
+use App\Models\User;
 use App\Services\LetterService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -97,7 +98,7 @@ class LetterDashboard extends Component
         $this->selectedLetterType = LetterType::find($this->letterTypeId);
     }
 
-    public function searchDosen(): void
+    public function updatedSearchQuery(): void
     {
         if (strlen($this->searchQuery) < 2) {
             $this->searchResults = [];
@@ -109,17 +110,28 @@ class LetterDashboard extends Component
         $this->searchResults = $service->searchDosen($this->searchQuery)->toArray();
     }
 
-    public function addTeamMember(array $dosen): void
+    public function addTeamMember(string $dosenId): void
     {
+        $dosen = User::whereHas('roles', fn ($q) => $q->where('name', 'dosen'))
+            ->where('id', $dosenId)
+            ->select('id', 'name')
+            ->first();
+
+        if (! $dosen) {
+            $this->dispatch('swal', title: 'Gagal', text: 'Dosen tidak ditemukan.', icon: 'error');
+
+            return;
+        }
+
         foreach ($this->team as $member) {
-            if ($member['id'] === $dosen['id']) {
+            if ($member['id'] === $dosenId) {
                 return;
             }
         }
 
         $this->team[] = [
-            'id' => $dosen['id'],
-            'name' => $dosen['name'],
+            'id' => $dosen->id,
+            'name' => $dosen->name,
             'role' => 'Anggota',
             'identifier' => '',
         ];
