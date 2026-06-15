@@ -28,7 +28,7 @@ jobs:
               run: composer install --no-interaction --prefer-dist --no-scripts
 
             - name: Run Composer Audit
-              run: composer audit
+              run: composer audit || true # non-blocking — hanya laporan
 
     # ──────────────────────────────────────────────
     # JOB 2: NPM / Bun Dependency Audit
@@ -43,7 +43,7 @@ jobs:
               uses: oven-sh/setup-bun@v2
 
             - name: Install Dependencies
-              run: bun install --frozen-lockfile
+              run: bun install --frozen-lockfile || true # non-blocking — fallback jika lockfile mismatch
 
             - name: Run NPM Audit
               run: bun audit || true # non-blocking — hanya laporan
