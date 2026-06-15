@@ -4,6 +4,7 @@ namespace App\Livewire\AdminLppm\Letter;
 
 use App\Models\Letter;
 use App\Models\LetterType;
+use Illuminate\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -23,7 +24,7 @@ class Archive extends Component
 
     public $dateTo = '';
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $letters = Letter::with(['letterType', 'user'])

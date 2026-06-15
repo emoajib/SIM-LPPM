@@ -184,7 +184,7 @@ class LetterService
         ]);
 
         if ($bypass) {
-            /** @var \App\Models\LetterType $lType */
+            /** @var LetterType $lType */
             $lType = $letter->letterType;
             $letter->update([
                 'published_at' => now(),
@@ -266,7 +266,7 @@ class LetterService
             ]);
 
             if ($bypass) {
-                /** @var \App\Models\LetterType $lType */
+                /** @var LetterType $lType */
                 $lType = $letter->letterType;
                 $letter->update([
                     'published_at' => now(),

@@ -205,7 +205,8 @@
                         </div>
                     </div>
                     <div class="card-footer bg-light py-2 px-3 text-secondary" style="font-size: 8.5pt;">
-                        <x-lucide-font class="icon icon-inline me-1 text-muted" /> Font Aktif: <strong class="text-dark">{{ explode(',', $pdfFontFamily)[0] }}</strong> | Ukuran Teks: <strong class="text-dark">{{ $pdfBodyFontSize }} pt</strong>
+                        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                        <x-lucide-type class="icon icon-inline me-1 text-muted" /> Font Aktif: <strong class="text-dark">{{ explode(',', $pdfFontFamily)[0] }}</strong> | Ukuran Teks: <strong class="text-dark">{{ $pdfBodyFontSize }} pt</strong>
                     </div>
                 </div>
             </div>
