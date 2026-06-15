@@ -108,6 +108,13 @@ class ProposalReviewer extends Model
      */
     public function latestLog(): ?ReviewLog
     {
+        // Use eager-loaded collection if available to prevent N+1 queries.
+        // The logs() relation already orders by 'round' desc, so the first
+        // completed log in the collection is the latest by definition.
+        if ($this->relationLoaded('logs')) {
+            return $this->logs->first(fn (ReviewLog $log) => $log->completed_at !== null);
+        }
+
         /** @var ReviewLog|null $log */
         $log = $this->logs()->whereNotNull('completed_at')->first();
 

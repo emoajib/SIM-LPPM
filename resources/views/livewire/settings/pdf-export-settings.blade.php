@@ -158,6 +158,46 @@
                         </div>
                     </div>
 
+                    {{-- === COVER & APPROVAL EDITOR === --}}
+                    <h4 class="card-title mb-3 mt-4">
+                        <x-lucide-file-text class="icon me-1 text-purple" />
+                        Cover &amp; Halaman Pengesahan
+                    </h4>
+
+                    <div class="card mb-4 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label fw-medium">Judul Cover (Kosongkan = pakai judul bawaan)</label>
+                                <input type="text" class="form-control" wire:model.live="pdfCoverTitle"
+                                    placeholder="Contoh: PROPOSAL PENELITIAN INTERNAL">
+                                <small class="text-muted">Teks judul di halaman cover proposal/laporan. Biarkan kosong untuk menggunakan judul otomatis dari sistem.</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-medium">Subjudul Cover (Kosongkan = tidak tampil)</label>
+                                <input type="text" class="form-control" wire:model.live="pdfCoverSubtitle"
+                                    placeholder="Contoh: Tahun Akademik 2025/2026">
+                                <small class="text-muted">Teks subjudul di bawah judul utama halaman cover. Biarkan kosong untuk menyembunyikannya.</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="pdfCoverShowTeam"
+                                        wire:model.live="pdfCoverShowTeam">
+                                    <label class="form-check-label fw-medium" for="pdfCoverShowTeam">Tampilkan Tim Pengusul di Cover</label>
+                                </div>
+                                <small class="text-muted">Jika dimatikan, tabel nama ketua dan anggota tidak akan ditampilkan di halaman cover.</small>
+                            </div>
+
+                            <div class="mb-0">
+                                <label class="form-label fw-medium">Teks Kustom Halaman Pengesahan</label>
+                                <textarea class="form-control" wire:model.live="pdfApprovalCustomText" rows="3"
+                                    placeholder="Kosongkan untuk menggunakan teks bawaan sistem."></textarea>
+                                <small class="text-muted">Teks yang muncul di halaman pengesahan/approval. Mendukung HTML sederhana.</small>
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- === TIPOGRAFI (Family A) === --}}
                     <h4 class="card-title mb-3 mt-2">
                         <x-lucide-type class="icon me-1 text-indigo" />

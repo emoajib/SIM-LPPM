@@ -6,9 +6,6 @@
     <title>Laporan Penugasan & Reviewer</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style>
-        @page {
-            margin: 1.5cm 1cm;
-        }
         body {
             font-family: Arial, Helvetica, sans-serif;
             font-size: 7pt;
@@ -27,7 +24,7 @@
             padding-bottom: 3px;
         }
         .logo {
-            width: 45px;
+            width: {{ $pdfConfig['logo_size'] ?? 45 }}px;
         }
         .header-text {
             text-align: center;
@@ -176,11 +173,11 @@
             @php $logoPos = $pdfConfig['logo_position'] ?? 'left'; $logoSrc = get_logo_base64(); @endphp
             @if(($pdfConfig['show_logo'] ?? true) && $logoSrc)
                 @if($logoPos === 'center')
-                    <img src="{{ $logoSrc }}" class="logo" style="display:block; margin:0 auto; width:45px;">
+                    <img src="{{ $logoSrc }}" class="logo" style="display:block; margin:0 auto; width:{{ $pdfConfig['logo_size'] ?? 45 }}px;">
                 @elseif($logoPos === 'right')
-                    <img src="{{ $logoSrc }}" class="logo" style="position:absolute; right:0; top:0; left:auto; width:45px;">
+                    <img src="{{ $logoSrc }}" class="logo" style="position:absolute; right:0; top:0; left:auto; width:{{ $pdfConfig['logo_size'] ?? 45 }}px;">
                 @else
-                    <img src="{{ $logoSrc }}" class="logo" style="position:absolute; left:0; top:0; width:45px;">
+                    <img src="{{ $logoSrc }}" class="logo" style="position:absolute; left:0; top:0; width:{{ $pdfConfig['logo_size'] ?? 45 }}px;">
                 @endif
             @endif
             <div class="header-text" style="margin-{{ $logoPos === 'right' ? 'right' : 'left' }}: {{ $logoPos === 'center' ? '0' : '50px' }};">

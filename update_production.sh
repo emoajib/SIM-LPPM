@@ -46,8 +46,9 @@ php artisan view:cache
 # Clear OPcache
 php -r 'if (function_exists("opcache_reset")) { opcache_reset(); echo "OPcache cleared\n"; } else { echo "OPcache not available\n"; }'
 
-# Flush PDF cache
-find storage/app/public/pdf_cache -type f -name "*.pdf" -delete 2>/dev/null
+# Flush PDF cache (baru + bersihkan legacy)
+find storage/app/pdf_cache -type f -name "*.pdf" -delete 2>/dev/null
+rm -rf storage/app/public/pdf_cache 2>/dev/null
 echo "PDF cache cleaned"
 
 # Set permissions

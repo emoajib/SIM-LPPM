@@ -4,10 +4,6 @@
     <title>Berita Acara Monev</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style>
-        @page { 
-            size: A4;
-            margin: 4cm 3cm 3cm 4cm; /* Top Right Bottom Left - Standar Tata Naskah Dinas */
-        }
         html, body { 
             margin: 0; 
             padding: 0; 
@@ -30,7 +26,7 @@
             width: 100%;
         }
         .logo { 
-            width: 100px; 
+            width: {{ $pdfConfig['logo_size'] ?? 100 }}px; 
         }
         .header-text {}
         .inst-name { 
@@ -122,11 +118,11 @@
         @php $logoPos = $pdfConfig['logo_position'] ?? 'left'; $logoSrc = get_logo_base64(); @endphp
         @if(($pdfConfig['show_logo'] ?? true) && $logoSrc)
             @if($logoPos === 'center')
-                <img src="{{ $logoSrc }}" class="logo" style="display:block; margin:0 auto; width:100px;">
+                <img src="{{ $logoSrc }}" class="logo" style="display:block; margin:0 auto; width:{{ $pdfConfig['logo_size'] ?? 100 }}px;">
             @elseif($logoPos === 'right')
-                <img src="{{ $logoSrc }}" class="logo" style="position:absolute; right:0; top:-20px; left:auto; width:100px;">
+                <img src="{{ $logoSrc }}" class="logo" style="position:absolute; right:0; top:-20px; left:auto; width:{{ $pdfConfig['logo_size'] ?? 100 }}px;">
             @else
-                <img src="{{ $logoSrc }}" class="logo" style="position:absolute; left:0; top:-20px; width:100px;">
+                <img src="{{ $logoSrc }}" class="logo" style="position:absolute; left:0; top:-20px; width:{{ $pdfConfig['logo_size'] ?? 100 }}px;">
             @endif
         @endif
         <div class="header-text" style="margin-{{ $logoPos === 'right' ? 'right' : 'left' }}: {{ $logoPos === 'center' ? '0' : '100px' }};">

@@ -632,7 +632,8 @@ php artisan view:cache
 php -r 'if (function_exists("opcache_reset")) { opcache_reset(); echo "OPcache cleared\n"; } else { echo "OPcache tidak tersedia\n"; }'
 
 # 6. Flush PDF cache (regenerate otomatis)
-find storage/app/public/pdf_cache -type f -name "*.pdf" -delete 2>/dev/null || true
+find storage/app/pdf_cache -type f -name "*.pdf" -delete 2>/dev/null || true
+rm -rf storage/app/public/pdf_cache 2>/dev/null || true
 
 # 7. Permissions (Sesuai standar Zero Trust & Keamanan File cPanel)
 find . -type f -print0 | xargs -0 chmod 644

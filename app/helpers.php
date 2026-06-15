@@ -370,6 +370,11 @@ if (! function_exists('get_pdf_config')) {
             'orientation' => '',
             'intro_text' => '',
             'outro_text' => '',
+            // Cover & Approval editor
+            'cover_title' => Setting::get('pdf_cover_title', ''),
+            'cover_subtitle' => Setting::get('pdf_cover_subtitle', ''),
+            'cover_show_team' => (bool) Setting::get('pdf_cover_show_team', true),
+            'approval_custom_text' => Setting::get('pdf_approval_custom_text', ''),
         ];
 
         // Apply Module-Specific Overrides

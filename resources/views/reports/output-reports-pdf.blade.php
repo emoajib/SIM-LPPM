@@ -4,9 +4,6 @@
     <title>Laporan Luaran</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <style>
-        @page {
-            margin: 3cm 3cm 3cm 4cm;
-        }
         body {
             font-family: Arial, Helvetica, sans-serif;
             font-size: 9pt;
@@ -25,7 +22,7 @@
             padding-bottom: 5px;
         }
         .logo {
-            width: 65px;
+            width: {{ $pdfConfig['logo_size'] ?? 65 }}px;
         }
         .header-text {
             text-align: center;
@@ -122,28 +119,7 @@
     </style>
 </head>
 <body>
-    <div class="kop-surat">
-        <div class="kop-surat-inner">
-            @php $logoPos = $pdfConfig['logo_position'] ?? 'left'; $logoSrc = get_logo_base64(); @endphp
-            @if(($pdfConfig['show_logo'] ?? true) && $logoSrc)
-                @if($logoPos === 'center')
-                    <img src="{{ $logoSrc }}" class="logo" style="display:block; margin:0 auto; width:65px;">
-                @elseif($logoPos === 'right')
-                    <img src="{{ $logoSrc }}" class="logo" style="position:absolute; right:0; top:0; left:auto; width:65px;">
-                @else
-                    <img src="{{ $logoSrc }}" class="logo" style="position:absolute; left:0; top:0; width:65px;">
-                @endif
-            @endif
-            <div class="header-text" style="margin-{{ $logoPos === 'right' ? 'right' : 'left' }}: {{ $logoPos === 'center' ? '0' : '70px' }};">
-                <div class="inst-name">INSTITUT TEKNOLOGI DAN SAINS NAHDLATUL ULAMA PEKALONGAN</div>
-                <div class="lppm-name">LEMBAGA PENELITIAN DAN PENGABDIAN KEPADA MASYARAKAT (LPPM)</div>
-                <div class="inst-address">
-                    Jl. Karangdowo No. 9, Kedungwuni, Kab. Pekalongan, Jawa Tengah 51173<br>
-                    Email: lppm@itsnupekalongan.ac.id | Website: https://lppm.itsnupekalongan.ac.id
-                </div>
-            </div>
-        </div>
-    </div>
+    @include('reports.partials.kop-surat')
 
     <div class="report-title-container">
         <div class="report-title">LAPORAN LUARAN {{ strtoupper($activeTab === 'research' ? 'PENELITIAN' : 'PENGABDIAN') }}</div>

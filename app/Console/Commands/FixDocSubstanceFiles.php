@@ -112,7 +112,7 @@ class FixDocSubstanceFiles extends Command
             $this->info('  ✅ File PDF berhasil diupload!');
 
             // Clear PDF cache for this proposal so it regenerates with new file
-            $cacheDir = storage_path('app/public/pdf_cache/proposals');
+            $cacheDir = storage_path('app/pdf_cache/proposals');
             $oldPdfs = glob($cacheDir.DIRECTORY_SEPARATOR."*proposal_{$proposal->id}_*.pdf");
             $oldPdfs = array_merge(
                 $oldPdfs ?: [],

@@ -44,6 +44,15 @@ class PdfExportSettings extends Component
 
     public string $pdfMarginLeft = '';
 
+    // --- Cover & Approval Editor ---
+    public string $pdfCoverTitle = '';
+
+    public string $pdfCoverSubtitle = '';
+
+    public bool $pdfCoverShowTeam = true;
+
+    public string $pdfApprovalCustomText = '';
+
     // --- Family B (Laporan Modul) ---
     public string $pdfReportFontFamily = 'Arial, Helvetica, sans-serif';
 
@@ -108,6 +117,12 @@ class PdfExportSettings extends Component
         $this->pdfMarginBottom = Setting::get('pdf_margin_bottom', '');
         $this->pdfMarginLeft = Setting::get('pdf_margin_left', '');
 
+        // Cover & Approval
+        $this->pdfCoverTitle = Setting::get('pdf_cover_title', '');
+        $this->pdfCoverSubtitle = Setting::get('pdf_cover_subtitle', '');
+        $this->pdfCoverShowTeam = (bool) Setting::get('pdf_cover_show_team', true);
+        $this->pdfApprovalCustomText = Setting::get('pdf_approval_custom_text', '');
+
         // Family B
         $this->pdfReportFontFamily = Setting::get('pdf_report_font_family', 'Arial, Helvetica, sans-serif');
         $this->pdfReportFontSize = (int) Setting::get('pdf_report_font_size', 9);
@@ -132,6 +147,10 @@ class PdfExportSettings extends Component
             'pdfMarginRight' => ['pdf_margin_right', 'string'],
             'pdfMarginBottom' => ['pdf_margin_bottom', 'string'],
             'pdfMarginLeft' => ['pdf_margin_left', 'string'],
+            'pdfCoverTitle' => ['pdf_cover_title', 'string'],
+            'pdfCoverSubtitle' => ['pdf_cover_subtitle', 'string'],
+            'pdfCoverShowTeam' => ['pdf_cover_show_team', 'boolean'],
+            'pdfApprovalCustomText' => ['pdf_approval_custom_text', 'string'],
             'pdfReportFontFamily' => ['pdf_report_font_family', 'string'],
             'pdfReportFontSize' => ['pdf_report_font_size', 'integer'],
             'pdfReportLineHeight' => ['pdf_report_line_height', 'string'],
@@ -169,7 +188,7 @@ class PdfExportSettings extends Component
         $deleted = 0;
 
         foreach ($dirs as $dir) {
-            $fullDir = storage_path("app/public/{$dir}");
+            $fullDir = storage_path("app/{$dir}");
             if (is_dir($fullDir)) {
                 $files = glob($fullDir.DIRECTORY_SEPARATOR.'*.pdf') ?: [];
                 foreach ($files as $file) {
@@ -198,9 +217,9 @@ class PdfExportSettings extends Component
     public function getCacheStats(): array
     {
         $dirs = [
-            'proposals' => storage_path('app/public/pdf_cache/proposals'),
-            'reports' => storage_path('app/public/pdf_cache/reports'),
-            'reviewer' => storage_path('app/public/pdf_cache/reviewer_reports'),
+            'proposals' => storage_path('app/pdf_cache/proposals'),
+            'reports' => storage_path('app/pdf_cache/reports'),
+            'reviewer' => storage_path('app/pdf_cache/reviewer_reports'),
         ];
 
         $stats = [];

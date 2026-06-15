@@ -79,7 +79,8 @@ php artisan route:cache
 php artisan view:cache
 
 # 6. Flush PDF cache (akan regenerate otomatis)
-find storage/app/public/pdf_cache -type f -name "*.pdf" -delete 2>/dev/null
+find storage/app/pdf_cache -type f -name "*.pdf" -delete 2>/dev/null
+rm -rf storage/app/public/pdf_cache 2>/dev/null
 echo "PDF cache cleaned"
 
 # 7. OPcache

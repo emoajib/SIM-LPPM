@@ -108,58 +108,26 @@
         <span class="page-number">Halaman </span>
     </div>
 
-    <div class="page-break">
-        <div style="font-size: 14pt; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; text-align: center;">
-            LAPORAN {{ $periodLabel }} {{ $proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN' }} INTERNAL
-        </div>
-        
-        <div style="margin: 40px 0; text-align: center;">
-            @php $pdfConfig ??= get_pdf_config('letter'); @endphp
-            @if(($pdfConfig['show_logo'] ?? true) && get_logo_base64())
-                {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
-                <img src="{{ get_logo_base64() }}" style="width: 180px;">
-            @endif
-        </div>
-
-        <div style="font-size: 14pt; font-weight: bold; margin-bottom: 30px; line-height: 1.3; text-align: center;">
-            {{ clean_proposal_title($proposal->title) }}
-        </div>
-
-        <div style="width: 100%; margin: 20px 0;">
-            <div style="font-weight: bold; margin-bottom: 5px; text-align: center;">Oleh:</div>
-            <table style="width: 100%; border: 0.5pt dashed #000; margin-bottom: 0;">
-                <tr>
-                    <td style="width: 15%; border: 0.5pt dashed #000; padding: 8px;">Ketua</td>
-                    <td style="width: 45%; border: 0.5pt dashed #000; padding: 8px; font-weight: bold;">{{ $submitterFullName }}</td>
-                    <td style="width: 10%; border: 0.5pt dashed #000; padding: 8px;">NIDN</td>
-                    <td style="width: 30%; border: 0.5pt dashed #000; padding: 8px; font-weight: bold;">{{ $proposal->submitter->identity?->identity_id ?? '-' }}</td>
-                </tr>
-                @php
-                    $lecturerMembersCover = $proposal->teamMembers->filter(fn($m) => $m->id !== $proposal->submitter_id && ($m->identity?->type === 'dosen' || $m->pivot->role === 'anggota' || $m->pivot->role === 'dosen'));
-                @endphp
-                @foreach($lecturerMembersCover as $index => $member)
-                <tr>
-                    <td style="width: 15%; border: 0.5pt dashed #000; padding: 8px;">Anggota {{ to_roman($index + 1) }}</td>
-                    <td style="width: 45%; border: 0.5pt dashed #000; padding: 8px; font-weight: bold;">{{ format_name($member->identity?->title_prefix ?? '', $member->name, $member->identity?->title_suffix ?? '') }}</td>
-                    <td style="width: 10%; border: 0.5pt dashed #000; padding: 8px;">NIDN</td>
-                    <td style="width: 30%; border: 0.5pt dashed #000; padding: 8px; font-weight: bold;">{{ $member->identity?->identity_id ?? '-' }}</td>
-                </tr>
-                @endforeach
-            </table>
-        </div>
-
-        <div style="position: absolute; bottom: 2cm; width: 100%; text-align: center; font-weight: bold; font-size: 12pt; text-transform: uppercase;">
-            FAKULTAS {{ strtoupper($facultyName) }}<br>
-            PROGRAM STUDI {{ strtoupper($prodiName) }}<br>
-            ITSNU PEKALONGAN<br>
-            TAHUN {{ $report->reporting_year }}
-        </div>
-    </div>
+    @include('pdf.partials.cover', [
+        'coverTitle' => 'LAPORAN '.$periodLabel.' '.($proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN').' INTERNAL',
+        'coverYear' => $report->reporting_year,
+        'proposal' => $proposal,
+        'submitterFullName' => $submitterFullName,
+        'submitterNidn' => $proposal->submitter->identity?->identity_id ?? '-',
+        'facultyName' => $facultyName,
+        'prodiName' => $prodiName,
+    ])
 
     <div style="page-break-after: always;"></div>
 
     {{-- Standardized Header --}}
     @include('pdf.partials.header')
+
+    @if(!empty($pdfConfig['intro_text'] ?? null))
+        <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; background: #f9f9f9; text-align: justify; font-size: 9pt;">
+            {!! nl2br(e($pdfConfig['intro_text'])) !!}
+        </div>
+    @endif
 
     <div class="report-type-box">
         LAPORAN {{ $report->reporting_period === 'final' ? 'AKHIR' : 'KEMAJUAN' }}
@@ -767,6 +735,18 @@
             <div style="font-weight: bold; margin-bottom: 3px; color: #333;">DOKUMEN INI DISAHKAN SECARA DIGITAL</div>
             <div>Sesuai dengan kebijakan LPPM ITSNU Pekalongan, pengesahan laporan dilakukan melalui sistem informasi.</div>
             <div style="margin-top: 3px; font-family: monospace;">ID Laporan: {{ $report->id }} | Dicetak pada: {{ date('Y-m-d H:i:s') }}</div>
+        </div>
+    @endif
+
+    @if(!empty($pdfConfig['approval_custom_text'] ?? null))
+        <div style="margin-top: 20px; padding: 10px; border: 1px solid #ddd; background: #f9f9f9; text-align: center; font-size: 9pt;">
+            {!! nl2br(e($pdfConfig['approval_custom_text'])) !!}
+        </div>
+    @endif
+
+    @if(!empty($pdfConfig['outro_text'] ?? null))
+        <div style="margin-top: 15px; padding: 10px; border: 1px solid #ddd; background: #f9f9f9; text-align: justify; font-size: 9pt;">
+            {!! nl2br(e($pdfConfig['outro_text'])) !!}
         </div>
     @endif
 </body>

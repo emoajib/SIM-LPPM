@@ -261,7 +261,7 @@ class Show extends Component
         $reports = $this->proposal->progressReports()->get();
         /** @var ProgressReport $report */
         foreach ($reports as $report) {
-            $files = glob(storage_path('app/public/pdf_cache/reports/report_'.$report->id.'_*.pdf'));
+            $files = glob(storage_path('app/pdf_cache/reports/report_'.$report->id.'_*.pdf'));
             if (is_array($files)) {
                 foreach ($files as $file) {
                     @unlink($file);

@@ -15,9 +15,11 @@ class DocumentSignatureService
     {
         $keys = (array) config('document-signatures.keys', []);
         $secret = (string) ($keys[$kid] ?? '');
+
         if ($secret === '') {
-            // Fallback for production environments without explicit secret
-            $secret = 'default-signature-secret-for-production';
+            throw new \RuntimeException(
+                "No signature secret configured for key ID: {$kid}."
+            );
         }
 
         return $secret;

@@ -131,7 +131,7 @@
             @php $pdfConfig ??= get_pdf_config('letter'); @endphp
             @if(($pdfConfig['show_logo'] ?? true) && get_logo_base64())
                 {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
-                <img src="{{ get_logo_base64() }}" style="width: 180px;">
+                <img src="{{ get_logo_base64() }}" style="width: {{ $pdfConfig['logo_size'] ?? 110 }}px;">
             @endif
         </div>
 
