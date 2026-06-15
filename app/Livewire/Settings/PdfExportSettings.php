@@ -17,6 +17,7 @@ class PdfExportSettings extends Component
     public bool   $pdfLayoutCompact = false;
     public bool   $pdfShowLogo      = true;
     public string $pdfPageMargin    = 'normal';
+    public string $pdfPaperSize     = 'a4';
 
     // --- Logo & Layout Extended ---
     public string $pdfLogoPosition    = 'left';
@@ -36,6 +37,13 @@ class PdfExportSettings extends Component
     public int    $pdfReportFontSize    = 9;
     public string $pdfReportLineHeight  = '1.1';
 
+    // --- Editor Konten Statis ---
+    public bool $contentModalOpen = false;
+    public string $editingModule = '';
+    public string $editingModuleName = '';
+    public string $editingContentIntro = '';
+    public string $editingContentOutro = '';
+
     // --- UI State ---
     public string $activePdfTab = 'layout';
 
@@ -49,6 +57,7 @@ class PdfExportSettings extends Component
         $this->pdfLayoutCompact = (bool) Setting::get('pdf_layout_compact', false);
         $this->pdfShowLogo      = (bool) Setting::get('pdf_show_logo', true);
         $this->pdfPageMargin    = Setting::get('pdf_page_margin', 'normal');
+        $this->pdfPaperSize     = Setting::get('pdf_paper_size', 'a4');
 
         // Extended layout
         $this->pdfLogoPosition    = Setting::get('pdf_logo_position', 'left');
@@ -77,6 +86,7 @@ class PdfExportSettings extends Component
             'pdfLayoutCompact'    => ['pdf_layout_compact', 'boolean'],
             'pdfShowLogo'         => ['pdf_show_logo', 'boolean'],
             'pdfPageMargin'       => ['pdf_page_margin', 'string'],
+            'pdfPaperSize'        => ['pdf_paper_size', 'string'],
             'pdfLogoPosition'     => ['pdf_logo_position', 'string'],
             'pdfLogoSize'         => ['pdf_logo_size', 'integer'],
             'pdfLineHeight'       => ['pdf_line_height', 'string'],
@@ -181,6 +191,28 @@ class PdfExportSettings extends Component
         }
 
         return $bytes.' B';
+    }
+
+    public function openContentEditor(string $moduleKey, string $moduleName): void
+    {
+        $this->editingModule = $moduleKey;
+        $this->editingModuleName = $moduleName;
+        $this->editingContentIntro = Setting::get("pdf_content_{$moduleKey}_intro", '');
+        $this->editingContentOutro = Setting::get("pdf_content_{$moduleKey}_outro", '');
+        $this->contentModalOpen = true;
+    }
+
+    public function closeContentEditor(): void
+    {
+        $this->contentModalOpen = false;
+    }
+
+    public function saveContentEditor(): void
+    {
+        Setting::set("pdf_content_{$this->editingModule}_intro", $this->editingContentIntro, 'string');
+        Setting::set("pdf_content_{$this->editingModule}_outro", $this->editingContentOutro, 'string');
+        $this->contentModalOpen = false;
+        $this->dispatch('settings-updated', message: "Konten teks untuk {$this->editingModuleName} berhasil disimpan.");
     }
 
     public function render(): View

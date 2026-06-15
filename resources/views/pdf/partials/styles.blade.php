@@ -2,6 +2,7 @@
 <style>
     /* Vetted by AI - Manual Review Required by Senior Engineer/Manager */
     @page {
+        size: {{ $pdfConfig['paper_size'] ?? 'a4' }} portrait;
         margin: {{ $pdfConfig['custom_margins'] ?: $pdfConfig['page_margin'] }};
     }
     body {

@@ -22,6 +22,7 @@
             marginPreset:     '{{ $pdfPageMargin }}',
             hasLogo:          {{ $hasLogo ? 'true' : 'false' }},
             logoUrl:          '{{ $logoUrl }}',
+            paperSize:        '{{ $pdfPaperSize }}',
 
             {{-- Compute effective margin for preview from preset --}}
             get marginPx() {
@@ -43,8 +44,8 @@
             },
 
             get previewBodyStyle() {
-                return \`font-family: \${this.font}; font-size: \${this.fontSize}pt; line-height: \${this.lineHeight}; color: #000;\`;
-            },
+                return 'font-family: ' + this.font + '; font-size: ' + this.fontSize + 'pt; line-height: ' + this.lineHeight + '; color: #000;';
+            }
         }"
     >
 
@@ -242,7 +243,27 @@
 
                     <div class="card mb-4 border-0 shadow-sm">
                         <div class="card-body">
-                            <div class="mb-3">
+                            <div class="row g-3">
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-medium">Keluarga Font</label>
+                                    <select class="form-select" wire:model.live="pdfFontFamily" x-on:change="font = $event.target.value">
+                                        <option value="Times New Roman, Times, serif">Times New Roman</option>
+                                        <option value="Arial, Helvetica, sans-serif">Arial</option>
+                                        <option value="Courier New, Courier, monospace">Courier New</option>
+                                        <option value="Georgia, serif">Georgia</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-medium">Ukuran Kertas <span class="badge bg-green-lt">Baru</span></label>
+                                    <select class="form-select" wire:model.live="pdfPaperSize" x-on:change="paperSize = $event.target.value">
+                                        <option value="a4">A4 (210 × 297 mm) — Default</option>
+                                        <option value="folio">F4 / Folio (215 × 330 mm)</option>
+                                        <option value="letter">Letter (215.9 × 279.4 mm)</option>
+                                        <option value="legal">Legal (215.9 × 355.6 mm)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3 mt-3">
                                 <label class="form-label fw-medium">Preset Margin</label>
                                 <select class="form-select" wire:model.live="pdfPageMargin"
                                     x-on:change="marginPreset = $event.target.value">
@@ -520,7 +541,7 @@
                         <div class="card-body">
                             <div class="d-flex align-items-center mb-3">
                                 <span class="avatar bg-{{ $color }}-lt me-3">
-                                    <x-lucide-dynamic :name="$icon" class="icon text-{{ $color }}" />
+                                    <x-dynamic-component :component="'lucide-'.$icon" class="icon text-{{ $color }}" />
                                 </span>
                                 <div>
                                     <div class="fw-medium">Cache {{ $label }}</div>
@@ -601,30 +622,29 @@
                             <th>Nama Modul / Fitur</th>
                             <th>Template View</th>
                             <th width="12%">Keluarga</th>
-                            <th width="20%">Digunakan Oleh</th>
+                            <th width="15%">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach([
-                            [1,'Surat Tugas','pdf/letters/surat-tugas','A','Admin LPPM, Kepala LPPM'],
-                            [2,'Surat Keterangan','pdf/letters/surat-keterangan','A','Admin LPPM, Kepala LPPM'],
-                            [3,'Surat Permohonan Izin','pdf/letters/surat-permohonan-izin','A','Admin LPPM'],
-                            [4,'Ekspor Proposal','pdf/proposal-export','A','Dosen, Admin, Kepala LPPM'],
-                            [5,'Laporan Kemajuan Proposal','pdf/report-export','A','Dosen, Admin, Kepala LPPM'],
-                            [6,'Logbook Harian (Individu)','pdf/daily-notes','A','Dosen'],
-                            [7,'Logbook Harian (Batch)','pdf/daily-notes','A','Admin LPPM'],
-                            [8,'Evaluasi Reviewer','pdf/review-evaluation','A','Reviewer, Admin LPPM'],
-                            [9,'Laporan IKU','reports/iku-report-pdf','B','Admin LPPM, Kepala LPPM'],
-                            [10,'Laporan Penelitian','reports/research-pdf','B','Admin LPPM, Kepala LPPM'],
-                            [11,'Laporan Pengabdian','reports/community-service-pdf','B','Admin LPPM, Kepala LPPM'],
-                            [12,'Laporan Output','reports/output-reports-pdf','B','Admin LPPM, Kepala LPPM'],
-                            [13,'Laporan Kerjasama Mitra','reports/partner-collaboration-pdf','B','Admin LPPM, Kepala LPPM'],
-                            [14,'Laporan Monev Berita Acara','reports/monev-ba-pdf','B','Admin LPPM'],
-                            [15,'Laporan Monev','reports/monev-pdf','B','Admin LPPM'],
-                            [16,'Laporan Reviewer','reports/reviewer-report-pdf','B','Admin LPPM, Kepala LPPM'],
-                        ] as [$no, $name, $template, $family, $roles])
+                            ['surat-tugas', 'Surat Tugas','pdf/letters/surat-tugas','A'],
+                            ['surat-keterangan', 'Surat Keterangan','pdf/letters/surat-keterangan','A'],
+                            ['surat-izin', 'Surat Permohonan Izin','pdf/letters/surat-permohonan-izin','A'],
+                            ['proposal-export', 'Ekspor Proposal','pdf/proposal-export','A'],
+                            ['laporan-kemajuan', 'Laporan Kemajuan Proposal','pdf/report-export','A'],
+                            ['logbook', 'Logbook Harian','pdf/daily-notes','A'],
+                            ['evaluasi-reviewer', 'Evaluasi Reviewer','pdf/review-evaluation','A'],
+                            ['iku', 'Laporan IKU','reports/iku-report-pdf','B'],
+                            ['penelitian', 'Laporan Penelitian','reports/research-pdf','B'],
+                            ['pengabdian', 'Laporan Pengabdian','reports/community-service-pdf','B'],
+                            ['output', 'Laporan Output','reports/output-reports-pdf','B'],
+                            ['mitra', 'Laporan Kerjasama Mitra','reports/partner-collaboration-pdf','B'],
+                            ['monev-ba', 'Laporan Monev Berita Acara','reports/monev-ba-pdf','B'],
+                            ['monev', 'Laporan Monev','reports/monev-pdf','B'],
+                            ['reviewer', 'Laporan Reviewer','reports/reviewer-report-pdf','B'],
+                        ] as $index => [$key, $name, $template, $family])
                         <tr>
-                            <td class="text-muted">{{ $no }}</td>
+                            <td class="text-muted">{{ $index + 1 }}</td>
                             <td class="fw-medium">{{ $name }}</td>
                             <td><code style="font-size:11px;">{{ $template }}</code></td>
                             <td>
@@ -634,7 +654,11 @@
                                     <span class="badge bg-green-lt text-green">Keluarga B</span>
                                 @endif
                             </td>
-                            <td class="text-muted small">{{ $roles }}</td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-outline-primary" wire:click="openContentEditor('{{ $key }}', '{{ $name }}')">
+                                    <x-lucide-edit-3 class="icon icon-sm me-1" /> Edit Konten
+                                </button>
+                            </td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -660,6 +684,47 @@
                 </div>
             </div>
         </div>
+
+        {{-- ==================== MODAL EDITOR KONTEN ==================== --}}
+        @if($contentModalOpen)
+            <div class="modal modal-blur fade show d-block" tabindex="-1" role="dialog" style="background: rgba(0,0,0,0.5);">
+                <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                <x-lucide-edit-3 class="icon me-1 text-primary" />
+                                Edit Teks Pengantar: {{ $editingModuleName }}
+                            </h5>
+                            <button type="button" class="btn-close" wire:click="closeContentEditor"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-info bg-info-lt">
+                                <x-lucide-info class="icon me-2" />
+                                <strong>Penting:</strong> Anda mengedit <strong>teks statis</strong> dari modul PDF ini. Tabel data, perhitungan, dan tanda tangan akan tetap dirender secara otomatis oleh sistem (tidak bisa diedit manual) demi menjaga keamanan dan validitas dokumen.
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Teks Pengantar (Intro)</label>
+                                <textarea class="form-control" wire:model="editingContentIntro" rows="4" placeholder="Kosongkan untuk menggunakan teks bawaan (default) sistem."></textarea>
+                                <small class="text-muted">Paragraf yang muncul di bagian atas dokumen sebelum tabel data utama.</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Teks Penutup (Outro)</label>
+                                <textarea class="form-control" wire:model="editingContentOutro" rows="4" placeholder="Kosongkan untuk menggunakan teks bawaan (default) sistem."></textarea>
+                                <small class="text-muted">Paragraf yang muncul di bagian bawah dokumen sebelum area tanda tangan.</small>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn me-auto" wire:click="closeContentEditor">Batal</button>
+                            <button type="button" class="btn btn-primary" wire:click="saveContentEditor">
+                                <x-lucide-save class="icon me-1" /> Simpan Konten
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
 
     </div>
 </div>

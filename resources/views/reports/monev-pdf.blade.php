@@ -149,6 +149,12 @@
         <div class="report-subtitle">Tahun Akademik: <strong>{{ $period }}</strong> | Semester: <strong>{{ ucfirst($semester) }}</strong></div>
     </div>
 
+    @if($introText = \App\Models\Setting::get('pdf_content_monev_intro'))
+        <div style="margin-bottom: 10px; font-size: 9pt;">
+            {!! nl2br(e($introText)) !!}
+        </div>
+    @endif
+
     <table class="data-table">
         <thead>
             <tr>
@@ -188,6 +194,12 @@
             @endforelse
         </tbody>
     </table>
+
+    @if($outroText = \App\Models\Setting::get('pdf_content_monev_outro'))
+        <div style="margin-top: 10px; font-size: 9pt;">
+            {!! nl2br(e($outroText)) !!}
+        </div>
+    @endif
 
     <div class="signature-wrapper">
         @php

@@ -332,6 +332,7 @@ if (! function_exists('get_pdf_config')) {
             'compact'           => $isCompact,
             'show_logo'         => (bool) Setting::get('pdf_show_logo', true),
             'page_margin'       => $marginMap[$pageMarginKey] ?? $marginDefaults[$viewType],
+            'paper_size'        => Setting::get('pdf_paper_size', 'a4'),
             '_view_type'        => $viewType,
             // Extended layout controls
             'logo_position'     => Setting::get('pdf_logo_position', 'left'),
