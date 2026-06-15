@@ -37,7 +37,7 @@ class TeamSnapshotBuilder
                 $team[] = [
                     'name' => $student['name'],
                     'role' => 'Mahasiswa',
-                    'identifier' => $student['nim'] ?? '-',
+                    'identifier' => $student['identifier'] ?? $student['nim'] ?? '-',
                 ];
             }
         }
