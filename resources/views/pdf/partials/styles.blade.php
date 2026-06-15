@@ -2,13 +2,20 @@
 <style>
     /* Vetted by AI - Manual Review Required by Senior Engineer/Manager */
     @page {
-        margin: {{ $pdfConfig['page_margin'] }};
+        margin: {{ $pdfConfig['custom_margins'] ?: $pdfConfig['page_margin'] }};
     }
     body {
         font-family: {{ $pdfConfig['font_family'] }};
         font-size: {{ $pdfConfig['body_font_size'] }}pt;
-        line-height: {{ $pdfConfig['compact'] ? '1' : '1.1' }};
+        line-height: {{ $pdfConfig['line_height'] }};
         color: #000;
+    }
+    .content p, p {
+        margin-top: {{ $pdfConfig['paragraph_spacing'] }}px;
+        margin-bottom: {{ $pdfConfig['paragraph_spacing'] }}px;
+        @if($pdfConfig['paragraph_indent'] > 0)
+        text-indent: {{ $pdfConfig['paragraph_indent'] }}px;
+        @endif
     }
     .header-table {
         width: 100%;

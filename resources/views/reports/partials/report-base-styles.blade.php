@@ -5,14 +5,8 @@
 body {
     font-family: {{ $pdfConfig['font_family'] }};
     font-size: {{ $pdfConfig['body_font_size'] }}pt;
-    @if($pdfConfig['compact'])
-    line-height: 1.1;
-    @endif
+    line-height: {{ $pdfConfig['line_height'] }};
 }
 @page {
-    @if($pdfConfig['compact'])
-    margin: 1.5cm 1cm;
-    @else
-    margin: {{ $pdfConfig['page_margin'] }};
-    @endif
+    margin: {{ $pdfConfig['custom_margins'] ?: $pdfConfig['page_margin'] }};
 }

@@ -311,8 +311,10 @@ if (! function_exists('get_pdf_config')) {
             'report_compact' => '1.5cm 1cm',
         ];
 
-        $settingFontKey = str_starts_with($viewType, 'report') ? 'pdf_report_font_family' : 'pdf_font_family';
-        $settingFontSize = str_starts_with($viewType, 'report') ? 'pdf_report_font_size' : 'pdf_body_font_size';
+        $isReport = str_starts_with($viewType, 'report');
+        $settingFontKey = $isReport ? 'pdf_report_font_family' : 'pdf_font_family';
+        $settingFontSize = $isReport ? 'pdf_report_font_size' : 'pdf_body_font_size';
+        $settingLineHeight = $isReport ? 'pdf_report_line_height' : 'pdf_line_height';
 
         $isCompact = (bool) Setting::get('pdf_layout_compact', false);
         $pageMarginKey = Setting::get('pdf_page_margin', 'normal');
@@ -322,13 +324,61 @@ if (! function_exists('get_pdf_config')) {
             'wide' => '4cm 3.5cm',
         ];
 
+        $customMargins = _build_custom_margins($viewType, $marginDefaults);
+
         return [
-            'font_family' => Setting::get($settingFontKey, $fontDefaults[$viewType] ?? 'Arial, Helvetica, sans-serif'),
-            'body_font_size' => (int) Setting::get($settingFontSize, $sizeDefaults[$viewType] ?? 11),
-            'compact' => $isCompact,
-            'show_logo' => (bool) Setting::get('pdf_show_logo', true),
-            'page_margin' => $marginMap[$pageMarginKey] ?? $marginDefaults[$viewType],
-            '_view_type' => $viewType,
+            'font_family'       => Setting::get($settingFontKey, $fontDefaults[$viewType] ?? 'Arial, Helvetica, sans-serif'),
+            'body_font_size'    => (int) Setting::get($settingFontSize, $sizeDefaults[$viewType] ?? 11),
+            'compact'           => $isCompact,
+            'show_logo'         => (bool) Setting::get('pdf_show_logo', true),
+            'page_margin'       => $marginMap[$pageMarginKey] ?? $marginDefaults[$viewType],
+            '_view_type'        => $viewType,
+            // Extended layout controls
+            'logo_position'     => Setting::get('pdf_logo_position', 'left'),
+            'logo_size'         => (int) Setting::get('pdf_logo_size', 110),
+            'line_height'       => Setting::get($settingLineHeight, '1.1'),
+            'paragraph_spacing' => (int) Setting::get('pdf_paragraph_spacing', 6),
+            'paragraph_indent'  => (int) Setting::get('pdf_paragraph_indent', 0),
+            'custom_margins'    => $customMargins,
         ];
+    }
+}
+
+if (! function_exists('_build_custom_margins')) {
+    /**
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Build custom margin string from per-side settings.
+     * Returns empty string if no custom margins are set (fallback to preset).
+     *
+     * @param  array<string, string>  $defaults
+     */
+    function _build_custom_margins(string $viewType, array $defaults): string
+    {
+        $t = trim((string) Setting::get('pdf_margin_top', ''));
+        $r = trim((string) Setting::get('pdf_margin_right', ''));
+        $b = trim((string) Setting::get('pdf_margin_bottom', ''));
+        $l = trim((string) Setting::get('pdf_margin_left', ''));
+
+        // Only apply custom margins if at least one side is explicitly set
+        if ($t === '' && $r === '' && $b === '' && $l === '') {
+            return '';
+        }
+
+        // Parse the default margin to use as fallback for unset sides
+        $defaultStr = $defaults[$viewType] ?? '2cm 2cm 2cm 2cm';
+        $parts = preg_split('/\s+/', trim($defaultStr)) ?: ['2cm', '2cm', '2cm', '2cm'];
+
+        // CSS shorthand: top right bottom left (4-value)
+        $dTop    = $parts[0] ?? '2cm';
+        $dRight  = $parts[1] ?? ($parts[0] ?? '2cm');
+        $dBottom = $parts[2] ?? ($parts[0] ?? '2cm');
+        $dLeft   = $parts[3] ?? ($parts[1] ?? $parts[0] ?? '2cm');
+
+        $top    = $t !== '' ? $t.'cm' : $dTop;
+        $right  = $r !== '' ? $r.'cm' : $dRight;
+        $bottom = $b !== '' ? $b.'cm' : $dBottom;
+        $left   = $l !== '' ? $l.'cm' : $dLeft;
+
+        return "{$top} {$right} {$bottom} {$left}";
     }
 }
