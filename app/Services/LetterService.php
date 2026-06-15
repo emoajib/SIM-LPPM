@@ -182,7 +182,9 @@ class LetterService
         if ($bypass) {
             $letter->update([
                 'published_at' => now(),
+                'letter_number' => $this->generateNextNumber($letter->letterType),
             ]);
+            $this->generatePdf($letter->fresh());
         }
 
         return $letter;
@@ -260,7 +262,9 @@ class LetterService
             if ($bypass) {
                 $letter->update([
                     'published_at' => now(),
+                    'letter_number' => $this->generateNextNumber($letter->letterType),
                 ]);
+                $this->generatePdf($letter->fresh());
             }
 
             return $letter;
