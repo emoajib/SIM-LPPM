@@ -4,15 +4,15 @@
         <td class="signature-box right" style="border:none;">
             Ditetapkan di : Pekalongan<br>
             Pada tanggal : {{ $letter->published_at ? $letter->published_at->translatedFormat('d F Y') : '....................' }}
-            <br><br>
+            <br>
             Kepala LPPM<br>
             ITSNU Pekalongan
-            
+            <br>
             <div class="qr-code">
                 @if($letter->signature_mode === 'tte' && $letter->status === 'published')
                     <img src="{{ $qrDataUri }}" alt="QR Code" style="width: 80px; height: 80px;">
                 @else
-                    <br><br><br><br><br>
+                    <br><br>
                 @endif
             </div>
 

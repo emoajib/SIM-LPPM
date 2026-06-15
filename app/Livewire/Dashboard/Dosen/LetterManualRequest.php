@@ -164,17 +164,15 @@ class LetterManualRequest extends Component
         ]);
 
         try {
-            $teamData = array_map(fn ($m) => [
-                'name' => $m['name'],
-                'role' => $m['role'],
-                'identifier' => $m['identifier'] ?? '-',
-            ], $this->team);
+            $userName = auth()->user()->name;
+            $userIdentifier = auth()->user()->identity->identity_id ?? '-';
 
-            // Add the requester as ketua
+            $teamData = array_values(array_filter($this->team, fn ($m) => ($m['name'] ?? '') !== $userName));
+
             array_unshift($teamData, [
-                'name' => auth()->user()->name,
+                'name' => $userName,
                 'role' => 'Ketua',
-                'identifier' => auth()->user()->identity->identity_id ?? '-',
+                'identifier' => $userIdentifier,
             ]);
 
             // Format date and time for PDF

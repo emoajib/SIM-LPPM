@@ -10,14 +10,18 @@ class TeamSnapshotBuilder
     public static function forProposal(Proposal $proposal): array
     {
         $team = [];
+        $submitterName = $proposal->submitter->name;
 
         $team[] = [
-            'name' => $proposal->submitter->name,
+            'name' => $submitterName,
             'role' => 'Ketua',
             'identifier' => $proposal->submitter->identity->identity_id ?? '-',
         ];
 
         foreach ($proposal->teamMembers as $member) {
+            if ($member->name === $submitterName) {
+                continue;
+            }
             $pivot = $member->pivot;
             if ($pivot && $pivot->getAttribute('status') === 'accepted') {
                 $team[] = [
