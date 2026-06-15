@@ -21,9 +21,38 @@
     </style>
 </head>
 <body>
+    @php
+        $logoSrc = get_logo_base64();
+        $logoPos = \App\Models\Setting::get('pdf_logo_position', 'left');
+    @endphp
+    @if($logoPos === 'center')
+    <div class="header" style="text-align:center;">
+        @if(\App\Models\Setting::get('pdf_show_logo', true) && $logoSrc)
+            <img src="{{ $logoSrc }}" class="logo" style="display:block; margin:0 auto;">
+        @endif
+        <div class="header-text" style="text-align:center;">
+            <h2>KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</h2>
+            <h1>INSTITUT TEKNOLOGI SAINS DAN KESEHATAN NAHDLATUL ULAMA KASINTA</h1>
+            <p>Jalan Jenderal Sudirman No. 123, Kota Kasinta</p>
+            <p>Telepon: (021) 1234567, Email: info@itsnu.ac.id, Website: www.itsnu.ac.id</p>
+        </div>
+    </div>
+    @elseif($logoPos === 'right')
+    <div class="header" style="text-align:right;">
+        <div class="header-text" style="text-align:center;">
+            <h2>KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</h2>
+            <h1>INSTITUT TEKNOLOGI SAINS DAN KESEHATAN NAHDLATUL ULAMA KASINTA</h1>
+            <p>Jalan Jenderal Sudirman No. 123, Kota Kasinta</p>
+            <p>Telepon: (021) 1234567, Email: info@itsnu.ac.id, Website: www.itsnu.ac.id</p>
+        </div>
+        @if(\App\Models\Setting::get('pdf_show_logo', true) && $logoSrc)
+            <img src="{{ $logoSrc }}" class="logo" style="margin-left:auto;">
+        @endif
+    </div>
+    @else
     <div class="header">
-        @if(\App\Models\Setting::get('pdf_show_logo', true))
-            <img src="{{ public_path('img/logo-itsnu.png') }}" class="logo" />
+        @if(\App\Models\Setting::get('pdf_show_logo', true) && $logoSrc)
+            <img src="{{ $logoSrc }}" class="logo" />
         @endif
         <div class="header-text">
             <h2>KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</h2>
@@ -32,10 +61,12 @@
             <p>Telepon: (021) 1234567, Email: info@itsnu.ac.id, Website: www.itsnu.ac.id</p>
         </div>
     </div>
+    @endif
     <hr class="header-line">
 
     <div class="title">
         <h3 style="text-align:center; text-decoration:underline;">DOKUMEN PRATINJAU REAL-TIME</h3>
+        <p style="text-align:center;">Modul: <strong>{{ $moduleLabel ?? 'Semua Pengaturan' }}</strong></p>
         <p style="text-align:center;">Nomor: 123/ITSNU/PRATINJAU/{{ date('Y') }}</p>
     </div>
 

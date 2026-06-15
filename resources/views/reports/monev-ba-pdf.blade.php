@@ -30,14 +30,9 @@
             width: 100%;
         }
         .logo { 
-            position: absolute; 
-            left: -10px; 
-            top: -20px; 
             width: 100px; 
         }
-        .header-text {
-            margin-left: 90px;
-        }
+        .header-text {}
         .inst-name { 
             font-size: 14pt; 
             font-weight: bold; 
@@ -124,11 +119,17 @@
 </head>
 <body>
     <div class="kop-surat">
-        @if($pdfConfig['show_logo'] ?? true)
-            {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
-            <img src="{{ get_logo_base64() }}" class="logo">
+        @php $logoPos = $pdfConfig['logo_position'] ?? 'left'; $logoSrc = get_logo_base64(); @endphp
+        @if(($pdfConfig['show_logo'] ?? true) && $logoSrc)
+            @if($logoPos === 'center')
+                <img src="{{ $logoSrc }}" class="logo" style="display:block; margin:0 auto; width:100px;">
+            @elseif($logoPos === 'right')
+                <img src="{{ $logoSrc }}" class="logo" style="position:absolute; right:0; top:-20px; left:auto; width:100px;">
+            @else
+                <img src="{{ $logoSrc }}" class="logo" style="position:absolute; left:0; top:-20px; width:100px;">
+            @endif
         @endif
-        <div class="header-text">
+        <div class="header-text" style="margin-{{ $logoPos === 'right' ? 'right' : 'left' }}: {{ $logoPos === 'center' ? '0' : '100px' }};">
             <div class="inst-name">INSTITUT TEKNOLOGI DAN SAINS NAHDLATUL ULAMA PEKALONGAN</div>
             <div class="lppm-name">LEMBAGA PENELITIAN DAN PENGABDIAN KEPADA MASYARAKAT</div>
             <div class="inst-address">Jl. Karangdowo No. 9, Kedungwuni, Kab. Pekalongan 51173</div>

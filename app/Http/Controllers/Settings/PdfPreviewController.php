@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Settings;
 use App\Http\Controllers\Controller;
 use App\Models\Letter;
 use App\Models\MandatoryOutput;
+use App\Models\Partner;
 use App\Models\ProgressReport;
 use App\Models\Proposal;
 use App\Models\ProposalMonev;
@@ -40,182 +41,42 @@ class PdfPreviewController extends Controller
             return $pdf->stream('pratinjau-pengaturan.pdf');
         }
 
+        $moduleLabels = [
+            'pdf.proposal-export' => 'Proposal Export',
+            'pdf.report-export' => 'Laporan Kemajuan/Akhir',
+            'pdf.daily-notes' => 'Logbook Harian',
+            'pdf.review-evaluation' => 'Review Evaluasi',
+            'reports.research-pdf' => 'Laporan Penelitian',
+            'reports.community-service-pdf' => 'Laporan Pengabdian',
+            'reports.output-reports-pdf' => 'Laporan Output',
+            'reports.partner-collaboration-pdf' => 'Kerjasama Mitra',
+            'reports.monev-ba-pdf' => 'Berita Acara Monev',
+            'reports.monev-pdf' => 'Rekapitulasi Monev',
+            'reports.reviewer-report-pdf' => 'Laporan Reviewer',
+        ];
+
+        $moduleKeys = [
+            'pdf.letters.surat-tugas' => 'surat-tugas',
+            'pdf.letters.surat-keterangan' => 'surat-keterangan',
+            'pdf.letters.surat-permohonan-izin' => 'surat-izin',
+            'pdf.proposal-export' => 'proposal-export',
+            'pdf.report-export' => 'laporan-kemajuan',
+            'pdf.daily-notes' => 'logbook',
+            'pdf.review-evaluation' => 'evaluasi-reviewer',
+            'reports.iku-report-pdf' => 'iku',
+            'reports.research-pdf' => 'penelitian',
+            'reports.community-service-pdf' => 'pengabdian',
+            'reports.output-reports-pdf' => 'output',
+            'reports.partner-collaboration-pdf' => 'mitra',
+            'reports.monev-ba-pdf' => 'monev-ba',
+            'reports.monev-pdf' => 'monev',
+            'reports.reviewer-report-pdf' => 'reviewer',
+        ];
+
+        $shortKey = $moduleKeys[$module] ?? null;
+
         try {
-            $data = [];
-
-            $moduleKeys = [
-                'pdf.letters.surat-tugas' => 'surat-tugas',
-                'pdf.letters.surat-keterangan' => 'surat-keterangan',
-                'pdf.letters.surat-permohonan-izin' => 'surat-izin',
-                'pdf.proposal-export' => 'proposal-export',
-                'pdf.report-export' => 'laporan-kemajuan',
-                'pdf.daily-notes' => 'logbook',
-                'pdf.review-evaluation' => 'evaluasi-reviewer',
-                'reports.iku-report-pdf' => 'iku',
-                'reports.research-pdf' => 'penelitian',
-                'reports.community-service-pdf' => 'pengabdian',
-                'reports.output-reports-pdf' => 'output',
-                'reports.partner-collaboration-pdf' => 'mitra',
-                'reports.monev-ba-pdf' => 'monev-ba',
-                'reports.monev-pdf' => 'monev',
-                'reports.reviewer-report-pdf' => 'reviewer',
-            ];
-
-            $shortKey = $moduleKeys[$module] ?? null;
-
-            if (in_array($module, ['pdf.letters.surat-tugas', 'pdf.letters.surat-keterangan', 'pdf.letters.surat-permohonan-izin'])) {
-                $typeCode = match ($module) {
-                    'pdf.letters.surat-tugas' => 'surat tugas',
-                    'pdf.letters.surat-keterangan' => 'surat keterangan',
-                    'pdf.letters.surat-permohonan-izin' => 'surat permohonan izin',
-                    default => 'surat tugas',
-                };
-
-                $letter = Letter::whereHas('letterType', function ($q) use ($typeCode) {
-                    $q->where('name', 'LIKE', "%{$typeCode}%");
-                })->latest()->first() ?? new Letter([
-                    'letter_number' => '001/DUMMY/2026',
-                    'metadata' => [
-                        'title' => 'Judul Dummy',
-                        'activity_type' => 'Kegiatan',
-                        'date_string' => '10 Juni 2026',
-                        'time_string' => '08:00 WIB',
-                        'location' => 'Gedung A',
-                    ],
-                ]);
-
-                $data = [
-                    'letter' => $letter,
-                    'metadata' => array_merge([
-                        'signer_name' => Setting::get('lppm_head_name', 'Nama LPPM'),
-                        'signer_position' => Setting::get('lppm_head_position', 'Kepala LPPM'),
-                    ], is_array($letter->metadata) ? $letter->metadata : []),
-                    'team' => is_array($letter->team_snapshot) && count($letter->team_snapshot) > 0 ? $letter->team_snapshot : [['name' => 'Dr. Dummy', 'role' => 'Ketua', 'identifier' => '123']],
-                    'qrDataUri' => '',
-                    'pdfConfig' => get_pdf_config('letter', $shortKey),
-                ];
-
-            } elseif ($module === 'pdf.proposal-export') {
-                $proposal = Proposal::latest()->first();
-                if (! $proposal) {
-                    throw new \Exception('Data Proposal kosong di sistem.');
-                }
-                $data = [
-                    'proposal' => $proposal,
-                    'pdfConfig' => get_pdf_config('letter', $shortKey),
-                    'isDraft' => false,
-                    'signatureLppmDataUri' => '',
-                    'signatureDekanDataUri' => '',
-                    'signatureLecturerDataUri' => '',
-                ];
-
-            } elseif ($module === 'pdf.report-export') {
-                $report = ProgressReport::with('proposal')->latest()->first();
-                if (! $report) {
-                    throw new \Exception('Data Laporan Kemajuan/Akhir kosong.');
-                }
-                $data = [
-                    'report' => $report,
-                    'proposal' => $report->proposal,
-                    'pdfConfig' => get_pdf_config('report', $shortKey),
-                    'signatureLppmDataUri' => '',
-                    'signatureLecturerDataUri' => '',
-                ];
-
-            } elseif ($module === 'pdf.daily-notes') {
-                $proposal = Proposal::has('dailyNotes')->with('dailyNotes')->latest()->first();
-                if (! $proposal) {
-                    throw new \Exception('Data Logbook Harian kosong.');
-                }
-                $data = [
-                    'proposal' => $proposal,
-                    'notes' => $proposal->dailyNotes,
-                    'pdfConfig' => get_pdf_config('report', $shortKey),
-                    'dateRange' => 'Semua Waktu',
-                ];
-
-            } elseif ($module === 'pdf.review-evaluation') {
-                $assignment = ProposalReviewer::with(['proposal', 'user.identity'])->latest()->first();
-                if (! $assignment) {
-                    throw new \Exception('Data Review kosong.');
-                }
-                $data = [
-                    'assignment' => $assignment,
-                    'proposal' => $assignment->proposal,
-                    'pdfConfig' => get_pdf_config('letter', $shortKey),
-                    'signatureReviewerDataUri' => '',
-                    'signatureLppmDataUri' => '',
-                ];
-
-            } elseif ($module === 'reports.iku-report-pdf') {
-                $data = [
-                    'year' => date('Y'),
-                    'iku1' => collect(), 'iku2' => collect(), 'iku3' => collect(),
-                    'iku4' => collect(), 'iku5' => collect(),
-                    'pdfConfig' => get_pdf_config('report', $shortKey),
-                ];
-
-            } elseif ($module === 'reports.research-pdf' || $module === 'reports.community-service-pdf') {
-                $proposals = Proposal::take(3)->get();
-                if ($proposals->isEmpty()) {
-                    throw new \Exception('Data Proposal kosong.');
-                }
-                $data = [
-                    'year' => date('Y'),
-                    'proposals' => $proposals,
-                    'totalBudget' => $proposals->sum('approved_funds'),
-                    'pdfConfig' => get_pdf_config('report', $shortKey),
-                ];
-
-            } elseif ($module === 'reports.output-reports-pdf') {
-                $outputs = MandatoryOutput::take(3)->get();
-                if ($outputs->isEmpty()) {
-                    throw new \Exception('Data Laporan Output kosong.');
-                }
-                $data = [
-                    'year' => date('Y'),
-                    'outputs' => $outputs,
-                    'pdfConfig' => get_pdf_config('report', $shortKey),
-                ];
-
-            } elseif ($module === 'reports.partner-collaboration-pdf') {
-                $proposals = Proposal::take(3)->get();
-                if ($proposals->isEmpty()) {
-                    throw new \Exception('Data Kerjasama Mitra kosong.');
-                }
-                $data = [
-                    'year' => date('Y'),
-                    'proposals' => $proposals,
-                    'pdfConfig' => get_pdf_config('report', $shortKey),
-                ];
-
-            } elseif ($module === 'reports.monev-ba-pdf' || $module === 'reports.monev-pdf') {
-                $monev = ProposalMonev::with('proposal')->latest()->first();
-                if (! $monev) {
-                    throw new \Exception('Data Monev kosong.');
-                }
-                $data = [
-                    'monev' => $monev,
-                    'proposal' => $monev->proposal,
-                    'pdfConfig' => get_pdf_config('report', $shortKey),
-                    'qrDataUri' => '',
-                    'signatureReviewer1DataUri' => '',
-                    'signatureReviewer2DataUri' => '',
-                ];
-
-            } elseif ($module === 'reports.reviewer-report-pdf') {
-                $reviews = ProposalReviewer::with(['proposal', 'user'])->take(3)->get();
-                if ($reviews->isEmpty()) {
-                    throw new \Exception('Data Reviewer kosong.');
-                }
-                $data = [
-                    'year' => date('Y'),
-                    'reviews' => $reviews,
-                    'pdfConfig' => get_pdf_config('report', $shortKey),
-                ];
-            } else {
-                throw new \Exception("Modul '{$module}' tidak dikenali.");
-            }
+            $data = $this->resolveModuleData($module, $shortKey);
 
             $pdf = Pdf::loadView($module, $data);
 
@@ -225,15 +86,249 @@ class PdfPreviewController extends Controller
             return $pdf->stream('pratinjau.pdf');
 
         } catch (\Exception $e) {
+            $moduleLabel = $moduleLabels[$module] ?? $module;
             $errorHtml = '<div style="font-family: sans-serif; text-align: center; margin-top: 50px;">
                             <h2 style="color: #dc3545;">Pratinjau Tidak Tersedia</h2>
                             <p>'.htmlspecialchars($e->getMessage()).'</p>
                             <p style="color: #6c757d; font-size: 12px;">Data riil diperlukan untuk mempratinjau modul ini.</p>
+                            <hr style="width: 50%; margin: 20px auto; border: 0.5px solid #ddd;">
+                            <p style="color: #6c757d; font-size: 11px;">Menampilkan pratinjau generik dengan pengaturan saat ini...</p>
                           </div>';
-            $pdf = Pdf::loadHTML($errorHtml);
+
+            if (config('app.env') === 'local') {
+                $pdf = Pdf::loadView('pdf.settings-preview', [
+                    'moduleLabel' => $moduleLabel,
+                ]);
+            } else {
+                $pdf = Pdf::loadHTML($errorHtml);
+            }
             $pdf->setPaper($paperSizeArray);
 
             return $pdf->stream();
         }
+    }
+
+    /**
+     * Resolve module-specific data for PDF preview.
+     */
+    private function resolveModuleData(string $module, ?string $shortKey): array
+    {
+        if (in_array($module, ['pdf.letters.surat-tugas', 'pdf.letters.surat-keterangan', 'pdf.letters.surat-permohonan-izin'])) {
+            $typeCode = 'surat permohonan izin';
+            if ($module === 'pdf.letters.surat-tugas') {
+                $typeCode = 'surat tugas';
+            } elseif ($module === 'pdf.letters.surat-keterangan') {
+                $typeCode = 'surat keterangan';
+            }
+
+            $letter = Letter::whereHas('letterType', function ($q) use ($typeCode) {
+                $q->where('name', 'LIKE', "%{$typeCode}%");
+            })->latest()->first() ?? new Letter([
+                'letter_number' => '001/DUMMY/2026',
+                'metadata' => [
+                    'title' => 'Judul Dummy',
+                    'activity_type' => 'Kegiatan',
+                    'date_string' => '10 Juni 2026',
+                    'time_string' => '08:00 WIB',
+                    'location' => 'Gedung A',
+                ],
+            ]);
+
+            return [
+                'letter' => $letter,
+                'metadata' => array_merge([
+                    'signer_name' => Setting::get('lppm_head_name', 'Nama LPPM'),
+                    'signer_position' => Setting::get('lppm_head_position', 'Kepala LPPM'),
+                ], is_array($letter->metadata) ? $letter->metadata : []),
+                'team' => is_array($letter->team_snapshot) && count($letter->team_snapshot) > 0 ? $letter->team_snapshot : [['name' => 'Dr. Dummy', 'role' => 'Ketua', 'identifier' => '123']],
+                'qrDataUri' => '',
+                'pdfConfig' => get_pdf_config('letter', $shortKey),
+            ];
+        }
+
+        if ($module === 'pdf.proposal-export') {
+            $proposal = Proposal::latest()->first();
+            if (! $proposal) {
+                throw new \Exception('Data Proposal kosong di sistem.');
+            }
+
+            return [
+                'proposal' => $proposal,
+                'pdfConfig' => get_pdf_config('letter', $shortKey),
+                'isDraft' => false,
+                'signatureLppmDataUri' => '',
+                'signatureDekanDataUri' => '',
+                'signatureLecturerDataUri' => '',
+            ];
+        }
+
+        if ($module === 'pdf.report-export') {
+            $report = ProgressReport::with('proposal')->latest()->first();
+            if (! $report) {
+                throw new \Exception('Data Laporan Kemajuan/Akhir kosong.');
+            }
+
+            return [
+                'report' => $report,
+                'proposal' => $report->proposal,
+                'pdfConfig' => get_pdf_config('report', $shortKey),
+                'signatureLppmDataUri' => '',
+                'signatureLecturerDataUri' => '',
+            ];
+        }
+
+        if ($module === 'pdf.daily-notes') {
+            $proposal = Proposal::has('dailyNotes')->with('dailyNotes')->latest()->first();
+            if (! $proposal) {
+                throw new \Exception('Data Logbook Harian kosong.');
+            }
+
+            return [
+                'proposal' => $proposal,
+                'notes' => $proposal->dailyNotes,
+                'pdfConfig' => get_pdf_config('report', $shortKey),
+                'dateRange' => 'Semua Waktu',
+            ];
+        }
+
+        if ($module === 'pdf.review-evaluation') {
+            $assignment = ProposalReviewer::with(['proposal', 'user.identity'])->latest()->first();
+            if (! $assignment) {
+                throw new \Exception('Data Review kosong.');
+            }
+
+            return [
+                'assignment' => $assignment,
+                'proposal' => $assignment->proposal,
+                'pdfConfig' => get_pdf_config('letter', $shortKey),
+                'signatureReviewerDataUri' => '',
+                'signatureLppmDataUri' => '',
+            ];
+        }
+
+        if ($module === 'reports.iku-report-pdf') {
+            return [
+                'period' => date('Y'),
+                'ikuMetrics' => collect(),
+                'institutionalReport' => null,
+                'rektor' => null,
+                'lppmHead' => null,
+                'pdfConfig' => get_pdf_config('report', $shortKey),
+            ];
+        }
+
+        if ($module === 'reports.research-pdf' || $module === 'reports.community-service-pdf') {
+            $proposals = Proposal::take(3)->get();
+            if ($proposals->isEmpty()) {
+                throw new \Exception('Data Proposal kosong.');
+            }
+
+            return [
+                'period' => date('Y'),
+                'semester' => 'all',
+                'proposals' => $proposals,
+                'totalBudget' => $proposals->sum('approved_funds'),
+                'institutionalReport' => null,
+                'rektor' => null,
+                'lppmHead' => null,
+                'pdfConfig' => get_pdf_config('report', $shortKey),
+            ];
+        }
+
+        if ($module === 'reports.output-reports-pdf') {
+            $outputs = MandatoryOutput::take(3)->get();
+            if ($outputs->isEmpty()) {
+                throw new \Exception('Data Laporan Output kosong.');
+            }
+
+            return [
+                'period' => date('Y'),
+                'proposals' => Proposal::take(3)->get(),
+                'activeTab' => 'research',
+                'outputType' => 'all',
+                'institutionalReport' => null,
+                'rektor' => null,
+                'lppmHead' => null,
+                'pdfConfig' => get_pdf_config('report', $shortKey),
+            ];
+        }
+
+        if ($module === 'reports.partner-collaboration-pdf') {
+            $partners = Partner::take(3)->get();
+            if ($partners->isEmpty()) {
+                throw new \Exception('Data Kerjasama Mitra kosong.');
+            }
+
+            return [
+                'periodFilter' => date('Y'),
+                'typeFilter' => null,
+                'partners' => $partners,
+                'institutionalReport' => null,
+                'rektor' => null,
+                'lppmHead' => null,
+                'pdfConfig' => get_pdf_config('report', $shortKey),
+            ];
+        }
+
+        if ($module === 'reports.monev-ba-pdf' || $module === 'reports.monev-pdf') {
+            $monev = ProposalMonev::with('proposal')->latest()->first();
+            if (! $monev) {
+                throw new \Exception('Data Monev kosong.');
+            }
+
+            $review = $monev;
+
+            if ($module === 'reports.monev-ba-pdf') {
+                return [
+                    'review' => $review,
+                    'proposal' => $review->proposal,
+                    'criteria' => collect(),
+                    'activeReport' => null,
+                    'period' => date('Y'),
+                    'semester' => 'all',
+                    'qrReviewerUrl' => null,
+                    'qrAdminUrl' => null,
+                    'qrKepalaUrl' => null,
+                    'generatedAt' => now(),
+                    'pdfConfig' => get_pdf_config('report', $shortKey),
+                ];
+            }
+
+            return [
+                'reviews' => collect([$review]),
+                'period' => date('Y'),
+                'semester' => 'all',
+                'institutionalReport' => null,
+                'rektor' => null,
+                'lppmHead' => null,
+                'pdfConfig' => get_pdf_config('report', $shortKey),
+            ];
+        }
+
+        if ($module === 'reports.reviewer-report-pdf') {
+            $proposals = ProposalReviewer::with(['proposal', 'user.identity'])->take(3)->get();
+            if ($proposals->isEmpty()) {
+                throw new \Exception('Data Reviewer kosong.');
+            }
+
+            return [
+                'period' => date('Y'),
+                'semester' => 'all',
+                'proposals' => $proposals,
+                'reviewers' => collect(),
+                'summaryStats' => [
+                    'total_proposals' => 0,
+                    'assigned' => 0,
+                    'progress_percent' => 0,
+                    'avg_score' => '-',
+                ],
+                'institutionalReport' => null,
+                'rektor' => null,
+                'lppmHead' => null,
+                'pdfConfig' => get_pdf_config('report', $shortKey),
+            ];
+        }
+
+        throw new \Exception("Modul '{$module}' tidak dikenali.");
     }
 }

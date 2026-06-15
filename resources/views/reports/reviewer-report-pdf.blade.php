@@ -27,14 +27,10 @@
             padding-bottom: 3px;
         }
         .logo {
-            position: absolute;
-            left: 0;
-            top: 0;
             width: 45px;
         }
         .header-text {
             text-align: center;
-            margin-left: 50px;
         }
         .inst-name {
             font-size: 10pt;
@@ -177,11 +173,17 @@
     <!-- KOP SURAT -->
     <div class="kop-surat">
         <div class="kop-surat-inner">
-            @if($pdfConfig['show_logo'] ?? true)
-                {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
-                <img src="{{ get_logo_base64() }}" class="logo">
+            @php $logoPos = $pdfConfig['logo_position'] ?? 'left'; $logoSrc = get_logo_base64(); @endphp
+            @if(($pdfConfig['show_logo'] ?? true) && $logoSrc)
+                @if($logoPos === 'center')
+                    <img src="{{ $logoSrc }}" class="logo" style="display:block; margin:0 auto; width:45px;">
+                @elseif($logoPos === 'right')
+                    <img src="{{ $logoSrc }}" class="logo" style="position:absolute; right:0; top:0; left:auto; width:45px;">
+                @else
+                    <img src="{{ $logoSrc }}" class="logo" style="position:absolute; left:0; top:0; width:45px;">
+                @endif
             @endif
-            <div class="header-text">
+            <div class="header-text" style="margin-{{ $logoPos === 'right' ? 'right' : 'left' }}: {{ $logoPos === 'center' ? '0' : '50px' }};">
                 <div class="inst-name">INSTITUT TEKNOLOGI DAN SAINS NAHDLATUL ULAMA PEKALONGAN</div>
                 <div class="lppm-name">LEMBAGA PENELITIAN DAN PENGABDIAN KEPADA MASYARAKAT (LPPM)</div>
                 <div class="inst-address">
