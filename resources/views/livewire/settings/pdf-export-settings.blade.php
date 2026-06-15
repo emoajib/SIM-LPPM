@@ -167,7 +167,7 @@
                     <div class="card mb-4 border-0 shadow-sm">
                         <div class="card-body">
                             <div class="row g-3">
-                                <div class="col-12">
+                                <div class="col-12 col-md-6">
                                     <label class="form-label fw-medium">Font Family</label>
                                     <select class="form-select" wire:model.live="pdfFontFamily"
                                         x-on:change="font = $event.target.value">
@@ -176,6 +176,15 @@
                                         <option value="Georgia, serif">Georgia (Klasik Serif)</option>
                                         <option value="Courier New, Courier, monospace">Courier New (Monospace)</option>
                                         <option value="Garamond, serif">Garamond (Elegant Book)</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label fw-medium">Ukuran Kertas <span class="badge bg-green-lt">Baru</span></label>
+                                    <select class="form-select" wire:model.live="pdfPaperSize" x-on:change="paperSize = $event.target.value">
+                                        <option value="a4">A4 (210 × 297 mm) — Default</option>
+                                        <option value="folio">F4 / Folio (215 × 330 mm)</option>
+                                        <option value="letter">Letter (215.9 × 279.4 mm)</option>
+                                        <option value="legal">Legal (215.9 × 355.6 mm)</option>
                                     </select>
                                 </div>
                                 <div class="col-6">
@@ -243,26 +252,7 @@
 
                     <div class="card mb-4 border-0 shadow-sm">
                         <div class="card-body">
-                            <div class="row g-3">
-                                <div class="col-12 col-md-6">
-                                    <label class="form-label fw-medium">Keluarga Font</label>
-                                    <select class="form-select" wire:model.live="pdfFontFamily" x-on:change="font = $event.target.value">
-                                        <option value="Times New Roman, Times, serif">Times New Roman</option>
-                                        <option value="Arial, Helvetica, sans-serif">Arial</option>
-                                        <option value="Courier New, Courier, monospace">Courier New</option>
-                                        <option value="Georgia, serif">Georgia</option>
-                                    </select>
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    <label class="form-label fw-medium">Ukuran Kertas <span class="badge bg-green-lt">Baru</span></label>
-                                    <select class="form-select" wire:model.live="pdfPaperSize" x-on:change="paperSize = $event.target.value">
-                                        <option value="a4">A4 (210 × 297 mm) — Default</option>
-                                        <option value="folio">F4 / Folio (215 × 330 mm)</option>
-                                        <option value="letter">Letter (215.9 × 279.4 mm)</option>
-                                        <option value="legal">Legal (215.9 × 355.6 mm)</option>
-                                    </select>
-                                </div>
-                            </div>
+                            
                             <div class="mb-3 mt-3">
                                 <label class="form-label fw-medium">Preset Margin</label>
                                 <select class="form-select" wire:model.live="pdfPageMargin"
@@ -357,167 +347,26 @@
                 </div>
 
                 {{-- ---- RIGHT COLUMN: REAL Live Preview ---- --}}
-                <div class="col-md-5">
+                <div class="col-md-5" x-data="{
+                    refreshKey: Date.now(),
+                    refreshPreview() {
+                        this.refreshKey = Date.now();
+                    }
+                }" x-on:settings-updated.window="refreshPreview()">
                     <div class="sticky-top" style="top: 1.5rem; z-index: 100;">
-                        <h4 class="card-title mb-2">
-                            <x-lucide-eye class="icon me-1 text-warning" />
-                            Pratinjau Instan
-                        </h4>
-                        <p class="text-muted small mb-3">Preview real-time menggunakan struktur kop surat yang sesungguhnya.</p>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h4 class="card-title mb-0">
+                                <x-lucide-monitor class="icon me-1 text-primary" />
+                                Pratinjau Instan (Real PDF)
+                            </h4>
+                            <button class="btn btn-sm btn-outline-primary" @click="refreshPreview()">
+                                <x-lucide-refresh-cw class="icon me-1" /> Segarkan
+                            </button>
+                        </div>
+                        <p class="text-muted small mb-3">Pratinjau ini dirender menggunakan <strong>mesin PDF asli (DomPDF)</strong>. Data ditarik sinkron dari sistem backend.</p>
 
-                        {{-- A4 Paper Simulation --}}
-                        <div class="card border-0 shadow" style="background: #e9ecef; border-radius: 8px; overflow: hidden;">
-                            <div class="card-header bg-white py-2 px-3 d-flex justify-content-between align-items-center border-bottom">
-                                <span class="badge bg-purple-lt small">Surat / Proposal — A4</span>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <span class="text-muted" style="font-size: 10px;" x-text="font.split(',')[0]"></span>
-                                    <span class="badge bg-blue-lt small" x-text="fontSize + 'pt'"></span>
-                                    <span class="badge bg-green-lt small" x-text="'× ' + lineHeight"></span>
-                                </div>
-                            </div>
-
-                            {{-- Scrollable paper container --}}
-                            <div class="p-3 overflow-auto" style="max-height: 600px; background: #dee2e6;">
-                                {{-- White paper -- scaled to fit --}}
-                                <div
-                                    :style="`
-                                        background: #fff;
-                                        padding-top: ${marginPx.top};
-                                        padding-right: ${marginPx.right};
-                                        padding-bottom: ${marginPx.bottom};
-                                        padding-left: ${marginPx.left};
-                                        box-shadow: 0 2px 12px rgba(0,0,0,.18);
-                                        border-radius: 2px;
-                                        min-height: 380px;
-                                        transition: padding 0.2s ease;
-                                    `"
-                                    :style-body="previewBodyStyle"
-                                >
-                                    {{-- ===== KOP SURAT NYATA ===== --}}
-                                    <div :style="previewBodyStyle">
-
-                                        {{-- Logo + Header - real structure --}}
-
-                                        {{-- CENTER position --}}
-                                        <template x-if="logoPos === 'center'">
-                                            <div>
-                                                <div x-show="showLogo && hasLogo" style="text-align: center; margin-bottom: 4px;">
-                                                    <img :src="logoUrl" :style="`width: ${logoSize}px;`" onerror="this.style.display='none'">
-                                                </div>
-                                                <div x-show="showLogo && !hasLogo" style="text-align:center; margin-bottom:4px;">
-                                                    <div style="width:50px;height:50px;background:#dee2e6;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;color:#6c757d;">LOGO</div>
-                                                </div>
-                                                <table style="width:100%; border-bottom: 2px solid #000; border-collapse:collapse; margin-bottom:3px;">
-                                                    <tr>
-                                                        <td style="text-align:center; border:none; padding:0 0 2px 0;" :style="`font-family:${font};`">
-                                                            <div style="font-size: 1.1em; font-weight:bold;">LEMBAGA PENELITIAN DAN PENGABDIAN MASYARAKAT</div>
-                                                            <div style="font-size: 1.2em; font-weight:bold;">ITSNU PEKALONGAN</div>
-                                                            <div style="font-size: 0.8em; font-style:italic;">Jl. Karangdowo No. 9 Kedungwuni Kab. Pekalongan Kode Pos 51173</div>
-                                                            <div style="font-size: 0.8em;">Telp/Fax. (0285) 7831614 email: lppmitsnupkl@gmail.com</div>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                            </div>
-                                        </template>
-
-                                        {{-- RIGHT position --}}
-                                        <template x-if="logoPos === 'right'">
-                                            <table style="width:100%; border-bottom: 2px solid #000; border-collapse:collapse; margin-bottom:3px;">
-                                                <tr>
-                                                    <td style="border:none; padding:0 0 2px 0; vertical-align:bottom;" :style="`font-family:${font};`">
-                                                        <div style="font-size: 1.1em; font-weight:bold;">LEMBAGA PENELITIAN DAN PENGABDIAN MASYARAKAT</div>
-                                                        <div style="font-size: 1.2em; font-weight:bold;">ITSNU PEKALONGAN</div>
-                                                        <div style="font-size: 0.8em; font-style:italic;">Jl. Karangdowo No. 9 Kedungwuni Kab. Pekalongan Kode Pos 51173</div>
-                                                        <div style="font-size: 0.8em;">Telp/Fax. (0285) 7831614 email: lppmitsnupkl@gmail.com</div>
-                                                    </td>
-                                                    <td style="border:none; text-align:right; vertical-align:bottom; width:90px; padding:0 0 2px 8px;">
-                                                        <template x-if="showLogo && hasLogo">
-                                                            <img :src="logoUrl" :style="`width: ${logoSize * 0.6}px;`" onerror="this.style.display='none'">
-                                                        </template>
-                                                        <template x-if="showLogo && !hasLogo">
-                                                            <div style="width:40px;height:40px;background:#dee2e6;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:9px;color:#6c757d;float:right;">LOGO</div>
-                                                        </template>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </template>
-
-                                        {{-- LEFT position (default) --}}
-                                        <template x-if="logoPos === 'left'">
-                                            <table style="width:100%; border-bottom: 2px solid #000; border-collapse:collapse; margin-bottom:3px;">
-                                                <tr>
-                                                    <td style="border:none; vertical-align:bottom; padding:0 8px 2px 0; width:90px;">
-                                                        <template x-if="showLogo && hasLogo">
-                                                            <img :src="logoUrl" :style="`width: ${logoSize * 0.6}px;`" onerror="this.style.display='none'">
-                                                        </template>
-                                                        <template x-if="showLogo && !hasLogo">
-                                                            <div style="width:40px;height:40px;background:#dee2e6;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:9px;color:#6c757d;">LOGO</div>
-                                                        </template>
-                                                    </td>
-                                                    <td style="border:none; text-align:center; padding:0 0 2px 0; vertical-align:bottom;" :style="`font-family:${font};`">
-                                                        <div style="font-size: 1.1em; font-weight:bold;">LEMBAGA PENELITIAN DAN PENGABDIAN MASYARAKAT</div>
-                                                        <div style="font-size: 1.2em; font-weight:bold;">ITSNU PEKALONGAN</div>
-                                                        <div style="font-size: 0.8em; font-style:italic;">Jl. Karangdowo No. 9 Kedungwuni Kab. Pekalongan Kode Pos 51173</div>
-                                                        <div style="font-size: 0.8em;">Telp/Fax. (0285) 7831614 email: lppmitsnupkl@gmail.com</div>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </template>
-
-                                        {{-- Judul Surat --}}
-                                        <div :style="`text-align:center; font-family:${font}; font-weight:bold; text-decoration:underline; margin: 8px 0 4px; font-size: ${fontSize}pt;`">
-                                            SURAT KETERANGAN PENELITIAN
-                                        </div>
-                                        <div :style="`text-align:center; font-family:${font}; font-size: ${fontSize * 0.85}pt; margin-bottom: 8px; color:#555;`">
-                                            Nomor: 005/LPPM/ITSNU.Pkl/VI/2026
-                                        </div>
-
-                                        {{-- Body text paragraphs with real styling --}}
-                                        <div :style="`font-family:${font}; font-size:${fontSize}pt; line-height:${lineHeight};`">
-                                            <p :style="`text-indent:${paraIndent}px; text-align:justify; margin:${paraSpacing}px 0;`">
-                                                Yang bertanda tangan di bawah ini, Kepala LPPM ITSNU Pekalongan menerangkan bahwa dosen pengusul dengan identitas di bawah ini telah menyelesaikan usulan penelitian internal tahun akademik 2025/2026.
-                                            </p>
-
-                                            <table style="width:100%; font-size:inherit; margin: 4px 0; border-collapse:collapse;">
-                                                <tr><td style="width:35%; padding:1px 0; border:none;">Nama Dosen</td><td style="width:5%; border:none;">:</td><td style="border:none;">Dr. Ahmad Mansur, M.Kom.</td></tr>
-                                                <tr><td style="padding:1px 0; border:none;">NIDN</td><td style="border:none;">:</td><td style="border:none;">0612345678</td></tr>
-                                                <tr><td style="padding:1px 0; border:none;">Skema Usulan</td><td style="border:none;">:</td><td style="border:none;">Penelitian Dosen Pemula (PDP)</td></tr>
-                                            </table>
-
-                                            <p :style="`text-align:justify; margin:${paraSpacing}px 0;`">
-                                                Demikian surat keterangan ini dibuat dengan sebenarnya untuk dapat dipergunakan sebagaimana mestinya.
-                                            </p>
-                                        </div>
-
-                                        {{-- Signature area --}}
-                                        <div style="width:45%; float:right; margin-top: 10px;" :style="`font-family:${font}; font-size:${fontSize * 0.9}pt;`">
-                                            Pekalongan, {{ now()->translatedFormat('d F Y') }}<br>
-                                            Kepala LPPM,<br>
-                                            <div style="height: 35px; margin: 4px 0;">
-                                                <span style="background:#d3f9d8; color:#2f9e44; font-size:8px; padding:2px 6px; border-radius:4px; letter-spacing:0.5px;">✓ VERIFIED</span>
-                                            </div>
-                                            <strong><u>Aria Mulyapradana, M.A.</u></strong><br>
-                                            NPP. 0612118401
-                                        </div>
-                                        <div style="clear:both;"></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="card-footer bg-white border-top py-2 px-3" style="font-size:10px;">
-                                {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
-                                <div class="d-flex flex-wrap gap-2 align-items-center text-muted">
-                                    <span><x-lucide-type class="icon icon-inline me-1" />Font: <strong class="text-dark" x-text="font.split(',')[0]"></strong></span>
-                                    <span>•</span>
-                                    <span>Size: <strong class="text-dark" x-text="fontSize + 'pt'"></strong></span>
-                                    <span>•</span>
-                                    <span>Line: <strong class="text-dark" x-text="lineHeight"></strong></span>
-                                    <span>•</span>
-                                    <span>Logo: <strong class="text-dark" x-text="logoPos === 'left' ? 'Kiri' : (logoPos === 'center' ? 'Tengah' : 'Kanan')"></strong></span>
-                                    <span>•</span>
-                                    <span>Margin: <strong class="text-dark" x-text="(marginTop||marginLeft) ? 'Custom' : marginPreset"></strong></span>
-                                </div>
-                            </div>
+                        <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 8px; height: 750px;">
+                            <iframe :src="`{{ route('settings.pdf-preview') }}?t=${refreshKey}`" width="100%" height="100%" frameborder="0" style="background:#525659;"></iframe>
                         </div>
                     </div>
                 </div>

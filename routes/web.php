@@ -371,6 +371,8 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::middleware(['role:admin lppm|superadmin'])->group(function () {
+        Route::get('settings/pdf-preview', [\App\Http\Controllers\Settings\PdfPreviewController::class, 'preview'])->name('settings.pdf-preview');
+
         Route::get('settings/proposal-schedule', ProposalSchedule::class)->name('settings.proposal-schedule');
         Route::get('settings/proposal-template', ProposalTemplate::class)->name('settings.proposal-template');
         Route::get('settings/manual-books', ManualBookSetting::class)->name('settings.manual-books');
