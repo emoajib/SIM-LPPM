@@ -348,6 +348,7 @@
 
                 {{-- ---- RIGHT COLUMN: REAL Live Preview ---- --}}
                 <div class="col-md-5" x-data="{
+                    previewModule: 'dummy',
                     refreshKey: Date.now(),
                     refreshPreview() {
                         this.refreshKey = Date.now();
@@ -363,10 +364,31 @@
                                 <x-lucide-refresh-cw class="icon me-1" /> Segarkan
                             </button>
                         </div>
-                        <p class="text-muted small mb-3">Pratinjau ini dirender menggunakan <strong>mesin PDF asli (DomPDF)</strong>. Data ditarik sinkron dari sistem backend.</p>
+                        <p class="text-muted small mb-2">Pratinjau ini dirender menggunakan <strong>mesin PDF asli (DomPDF)</strong>. Data ditarik sinkron dari sistem backend.</p>
 
-                        <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 8px; height: 750px;">
-                            <iframe :src="`{{ route('settings.pdf-preview') }}?t=${refreshKey}`" width="100%" height="100%" frameborder="0" style="background:#525659;"></iframe>
+                        <div class="mb-3">
+                            <select class="form-select form-select-sm border-primary text-primary fw-bold" x-model="previewModule" @change="refreshPreview()">
+                                <option value="dummy">-- Pilih Modul Pratinjau (Default) --</option>
+                                <option value="pdf.letters.surat-tugas">1. Surat Tugas</option>
+                                <option value="pdf.letters.surat-keterangan">2. Surat Keterangan</option>
+                                <option value="pdf.letters.surat-permohonan-izin">3. Surat Permohonan Izin</option>
+                                <option value="pdf.proposal-export">4. Ekspor Proposal</option>
+                                <option value="pdf.report-export">5. Laporan Kemajuan Proposal</option>
+                                <option value="pdf.daily-notes">6. Logbook Harian</option>
+                                <option value="pdf.review-evaluation">7. Evaluasi Reviewer</option>
+                                <option value="reports.iku-report-pdf">8. Laporan IKU</option>
+                                <option value="reports.research-pdf">9. Laporan Penelitian</option>
+                                <option value="reports.community-service-pdf">10. Laporan Pengabdian</option>
+                                <option value="reports.output-reports-pdf">11. Laporan Output</option>
+                                <option value="reports.partner-collaboration-pdf">12. Laporan Kerjasama Mitra</option>
+                                <option value="reports.monev-ba-pdf">13. Laporan Monev Berita Acara</option>
+                                <option value="reports.monev-pdf">14. Laporan Monev</option>
+                                <option value="reports.reviewer-report-pdf">15. Laporan Reviewer</option>
+                            </select>
+                        </div>
+
+                        <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 8px; height: 700px;">
+                            <iframe :src="`{{ route('settings.pdf-preview') }}?module=${previewModule}&t=${refreshKey}`" width="100%" height="100%" frameborder="0" style="background:#525659;"></iframe>
                         </div>
                     </div>
                 </div>
