@@ -77,7 +77,7 @@ class DailyNoteExportController extends Controller
             'academicYear' => $academicYear,
             'docTitle' => 'CATATAN HARIAN '.($proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN').' INTERNAL',
             'pdfConfig' => $pdfConfig,
-        ])->setPaper('a4', 'portrait');
+        ])->setPaper(normalize_paper_size($pdfConfig['paper_size'] ?? 'a4'), 'portrait');
 
         if ($request->has('preview')) {
             return $pdf->stream('preview.pdf');
@@ -119,7 +119,7 @@ class DailyNoteExportController extends Controller
             'academicYear' => $academicYear,
             'docTitle' => 'CATATAN HARIAN '.($proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN').' INTERNAL',
             'pdfConfig' => $pdfConfig,
-        ])->setPaper('a4', 'portrait');
+        ])->setPaper(normalize_paper_size($pdfConfig['paper_size'] ?? 'a4'), 'portrait');
 
         $title = preg_replace('/[^A-Za-z0-9_\-]/', '_', substr($proposal->title, 0, 50));
         $filename = 'Catatan_Harian_'.$title.'.pdf';

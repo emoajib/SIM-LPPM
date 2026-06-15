@@ -241,12 +241,17 @@ if (! function_exists('to_roman')) {
 if (! function_exists('get_logo_base64')) {
     /**
      * Get the logo image as a base64 encoded data URI.
+     * Prefers JPG over PNG because DOMPDF handles JPG base64 more reliably
+     * (transparent PNGs sometimes render as a huge X box).
      */
     function get_logo_base64(): ?string
     {
-        $path = public_path('logo.png');
+        $path = public_path('logo.jpg');
         if (! file_exists($path)) {
-            return null;
+            $path = public_path('logo.png');
+            if (! file_exists($path)) {
+                return null;
+            }
         }
 
         $type = pathinfo($path, PATHINFO_EXTENSION);
@@ -283,6 +288,27 @@ if (! function_exists('clean_proposal_title')) {
     }
 }
 
+if (! function_exists('normalize_paper_size')) {
+    /**
+     * Normalize paper size for DomPDF's setPaper().
+     * DomPDF accepts standard sizes as strings ('a4', 'letter', etc.)
+     * but does NOT accept 'folio' or 'f4' as strings. Map to array.
+     */
+    function normalize_paper_size(string|array $size): string|array
+    {
+        if (is_array($size)) {
+            return $size;
+        }
+
+        $map = [
+            'folio' => [0, 0, 612.00, 935.43],
+            'f4' => [0, 0, 612.00, 935.43],
+        ];
+
+        return $map[strtolower($size)] ?? $size;
+    }
+}
+
 if (! function_exists('get_pdf_config')) {
     /**
      * Vetted by AI - Manual Review Required by Senior Engineer/Manager
@@ -290,10 +316,10 @@ if (! function_exists('get_pdf_config')) {
      *
      * @param  string  $viewType  'letter' | 'report' | 'report_ba' | 'report_compact'
      */
-    function get_pdf_config(string $viewType = 'letter'): array
+    function get_pdf_config(string $viewType = 'letter', ?string $moduleKey = null): array
     {
         $fontDefaults = [
-            'letter' => 'Times New Roman, Times, serif',
+            'letter' => "'Times New Roman', Times, serif",
             'report' => 'Arial, Helvetica, sans-serif',
             'report_ba' => 'Arial, Helvetica, sans-serif',
             'report_compact' => 'Arial, Helvetica, sans-serif',
@@ -326,22 +352,66 @@ if (! function_exists('get_pdf_config')) {
 
         $customMargins = _build_custom_margins($viewType, $marginDefaults);
 
-        return [
-            'font_family'       => Setting::get($settingFontKey, $fontDefaults[$viewType] ?? 'Arial, Helvetica, sans-serif'),
-            'body_font_size'    => (int) Setting::get($settingFontSize, $sizeDefaults[$viewType] ?? 11),
-            'compact'           => $isCompact,
-            'show_logo'         => (bool) Setting::get('pdf_show_logo', true),
-            'page_margin'       => $marginMap[$pageMarginKey] ?? $marginDefaults[$viewType],
-            'paper_size'        => Setting::get('pdf_paper_size', 'a4'),
-            '_view_type'        => $viewType,
+        $config = [
+            'font_family' => Setting::get($settingFontKey, $fontDefaults[$viewType] ?? 'Arial, Helvetica, sans-serif'),
+            'body_font_size' => (int) Setting::get($settingFontSize, $sizeDefaults[$viewType] ?? 11),
+            'compact' => $isCompact,
+            'show_logo' => (bool) Setting::get('pdf_show_logo', true),
+            'page_margin' => $marginMap[$pageMarginKey] ?? $marginDefaults[$viewType],
+            'paper_size' => Setting::get('pdf_paper_size', 'a4'),
+            '_view_type' => $viewType,
             // Extended layout controls
-            'logo_position'     => Setting::get('pdf_logo_position', 'left'),
-            'logo_size'         => (int) Setting::get('pdf_logo_size', 110),
-            'line_height'       => Setting::get($settingLineHeight, '1.1'),
+            'logo_position' => Setting::get('pdf_logo_position', 'left'),
+            'logo_size' => (int) Setting::get('pdf_logo_size', 110),
+            'line_height' => Setting::get($settingLineHeight, '1.1'),
             'paragraph_spacing' => (int) Setting::get('pdf_paragraph_spacing', 6),
-            'paragraph_indent'  => (int) Setting::get('pdf_paragraph_indent', 0),
-            'custom_margins'    => $customMargins,
+            'paragraph_indent' => (int) Setting::get('pdf_paragraph_indent', 0),
+            'custom_margins' => $customMargins,
+            'intro_text' => '',
+            'outro_text' => '',
         ];
+
+        // Apply Module-Specific Overrides
+        if ($moduleKey) {
+            $config['intro_text'] = Setting::get("pdf_content_{$moduleKey}_intro", '');
+            $config['outro_text'] = Setting::get("pdf_content_{$moduleKey}_outro", '');
+
+            if ($overrideFont = Setting::get("pdf_override_{$moduleKey}_font_family")) {
+                $config['font_family'] = $overrideFont;
+            }
+            if ($overrideSize = Setting::get("pdf_override_{$moduleKey}_font_size")) {
+                $config['body_font_size'] = (int) $overrideSize;
+            }
+            if ($overridePaper = Setting::get("pdf_override_{$moduleKey}_paper_size")) {
+                $config['paper_size'] = $overridePaper;
+            }
+
+            // Margin Override
+            $mTop = Setting::get("pdf_override_{$moduleKey}_margin_top", '');
+            $mRight = Setting::get("pdf_override_{$moduleKey}_margin_right", '');
+            $mBottom = Setting::get("pdf_override_{$moduleKey}_margin_bottom", '');
+            $mLeft = Setting::get("pdf_override_{$moduleKey}_margin_left", '');
+
+            if ($mTop !== '' || $mRight !== '' || $mBottom !== '' || $mLeft !== '') {
+                // Parse default string to fallback array
+                $defaultMarginStr = $customMargins !== '' ? $customMargins : ($marginMap[$pageMarginKey] ?? $marginDefaults[$viewType] ?? '2cm 2cm 2cm 2cm');
+                $parts = preg_split('/\s+/', trim($defaultMarginStr)) ?: ['2cm', '2cm', '2cm', '2cm'];
+
+                $dTop = $parts[0];
+                $dRight = $parts[1] ?? $parts[0];
+                $dBottom = $parts[2] ?? $parts[0];
+                $dLeft = $parts[3] ?? ($parts[1] ?? $parts[0]);
+
+                $cTop = $mTop !== '' ? $mTop.'cm' : $dTop;
+                $cRight = $mRight !== '' ? $mRight.'cm' : $dRight;
+                $cBottom = $mBottom !== '' ? $mBottom.'cm' : $dBottom;
+                $cLeft = $mLeft !== '' ? $mLeft.'cm' : $dLeft;
+
+                $config['custom_margins'] = "{$cTop} {$cRight} {$cBottom} {$cLeft}";
+            }
+        }
+
+        return $config;
     }
 }
 
@@ -370,15 +440,15 @@ if (! function_exists('_build_custom_margins')) {
         $parts = preg_split('/\s+/', trim($defaultStr)) ?: ['2cm', '2cm', '2cm', '2cm'];
 
         // CSS shorthand: top right bottom left (4-value)
-        $dTop    = $parts[0] ?? '2cm';
-        $dRight  = $parts[1] ?? ($parts[0] ?? '2cm');
-        $dBottom = $parts[2] ?? ($parts[0] ?? '2cm');
-        $dLeft   = $parts[3] ?? ($parts[1] ?? $parts[0] ?? '2cm');
+        $dTop = $parts[0];
+        $dRight = $parts[1] ?? $parts[0];
+        $dBottom = $parts[2] ?? $parts[0];
+        $dLeft = $parts[3] ?? ($parts[1] ?? $parts[0]);
 
-        $top    = $t !== '' ? $t.'cm' : $dTop;
-        $right  = $r !== '' ? $r.'cm' : $dRight;
+        $top = $t !== '' ? $t.'cm' : $dTop;
+        $right = $r !== '' ? $r.'cm' : $dRight;
         $bottom = $b !== '' ? $b.'cm' : $dBottom;
-        $left   = $l !== '' ? $l.'cm' : $dLeft;
+        $left = $l !== '' ? $l.'cm' : $dLeft;
 
         return "{$top} {$right} {$bottom} {$left}";
     }

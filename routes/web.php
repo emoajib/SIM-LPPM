@@ -14,6 +14,7 @@ use App\Http\Controllers\ReportVerificationController;
 use App\Http\Controllers\ReviewExportController;
 use App\Http\Controllers\RoleSwitcherController;
 use App\Http\Controllers\Settings\BackupDownloadController;
+use App\Http\Controllers\Settings\PdfPreviewController;
 use App\Http\Controllers\Settings\ProposalTemplateUploadController;
 use App\Http\Controllers\SintaExportController;
 use App\Livewire\Admin\Archive\ManageArchives;
@@ -371,7 +372,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::middleware(['role:admin lppm|superadmin'])->group(function () {
-        Route::get('settings/pdf-preview', [\App\Http\Controllers\Settings\PdfPreviewController::class, 'preview'])->name('settings.pdf-preview');
+        Route::get('settings/pdf-preview', [PdfPreviewController::class, 'preview'])->name('settings.pdf-preview');
 
         Route::get('settings/proposal-schedule', ProposalSchedule::class)->name('settings.proposal-schedule');
         Route::get('settings/proposal-template', ProposalTemplate::class)->name('settings.proposal-template');

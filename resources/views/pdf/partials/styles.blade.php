@@ -6,22 +6,15 @@
         margin: {{ $pdfConfig['custom_margins'] ?: $pdfConfig['page_margin'] }};
     }
     body {
-        font-family: {{ $pdfConfig['font_family'] }};
+        font-family: {!! $pdfConfig['font_family'] !!};
         font-size: {{ $pdfConfig['body_font_size'] }}pt;
         line-height: {{ $pdfConfig['line_height'] }};
         color: #000;
     }
-    .content p, p {
-        margin-top: {{ $pdfConfig['paragraph_spacing'] }}px;
-        margin-bottom: {{ $pdfConfig['paragraph_spacing'] }}px;
-        @if($pdfConfig['paragraph_indent'] > 0)
-        text-indent: {{ $pdfConfig['paragraph_indent'] }}px;
-        @endif
-    }
     .header-table {
         width: 100%;
         border-bottom: 2px solid #000;
-        margin-bottom: 3px;
+        margin-bottom: 8px;
         padding-bottom: 0px;
         border-collapse: collapse;
     }
@@ -59,29 +52,26 @@
         text-align: center;
         font-weight: bold;
         text-decoration: underline;
-        margin-top: 8px;
-        margin-bottom: 6px;
+        margin-top: 20px;
+        margin-bottom: 0;
         font-size: 12pt;
     }
     .number {
         text-align: center;
-        margin-bottom: 8px;
+        margin-bottom: 20px;
     }
     .bismillah {
         text-align: center;
         font-weight: bold;
-        margin-bottom: 18px;
+        margin-bottom: 15px;
         font-size: 11pt;
     }
     .content {
         text-align: justify;
     }
-    .content p {
-        margin: 6px 0;
-    }
     .meta-table {
         width: 100%;
-        margin-top: 5px;
+        margin-top: 10px;
     }
     .meta-table td {
         border: none;
@@ -95,7 +85,7 @@
     }
     .table-data th, .table-data td {
         border: 1px solid #000;
-        padding: 3px 5px;
+        padding: 5px 8px;
         text-align: left;
         font-size: 10.5pt;
     }
@@ -115,8 +105,14 @@
         text-align: left;
         padding-left: 10%;
     }
+    .content p {
+        margin: {{ $pdfConfig['paragraph_spacing'] }}px 0;
+        @if($pdfConfig['paragraph_indent'] > 0)
+        text-indent: {{ $pdfConfig['paragraph_indent'] }}px;
+        @endif
+    }
     .qr-code {
-        margin: 3px 0;
+        margin: 10px 0;
     }
     .travel-table {
         width: 100%;
@@ -136,10 +132,6 @@
         width: 150px;
     }
     .sig-spacer {
-        height: 70px;
+        height: 60px;
     }
-    .manual-sig-space {
-        height: 70px;
-    }
-    @include('pdf.partials.base-styles')
 </style>

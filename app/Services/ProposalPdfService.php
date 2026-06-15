@@ -314,7 +314,7 @@ class ProposalPdfService
             'proposal_approval_mode' => $approvalMode, // reuse already-fetched variable
             'pdfConfig' => $pdfConfig,
         ])
-            ->setPaper('a4', 'portrait')
+            ->setPaper(normalize_paper_size($pdfConfig['paper_size'] ?? 'a4'), 'portrait')
             ->setOptions([
                 'isHtml5ParserEnabled' => true,
                 'isRemoteEnabled' => true,
@@ -800,7 +800,7 @@ class ProposalPdfService
             'qrLppmUrl' => $qrLppmUrl,
             'pdfConfig' => $pdfConfig,
         ])
-            ->setPaper('a4', 'portrait')
+            ->setPaper(normalize_paper_size($pdfConfig['paper_size'] ?? 'a4'), 'portrait')
             ->setOptions([
                 'isHtml5ParserEnabled' => true,
                 'isRemoteEnabled' => true,
@@ -991,7 +991,7 @@ class ProposalPdfService
                 'qrUrlSubmitter' => $qrUrlSubmitter,
                 'qrUrlLppm' => $qrUrlLppm,
                 'pdfConfig' => $pdfConfig,
-            ])->setPaper('a4', 'portrait')->output();
+            ])->setPaper(normalize_paper_size($pdfConfig['paper_size'] ?? 'a4'), 'portrait')->output();
 
             $tempNotesPath = tempnam(storage_path('app'), 'report_notes_');
             file_put_contents($tempNotesPath, $notesPdfContent);

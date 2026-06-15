@@ -14,7 +14,7 @@
     <div class="bismillah">BISMILLAHIRRAHMANIRRAHIM</div>
 
     <div class="content">
-        <p>{!! nl2br(e(\App\Models\Setting::get('pdf_content_surat-tugas_intro', 'Yang bertanda tangan di bawah ini:'))) !!}</p>
+        <p>Yang bertanda tangan di bawah ini:</p>
         <table class="no-border" style="width: 100%; margin-left: 20px;">
             <tr>
                 <td width="100px" style="border:none;">Nama</td>
@@ -76,7 +76,7 @@
             </tr>
         </table>
 
-        <p>{!! nl2br(e(\App\Models\Setting::get('pdf_content_surat-tugas_outro', 'Demikian Surat Tugas ini dikeluarkan agar dapat digunakan sebagaimana mestinya.'))) !!}</p>
+        <p>Demikian Surat Tugas ini dikeluarkan agar dapat digunakan sebagaimana mestinya.</p>
     </div>
 
     @include('pdf.letters.partials.letter-signature')
@@ -85,19 +85,19 @@
         <tr>
             <td width="50%">
                 Tiba di : …………………………<br>
-                Pada hari & Tgl : …………………………<br>
+                Pada hari & Tgl : …………………………<br><br>
                 Koordinator<br>
                 <div class="sig-spacer"></div>
                 (………………………)<br>
-                Nama : ……………………………………………
+                Nama : ……………………………………………<br>
             </td>
             <td>
                 Tiba kembali di : ITSNU Pekalongan<br>
-                Pada hari & Tgl : ……………………<br>
+                Pada hari & Tgl : ……………………<br><br>
                 Pejabat yang berwenang ditunjuk<br>
                 <div class="sig-spacer"></div>
                 (………………………)<br>
-                Nama : ……………………………………………
+                Nama : ……………………………………………<br>
             </td>
         </tr>
     </table>

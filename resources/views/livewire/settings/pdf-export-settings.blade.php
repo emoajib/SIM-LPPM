@@ -571,26 +571,100 @@
                         <div class="modal-body">
                             <div class="alert alert-info bg-info-lt">
                                 <x-lucide-info class="icon me-2" />
-                                <strong>Penting:</strong> Anda mengedit <strong>teks statis</strong> dari modul PDF ini. Tabel data, perhitungan, dan tanda tangan akan tetap dirender secara otomatis oleh sistem (tidak bisa diedit manual) demi menjaga keamanan dan validitas dokumen.
+                                <strong>Info:</strong> Pengaturan di bawah ini hanya akan diterapkan secara khusus pada dokumen <strong>{{ $editingModuleName }}</strong>, menimpa pengaturan global.
                             </div>
 
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Teks Pengantar (Intro)</label>
-                                <textarea class="form-control" wire:model="editingContentIntro" rows="4" placeholder="Kosongkan untuk menggunakan teks bawaan (default) sistem."></textarea>
-                                <small class="text-muted">Paragraf yang muncul di bagian atas dokumen sebelum tabel data utama.</small>
-                            </div>
+                            <ul class="nav nav-tabs nav-fill" data-bs-toggle="tabs">
+                                <li class="nav-item">
+                                    <a href="#tabs-override-layout" class="nav-link active" data-bs-toggle="tab"><x-lucide-layout-template class="icon me-2" /> Tipografi & Layout</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#tabs-override-content" class="nav-link" data-bs-toggle="tab"><x-lucide-type class="icon me-2" /> Konten Teks</a>
+                                </li>
+                            </ul>
 
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Teks Penutup (Outro)</label>
-                                <textarea class="form-control" wire:model="editingContentOutro" rows="4" placeholder="Kosongkan untuk menggunakan teks bawaan (default) sistem."></textarea>
-                                <small class="text-muted">Paragraf yang muncul di bagian bawah dokumen sebelum area tanda tangan.</small>
+                            <div class="tab-content mt-3">
+                                <div class="tab-pane active show" id="tabs-override-layout">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">Ukuran Kertas Khusus</label>
+                                            <select class="form-select" wire:model="editingPaperSize">
+                                                <option value="">-- Ikuti Pengaturan Global --</option>
+                                                <option value="a4">A4 (210 × 297 mm)</option>
+                                                <option value="folio">F4 / Folio (215 × 330 mm)</option>
+                                                <option value="letter">Letter (215.9 × 279.4 mm)</option>
+                                                <option value="legal">Legal (215.9 × 355.6 mm)</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">Font Family Khusus</label>
+                                            <select class="form-select" wire:model="editingFontFamily">
+                                                <option value="">-- Ikuti Pengaturan Global --</option>
+                                                <option value="Times New Roman, Times, serif">Times New Roman</option>
+                                                <option value="Arial, Helvetica, sans-serif">Arial</option>
+                                                <option value="Georgia, serif">Georgia</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">Ukuran Font Khusus</label>
+                                            <select class="form-select" wire:model="editingFontSize">
+                                                <option value="">-- Ikuti Pengaturan Global --</option>
+                                                <option value="9">9 pt</option>
+                                                <option value="10">10 pt</option>
+                                                <option value="11">11 pt</option>
+                                                <option value="12">12 pt</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="col-12 mt-4">
+                                            <label class="form-label fw-bold mb-1">Custom Margin Khusus <span class="badge bg-blue-lt">cm</span></label>
+                                            <small class="d-block text-muted mb-2">Kosongkan kolom yang ingin mengikuti margin default/global.</small>
+                                            <div class="row g-2">
+                                                <div class="col-3">
+                                                    <label class="form-label small mb-1">Atas</label>
+                                                    <input type="number" step="0.1" class="form-control form-control-sm" wire:model="editingMarginTop" placeholder="Auto">
+                                                </div>
+                                                <div class="col-3">
+                                                    <label class="form-label small mb-1">Kanan</label>
+                                                    <input type="number" step="0.1" class="form-control form-control-sm" wire:model="editingMarginRight" placeholder="Auto">
+                                                </div>
+                                                <div class="col-3">
+                                                    <label class="form-label small mb-1">Bawah</label>
+                                                    <input type="number" step="0.1" class="form-control form-control-sm" wire:model="editingMarginBottom" placeholder="Auto">
+                                                </div>
+                                                <div class="col-3">
+                                                    <label class="form-label small mb-1">Kiri</label>
+                                                    <input type="number" step="0.1" class="form-control form-control-sm" wire:model="editingMarginLeft" placeholder="Auto">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="tabs-override-content">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Teks Pengantar (Intro)</label>
+                                        <textarea class="form-control" wire:model="editingContentIntro" rows="4" placeholder="Kosongkan untuk menggunakan teks bawaan (default) sistem."></textarea>
+                                        <small class="text-muted">Paragraf yang muncul di bagian atas dokumen sebelum tabel data utama.</small>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Teks Penutup (Outro)</label>
+                                        <textarea class="form-control" wire:model="editingContentOutro" rows="4" placeholder="Kosongkan untuk menggunakan teks bawaan (default) sistem."></textarea>
+                                        <small class="text-muted">Paragraf yang muncul di bagian bawah dokumen sebelum area tanda tangan.</small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn me-auto" wire:click="closeContentEditor">Batal</button>
-                            <button type="button" class="btn btn-primary" wire:click="saveContentEditor">
-                                <x-lucide-save class="icon me-1" /> Simpan Konten
+                        <div class="modal-footer justify-content-between">
+                            <button type="button" class="btn btn-outline-danger" wire:click="resetContentEditor" wire:confirm="Anda yakin ingin me-reset semua konfigurasi kustom modul ini ke bawaan global?">
+                                <x-lucide-trash-2 class="icon me-1" /> Hapus Konfigurasi Khusus
                             </button>
+                            <div>
+                                <button type="button" class="btn me-2" wire:click="closeContentEditor">Batal</button>
+                                <button type="button" class="btn btn-primary" wire:click="saveContentEditor">
+                                    <x-lucide-save class="icon me-1" /> Simpan Konfigurasi
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

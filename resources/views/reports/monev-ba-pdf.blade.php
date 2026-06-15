@@ -126,7 +126,7 @@
     <div class="kop-surat">
         @if($pdfConfig['show_logo'] ?? true)
             {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
-            <img src="{{ public_path('logo.png') }}" class="logo">
+            <img src="{{ get_logo_base64() }}" class="logo">
         @endif
         <div class="header-text">
             <div class="inst-name">INSTITUT TEKNOLOGI DAN SAINS NAHDLATUL ULAMA PEKALONGAN</div>

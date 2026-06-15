@@ -208,7 +208,7 @@ class ReportExportController extends Controller
                 'institutionalReport' => $institutionalReport,
                 'isPreview' => $isPreview,
                 'pdfConfig' => $pdfConfig,
-            ])->setPaper('a4', 'portrait');
+            ])->setPaper(normalize_paper_size($pdfConfig['paper_size'] ?? 'a4'), 'portrait');
 
             $filename = ($isPreview ? 'PREVIEW-' : '').'laporan-rekap-iku-'.$period.'-'.now()->format('YmdHis').'.pdf';
 
@@ -317,7 +317,7 @@ class ReportExportController extends Controller
                 'institutionalReport' => $institutionalReport,
                 'isPreview' => $isPreview,
                 'pdfConfig' => $pdfConfig,
-            ])->setPaper('a4', 'landscape');
+            ])->setPaper(normalize_paper_size($pdfConfig['paper_size'] ?? 'a4'), 'landscape');
 
             $filename = ($isPreview ? 'PREVIEW-' : '').'laporan-penelitian-'.$period.'-'.now()->format('YmdHis').'.pdf';
 
@@ -438,7 +438,7 @@ class ReportExportController extends Controller
                 'institutionalReport' => $institutionalReport,
                 'isPreview' => $isPreview,
                 'pdfConfig' => $pdfConfig,
-            ])->setPaper('a4', 'landscape');
+            ])->setPaper(normalize_paper_size($pdfConfig['paper_size'] ?? 'a4'), 'landscape');
 
             $filename = ($isPreview ? 'PREVIEW-' : '').'laporan-pkm-'.$period.'-'.now()->format('YmdHis').'.pdf';
 
@@ -547,7 +547,7 @@ class ReportExportController extends Controller
                 'institutionalReport' => $institutionalReport,
                 'isPreview' => $isPreview,
                 'pdfConfig' => $pdfConfig,
-            ])->setPaper('a4', 'landscape');
+            ])->setPaper(normalize_paper_size($pdfConfig['paper_size'] ?? 'a4'), 'landscape');
 
             $filename = ($isPreview ? 'PREVIEW-' : '').'laporan-luaran-'.$activeTab.'-'.now()->format('YmdHis').'.pdf';
 
@@ -710,7 +710,7 @@ class ReportExportController extends Controller
                 'institutionalReport' => $institutionalReport,
                 'isPreview' => $isPreview,
                 'pdfConfig' => $pdfConfig,
-            ])->setPaper('a4', 'landscape');
+            ])->setPaper(normalize_paper_size($pdfConfig['paper_size'] ?? 'a4'), 'landscape');
 
             $filename = ($isPreview ? 'PREVIEW-' : '').'laporan-mitra-'.now()->format('Y-m-d').'.pdf';
 
@@ -1024,7 +1024,7 @@ class ReportExportController extends Controller
                 'qrKepalaUrl' => $qrKepalaUrl,
                 'generatedAt' => now(),
                 'pdfConfig' => $pdfConfig,
-            ])->setPaper('a4', 'portrait');
+            ])->setPaper(normalize_paper_size($pdfConfig['paper_size'] ?? 'a4'), 'portrait');
 
             $pdfBinary = $pdf->output();
 
@@ -1167,7 +1167,7 @@ class ReportExportController extends Controller
                 'institutionalReport' => $institutionalReport,
                 'isPreview' => $isPreview,
                 'pdfConfig' => $pdfConfig,
-            ])->setPaper('a4', 'portrait');
+            ])->setPaper(normalize_paper_size($pdfConfig['paper_size'] ?? 'a4'), 'portrait');
 
             $filename = ($isPreview ? 'PREVIEW-' : '').'laporan-rekap-monev-'.$period.'-'.now()->format('YmdHis').'.pdf';
 
@@ -1330,7 +1330,7 @@ class ReportExportController extends Controller
                 'institutionalReport' => $institutionalReport,
                 'isPreview' => $isPreview,
                 'pdfConfig' => $pdfConfig,
-            ])->setPaper('a4', 'landscape');
+            ])->setPaper(normalize_paper_size($pdfConfig['paper_size'] ?? 'a4'), 'landscape');
 
             $mainPdfBinary = $pdf->output();
 
@@ -1414,7 +1414,7 @@ class ReportExportController extends Controller
                             'type' => $typeVal,
                             'qrUrl' => $qrUrl,
                             'pdfConfig' => $pdfConfigLetter,
-                        ])->setPaper('a4', 'portrait');
+                        ])->setPaper(normalize_paper_size($pdfConfigLetter['paper_size'] ?? 'a4'), 'portrait');
 
                         $tempReviewPath = tempnam($tempDir, 'rev_eval_');
                         file_put_contents($tempReviewPath, $reviewPdf->output());

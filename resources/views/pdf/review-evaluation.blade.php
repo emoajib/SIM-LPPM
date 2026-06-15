@@ -7,13 +7,6 @@
     <title>Lembar Penilaian Reviewer - {{ $proposal->id }}</title>
     @include('pdf.partials.styles')
     <style>
-        @page {
-            margin: 0cm 2.5cm 1cm 3cm;
-        }
-        body {
-            font-size: 10pt;
-            line-height: 1.5;
-        }
         .main-title {
             text-align: center;
             margin: 15px 0;

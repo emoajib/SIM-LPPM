@@ -12,37 +12,71 @@ use Livewire\Component;
 class PdfExportSettings extends Component
 {
     // --- Family A (Surat / Proposal) ---
-    public string $pdfFontFamily    = 'Times New Roman, Times, serif';
-    public int    $pdfBodyFontSize  = 11;
-    public bool   $pdfLayoutCompact = false;
-    public bool   $pdfShowLogo      = true;
-    public string $pdfPageMargin    = 'normal';
-    public string $pdfPaperSize     = 'a4';
+    public string $pdfFontFamily = 'Times New Roman, Times, serif';
+
+    public int $pdfBodyFontSize = 11;
+
+    public bool $pdfLayoutCompact = false;
+
+    public bool $pdfShowLogo = true;
+
+    public string $pdfPageMargin = 'normal';
+
+    public string $pdfPaperSize = 'a4';
 
     // --- Logo & Layout Extended ---
-    public string $pdfLogoPosition    = 'left';
-    public int    $pdfLogoSize        = 110;
-    public string $pdfLineHeight      = '1.1';
-    public int    $pdfParagraphSpacing = 6;
-    public int    $pdfParagraphIndent  = 0;
+    public string $pdfLogoPosition = 'left';
+
+    public int $pdfLogoSize = 110;
+
+    public string $pdfLineHeight = '1.1';
+
+    public int $pdfParagraphSpacing = 6;
+
+    public int $pdfParagraphIndent = 0;
 
     // --- Custom Margins (cm, empty = use preset) ---
-    public string $pdfMarginTop    = '';
-    public string $pdfMarginRight  = '';
+    public string $pdfMarginTop = '';
+
+    public string $pdfMarginRight = '';
+
     public string $pdfMarginBottom = '';
-    public string $pdfMarginLeft   = '';
+
+    public string $pdfMarginLeft = '';
 
     // --- Family B (Laporan Modul) ---
-    public string $pdfReportFontFamily  = 'Arial, Helvetica, sans-serif';
-    public int    $pdfReportFontSize    = 9;
-    public string $pdfReportLineHeight  = '1.1';
+    public string $pdfReportFontFamily = 'Arial, Helvetica, sans-serif';
 
-    // --- Editor Konten Statis ---
+    public int $pdfReportFontSize = 9;
+
+    public string $pdfReportLineHeight = '1.1';
+
+    // --- Editor Konten & Override Modul ---
     public bool $contentModalOpen = false;
+
     public string $editingModule = '';
+
     public string $editingModuleName = '';
+
+    // Konten
     public string $editingContentIntro = '';
+
     public string $editingContentOutro = '';
+
+    // Override Tipografi & Tata Letak
+    public string $editingPaperSize = '';
+
+    public string $editingFontFamily = '';
+
+    public string $editingFontSize = '';
+
+    public string $editingMarginTop = '';
+
+    public string $editingMarginRight = '';
+
+    public string $editingMarginBottom = '';
+
+    public string $editingMarginLeft = '';
 
     // --- UI State ---
     public string $activePdfTab = 'layout';
@@ -52,52 +86,52 @@ class PdfExportSettings extends Component
         abort_unless(Auth::user()?->hasRole('admin lppm') || Auth::user()?->hasRole('superadmin'), 403);
 
         // Family A
-        $this->pdfFontFamily    = Setting::get('pdf_font_family', 'Times New Roman, Times, serif');
-        $this->pdfBodyFontSize  = (int) Setting::get('pdf_body_font_size', 11);
+        $this->pdfFontFamily = Setting::get('pdf_font_family', 'Times New Roman, Times, serif');
+        $this->pdfBodyFontSize = (int) Setting::get('pdf_body_font_size', 11);
         $this->pdfLayoutCompact = (bool) Setting::get('pdf_layout_compact', false);
-        $this->pdfShowLogo      = (bool) Setting::get('pdf_show_logo', true);
-        $this->pdfPageMargin    = Setting::get('pdf_page_margin', 'normal');
-        $this->pdfPaperSize     = Setting::get('pdf_paper_size', 'a4');
+        $this->pdfShowLogo = (bool) Setting::get('pdf_show_logo', true);
+        $this->pdfPageMargin = Setting::get('pdf_page_margin', 'normal');
+        $this->pdfPaperSize = Setting::get('pdf_paper_size', 'a4');
 
         // Extended layout
-        $this->pdfLogoPosition    = Setting::get('pdf_logo_position', 'left');
-        $this->pdfLogoSize        = (int) Setting::get('pdf_logo_size', 110);
-        $this->pdfLineHeight      = Setting::get('pdf_line_height', '1.1');
+        $this->pdfLogoPosition = Setting::get('pdf_logo_position', 'left');
+        $this->pdfLogoSize = (int) Setting::get('pdf_logo_size', 110);
+        $this->pdfLineHeight = Setting::get('pdf_line_height', '1.1');
         $this->pdfParagraphSpacing = (int) Setting::get('pdf_paragraph_spacing', 6);
-        $this->pdfParagraphIndent  = (int) Setting::get('pdf_paragraph_indent', 0);
+        $this->pdfParagraphIndent = (int) Setting::get('pdf_paragraph_indent', 0);
 
         // Custom margins
-        $this->pdfMarginTop    = Setting::get('pdf_margin_top', '');
-        $this->pdfMarginRight  = Setting::get('pdf_margin_right', '');
+        $this->pdfMarginTop = Setting::get('pdf_margin_top', '');
+        $this->pdfMarginRight = Setting::get('pdf_margin_right', '');
         $this->pdfMarginBottom = Setting::get('pdf_margin_bottom', '');
-        $this->pdfMarginLeft   = Setting::get('pdf_margin_left', '');
+        $this->pdfMarginLeft = Setting::get('pdf_margin_left', '');
 
         // Family B
-        $this->pdfReportFontFamily  = Setting::get('pdf_report_font_family', 'Arial, Helvetica, sans-serif');
-        $this->pdfReportFontSize    = (int) Setting::get('pdf_report_font_size', 9);
-        $this->pdfReportLineHeight  = Setting::get('pdf_report_line_height', '1.1');
+        $this->pdfReportFontFamily = Setting::get('pdf_report_font_family', 'Arial, Helvetica, sans-serif');
+        $this->pdfReportFontSize = (int) Setting::get('pdf_report_font_size', 9);
+        $this->pdfReportLineHeight = Setting::get('pdf_report_line_height', '1.1');
     }
 
     public function updated(string $property, mixed $value): void
     {
         $map = [
-            'pdfFontFamily'       => ['pdf_font_family', 'string'],
-            'pdfBodyFontSize'     => ['pdf_body_font_size', 'integer'],
-            'pdfLayoutCompact'    => ['pdf_layout_compact', 'boolean'],
-            'pdfShowLogo'         => ['pdf_show_logo', 'boolean'],
-            'pdfPageMargin'       => ['pdf_page_margin', 'string'],
-            'pdfPaperSize'        => ['pdf_paper_size', 'string'],
-            'pdfLogoPosition'     => ['pdf_logo_position', 'string'],
-            'pdfLogoSize'         => ['pdf_logo_size', 'integer'],
-            'pdfLineHeight'       => ['pdf_line_height', 'string'],
+            'pdfFontFamily' => ['pdf_font_family', 'string'],
+            'pdfBodyFontSize' => ['pdf_body_font_size', 'integer'],
+            'pdfLayoutCompact' => ['pdf_layout_compact', 'boolean'],
+            'pdfShowLogo' => ['pdf_show_logo', 'boolean'],
+            'pdfPageMargin' => ['pdf_page_margin', 'string'],
+            'pdfPaperSize' => ['pdf_paper_size', 'string'],
+            'pdfLogoPosition' => ['pdf_logo_position', 'string'],
+            'pdfLogoSize' => ['pdf_logo_size', 'integer'],
+            'pdfLineHeight' => ['pdf_line_height', 'string'],
             'pdfParagraphSpacing' => ['pdf_paragraph_spacing', 'integer'],
-            'pdfParagraphIndent'  => ['pdf_paragraph_indent', 'integer'],
-            'pdfMarginTop'        => ['pdf_margin_top', 'string'],
-            'pdfMarginRight'      => ['pdf_margin_right', 'string'],
-            'pdfMarginBottom'     => ['pdf_margin_bottom', 'string'],
-            'pdfMarginLeft'       => ['pdf_margin_left', 'string'],
+            'pdfParagraphIndent' => ['pdf_paragraph_indent', 'integer'],
+            'pdfMarginTop' => ['pdf_margin_top', 'string'],
+            'pdfMarginRight' => ['pdf_margin_right', 'string'],
+            'pdfMarginBottom' => ['pdf_margin_bottom', 'string'],
+            'pdfMarginLeft' => ['pdf_margin_left', 'string'],
             'pdfReportFontFamily' => ['pdf_report_font_family', 'string'],
-            'pdfReportFontSize'   => ['pdf_report_font_size', 'integer'],
+            'pdfReportFontSize' => ['pdf_report_font_size', 'integer'],
             'pdfReportLineHeight' => ['pdf_report_line_height', 'string'],
         ];
 
@@ -106,7 +140,7 @@ class PdfExportSettings extends Component
             $castValue = match ($type) {
                 'integer' => (int) $value,
                 'boolean' => (bool) $value,
-                default   => (string) $value,
+                default => (string) $value,
             };
             Setting::set($key, $castValue, $type);
         }
@@ -124,9 +158,9 @@ class PdfExportSettings extends Component
 
         $dirMap = [
             'proposals' => ['pdf_cache/proposals'],
-            'reports'   => ['pdf_cache/reports'],
-            'reviewer'  => ['pdf_cache/reviewer_reports'],
-            'all'       => ['pdf_cache/proposals', 'pdf_cache/reports', 'pdf_cache/reviewer_reports'],
+            'reports' => ['pdf_cache/reports'],
+            'reviewer' => ['pdf_cache/reviewer_reports'],
+            'all' => ['pdf_cache/proposals', 'pdf_cache/reports', 'pdf_cache/reviewer_reports'],
         ];
 
         $dirs = $dirMap[$type] ?? $dirMap['all'];
@@ -146,9 +180,9 @@ class PdfExportSettings extends Component
 
         $label = match ($type) {
             'proposals' => 'Proposal',
-            'reports'   => 'Laporan',
-            'reviewer'  => 'Reviewer',
-            default     => 'Semua',
+            'reports' => 'Laporan',
+            'reviewer' => 'Reviewer',
+            default => 'Semua',
         };
 
         $this->dispatch('settings-updated', message: "Cache PDF {$label} berhasil dibersihkan ({$deleted} file dihapus).");
@@ -163,8 +197,8 @@ class PdfExportSettings extends Component
     {
         $dirs = [
             'proposals' => storage_path('app/public/pdf_cache/proposals'),
-            'reports'   => storage_path('app/public/pdf_cache/reports'),
-            'reviewer'  => storage_path('app/public/pdf_cache/reviewer_reports'),
+            'reports' => storage_path('app/public/pdf_cache/reports'),
+            'reviewer' => storage_path('app/public/pdf_cache/reviewer_reports'),
         ];
 
         $stats = [];
@@ -174,7 +208,7 @@ class PdfExportSettings extends Component
             $stats[$key] = [
                 'count' => count($files),
                 'bytes' => $bytes,
-                'size'  => $this->formatBytes($bytes),
+                'size' => $this->formatBytes($bytes),
             ];
         }
 
@@ -197,8 +231,18 @@ class PdfExportSettings extends Component
     {
         $this->editingModule = $moduleKey;
         $this->editingModuleName = $moduleName;
+
         $this->editingContentIntro = Setting::get("pdf_content_{$moduleKey}_intro", '');
         $this->editingContentOutro = Setting::get("pdf_content_{$moduleKey}_outro", '');
+
+        $this->editingPaperSize = Setting::get("pdf_override_{$moduleKey}_paper_size", '');
+        $this->editingFontFamily = Setting::get("pdf_override_{$moduleKey}_font_family", '');
+        $this->editingFontSize = Setting::get("pdf_override_{$moduleKey}_font_size", '');
+        $this->editingMarginTop = Setting::get("pdf_override_{$moduleKey}_margin_top", '');
+        $this->editingMarginRight = Setting::get("pdf_override_{$moduleKey}_margin_right", '');
+        $this->editingMarginBottom = Setting::get("pdf_override_{$moduleKey}_margin_bottom", '');
+        $this->editingMarginLeft = Setting::get("pdf_override_{$moduleKey}_margin_left", '');
+
         $this->contentModalOpen = true;
     }
 
@@ -211,16 +255,34 @@ class PdfExportSettings extends Component
     {
         Setting::set("pdf_content_{$this->editingModule}_intro", $this->editingContentIntro, 'string');
         Setting::set("pdf_content_{$this->editingModule}_outro", $this->editingContentOutro, 'string');
+
+        Setting::set("pdf_override_{$this->editingModule}_paper_size", $this->editingPaperSize, 'string');
+        Setting::set("pdf_override_{$this->editingModule}_font_family", $this->editingFontFamily, 'string');
+        Setting::set("pdf_override_{$this->editingModule}_font_size", $this->editingFontSize, 'string');
+        Setting::set("pdf_override_{$this->editingModule}_margin_top", $this->editingMarginTop, 'string');
+        Setting::set("pdf_override_{$this->editingModule}_margin_right", $this->editingMarginRight, 'string');
+        Setting::set("pdf_override_{$this->editingModule}_margin_bottom", $this->editingMarginBottom, 'string');
+        Setting::set("pdf_override_{$this->editingModule}_margin_left", $this->editingMarginLeft, 'string');
+
         $this->contentModalOpen = false;
-        $this->dispatch('settings-updated', message: "Konten teks untuk {$this->editingModuleName} berhasil disimpan.");
+        $this->dispatch('settings-updated', message: "Konfigurasi kustom untuk {$this->editingModuleName} berhasil disimpan.");
+    }
+
+    public function resetContentEditor(): void
+    {
+        Setting::where('key', 'LIKE', "pdf_content_{$this->editingModule}_%")->delete();
+        Setting::where('key', 'LIKE', "pdf_override_{$this->editingModule}_%")->delete();
+
+        $this->contentModalOpen = false;
+        $this->dispatch('settings-updated', message: "Konfigurasi kustom untuk {$this->editingModuleName} berhasil di-reset ke pengaturan global bawaan.");
     }
 
     public function render(): View
     {
         return view('livewire.settings.pdf-export-settings', [
             'cacheStats' => $this->getCacheStats(),
-            'hasLogo'    => file_exists(public_path('logo.png')),
-            'logoUrl'    => asset('logo.png'),
+            'hasLogo' => file_exists(public_path('logo.png')),
+            'logoUrl' => asset('logo.png'),
         ]);
     }
 }
