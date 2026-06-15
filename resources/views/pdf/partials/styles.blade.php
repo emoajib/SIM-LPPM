@@ -128,4 +128,7 @@
     .sig-spacer {
         height: 30px;
     }
+    .manual-sig-space {
+        height: 70px;
+    }
 </style>
