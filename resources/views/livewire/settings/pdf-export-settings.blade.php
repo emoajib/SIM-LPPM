@@ -168,14 +168,14 @@
                         <div class="card-body">
                             <div class="mb-3">
                                 <label class="form-label fw-medium">Judul Cover (Kosongkan = pakai judul bawaan)</label>
-                                <input type="text" class="form-control" wire:model.live="pdfCoverTitle"
+                                <input type="text" class="form-control" wire:model.blur="pdfCoverTitle"
                                     placeholder="Contoh: PROPOSAL PENELITIAN INTERNAL">
                                 <small class="text-muted">Teks judul di halaman cover proposal/laporan. Biarkan kosong untuk menggunakan judul otomatis dari sistem.</small>
                             </div>
 
                             <div class="mb-3">
                                 <label class="form-label fw-medium">Subjudul Cover (Kosongkan = tidak tampil)</label>
-                                <input type="text" class="form-control" wire:model.live="pdfCoverSubtitle"
+                                <input type="text" class="form-control" wire:model.blur="pdfCoverSubtitle"
                                     placeholder="Contoh: Tahun Akademik 2025/2026">
                                 <small class="text-muted">Teks subjudul di bawah judul utama halaman cover. Biarkan kosong untuk menyembunyikannya.</small>
                             </div>
@@ -191,7 +191,7 @@
 
                             <div class="mb-0">
                                 <label class="form-label fw-medium">Teks Kustom Halaman Pengesahan</label>
-                                <textarea class="form-control" wire:model.live="pdfApprovalCustomText" rows="3"
+                                <textarea class="form-control" wire:model.blur="pdfApprovalCustomText" rows="3"
                                     placeholder="Kosongkan untuk menggunakan teks bawaan sistem."></textarea>
                                 <small class="text-muted">Teks yang muncul di halaman pengesahan/approval. Mendukung HTML sederhana.</small>
                             </div>

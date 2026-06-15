@@ -1,3 +1,4 @@
+@php $pdfConfig ??= get_pdf_config('letter'); @endphp
 <div class="page-break">
     <div style="font-size: 14pt; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; text-align: center;">
         {{ $pdfConfig['cover_title'] ?: $coverTitle }}
@@ -10,7 +11,6 @@
     @endif
 
     <div style="margin: 40px 0; text-align: center;">
-        @php $pdfConfig ??= get_pdf_config('letter'); @endphp
         @if(($pdfConfig['show_logo'] ?? true) && get_logo_base64())
             <img src="{{ get_logo_base64() }}" style="width: {{ $pdfConfig['logo_size'] ?? 110 }}px;">
         @endif

@@ -29,35 +29,6 @@ if (! function_exists('active_role_is')) {
     }
 }
 
-if (! function_exists('active_can')) {
-    /**
-     * Determine if the currently active role has a given permission.
-     * This is more strict than $user->can() because it filters by current session role.
-     */
-    function active_can(string $permission): bool
-    {
-        static $activeRoleModel = null;
-        static $checkedRoleName = null;
-
-        $roleName = active_role();
-        if (! $roleName) {
-            return false;
-        }
-
-        // Cache the role model per request for performance
-        if ($activeRoleModel === null || $checkedRoleName !== $roleName) {
-            try {
-                $activeRoleModel = Role::findByName($roleName, 'web');
-                $checkedRoleName = $roleName;
-            } catch (Throwable $e) {
-                return false;
-            }
-        }
-
-        return $activeRoleModel ? $activeRoleModel->hasPermissionTo($permission) : false;
-    }
-}
-
 if (! function_exists('format_role_name')) {
     /**
      * Format role name for display (convert to title case).
@@ -97,18 +68,6 @@ if (! function_exists('active_has_any_role')) {
         $activeRole = active_role();
 
         return in_array($activeRole, $roles, true);
-    }
-}
-
-if (! function_exists('active_has_all_roles')) {
-    /**
-     * Check if the active role matches any of the given roles.
-     */
-    function active_has_all_roles(array $roles): bool
-    {
-        $activeRole = active_role();
-
-        return in_array($activeRole, $roles);
     }
 }
 

@@ -75,8 +75,14 @@ class LetterService
     {
         $letter->load(['letterType', 'user']);
 
-        /** @var LetterType $letterType */
+        /** @var LetterType|null $letterType */
         $letterType = $letter->letterType;
+
+        if (! $letterType || empty($letterType->template_view)) {
+            throw new \RuntimeException(
+                'Template view untuk surat jenis "'.($letterType->name ?? 'unknown').'" tidak tersedia.'
+            );
+        }
 
         $metadata = array_merge([
             'signer_name' => Setting::get('lppm_head_name', ''),
