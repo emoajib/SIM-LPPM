@@ -76,30 +76,30 @@
             </tr>
         </table>
 
+        <table class="travel-table">
+            <tr>
+                <td width="50%">
+                    Tiba di : …………………………<br>
+                    Pada hari & Tgl : …………………………<br>
+                    Koordinator<br>
+                    <div class="sig-spacer"></div>
+                    (………………………)<br>
+                    Nama : ……………………………………………
+                </td>
+                <td>
+                    Tiba kembali di : ITSNU Pekalongan<br>
+                    Pada hari & Tgl : ……………………<br>
+                    Pejabat yang berwenang ditunjuk<br>
+                    <div class="sig-spacer"></div>
+                    (………………………)<br>
+                    Nama : ……………………………………………
+                </td>
+            </tr>
+        </table>
+
         <p>Demikian Surat Tugas ini dikeluarkan agar dapat digunakan sebagaimana mestinya.</p>
     </div>
 
     @include('pdf.letters.partials.letter-signature')
-
-    <table class="travel-table">
-        <tr>
-            <td width="50%">
-                Tiba di : …………………………<br>
-                Pada hari & Tgl : …………………………<br><br>
-                Koordinator<br>
-                <div class="sig-spacer"></div>
-                (………………………)<br>
-                Nama : ……………………………………………<br>
-            </td>
-            <td>
-                Tiba kembali di : ITSNU Pekalongan<br>
-                Pada hari & Tgl : ……………………<br><br>
-                Pejabat yang berwenang ditunjuk<br>
-                <div class="sig-spacer"></div>
-                (………………………)<br>
-                Nama : ……………………………………………<br>
-            </td>
-        </tr>
-    </table>
 </body>
 </html>

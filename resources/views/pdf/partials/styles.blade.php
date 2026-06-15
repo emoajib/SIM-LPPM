@@ -11,7 +11,7 @@
     .header-table {
         width: 100%;
         border-bottom: 2px solid #000;
-        margin-bottom: 8px;
+        margin-bottom: 3px;
         padding-bottom: 0px;
         border-collapse: collapse;
     }
@@ -49,26 +49,29 @@
         text-align: center;
         font-weight: bold;
         text-decoration: underline;
-        margin-top: 20px;
+        margin-top: 5px;
         margin-bottom: 0;
         font-size: 12pt;
     }
     .number {
         text-align: center;
-        margin-bottom: 20px;
+        margin-bottom: 5px;
     }
     .bismillah {
         text-align: center;
         font-weight: bold;
-        margin-bottom: 15px;
+        margin-bottom: 5px;
         font-size: 11pt;
     }
     .content {
         text-align: justify;
     }
+    .content p {
+        margin: 0 0 2px 0;
+    }
     .meta-table {
         width: 100%;
-        margin-top: 10px;
+        margin-top: 5px;
     }
     .meta-table td {
         border: none;
@@ -78,11 +81,11 @@
     .table-data {
         width: 100%;
         border-collapse: collapse;
-        margin: 15px 0;
+        margin: 5px 0;
     }
     .table-data th, .table-data td {
         border: 1px solid #000;
-        padding: 5px 8px;
+        padding: 3px 5px;
         text-align: left;
         font-size: 10.5pt;
     }
@@ -92,7 +95,7 @@
     }
     .signature-table {
         width: 100%;
-        margin-top: 30px;
+        margin-top: 10px;
     }
     .signature-box {
         width: 50%;
@@ -103,18 +106,18 @@
         padding-left: 10%;
     }
     .qr-code {
-        margin: 10px 0;
+        margin: 3px 0;
     }
     .travel-table {
         width: 100%;
         border-top: 1px solid #000;
-        margin-top: 40px;
-        padding-top: 10px;
+        margin-top: 5px;
+        padding-top: 3px;
         font-size: 9pt;
     }
     .travel-table td {
         border: none;
-        padding: 2px;
+        padding: 0px;
         vertical-align: top;
     }
     .line-dots {
@@ -123,6 +126,6 @@
         width: 150px;
     }
     .sig-spacer {
-        height: 60px;
+        height: 30px;
     }
 </style>
