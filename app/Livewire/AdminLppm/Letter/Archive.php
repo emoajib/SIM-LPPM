@@ -23,8 +23,9 @@ class Archive extends Component
 
     public $dateTo = '';
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $letters = Letter::with(['letterType', 'user'])
             ->when($this->statusFilter, fn ($q) => $q->where('status', $this->statusFilter))
             ->when($this->typeFilter, fn ($q) => $q->where('letter_type_id', $this->typeFilter))
@@ -38,7 +39,10 @@ class Archive extends Component
             ->latest()
             ->paginate(20);
 
-        return view('livewire.admin-lppm.letter.archive', [
+        /** @var view-string $view */
+        $view = 'livewire.admin-lppm.letter.archive';
+
+        return view($view, [
             'letters' => $letters,
             'letterTypes' => LetterType::where('is_active', true)->orderBy('code')->get(),
         ]);

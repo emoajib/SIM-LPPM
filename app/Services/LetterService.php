@@ -184,9 +184,11 @@ class LetterService
         ]);
 
         if ($bypass) {
+            /** @var \App\Models\LetterType $lType */
+            $lType = $letter->letterType;
             $letter->update([
                 'published_at' => now(),
-                'letter_number' => $this->generateNextNumber($letter->letterType),
+                'letter_number' => $this->generateNextNumber($lType),
             ]);
             $this->generatePdf($letter->fresh());
         }
@@ -264,9 +266,11 @@ class LetterService
             ]);
 
             if ($bypass) {
+                /** @var \App\Models\LetterType $lType */
+                $lType = $letter->letterType;
                 $letter->update([
                     'published_at' => now(),
-                    'letter_number' => $this->generateNextNumber($letter->letterType),
+                    'letter_number' => $this->generateNextNumber($lType),
                 ]);
                 $this->generatePdf($letter->fresh());
             }

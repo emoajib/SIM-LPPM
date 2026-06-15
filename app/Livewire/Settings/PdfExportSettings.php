@@ -1,4 +1,5 @@
 <?php
+
 // Vetted by AI - Manual Review Required by Senior Engineer/Manager
 
 namespace App\Livewire\Settings;
@@ -11,12 +12,17 @@ use Livewire\Component;
 class PdfExportSettings extends Component
 {
     public string $pdfFontFamily = 'Times New Roman, Times, serif';
+
     public int $pdfBodyFontSize = 11;
+
     public bool $pdfLayoutCompact = false;
+
     public bool $pdfShowLogo = true;
+
     public string $pdfPageMargin = 'normal';
-    
+
     public string $pdfReportFontFamily = 'Arial, Helvetica, sans-serif';
+
     public int $pdfReportFontSize = 9;
 
     public function mount(): void
