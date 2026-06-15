@@ -34,6 +34,12 @@
                                 <x-lucide-palette class="icon" />
                                 <span>Tampilan</span>
                             </button>
+                            {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                            <button wire:click="setActiveTab('pdf-export')"
+                                class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'pdf-export' ? 'active' : '' }}">
+                                <x-lucide-printer class="icon" />
+                                <span>PDF & Ekspor</span>
+                            </button>
                             <button wire:click="setActiveTab('audit')"
                                 class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'audit' ? 'active' : '' }}">
                                 <x-lucide-eye class="icon" />
@@ -81,6 +87,13 @@
                     @elseif ($activeTab === 'appearance')
                         <div>
                             <livewire:settings.appearance />
+                        </div>
+                    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                    @elseif ($activeTab === 'pdf-export')
+                        <div>
+                            <h2 class="mb-4">Pengaturan PDF & Ekspor</h2>
+                            <p class="mb-4 card-subtitle">Kelola preferensi tipografi, tata letak, dan logo untuk semua dokumen PDF.</p>
+                            <livewire:settings.pdf-export-settings />
                         </div>
                     @elseif ($activeTab === 'audit')
                         <div>

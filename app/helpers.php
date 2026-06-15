@@ -281,3 +281,53 @@ if (! function_exists('clean_proposal_title')) {
         return $cleaned;
     }
 }
+
+if (! function_exists('get_pdf_config')) {
+    /**
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Ambil konfigurasi PDF dari settings. Default = existing hardcode values.
+     * @param string $viewType 'letter' | 'report' | 'report_ba' | 'report_compact'
+     */
+    function get_pdf_config(string $viewType = 'letter'): array
+    {
+        $fontDefaults = [
+            'letter'         => 'Times New Roman, Times, serif',
+            'report'         => 'Arial, Helvetica, sans-serif',
+            'report_ba'      => 'Arial, Helvetica, sans-serif',
+            'report_compact' => 'Arial, Helvetica, sans-serif',
+        ];
+        $sizeDefaults = [
+            'letter'         => 11,
+            'report'         => 9,
+            'report_ba'      => 11,
+            'report_compact' => 7,
+        ];
+        $marginDefaults = [
+            'letter'         => '0cm 2cm 0.5cm 2cm',
+            'report'         => '3cm 3cm 3cm 4cm',
+            'report_ba'      => '4cm 3cm 3cm 4cm',
+            'report_compact' => '1.5cm 1cm',
+        ];
+
+        $settingFontKey = str_starts_with($viewType, 'report') ? 'pdf_report_font_family' : 'pdf_font_family';
+        $settingFontSize = str_starts_with($viewType, 'report') ? 'pdf_report_font_size' : 'pdf_body_font_size';
+
+        $isCompact = (bool) \App\Models\Setting::get('pdf_layout_compact', false);
+        $pageMarginKey = \App\Models\Setting::get('pdf_page_margin', 'normal');
+        $marginMap = [
+            'narrow' => '1.5cm 1cm',
+            'normal' => $marginDefaults[$viewType] ?? '2cm',
+            'wide'   => '4cm 3.5cm',
+        ];
+
+        return [
+            'font_family'  => \App\Models\Setting::get($settingFontKey, $fontDefaults[$viewType] ?? 'Arial, Helvetica, sans-serif'),
+            'body_font_size' => (int) \App\Models\Setting::get($settingFontSize, $sizeDefaults[$viewType] ?? 11),
+            'compact'      => $isCompact,
+            'show_logo'    => (bool) \App\Models\Setting::get('pdf_show_logo', true),
+            'page_margin'  => $marginMap[$pageMarginKey] ?? $marginDefaults[$viewType],
+            '_view_type'   => $viewType,
+        ];
+    }
+}
+

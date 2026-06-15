@@ -58,6 +58,7 @@ class ReviewExportController extends Controller
         }
 
         $isPreview = $request->has('preview');
+        $pdfConfig = get_pdf_config('letter');
 
         $proposal->load([
             'submitter.identity.faculty',
@@ -114,8 +115,8 @@ class ReviewExportController extends Controller
 
         $qrUrl = URL::signedRoute('signatures.verify', ['documentSignature' => $signature->id]);
 
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         if ($isPreview) {
+            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             $pdf = Pdf::loadView('pdf.review-evaluation', [
                 'isPreview' => true,
                 'assignment' => $proposalReviewer,
@@ -124,6 +125,7 @@ class ReviewExportController extends Controller
                 'totalScore' => $totalScore,
                 'type' => $type,
                 'qrUrl' => $qrUrl,
+                'pdfConfig' => $pdfConfig,
             ])
                 ->setPaper('a4', 'portrait')
                 ->setOptions([
@@ -148,6 +150,7 @@ class ReviewExportController extends Controller
             'totalScore' => $totalScore,
             'type' => $type,
             'qrUrl' => $qrUrl,
+            'pdfConfig' => $pdfConfig,
         ])
             ->setPaper('a4', 'portrait')
             ->setOptions([

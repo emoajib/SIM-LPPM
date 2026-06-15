@@ -169,6 +169,7 @@
         .page-break-before {
             page-break-before: always;
         }
+        @include('reports.partials.report-base-styles')
     </style>
 </head>
 
@@ -176,7 +177,10 @@
     <!-- KOP SURAT -->
     <div class="kop-surat">
         <div class="kop-surat-inner">
-            <img src="{{ get_logo_base64() }}" class="logo">
+            @if($pdfConfig['show_logo'] ?? true)
+                {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                <img src="{{ get_logo_base64() }}" class="logo">
+            @endif
             <div class="header-text">
                 <div class="inst-name">INSTITUT TEKNOLOGI DAN SAINS NAHDLATUL ULAMA PEKALONGAN</div>
                 <div class="lppm-name">LEMBAGA PENELITIAN DAN PENGABDIAN KEPADA MASYARAKAT (LPPM)</div>

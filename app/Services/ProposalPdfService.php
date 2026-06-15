@@ -301,7 +301,9 @@ class ProposalPdfService
             'signatures',
         ]);
 
+        $pdfConfig = get_pdf_config('letter');
         // 1. Generate the basic info PDF using DomPDF
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $infoPdfContent = Pdf::loadView('pdf.proposal-export', [
             'isPreview' => $isPreview,
             'proposal' => $proposal,
@@ -310,6 +312,7 @@ class ProposalPdfService
             'lppm_head_name' => $lppmHeadName,
             'lppm_head_id' => $lppmHeadId,
             'proposal_approval_mode' => $approvalMode, // reuse already-fetched variable
+            'pdfConfig' => $pdfConfig,
         ])
             ->setPaper('a4', 'portrait')
             ->setOptions([
@@ -751,7 +754,10 @@ class ProposalPdfService
             ? URL::signedRoute('signatures.verify', ['documentSignature' => $reportSigs['finalized|kepala_lppm']->id])
             : null;
 
+        $pdfConfig = get_pdf_config('letter');
+
         // Generate report content PDF
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $infoPdfContent = Pdf::loadView('pdf.report-export', [
             'proposal' => $proposal->load([
                 'submitter.identity.institution',
@@ -792,6 +798,7 @@ class ProposalPdfService
             'qrLecturerUrl' => $qrLecturerUrl,
             'qrDeanUrl' => $qrDeanUrl,
             'qrLppmUrl' => $qrLppmUrl,
+            'pdfConfig' => $pdfConfig,
         ])
             ->setPaper('a4', 'portrait')
             ->setOptions([
@@ -968,6 +975,7 @@ class ProposalPdfService
                 ? URL::signedRoute('signatures.verify', ['documentSignature' => $logbookSigs['approved|kepala_lppm']->id])
                 : null;
 
+            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             $notesPdfContent = Pdf::loadView('pdf.daily-notes', [
                 'proposal' => $proposal,
                 'notes' => $dailyNotes,
@@ -982,6 +990,7 @@ class ProposalPdfService
                 'docTitle' => 'CATATAN HARIAN '.($proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN').' INTERNAL',
                 'qrUrlSubmitter' => $qrUrlSubmitter,
                 'qrUrlLppm' => $qrUrlLppm,
+                'pdfConfig' => $pdfConfig,
             ])->setPaper('a4', 'portrait')->output();
 
             $tempNotesPath = tempnam(storage_path('app'), 'report_notes_');

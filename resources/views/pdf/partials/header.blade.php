@@ -1,7 +1,11 @@
 <table class="header-table">
     <tr>
         <td width="15%" style="border:none;">
-            <img src="{{ public_path('logo.png') }}" class="logo">
+            @php $pdfConfig ??= get_pdf_config('letter'); @endphp
+            @if(($pdfConfig['show_logo'] ?? true) && file_exists(public_path('logo.png')))
+                {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                <img src="{{ public_path('logo.png') }}" class="logo">
+            @endif
         </td>
         <td width="85%" class="header-text" style="border:none;">
             <div class="dept">LEMBAGA PENELITIAN DAN PENGABDIAN MASYARAKAT</div>

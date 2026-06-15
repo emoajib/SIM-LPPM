@@ -56,8 +56,10 @@ class DailyNoteExportController extends Controller
         $academicYear = $proposal->start_year.'/'.($proposal->start_year + 1);
 
         $logbookApprovalMode = Setting::where('key', 'logbook_approval_mode')->value('value') ?? 'digital';
+        $pdfConfig = get_pdf_config('letter');
 
         // 1. Render for hash
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $pdf = Pdf::loadView('pdf.daily-notes', [
             'isPreview' => $request->has('preview'),
             'proposal' => $proposal,
@@ -74,6 +76,7 @@ class DailyNoteExportController extends Controller
             'institutionName' => $institutionName,
             'academicYear' => $academicYear,
             'docTitle' => 'CATATAN HARIAN '.($proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN').' INTERNAL',
+            'pdfConfig' => $pdfConfig,
         ])->setPaper('a4', 'portrait');
 
         if ($request->has('preview')) {
@@ -98,6 +101,7 @@ class DailyNoteExportController extends Controller
         }
 
         // 4. Re-render with QR codes
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $pdf = Pdf::loadView('pdf.daily-notes', [
             'isPreview' => false,
             'proposal' => $proposal,
@@ -114,6 +118,7 @@ class DailyNoteExportController extends Controller
             'institutionName' => $institutionName,
             'academicYear' => $academicYear,
             'docTitle' => 'CATATAN HARIAN '.($proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN').' INTERNAL',
+            'pdfConfig' => $pdfConfig,
         ])->setPaper('a4', 'portrait');
 
         $title = preg_replace('/[^A-Za-z0-9_\-]/', '_', substr($proposal->title, 0, 50));

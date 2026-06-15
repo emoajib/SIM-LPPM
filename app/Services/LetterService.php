@@ -87,13 +87,17 @@ class LetterService
         $qrUrl = URL::signedRoute('letters.verify', ['letter' => $letter->id]);
         $qrDataUri = generate_qr_code_data_uri($qrUrl);
 
+        $pdfConfig = get_pdf_config('letter');
+
         $data = [
             'letter' => $letter,
             'metadata' => $metadata,
             'team' => $letter->team_snapshot ?? [],
             'qrDataUri' => $qrDataUri,
+            'pdfConfig' => $pdfConfig,
         ];
 
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $pdf = Pdf::loadView((string) $letterType->template_view, $data);
 
         $filename = 'letters/'.$letterType->code.'-'.Str::slug($letter->letter_number ?? (string) $letter->id).'.pdf';

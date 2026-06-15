@@ -197,6 +197,8 @@ class ReportExportController extends Controller
                 ->first();
 
             $isPreview = $request->boolean('preview');
+            $pdfConfig = get_pdf_config('report');
+            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             $pdf = Pdf::loadView('reports.iku-report-pdf', [
                 'ikuMetrics' => $ikuMetrics,
                 'period' => $period,
@@ -205,6 +207,7 @@ class ReportExportController extends Controller
                 'lppmHead' => $lppmHead,
                 'institutionalReport' => $institutionalReport,
                 'isPreview' => $isPreview,
+                'pdfConfig' => $pdfConfig,
             ])->setPaper('a4', 'portrait');
 
             $filename = ($isPreview ? 'PREVIEW-' : '').'laporan-rekap-iku-'.$period.'-'.now()->format('YmdHis').'.pdf';
@@ -302,6 +305,8 @@ class ReportExportController extends Controller
             $rektor = User::role('rektor')->with('identity')->first();
             $lppmHead = User::role('kepala lppm')->with('identity')->first();
 
+            $pdfConfig = get_pdf_config('report');
+            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             $pdf = Pdf::loadView('reports.research-pdf', [
                 'proposals' => $proposals,
                 'period' => $period,
@@ -311,6 +316,7 @@ class ReportExportController extends Controller
                 'lppmHead' => $lppmHead,
                 'institutionalReport' => $institutionalReport,
                 'isPreview' => $isPreview,
+                'pdfConfig' => $pdfConfig,
             ])->setPaper('a4', 'landscape');
 
             $filename = ($isPreview ? 'PREVIEW-' : '').'laporan-penelitian-'.$period.'-'.now()->format('YmdHis').'.pdf';
@@ -420,6 +426,8 @@ class ReportExportController extends Controller
             $rektor = User::role('rektor')->with('identity')->first();
             $lppmHead = User::role('kepala lppm')->with('identity')->first();
 
+            $pdfConfig = get_pdf_config('report');
+            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             $pdf = Pdf::loadView('reports.community-service-pdf', [
                 'proposals' => $proposals,
                 'period' => $period,
@@ -429,6 +437,7 @@ class ReportExportController extends Controller
                 'lppmHead' => $lppmHead,
                 'institutionalReport' => $institutionalReport,
                 'isPreview' => $isPreview,
+                'pdfConfig' => $pdfConfig,
             ])->setPaper('a4', 'landscape');
 
             $filename = ($isPreview ? 'PREVIEW-' : '').'laporan-pkm-'.$period.'-'.now()->format('YmdHis').'.pdf';
@@ -524,6 +533,8 @@ class ReportExportController extends Controller
             $rektor = User::role('rektor')->with('identity')->first();
             $lppmHead = User::role('kepala lppm')->with('identity')->first();
 
+            $pdfConfig = get_pdf_config('report');
+            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             $pdf = Pdf::loadView('reports.output-reports-pdf', [
                 'proposals' => $proposals,
                 'activeTab' => $activeTab,
@@ -535,6 +546,7 @@ class ReportExportController extends Controller
                 'lppmHead' => $lppmHead,
                 'institutionalReport' => $institutionalReport,
                 'isPreview' => $isPreview,
+                'pdfConfig' => $pdfConfig,
             ])->setPaper('a4', 'landscape');
 
             $filename = ($isPreview ? 'PREVIEW-' : '').'laporan-luaran-'.$activeTab.'-'.now()->format('YmdHis').'.pdf';
@@ -686,6 +698,8 @@ class ReportExportController extends Controller
             $lppmHead = User::role('kepala lppm')->with('identity')->first();
 
             $isPreview = $request->boolean('preview');
+            $pdfConfig = get_pdf_config('report');
+            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             $pdf = Pdf::loadView('reports.partner-collaboration-pdf', [
                 'partners' => $partners,
                 'periodFilter' => $periodFilter,
@@ -695,6 +709,7 @@ class ReportExportController extends Controller
                 'lppmHead' => $lppmHead,
                 'institutionalReport' => $institutionalReport,
                 'isPreview' => $isPreview,
+                'pdfConfig' => $pdfConfig,
             ])->setPaper('a4', 'landscape');
 
             $filename = ($isPreview ? 'PREVIEW-' : '').'laporan-mitra-'.now()->format('Y-m-d').'.pdf';
@@ -996,6 +1011,8 @@ class ReportExportController extends Controller
                 return $this->pdfInlineResponse($pdfBinary, $filename);
             }
 
+            $pdfConfig = get_pdf_config('report_ba');
+            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             $pdf = Pdf::loadView('reports.monev-ba-pdf', [
                 'review' => $review,
                 'criteria' => $criteria,
@@ -1006,6 +1023,7 @@ class ReportExportController extends Controller
                 'qrAdminUrl' => $qrAdminUrl,
                 'qrKepalaUrl' => $qrKepalaUrl,
                 'generatedAt' => now(),
+                'pdfConfig' => $pdfConfig,
             ])->setPaper('a4', 'portrait');
 
             $pdfBinary = $pdf->output();
@@ -1137,6 +1155,8 @@ class ReportExportController extends Controller
             $rektor = User::role('rektor')->with('identity')->first();
             $lppmHead = User::role('kepala lppm')->with('identity')->first();
 
+            $pdfConfig = get_pdf_config('report');
+            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             $pdf = Pdf::loadView('reports.monev-pdf', [
                 'reviews' => $reviews,
                 'period' => $period,
@@ -1146,6 +1166,7 @@ class ReportExportController extends Controller
                 'lppmHead' => $lppmHead,
                 'institutionalReport' => $institutionalReport,
                 'isPreview' => $isPreview,
+                'pdfConfig' => $pdfConfig,
             ])->setPaper('a4', 'portrait');
 
             $filename = ($isPreview ? 'PREVIEW-' : '').'laporan-rekap-monev-'.$period.'-'.now()->format('YmdHis').'.pdf';
@@ -1294,6 +1315,8 @@ class ReportExportController extends Controller
                 ->where('year', $period)
                 ->first();
 
+            $pdfConfig = get_pdf_config('report_compact');
+            $pdfConfigLetter = get_pdf_config('letter');
             // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             $pdf = Pdf::loadView('reports.reviewer-report-pdf', [
                 'proposals' => $proposals,
@@ -1306,6 +1329,7 @@ class ReportExportController extends Controller
                 'lppmHead' => $lppmHead,
                 'institutionalReport' => $institutionalReport,
                 'isPreview' => $isPreview,
+                'pdfConfig' => $pdfConfig,
             ])->setPaper('a4', 'landscape');
 
             $mainPdfBinary = $pdf->output();
@@ -1380,6 +1404,7 @@ class ReportExportController extends Controller
 
                         $qrUrl = URL::signedRoute('signatures.verify', ['documentSignature' => $signature->id]);
 
+                        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
                         $reviewPdf = Pdf::loadView('pdf.review-evaluation', [
                             'isPreview' => false,
                             'assignment' => $rev,
@@ -1388,6 +1413,7 @@ class ReportExportController extends Controller
                             'totalScore' => $totalScore,
                             'type' => $typeVal,
                             'qrUrl' => $qrUrl,
+                            'pdfConfig' => $pdfConfigLetter,
                         ])->setPaper('a4', 'portrait');
 
                         $tempReviewPath = tempnam($tempDir, 'rev_eval_');

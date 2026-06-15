@@ -123,12 +123,16 @@
             text-align: center;
             color: #888;
         }
+        @include('reports.partials.report-base-styles')
     </style>
 </head>
 <body>
     <div class="kop-surat">
         <div class="kop-surat-inner">
-            <img src="{{ get_logo_base64() }}" class="logo">
+            @if($pdfConfig['show_logo'] ?? true)
+                {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                <img src="{{ get_logo_base64() }}" class="logo">
+            @endif
             <div class="header-text">
                 <div class="inst-name">INSTITUT TEKNOLOGI DAN SAINS NAHDLATUL ULAMA PEKALONGAN</div>
                 <div class="lppm-name">LEMBAGA PENELITIAN DAN PENGABDIAN KEPADA MASYARAKAT (LPPM)</div>

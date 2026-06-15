@@ -1,11 +1,13 @@
+@php $pdfConfig ??= get_pdf_config('letter'); @endphp
 <style>
+    /* Vetted by AI - Manual Review Required by Senior Engineer/Manager */
     @page {
-        margin: 0cm 2cm 0.5cm 2cm;
+        margin: {{ $pdfConfig['page_margin'] }};
     }
     body {
-        font-family: "Times New Roman", Times, serif;
-        font-size: 11pt;
-        line-height: 1;
+        font-family: {{ $pdfConfig['font_family'] }};
+        font-size: {{ $pdfConfig['body_font_size'] }}pt;
+        line-height: {{ $pdfConfig['compact'] ? '1' : '1.1' }};
         color: #000;
     }
     .header-table {
@@ -49,25 +51,25 @@
         text-align: center;
         font-weight: bold;
         text-decoration: underline;
-        margin-top: 5px;
-        margin-bottom: 0;
+        margin-top: 8px;
+        margin-bottom: 6px;
         font-size: 12pt;
     }
     .number {
         text-align: center;
-        margin-bottom: 5px;
+        margin-bottom: 8px;
     }
     .bismillah {
         text-align: center;
         font-weight: bold;
-        margin-bottom: 5px;
+        margin-bottom: 18px;
         font-size: 11pt;
     }
     .content {
         text-align: justify;
     }
     .content p {
-        margin: 0 0 2px 0;
+        margin: 6px 0;
     }
     .meta-table {
         width: 100%;
@@ -81,7 +83,7 @@
     .table-data {
         width: 100%;
         border-collapse: collapse;
-        margin: 5px 0;
+        margin: 8px 0;
     }
     .table-data th, .table-data td {
         border: 1px solid #000;
@@ -95,7 +97,7 @@
     }
     .signature-table {
         width: 100%;
-        margin-top: 10px;
+        margin-top: 20px;
     }
     .signature-box {
         width: 50%;
@@ -111,9 +113,9 @@
     .travel-table {
         width: 100%;
         border-top: 1px solid #000;
-        margin-top: 5px;
+        margin-top: 15px;
         padding-top: 3px;
-        font-size: 9pt;
+        font-size: 11pt;
     }
     .travel-table td {
         border: none;
@@ -126,9 +128,10 @@
         width: 150px;
     }
     .sig-spacer {
-        height: 30px;
+        height: 70px;
     }
     .manual-sig-space {
         height: 70px;
     }
+    @include('pdf.partials.base-styles')
 </style>

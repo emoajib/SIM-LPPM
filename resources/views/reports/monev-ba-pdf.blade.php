@@ -119,11 +119,15 @@
         
         strong { font-weight: bold; }
 
+        @include('reports.partials.report-base-styles')
     </style>
 </head>
 <body>
     <div class="kop-surat">
-        <img src="{{ public_path('logo.png') }}" class="logo">
+        @if($pdfConfig['show_logo'] ?? true)
+            {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+            <img src="{{ public_path('logo.png') }}" class="logo">
+        @endif
         <div class="header-text">
             <div class="inst-name">INSTITUT TEKNOLOGI DAN SAINS NAHDLATUL ULAMA PEKALONGAN</div>
             <div class="lppm-name">LEMBAGA PENELITIAN DAN PENGABDIAN KEPADA MASYARAKAT</div>

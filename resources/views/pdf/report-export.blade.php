@@ -121,7 +121,9 @@
         </div>
         
         <div style="margin: 40px 0; text-align: center;">
-            @if(get_logo_base64())
+            @php $pdfConfig ??= get_pdf_config('letter'); @endphp
+            @if(($pdfConfig['show_logo'] ?? true) && get_logo_base64())
+                {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
                 <img src="{{ get_logo_base64() }}" style="width: 180px;">
             @endif
         </div>
