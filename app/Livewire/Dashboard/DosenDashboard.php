@@ -181,7 +181,7 @@ class DosenDashboard extends Component
                     'data' => $usulanAnggota,
                     'borderColor' => '#f59f00',
                     'backgroundColor' => 'rgba(245, 159, 0, 0.1)',
-                    'fill' => true,
+                    'fill' => false,
                     'tension' => 0.4,
                 ],
                 [
@@ -189,7 +189,7 @@ class DosenDashboard extends Component
                     'data' => $didanaiAnggota,
                     'borderColor' => '#d6336c',
                     'backgroundColor' => 'rgba(214, 51, 108, 0.1)',
-                    'fill' => true,
+                    'fill' => false,
                     'tension' => 0.4,
                 ],
             ],
