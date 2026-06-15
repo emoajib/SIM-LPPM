@@ -119,51 +119,76 @@ class DosenDashboard extends Component
      */
     private function loadChartData(): void
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $currentYear = (int) date('Y');
-        $startYear = $currentYear - 4; // Last 5 years
+        $startYear = $currentYear - 4;
         $years = range($startYear, $currentYear);
 
-        $proposalsData = Proposal::query()
-            ->where('submitter_id', $this->user->id)
+        $userId = $this->user->id;
+
+        $ketuaData = Proposal::query()
+            ->where('submitter_id', $userId)
             ->where('start_year', '>=', $startYear)
-            ->select([
-                'start_year as year',
-                'status',
-                DB::raw('COUNT(*) as count'),
-            ])
+            ->select(['start_year as year', 'status', DB::raw('COUNT(*) as count')])
             ->groupBy('start_year', 'status')
             ->get();
 
-        $usulanData = [];
-        $didanaiData = [];
+        $anggotaData = Proposal::query()
+            ->where('start_year', '>=', $startYear)
+            ->whereHas('teamMembers', fn ($q) => $q->where('user_id', $userId)
+                ->where('status', 'accepted')
+            )
+            ->where('submitter_id', '!=', $userId)
+            ->select(['start_year as year', 'status', DB::raw('COUNT(*) as count')])
+            ->groupBy('start_year', 'status')
+            ->get();
+
+        $usulanKetua = [];
+        $didanaiKetua = [];
+        $usulanAnggota = [];
+        $didanaiAnggota = [];
 
         foreach ($years as $year) {
-            // Total Usulan in this year
-            $usulanCount = $proposalsData->filter(fn ($p) => (int) $p->getAttribute('year') === $year)->sum('count');
-            $usulanData[] = $usulanCount;
+            $ketuaYear = $ketuaData->filter(fn ($p) => (int) $p->getAttribute('year') === $year);
+            $usulanKetua[] = $ketuaYear->sum('count');
+            $didanaiKetua[] = $ketuaYear->filter(fn ($p) => in_array($p->status->value ?? '', ['approved', 'completed']))->sum('count');
 
-            // Didanai (status: approved or completed) in this year
-            $didanaiCount = $proposalsData->filter(fn ($p) => (int) $p->getAttribute('year') === $year && in_array($p->status->value ?? '', ['approved', 'completed']))->sum('count');
-            $didanaiData[] = $didanaiCount;
+            $anggotaYear = $anggotaData->filter(fn ($p) => (int) $p->getAttribute('year') === $year);
+            $usulanAnggota[] = $anggotaYear->sum('count');
+            $didanaiAnggota[] = $anggotaYear->filter(fn ($p) => in_array($p->status->value ?? '', ['approved', 'completed']))->sum('count');
         }
 
         $this->chartData = [
             'labels' => array_map('strval', $years),
             'datasets' => [
                 [
-                    'label' => 'Usulan',
-                    'data' => $usulanData,
+                    'label' => 'Usulan (Ketua)',
+                    'data' => $usulanKetua,
                     'borderColor' => '#206bc4',
                     'backgroundColor' => 'rgba(32, 107, 196, 0.1)',
                     'fill' => true,
                     'tension' => 0.4,
                 ],
                 [
-                    'label' => 'Didanai',
-                    'data' => $didanaiData,
+                    'label' => 'Didanai (Ketua)',
+                    'data' => $didanaiKetua,
                     'borderColor' => '#2fb344',
                     'backgroundColor' => 'rgba(47, 179, 68, 0.1)',
+                    'fill' => true,
+                    'tension' => 0.4,
+                ],
+                [
+                    'label' => 'Usulan (Anggota)',
+                    'data' => $usulanAnggota,
+                    'borderColor' => '#f59f00',
+                    'backgroundColor' => 'rgba(245, 159, 0, 0.1)',
+                    'fill' => true,
+                    'tension' => 0.4,
+                ],
+                [
+                    'label' => 'Didanai (Anggota)',
+                    'data' => $didanaiAnggota,
+                    'borderColor' => '#d6336c',
+                    'backgroundColor' => 'rgba(214, 51, 108, 0.1)',
                     'fill' => true,
                     'tension' => 0.4,
                 ],
@@ -179,8 +204,13 @@ class DosenDashboard extends Component
     {
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $statsRaw = Proposal::query()
-            ->where('submitter_id', $this->user->id)
             ->where('start_year', $yearFilter)
+            ->where(function ($q) {
+                $q->where('submitter_id', $this->user->id)
+                    ->orWhereHas('teamMembers', fn ($q2) => $q2->where('user_id', $this->user->id)
+                        ->where('status', 'accepted')
+                    );
+            })
             ->select([
                 'detailable_type',
                 'status',

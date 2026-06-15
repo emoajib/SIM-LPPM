@@ -136,7 +136,7 @@
                         </div>
                         <div class="col">
                             <div class="fw-bold">Penelitian</div>
-                            <div class="text-muted small">{{ $stats['my_research'] }} Judul (Ketua)</div>
+                            <div class="text-muted small">{{ $stats['my_research'] }} Total</div>
                         </div>
                     </div>
                 </div>
@@ -152,7 +152,7 @@
                         </div>
                         <div class="col">
                             <div class="fw-bold">Pengabdian</div>
-                            <div class="text-muted small">{{ $stats['my_community_service'] }} Judul (Ketua)</div>
+                            <div class="text-muted small">{{ $stats['my_community_service'] }} Total</div>
                         </div>
                     </div>
                 </div>
@@ -252,14 +252,22 @@
                             <i class="ti ti-chart-line"></i>
                         </div>
                         <h3 class="card-title fw-bold mb-0">Tren Penelitian & Pengabdian</h3>
-                        <div class="ms-auto d-flex gap-3">
+                        <div class="ms-auto d-flex gap-3 flex-wrap">
                             <span class="d-flex align-items-center gap-1 small text-muted">
                                 <span class="d-inline-block rounded-circle" style="width:8px;height:8px;background:#206bc4;"></span>
-                                Usulan
+                                Usulan (Ketua)
                             </span>
                             <span class="d-flex align-items-center gap-1 small text-muted">
                                 <span class="d-inline-block rounded-circle" style="width:8px;height:8px;background:#2fb344;"></span>
-                                Didanai
+                                Didanai (Ketua)
+                            </span>
+                            <span class="d-flex align-items-center gap-1 small text-muted">
+                                <span class="d-inline-block rounded-circle" style="width:8px;height:8px;background:#f59f00;"></span>
+                                Usulan (Anggota)
+                            </span>
+                            <span class="d-flex align-items-center gap-1 small text-muted">
+                                <span class="d-inline-block rounded-circle" style="width:8px;height:8px;background:#d6336c;"></span>
+                                Didanai (Anggota)
                             </span>
                         </div>
                     </div>
