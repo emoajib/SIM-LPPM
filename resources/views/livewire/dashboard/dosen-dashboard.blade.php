@@ -255,19 +255,19 @@
                         <div class="ms-auto d-flex gap-3 flex-wrap">
                             <span class="d-flex align-items-center gap-1 small text-muted">
                                 <span class="d-inline-block rounded-circle" style="width:8px;height:8px;background:#206bc4;"></span>
-                                Usulan (Ketua)
+                                Penelitian (Ketua)
                             </span>
                             <span class="d-flex align-items-center gap-1 small text-muted">
-                                <span class="d-inline-block rounded-circle" style="width:8px;height:8px;background:#2fb344;"></span>
-                                Didanai (Ketua)
+                                <span class="d-inline-block border border-2 rounded-circle" style="width:8px;height:8px;background:transparent;border-color:#7eb8e0 !important;"></span>
+                                Penelitian (Anggota)
                             </span>
                             <span class="d-flex align-items-center gap-1 small text-muted">
                                 <span class="d-inline-block rounded-circle" style="width:8px;height:8px;background:#f59f00;"></span>
-                                Usulan (Anggota)
+                                Pengabdian (Ketua)
                             </span>
                             <span class="d-flex align-items-center gap-1 small text-muted">
-                                <span class="d-inline-block rounded-circle" style="width:8px;height:8px;background:#d6336c;"></span>
-                                Didanai (Anggota)
+                                <span class="d-inline-block border border-2 rounded-circle" style="width:8px;height:8px;background:transparent;border-color:#fbd38d !important;"></span>
+                                Pengabdian (Anggota)
                             </span>
                         </div>
                     </div>

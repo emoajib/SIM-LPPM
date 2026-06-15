@@ -128,8 +128,8 @@ class DosenDashboard extends Component
         $ketuaData = Proposal::query()
             ->where('submitter_id', $userId)
             ->where('start_year', '>=', $startYear)
-            ->select(['start_year as year', 'status', DB::raw('COUNT(*) as count')])
-            ->groupBy('start_year', 'status')
+            ->select(['start_year as year', 'detailable_type', DB::raw('COUNT(*) as count')])
+            ->groupBy('start_year', 'detailable_type')
             ->get();
 
         $anggotaData = Proposal::query()
@@ -138,57 +138,65 @@ class DosenDashboard extends Component
                 ->where('status', 'accepted')
             )
             ->where('submitter_id', '!=', $userId)
-            ->select(['start_year as year', 'status', DB::raw('COUNT(*) as count')])
-            ->groupBy('start_year', 'status')
+            ->select(['start_year as year', 'detailable_type', DB::raw('COUNT(*) as count')])
+            ->groupBy('start_year', 'detailable_type')
             ->get();
 
-        $usulanKetua = [];
-        $didanaiKetua = [];
-        $usulanAnggota = [];
-        $didanaiAnggota = [];
+        $penelitianKetua = [];
+        $penelitianAnggota = [];
+        $pengabdianKetua = [];
+        $pengabdianAnggota = [];
 
         foreach ($years as $year) {
-            $ketuaYear = $ketuaData->filter(fn ($p) => (int) $p->getAttribute('year') === $year);
-            $usulanKetua[] = $ketuaYear->sum('count');
-            $didanaiKetua[] = $ketuaYear->filter(fn ($p) => in_array($p->status->value ?? '', ['approved', 'completed']))->sum('count');
+            $penelitianKetua[] = $ketuaData->filter(fn ($p) => (int) $p->getAttribute('year') === $year &&
+                str_contains($p->detailable_type ?? '', 'Research')
+            )->sum('count');
 
-            $anggotaYear = $anggotaData->filter(fn ($p) => (int) $p->getAttribute('year') === $year);
-            $usulanAnggota[] = $anggotaYear->sum('count');
-            $didanaiAnggota[] = $anggotaYear->filter(fn ($p) => in_array($p->status->value ?? '', ['approved', 'completed']))->sum('count');
+            $pengabdianKetua[] = $ketuaData->filter(fn ($p) => (int) $p->getAttribute('year') === $year &&
+                str_contains($p->detailable_type ?? '', 'CommunityService')
+            )->sum('count');
+
+            $penelitianAnggota[] = $anggotaData->filter(fn ($p) => (int) $p->getAttribute('year') === $year &&
+                str_contains($p->detailable_type ?? '', 'Research')
+            )->sum('count');
+
+            $pengabdianAnggota[] = $anggotaData->filter(fn ($p) => (int) $p->getAttribute('year') === $year &&
+                str_contains($p->detailable_type ?? '', 'CommunityService')
+            )->sum('count');
         }
 
         $this->chartData = [
             'labels' => array_map('strval', $years),
             'datasets' => [
                 [
-                    'label' => 'Usulan (Ketua)',
-                    'data' => $usulanKetua,
+                    'label' => 'Penelitian (Ketua)',
+                    'data' => $penelitianKetua,
                     'borderColor' => '#206bc4',
                     'backgroundColor' => 'rgba(32, 107, 196, 0.1)',
                     'fill' => true,
                     'tension' => 0.4,
                 ],
                 [
-                    'label' => 'Didanai (Ketua)',
-                    'data' => $didanaiKetua,
-                    'borderColor' => '#2fb344',
-                    'backgroundColor' => 'rgba(47, 179, 68, 0.1)',
-                    'fill' => true,
-                    'tension' => 0.4,
-                ],
-                [
-                    'label' => 'Usulan (Anggota)',
-                    'data' => $usulanAnggota,
-                    'borderColor' => '#f59f00',
-                    'backgroundColor' => 'rgba(245, 159, 0, 0.1)',
+                    'label' => 'Penelitian (Anggota)',
+                    'data' => $penelitianAnggota,
+                    'borderColor' => '#7eb8e0',
+                    'backgroundColor' => 'rgba(126, 184, 224, 0.1)',
                     'fill' => false,
                     'tension' => 0.4,
                 ],
                 [
-                    'label' => 'Didanai (Anggota)',
-                    'data' => $didanaiAnggota,
-                    'borderColor' => '#d6336c',
-                    'backgroundColor' => 'rgba(214, 51, 108, 0.1)',
+                    'label' => 'Pengabdian (Ketua)',
+                    'data' => $pengabdianKetua,
+                    'borderColor' => '#f59f00',
+                    'backgroundColor' => 'rgba(245, 159, 0, 0.1)',
+                    'fill' => true,
+                    'tension' => 0.4,
+                ],
+                [
+                    'label' => 'Pengabdian (Anggota)',
+                    'data' => $pengabdianAnggota,
+                    'borderColor' => '#fbd38d',
+                    'backgroundColor' => 'rgba(251, 211, 141, 0.1)',
                     'fill' => false,
                     'tension' => 0.4,
                 ],
