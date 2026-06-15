@@ -8,6 +8,6 @@ body {
     line-height: {{ $pdfConfig['line_height'] }};
 }
 @page {
-    size: {{ $pdfConfig['paper_size'] ?? 'a4' }} portrait;
+    size: {{ $pdfConfig['paper_size'] ?? 'a4' }} {{ $pdfConfig['orientation'] ?? 'portrait' }};
     margin: {{ $pdfConfig['custom_margins'] ?: $pdfConfig['page_margin'] }};
 }

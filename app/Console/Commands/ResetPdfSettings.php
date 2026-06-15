@@ -99,6 +99,7 @@ class ResetPdfSettings extends Command
     {
         if (! in_array($module, self::MODULE_KEYS, true)) {
             $this->error("Module '{$module}' tidak dikenal. Gunakan salah satu: ".implode(', ', self::MODULE_KEYS));
+
             return;
         }
 

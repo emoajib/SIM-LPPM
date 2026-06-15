@@ -127,7 +127,7 @@ class ReviewExportController extends Controller
                 'qrUrl' => $qrUrl,
                 'pdfConfig' => $pdfConfig,
             ])
-                ->setPaper(normalize_paper_size($pdfConfig['paper_size'] ?? 'a4'), 'portrait')
+                ->setPaper(normalize_paper_size($pdfConfig['paper_size'] ?? 'a4'), $pdfConfig['orientation'] ?? 'portrait')
                 ->setOptions([
                     'isHtml5ParserEnabled' => true,
                     'isRemoteEnabled' => true,
@@ -152,7 +152,7 @@ class ReviewExportController extends Controller
             'qrUrl' => $qrUrl,
             'pdfConfig' => $pdfConfig,
         ])
-            ->setPaper(normalize_paper_size($pdfConfig['paper_size'] ?? 'a4'), 'portrait')
+            ->setPaper(normalize_paper_size($pdfConfig['paper_size'] ?? 'a4'), $pdfConfig['orientation'] ?? 'portrait')
             ->setOptions([
                 'isHtml5ParserEnabled' => true,
                 'isRemoteEnabled' => true,

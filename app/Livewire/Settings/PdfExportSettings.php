@@ -70,6 +70,8 @@ class PdfExportSettings extends Component
 
     public string $editingFontSize = '';
 
+    public string $editingOrientation = '';
+
     public string $editingMarginTop = '';
 
     public string $editingMarginRight = '';
@@ -236,6 +238,7 @@ class PdfExportSettings extends Component
         $this->editingContentOutro = Setting::get("pdf_content_{$moduleKey}_outro", '');
 
         $this->editingPaperSize = Setting::get("pdf_override_{$moduleKey}_paper_size", '');
+        $this->editingOrientation = Setting::get("pdf_override_{$moduleKey}_orientation", '');
         $this->editingFontFamily = Setting::get("pdf_override_{$moduleKey}_font_family", '');
         $this->editingFontSize = Setting::get("pdf_override_{$moduleKey}_font_size", '');
         $this->editingMarginTop = Setting::get("pdf_override_{$moduleKey}_margin_top", '');
@@ -257,6 +260,7 @@ class PdfExportSettings extends Component
         Setting::set("pdf_content_{$this->editingModule}_outro", $this->editingContentOutro, 'string');
 
         Setting::set("pdf_override_{$this->editingModule}_paper_size", $this->editingPaperSize, 'string');
+        Setting::set("pdf_override_{$this->editingModule}_orientation", $this->editingOrientation, 'string');
         Setting::set("pdf_override_{$this->editingModule}_font_family", $this->editingFontFamily, 'string');
         Setting::set("pdf_override_{$this->editingModule}_font_size", $this->editingFontSize, 'string');
         Setting::set("pdf_override_{$this->editingModule}_margin_top", $this->editingMarginTop, 'string');

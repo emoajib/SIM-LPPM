@@ -606,6 +606,14 @@
                                             </select>
                                         </div>
                                         <div class="col-md-6">
+                                            <label class="form-label fw-bold">Orientasi Halaman</label>
+                                            <select class="form-select" wire:model="editingOrientation">
+                                                <option value="">-- Ikuti Pengaturan Default Modul --</option>
+                                                <option value="portrait">Portrait (Vertikal)</option>
+                                                <option value="landscape">Landscape (Horizontal)</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
                                             <label class="form-label fw-bold">Ukuran Font Khusus</label>
                                             <select class="form-select" wire:model="editingFontSize">
                                                 <option value="">-- Ikuti Pengaturan Global --</option>

@@ -367,6 +367,7 @@ if (! function_exists('get_pdf_config')) {
             'paragraph_spacing' => (int) Setting::get('pdf_paragraph_spacing', 6),
             'paragraph_indent' => (int) Setting::get('pdf_paragraph_indent', 0),
             'custom_margins' => $customMargins,
+            'orientation' => '',
             'intro_text' => '',
             'outro_text' => '',
         ];
@@ -384,6 +385,9 @@ if (! function_exists('get_pdf_config')) {
             }
             if ($overridePaper = Setting::get("pdf_override_{$moduleKey}_paper_size")) {
                 $config['paper_size'] = $overridePaper;
+            }
+            if ($overrideOrientation = Setting::get("pdf_override_{$moduleKey}_orientation")) {
+                $config['orientation'] = $overrideOrientation;
             }
 
             // Margin Override
