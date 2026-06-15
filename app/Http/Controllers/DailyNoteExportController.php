@@ -41,7 +41,9 @@ class DailyNoteExportController extends Controller
 
         $proposal->load([
             'dailyNotes' => fn ($q) => $q->with(['media.model', 'budgetGroup'])->latest('activity_date'),
+            'submitter.identity.faculty',
             'submitter.identity.studyProgram',
+            'submitter.identity.institution',
             'teamMembers.identity',
             'researchScheme',
             'communityServiceScheme',
@@ -56,7 +58,7 @@ class DailyNoteExportController extends Controller
         $academicYear = $proposal->start_year.'/'.($proposal->start_year + 1);
 
         $logbookApprovalMode = Setting::where('key', 'logbook_approval_mode')->value('value') ?? 'digital';
-        $pdfConfig = get_pdf_config('letter');
+        $pdfConfig = get_pdf_config('letter', 'logbook');
 
         // 1. Render for hash
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
@@ -123,10 +125,6 @@ class DailyNoteExportController extends Controller
 
         $title = preg_replace('/[^A-Za-z0-9_\-]/', '_', substr($proposal->title, 0, 50));
         $filename = 'Catatan_Harian_'.$title.'.pdf';
-
-        if (ob_get_level()) {
-
-        }
 
         if ($request->query('download') === 'true') {
             return $pdf->download($filename);

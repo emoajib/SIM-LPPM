@@ -87,7 +87,7 @@ class LetterService
         $qrUrl = URL::signedRoute('letters.verify', ['letter' => $letter->id]);
         $qrDataUri = generate_qr_code_data_uri($qrUrl);
 
-        $pdfConfig = get_pdf_config('letter');
+        $pdfConfig = get_pdf_config('letter', 'letter');
 
         $data = [
             'letter' => $letter,

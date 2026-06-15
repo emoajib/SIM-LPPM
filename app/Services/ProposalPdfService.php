@@ -37,11 +37,9 @@ class ProposalPdfService
      * Get a local PDF path for a media file.
      * Returns null if the file cannot be found.
      *
-     * @param  array<int, string>  $tempFiles
-     *
      * For local disks: resolves to the absolute filesystem path.
      */
-    private function getLocalPdfPath(Media $media, array &$tempFiles): ?string
+    private function getLocalPdfPath(Media $media): ?string
     {
         $diskName = config('media-library.disk_name', 'public');
         $path = $media->getPath();
@@ -59,7 +57,7 @@ class ProposalPdfService
     public function export(Proposal $proposal, bool $isPreview = false): string
     {
         // 0. Cache Check
-        $cacheDir = storage_path('app/public/pdf_cache/proposals');
+        $cacheDir = storage_path('app/pdf_cache/proposals');
         if (! file_exists($cacheDir)) {
             mkdir($cacheDir, 0755, true);
         }
@@ -240,7 +238,7 @@ class ProposalPdfService
                     $nm = $nm.', '.$sx;
                 }
                 $lppmHeadName = $nm;
-                $deanId = $idn->identity_id ?? '';
+                $lppmHeadId = $idn->identity_id ?? '';
             }
         } else {
             // Ultimate fallback
@@ -301,7 +299,7 @@ class ProposalPdfService
             'signatures',
         ]);
 
-        $pdfConfig = get_pdf_config('letter');
+        $pdfConfig = get_pdf_config('letter', 'proposal-export');
         // 1. Generate the basic info PDF using DomPDF
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $infoPdfContent = Pdf::loadView('pdf.proposal-export', [
@@ -336,9 +334,6 @@ class ProposalPdfService
         // 2. Prepare FPDI for merging
         $pdf = new Fpdi;
 
-        // Track temp files for cleanup if needed
-        $tempFiles = [];
-
         // Add pages from the generated info PDF
         $pageCount = $pdf->setSourceFile($tempInfoPath);
         for ($i = 1; $i <= $pageCount; $i++) {
@@ -358,7 +353,7 @@ class ProposalPdfService
                 $approvalFile = $detailable->getFirstMedia('approval_file');
             }
             if ($approvalFile) {
-                $approvalPath = $this->getLocalPdfPath($approvalFile, $tempFiles);
+                $approvalPath = $this->getLocalPdfPath($approvalFile);
                 $isPdf = str_contains($approvalFile->mime_type ?? '', 'pdf');
 
                 if ($approvalPath !== null && $isPdf) {
@@ -399,7 +394,7 @@ class ProposalPdfService
             $substanceFile = $detailableSubstance->getFirstMedia('substance_file');
         }
         if ($substanceFile) {
-            $substancePath = $this->getLocalPdfPath($substanceFile, $tempFiles);
+            $substancePath = $this->getLocalPdfPath($substanceFile);
             $isPdf = str_contains($substanceFile->mime_type ?? '', 'pdf');
 
             if ($substancePath !== null && $isPdf) {
@@ -439,7 +434,7 @@ class ProposalPdfService
                 ->first();
 
             if ($commitmentLetter) {
-                $filePath = $this->getLocalPdfPath($commitmentLetter, $tempFiles);
+                $filePath = $this->getLocalPdfPath($commitmentLetter);
                 $isPdf = str_contains($commitmentLetter->mime_type ?? '', 'pdf');
 
                 Log::debug('Checking commitment letter for PDF merge', [
@@ -500,11 +495,6 @@ class ProposalPdfService
 
         // Cleanup temporary info PDF
         @unlink($tempInfoPath);
-
-        // Cleanup temp files
-        foreach ($tempFiles as $tempFile) {
-            @unlink($tempFile);
-        }
 
         return $cachePath;
     }
@@ -585,19 +575,28 @@ class ProposalPdfService
     }
 
     /**
-     * Update signature hashes with actual PDF hash.
+     * Update signature hashes with actual PDF hash and re-sign payload.
      */
     protected function updateProposalSignatureHashes(Proposal $proposal, string $actualHash): void
     {
         $kid = config('document-signatures.current_kid', 'v1');
 
-        $proposal->signatures()
+        $signatures = $proposal->signatures()
             ->where('document_type', get_class($proposal))
             ->where('document_id', $proposal->id)
             ->where('variant', 'final')
-            ->update([
+            ->get();
+
+        foreach ($signatures as $sig) {
+            $payload = $sig->payload;
+            $payload['pdf_hash'] = $actualHash;
+
+            $sig->update([
                 'document_hash' => $actualHash,
+                'payload' => $payload,
+                'signature' => $this->signatureService->signPayload($payload, $kid),
             ]);
+        }
     }
 
     /**
@@ -606,7 +605,7 @@ class ProposalPdfService
     public function exportReport(Proposal $proposal, ProgressReport $report, bool $isPreview = false): string
     {
         // 0. Cache Check
-        $cacheDir = storage_path('app/public/pdf_cache/reports');
+        $cacheDir = storage_path('app/pdf_cache/reports');
         if (! file_exists($cacheDir)) {
             mkdir($cacheDir, 0755, true);
         }
@@ -754,7 +753,7 @@ class ProposalPdfService
             ? URL::signedRoute('signatures.verify', ['documentSignature' => $reportSigs['finalized|kepala_lppm']->id])
             : null;
 
-        $pdfConfig = get_pdf_config('letter');
+        $pdfConfig = get_pdf_config('letter', 'laporan-kemajuan');
 
         // Generate report content PDF
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
@@ -822,9 +821,6 @@ class ProposalPdfService
 
         $pdf = new Fpdi;
 
-        // Track temp files for cleanup if needed
-        $tempFiles = [];
-
         $pageCount = $pdf->setSourceFile($tempInfoPath);
         for ($i = 1; $i <= $pageCount; $i++) {
             $templateId = $pdf->importPage($i);
@@ -837,7 +833,7 @@ class ProposalPdfService
         /** @var ?Media $signaturePage */
         $signaturePage = $report->getFirstMedia('signature_page');
         if ($signaturePage) {
-            $signaturePath = $this->getLocalPdfPath($signaturePage, $tempFiles);
+            $signaturePath = $this->getLocalPdfPath($signaturePage);
             if ($signaturePath !== null && str_contains($signaturePage->mime_type ?? '', 'pdf')) {
                 try {
                     $sigPageCount = $pdf->setSourceFile($signaturePath);
@@ -857,7 +853,7 @@ class ProposalPdfService
         /** @var ?Media $substanceFile */
         $substanceFile = $report->getFirstMedia('substance_file');
         if ($substanceFile) {
-            $reportSubstancePath = $this->getLocalPdfPath($substanceFile, $tempFiles);
+            $reportSubstancePath = $this->getLocalPdfPath($substanceFile);
             if ($reportSubstancePath !== null && str_contains($substanceFile->mime_type ?? '', 'pdf')) {
                 try {
                     $substancePageCount = $pdf->setSourceFile($reportSubstancePath);
@@ -877,7 +873,7 @@ class ProposalPdfService
         /** @var ?Media $realizationFile */
         $realizationFile = $report->getFirstMedia('realization_file');
         if ($realizationFile) {
-            $realizationPath = $this->getLocalPdfPath($realizationFile, $tempFiles);
+            $realizationPath = $this->getLocalPdfPath($realizationFile);
             if ($realizationPath !== null && str_contains($realizationFile->mime_type ?? '', 'pdf')) {
                 try {
                     $realizationPageCount = $pdf->setSourceFile($realizationPath);
@@ -898,7 +894,7 @@ class ProposalPdfService
             /** @var ?Media $presentationFile */
             $presentationFile = $report->getFirstMedia('presentation_file');
             if ($presentationFile) {
-                $presentationPath = $this->getLocalPdfPath($presentationFile, $tempFiles);
+                $presentationPath = $this->getLocalPdfPath($presentationFile);
                 if ($presentationPath !== null && str_contains($presentationFile->mime_type ?? '', 'pdf')) {
                     try {
                         $presentationPageCount = $pdf->setSourceFile($presentationPath);
@@ -925,7 +921,7 @@ class ProposalPdfService
                 /** @var ?Media $outputMedia */
                 $outputMedia = $outputRecord->getFirstMedia($collection);
                 if ($outputMedia) {
-                    $outputPath = $this->getLocalPdfPath($outputMedia, $tempFiles);
+                    $outputPath = $this->getLocalPdfPath($outputMedia);
                     if ($outputPath !== null && str_contains($outputMedia->mime_type ?? '', 'pdf')) {
                         try {
                             $outputPageCount = $pdf->setSourceFile($outputPath);
@@ -1013,11 +1009,7 @@ class ProposalPdfService
         $pdf->Output('F', $cachePath);
         @unlink($tempInfoPath);
 
-        // Cleanup temp files
-        foreach ($tempFiles as $tempFile) {
-            @unlink($tempFile);
-        }
-
         return $cachePath;
     }
 }
+

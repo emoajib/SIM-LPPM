@@ -197,7 +197,7 @@ class ReportExportController extends Controller
                 ->first();
 
             $isPreview = $request->boolean('preview');
-            $pdfConfig = get_pdf_config('report');
+            $pdfConfig = get_pdf_config('report', 'iku');
             // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             $pdf = Pdf::loadView('reports.iku-report-pdf', [
                 'ikuMetrics' => $ikuMetrics,
@@ -305,7 +305,7 @@ class ReportExportController extends Controller
             $rektor = User::role('rektor')->with('identity')->first();
             $lppmHead = User::role('kepala lppm')->with('identity')->first();
 
-            $pdfConfig = get_pdf_config('report');
+            $pdfConfig = get_pdf_config('report', 'penelitian');
             // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             $pdf = Pdf::loadView('reports.research-pdf', [
                 'proposals' => $proposals,
@@ -426,7 +426,7 @@ class ReportExportController extends Controller
             $rektor = User::role('rektor')->with('identity')->first();
             $lppmHead = User::role('kepala lppm')->with('identity')->first();
 
-            $pdfConfig = get_pdf_config('report');
+            $pdfConfig = get_pdf_config('report', 'pengabdian');
             // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             $pdf = Pdf::loadView('reports.community-service-pdf', [
                 'proposals' => $proposals,
@@ -533,7 +533,7 @@ class ReportExportController extends Controller
             $rektor = User::role('rektor')->with('identity')->first();
             $lppmHead = User::role('kepala lppm')->with('identity')->first();
 
-            $pdfConfig = get_pdf_config('report');
+            $pdfConfig = get_pdf_config('report', 'output');
             // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             $pdf = Pdf::loadView('reports.output-reports-pdf', [
                 'proposals' => $proposals,
@@ -698,7 +698,7 @@ class ReportExportController extends Controller
             $lppmHead = User::role('kepala lppm')->with('identity')->first();
 
             $isPreview = $request->boolean('preview');
-            $pdfConfig = get_pdf_config('report');
+            $pdfConfig = get_pdf_config('report', 'mitra');
             // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             $pdf = Pdf::loadView('reports.partner-collaboration-pdf', [
                 'partners' => $partners,
@@ -1011,7 +1011,7 @@ class ReportExportController extends Controller
                 return $this->pdfInlineResponse($pdfBinary, $filename);
             }
 
-            $pdfConfig = get_pdf_config('report_ba');
+            $pdfConfig = get_pdf_config('report_ba', 'monev-ba');
             // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             $pdf = Pdf::loadView('reports.monev-ba-pdf', [
                 'review' => $review,
@@ -1155,7 +1155,7 @@ class ReportExportController extends Controller
             $rektor = User::role('rektor')->with('identity')->first();
             $lppmHead = User::role('kepala lppm')->with('identity')->first();
 
-            $pdfConfig = get_pdf_config('report');
+            $pdfConfig = get_pdf_config('report', 'monev');
             // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             $pdf = Pdf::loadView('reports.monev-pdf', [
                 'reviews' => $reviews,
@@ -1315,8 +1315,8 @@ class ReportExportController extends Controller
                 ->where('year', $period)
                 ->first();
 
-            $pdfConfig = get_pdf_config('report_compact');
-            $pdfConfigLetter = get_pdf_config('letter');
+            $pdfConfig = get_pdf_config('report_compact', 'reviewer');
+            $pdfConfigLetter = get_pdf_config('letter', 'evaluasi-reviewer');
             // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             $pdf = Pdf::loadView('reports.reviewer-report-pdf', [
                 'proposals' => $proposals,
@@ -1335,7 +1335,7 @@ class ReportExportController extends Controller
             $mainPdfBinary = $pdf->output();
 
             // Setup cache/temp dir
-            $tempDir = storage_path('app/public/pdf_cache/reviewer_reports');
+            $tempDir = storage_path('app/pdf_cache/reviewer_reports');
             if (! file_exists($tempDir)) {
                 mkdir($tempDir, 0755, true);
             }

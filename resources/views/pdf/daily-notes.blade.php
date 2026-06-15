@@ -257,17 +257,6 @@
                 </tr>
             @endforelse
         </tbody>
-        {{-- @if ($notes->count() > 0)
-        <tfoot>
-            <tr>
-                <td colspan="4" class="font-bold text-right">Total Nominal Digunakan:</td>
-                <td class="font-bold text-right">
-                    {{ number_format($notes->sum('amount'), 0, ',', '.') }}
-                </td>
-                <td></td>
-            </tr>
-        </tfoot>
-        @endif --}}
     </table>
 
     <div style="margin-top: 30px; page-break-inside: avoid;">

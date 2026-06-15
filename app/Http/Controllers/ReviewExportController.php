@@ -58,7 +58,7 @@ class ReviewExportController extends Controller
         }
 
         $isPreview = $request->has('preview');
-        $pdfConfig = get_pdf_config('letter');
+        $pdfConfig = get_pdf_config('letter', 'evaluasi-reviewer');
 
         $proposal->load([
             'submitter.identity.faculty',

@@ -72,7 +72,7 @@ jobs:
         run: php artisan key:generate
 
       - name: Run PHPStan
-        run: vendor/bin/phpstan analyze --memory-limit=2G --level=4
+        run: vendor/bin/phpstan analyze --memory-limit=2G --level=5
 
   # ──────────────────────────────────────────────
   # JOB 3: Automated Tests (Pest — SQLite)
