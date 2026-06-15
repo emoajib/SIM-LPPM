@@ -136,6 +136,7 @@ class DosenDashboard extends Component
             ->where('start_year', '>=', $startYear)
             ->whereHas('teamMembers', fn ($q) => $q->where('user_id', $userId)
                 ->where('status', 'accepted')
+                ->where('role', '!=', 'ketua')
             )
             ->where('submitter_id', '!=', $userId)
             ->select(['start_year as year', 'detailable_type', DB::raw('COUNT(*) as count')])
