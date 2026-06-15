@@ -96,7 +96,9 @@ class Letter extends Model
                 $immutableFields = ['letter_number', 'status', 'team_snapshot', 'file_path', 'published_at'];
 
                 foreach ($immutableFields as $field) {
-                    if ($letter->isDirty($field) && in_array($letter->getOriginal('status'), self::STATUS_IMMUTABLE)) {
+                    if ($letter->isDirty($field)
+                        && ! is_null($letter->getOriginal($field))
+                        && in_array($letter->getOriginal('status'), self::STATUS_IMMUTABLE)) {
                         return false;
                     }
                 }
