@@ -1,16 +1,22 @@
 <?php
 
 $currentKid = env('DOCUMENT_SIGNATURE_KID', 'v1');
-// Always provide a fallback secret to prevent runtime errors
-$keys = [
-    $currentKid => env('DOCUMENT_SIGNATURE_SECRET', 'default-signature-secret-do-not-use-in-production'),
-];
+$secret = env('DOCUMENT_SIGNATURE_SECRET');
 
-// Validation: Ensure current_kid exists in keys and has a non-empty secret
-// We wrap this in a check to allow bootstrapping during static analysis or CLI if needed
-// Note: In production without env set, we use fallback above but warn in logs
+if (empty($secret)) {
+    if (app()->environment('production')) {
+        throw new RuntimeException(
+            'DOCUMENT_SIGNATURE_SECRET is not configured. '
+            .'Generate a key: php -r "echo bin2hex(random_bytes(32));"'
+        );
+    }
+    logger()->warning('DOCUMENT_SIGNATURE_SECRET not set — using development fallback');
+    $secret = 'dev-fallback-secret-not-for-production';
+}
 
 return [
     'current_kid' => $currentKid,
-    'keys' => $keys,
+    'keys' => [
+        $currentKid => $secret,
+    ],
 ];

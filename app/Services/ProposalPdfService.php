@@ -1012,4 +1012,3 @@ class ProposalPdfService
         return $cachePath;
     }
 }
-
