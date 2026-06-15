@@ -20,6 +20,21 @@
                                     @enderror
                                 </div>
 
+                                @if(count($proposals) > 0)
+                                <div class="mb-4">
+                                    <label class="form-label">Gunakan Data Proposal</label>
+                                    <select class="form-select" wire:model.live="selectedProposalId">
+                                        <option value="">-- Input manual atau pilih proposal --</option>
+                                        @foreach($proposals as $proposal)
+                                        <option value="{{ $proposal->id }}" wire:key="prop-{{ $proposal->id }}">
+                                            {{ $proposal->title }}
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                    <small class="text-muted">Judul, lokasi, dan tim akan terisi otomatis jika memilih proposal.</small>
+                                </div>
+                                @endif
+
                                 {{-- Detail Kegiatan --}}
                                 <div class="mb-4">
                                     <label class="form-label required">Judul Kegiatan</label>
@@ -115,6 +130,7 @@
                                                         <select class="form-select form-select-sm" wire:model.lazy="team.{{ $index }}.role">
                                                             <option value="Ketua">Ketua</option>
                                                             <option value="Anggota">Anggota</option>
+                                                            <option value="Mahasiswa">Mahasiswa</option>
                                                         </select>
                                                     </td>
                                                     <td>

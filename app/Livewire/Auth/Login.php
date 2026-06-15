@@ -94,7 +94,7 @@ class Login extends Component
         // Manual Honey Pot Check
         if (! empty($this->username_honeypot)) {
             throw ValidationException::withMessages([
-                'email' => __('auth.failed'),
+                'general' => 'Terjadi kesalahan validasi.',
             ]);
         }
 
@@ -113,8 +113,10 @@ class Login extends Component
 
         if (! Auth::attempt($credentials, $this->remember)) {
             RateLimiter::hit($this->throttleKey());
+            $attemptsLeft = max(0, 5 - RateLimiter::attempts($this->throttleKey()));
             throw ValidationException::withMessages([
                 'email' => __('auth.failed'),
+                'general' => __('auth.failed').' Sisa percobaan: '.$attemptsLeft.'.',
             ]);
         }
 
@@ -178,6 +180,10 @@ class Login extends Component
 
         throw ValidationException::withMessages([
             'email' => __('auth.throttle', [
+                'seconds' => $seconds,
+                'minutes' => ceil($seconds / 60),
+            ]),
+            'general' => __('auth.throttle', [
                 'seconds' => $seconds,
                 'minutes' => ceil($seconds / 60),
             ]),

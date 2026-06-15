@@ -16,6 +16,14 @@
                     <div class="card-body p-4 p-md-5">
                         <h2 class="mb-5 text-center h2 fw-bold text-dark" style="letter-spacing: -0.02em;">{{ $loginTitle }}</h2>
                         
+                        @error('general')
+                            <div class="alert alert-danger alert-dismissible d-flex align-items-center py-2 px-3 mb-4" role="alert">
+                                <x-lucide-alert-circle class="icon me-2 flex-shrink-0" style="width:1.25rem;height:1.25rem;" />
+                                <span>{{ $message }}</span>
+                                <button type="button" class="btn-close btn-close-sm ms-auto" data-bs-dismiss="alert"></button>
+                            </div>
+                        @enderror
+
                         <form method="post" wire:submit.prevent="login" autocomplete="off" novalidate>
                             <div class="mb-4">
                                 <label class="form-label fw-medium text-secondary mb-2">Email atau ID Identitas</label>
@@ -128,6 +136,23 @@
                     </div>
                 </div>
                 
+                @if(app()->environment('local'))
+                    <div class="mt-4 pt-4 border-top">
+                        <p class="text-center text-secondary small fw-bold mb-3">🔧 Developer Quick Login (Local Only)</p>
+                        <div class="d-flex flex-wrap gap-2 justify-content-center">
+                            @php
+                                $devRoles = ['superadmin', 'admin lppm', 'kepala lppm', 'dosen', 'reviewer', 'dekan', 'kaprodi', 'rektor'];
+                            @endphp
+                            @foreach($devRoles as $role)
+                                <button type="button" wire:click="devLogin('{{ $role }}')" 
+                                    class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                                    {{ ucfirst($role) }}
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
                 <p class="text-center mt-4 text-secondary small">
                     &copy; {{ date('Y') }} SIM LPPM ITSNU Pekalongan. All rights reserved.
                 </p>

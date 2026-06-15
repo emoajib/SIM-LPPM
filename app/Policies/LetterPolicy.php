@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Models\Letter;
+use App\Models\Setting;
 use App\Models\User;
 
 class LetterPolicy
@@ -28,11 +29,21 @@ class LetterPolicy
 
     public function approve(User $user, Letter $letter): bool
     {
+        if ($letter->signature_mode === 'manual'
+            && (bool) Setting::get('surat_wet_signature_bypass', false)) {
+            return true;
+        }
+
         return $user->activeHasAnyRole(['kepala lppm', 'rektor']);
     }
 
     public function reject(User $user, Letter $letter): bool
     {
+        if ($letter->signature_mode === 'manual'
+            && (bool) Setting::get('surat_wet_signature_bypass', false)) {
+            return false;
+        }
+
         return $user->activeHasAnyRole(['kepala lppm', 'rektor']);
     }
 

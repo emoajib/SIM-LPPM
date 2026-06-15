@@ -115,13 +115,24 @@ class LetterService
     /**
      * Check if a duplicate letter type exists for the given proposal.
      */
-    public function hasDuplicateLetter(Proposal $proposal, int $letterTypeId): bool
+    public function hasDuplicateLetter(Proposal $proposal, int $letterTypeId, ?string $teamSource = null): bool
     {
-        return Letter::where('letter_type_id', $letterTypeId)
+        $query = Letter::where('letter_type_id', $letterTypeId)
             ->where('reference_type', get_class($proposal))
             ->where('reference_id', $proposal->id)
-            ->where('status', '!=', 'rejected')
-            ->exists();
+            ->where('status', '!=', 'rejected');
+
+        if ($teamSource !== null) {
+            $query->where('team_source', $teamSource);
+        }
+
+        return $query->exists();
+    }
+
+    private function shouldBypassApproval(): bool
+    {
+        return Setting::get('surat_signature_mode', 'tte') === 'manual'
+            && (bool) Setting::get('surat_wet_signature_bypass', false);
     }
 
     /**
@@ -143,17 +154,38 @@ class LetterService
             'signer_address' => Setting::get('lppm_head_address', 'Jl. Rowolaku No. 01 Kajen, Pekalongan'),
         ];
 
-        return Letter::create([
+        $bypass = $this->shouldBypassApproval();
+        $status = $bypass ? 'ready_to_print' : 'pending_approval';
+
+        $letter = Letter::create([
             'letter_type_id' => $data['letterTypeId'],
             'user_id' => $user->id,
             'reference_type' => get_class($proposal),
             'reference_id' => $proposal->id,
             'source' => 'proposal',
+            'team_source' => 'proposal',
             'signature_mode' => Setting::get('surat_signature_mode', 'tte'),
-            'status' => 'pending_approval',
+            'status' => $status,
             'metadata' => $metadata,
-            'team_snapshot' => $this->buildTeamSnapshot($proposal),
+            'team_snapshot' => TeamSnapshotBuilder::forProposal($proposal),
         ]);
+
+        $letter->logs()->create([
+            'user_id' => $user->id,
+            'action' => $bypass ? 'auto_published' : 'submitted',
+            'notes' => $bypass
+                ? 'Diterbitkan otomatis (TTD Basah bypass)'
+                : 'Diajukan ke Kepala LPPM.',
+            'created_at' => now(),
+        ]);
+
+        if ($bypass) {
+            $letter->update([
+                'published_at' => now(),
+            ]);
+        }
+
+        return $letter;
     }
 
     /**
@@ -162,17 +194,23 @@ class LetterService
     public function requestManualLetter(User $user, array $data): Letter
     {
         return DB::transaction(function () use ($user, $data) {
+            $referenceType = $data['reference_type'] ?? null;
+            $referenceId = $data['reference_id'] ?? null;
+
             // Lock to prevent duplicate submissions
             $exists = Letter::where('letter_type_id', $data['letterTypeId'])
                 ->where('user_id', $user->id)
-                ->whereNull('reference_id')
-                ->where('source', 'manual')
+                ->when($referenceId, fn ($q) => $q->where('reference_type', $referenceType)->where('reference_id', $referenceId))
+                ->when(! $referenceId, fn ($q) => $q->whereNull('reference_id')->where('source', 'manual'))
                 ->where('status', '!=', 'cancelled')
                 ->lockForUpdate()
                 ->exists();
 
             if ($exists) {
-                throw new \DomainException('Anda sudah mengajukan surat jenis ini yang sedang diproses.');
+                $msg = $referenceId
+                    ? 'Anda sudah mengajukan surat jenis ini untuk proposal tersebut.'
+                    : 'Anda sudah mengajukan surat jenis ini yang sedang diproses.';
+                throw new \DomainException($msg);
             }
 
             $metadata = [
@@ -189,17 +227,43 @@ class LetterService
                 'signer_address' => Setting::get('lppm_head_address', 'Jl. Rowolaku No. 01 Kajen, Pekalongan'),
             ];
 
-            return Letter::create([
+            $referenceType = $data['reference_type'] ?? null;
+            $referenceId = $data['reference_id'] ?? null;
+            $source = $referenceId ? 'proposal' : 'manual';
+            $teamSource = $referenceId ? 'manual' : 'manual';
+
+            $bypass = $this->shouldBypassApproval();
+            $status = $bypass ? 'ready_to_print' : 'pending_approval';
+
+            $letter = Letter::create([
                 'letter_type_id' => $data['letterTypeId'],
                 'user_id' => $user->id,
-                'reference_type' => null,
-                'reference_id' => null,
-                'source' => 'manual',
+                'reference_type' => $referenceType,
+                'reference_id' => $referenceId,
+                'source' => $source,
+                'team_source' => $teamSource,
                 'signature_mode' => Setting::get('surat_signature_mode', 'tte'),
-                'status' => 'pending_approval',
+                'status' => $status,
                 'metadata' => $metadata,
-                'team_snapshot' => $data['team'] ?? [],
+                'team_snapshot' => TeamSnapshotBuilder::forManual($data['team'] ?? [], $user),
             ]);
+
+            $letter->logs()->create([
+                'user_id' => $user->id,
+                'action' => $bypass ? 'auto_published' : 'submitted',
+                'notes' => $bypass
+                    ? 'Diterbitkan otomatis (TTD Basah bypass)'
+                    : 'Diajukan ke Kepala LPPM.',
+                'created_at' => now(),
+            ]);
+
+            if ($bypass) {
+                $letter->update([
+                    'published_at' => now(),
+                ]);
+            }
+
+            return $letter;
         });
     }
 
@@ -394,42 +458,5 @@ class LetterService
             ->select('id', 'name', 'email')
             ->limit(10)
             ->get();
-    }
-
-    /**
-     * Build team snapshot from proposal.
-     */
-    private function buildTeamSnapshot(Proposal $proposal): array
-    {
-        $team = [];
-
-        $team[] = [
-            'name' => $proposal->submitter->name,
-            'role' => 'Ketua',
-            'identifier' => $proposal->submitter->identity->identity_id ?? '-',
-        ];
-
-        foreach ($proposal->teamMembers as $member) {
-            $pivot = $member->pivot;
-            if ($pivot && $pivot->getAttribute('status') === 'accepted') {
-                $team[] = [
-                    'name' => $member->name,
-                    'role' => 'Anggota',
-                    'identifier' => $member->identity->identity_id ?? '-',
-                ];
-            }
-        }
-
-        if ($proposal->student_members) {
-            foreach ($proposal->student_members as $student) {
-                $team[] = [
-                    'name' => $student['name'],
-                    'role' => 'Mahasiswa',
-                    'identifier' => $student['nim'] ?? '-',
-                ];
-            }
-        }
-
-        return $team;
     }
 }

@@ -17,6 +17,8 @@ class FeatureFlags extends Component
 
     public string $suratSignatureMode = 'tte';
 
+    public bool $suratWetSignatureBypass = false;
+
     public bool $featureCommunityPartnerRequired = true;
 
     // Vetted by AI - Manual Review Required by Senior Engineer/Manager
@@ -30,6 +32,7 @@ class FeatureFlags extends Component
         $this->featureKaprodiValidation = Setting::get('feature_kaprodi_validation', false);
         $this->modulePersuratanActive = Setting::get('module_persuratan_active', false);
         $this->suratSignatureMode = Setting::get('surat_signature_mode', 'tte');
+        $this->suratWetSignatureBypass = (bool) Setting::get('surat_wet_signature_bypass', false);
         $this->featureCommunityPartnerRequired = Setting::get('feature_community_partner_required', true);
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $this->reviewerCountRequired = (int) Setting::get('reviewer_count_required', 1);
@@ -51,6 +54,15 @@ class FeatureFlags extends Component
 
         if ($property === 'suratSignatureMode') {
             Setting::set('surat_signature_mode', $value, 'string');
+
+            if ($value !== 'manual') {
+                Setting::set('surat_wet_signature_bypass', false, 'boolean');
+                $this->suratWetSignatureBypass = false;
+            }
+        }
+
+        if ($property === 'suratWetSignatureBypass') {
+            Setting::set('surat_wet_signature_bypass', (bool) $value, 'boolean');
         }
 
         if ($property === 'featureCommunityPartnerRequired') {

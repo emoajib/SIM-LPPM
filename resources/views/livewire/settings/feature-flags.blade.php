@@ -147,6 +147,30 @@
                     </select>
                 </div>
             </div>
+            @if($suratSignatureMode === 'manual')
+            <div class="row align-items-center mt-2">
+                <div class="col-auto">
+                    <span class="avatar bg-50-lt">
+                        <x-lucide-shield-off class="icon" />
+                    </span>
+                </div>
+                <div class="col text-truncate">
+                    <div class="text-body d-block font-weight-medium">Lewati Persetujuan Kepala LPPM</div>
+                    <div class="text-muted text-truncate mt-n1">
+                        @if($suratWetSignatureBypass)
+                            <span class="text-warning"><i class="ti ti-alert-triangle me-1"></i>Dosen dapat mencetak surat langsung tanpa persetujuan.</span>
+                        @else
+                            Dosen tetap harus menunggu persetujuan Kepala LPPM sebelum mencetak.
+                        @endif
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <label class="form-check form-switch m-0">
+                        <input class="form-check-input" type="checkbox" wire:model.live="suratWetSignatureBypass">
+                    </label>
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 </div>

@@ -107,17 +107,6 @@ abstract class ProposalShow extends Component
         return (bool) Setting::get('module_persuratan_active', false);
     }
 
-    public function requestLetter(): void
-    {
-        if (! $this->isLetteringModuleActive()) {
-            $this->toastError('Modul persuratan sedang tidak aktif.');
-
-            return;
-        }
-
-        $this->dispatch('openLetterRequest')->to('dashboard.dosen.letter-request');
-    }
-
     #[Computed]
     public function statusLabel(): string
     {

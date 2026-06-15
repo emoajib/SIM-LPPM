@@ -30,6 +30,7 @@ use App\Livewire\AdminLppm\SyncSinta;
 use App\Livewire\Dashboard;
 use App\Livewire\Dashboard\Dosen\LetterDashboard;
 use App\Livewire\Dashboard\Dosen\LetterManualRequest;
+use App\Livewire\Dashboard\Dosen\LetterProposalLinkedRequest;
 use App\Livewire\Dashboard\KepalaLppm\LetterApproval;
 use App\Livewire\Dekan\ApprovalHistory;
 use App\Livewire\Dekan\ProposalIndex as DekanProposalIndex;
@@ -286,6 +287,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['auth', 'letter.active'])->prefix('dosen/persuratan')->name('dashboard.dosen.surat.')->group(function () {
         Route::get('/', LetterDashboard::class)->name('dashboard');
         Route::get('/buat', LetterManualRequest::class)->name('buat');
+        Route::get('/proposal/{proposal}/buat', LetterProposalLinkedRequest::class)->name('proposal-linked');
     });
 
     // Admin LPPM - Persuratan Routes

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TeamSource;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -23,6 +24,7 @@ class Letter extends Model
         'reference_type',
         'reference_id',
         'source',
+        'team_source',
         'signature_mode',
         'status',
         'rejection_reason',
@@ -38,6 +40,7 @@ class Letter extends Model
         'team_snapshot' => 'array',
         'is_stamped' => 'boolean',
         'published_at' => 'datetime',
+        'team_source' => TeamSource::class,
     ];
 
     public function letterType(): BelongsTo

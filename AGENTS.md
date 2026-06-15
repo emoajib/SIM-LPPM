@@ -6,6 +6,7 @@ Setelah selesai mengerjakan perubahan kode, agent AI HARUS menjalankan langkah-l
 
 ### 1. Tes Kode Lokal
 ```bash
+php artisan rate-limiter:clear --force
 php artisan config:clear
 php artisan test
 ```
@@ -93,7 +94,11 @@ chmod 644 public/.htaccess
 chmod 644 public/index.php
 chmod 600 .env                    # KRITIS: .env hanya boleh dibaca owner
 
-# 9. Maintenance mode OFF
+# 9. Clear rate limiters (biar user yg kena lockout bisa login lagi)
+php artisan rate-limiter:clear --force
+echo "Rate limiters cleared"
+
+# 10. Maintenance mode OFF
 trap - ERR                         # Reset trap sebelum artisan up
 php artisan up
 echo "✅ Deploy selesai!"

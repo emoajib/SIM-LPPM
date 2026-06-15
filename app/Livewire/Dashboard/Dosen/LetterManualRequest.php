@@ -3,8 +3,10 @@
 namespace App\Livewire\Dashboard\Dosen;
 
 use App\Models\LetterType;
+use App\Models\Proposal;
 use App\Models\User;
 use App\Services\LetterService;
+use App\Services\TeamSnapshotBuilder;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Layout;
@@ -41,9 +43,24 @@ class LetterManualRequest extends Component
 
     public $selectedLetterType;
 
+    // Proposal-linked fields
+    public $proposals = [];
+
+    public $selectedProposalId = '';
+
+    public $referenceType = null;
+
+    public $referenceId = null;
+
     public function mount(): void
     {
         $this->letterTypes = LetterType::where('is_active', true)->orderBy('code')->get();
+
+        $this->proposals = Proposal::where('submitter_id', auth()->id())
+            ->whereIn('status', ['approved', 'completed'])
+            ->with('detailable')
+            ->latest()
+            ->get();
     }
 
     public function updatedLetterTypeId(): void
@@ -69,6 +86,30 @@ class LetterManualRequest extends Component
                 'error' => $e->getMessage(),
             ]);
             $this->searchResults = [];
+        }
+    }
+
+    public function updatedSelectedProposalId(): void
+    {
+        if ($this->selectedProposalId) {
+            $proposal = Proposal::with(['detailable', 'teamMembers', 'submitter.identity'])
+                ->find($this->selectedProposalId);
+
+            if ($proposal) {
+                $this->title = $proposal->title;
+                $this->activityType = str_contains($proposal->detailable_type, 'Research') ? 'Penelitian' : 'PKM';
+                $this->location = $proposal->location ?? '';
+                $this->team = TeamSnapshotBuilder::forProposal($proposal);
+                $this->referenceType = get_class($proposal);
+                $this->referenceId = $proposal->id;
+            }
+        } else {
+            $this->title = '';
+            $this->activityType = 'Penelitian';
+            $this->location = '';
+            $this->team = [];
+            $this->referenceType = null;
+            $this->referenceId = null;
         }
     }
 
@@ -151,6 +192,8 @@ class LetterManualRequest extends Component
                 'destinationName' => $this->destinationName,
                 'tembusan' => $this->tembusan,
                 'team' => $teamData,
+                'reference_type' => $this->referenceType,
+                'reference_id' => $this->referenceId,
             ]);
 
             session()->flash('success', 'Surat berhasil diajukan ke Kepala LPPM.');
