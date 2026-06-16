@@ -359,7 +359,7 @@ class Dashboard extends Component
     {
         $stats = (new LetterService)->getLetterStats();
 
-        $letters = Letter::with(['letterType', 'user'])
+        $letters = Letter::with(['letterType', 'user.identity'])
             ->when($this->statusFilter, function ($query) {
                 if ($this->statusFilter === 'all') {
                     return;

@@ -20,7 +20,6 @@ use App\Http\Controllers\SintaExportController;
 use App\Livewire\Admin\Archive\ManageArchives;
 use App\Livewire\Admin\EligibilityDashboard;
 use App\Livewire\AdminLppm\ExportSinta;
-use App\Livewire\AdminLppm\Letter\Archive;
 use App\Livewire\AdminLppm\ManualBook\Form as ManualBookForm;
 use App\Livewire\AdminLppm\ManualBook\Index as ManualBookIndex;
 use App\Livewire\AdminLppm\Monev\MonevIndex;
@@ -263,7 +262,7 @@ Route::middleware(['auth'])->group(function () {
         return response()->download($filePath, $fileName, [
             'Content-Type' => 'application/pdf',
         ]);
-    })->name('letter.download');
+    })->middleware('letter.active')->name('letter.download');
 
     // Letter View (inline PDF in browser)
     Route::get('letters/{letter}/view', function (Letter $letter) {
@@ -276,12 +275,11 @@ Route::middleware(['auth'])->group(function () {
         return response($pdfContent, 200, [
             'Content-Type' => 'application/pdf',
         ]);
-    })->name('letter.view');
+    })->middleware('letter.active')->name('letter.view');
 
     // Dosen - Persuratan Routes
     Route::middleware(['auth', 'letter.active'])->prefix('surat')->name('letters.')->group(function () {
         Route::get('/buat', LetterManualRequest::class)->name('manual-request');
-        Route::get('/riwayat', fn () => redirect()->route('dashboard.dosen.surat.dashboard'))->name('history');
     });
 
     // Dosen - Dashboard Surat Routes
@@ -295,11 +293,9 @@ Route::middleware(['auth'])->group(function () {
     // Vetted by AI - Manual Review Required by Senior Engineer/Manager
     Route::middleware(['auth', 'role:admin lppm', 'letter.active'])->prefix('admin-lppm/persuratan')->name('admin-lppm.letters.')->group(function () {
         Route::get('/', App\Livewire\AdminLppm\Letter\Dashboard::class)->name('dashboard');
-        Route::get('/arsip', fn () => redirect()->route('admin-lppm.letters.dashboard'))->name('archive');
     });
 
     Route::middleware(['auth', 'role:admin lppm', 'letter.active'])->prefix('admin-lppm/persuratan/jenis')->name('admin-lppm.letter-types.')->group(function () {
-        Route::get('/', fn () => redirect()->route('admin-lppm.letters.dashboard'))->name('index');
         Route::post('/{letterType}/upload-template', [LetterTypeController::class, 'uploadTemplate'])->name('upload-template');
         Route::get('/{letterType}/download-template', [LetterTypeController::class, 'downloadTemplate'])->name('download-template');
         Route::delete('/{letterType}/delete-template', [LetterTypeController::class, 'deleteTemplate'])->name('delete-template');
@@ -451,7 +447,7 @@ Route::get('/verify/signatures/{documentSignature}', [DocumentSignatureVerificat
     ->name('signatures.verify');
 
 Route::get('/verify/letters/{letter}', [LetterVerificationController::class, 'show'])
-    ->middleware(['signed'])
+    ->middleware(['signed', 'letter.active'])
     ->name('letters.verify');
 
 // Rute Ekspor Laporan (Dekan & Role dengan module_laporan)
