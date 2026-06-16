@@ -22,25 +22,10 @@ return new class extends Migration
                 ->restrictOnDelete();
         });
 
-        Schema::table('letter_logs', function (Blueprint $table) {
-            $table->dropForeign(['user_id']);
-            $table->foreign('user_id')
-                ->references('id')
-                ->on('users')
-                ->restrictOnDelete();
-        });
     }
 
     public function down(): void
     {
-        Schema::table('letter_logs', function (Blueprint $table) {
-            $table->dropForeign(['user_id']);
-            $table->foreign('user_id')
-                ->references('id')
-                ->on('users')
-                ->cascadeOnDelete();
-        });
-
         Schema::table('letters', function (Blueprint $table) {
             $table->dropForeign(['user_id']);
             $table->foreign('user_id')

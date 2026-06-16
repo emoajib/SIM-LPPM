@@ -135,12 +135,20 @@
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">File PDF</label>
+                    <label class="form-label">File</label>
                     @if($existingFile)
+                        @php $isImage = str_starts_with($existingFile['mime_type'] ?? '', 'image/'); @endphp
                         <div class="mb-2 p-2 border rounded">
+                            @if($isImage)
+                                <div class="mb-2">
+                                    @include('components.layouts.partials.menu.icon', ['name' => 'photo', 'class' => 'icon text-success me-1'])
+                                    <span class="small">Gambar:</span>
+                                    <img src="{{ $existingFile['url'] }}?view=1" class="img-fluid rounded mt-1" style="max-height:150px">
+                                </div>
+                            @endif
                             <div class="d-flex align-items-center justify-content-between">
                                 <div>
-                                    @include('components.layouts.partials.menu.icon', ['name' => 'file-check', 'class' => 'icon text-success me-1'])
+                                    @include('components.layouts.partials.menu.icon', ['name' => $isImage ? 'photo' : 'file-check', 'class' => 'icon text-success me-1'])
                                     <span class="small">{{ $existingFile['name'] }}</span>
                                     <span class="text-muted small ms-2">
                                         ({{ number_format($existingFile['size'] / 1024, 1) }} KB)
@@ -153,8 +161,8 @@
                             </div>
                         </div>
                     @endif
-                    <input type="file" wire:model="file" class="form-control" accept=".pdf">
-                    <small class="text-muted">Format: PDF, maks 10 MB</small>
+                    <input type="file" wire:model="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png,.webp,.gif">
+                    <small class="text-muted">Format: PDF, JPG, PNG, WebP, GIF. Maks 10 MB</small>
                     <div wire:loading wire:target="file" class="text-info small mt-1">
                         @include('components.layouts.partials.menu.icon', ['name' => 'loader', 'class' => 'icon icon-spin']) Mengupload...
                     </div>

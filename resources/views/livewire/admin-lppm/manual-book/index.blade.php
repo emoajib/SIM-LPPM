@@ -8,15 +8,24 @@
 
     <div class="row row-cards">
         @forelse($manualBooks as $book)
-            @php $media = $book->getFirstMedia('manual_book_file'); @endphp
+            @php
+                $media = $book->getFirstMedia('manual_book_file');
+                $isImage = $media && str_starts_with($media->mime_type ?? '', 'image/');
+            @endphp
             <div class="col-md-6 col-lg-4">
                 <div class="card h-100">
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex align-items-center mb-3">
                             <div class="flex-shrink-0 me-3">
-                                <div class="avatar avatar-lg bg-primary text-white">
-                                    @include('components.layouts.partials.menu.icon', ['name' => 'file-text', 'class' => 'icon icon-lg'])
-                                </div>
+                                @if($isImage)
+                                    <div class="avatar avatar-lg">
+                                        <img src="{{ route('media.download', $media) }}?view=1" class="rounded" style="width:48px;height:48px;object-fit:cover">
+                                    </div>
+                                @else
+                                    <div class="avatar avatar-lg bg-primary text-white">
+                                        @include('components.layouts.partials.menu.icon', ['name' => 'file-text', 'class' => 'icon icon-lg'])
+                                    </div>
+                                @endif
                             </div>
                             <div class="flex-grow-1 min-width-0">
                                 <h4 class="card-title mb-1 text-truncate">{{ $book->title }}</h4>
@@ -31,7 +40,6 @@
                         </div>
 
                         <div class="mt-auto">
-                            {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
                             @if($media)
                                 <div class="d-flex gap-2">
                                     <a href="{{ route('media.download', $media) }}?view=1" class="btn btn-outline-primary w-50" target="_blank">
@@ -47,7 +55,7 @@
                             @else
                                 <div class="alert alert-warning mb-0 py-2 text-center small">
                                     @include('components.layouts.partials.menu.icon', ['name' => 'book-off', 'class' => 'icon me-1'])
-                                    File PDF belum tersedia
+                                    File belum tersedia
                                 </div>
                             @endif
                         </div>

@@ -27,6 +27,7 @@ class Index extends Component
                     'downloadUrl' => $media ? route('media.download', $media) : null,
                     'hasFile' => $media !== null,
                     'fileSize' => $media?->size,
+                    'mimeType' => $media?->mime_type,
                 ];
             });
 

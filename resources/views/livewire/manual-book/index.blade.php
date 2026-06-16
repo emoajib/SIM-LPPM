@@ -21,23 +21,33 @@
                         @endif
 
                         <div class="mt-auto">
-                            {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
                             @if($book['hasFile'])
-                                <div class="d-flex gap-2">
-                                    <a href="{{ $book['downloadUrl'] }}?view=1" class="btn btn-outline-primary w-50" target="_blank">
-                                        @include('components.layouts.partials.menu.icon', ['name' => 'eye', 'class' => 'icon me-1']) Lihat
-                                    </a>
-                                    <a href="{{ $book['downloadUrl'] }}" class="btn btn-primary w-50" target="_blank">
+                                @php $isImage = $book['mimeType'] && str_starts_with($book['mimeType'], 'image/'); @endphp
+                                @if($isImage)
+                                    <a href="{{ $book['downloadUrl'] }}" class="btn btn-primary w-100 mb-1" target="_blank">
                                         @include('components.layouts.partials.menu.icon', ['name' => 'download', 'class' => 'icon me-1']) Unduh
                                     </a>
-                                </div>
-                                <p class="text-muted small mt-2 mb-0 text-center">
-                                    {{ number_format($book['fileSize'] / 1024, 1) }} KB
-                                </p>
+                                    <p class="text-muted small mb-2 text-center">
+                                        {{ number_format($book['fileSize'] / 1024, 1) }} KB
+                                    </p>
+                                    <img src="{{ $book['downloadUrl'] }}?view=1" class="img-fluid rounded" style="max-height:300px">
+                                @else
+                                    <div class="d-flex gap-2">
+                                        <a href="{{ $book['downloadUrl'] }}?view=1" class="btn btn-outline-primary w-50" target="_blank">
+                                            @include('components.layouts.partials.menu.icon', ['name' => 'eye', 'class' => 'icon me-1']) Lihat
+                                        </a>
+                                        <a href="{{ $book['downloadUrl'] }}" class="btn btn-primary w-50" target="_blank">
+                                            @include('components.layouts.partials.menu.icon', ['name' => 'download', 'class' => 'icon me-1']) Unduh
+                                        </a>
+                                    </div>
+                                    <p class="text-muted small mt-2 mb-0 text-center">
+                                        {{ number_format($book['fileSize'] / 1024, 1) }} KB
+                                    </p>
+                                @endif
                             @else
                                 <div class="alert alert-warning mb-0 py-2 text-center small">
                                     @include('components.layouts.partials.menu.icon', ['name' => 'book-off', 'class' => 'icon me-1'])
-                                    File PDF belum tersedia
+                                    File belum tersedia
                                 </div>
                             @endif
                         </div>

@@ -58,15 +58,26 @@
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-header">
-                        <h4 class="card-title">File PDF</h4>
+                        <h4 class="card-title">File</h4>
                     </div>
                     <div class="card-body">
                         @if($existingFile)
                             <div class="mb-3">
-                                <p class="text-success mb-1">
-                                    <i class="icon icon-tabler icon-tabler-file-check me-1"></i>
-                                    File terupload:
-                                </p>
+                                @php
+                                    $isImage = $existingFile && str_starts_with($existingFile['mime_type'] ?? '', 'image/');
+                                @endphp
+                                @if($isImage)
+                                    <p class="text-success mb-1">
+                                        <i class="icon icon-tabler icon-tabler-photo me-1"></i>
+                                        Gambar terupload:
+                                    </p>
+                                    <img src="{{ $existingFile['url'] }}?view=1" class="img-fluid rounded mb-2" style="max-height:200px">
+                                @else
+                                    <p class="text-success mb-1">
+                                        <i class="icon icon-tabler icon-tabler-file-check me-1"></i>
+                                        File terupload:
+                                    </p>
+                                @endif
                                 <p class="mb-1 small">{{ $existingFile['name'] }}</p>
                                 <p class="text-muted small">{{ number_format($existingFile['size'] / 1024, 1) }} KB</p>
                                 <div class="d-flex gap-2">
@@ -86,8 +97,8 @@
                                 {{ $existingFile ? 'Ganti File' : 'Upload File' }}
                             </label>
                             <input type="file" class="form-control @error('file') is-invalid @enderror"
-                                wire:model="file" accept=".pdf">
-                            <small class="text-muted">Format: PDF, maks 10 MB</small>
+                                wire:model="file" accept=".pdf,.jpg,.jpeg,.png,.webp,.gif">
+                            <small class="text-muted">Format: PDF, JPG, PNG, WebP, GIF. Maks 10 MB</small>
                             @error('file') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             <div wire:loading wire:target="file" class="text-info small mt-1">
                                 <i class="icon icon-tabler icon-tabler-loader icon-spin"></i> Mengupload...
