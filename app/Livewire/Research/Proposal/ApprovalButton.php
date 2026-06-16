@@ -43,7 +43,9 @@ class ApprovalButton extends Component
         $isAdmin = $user->hasRole(['admin lppm', 'kepala lppm', 'rektor']);
         $proposal = $this->proposal;
 
-        return $isAdmin && $proposal->status === ProposalStatus::REVIEWED && $proposal->allReviewsCompleted();
+        return $isAdmin
+            && in_array($proposal->status, [ProposalStatus::REVIEWED, ProposalStatus::REVISION_SUBMITTED])
+            && ($proposal->status === ProposalStatus::REVISION_SUBMITTED || $proposal->allReviewsCompleted());
     }
 
     #[Computed]

@@ -507,9 +507,9 @@ class ProposalPdfService
         $kid = config('document-signatures.current_kid', 'v1');
 
         $signatories = [
-            'lecturer' => ['submitted', in_array($proposal->status->value, [ProposalStatus::SUBMITTED->value, ProposalStatus::NEED_ASSIGNMENT->value, ProposalStatus::APPROVED->value, ProposalStatus::WAITING_REVIEWER->value, ProposalStatus::UNDER_REVIEW->value, ProposalStatus::REVIEWED->value, ProposalStatus::COMPLETED->value])],
-            'dekan' => ['approved', in_array($proposal->status->value, [ProposalStatus::APPROVED->value, ProposalStatus::WAITING_REVIEWER->value, ProposalStatus::UNDER_REVIEW->value, ProposalStatus::REVIEWED->value, ProposalStatus::COMPLETED->value])],
-            'kepala_lppm' => ['finalized', in_array($proposal->status->value, [ProposalStatus::WAITING_REVIEWER->value, ProposalStatus::UNDER_REVIEW->value, ProposalStatus::REVIEWED->value, ProposalStatus::COMPLETED->value])],
+            'lecturer' => ['submitted', in_array($proposal->status->value, [ProposalStatus::SUBMITTED->value, ProposalStatus::NEED_ASSIGNMENT->value, ProposalStatus::APPROVED->value, ProposalStatus::WAITING_REVIEWER->value, ProposalStatus::UNDER_REVIEW->value, ProposalStatus::REVIEWED->value, ProposalStatus::REVISION_SUBMITTED->value, ProposalStatus::COMPLETED->value])],
+            'dekan' => ['approved', in_array($proposal->status->value, [ProposalStatus::APPROVED->value, ProposalStatus::WAITING_REVIEWER->value, ProposalStatus::UNDER_REVIEW->value, ProposalStatus::REVIEWED->value, ProposalStatus::REVISION_SUBMITTED->value, ProposalStatus::COMPLETED->value])],
+            'kepala_lppm' => ['finalized', $proposal->status === ProposalStatus::COMPLETED],
         ];
 
         foreach ($signatories as $role => $config) {
@@ -532,7 +532,7 @@ class ProposalPdfService
             $signedAt = [
                 'lecturer' => ProposalStatusLog::where('proposal_id', $proposal->id)->where('status_after', ProposalStatus::SUBMITTED)->latest('at')->value('at') ?? $proposal->created_at ?? now(),
                 'dekan' => ProposalStatusLog::where('proposal_id', $proposal->id)->where('status_after', ProposalStatus::APPROVED)->latest('at')->value('at') ?? now(),
-                'kepala_lppm' => ProposalStatusLog::where('proposal_id', $proposal->id)->whereIn('status_after', [ProposalStatus::WAITING_REVIEWER, ProposalStatus::UNDER_REVIEW])->latest('at')->value('at') ?? now(),
+                'kepala_lppm' => ProposalStatusLog::where('proposal_id', $proposal->id)->where('status_after', ProposalStatus::COMPLETED)->latest('at')->value('at') ?? now(),
             ][$role];
 
             $nonce = Str::random(32);

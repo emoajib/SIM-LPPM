@@ -35,7 +35,7 @@ class Show extends Component
     // Report configuration
     protected array $config = [];
 
-    public function mount(Proposal $proposal, string $type = 'research-progress'): void
+    public function mount(Proposal $proposal, string $type = 'research-final'): void
     {
         $this->proposal = $proposal;
         $this->config = $this->getConfig($type);
@@ -62,17 +62,9 @@ class Show extends Component
     protected function getConfig(string $type): array
     {
         $configs = [
-            'research-progress' => [
-                'view' => 'livewire.research.progress-report.show',
-                'route' => 'research.progress-report.index',
-            ],
             'research-final' => [
                 'view' => 'livewire.research.final-report.show',
                 'route' => 'research.final-report.index',
-            ],
-            'community-service-progress' => [
-                'view' => 'livewire.community-service.progress-report.show',
-                'route' => 'community-service.progress-report.index',
             ],
             'community-service-final' => [
                 'view' => 'livewire.community-service.final-report.show',
@@ -80,7 +72,7 @@ class Show extends Component
             ],
         ];
 
-        return $configs[$type] ?? $configs['research-progress'];
+        return $configs[$type] ?? $configs['research-final'];
     }
 
     public function save(): void
@@ -128,7 +120,7 @@ class Show extends Component
 
         // Ensure config is initialized before redirect
         if (empty($this->config) || ! isset($this->config['route'])) {
-            $this->config = $this->getConfig('research-progress');
+            $this->config = $this->getConfig('research-final');
         }
 
         $message = 'Laporan berhasil diajukan.';

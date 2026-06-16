@@ -573,7 +573,7 @@ class ProposalWorkflowTest extends TestCase
         $result = app(SubmitProposalAction::class)->execute($proposal);
 
         $this->assertTrue($result['success']);
-        $this->assertEquals(ProposalStatus::SUBMITTED, $proposal->fresh()->status);
+        $this->assertEquals(ProposalStatus::REVISION_SUBMITTED, $proposal->fresh()->status);
     }
 
     public function test_submit_succeeds_with_all_requirements()

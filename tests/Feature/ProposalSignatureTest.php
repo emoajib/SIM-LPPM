@@ -276,7 +276,7 @@ class ProposalSignatureTest extends TestCase
             'proposal_id' => $proposal->id,
             'user_id' => $this->dosen->id,
             'status_before' => ProposalStatus::REVISION_NEEDED,
-            'status_after' => ProposalStatus::SUBMITTED,
+            'status_after' => ProposalStatus::REVISION_SUBMITTED,
             'at' => $secondSubmitAt,
         ]);
 
@@ -292,9 +292,10 @@ class ProposalSignatureTest extends TestCase
         $this->assertNotNull($signature->signed_at);
 
         $this->assertEquals(
-            $secondSubmitAt->format('Y-m-d H:i:s'),
+            $firstSubmitAt->format('Y-m-d H:i:s'),
             $signature->signed_at->format('Y-m-d H:i:s'),
-            'signed_at harus menggunakan submission log terbaru (->latest(at))'
+            'signed_at tetap menggunakan submission log SUBMITTED terbaru,'
+            .' bukan REVISION_SUBMITTED'
         );
     }
 }

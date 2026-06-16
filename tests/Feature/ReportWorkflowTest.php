@@ -4,12 +4,10 @@ namespace Tests\Feature;
 
 use App\Enums\ProposalStatus;
 use App\Enums\ReportStatus;
-use App\Livewire\Reports\Show;
-use App\Models\CommunityService;
+use App\Livewire\Research\FinalReport\Show;
 use App\Models\Faculty;
 use App\Models\Identity;
 use App\Models\Institution;
-use App\Models\ProgressReport;
 use App\Models\Proposal;
 use App\Models\ProposalOutput;
 use App\Models\Research;
@@ -68,37 +66,11 @@ class ReportWorkflowTest extends TestCase
         Identity::factory()->create(['user_id' => $this->dekan->id, 'faculty_id' => $faculty->id]);
     }
 
-    public function test_dosen_can_create_and_submit_progress_report()
-    {
-        $this->actingAs($this->dosen);
-
-        $component = Livewire::test(\App\Livewire\Research\ProgressReport\Show::class, [
-            'proposal' => $this->proposal,
-        ])
-            ->set('form.summaryUpdate', 'This is an updated summary for progress report.')
-            ->set('form.keywordsInput', 'test; progress; report')
-            ->call('save');
-
-        $component->assertHasNoErrors();
-
-        $this->proposal->refresh();
-        $report = $this->proposal->progressReports()->where('reporting_period', 'semester_1')->first();
-
-        $this->assertNotNull($report);
-        $this->assertEquals(ReportStatus::DRAFT, $report->status);
-
-        // Submit the report
-        $component->call('submit');
-        $component->assertHasNoErrors();
-
-        $this->assertEquals(ReportStatus::SUBMITTED, $report->fresh()->status);
-    }
-
     public function test_dosen_can_create_and_submit_final_report()
     {
         $this->actingAs($this->dosen);
 
-        $component = Livewire::test(\App\Livewire\Research\FinalReport\Show::class, [
+        $component = Livewire::test(Show::class, [
             'proposal' => $this->proposal,
         ])
             ->set('form.summaryUpdate', 'This is the final summary.')
@@ -117,42 +89,6 @@ class ReportWorkflowTest extends TestCase
         $component->call('submit');
         $component->assertHasNoErrors();
         $this->assertEquals(ReportStatus::SUBMITTED, $report->fresh()->status);
-    }
-
-    public function test_dosen_can_fill_mandatory_output_in_report()
-    {
-        $this->actingAs($this->dosen);
-
-        $report = ProgressReport::create([
-            'proposal_id' => $this->proposal->id,
-            'reporting_year' => 2025,
-            'reporting_period' => 'semester_1',
-            'status' => ReportStatus::DRAFT,
-            'summary_update' => 'Initial summary',
-        ]);
-
-        $output = $this->proposal->outputs()->where('category', 'Wajib')->first();
-
-        $component = Livewire::test(\App\Livewire\Research\ProgressReport\Show::class, [
-            'proposal' => $this->proposal,
-        ])
-            ->call('editMandatoryOutput', $output->id)
-            ->set("form.mandatoryOutputs.{$output->id}.status_type", 'published')
-            ->set("form.mandatoryOutputs.{$output->id}.journal_title", 'Test Journal')
-            ->set("form.mandatoryOutputs.{$output->id}.article_title", 'Test Article')
-            ->set("form.mandatoryOutputs.{$output->id}.author_status", 'first_author')
-            ->set("form.mandatoryOutputs.{$output->id}.publication_year", 2025)
-            ->call('saveMandatoryOutput', $output->id);
-
-        $component->assertHasNoErrors();
-
-        $this->proposal->refresh();
-        $report = $this->proposal->progressReports()->first();
-        $this->assertNotNull($report);
-
-        $mandatoryOutput = $report->mandatoryOutputs()->where('proposal_output_id', $output->id)->first();
-        $this->assertNotNull($mandatoryOutput);
-        $this->assertEquals('published', $mandatoryOutput->status_type);
     }
 
     public function test_dosen_can_add_daily_note()
@@ -175,47 +111,6 @@ class ReportWorkflowTest extends TestCase
         $this->assertNotNull($note);
         $this->assertEquals('Doing some research today.', $note->activity_description);
         $this->assertEquals(10, $note->progress_percentage);
-    }
-
-    public function test_dosen_can_create_community_service_progress_report()
-    {
-        $this->actingAs($this->dosen);
-
-        $communityService = CommunityService::factory()->create();
-        $proposal = Proposal::factory()->create([
-            'submitter_id' => $this->dosen->id,
-            'detailable_id' => $communityService->id,
-            'detailable_type' => CommunityService::class,
-            'status' => ProposalStatus::COMPLETED,
-        ]);
-
-        $component = Livewire::test(Show::class, [
-            'proposal' => $proposal,
-            'type' => 'community-service-progress',
-        ])
-            ->set('form.summaryUpdate', 'Updated PKM summary.')
-            ->set('form.keywordsInput', 'pkm; test')
-            ->call('save');
-
-        $component->assertHasNoErrors();
-
-        $proposal->refresh();
-        $report = $proposal->progressReports()->first();
-        $this->assertNotNull($report);
-        $this->assertEquals('Updated PKM summary.', $report->summary_update);
-        $this->assertNotNull($report);
-        $this->assertEquals('Updated PKM summary.', $report->summary_update);
-    }
-
-    public function test_dekan_can_view_progress_report()
-    {
-        $this->actingAs($this->dekan)
-            ->withSession(['active_role' => 'dekan']);
-
-        Livewire::test(\App\Livewire\Research\ProgressReport\Show::class, [
-            'proposal' => $this->proposal,
-        ])
-            ->assertStatus(200);
     }
 
     public function test_dekan_can_view_daily_notes()

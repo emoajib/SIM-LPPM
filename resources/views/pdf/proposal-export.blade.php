@@ -742,7 +742,7 @@
                         @php
                             $lppmSig = $proposal->signatures->first(fn($s) => $s->signed_role === 'kepala_lppm' && strtolower($s->action) === 'finalized');
                         @endphp
-                        @if($lppmSig && $lppmSig->signed_at)
+                        @if($lppmSig && $lppmSig->signed_at && $proposal->status === \App\Enums\ProposalStatus::COMPLETED)
                             <div style="margin-bottom: 5px;">
                                 <img src="{{ generate_qr_code_data_uri(\Illuminate\Support\Facades\URL::signedRoute('signatures.verify', ['documentSignature' => $lppmSig->id])) }}" width="70">
                             </div>

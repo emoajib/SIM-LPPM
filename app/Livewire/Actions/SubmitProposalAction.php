@@ -19,11 +19,12 @@ class SubmitProposalAction
     ) {}
 
     /**
-     * Submit a proposal (change status to SUBMITTED).
+     * Submit a proposal.
+     * For new submissions (DRAFT/NEED_ASSIGNMENT): full validation, status → SUBMITTED.
+     * For revision resubmit (REVISION_NEEDED): lightweight validation, status → REVISION_SUBMITTED.
      */
     public function execute(Proposal $proposal): array
     {
-        // Authorization check - only submitter can submit
         $user = Auth::user();
         if (! $user || ($proposal->submitter_id !== $user->getAuthIdentifier())) {
             return [
@@ -32,7 +33,6 @@ class SubmitProposalAction
             ];
         }
 
-        // Check if proposal can be submitted from current status
         $allowedStatuses = [
             ProposalStatus::DRAFT,
             ProposalStatus::NEED_ASSIGNMENT,
@@ -46,68 +46,68 @@ class SubmitProposalAction
             ];
         }
 
-        // Check if all team members accepted
-        if (! $proposal->allTeamMembersAccepted()) {
-            $pendingMembers = $proposal->getPendingTeamMembers();
+        $isRevision = $proposal->status === ProposalStatus::REVISION_NEEDED;
 
-            return [
-                'success' => false,
-                'message' => sprintf(
-                    'Tidak dapat mengirim proposal. %d anggota masih belum menerima undangan.',
-                    $pendingMembers->count()
-                ),
-            ];
-        }
+        // Full validation for new submissions only
+        if (! $isRevision) {
+            if (! $proposal->allTeamMembersAccepted()) {
+                $pendingMembers = $proposal->getPendingTeamMembers();
 
-        // Check kaprodi approval (pre-gate before submission)
-        if (Setting::get('feature_kaprodi_validation', false)) {
-            $kaprodiAction = app(KaprodiApprovalAction::class);
-            $kaprodiCheck = $kaprodiAction->canSubmit($proposal);
-
-            if (! $kaprodiCheck['can_submit']) {
                 return [
                     'success' => false,
-                    'message' => $kaprodiCheck['reason'],
+                    'message' => sprintf(
+                        'Tidak dapat mengirim proposal. %d anggota masih belum menerima undangan.',
+                        $pendingMembers->count()
+                    ),
                 ];
             }
-        }
 
-        // Check lecturer eligibility
-        if ($proposal->submitter->activeHasRole('dosen')) {
-            $eligibilityService = app(LecturerEligibilityService::class);
-            $eligibility = $eligibilityService->checkEligibility($proposal->submitter);
+            if (Setting::get('feature_kaprodi_validation', false)) {
+                $kaprodiAction = app(KaprodiApprovalAction::class);
+                $kaprodiCheck = $kaprodiAction->canSubmit($proposal);
 
-            if (! $eligibility['eligible']) {
+                if (! $kaprodiCheck['can_submit']) {
+                    return [
+                        'success' => false,
+                        'message' => $kaprodiCheck['reason'],
+                    ];
+                }
+            }
+
+            if ($proposal->submitter->activeHasRole('dosen')) {
+                $eligibilityService = app(LecturerEligibilityService::class);
+                $eligibility = $eligibilityService->checkEligibility($proposal->submitter);
+
+                if (! $eligibility['eligible']) {
+                    return [
+                        'success' => false,
+                        'message' => 'Anda tidak memenuhi syarat untuk mengajukan proposal baru. '.implode(', ', $eligibility['reasons']),
+                    ];
+                }
+            }
+
+            if (Setting::get('feature_community_partner_required', true)
+                && $proposal->detailable_type === 'App\Models\CommunityService'
+                && $proposal->partners()->count() === 0) {
                 return [
                     'success' => false,
-                    'message' => 'Anda tidak memenuhi syarat untuk mengajukan proposal baru. '.implode(', ', $eligibility['reasons']),
+                    'message' => 'Proposal Pengabdian Masyarakat wajib memiliki minimal 1 mitra.',
                 ];
             }
-        }
 
-        // Check partner requirement for community service proposals
-        if (Setting::get('feature_community_partner_required', true)
-            && $proposal->detailable_type === 'App\Models\CommunityService'
-            && $proposal->partners()->count() === 0) {
-            return [
-                'success' => false,
-                'message' => 'Proposal Pengabdian Masyarakat wajib memiliki minimal 1 mitra.',
-            ];
-        }
+            if ($proposal->detailable_type === 'App\Models\Research' && ! $proposal->research_scheme_id) {
+                return [
+                    'success' => false,
+                    'message' => 'Skema Penelitian wajib dipilih sebelum mengajukan proposal.',
+                ];
+            }
 
-        // Validate scheme selection before submission
-        if ($proposal->detailable_type === 'App\Models\Research' && ! $proposal->research_scheme_id) {
-            return [
-                'success' => false,
-                'message' => 'Skema Penelitian wajib dipilih sebelum mengajukan proposal.',
-            ];
-        }
-
-        if ($proposal->detailable_type === 'App\Models\CommunityService' && ! $proposal->community_service_scheme_id) {
-            return [
-                'success' => false,
-                'message' => 'Skema Pengabdian Masyarakat wajib dipilih sebelum mengajukan proposal.',
-            ];
+            if ($proposal->detailable_type === 'App\Models\CommunityService' && ! $proposal->community_service_scheme_id) {
+                return [
+                    'success' => false,
+                    'message' => 'Skema Pengabdian Masyarakat wajib dipilih sebelum mengajukan proposal.',
+                ];
+            }
         }
 
         if ($proposal->budgetItems()->count() === 0) {
@@ -118,20 +118,23 @@ class SubmitProposalAction
         }
 
         try {
-            DB::transaction(function () use ($proposal) {
-                $snapshot = app(LecturerEligibilityService::class)->generateSnapshot($proposal->submitter, $proposal);
+            $newStatus = $isRevision ? ProposalStatus::REVISION_SUBMITTED : ProposalStatus::SUBMITTED;
+
+            DB::transaction(function () use ($proposal, $newStatus, $isRevision) {
+                $snapshot = $isRevision ? $proposal->qualification_snapshot
+                    : app(LecturerEligibilityService::class)->generateSnapshot($proposal->submitter, $proposal);
+
                 $proposal->update([
-                    'status' => ProposalStatus::SUBMITTED->value,
+                    'status' => $newStatus->value,
                     'qualification_snapshot' => $snapshot,
                 ]);
             });
 
-            // Send notifications
-            $this->sendNotifications($proposal);
+            $this->sendNotifications($proposal, $isRevision);
 
             return [
                 'success' => true,
-                'message' => 'Proposal berhasil diajukan.',
+                'message' => $isRevision ? 'Revisi proposal berhasil diajukan.' : 'Proposal berhasil diajukan.',
             ];
         } catch (\Exception $e) {
             return [
@@ -144,26 +147,35 @@ class SubmitProposalAction
     /**
      * Send notifications to relevant stakeholders
      */
-    protected function sendNotifications(Proposal $proposal): void
+    protected function sendNotifications(Proposal $proposal, bool $isRevision = false): void
     {
-        // Get recipients: Dean, Team Members
         $submitter = $proposal->submitter;
-        $faculty = null;
-        $dean = null;
 
-        if ($submitter && $submitter->identity) {
-            $faculty = $submitter->identity->faculty;
+        if ($isRevision) {
+            // Revision resubmit: notify Kepala LPPM + Admin LPPM only
+            $recipients = collect()
+                ->push(User::role('kepala lppm')->first())
+                ->push(User::role('admin lppm')->first())
+                ->filter()
+                ->unique('id')
+                ->values();
+
+            $this->notificationService->notifyProposalSubmitted(
+                $proposal,
+                $submitter,
+                $recipients
+            );
+
+            return;
         }
 
-        if ($faculty) {
-            $dean = $faculty->deanUser()->first() ?? User::role('dekan')->whereHas('identity', function ($query) use ($faculty) {
-                $query->where('faculty_id', $faculty->id);
-            })->first();
-        }
+        // New submission: notify Dean + Team Members
+        $faculty = $submitter->identity?->faculty;
 
-        if (! $dean) {
-            $dean = User::role('dekan')->first();
-        }
+        $dean = $faculty
+            ? ($faculty->deanUser()->first()
+                ?? User::role('dekan')->whereHas('identity', fn ($q) => $q->where('faculty_id', $faculty->id))->first())
+            : User::role('dekan')->first();
 
         $teamMembers = $proposal->teamMembers()->where('user_id', '!=', $proposal->submitter_id)->get();
 

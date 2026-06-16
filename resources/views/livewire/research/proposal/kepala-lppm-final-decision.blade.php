@@ -39,13 +39,24 @@
             </div>
         @endif
 
-        <div class="alert alert-info" role="alert">
+        @php $isRevisionReview = $proposal->status === \App\Enums\ProposalStatus::REVISION_SUBMITTED; @endphp
+
+        <div class="alert alert-{{ $isRevisionReview ? 'purple' : 'info' }}" role="alert">
             <h4 class="alert-title">
-                <x-lucide-clipboard-check class="icon" />
-                Keputusan Akhir Kepala LPPM
+                @if ($isRevisionReview)
+                    <x-lucide-refresh-cw class="icon" />
+                    Keputusan Revisi Proposal
+                @else
+                    <x-lucide-clipboard-check class="icon" />
+                    Keputusan Akhir Kepala LPPM
+                @endif
             </h4>
             <div class="text-secondary">
-                Semua reviewer telah menyelesaikan review. Silakan berikan keputusan akhir untuk proposal ini.
+                @if ($isRevisionReview)
+                    Pengusul telah mengajukan revisi proposal. Silakan tinjau dan berikan keputusan akhir.
+                @else
+                    Semua reviewer telah menyelesaikan review. Silakan berikan keputusan akhir untuk proposal ini.
+                @endif
             </div>
         </div>
 
@@ -102,10 +113,15 @@
                     @else
                         <div class="mb-3 text-center">
                             <x-lucide-file-edit class="mb-2 text-warning icon" style="width: 3rem; height: 3rem;" />
-                            <h3>Minta Perbaikan Usulan?</h3>
+                            <h3>@php $isRevisionReview = $proposal?->status === \App\Enums\ProposalStatus::REVISION_SUBMITTED; @endphp
+                                {{ $isRevisionReview ? 'Minta Perbaikan Ulang?' : 'Minta Perbaikan Usulan?' }}</h3>
                             <div class="text-secondary">
-                                Proposal akan dikembalikan ke pengusul untuk melakukan perbaikan sesuai dengan catatan
-                                yang Anda berikan.
+                                @if ($isRevisionReview)
+                                    Proposal akan dikembalikan ke pengusul untuk melakukan perbaikan lanjutan.
+                                @else
+                                    Proposal akan dikembalikan ke pengusul untuk melakukan perbaikan sesuai dengan catatan
+                                    yang Anda berikan.
+                                @endif
                             </div>
                         </div>
                     @endif

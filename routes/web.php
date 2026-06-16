@@ -176,10 +176,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('proposal-revision/{proposal}', App\Livewire\Research\ProposalRevision\Show::class)->name('proposal-revision.show');
 
         // Laporan Kemajuan dihilangkan berdasarkan arahan simplifikasi
-        Route::get('progress-report', App\Livewire\Research\ProgressReport\Index::class)->name('progress-report.index');
-        Route::get('progress-report/{proposal}', Show::class)
-            ->name('progress-report.show')
-            ->defaults('type', 'research-progress');
+        // Route::get('progress-report', App\Livewire\Research\ProgressReport\Index::class)->name('progress-report.index');
+        // Route::get('progress-report/{proposal}', Show::class)
+        //     ->name('progress-report.show')
+        //     ->defaults('type', 'research-progress');
 
         Route::get('final-report', App\Livewire\Research\FinalReport\Index::class)->name('final-report.index');
         Route::get('final-report/{proposal}', App\Livewire\Research\FinalReport\Show::class)
@@ -210,10 +210,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('proposal-revision/{proposal}', App\Livewire\CommunityService\ProposalRevision\Show::class)->name('proposal-revision.show');
 
         // Laporan Kemajuan dihilangkan berdasarkan arahan simplifikasi
-        Route::get('progress-report', App\Livewire\CommunityService\ProgressReport\Index::class)->name('progress-report.index');
-        Route::get('progress-report/{proposal}', Show::class)
-            ->name('progress-report.show')
-            ->defaults('type', 'community-service-progress');
+        // Route::get('progress-report', App\Livewire\CommunityService\ProgressReport\Index::class)->name('progress-report.index');
+        // Route::get('progress-report/{proposal}', Show::class)
+        //     ->name('progress-report.show')
+        //     ->defaults('type', 'community-service-progress');
 
         Route::get('final-report', App\Livewire\CommunityService\FinalReport\Index::class)->name('final-report.index');
         Route::get('final-report/{proposal}', App\Livewire\CommunityService\FinalReport\Show::class)

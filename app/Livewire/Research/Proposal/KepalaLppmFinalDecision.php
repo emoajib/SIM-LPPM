@@ -6,6 +6,7 @@ use App\Enums\ProposalStatus;
 use App\Livewire\Concerns\HasToast;
 use App\Models\Proposal;
 use App\Models\ProposalReviewer;
+use App\Models\ProposalStatusLog;
 use App\Models\User;
 use App\Services\NotificationService;
 use Illuminate\Support\Collection;
@@ -49,8 +50,13 @@ class KepalaLppmFinalDecision extends Component
         $user = Auth::user();
         $isKepalaLppm = $user->hasRole(['kepala lppm']);
         $proposal = $this->proposal;
+        $status = $proposal->status;
 
-        return $isKepalaLppm && $proposal->status === ProposalStatus::REVIEWED && $proposal->allReviewsCompleted();
+        if ($status === ProposalStatus::REVISION_SUBMITTED) {
+            return $isKepalaLppm;
+        }
+
+        return $isKepalaLppm && $status === ProposalStatus::REVIEWED && $proposal->allReviewsCompleted();
     }
 
     /**
@@ -103,8 +109,9 @@ class KepalaLppmFinalDecision extends Component
         }
 
         $proposal = $this->proposal;
+        $allowedStatuses = [ProposalStatus::REVIEWED, ProposalStatus::REVISION_SUBMITTED];
 
-        if ($proposal->status !== ProposalStatus::REVIEWED) {
+        if (! in_array($proposal->status, $allowedStatuses)) {
             $message = 'Proposal tidak dalam status yang dapat diputuskan';
             session()->flash('error', $message);
             $this->toastError($message);
@@ -112,7 +119,7 @@ class KepalaLppmFinalDecision extends Component
             return;
         }
 
-        if (! $proposal->allReviewsCompleted()) {
+        if ($proposal->status === ProposalStatus::REVIEWED && ! $proposal->allReviewsCompleted()) {
             $message = 'Semua reviewer harus menyelesaikan review terlebih dahulu';
             session()->flash('error', $message);
             $this->toastError($message);
@@ -144,9 +151,20 @@ class KepalaLppmFinalDecision extends Component
                 return;
             }
 
-            // Update proposal status
+            // Store decision notes in status log (before update)
+            $oldStatus = $proposal->status;
+
             $proposal->update([
                 'status' => $newStatus,
+            ]);
+
+            ProposalStatusLog::create([
+                'proposal_id' => $proposal->id,
+                'user_id' => $user->id,
+                'status_before' => $oldStatus,
+                'status_after' => $newStatus,
+                'notes' => $this->notes,
+                'at' => now(),
             ]);
 
             Log::info('Kepala LPPM final decision', [

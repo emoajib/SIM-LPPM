@@ -44,8 +44,10 @@ class ApproveProposalAction
             ];
         }
 
-        // Check if all reviewers completed (except for revision_needed which can be done early)
-        if ($decision !== ProposalStatus::REVISION_NEEDED->value && ! $proposal->allReviewsCompleted()) {
+        // Check if all reviewers completed (skip for REVISION_SUBMITTED or revision_needed decision)
+        if ($proposal->status !== ProposalStatus::REVISION_SUBMITTED
+            && $decision !== ProposalStatus::REVISION_NEEDED->value
+            && ! $proposal->allReviewsCompleted()) {
             $pendingReviewers = $proposal->getPendingReviewers();
 
             return [

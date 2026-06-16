@@ -12,6 +12,7 @@ enum ProposalStatus: string
     case UNDER_REVIEW = 'under_review';
     case REVIEWED = 'reviewed';
     case REVISION_NEEDED = 'revision_needed';
+    case REVISION_SUBMITTED = 'revision_submitted';
     case COMPLETED = 'completed';
     case REJECTED = 'rejected';
 
@@ -29,6 +30,7 @@ enum ProposalStatus: string
             self::UNDER_REVIEW => 'Sedang Direview',
             self::REVIEWED => 'Review Selesai',
             self::REVISION_NEEDED => 'Perlu Revisi',
+            self::REVISION_SUBMITTED => 'Revisi Diajukan',
             self::COMPLETED => 'Selesai',
             self::REJECTED => 'Ditolak',
         };
@@ -48,6 +50,7 @@ enum ProposalStatus: string
             self::UNDER_REVIEW => 'cyan',
             self::REVIEWED => 'orange',
             self::REVISION_NEEDED => 'yellow',
+            self::REVISION_SUBMITTED => 'purple',
             self::COMPLETED => 'azure',
             self::REJECTED => 'danger',
         };
@@ -76,7 +79,8 @@ enum ProposalStatus: string
             self::WAITING_REVIEWER => in_array($newStatus, [self::UNDER_REVIEW]),
             self::UNDER_REVIEW => in_array($newStatus, [self::REVIEWED]),
             self::REVIEWED => in_array($newStatus, [self::COMPLETED, self::REVISION_NEEDED, self::REJECTED]),
-            self::REVISION_NEEDED => in_array($newStatus, [self::SUBMITTED]),
+            self::REVISION_NEEDED => in_array($newStatus, [self::REVISION_SUBMITTED]),
+            self::REVISION_SUBMITTED => in_array($newStatus, [self::COMPLETED, self::REVISION_NEEDED, self::REJECTED]),
             self::COMPLETED => false,
             self::REJECTED => false,
         };
