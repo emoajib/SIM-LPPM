@@ -2,12 +2,10 @@
 
 namespace App\Livewire\Dashboard\Dosen;
 
+use App\Livewire\Concerns\HasLetterForm;
+use App\Livewire\Concerns\HasTeamSearch;
 use App\Models\Letter;
-use App\Models\LetterType;
-use App\Models\Proposal;
-use App\Models\User;
 use App\Services\LetterService;
-use App\Services\TeamSnapshotBuilder;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Layout;
@@ -18,15 +16,27 @@ use Livewire\WithPagination;
 #[Layout('components.layouts.app', ['title' => 'Dashboard Persuratan'])]
 class LetterDashboard extends Component
 {
-    use WithPagination;
+    use HasTeamSearch, HasLetterForm, WithPagination;
 
-    // Tab & Search
     public $statusFilter = 'pending_approval';
 
     public $search = '';
 
-    // Form visibility
     public $showForm = false;
+
+    public $showResubmitModal = false;
+
+    public $resubmitLetterId = null;
+
+    public $resubmitData = [
+        'title' => '',
+        'activityType' => 'Penelitian',
+        'dateString' => '',
+        'timeString' => '',
+        'location' => '',
+        'destinationName' => '',
+        'tembusan' => '1. Arsip',
+    ];
 
     public function setFilter(string $status): void
     {
@@ -46,120 +56,6 @@ class LetterDashboard extends Component
         $this->showResubmitModal = false;
     }
 
-    // Form fields
-    public $letterTypeId;
-
-    public $title = '';
-
-    public $activityType = 'Penelitian';
-
-    public $date = '';
-
-    public $timeStart = '';
-
-    public $timeEnd = '';
-
-    public $location = '';
-
-    public $destinationName = '';
-
-    public $tembusan = '1. Arsip';
-
-    public $team = [];
-
-    public $searchQuery = '';
-
-    public $searchResults = [];
-
-    public $letterTypes = [];
-
-    public $selectedLetterType;
-
-    // Proposal-linked fields
-    public $proposals = [];
-
-    public $selectedProposalId = '';
-
-    public $referenceType = null;
-
-    public $referenceId = null;
-
-    // Resubmit modal
-    public $showResubmitModal = false;
-
-    public $resubmitLetterId = null;
-
-    public $resubmitData = [
-        'title' => '',
-        'activityType' => 'Penelitian',
-        'dateString' => '',
-        'timeString' => '',
-        'location' => '',
-        'destinationName' => '',
-        'tembusan' => '1. Arsip',
-    ];
-
-    public function mount(): void
-    {
-        $this->letterTypes = LetterType::where('is_active', true)->orderBy('code')->get();
-
-        $this->proposals = Proposal::where('submitter_id', auth()->id())
-            ->whereIn('status', ['approved', 'completed'])
-            ->with('detailable')
-            ->latest()
-            ->get();
-    }
-
-    public function updatedLetterTypeId(): void
-    {
-        $this->selectedLetterType = LetterType::find($this->letterTypeId);
-    }
-
-    public function updatedSearchQuery(): void
-    {
-        try {
-            $query = (string) $this->searchQuery;
-            if (strlen($query) < 2) {
-                $this->searchResults = [];
-
-                return;
-            }
-
-            $service = new LetterService;
-            $this->searchResults = $service->searchDosen($query)->toArray();
-        } catch (\Exception $e) {
-            Log::error('Search dosen failed in dashboard', [
-                'user_id' => auth()->id(),
-                'error' => $e->getMessage(),
-            ]);
-            $this->searchResults = [];
-        }
-    }
-
-    public function updatedSelectedProposalId(): void
-    {
-        if ($this->selectedProposalId) {
-            $proposal = Proposal::with(['detailable', 'teamMembers', 'submitter.identity'])
-                ->find($this->selectedProposalId);
-
-            if ($proposal) {
-                $this->title = $proposal->title;
-                $this->activityType = str_contains($proposal->detailable_type, 'Research') ? 'Penelitian' : 'PKM';
-                $this->location = $proposal->location ?? '';
-                $this->team = TeamSnapshotBuilder::forProposal($proposal);
-                $this->referenceType = get_class($proposal);
-                $this->referenceId = $proposal->id;
-            }
-        } else {
-            $this->title = '';
-            $this->activityType = 'Penelitian';
-            $this->location = '';
-            $this->team = [];
-            $this->referenceType = null;
-            $this->referenceId = null;
-        }
-    }
-
     public function showSectionForm(): void
     {
         $this->showForm = true;
@@ -169,42 +65,6 @@ class LetterDashboard extends Component
     {
         $this->showForm = false;
         $this->resetForm();
-    }
-
-    public function addTeamMember(string $dosenId): void
-    {
-        $dosen = User::whereHas('roles', fn ($q) => $q->where('name', 'dosen'))
-            ->where('id', $dosenId)
-            ->with('identity')
-            ->first();
-
-        if (! $dosen) {
-            $this->dispatch('swal', title: 'Gagal', text: 'Dosen tidak ditemukan.', icon: 'error');
-
-            return;
-        }
-
-        foreach ($this->team as $member) {
-            if ($member['id'] === $dosenId) {
-                return;
-            }
-        }
-
-        $this->team[] = [
-            'id' => $dosen->id,
-            'name' => $dosen->name,
-            'role' => 'Anggota',
-            'identifier' => $dosen->identity->identity_id ?? '-',
-        ];
-
-        $this->searchQuery = '';
-        $this->searchResults = [];
-    }
-
-    public function removeTeamMember(int $index): void
-    {
-        unset($this->team[$index]);
-        $this->team = array_values($this->team);
     }
 
     public function submitLetter(LetterService $service): void
@@ -371,19 +231,6 @@ class LetterDashboard extends Component
     private function resetForm(): void
     {
         $this->showForm = false;
-        $this->letterTypeId = null;
-        $this->title = '';
-        $this->activityType = 'Penelitian';
-        $this->date = '';
-        $this->timeStart = '';
-        $this->timeEnd = '';
-        $this->location = '';
-        $this->destinationName = '';
-        $this->tembusan = '1. Arsip';
-        $this->team = [];
-        $this->selectedLetterType = null;
-        $this->selectedProposalId = '';
-        $this->referenceType = null;
-        $this->referenceId = null;
+        $this->resetFormFields();
     }
 }
