@@ -13,7 +13,7 @@ use Livewire\Component;
 #[Layout('components.layouts.app', ['title' => 'Buat Surat', 'pageTitle' => 'Buat Surat Baru', 'pageSubtitle' => 'Ajukan surat tanpa proposal'])]
 class LetterManualRequest extends Component
 {
-    use HasTeamSearch, HasLetterForm;
+    use HasLetterForm, HasTeamSearch;
 
     public function submit(LetterService $service): void
     {

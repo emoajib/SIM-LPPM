@@ -6,6 +6,7 @@ use App\Models\Letter;
 use App\Models\LetterType;
 use App\Models\Setting;
 use App\Services\LetterService;
+use App\Services\Validation\LetterValidationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -19,7 +20,9 @@ class LetterServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->service = new LetterService;
+        $this->service = new LetterService(
+            new LetterValidationService
+        );
     }
 
     public function test_it_can_convert_all_months_to_roman()

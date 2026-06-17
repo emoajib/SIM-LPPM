@@ -7,6 +7,7 @@ use App\Models\LetterType;
 use App\Models\Proposal;
 use App\Models\Setting;
 use App\Models\User;
+use App\Services\Validation\LetterValidationService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +18,12 @@ use Illuminate\Support\Str;
 
 class LetterService
 {
+    public function __construct(
+        protected ?LetterValidationService $letterValidationService = null
+    ) {
+        $this->letterValidationService ??= app(LetterValidationService::class);
+    }
+
     /**
      * Generate the next letter number for a given type.
      */
@@ -150,6 +157,12 @@ class LetterService
      */
     public function requestLetter(Proposal $proposal, User $user, array $data): Letter
     {
+        // Validate letter creation
+        $validationErrors = $this->letterValidationService->validateLetterCreation($data, $user->id);
+        if (! empty($validationErrors)) {
+            throw new \DomainException(implode('\n', $validationErrors));
+        }
+
         $metadata = [
             'activity_type' => $data['activityType'],
             'title' => $proposal->title,
@@ -207,6 +220,12 @@ class LetterService
      */
     public function requestManualLetter(User $user, array $data): Letter
     {
+        // Validate letter creation
+        $validationErrors = $this->letterValidationService->validateLetterCreation($data, $user->id);
+        if (! empty($validationErrors)) {
+            throw new \DomainException(implode('\n', $validationErrors));
+        }
+
         return DB::transaction(function () use ($user, $data) {
             $referenceType = $data['reference_type'] ?? null;
             $referenceId = $data['reference_id'] ?? null;
@@ -290,6 +309,12 @@ class LetterService
      */
     public function approveLetter(Letter $letter): string
     {
+        // Validate letter approval
+        $validationErrors = $this->letterValidationService->validateLetterApproval($letter, auth()->id());
+        if (! empty($validationErrors)) {
+            throw new \DomainException(implode('\n', $validationErrors));
+        }
+
         return DB::transaction(function () use ($letter) {
             // Lock the letter row to prevent double-approve
             $lockedLetter = Letter::where('id', $letter->id)
@@ -336,6 +361,12 @@ class LetterService
      */
     public function rejectLetter(Letter $letter, ?string $reason = null): void
     {
+        // Validate letter rejection
+        $validationErrors = $this->letterValidationService->validateLetterRejection($letter, auth()->id());
+        if (! empty($validationErrors)) {
+            throw new \DomainException(implode('\n', $validationErrors));
+        }
+
         if (in_array($letter->status, Letter::STATUS_IMMUTABLE)) {
             throw new \DomainException('Cannot reject immutable letter.');
         }
@@ -351,6 +382,12 @@ class LetterService
      */
     public function cancelLetter(Letter $letter): void
     {
+        // Validate letter cancellation
+        $validationErrors = $this->letterValidationService->validateLetterCancellation($letter, auth()->id());
+        if (! empty($validationErrors)) {
+            throw new \DomainException(implode('\n', $validationErrors));
+        }
+
         if (in_array($letter->status, Letter::STATUS_IMMUTABLE)) {
             throw new \DomainException('Surat yang sudah diterbitkan tidak bisa dibatalkan.');
         }
@@ -367,6 +404,12 @@ class LetterService
      */
     public function resubmitLetter(Letter $letter, array $data): void
     {
+        // Validate letter resubmission
+        $validationErrors = $this->letterValidationService->validateLetterResubmission($letter, auth()->id());
+        if (! empty($validationErrors)) {
+            throw new \DomainException(implode('\n', $validationErrors));
+        }
+
         if ($letter->status !== 'rejected') {
             throw new \DomainException('Hanya surat yang ditolak yang bisa diajukan ulang.');
         }

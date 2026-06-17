@@ -46,12 +46,12 @@ class Form extends Component
 
             $media = $manualBook->getFirstMedia('manual_book_file');
             if ($media) {
-            $this->existingFile = [
-                'name' => $media->file_name,
-                'size' => $media->size,
-                'url' => route('media.download', $media),
-                'mime_type' => $media->mime_type,
-            ];
+                $this->existingFile = [
+                    'name' => $media->file_name,
+                    'size' => $media->size,
+                    'url' => route('media.download', $media),
+                    'mime_type' => $media->mime_type,
+                ];
             }
         }
     }

@@ -45,4 +45,9 @@ class LetterType extends Model
     {
         return $this->belongsTo(LetterCategory::class, 'category', 'slug');
     }
+
+    public function getSupportsManualSignatureAttribute(): bool
+    {
+        return $this->attributes['supports_manual_signature'] ?? true;
+    }
 }

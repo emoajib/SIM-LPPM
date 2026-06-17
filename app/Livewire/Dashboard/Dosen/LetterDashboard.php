@@ -16,7 +16,7 @@ use Livewire\WithPagination;
 #[Layout('components.layouts.app', ['title' => 'Dashboard Persuratan'])]
 class LetterDashboard extends Component
 {
-    use HasTeamSearch, HasLetterForm, WithPagination;
+    use HasLetterForm, HasTeamSearch, WithPagination;
 
     public $statusFilter = 'pending_approval';
 
