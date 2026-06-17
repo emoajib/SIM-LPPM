@@ -124,6 +124,57 @@ if (! function_exists('generate_qr_code_data_uri')) {
     }
 }
 
+if (! function_exists('get_institution_config')) {
+    function get_institution_config(?string $key = null): mixed
+    {
+        $config = config('institution', []);
+
+        if ($key === null) {
+            $result = [];
+            foreach ($config as $k => $default) {
+                $result[$k] = get_institution_config($k);
+            }
+
+            return $result;
+        }
+
+        $institution = \App\Models\Institution::first();
+
+        $modelMap = [
+            'name' => 'name',
+            'short_name' => 'short_name',
+            'address' => 'address',
+            'phone' => 'phone',
+            'email' => 'email',
+            'website' => 'website',
+            'lppm_head_name' => 'lppm_head_name',
+            'lppm_head_id' => 'lppm_head_id',
+        ];
+
+        if ($institution && isset($modelMap[$key])) {
+            $field = $modelMap[$key];
+            $value = $institution->$field;
+            if ($value !== null && $value !== '') {
+                return $value;
+            }
+        }
+
+        $setting = Setting::get("institution_{$key}");
+        if ($setting !== null && $setting !== '') {
+            return $setting;
+        }
+
+        if ($key === 'lppm_head_name' || $key === 'lppm_head_position') {
+            $legacy = Setting::get($key);
+            if ($legacy !== null && $legacy !== '') {
+                return $legacy;
+            }
+        }
+
+        return $config[$key] ?? null;
+    }
+}
+
 if (! function_exists('format_name')) {
     /**
      * Build a full display name from a base name plus optional academic
@@ -419,5 +470,16 @@ if (! function_exists('_build_custom_margins')) {
         $left = $l !== '' ? $l.'cm' : $dLeft;
 
         return "{$top} {$right} {$bottom} {$left}";
+    }
+}
+
+if (! function_exists('embed_attachment_image')) {
+    function embed_attachment_image(\Spatie\MediaLibrary\MediaCollections\Models\Media $media): ?string
+    {
+        $path = $media->hasGeneratedConversion('pdf_image') && file_exists($media->getPath('pdf_image'))
+            ? $media->getPath('pdf_image')
+            : $media->getPath();
+
+        return file_exists($path) ? $path : null;
     }
 }

@@ -3,6 +3,7 @@
     $logoPos = $pdfConfig['logo_position'] ?? 'left';
     $logoSrc = get_logo_base64();
     $logoSize = $pdfConfig['logo_size'] ?? 110;
+    $inst = get_institution_config();
 @endphp
 @if($logoPos === 'center')
 <table class="header-table">
@@ -15,10 +16,10 @@
     </tr>
     <tr>
         <td class="header-text" style="border:none;">
-            <div class="dept">LEMBAGA PENELITIAN DAN PENGABDIAN MASYARAKAT</div>
-            <div class="univ">ITSNU PEKALONGAN</div>
-            <div class="address">Jl. Karangdowo No. 9 Kedungwuni Kab. Pekalongan Kode Pos 51173</div>
-            <div class="contact">Telp/Fax. (0285) 7831614 email: lppmitsnupkl@gmail.com #SantriHighTech</div>
+            <div class="dept">{{ strtoupper($inst['lppm_name']) }}</div>
+            <div class="univ">{{ strtoupper($inst['name']) }}</div>
+            <div class="address">{{ $inst['address'] }}</div>
+            <div class="contact">Telp/Fax. {{ $inst['phone'] }} email: {{ $inst['email'] }} {{ $inst['motto'] }}</div>
         </td>
     </tr>
 </table>
@@ -27,10 +28,10 @@
     <tr>
         @if($logoPos === 'right')
         <td width="85%" class="header-text" style="border:none;">
-            <div class="dept">LEMBAGA PENELITIAN DAN PENGABDIAN MASYARAKAT</div>
-            <div class="univ">ITSNU PEKALONGAN</div>
-            <div class="address">Jl. Karangdowo No. 9 Kedungwuni Kab. Pekalongan Kode Pos 51173</div>
-            <div class="contact">Telp/Fax. (0285) 7831614 email: lppmitsnupkl@gmail.com #SantriHighTech</div>
+            <div class="dept">{{ strtoupper($inst['lppm_name']) }}</div>
+            <div class="univ">{{ strtoupper($inst['name']) }}</div>
+            <div class="address">{{ $inst['address'] }}</div>
+            <div class="contact">Telp/Fax. {{ $inst['phone'] }} email: {{ $inst['email'] }} {{ $inst['motto'] }}</div>
         </td>
         <td width="15%" style="border:none; text-align:right;">
             @if(($pdfConfig['show_logo'] ?? true) && $logoSrc)
@@ -44,10 +45,10 @@
             @endif
         </td>
         <td width="85%" class="header-text" style="border:none;">
-            <div class="dept">LEMBAGA PENELITIAN DAN PENGABDIAN MASYARAKAT</div>
-            <div class="univ">ITSNU PEKALONGAN</div>
-            <div class="address">Jl. Karangdowo No. 9 Kedungwuni Kab. Pekalongan Kode Pos 51173</div>
-            <div class="contact">Telp/Fax. (0285) 7831614 email: lppmitsnupkl@gmail.com #SantriHighTech</div>
+            <div class="dept">{{ strtoupper($inst['lppm_name']) }}</div>
+            <div class="univ">{{ strtoupper($inst['name']) }}</div>
+            <div class="address">{{ $inst['address'] }}</div>
+            <div class="contact">Telp/Fax. {{ $inst['phone'] }} email: {{ $inst['email'] }} {{ $inst['motto'] }}</div>
         </td>
         @endif
     </tr>

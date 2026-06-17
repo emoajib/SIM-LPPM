@@ -92,15 +92,16 @@ class LetterService
         }
 
         $metadata = array_merge([
-            'signer_name' => Setting::get('lppm_head_name', ''),
-            'signer_position' => Setting::get('lppm_head_position', ''),
-            'signer_nidn' => Setting::get('lppm_head_nidn', ''),
+            'signer_name' => get_institution_config('lppm_head_name'),
+            'signer_position' => get_institution_config('lppm_head_position'),
+            'signer_nidn' => get_institution_config('lppm_head_nidn'),
         ], $letter->metadata ?? []);
 
         $qrUrl = URL::signedRoute('letters.verify', ['letter' => $letter->id]);
         $qrDataUri = generate_qr_code_data_uri($qrUrl);
 
-        $pdfConfig = get_pdf_config('letter', 'letter');
+        $moduleKey = $this->resolveModuleKey($letterType->template_view ?? '');
+        $pdfConfig = get_pdf_config('letter', $moduleKey);
 
         $data = [
             'letter' => $letter,
@@ -119,6 +120,18 @@ class LetterService
         Letter::where('id', $letter->id)->update(['file_path' => $filename]);
 
         return $filename;
+    }
+
+    /**
+     * Resolve module key from template view name for PDF config overrides.
+     * Maps e.g. 'pdf.letters.surat-tugas' → 'surat-tugas'
+     * Falls back to 'letter' for backward compatibility.
+     */
+    private function resolveModuleKey(string $templateView): string
+    {
+        $map = collect(config('pdf-modules.list', []))->pluck('key', 'template');
+
+        return $map[$templateView] ?? 'letter';
     }
 
     /**
@@ -171,10 +184,10 @@ class LetterService
             'location' => $data['location'],
             'destination_name' => $data['destinationName'] ?? null,
             'tembusan' => array_map('trim', explode("\n", $data['tembusan'] ?? '1. Arsip')),
-            'signer_name' => Setting::get('lppm_head_name', 'Aria Mulyapradana, S.Psi., M.A.'),
-            'signer_position' => Setting::get('lppm_head_position', 'Kepala LPPM'),
-            'signer_nidn' => Setting::get('lppm_head_nidn', '0612118401'),
-            'signer_address' => Setting::get('lppm_head_address', 'Jl. Rowolaku No. 01 Kajen, Pekalongan'),
+            'signer_name' => get_institution_config('lppm_head_name'),
+            'signer_position' => get_institution_config('lppm_head_position'),
+            'signer_nidn' => get_institution_config('lppm_head_nidn'),
+            'signer_address' => get_institution_config('lppm_head_address'),
         ];
 
         $bypass = $this->shouldBypassApproval();
@@ -254,10 +267,10 @@ class LetterService
                 'location' => $data['location'],
                 'destination_name' => $data['destinationName'] ?? null,
                 'tembusan' => array_map('trim', explode("\n", $data['tembusan'] ?? '1. Arsip')),
-                'signer_name' => Setting::get('lppm_head_name', 'Aria Mulyapradana, S.Psi., M.A.'),
-                'signer_position' => Setting::get('lppm_head_position', 'Kepala LPPM'),
-                'signer_nidn' => Setting::get('lppm_head_nidn', '0612118401'),
-                'signer_address' => Setting::get('lppm_head_address', 'Jl. Rowolaku No. 01 Kajen, Pekalongan'),
+                'signer_name' => get_institution_config('lppm_head_name'),
+                'signer_position' => get_institution_config('lppm_head_position'),
+                'signer_nidn' => get_institution_config('lppm_head_nidn'),
+                'signer_address' => get_institution_config('lppm_head_address'),
             ];
 
             $referenceType = $data['reference_type'] ?? null;

@@ -35,11 +35,11 @@
                                 <span>Tampilan</span>
                             </button>
                             {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
-                            <button wire:click="setActiveTab('pdf-export')"
-                                class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'pdf-export' ? 'active' : '' }}">
-                                <x-lucide-printer class="icon" />
-                                <span>PDF & Ekspor</span>
-                            </button>
+                             <button wire:click="setActiveTab('pdf-export')"
+                                 class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'pdf-export' ? 'active' : '' }}">
+                                 <x-lucide-printer class="icon" />
+                                 <span>PDF & Ekspor</span>
+                             </button>
                             <button wire:click="setActiveTab('audit')"
                                 class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'audit' ? 'active' : '' }}">
                                 <x-lucide-eye class="icon" />

@@ -409,21 +409,9 @@
                         <div class="mb-3">
                             <select class="form-select form-select-sm border-primary text-primary fw-bold" x-model="previewModule" @change="refreshPreview()">
                                 <option value="dummy">-- Pilih Modul Pratinjau (Default) --</option>
-                                <option value="pdf.letters.surat-tugas">1. Surat Tugas</option>
-                                <option value="pdf.letters.surat-keterangan">2. Surat Keterangan</option>
-                                <option value="pdf.letters.surat-permohonan-izin">3. Surat Permohonan Izin</option>
-                                <option value="pdf.proposal-export">4. Ekspor Proposal</option>
-                                <option value="pdf.report-export">5. Laporan Kemajuan Proposal</option>
-                                <option value="pdf.daily-notes">6. Logbook Harian</option>
-                                <option value="pdf.review-evaluation">7. Evaluasi Reviewer</option>
-                                <option value="reports.iku-report-pdf">8. Laporan IKU</option>
-                                <option value="reports.research-pdf">9. Laporan Penelitian</option>
-                                <option value="reports.community-service-pdf">10. Laporan Pengabdian</option>
-                                <option value="reports.output-reports-pdf">11. Laporan Output</option>
-                                <option value="reports.partner-collaboration-pdf">12. Laporan Kerjasama Mitra</option>
-                                <option value="reports.monev-ba-pdf">13. Laporan Monev Berita Acara</option>
-                                <option value="reports.monev-pdf">14. Laporan Monev</option>
-                                <option value="reports.reviewer-report-pdf">15. Laporan Reviewer</option>
+                                @foreach(config('pdf-modules.list', []) as $m)
+                                <option value="{{ $m['template'] }}">{{ $loop->iteration }}. {{ $m['name'] }}</option>
+                                @endforeach
                             </select>
                         </div>
 
@@ -522,7 +510,7 @@
                     <x-lucide-layout-list class="icon me-1 text-primary" />
                     Daftar Modul &amp; Fitur Penghasil PDF
                 </h4>
-                <p class="text-muted">Semua 16 titik ekspor PDF di sistem ini menggunakan pengaturan global dari halaman ini. Pengaturan Keluarga A berlaku untuk modul surat/proposal, Keluarga B untuk laporan.</p>
+                <p class="text-muted">Semua modul penghasil PDF di sistem ini menggunakan pengaturan global dari halaman ini. Pengaturan Keluarga A berlaku untuk modul surat/proposal, Keluarga B untuk laporan.</p>
             </div>
 
             <div class="table-responsive">
@@ -537,36 +525,20 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach([
-                            ['surat-tugas', 'Surat Tugas','pdf/letters/surat-tugas','A'],
-                            ['surat-keterangan', 'Surat Keterangan','pdf/letters/surat-keterangan','A'],
-                            ['surat-izin', 'Surat Permohonan Izin','pdf/letters/surat-permohonan-izin','A'],
-                            ['proposal-export', 'Ekspor Proposal','pdf/proposal-export','A'],
-                            ['laporan-kemajuan', 'Laporan Kemajuan Proposal','pdf/report-export','A'],
-                            ['logbook', 'Logbook Harian','pdf/daily-notes','A'],
-                            ['evaluasi-reviewer', 'Evaluasi Reviewer','pdf/review-evaluation','A'],
-                            ['iku', 'Laporan IKU','reports/iku-report-pdf','B'],
-                            ['penelitian', 'Laporan Penelitian','reports/research-pdf','B'],
-                            ['pengabdian', 'Laporan Pengabdian','reports/community-service-pdf','B'],
-                            ['output', 'Laporan Output','reports/output-reports-pdf','B'],
-                            ['mitra', 'Laporan Kerjasama Mitra','reports/partner-collaboration-pdf','B'],
-                            ['monev-ba', 'Laporan Monev Berita Acara','reports/monev-ba-pdf','B'],
-                            ['monev', 'Laporan Monev','reports/monev-pdf','B'],
-                            ['reviewer', 'Laporan Reviewer','reports/reviewer-report-pdf','B'],
-                        ] as $index => [$key, $name, $template, $family])
+                        @foreach(config('pdf-modules.list', []) as $index => $m)
                         <tr>
                             <td class="text-muted">{{ $index + 1 }}</td>
-                            <td class="fw-medium">{{ $name }}</td>
-                            <td><code style="font-size:11px;">{{ $template }}</code></td>
+                            <td class="fw-medium">{{ $m['name'] }}</td>
+                            <td><code style="font-size:11px;">{{ $m['template'] }}</code></td>
                             <td>
-                                @if($family === 'A')
+                                @if($m['family'] === 'A')
                                     <span class="badge bg-blue-lt text-blue">Keluarga A</span>
                                 @else
                                     <span class="badge bg-green-lt text-green">Keluarga B</span>
                                 @endif
                             </td>
                             <td>
-                                <button type="button" class="btn btn-sm btn-outline-primary" wire:click="openContentEditor('{{ $key }}', '{{ $name }}')">
+                                <button type="button" class="btn btn-sm btn-outline-primary" wire:click="openContentEditor('{{ $m['key'] }}', '{{ $m['name'] }}')">
                                     <x-lucide-edit-3 class="icon icon-sm me-1" /> Edit Konten
                                 </button>
                             </td>
@@ -576,21 +548,74 @@
                 </table>
             </div>
 
+            @php
+                $modules = config('pdf-modules.list', []);
+                $familyA = collect($modules)->where('family', 'A');
+                $familyB = collect($modules)->where('family', 'B');
+            @endphp
             <div class="row g-3 mt-2">
                 <div class="col-md-6">
                     <div class="card bg-blue-lt border-0">
                         <div class="card-body">
-                            <h5 class="card-title text-blue mb-1">Keluarga A — 8 Modul</h5>
-                            <p class="text-muted small mb-0">Surat resmi, proposal, laporan kemajuan, logbook, reviewer. Menggunakan font <strong>Times New Roman 11pt</strong> sebagai default. Kop surat menggunakan partial <code>header.blade.php</code> yang dikontrol pengaturan posisi logo.</p>
+                            <h5 class="card-title text-blue mb-1">Keluarga A — {{ $familyA->count() }} Modul</h5>
+                            <p class="text-muted small mb-0">Surat resmi, proposal, laporan, logbook, evaluasi reviewer. Menggunakan font <strong>Times New Roman 11pt</strong> sebagai default. Kop surat menggunakan partial <code>header.blade.php</code> yang dikontrol pengaturan posisi logo.</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="card bg-green-lt border-0">
                         <div class="card-body">
-                            <h5 class="card-title text-green mb-1">Keluarga B — 8 Modul</h5>
+                            <h5 class="card-title text-green mb-1">Keluarga B — {{ $familyB->count() }} Modul</h5>
                             <p class="text-muted small mb-0">Laporan rekap IKU, Monev, PKM, Output, Mitra, Reviewer. Menggunakan font <strong>Arial 9pt</strong> sebagai default. Layout lebih padat untuk efisiensi tabel data. Dikontrol pengaturan Laporan Modul.</p>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- ==================== DATA INSTITUSI ==================== --}}
+        @php $inst = get_institution_config(); @endphp
+        <div class="mt-4 card">
+            <div class="card-header">
+                <h4 class="card-title">
+                    <x-lucide-building class="icon me-1 text-primary" />
+                    Data Institusi untuk Kop Surat & Laporan
+                </h4>
+                <div class="card-actions">
+                    <a href="{{ url('/settings/master-data?group=academic-structure') }}" class="btn btn-outline-primary btn-sm">
+                        <x-lucide-external-link class="icon me-1" /> Edit di Master Data
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-muted small text-uppercase">Nama Institusi</label>
+                        <p class="mb-0">{{ $inst['full_name'] }}</p>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold text-muted small text-uppercase">Nama Singkat</label>
+                        <p class="mb-0">{{ $inst['name'] }}</p>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold text-muted small text-uppercase">LPPM</label>
+                        <p class="mb-0">{{ $inst['lppm_name'] }}</p>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold text-muted small text-uppercase">Kepala LPPM</label>
+                        <p class="mb-0">{{ $inst['lppm_head_name'] }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-muted small text-uppercase">Alamat</label>
+                        <p class="mb-0">{{ $inst['address'] }}</p>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold text-muted small text-uppercase">Telepon</label>
+                        <p class="mb-0">{{ $inst['phone'] }}</p>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold text-muted small text-uppercase">Email / Website</label>
+                        <p class="mb-0">{{ $inst['email'] }} / {{ $inst['website'] }}</p>
                     </div>
                 </div>
             </div>

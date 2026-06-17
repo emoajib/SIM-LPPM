@@ -150,10 +150,16 @@ class Login extends Component
             return;
         }
 
-        $user = User::role($roleName)->first();
+        try {
+            $user = User::role($roleName)->first();
+        } catch (\Spatie\Permission\Exceptions\RoleDoesNotExist) {
+            $this->addError('email', "Role '$roleName' tidak ditemukan di database. Jalankan `php artisan db:seed --class=RoleSeeder`.");
+
+            return;
+        }
 
         if (! $user) {
-            $this->addError('email', "No user found with role: $roleName");
+            $this->addError('email', "Tidak ada user dengan role: $roleName");
 
             return;
         }

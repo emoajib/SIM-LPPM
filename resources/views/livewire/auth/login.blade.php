@@ -141,7 +141,7 @@
                         <p class="text-center text-secondary small fw-bold mb-3">🔧 Developer Quick Login (Local Only)</p>
                         <div class="d-flex flex-wrap gap-2 justify-content-center">
                             @php
-                                $devRoles = ['superadmin', 'admin lppm', 'kepala lppm', 'dosen', 'reviewer', 'dekan', 'kaprodi', 'rektor'];
+                                $devRoles = \Spatie\Permission\Models\Role::where('guard_name', 'web')->pluck('name')->toArray();
                             @endphp
                             @foreach($devRoles as $role)
                                 <button type="button" wire:click="devLogin('{{ $role }}')" 

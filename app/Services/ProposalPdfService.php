@@ -211,8 +211,8 @@ class ProposalPdfService
             $lppmHeadName = $fullName;
             $lppmHeadId = $identity->identity_id ?? '';
         } else {
-            $lppmHeadName = $institution->lppm_head_name ?: (Setting::where('key', 'lppm_head_name')->first()->value ?? $lppmHeadName);
-            $lppmHeadId = $institution->lppm_head_id ?: (Setting::where('key', 'lppm_head_id')->first()->value ?? $lppmHeadId);
+            $lppmHeadName = $institution->lppm_head_name ?: (get_institution_config('lppm_head_name') ?? $lppmHeadName);
+            $lppmHeadId = $institution->lppm_head_id ?: (get_institution_config('lppm_head_id') ?? $lppmHeadId);
         }
 
         if ($lppmHeadName === '..........................') {
@@ -241,9 +241,8 @@ class ProposalPdfService
                 $lppmHeadId = $idn->identity_id ?? '';
             }
         } else {
-            // Ultimate fallback
-            $lppmHeadName = Setting::where('key', 'lppm_head_name')->first()->value ?? $lppmHeadName;
-            $lppmHeadId = Setting::where('key', 'lppm_head_id')->first()->value ?? $lppmHeadId;
+            $lppmHeadName = get_institution_config('lppm_head_name') ?? $lppmHeadName;
+            $lppmHeadId = get_institution_config('lppm_head_id') ?? $lppmHeadId;
         }
 
         // Pre-fetch approval mode once (reused for Blade view & FPDI merge)
@@ -689,11 +688,11 @@ class ProposalPdfService
             $lppmHeadName = format_name($identity->title_prefix, $institution->lppmHeadUser->name, $identity->title_suffix);
             $lppmHeadId = $identity->identity_id ?? '';
         } elseif ($institution) {
-            $lppmHeadName = $institution->lppm_head_name ?: (Setting::where('key', 'lppm_head_name')->first()->value ?? $lppmHeadName);
-            $lppmHeadId = $institution->lppm_head_id ?: (Setting::where('key', 'lppm_head_id')->first()->value ?? $lppmHeadId);
+            $lppmHeadName = $institution->lppm_head_name ?: (get_institution_config('lppm_head_name') ?? $lppmHeadName);
+            $lppmHeadId = $institution->lppm_head_id ?: (get_institution_config('lppm_head_id') ?? $lppmHeadId);
         } else {
-            $lppmHeadName = Setting::where('key', 'lppm_head_name')->first()->value ?? $lppmHeadName;
-            $lppmHeadId = Setting::where('key', 'lppm_head_id')->first()->value ?? $lppmHeadId;
+            $lppmHeadName = get_institution_config('lppm_head_name') ?? $lppmHeadName;
+            $lppmHeadId = get_institution_config('lppm_head_id') ?? $lppmHeadId;
         }
 
         if ($institution && $lppmHeadName === '..........................') {
@@ -753,7 +752,7 @@ class ProposalPdfService
             ? URL::signedRoute('signatures.verify', ['documentSignature' => $reportSigs['finalized|kepala_lppm']->id])
             : null;
 
-        $pdfConfig = get_pdf_config('letter', 'laporan-kemajuan');
+        $pdfConfig = get_pdf_config('letter', 'laporan-akhir');
 
         // Generate report content PDF
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager

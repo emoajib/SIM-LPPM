@@ -106,7 +106,7 @@ class ProposalExportController extends Controller
             abort(403, 'Anda tidak memiliki akses untuk mengekspor laporan ini.');
         }
 
-        $type = $request->query('type', 'progress');
+        $type = $request->query('type', 'final');
 
         // Find the report based on type
         if ($type === 'final') {

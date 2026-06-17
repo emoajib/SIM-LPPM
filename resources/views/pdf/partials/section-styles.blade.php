@@ -29,4 +29,8 @@
         color: #555;
         margin-bottom: 10px;
     }
+    .lampiran-image {
+        max-width: 100%;
+        height: auto;
+    }
 </style>

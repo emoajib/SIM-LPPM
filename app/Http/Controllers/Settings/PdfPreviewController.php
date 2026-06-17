@@ -42,37 +42,9 @@ class PdfPreviewController extends Controller
             return $pdf->stream('pratinjau-pengaturan.pdf');
         }
 
-        $moduleLabels = [
-            'pdf.proposal-export' => 'Proposal Export',
-            'pdf.report-export' => 'Laporan Kemajuan/Akhir',
-            'pdf.daily-notes' => 'Logbook Harian',
-            'pdf.review-evaluation' => 'Review Evaluasi',
-            'reports.research-pdf' => 'Laporan Penelitian',
-            'reports.community-service-pdf' => 'Laporan Pengabdian',
-            'reports.output-reports-pdf' => 'Laporan Output',
-            'reports.partner-collaboration-pdf' => 'Kerjasama Mitra',
-            'reports.monev-ba-pdf' => 'Berita Acara Monev',
-            'reports.monev-pdf' => 'Rekapitulasi Monev',
-            'reports.reviewer-report-pdf' => 'Laporan Reviewer',
-        ];
-
-        $moduleKeys = [
-            'pdf.letters.surat-tugas' => 'surat-tugas',
-            'pdf.letters.surat-keterangan' => 'surat-keterangan',
-            'pdf.letters.surat-permohonan-izin' => 'surat-izin',
-            'pdf.proposal-export' => 'proposal-export',
-            'pdf.report-export' => 'laporan-kemajuan',
-            'pdf.daily-notes' => 'logbook',
-            'pdf.review-evaluation' => 'evaluasi-reviewer',
-            'reports.iku-report-pdf' => 'iku',
-            'reports.research-pdf' => 'penelitian',
-            'reports.community-service-pdf' => 'pengabdian',
-            'reports.output-reports-pdf' => 'output',
-            'reports.partner-collaboration-pdf' => 'mitra',
-            'reports.monev-ba-pdf' => 'monev-ba',
-            'reports.monev-pdf' => 'monev',
-            'reports.reviewer-report-pdf' => 'reviewer',
-        ];
+        $modules = config('pdf-modules.list', []);
+        $moduleLabels = collect($modules)->pluck('name', 'template')->toArray();
+        $moduleKeys = collect($modules)->pluck('key', 'template')->toArray();
 
         $shortKey = $moduleKeys[$module] ?? null;
 
@@ -142,8 +114,8 @@ class PdfPreviewController extends Controller
             return [
                 'letter' => $letter,
                 'metadata' => array_merge([
-                    'signer_name' => Setting::get('lppm_head_name', 'Nama LPPM'),
-                    'signer_position' => Setting::get('lppm_head_position', 'Kepala LPPM'),
+                    'signer_name' => get_institution_config('lppm_head_name'),
+                    'signer_position' => get_institution_config('lppm_head_position'),
                 ], is_array($letter->metadata) ? $letter->metadata : []),
                 'team' => is_array($letter->team_snapshot) && count($letter->team_snapshot) > 0 ? $letter->team_snapshot : [['name' => 'Dr. Dummy', 'role' => 'Ketua', 'identifier' => '123']],
                 'qrDataUri' => '',
@@ -193,9 +165,9 @@ class PdfPreviewController extends Controller
                 'proposal.focusArea',
                 'proposal.signatures',
                 'proposal.detailable',
-            ])->latest()->first();
+            ])->where('reporting_period', 'final')->latest()->first();
             if (! $report) {
-                throw new \Exception('Data Laporan Kemajuan/Akhir kosong.');
+                throw new \Exception('Data Laporan Akhir kosong.');
             }
 
             return [

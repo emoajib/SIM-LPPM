@@ -26,14 +26,12 @@ class ResetPdfSettings extends Command
     protected $description = 'Reset PDF and Export styling settings to kanonik/default values';
 
     /**
-     * All recognised module keys for module-specific overrides.
+     * Get all recognised module keys from config (single source of truth).
      */
-    private const MODULE_KEYS = [
-        'surat-tugas', 'surat-keterangan', 'surat-izin',
-        'proposal-export', 'laporan-kemajuan', 'logbook',
-        'evaluasi-reviewer', 'iku', 'penelitian', 'pengabdian',
-        'output', 'mitra', 'monev-ba', 'monev', 'reviewer',
-    ];
+    private function getModuleKeys(): array
+    {
+        return array_column(config('pdf-modules.list', []), 'key');
+    }
 
     /**
      * Execute the console command.
@@ -97,8 +95,9 @@ class ResetPdfSettings extends Command
      */
     private function resetModuleOverrides(string $module): void
     {
-        if (! in_array($module, self::MODULE_KEYS, true)) {
-            $this->error("Module '{$module}' tidak dikenal. Gunakan salah satu: ".implode(', ', self::MODULE_KEYS));
+        $keys = $this->getModuleKeys();
+        if (! in_array($module, $keys, true)) {
+            $this->error("Module '{$module}' tidak dikenal. Gunakan salah satu: ".implode(', ', $keys));
 
             return;
         }
@@ -118,12 +117,13 @@ class ResetPdfSettings extends Command
     {
         $this->warn('Resetting ALL module-specific overrides...');
 
-        foreach (self::MODULE_KEYS as $module) {
+        $keys = $this->getModuleKeys();
+        foreach ($keys as $module) {
             Setting::where('key', 'LIKE', "pdf_content_{$module}_%")->delete();
             Setting::where('key', 'LIKE', "pdf_override_{$module}_%")->delete();
         }
 
-        $this->line('  ✓ All module-specific overrides deleted ('.count(self::MODULE_KEYS).' modules).');
+        $this->line('  ✓ All module-specific overrides deleted ('.count($keys).' modules).');
     }
 
     /**
@@ -131,7 +131,8 @@ class ResetPdfSettings extends Command
      */
     private function confirmResetAll(): bool
     {
-        $count = count(self::MODULE_KEYS);
+        $keys = $this->getModuleKeys();
+        $count = count($keys);
         $overridesCount = $count * 9; // 9 override keys per module
 
         $this->line('');

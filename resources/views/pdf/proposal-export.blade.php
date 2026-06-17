@@ -100,74 +100,6 @@
         @php $sectionNum++; @endphp
     @endif
 
-    @php
-        $supportingDocs = [];
-        if ($proposal->detailable?->hasMedia('substance_file')) {
-            $supportingDocs[] = ['name' => 'Substansi Usulan', 'file' => $proposal->detailable->getFirstMedia('substance_file')];
-        }
-        if (in_array($proposal_approval_mode, ['upload', 'both']) && $proposal->detailable?->hasMedia('approval_file')) {
-            $supportingDocs[] = ['name' => 'Lembar Pengesahan (Tanda Tangan Basah)', 'file' => $proposal->detailable->getFirstMedia('approval_file')];
-        }
-    @endphp
-    @if(count($supportingDocs) > 0)
-        <div class="section-title">{{ $sectionNum++ }}. Dokumen Pendukung (Terlampir)</div>
-        <table>
-            <thead>
-                <tr>
-                    <th width="5%">No</th>
-                    <th width="75%">Nama Data Pendukung</th>
-                    <th width="20%">Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($supportingDocs as $index => $doc)
-                    <tr>
-                        <td class="text-center">{{ $index + 1 }}</td>
-                        <td>{{ $doc['name'] }}</td>
-                        <td class="text-center">Terlampir</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    @endif
-
-    @php
-        $otherDocs = [];
-        foreach ($proposal->partners as $partner) {
-            if ($partner->hasMedia('commitment_letter')) {
-                $media = $partner->getMedia('commitment_letter')
-                    ->where('custom_properties.proposal_id', $proposal->id)
-                    ->first();
-                if ($media) {
-                    $otherDocs[] = ['name' => 'Surat Pernyataan Kerjasama Mitra - ' . $partner->name, 'file' => $media];
-                }
-            }
-        }
-    @endphp
-    @if(count($otherDocs) > 0)
-        <div class="section-title">{{ $sectionNum++ }}. Dokumen Pendukung Lainnya (Terlampir)</div>
-        <table>
-            <thead>
-                <tr>
-                    <th width="5%">No</th>
-                    <th width="35%">Kategori</th>
-                    <th width="40%">Nama Mitra</th>
-                    <th width="20%">Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($otherDocs as $index => $doc)
-                    <tr>
-                        <td class="text-center">{{ $index + 1 }}</td>
-                        <td>Surat Pernyataan Kerjasama</td>
-                        <td>{{ str_replace('Surat Pernyataan Kerjasama Mitra - ', '', $doc['name']) }}</td>
-                        <td class="text-center">Terlampir</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    @endif
-
     @include('pdf.partials.section-anggaran', ['sectionNum' => $sectionNum])
     @php $sectionNum++; @endphp
 
@@ -394,6 +326,54 @@
                 </tr>
             </table>
         </div>
+    @endif
+
+    @php
+        $supportingDocs = [];
+        if ($proposal->detailable?->hasMedia('substance_file')) {
+            $media = $proposal->detailable->getFirstMedia('substance_file');
+            $mime = $media->mime_type ?? '';
+            $type = str_starts_with($mime, 'image/') ? 'image' : (str_contains($mime, 'pdf') ? 'pdf' : 'other');
+            $supportingDocs[] = ['label' => 'Substansi Usulan', 'media' => $media, 'type' => $type];
+        }
+        if (in_array($proposal_approval_mode, ['upload', 'both']) && $proposal->detailable?->hasMedia('approval_file')) {
+            $media = $proposal->detailable->getFirstMedia('approval_file');
+            $mime = $media->mime_type ?? '';
+            $type = str_starts_with($mime, 'image/') ? 'image' : (str_contains($mime, 'pdf') ? 'pdf' : 'other');
+            $supportingDocs[] = ['label' => 'Lembar Pengesahan (Tanda Tangan Basah)', 'media' => $media, 'type' => $type];
+        }
+    @endphp
+    @include('pdf.partials.section-lampiran', [
+        'title' => 'Dokumen Pendukung',
+        'items' => $supportingDocs,
+        'sectionNum' => $sectionNum,
+    ])
+    @if(count($supportingDocs) > 0)
+        @php $sectionNum++; @endphp
+    @endif
+
+    @php
+        $otherDocs = [];
+        foreach ($proposal->partners as $partner) {
+            if ($partner->hasMedia('commitment_letter')) {
+                $media = $partner->getMedia('commitment_letter')
+                    ->where('custom_properties.proposal_id', $proposal->id)
+                    ->first();
+                if ($media) {
+                    $mime = $media->mime_type ?? '';
+                    $type = str_starts_with($mime, 'image/') ? 'image' : (str_contains($mime, 'pdf') ? 'pdf' : 'other');
+                    $otherDocs[] = ['label' => 'Surat Pernyataan Kerjasama Mitra - ' . $partner->name, 'media' => $media, 'type' => $type];
+                }
+            }
+        }
+    @endphp
+    @include('pdf.partials.section-lampiran', [
+        'title' => 'Dokumen Pendukung Lainnya',
+        'items' => $otherDocs,
+        'sectionNum' => $sectionNum,
+    ])
+    @if(count($otherDocs) > 0)
+        @php $sectionNum++; @endphp
     @endif
 
     @if(!empty($pdfConfig['approval_custom_text'] ?? null))

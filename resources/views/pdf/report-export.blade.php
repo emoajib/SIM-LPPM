@@ -87,89 +87,6 @@
         @php $sectionNum++; @endphp
     @endif
 
-    @php
-        $supportingDocs = [];
-        if ($proposal->detailable?->hasMedia('substance_file')) {
-            $supportingDocs[] = ['name' => 'Substansi Usulan (Proposal)', 'file' => $proposal->detailable->getFirstMedia('substance_file')];
-        }
-        if ($report->hasMedia('substance_file')) {
-            $supportingDocs[] = ['name' => 'Substansi ' . ($report->reporting_period === 'final' ? 'Laporan Akhir' : 'Laporan Kemajuan'), 'file' => $report->getFirstMedia('substance_file')];
-        }
-        if ($report->hasMedia('realization_file')) {
-            $supportingDocs[] = ['name' => 'Realisasi Keterlibatan', 'file' => $report->getFirstMedia('realization_file')];
-        }
-        if ($report->hasMedia('presentation_file')) {
-            $supportingDocs[] = ['name' => 'Presentasi Hasil', 'file' => $report->getFirstMedia('presentation_file')];
-        }
-        foreach($report->mandatoryOutputs as $mo) {
-            $collections = ['journal_article', 'book_document', 'publication_certificate'];
-            foreach($collections as $col) {
-                if ($mo->hasMedia($col)) {
-                    $supportingDocs[] = ['name' => 'Luaran Wajib: ' . ($mo->proposalOutput->type ?? 'Output') . ' - ' . $mo->getFirstMedia($col)->name, 'file' => $mo->getFirstMedia($col)];
-                }
-            }
-        }
-        foreach($report->additionalOutputs as $ao) {
-            $collections = ['journal_article', 'book_document', 'publication_certificate'];
-            foreach($collections as $col) {
-                if ($ao->hasMedia($col)) {
-                    $supportingDocs[] = ['name' => 'Luaran Tambahan: ' . ($ao->proposalOutput->type ?? 'Output') . ' - ' . $ao->getFirstMedia($col)->name, 'file' => $ao->getFirstMedia($col)];
-                }
-            }
-        }
-    @endphp
-    @if(count($supportingDocs) > 0)
-        <div class="section-title">{{ $sectionNum++ }}. Dokumen Pendukung (Terlampir)</div>
-        <table>
-            <thead>
-                <tr>
-                    <th width="5%">No</th>
-                    <th width="75%">Nama Data Pendukung</th>
-                    <th width="20%">Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($supportingDocs as $index => $doc)
-                    <tr>
-                        <td class="text-center">{{ $index + 1 }}</td>
-                        <td>{{ $doc['name'] }}</td>
-                        <td class="text-center">Terlampir</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    @endif
-
-    @php
-        $otherDocs = [];
-        foreach($proposal->partners as $partner) {
-            if ($partner->hasMedia('commitment_letter')) {
-                $otherDocs[] = ['name' => 'Surat Pernyataan Kerjasama Mitra - ' . $partner->name, 'file' => $partner->getFirstMedia('commitment_letter')];
-            }
-        }
-    @endphp
-    @if(count($otherDocs) > 0)
-        <div class="section-title">{{ $sectionNum++ }}. Dokumen Pendukung Lainnya</div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Kategori</th>
-                    <th>Nama Mitra</th>
-                    <th>File</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($otherDocs as $doc)
-                    <tr>
-                        <td>Surat Pernyataan Kerjasama</td>
-                        <td>{{ str_replace('Surat Pernyataan Kerjasama Mitra - ', '', $doc['name']) }}</td>
-                        <td>Terlampir</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    @endif
-
     @include('pdf.partials.section-anggaran', ['sectionNum' => $sectionNum])
     @php $sectionNum++; @endphp
 
@@ -409,6 +326,84 @@
             <div>Sesuai dengan kebijakan LPPM ITSNU Pekalongan, pengesahan laporan dilakukan melalui sistem informasi.</div>
             <div style="margin-top: 3px; font-family: monospace;">ID Laporan: {{ $report->id }} | Dicetak pada: {{ date('Y-m-d H:i:s') }}</div>
         </div>
+    @endif
+
+    @php
+        $supportingDocs = [];
+        if ($proposal->detailable?->hasMedia('substance_file')) {
+            $media = $proposal->detailable->getFirstMedia('substance_file');
+            $mime = $media->mime_type ?? '';
+            $type = str_starts_with($mime, 'image/') ? 'image' : (str_contains($mime, 'pdf') ? 'pdf' : 'other');
+            $supportingDocs[] = ['label' => 'Substansi Usulan (Proposal)', 'media' => $media, 'type' => $type];
+        }
+        if ($report->hasMedia('substance_file')) {
+            $media = $report->getFirstMedia('substance_file');
+            $mime = $media->mime_type ?? '';
+            $type = str_starts_with($mime, 'image/') ? 'image' : (str_contains($mime, 'pdf') ? 'pdf' : 'other');
+            $supportingDocs[] = ['label' => 'Substansi ' . ($report->reporting_period === 'final' ? 'Laporan Akhir' : 'Laporan Kemajuan'), 'media' => $media, 'type' => $type];
+        }
+        if ($report->hasMedia('realization_file')) {
+            $media = $report->getFirstMedia('realization_file');
+            $mime = $media->mime_type ?? '';
+            $type = str_starts_with($mime, 'image/') ? 'image' : (str_contains($mime, 'pdf') ? 'pdf' : 'other');
+            $supportingDocs[] = ['label' => 'Realisasi Keterlibatan', 'media' => $media, 'type' => $type];
+        }
+        if ($report->hasMedia('presentation_file')) {
+            $media = $report->getFirstMedia('presentation_file');
+            $mime = $media->mime_type ?? '';
+            $type = str_starts_with($mime, 'image/') ? 'image' : (str_contains($mime, 'pdf') ? 'pdf' : 'other');
+            $supportingDocs[] = ['label' => 'Presentasi Hasil', 'media' => $media, 'type' => $type];
+        }
+        foreach($report->mandatoryOutputs as $mo) {
+            $collections = ['journal_article', 'book_document', 'publication_certificate'];
+            foreach($collections as $col) {
+                if ($mo->hasMedia($col)) {
+                    $media = $mo->getFirstMedia($col);
+                    $mime = $media->mime_type ?? '';
+                    $type = str_starts_with($mime, 'image/') ? 'image' : (str_contains($mime, 'pdf') ? 'pdf' : 'other');
+                    $supportingDocs[] = ['label' => 'Luaran Wajib: ' . ($mo->proposalOutput->type ?? 'Output') . ' - ' . $media->name, 'media' => $media, 'type' => $type];
+                }
+            }
+        }
+        foreach($report->additionalOutputs as $ao) {
+            $collections = ['journal_article', 'book_document', 'publication_certificate'];
+            foreach($collections as $col) {
+                if ($ao->hasMedia($col)) {
+                    $media = $ao->getFirstMedia($col);
+                    $mime = $media->mime_type ?? '';
+                    $type = str_starts_with($mime, 'image/') ? 'image' : (str_contains($mime, 'pdf') ? 'pdf' : 'other');
+                    $supportingDocs[] = ['label' => 'Luaran Tambahan: ' . ($ao->proposalOutput->type ?? 'Output') . ' - ' . $media->name, 'media' => $media, 'type' => $type];
+                }
+            }
+        }
+    @endphp
+    @include('pdf.partials.section-lampiran', [
+        'title' => 'Dokumen Pendukung',
+        'items' => $supportingDocs,
+        'sectionNum' => $sectionNum,
+    ])
+    @if(count($supportingDocs) > 0)
+        @php $sectionNum++; @endphp
+    @endif
+
+    @php
+        $otherDocs = [];
+        foreach($proposal->partners as $partner) {
+            if ($partner->hasMedia('commitment_letter')) {
+                $media = $partner->getFirstMedia('commitment_letter');
+                $mime = $media->mime_type ?? '';
+                $type = str_starts_with($mime, 'image/') ? 'image' : (str_contains($mime, 'pdf') ? 'pdf' : 'other');
+                $otherDocs[] = ['label' => 'Surat Pernyataan Kerjasama Mitra - ' . $partner->name, 'media' => $media, 'type' => $type];
+            }
+        }
+    @endphp
+    @include('pdf.partials.section-lampiran', [
+        'title' => 'Dokumen Pendukung Lainnya',
+        'items' => $otherDocs,
+        'sectionNum' => $sectionNum,
+    ])
+    @if(count($otherDocs) > 0)
+        @php $sectionNum++; @endphp
     @endif
 
     @if(!empty($pdfConfig['approval_custom_text'] ?? null))

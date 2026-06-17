@@ -44,10 +44,10 @@ class RepairLetterData extends Command
 
             // 1. Repair Metadata (Signer Info)
             $metadata = $letter->metadata ?? [];
-            $metadata['signer_name'] = Setting::get('lppm_head_name', 'Aria Mulyapradana, S.Psi., M.A.');
-            $metadata['signer_position'] = Setting::get('lppm_head_position', 'Kepala LPPM');
-            $metadata['signer_nidn'] = Setting::get('lppm_head_nidn', '0612118401');
-            $metadata['signer_address'] = Setting::get('lppm_head_address', 'Jl. Rowolaku No. 01 Kajen, Pekalongan');
+            $metadata['signer_name'] = get_institution_config('lppm_head_name');
+            $metadata['signer_position'] = get_institution_config('lppm_head_position');
+            $metadata['signer_nidn'] = get_institution_config('lppm_head_nidn');
+            $metadata['signer_address'] = get_institution_config('lppm_head_address');
 
             // 2. Repair Team Snapshot (Missing Identifiers)
             $team = $letter->team_snapshot ?? [];

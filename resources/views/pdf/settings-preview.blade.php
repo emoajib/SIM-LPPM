@@ -24,6 +24,7 @@
     @php
         $logoSrc = get_logo_base64();
         $logoPos = \App\Models\Setting::get('pdf_logo_position', 'left');
+        $inst = get_institution_config();
     @endphp
     @if($logoPos === 'center')
     <div class="header" style="text-align:center;">
@@ -31,19 +32,19 @@
             <img src="{{ $logoSrc }}" class="logo" style="display:block; margin:0 auto;">
         @endif
         <div class="header-text" style="text-align:center;">
-            <h2>KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</h2>
-            <h1>INSTITUT TEKNOLOGI SAINS DAN KESEHATAN NAHDLATUL ULAMA KASINTA</h1>
-            <p>Jalan Jenderal Sudirman No. 123, Kota Kasinta</p>
-            <p>Telepon: (021) 1234567, Email: info@itsnu.ac.id, Website: www.itsnu.ac.id</p>
+            <h2>{{ strtoupper($inst['lppm_name']) }}</h2>
+            <h1>{{ strtoupper($inst['full_name']) }}</h1>
+            <p>{{ $inst['address'] }}</p>
+            <p>Telepon: {{ $inst['phone'] }}, Email: {{ $inst['email'] }}, Website: {{ $inst['website_main'] }}</p>
         </div>
     </div>
     @elseif($logoPos === 'right')
     <div class="header" style="text-align:right;">
         <div class="header-text" style="text-align:center;">
-            <h2>KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</h2>
-            <h1>INSTITUT TEKNOLOGI SAINS DAN KESEHATAN NAHDLATUL ULAMA KASINTA</h1>
-            <p>Jalan Jenderal Sudirman No. 123, Kota Kasinta</p>
-            <p>Telepon: (021) 1234567, Email: info@itsnu.ac.id, Website: www.itsnu.ac.id</p>
+            <h2>{{ strtoupper($inst['lppm_name']) }}</h2>
+            <h1>{{ strtoupper($inst['full_name']) }}</h1>
+            <p>{{ $inst['address'] }}</p>
+            <p>Telepon: {{ $inst['phone'] }}, Email: {{ $inst['email'] }}, Website: {{ $inst['website_main'] }}</p>
         </div>
         @if(\App\Models\Setting::get('pdf_show_logo', true) && $logoSrc)
             <img src="{{ $logoSrc }}" class="logo" style="margin-left:auto;">
@@ -55,10 +56,10 @@
             <img src="{{ $logoSrc }}" class="logo" />
         @endif
         <div class="header-text">
-            <h2>KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI</h2>
-            <h1>INSTITUT TEKNOLOGI SAINS DAN KESEHATAN NAHDLATUL ULAMA KASINTA</h1>
-            <p>Jalan Jenderal Sudirman No. 123, Kota Kasinta</p>
-            <p>Telepon: (021) 1234567, Email: info@itsnu.ac.id, Website: www.itsnu.ac.id</p>
+            <h2>{{ strtoupper($inst['lppm_name']) }}</h2>
+            <h1>{{ strtoupper($inst['full_name']) }}</h1>
+            <p>{{ $inst['address'] }}</p>
+            <p>Telepon: {{ $inst['phone'] }}, Email: {{ $inst['email'] }}, Website: {{ $inst['website_main'] }}</p>
         </div>
     </div>
     @endif
