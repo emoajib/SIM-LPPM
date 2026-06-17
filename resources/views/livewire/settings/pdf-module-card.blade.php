@@ -35,8 +35,8 @@
             <div class="d-flex flex-wrap gap-x-3 gap-y-1">
                 <span><strong>Font:</strong> {{ $this->fontFamily ?: $defaultFont }}</span>
                 <span class="ms-3"><strong>Ukuran:</strong> {{ $this->fontSize ?: $defaultSize }}pt</span>
-                <span class="ms-3"><strong>Kertas:</strong> {{ strtoupper($this->paperSize ?: Setting::get('pdf_paper_size', 'A4')) }}</span>
-                <span class="ms-3"><strong>Orientasi:</strong> {{ $this->orientation ?: 'Default' }}</span>
+                <span class="ms-3"><strong>Kertas:</strong> {{ strtoupper($effectivePaper) }}</span>
+                <span class="ms-3"><strong>Orientasi:</strong> {{ $effectiveOrientation ?: 'Default' }}</span>
             </div>
         </div>
 

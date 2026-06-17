@@ -142,12 +142,17 @@ class PdfModuleCard extends Component
         $defaultFont = config("pdf-modules.families.{$this->family}.default_font", '');
         $defaultSize = config("pdf-modules.families.{$this->family}.default_size", '');
 
+        $effectivePaper = $this->paperSize ?: Setting::get('pdf_paper_size', 'a4');
+        $effectiveOrientation = $this->orientation ?: Setting::get('pdf_orientation', 'portrait');
+
         return view('livewire.settings.pdf-module-card', [
             'familyLabel' => $familyLabel,
             'defaultFont' => $defaultFont,
             'defaultSize' => $defaultSize,
             'effectiveFont' => $this->fontFamily ?: $defaultFont,
             'effectiveSize' => $this->fontSize ?: $defaultSize,
+            'effectivePaper' => $effectivePaper,
+            'effectiveOrientation' => $effectiveOrientation,
         ]);
     }
 }
