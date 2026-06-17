@@ -1,7 +1,7 @@
 <div
     wire:key="pdf-module-card-{{ $moduleKey }}"
     class="card border-0 shadow-sm h-100"
-    x-data="{ overridesActive: @js($this->hasOverrides()) }"
+    x-data="{ overridesActive: @js($hasOverrides) }"
     @module-override-updated.window="if ($event.detail.moduleKey === '{{ $moduleKey }}') overridesActive = $event.detail.hasOverrides"
 >
     <div class="card-body d-flex flex-column">
@@ -10,8 +10,8 @@
             <div class="d-flex align-items-center gap-2 min-w-0">
                 <span
                     class="status-dot d-inline-block rounded-circle"
-                    style="width: 10px; height: 10px; flex-shrink: 0; background: {{ $this->hasOverrides() ? '#2fb344' : '#d9d9d9' }};"
-                    title="{{ $this->hasOverrides() ? 'Override aktif' : 'Mengikuti global' }}"
+                    :style="'width: 10px; height: 10px; flex-shrink: 0; background: ' + (overridesActive ? '#2fb344' : '#d9d9d9')"
+                    :title="overridesActive ? 'Override aktif' : 'Mengikuti global'"
                 ></span>
                 <span class="fw-medium text-truncate" style="font-size: 0.9rem;">{{ $moduleName }}</span>
             </div>
@@ -23,7 +23,7 @@
         {{-- View Type --}}
         <div class="text-muted small mb-2">
             <code style="font-size: 10px;">{{ $viewType }}</code>
-            @if($this->hasOverrides())
+            @if($hasOverrides)
                 <span class="badge bg-success-lt text-success ms-1" style="font-size: 9px;">Custom</span>
             @else
                 <span class="badge bg-secondary-lt text-secondary ms-1" style="font-size: 9px;">Global</span>
@@ -33,8 +33,8 @@
         {{-- Current effective settings summary --}}
         <div class="small bg-light rounded p-2 mb-2" style="font-size: 11px; line-height: 1.6;">
             <div class="d-flex flex-wrap gap-x-3 gap-y-1">
-                <span><strong>Font:</strong> {{ $this->fontFamily ?: $defaultFont }}</span>
-                <span class="ms-3"><strong>Ukuran:</strong> {{ $this->fontSize ?: $defaultSize }}pt</span>
+                <span><strong>Font:</strong> {{ $effectiveFont }}</span>
+                <span class="ms-3"><strong>Ukuran:</strong> {{ $effectiveSize }}pt</span>
                 <span class="ms-3"><strong>Kertas:</strong> {{ strtoupper($effectivePaper) }}</span>
                 <span class="ms-3"><strong>Orientasi:</strong> {{ $effectiveOrientation ?: 'Default' }}</span>
             </div>
@@ -44,11 +44,11 @@
         <button
             type="button"
             class="btn btn-sm w-100 mb-2"
-            style="border: 1px dashed {{ $this->hasOverrides() ? '#2fb344' : '#adb5bd' }}; color: {{ $this->hasOverrides() ? '#2fb344' : '#6c757d' }}; background: transparent;"
+            :style="'border: 1px dashed ' + (overridesActive ? '#2fb344' : '#adb5bd') + '; color: ' + (overridesActive ? '#2fb344' : '#6c757d') + '; background: transparent;'"
             wire:click="$toggle('showInlineEditor')"
         >
             <x-lucide-sliders class="icon icon-sm me-1" />
-            {{ $showInlineEditor ? 'Sembunyikan Editor' : ($this->hasOverrides() ? 'Edit Override Khusus' : 'Atur Override Khusus') }}
+            <span x-text="showInlineEditor ? 'Sembunyikan Editor' : (overridesActive ? 'Edit Override Khusus' : 'Atur Override Khusus')"></span>
         </button>
 
         {{-- Inline editor --}}
@@ -134,7 +134,7 @@
                 class="btn btn-sm btn-outline-danger"
                 wire:click="resetOverrides"
                 wire:confirm="Reset semua pengaturan kustom untuk '{{ $moduleName }}' ke nilai global?"
-                @disabled(!$this->hasOverrides())
+                @disabled(!$hasOverrides)
             >
                 <x-lucide-rotate-ccw class="icon icon-sm" />
             </button>

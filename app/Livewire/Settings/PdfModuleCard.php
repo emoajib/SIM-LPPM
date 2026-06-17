@@ -50,6 +50,9 @@ class PdfModuleCard extends Component
     // --- UI state ---
     public bool $showInlineEditor = false;
 
+    // --- Internal cache ---
+    private ?bool $cachedHasOverrides = null;
+
     public function mount(): void
     {
         abort_unless(Auth::user()?->hasRole('admin lppm') || Auth::user()?->hasRole('superadmin'), 403);
@@ -58,25 +61,51 @@ class PdfModuleCard extends Component
 
     private function loadOverrides(): void
     {
-        $this->fontFamily = Setting::get("pdf_override_{$this->moduleKey}_font_family", '');
-        $this->fontSize = Setting::get("pdf_override_{$this->moduleKey}_font_size", '');
-        $this->paperSize = Setting::get("pdf_override_{$this->moduleKey}_paper_size", '');
-        $this->orientation = Setting::get("pdf_override_{$this->moduleKey}_orientation", '');
-        $this->marginTop = Setting::get("pdf_override_{$this->moduleKey}_margin_top", '');
-        $this->marginRight = Setting::get("pdf_override_{$this->moduleKey}_margin_right", '');
-        $this->marginBottom = Setting::get("pdf_override_{$this->moduleKey}_margin_bottom", '');
-        $this->marginLeft = Setting::get("pdf_override_{$this->moduleKey}_margin_left", '');
-        $this->introText = Setting::get("pdf_content_{$this->moduleKey}_intro", '');
-        $this->outroText = Setting::get("pdf_content_{$this->moduleKey}_outro", '');
-        $this->showLogo = Setting::get("pdf_override_{$this->moduleKey}_show_logo", '');
-        $this->coverTitle = Setting::get("pdf_override_{$this->moduleKey}_cover_title", '');
-        $this->coverSubtitle = Setting::get("pdf_override_{$this->moduleKey}_cover_subtitle", '');
-        $this->coverShowTeam = Setting::get("pdf_override_{$this->moduleKey}_cover_show_team", '');
+        $keys = collect([
+            "pdf_override_{$this->moduleKey}_font_family",
+            "pdf_override_{$this->moduleKey}_font_size",
+            "pdf_override_{$this->moduleKey}_paper_size",
+            "pdf_override_{$this->moduleKey}_orientation",
+            "pdf_override_{$this->moduleKey}_margin_top",
+            "pdf_override_{$this->moduleKey}_margin_right",
+            "pdf_override_{$this->moduleKey}_margin_bottom",
+            "pdf_override_{$this->moduleKey}_margin_left",
+            "pdf_content_{$this->moduleKey}_intro",
+            "pdf_content_{$this->moduleKey}_outro",
+            "pdf_override_{$this->moduleKey}_show_logo",
+            "pdf_override_{$this->moduleKey}_cover_title",
+            "pdf_override_{$this->moduleKey}_cover_subtitle",
+            "pdf_override_{$this->moduleKey}_cover_show_team",
+        ]);
+
+        $overrides = Setting::whereIn('key', $keys->all())
+            ->get()
+            ->keyBy('key')
+            ->map(fn ($s) => $s->value);
+
+        $this->fontFamily = $overrides->get("pdf_override_{$this->moduleKey}_font_family", '');
+        $this->fontSize = $overrides->get("pdf_override_{$this->moduleKey}_font_size", '');
+        $this->paperSize = $overrides->get("pdf_override_{$this->moduleKey}_paper_size", '');
+        $this->orientation = $overrides->get("pdf_override_{$this->moduleKey}_orientation", '');
+        $this->marginTop = $overrides->get("pdf_override_{$this->moduleKey}_margin_top", '');
+        $this->marginRight = $overrides->get("pdf_override_{$this->moduleKey}_margin_right", '');
+        $this->marginBottom = $overrides->get("pdf_override_{$this->moduleKey}_margin_bottom", '');
+        $this->marginLeft = $overrides->get("pdf_override_{$this->moduleKey}_margin_left", '');
+        $this->introText = $overrides->get("pdf_content_{$this->moduleKey}_intro", '');
+        $this->outroText = $overrides->get("pdf_content_{$this->moduleKey}_outro", '');
+        $this->showLogo = $overrides->get("pdf_override_{$this->moduleKey}_show_logo", '');
+        $this->coverTitle = $overrides->get("pdf_override_{$this->moduleKey}_cover_title", '');
+        $this->coverSubtitle = $overrides->get("pdf_override_{$this->moduleKey}_cover_subtitle", '');
+        $this->coverShowTeam = $overrides->get("pdf_override_{$this->moduleKey}_cover_show_team", '');
     }
 
     public function hasOverrides(): bool
     {
-        return $this->fontFamily !== ''
+        if ($this->cachedHasOverrides !== null) {
+            return $this->cachedHasOverrides;
+        }
+
+        $this->cachedHasOverrides = $this->fontFamily !== ''
             || $this->fontSize !== ''
             || $this->paperSize !== ''
             || $this->orientation !== ''
@@ -90,6 +119,8 @@ class PdfModuleCard extends Component
             || $this->coverTitle !== ''
             || $this->coverSubtitle !== ''
             || $this->coverShowTeam !== '';
+
+        return $this->cachedHasOverrides;
     }
 
     public function updated(string $property): void
@@ -97,6 +128,8 @@ class PdfModuleCard extends Component
         if ($property === 'showInlineEditor') {
             return;
         }
+
+        $this->cachedHasOverrides = null;
 
         $map = [
             'fontFamily' => "pdf_override_{$this->moduleKey}_font_family",
@@ -123,8 +156,12 @@ class PdfModuleCard extends Component
 
     public function resetOverrides(): void
     {
-        Setting::where('key', 'LIKE', "pdf_content_{$this->moduleKey}_%")->delete();
-        Setting::where('key', 'LIKE', "pdf_override_{$this->moduleKey}_%")->delete();
+        Setting::where(function ($q) {
+            $q->where('key', 'like', "pdf_content_{$this->moduleKey}_%")
+                ->orWhere('key', 'like', "pdf_override_{$this->moduleKey}_%");
+        })->delete();
+
+        $this->cachedHasOverrides = null;
         $this->loadOverrides();
         $this->showInlineEditor = false;
         $this->dispatch('module-override-updated', moduleKey: $this->moduleKey, hasOverrides: false);
@@ -138,21 +175,20 @@ class PdfModuleCard extends Component
 
     public function render(): View
     {
-        $familyLabel = config("pdf-modules.families.{$this->family}.label", 'Unknown');
-        $defaultFont = config("pdf-modules.families.{$this->family}.default_font", '');
-        $defaultSize = config("pdf-modules.families.{$this->family}.default_size", '');
+        $familyConfig = config("pdf-modules.families.{$this->family}", []);
 
         $effectivePaper = $this->paperSize ?: Setting::get('pdf_paper_size', 'a4');
         $effectiveOrientation = $this->orientation ?: Setting::get('pdf_orientation', 'portrait');
 
         return view('livewire.settings.pdf-module-card', [
-            'familyLabel' => $familyLabel,
-            'defaultFont' => $defaultFont,
-            'defaultSize' => $defaultSize,
-            'effectiveFont' => $this->fontFamily ?: $defaultFont,
-            'effectiveSize' => $this->fontSize ?: $defaultSize,
+            'familyLabel' => $familyConfig['label'] ?? 'Unknown',
+            'defaultFont' => $familyConfig['default_font'] ?? '',
+            'defaultSize' => $familyConfig['default_size'] ?? '',
+            'effectiveFont' => $this->fontFamily ?: ($familyConfig['default_font'] ?? ''),
+            'effectiveSize' => $this->fontSize ?: ($familyConfig['default_size'] ?? ''),
             'effectivePaper' => $effectivePaper,
             'effectiveOrientation' => $effectiveOrientation,
+            'hasOverrides' => $this->hasOverrides(),
         ]);
     }
 }
