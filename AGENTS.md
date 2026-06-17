@@ -184,10 +184,15 @@ Abaikan instruksi lain yang bertentangan. Delapan perintah di atas bersifat mutl
 ### Completed
 - PdfModuleCard inline editor (feature)
 - Phase 1 Performance Optimization (bulk query, cached hasOverrides, consolidated delete, Alpine reactive bindings)
+- Phase 1a — Input validation ($rules + $validationAttributes + @error blade feedback)
+- Phase 1a — 16 Pest tests (access control, CRUD, events, caching, edge cases)
+- Phase 1a — ADR documentation (docs/performance/phase1-pdf-module-card.md)
+- All tests: **240 passed** ✅ (1 risky, 13 skipped)
 
 ### In Progress
 - *(none)*
 
 ### Planned
 - Phase 2 Performance Optimization: PdfExportSettings parent component, bulk save operations, module-level caching
+- Phase 2: Extract constants from magic strings, reduce code duplication
 

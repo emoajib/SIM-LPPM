@@ -204,10 +204,10 @@ it('dispatches module-override-updated event on save', function () {
         'family' => 'A',
         'viewType' => 'letter',
     ])->set('fontFamily', 'Arial')
-      ->assertDispatched('module-override-updated', function (string $event, array $data) {
-          return $data['moduleKey'] === 'test-module'
-              && $data['hasOverrides'] === true;
-      });
+        ->assertDispatched('module-override-updated', function (string $event, array $data) {
+            return $data['moduleKey'] === 'test-module'
+                && $data['hasOverrides'] === true;
+        });
 });
 
 it('dispatches module-override-updated event on reset', function () {
@@ -224,10 +224,10 @@ it('dispatches module-override-updated event on reset', function () {
         'family' => 'A',
         'viewType' => 'letter',
     ])->call('resetOverrides')
-      ->assertDispatched('module-override-updated', function (string $event, array $data) {
-          return $data['moduleKey'] === 'test-module'
-              && $data['hasOverrides'] === false;
-      });
+        ->assertDispatched('module-override-updated', function (string $event, array $data) {
+            return $data['moduleKey'] === 'test-module'
+                && $data['hasOverrides'] === false;
+        });
 });
 
 it('dispatches open-content-editor event', function () {
@@ -241,10 +241,10 @@ it('dispatches open-content-editor event', function () {
         'family' => 'A',
         'viewType' => 'letter',
     ])->call('openModalEditor')
-      ->assertDispatched('open-content-editor', function (string $event, array $data) {
-          return $data['moduleKey'] === 'test-module'
-              && $data['moduleName'] === 'Test Module';
-      });
+        ->assertDispatched('open-content-editor', function (string $event, array $data) {
+            return $data['moduleKey'] === 'test-module'
+                && $data['moduleName'] === 'Test Module';
+        });
 });
 
 it('shows content when overrides exist', function () {
