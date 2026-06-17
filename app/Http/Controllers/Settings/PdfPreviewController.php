@@ -16,6 +16,7 @@ use App\Models\Setting;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class PdfPreviewController extends Controller
 {
@@ -86,6 +87,10 @@ class PdfPreviewController extends Controller
             return $pdf->stream('pratinjau.pdf');
 
         } catch (\Exception $e) {
+            Log::error('PDF Preview gagal untuk modul: '.$module.' - '.$e->getMessage(), [
+                'module' => $module,
+                'trace' => $e->getTraceAsString(),
+            ]);
             $moduleLabel = $moduleLabels[$module] ?? $module;
             $errorHtml = '<div style="font-family: sans-serif; text-align: center; margin-top: 50px;">
                             <h2 style="color: #dc3545;">Pratinjau Tidak Tersedia</h2>
@@ -147,7 +152,25 @@ class PdfPreviewController extends Controller
         }
 
         if ($module === 'pdf.proposal-export') {
-            $proposal = Proposal::latest()->first();
+            $proposal = Proposal::with([
+                'submitter.identity.institution',
+                'submitter.identity.studyProgram',
+                'submitter.identity.scienceCluster',
+                'submitter.identity.faculty',
+                'teamMembers' => fn ($q) => $q->withPivot(['tasks', 'role']),
+                'teamMembers.identity',
+                'signatures',
+                'partners',
+                'outputs',
+                'keywords',
+                'budgetItems',
+                'sdgs',
+                'researchScheme',
+                'focusArea',
+                'theme',
+                'topic',
+                'detailable',
+            ])->latest()->first();
             if (! $proposal) {
                 throw new \Exception('Data Proposal kosong di sistem.');
             }
@@ -163,7 +186,14 @@ class PdfPreviewController extends Controller
         }
 
         if ($module === 'pdf.report-export') {
-            $report = ProgressReport::with('proposal')->latest()->first();
+            $report = ProgressReport::with([
+                'proposal.submitter.identity.faculty',
+                'proposal.submitter.identity.studyProgram',
+                'proposal.researchScheme',
+                'proposal.focusArea',
+                'proposal.signatures',
+                'proposal.detailable',
+            ])->latest()->first();
             if (! $report) {
                 throw new \Exception('Data Laporan Kemajuan/Akhir kosong.');
             }
@@ -178,7 +208,11 @@ class PdfPreviewController extends Controller
         }
 
         if ($module === 'pdf.daily-notes') {
-            $proposal = Proposal::has('dailyNotes')->with('dailyNotes')->latest()->first();
+            $proposal = Proposal::with([
+                'dailyNotes',
+                'submitter.identity',
+                'teamMembers' => fn ($q) => $q->withPivot('role'),
+            ])->has('dailyNotes')->latest()->first();
             if (! $proposal) {
                 throw new \Exception('Data Logbook Harian kosong.');
             }
@@ -192,7 +226,11 @@ class PdfPreviewController extends Controller
         }
 
         if ($module === 'pdf.review-evaluation') {
-            $assignment = ProposalReviewer::with(['proposal', 'user.identity'])->latest()->first();
+            $assignment = ProposalReviewer::with([
+                'proposal.submitter.identity',
+                'proposal.researchScheme',
+                'user.identity',
+            ])->latest()->first();
             if (! $assignment) {
                 throw new \Exception('Data Review kosong.');
             }
@@ -218,7 +256,12 @@ class PdfPreviewController extends Controller
         }
 
         if ($module === 'reports.research-pdf' || $module === 'reports.community-service-pdf') {
-            $proposals = Proposal::take(3)->get();
+            $proposals = Proposal::with([
+                'submitter.identity.faculty',
+                'submitter.identity.studyProgram',
+                'researchScheme',
+                'focusArea',
+            ])->take(3)->get();
             if ($proposals->isEmpty()) {
                 throw new \Exception('Data Proposal kosong.');
             }

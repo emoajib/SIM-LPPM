@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
@@ -10,6 +11,8 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 class Setting extends Model implements HasMedia
 {
     use HasUuids, InteractsWithMedia;
+
+    private static ?Collection $settingsCache = null;
 
     protected $fillable = [
         'key',
@@ -28,11 +31,32 @@ class Setting extends Model implements HasMedia
     }
 
     /**
-     * Get a setting value by key.
+     * Load all settings into static cache (1 query total).
+     */
+    private static function loadCache(): void
+    {
+        if (self::$settingsCache === null) {
+            self::$settingsCache = static::all()->keyBy('key');
+        }
+    }
+
+    /**
+     * Clear settings cache (call after set() or direct DB changes).
+     */
+    public static function clearCache(): void
+    {
+        self::$settingsCache = null;
+    }
+
+    /**
+     * Get a setting value by key — uses in-memory cache (1 query for all keys).
      */
     public static function get(string $key, mixed $default = null): mixed
     {
-        $setting = static::where('key', $key)->first();
+        self::loadCache();
+
+        /** @var self|null $setting */
+        $setting = self::$settingsCache->get($key);
 
         if (! $setting) {
             return $default;
@@ -61,5 +85,7 @@ class Setting extends Model implements HasMedia
             ['key' => $key],
             ['value' => $processedValue, 'type' => $type]
         );
+
+        self::clearCache();
     }
 }

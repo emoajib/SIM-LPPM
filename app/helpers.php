@@ -326,7 +326,7 @@ if (! function_exists('get_pdf_config')) {
             'paragraph_spacing' => (int) Setting::get('pdf_paragraph_spacing', 6),
             'paragraph_indent' => (int) Setting::get('pdf_paragraph_indent', 0),
             'custom_margins' => $customMargins,
-            'orientation' => '',
+            'orientation' => null,
             'intro_text' => '',
             'outro_text' => '',
             // Cover & Approval editor
