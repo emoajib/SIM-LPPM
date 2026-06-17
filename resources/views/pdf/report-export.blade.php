@@ -4,91 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Laporan Export - {{ $proposal->id }}</title>
     @include('pdf.partials.styles')
-    <style>
-        .protection-box {
-            text-align: center;
-            border: 1px solid #000;
-            padding: 5px;
-            margin-top: 5px;
-            font-size: 8pt;
-            background-color: #fff;
-            margin-bottom: 15px;
-        }
-        .report-type-box {
-            text-align: center;
-            margin: 10px 0;
-            font-weight: bold;
-            text-transform: uppercase;
-            background-color: #000;
-            color: #fff;
-            padding: 5px;
-            font-size: 10pt;
-        }
-        .report-id {
-            text-align: center;
-            font-size: 9pt;
-            margin-bottom: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 12px;
-        }
-        th, td {
-            border: 0.5pt solid #000;
-            padding: 6px;
-            text-align: left;
-            vertical-align: top;
-            font-size: 9pt;
-        }
-        th {
-            background-color: #f2f2f2;
-            text-align: center;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-        .no-border, .no-border td, .no-border th {
-            border: none !important;
-            padding: 2px !important;
-        }
-        .text-center { text-align: center; }
-        .text-right { text-align: right; }
-        .text-justify { text-align: justify; }
-        .font-bold { font-weight: bold; }
-        .page-break { page-break-after: always; }
-        
-        .section-title {
-            font-weight: bold;
-            margin-top: 15px;
-            margin-bottom: 5px;
-            font-size: 10pt;
-            text-transform: uppercase;
-        }
-        
-        .title-border-box {
-            border: 1px solid #000;
-            padding: 10px;
-            margin-bottom: 15px;
-            font-weight: bold;
-            text-align: justify;
-            background-color: #fafafa;
-        }
-        
-        .footer-institutional {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 8pt;
-            border-top: 1px solid #ccc;
-            padding-top: 3px;
-            color: #444;
-        }
-        .page-number::after {
-            content: counter(page);
-        }
-    </style>
+    @include('pdf.partials.section-styles')
     @php
         $submitterFullName = format_name(
             $proposal->submitter->identity?->title_prefix ?? '',
@@ -99,14 +15,11 @@
         $facultyName = $proposal->submitter->identity?->faculty?->name ?? '.......................';
         $prodiName = $proposal->submitter->identity?->studyProgram?->name ?? '.......................';
         $periodLabel = $report->reporting_period === 'final' ? 'AKHIR' : 'KEMAJUAN';
+        $totalRAB = $proposal->budgetItems->sum('total_price');
     @endphp
 </head>
 <body>
-    {{-- Institutional Footer for all pages --}}
-    <div class="footer-institutional">
-        Lppm ITSNU Pekalongan - Tahun Akademik {{ $academicYear ?? date('Y') }}<br>
-        <span class="page-number">Halaman </span>
-    </div>
+    @include('pdf.partials.section-footer')
 
     @include('pdf.partials.cover', [
         'coverTitle' => 'LAPORAN '.$periodLabel.' '.($proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN').' INTERNAL',
@@ -120,7 +33,6 @@
 
     <div style="page-break-after: always;"></div>
 
-    {{-- Standardized Header --}}
     @include('pdf.partials.header')
 
     @if(!empty($pdfConfig['intro_text'] ?? null))
@@ -140,237 +52,46 @@
         Rencana Pelaksanaan {{ $proposal->detailable_type === 'App\Models\Research' ? 'Penelitian' : 'Pengabdian' }} : tahun {{ $proposal->start_year }} s.d. tahun {{ $proposal->start_year + $proposal->duration_in_years - 1 }}
     </div>
 
-    @php
-        $sectionNum = 1;
-        $submitterFullName = format_name(
-            $proposal->submitter->identity?->title_prefix ?? '',
-            $proposal->submitter->name,
-            $proposal->submitter->identity?->title_suffix ?? ''
-        );
-    @endphp
+    @php $sectionNum = 1; @endphp
 
-    {{-- 1. JUDUL --}}
-    <div class="section-title">{{ $sectionNum++ }}. JUDUL {{ $proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN' }}</div>
-    <div class="title-border-box">{{ clean_proposal_title($proposal->title) }}</div>
+    @include('pdf.partials.section-judul', ['sectionNum' => $sectionNum])
+    @php $sectionNum++; @endphp
 
-    <table>
-        <thead>
-            <tr>
-                <th>Kelompok Skema</th>
-                <th>Ruang Lingkup</th>
-                <th>Bidang Fokus</th>
-                <th>Lama Kegiatan</th>
-                <th>Tahun Pertama Usulan</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td class="text-center">{{ $proposal->researchScheme->name ?? '-' }}</td>
-                <td class="text-center">
-                    @if($proposal->detailable_type === 'App\Models\Research')
-                        Penelitian
-                    @else
-                        Pemberdayaan Kemitraan Masyarakat
-                    @endif
-                </td>
-                <td class="text-center">{{ $proposal->focusArea->name ?? '-' }}</td>
-                <td class="text-center">{{ $proposal->duration_in_years }}</td>
-                <td class="text-center">{{ $proposal->start_year }}</td>
-            </tr>
-        </tbody>
-    </table>
+    @include('pdf.partials.section-identitas-pengusul', ['sectionNum' => $sectionNum])
+    @php $sectionNum++; @endphp
 
-    <table class="no-border" style="margin-bottom: 15px; font-size: 8.5pt;">
-        <tr>
-            <td width="150" style="padding: 2px;">Tema {{ $proposal->detailable_type === 'App\Models\Research' ? 'Penelitian' : 'Pengabdian' }}</td>
-            <td style="padding: 2px;">: {{ $proposal->theme->name ?? '-' }}</td>
-        </tr>
-        <tr>
-            <td style="padding: 2px;">Topik {{ $proposal->detailable_type === 'App\Models\Research' ? 'Penelitian' : 'Pengabdian' }}</td>
-            <td style="padding: 2px;">: {{ $proposal->topic->name ?? '-' }}</td>
-        </tr>
-        <tr>
-            <td style="padding: 2px;">Kata Kunci (Keywords)</td>
-            <td style="padding: 2px;">: 
-                @if($proposal->keywords && count($proposal->keywords) > 0)
-                    {{ implode(', ', $proposal->keywords->pluck('name')->toArray()) }}
-                @else
-                    -
-                @endif
-            </td>
-        </tr>
-        @if($proposal->detailable_type === 'App\Models\Research')
-            <tr>
-                <td style="padding: 2px;">Jenis TKT</td>
-                <td style="padding: 2px;">: {{ $proposal->detailable->tkt_type ?? '-' }}</td>
-            </tr>
-        @endif
-    </table>
+    @include('pdf.partials.section-identitas-mahasiswa', ['sectionNum' => $sectionNum])
+    @php $sectionNum++; @endphp
 
-    {{-- 2. IDENTITAS PENGUSUL --}}
-    <div class="section-title">{{ $sectionNum++ }}. IDENTITAS PENGUSUL</div>
-    <table>
-        <thead>
-            <tr>
-                <th width="20%">Nama, Peran</th>
-                <th width="15%">Institusi</th>
-                <th width="15%">Program Studi</th>
-                <th width="15%">Bidang Tugas</th>
-                <th width="10%">ID Sinta</th>
-                <th width="10%">GS H-Index</th>
-                <th width="15%">Rumpun Ilmu</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><span class="font-bold">{{ strtoupper($submitterFullName) }}</span><br>Ketua Pengusul</td>
-                <td>{{ $proposal->submitter->identity?->institution?->name ?? '-' }}</td>
-                <td>{{ $proposal->submitter->identity?->studyProgram->name ?? '-' }}</td>
-                <td>{{ $proposal->teamMembers->firstWhere('id', $proposal->submitter_id)->pivot->tasks ?? '-' }}</td>
-                <td class="text-center">{{ $proposal->submitter->identity?->sinta_id ?? '-' }}</td>
-                <td class="text-center">{{ $proposal->submitter->identity?->gs_h_index ?? '-' }}</td>
-                <td>{{ $proposal->submitter->identity?->scienceCluster?->name ?? '-' }}</td>
-            </tr>
-            @php
-                $lecturerMembersSection2 = $proposal->teamMembers->filter(fn($m) => $m->id !== $proposal->submitter_id && ($m->identity?->type === 'dosen' || $m->pivot->role === 'anggota' || $m->pivot->role === 'dosen'));
-            @endphp
-            @foreach($lecturerMembersSection2 as $member)
-                <tr>
-                    <td><span class="font-bold">{{ strtoupper(format_name($member->identity?->title_prefix ?? '', $member->name, $member->identity?->title_suffix ?? '')) }}</span><br>Anggota Pelaksana</td>
-                    <td>{{ $member->identity?->institution?->name ?? 'ITSNU Pekalongan' }}</td>
-                    <td>{{ $member->identity?->studyProgram?->name ?? '-' }}</td>
-                    <td>{{ $member->pivot->tasks ?? '-' }}</td>
-                    <td class="text-center">{{ $member->identity?->sinta_id ?? '-' }}</td>
-                    <td class="text-center">{{ $member->identity?->gs_h_index ?? '-' }}</td>
-                    <td>{{ $member->identity?->scienceCluster?->name ?? '-' }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    {{-- 3. IDENTITAS MAHASISWA --}}
-    <div class="section-title">{{ $sectionNum++ }}. IDENTITAS MAHASISWA</div>
-    @php 
-        $mahasiswaRelation = $proposal->teamMembers->filter(fn($m) => ($m->identity?->type === 'mahasiswa' || $m->pivot?->role === 'mahasiswa'));
-        $mahasiswaJson = [];
-        if (!empty($proposal->student_members)) {
-            $decoded = is_string($proposal->student_members) ? json_decode($proposal->student_members, true) : $proposal->student_members;
-            if (is_array($decoded)) {
-                $mahasiswaJson = $decoded;
-            }
-        }
-        $hasStudents = $mahasiswaRelation->count() > 0 || count($mahasiswaJson) > 0;
-    @endphp
-    
-    @if($hasStudents)
-    <table>
-        <thead>
-            <tr>
-                <th>Nama Anggota</th>
-                <th>NIM</th>
-                <th>Program Studi</th>
-                <th>Tugas Dalam {{ $proposal->detailable_type === 'App\Models\Research' ? 'Penelitian' : 'Pengabdian' }}</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($mahasiswaRelation as $member)
-                <tr>
-                    <td>{{ strtoupper($member->name) }}</td>
-                    <td>{{ $member->identity?->identity_id ?? '-' }}</td>
-                    <td>{{ $member->identity?->studyProgram?->name ?? '-' }}</td>
-                    <td>{{ $member->pivot->tasks ?? '-' }}</td>
-                </tr>
-            @endforeach
-            @foreach($mahasiswaJson as $student)
-                <tr>
-                    <td>{{ strtoupper($student['name'] ?? '-') }}</td>
-                    <td>{{ $student['identifier'] ?? '-' }}</td>
-                    <td>{{ $student['study_program'] ?? ($student['prodi'] ?? '-') }}</td>
-                    <td>{{ $student['tasks'] ?? '-' }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-    @else
-    <div style="margin-left: 20px; border: 1px dashed #ccc; padding: 10px; color: #666; font-style: italic;">Tidak ada anggota mahasiswa dalam usulan ini.</div>
+    @include('pdf.partials.section-mitra', ['sectionNum' => $sectionNum])
+    @if($proposal->partners->count() > 0)
+        @php $sectionNum++; @endphp
     @endif
 
-    {{-- 4. MITRA KERJASAMA --}}
-    @if($proposal->partners->count() > 0)
-    <div class="section-title">{{ $sectionNum++ }}. MITRA KERJASAMA</div>
-    @foreach($proposal->partners as $index => $partner)
-    <div style="margin-bottom: 5px;">
-        <strong>Mitra Sasaran {{ $index + 1 }}</strong>
-        <table class="no-border" style="margin-left: 15px; margin-bottom: 5px;">
-            <tr><td width="150" style="padding: 1px;">Jenis Mitra</td><td style="padding: 1px;">: {{ $partner->type ?? '-' }}</td></tr>
-            <tr><td style="padding: 1px;">Nama Mitra Sasaran</td><td style="padding: 1px;">: {{ $partner->name }}</td></tr>
-            <tr><td style="padding: 1px;">Institusi</td><td style="padding: 1px;">: {{ $partner->institution ?? '-' }}</td></tr>
-            <tr><td style="padding: 1px;">Alamat Lengkap</td><td style="padding: 1px;">: {{ $partner->address ?? '-' }}</td></tr>
-        </table>
-    </div>
-    @endforeach
-    @if($proposal->detailable_type === 'App\Models\CommunityService')
-        <div style="margin-top: 10px;">
-            <strong>Ringkasan Permasalahan Mitra:</strong>
-            <div style="margin-left: 20px; text-align: justify; margin-bottom: 5px;">{{ $proposal->detailable->partner_issue_summary ?? '-' }}</div>
-            <strong>Solusi yang Ditawarkan:</strong>
-            <div style="margin-left: 20px; text-align: justify; margin-bottom: 5px;">{{ $proposal->detailable->solution_offered ?? '-' }}</div>
+    @include('pdf.partials.section-asta-cita', ['sectionNum' => $sectionNum])
+    @if(isset($proposal->asta_cita) && $proposal->asta_cita)
+        @php $sectionNum++; @endphp
+    @endif
+
+    @if(isset($proposal->sdgs) && $proposal->sdgs->count() > 0)
+        <div class="section-title">{{ $sectionNum++ }}. Sustainable Development Goals (SDGs)</div>
+        <div style="margin-left: 20px; text-align: justify;">
+            @foreach($proposal->sdgs as $sdg)
+                <div>{{ trim($sdg->name) }}</div>
+            @endforeach
         </div>
     @endif
-    @endif
 
-    {{-- 5. Asta Cita --}}
-    @if(isset($proposal->asta_cita) && $proposal->asta_cita)
-    <div class="section-title">{{ $sectionNum++ }}. Asta Cita</div>
-    <div style="margin-left: 20px; text-align: justify;">{{ $proposal->asta_cita }}</div>
-    @endif
-
-    {{-- 6. SDGs --}}
-    @if(isset($proposal->sdgs) && $proposal->sdgs->count() > 0)
-    <div class="section-title">{{ $sectionNum++ }}. Sustainable Development Goals (SDGs)</div>
-    <div style="margin-left: 20px; text-align: justify;">
-        @foreach($proposal->sdgs as $sdg)
-            <div>{{ trim($sdg->name) }}</div>
-        @endforeach
-    </div>
-    @endif
-
-    {{-- 7. LUARAN DIJANJIKAN --}}
+    @include('pdf.partials.section-luaran-dijanjikan', ['sectionNum' => $sectionNum])
     @if($proposal->outputs->count() > 0)
-    <div class="section-title">{{ $sectionNum++ }}. LUARAN DIJANJIKAN</div>
-    <table>
-        <thead>
-            <tr>
-                <th>Tahun</th>
-                <th>Kelompok Luaran</th>
-                <th>Jenis Luaran</th>
-                <th>Status Target</th>
-                <th>Keterangan</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($proposal->outputs as $output)
-            <tr>
-                <td class="text-center">{{ $output->output_year }}</td>
-                <td>{{ ucfirst(str_replace('_', ' ', $output->group)) }}</td>
-                <td>{{ ucfirst(str_replace('_', ' ', $output->type)) }}</td>
-                <td class="text-center">{{ $output->target_status }}</td>
-                <td>{{ $output->description ?? '-' }}</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+        @php $sectionNum++; @endphp
     @endif
 
-    {{-- 8. Dokumen Pendukung --}}
     @php
         $supportingDocs = [];
-        // Proposal documents
         if ($proposal->detailable?->hasMedia('substance_file')) {
             $supportingDocs[] = ['name' => 'Substansi Usulan (Proposal)', 'file' => $proposal->detailable->getFirstMedia('substance_file')];
         }
-        
-        // Report documents
         if ($report->hasMedia('substance_file')) {
             $supportingDocs[] = ['name' => 'Substansi ' . ($report->reporting_period === 'final' ? 'Laporan Akhir' : 'Laporan Kemajuan'), 'file' => $report->getFirstMedia('substance_file')];
         }
@@ -380,8 +101,6 @@
         if ($report->hasMedia('presentation_file')) {
             $supportingDocs[] = ['name' => 'Presentasi Hasil', 'file' => $report->getFirstMedia('presentation_file')];
         }
-
-        // Output documents
         foreach($report->mandatoryOutputs as $mo) {
             $collections = ['journal_article', 'book_document', 'publication_certificate'];
             foreach($collections as $col) {
@@ -400,28 +119,27 @@
         }
     @endphp
     @if(count($supportingDocs) > 0)
-    <div class="section-title">{{ $sectionNum++ }}. Dokumen Pendukung (Terlampir)</div>
-    <table>
-        <thead>
-            <tr>
-                <th width="5%">No</th>
-                <th width="75%">Nama Data Pendukung</th>
-                <th width="20%">Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($supportingDocs as $index => $doc)
-            <tr>
-                <td class="text-center">{{ $index + 1 }}</td>
-                <td>{{ $doc['name'] }}</td>
-                <td class="text-center">Terlampir</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+        <div class="section-title">{{ $sectionNum++ }}. Dokumen Pendukung (Terlampir)</div>
+        <table>
+            <thead>
+                <tr>
+                    <th width="5%">No</th>
+                    <th width="75%">Nama Data Pendukung</th>
+                    <th width="20%">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($supportingDocs as $index => $doc)
+                    <tr>
+                        <td class="text-center">{{ $index + 1 }}</td>
+                        <td>{{ $doc['name'] }}</td>
+                        <td class="text-center">Terlampir</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
     @endif
 
-    {{-- 9. Dokumen Pendukung Lainnya --}}
     @php
         $otherDocs = [];
         foreach($proposal->partners as $partner) {
@@ -431,71 +149,30 @@
         }
     @endphp
     @if(count($otherDocs) > 0)
-    <div class="section-title">{{ $sectionNum++ }}. Dokumen Pendukung Lainnya</div>
-    <table>
-        <thead>
-            <tr>
-                <th>Kategori</th>
-                <th>Nama Mitra</th>
-                <th>File</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($otherDocs as $doc)
-            <tr>
-                <td>Surat Pernyataan Kerjasama</td>
-                <td>{{ str_replace('Surat Pernyataan Kerjasama Mitra - ', '', $doc['name']) }}</td>
-                <td>Terlampir</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-    @endif
-
-    {{-- 10. ANGGARAN --}}
-    <div class="section-title">{{ $sectionNum++ }}. ANGGARAN</div>
-    <p class="mb-0" style="font-size: 8pt;">Rencana Anggaran Biaya {{ $proposal->detailable_type === 'App\Models\Research' ? 'Penelitian' : 'Pengabdian' }} mengacu pada PMK dan buku Panduan Penelitian dan Pengabdian kepada Masyarakat yang berlaku.</p>
-    @php
-        $totalRAB = $proposal->budgetItems->sum('total_price');
-        $budgetGroups = $proposal->budgetItems->groupBy(function($item) {
-            return $item->budgetGroup->name ?? ($item->group ?? 'Lainnya');
-        });
-    @endphp
-    <p class="mt-0"><strong>Total RAB : Rp. {{ number_format($totalRAB, 0, ',', '.') }}</strong></p>
-
-    @foreach($budgetGroups as $groupName => $items)
-        @php $groupTotal = $items->sum('total_price'); @endphp
-        <div class="group-total">
-            Total Biaya {{ $groupName }} Rp. {{ number_format($groupTotal, 0, ',', '.') }} 
-            ({{ $totalRAB > 0 ? number_format(($groupTotal / $totalRAB) * 100, 2) : 0 }}%)
-        </div>
+        <div class="section-title">{{ $sectionNum++ }}. Dokumen Pendukung Lainnya</div>
         <table>
             <thead>
                 <tr>
-                    <th width="20%">Komponen</th>
-                    <th width="35%">Item</th>
-                    <th width="10%">Satuan</th>
-                    <th width="5%">Vol.</th>
-                    <th width="15%">Biaya Satuan</th>
-                    <th width="15%">Total</th>
+                    <th>Kategori</th>
+                    <th>Nama Mitra</th>
+                    <th>File</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($items as $item)
-                <tr>
-                    <td>{{ $item->budgetComponent->name ?? $item->component }}</td>
-                    <td>{{ $item->item_description ?? $item->item_name }}</td>
-                    <td class="text-center">{{ $item->budgetComponent->unit ?? ($item->unit ?? '-') }}</td>
-                    <td class="text-center">{{ $item->volume }}</td>
-                    <td class="text-right">{{ number_format($item->unit_price, 0, ',', '.') }}</td>
-                    <td class="text-right">{{ number_format($item->total_price, 0, ',', '.') }}</td>
-                </tr>
+                @foreach($otherDocs as $doc)
+                    <tr>
+                        <td>Surat Pernyataan Kerjasama</td>
+                        <td>{{ str_replace('Surat Pernyataan Kerjasama Mitra - ', '', $doc['name']) }}</td>
+                        <td>Terlampir</td>
+                    </tr>
                 @endforeach
             </tbody>
         </table>
-    @endforeach
+    @endif
 
-    {{-- REPORT DETAILS --}}
+    @include('pdf.partials.section-anggaran', ['sectionNum' => $sectionNum])
+    @php $sectionNum++; @endphp
+
     <div style="margin-top: 30px; border-top: 2px dashed #000; padding-top: 20px;"></div>
 
     <div class="section-title">{{ $sectionNum++ }}. RINGKASAN {{ $report->reporting_period === 'final' ? 'AKHIR' : 'KEMAJUAN' }}</div>
@@ -573,7 +250,6 @@
         </table>
     @endif
 
-    {{-- HALAMAN PENGESAHAN LAPORAN --}}
     @if(isset($report_approval_mode) && ($report_approval_mode === 'digital' || $report_approval_mode === 'both'))
         <div class="page-break"></div>
         <div style="text-align: center; font-weight: bold; font-size: 11pt; margin-bottom: 20px; text-transform: uppercase;">
@@ -667,7 +343,6 @@
         </table>
 
         <div style="page-break-inside: avoid;">
-            {{-- Row 1: Dekan & Ketua --}}
             <table class="no-border" style="width: 100%; margin-top: 30px;">
                 <tr>
                     <td width="50%" class="text-center" style="vertical-align: top;">
@@ -675,7 +350,6 @@
                         Dekan {{ $proposal->submitter->identity?->faculty?->name ?? '.......................' }}
                     </td>
                     <td width="50%" class="text-center" style="vertical-align: top;">
-                        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
                         Pekalongan, @if(isset($lecturer_signed_at)) {{ \Carbon\Carbon::parse($lecturer_signed_at)->format('d F Y') }} @else {{ date('d F Y') }} @endif<br>
                         Ketua {{ $proposal->detailable_type === 'App\Models\Research' ? 'Peneliti' : 'Pelaksana' }}
                     </td>
@@ -706,7 +380,6 @@
                 </tr>
             </table>
 
-            {{-- Row 2: Kepala LPPM (Centered) --}}
             <table class="no-border" style="width: 100%;">
                 <tr>
                     <td class="text-center" style="vertical-align: top;">
