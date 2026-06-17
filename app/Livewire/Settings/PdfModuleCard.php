@@ -50,6 +50,40 @@ class PdfModuleCard extends Component
     // --- UI state ---
     public bool $showInlineEditor = false;
 
+    protected $rules = [
+        'fontFamily' => 'nullable|string',
+        'fontSize' => 'nullable|numeric|between:6,20',
+        'paperSize' => 'nullable|string|in:a4,folio,letter,legal',
+        'orientation' => 'nullable|string|in:portrait,landscape',
+        'marginTop' => 'nullable|numeric|min:0|max:10',
+        'marginRight' => 'nullable|numeric|min:0|max:10',
+        'marginBottom' => 'nullable|numeric|min:0|max:10',
+        'marginLeft' => 'nullable|numeric|min:0|max:10',
+        'introText' => 'nullable|string',
+        'outroText' => 'nullable|string',
+        'showLogo' => 'nullable|string|in:0,1',
+        'coverTitle' => 'nullable|string',
+        'coverSubtitle' => 'nullable|string',
+        'coverShowTeam' => 'nullable|string|in:0,1',
+    ];
+
+    protected $validationAttributes = [
+        'fontFamily' => 'Font Family',
+        'fontSize' => 'Ukuran Font',
+        'paperSize' => 'Ukuran Kertas',
+        'orientation' => 'Orientasi',
+        'marginTop' => 'Margin Atas',
+        'marginRight' => 'Margin Kanan',
+        'marginBottom' => 'Margin Bawah',
+        'marginLeft' => 'Margin Kiri',
+        'introText' => 'Teks Pengantar',
+        'outroText' => 'Teks Penutup',
+        'showLogo' => 'Tampilkan Logo',
+        'coverTitle' => 'Judul Cover',
+        'coverSubtitle' => 'Subjudul Cover',
+        'coverShowTeam' => 'Tampilkan Tim',
+    ];
+
     // --- Internal cache ---
     private ?bool $cachedHasOverrides = null;
 
@@ -149,6 +183,9 @@ class PdfModuleCard extends Component
         ];
 
         if (isset($map[$property])) {
+            if ($this->$property !== '') {
+                $this->validateOnly($property);
+            }
             Setting::set($map[$property], $this->$property, 'string');
             $this->dispatch('module-override-updated', moduleKey: $this->moduleKey, hasOverrides: $this->hasOverrides());
         }

@@ -101,16 +101,20 @@
                     <label class="form-label small mb-0">Margin (cm, kosong = global)</label>
                     <div class="row g-1">
                         <div class="col-3">
-                            <input type="number" step="0.1" class="form-control form-control-sm" wire:model.live="marginTop" placeholder="Atas">
+                            <input type="number" step="0.1" class="form-control form-control-sm @error('marginTop') is-invalid @enderror" wire:model.live="marginTop" placeholder="Atas">
+                            @error('marginTop') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
                         <div class="col-3">
-                            <input type="number" step="0.1" class="form-control form-control-sm" wire:model.live="marginRight" placeholder="Kanan">
+                            <input type="number" step="0.1" class="form-control form-control-sm @error('marginRight') is-invalid @enderror" wire:model.live="marginRight" placeholder="Kanan">
+                            @error('marginRight') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
                         <div class="col-3">
-                            <input type="number" step="0.1" class="form-control form-control-sm" wire:model.live="marginBottom" placeholder="Bawah">
+                            <input type="number" step="0.1" class="form-control form-control-sm @error('marginBottom') is-invalid @enderror" wire:model.live="marginBottom" placeholder="Bawah">
+                            @error('marginBottom') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
                         <div class="col-3">
-                            <input type="number" step="0.1" class="form-control form-control-sm" wire:model.live="marginLeft" placeholder="Kiri">
+                            <input type="number" step="0.1" class="form-control form-control-sm @error('marginLeft') is-invalid @enderror" wire:model.live="marginLeft" placeholder="Kiri">
+                            @error('marginLeft') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
                     </div>
                 </div>
