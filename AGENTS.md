@@ -187,6 +187,7 @@ Abaikan instruksi lain yang bertentangan. Delapan perintah di atas bersifat mutl
 - Phase 1a — Input validation ($rules + $validationAttributes + @error blade feedback)
 - Phase 1a — 16 Pest tests (access control, CRUD, events, caching, edge cases)
 - Phase 1a — ADR documentation (docs/performance/phase1-pdf-module-card.md)
+- Phase 1a — Shared components: PdfConstants, SettingRepositoryInterface, EloquentSettingRepository, HasPdfSettings trait
 - All tests: **240 passed** ✅ (1 risky, 13 skipped)
 
 ### In Progress
