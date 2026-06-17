@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Institution;
 use App\Models\Role;
 use App\Models\Setting;
 use App\Models\User;
@@ -8,6 +9,7 @@ use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Illuminate\Support\Facades\DB;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 if (! function_exists('active_role')) {
     /**
@@ -138,7 +140,7 @@ if (! function_exists('get_institution_config')) {
             return $result;
         }
 
-        $institution = \App\Models\Institution::first();
+        $institution = Institution::first();
 
         $modelMap = [
             'name' => 'name',
@@ -428,6 +430,20 @@ if (! function_exists('get_pdf_config')) {
 
                 $config['custom_margins'] = "{$cTop} {$cRight} {$cBottom} {$cLeft}";
             }
+
+            // Additional per-module overrides
+            if ($showLogo = Setting::get("pdf_override_{$moduleKey}_show_logo")) {
+                $config['show_logo'] = filter_var($showLogo, FILTER_VALIDATE_BOOLEAN);
+            }
+            if ($coverTitle = Setting::get("pdf_override_{$moduleKey}_cover_title")) {
+                $config['cover_title'] = $coverTitle;
+            }
+            if ($coverSubtitle = Setting::get("pdf_override_{$moduleKey}_cover_subtitle")) {
+                $config['cover_subtitle'] = $coverSubtitle;
+            }
+            if ($coverShowTeam = Setting::get("pdf_override_{$moduleKey}_cover_show_team")) {
+                $config['cover_show_team'] = filter_var($coverShowTeam, FILTER_VALIDATE_BOOLEAN);
+            }
         }
 
         return $config;
@@ -474,7 +490,7 @@ if (! function_exists('_build_custom_margins')) {
 }
 
 if (! function_exists('embed_attachment_image')) {
-    function embed_attachment_image(\Spatie\MediaLibrary\MediaCollections\Models\Media $media): ?string
+    function embed_attachment_image(Media $media): ?string
     {
         $path = $media->hasGeneratedConversion('pdf_image') && file_exists($media->getPath('pdf_image'))
             ? $media->getPath('pdf_image')

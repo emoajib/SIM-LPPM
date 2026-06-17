@@ -505,53 +505,92 @@
 
         {{-- ==================== TAB 3: MODUL & FITUR ==================== --}}
         <div x-show="activePdfTab === 'modules'" x-cloak>
-            <div class="mb-3">
-                <h4 class="card-title">
-                    <x-lucide-layout-list class="icon me-1 text-primary" />
-                    Daftar Modul &amp; Fitur Penghasil PDF
-                </h4>
-                <p class="text-muted">Semua modul penghasil PDF di sistem ini menggunakan pengaturan global dari halaman ini. Pengaturan Keluarga A berlaku untuk modul surat/proposal, Keluarga B untuk laporan.</p>
+            <div class="d-flex align-items-start justify-content-between mb-3">
+                <div>
+                    <h4 class="card-title mb-1">
+                        <x-lucide-layout-list class="icon me-1 text-primary" />
+                        Daftar Modul &amp; Fitur Penghasil PDF
+                    </h4>
+                    <p class="text-muted mb-0">Klik <strong>Edit Detail</strong> untuk editor konten &amp; tipografi lengkap. Toggle <strong>Atur Override</strong> untuk perubahan cepat.</p>
+                </div>
+                <div class="btn-group btn-group-sm flex-shrink-0">
+                    <button type="button" class="btn {{ $viewMode === 'card' ? 'btn-primary' : 'btn-outline-primary' }}" wire:click="$set('viewMode', 'card')" title="Tampilan Kartu">
+                        <x-lucide-grid-3x3 class="icon" />
+                    </button>
+                    <button type="button" class="btn {{ $viewMode === 'table' ? 'btn-primary' : 'btn-outline-primary' }}" wire:click="$set('viewMode', 'table')" title="Tampilan Tabel">
+                        <x-lucide-list class="icon" />
+                    </button>
+                </div>
             </div>
 
-            <div class="table-responsive">
-                <table class="table table-vcenter card-table table-hover">
-                    <thead>
-                        <tr>
-                            <th width="5%">#</th>
-                            <th>Nama Modul / Fitur</th>
-                            <th>Template View</th>
-                            <th width="12%">Keluarga</th>
-                            <th width="15%">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach(config('pdf-modules.list', []) as $index => $m)
-                        <tr>
-                            <td class="text-muted">{{ $index + 1 }}</td>
-                            <td class="fw-medium">{{ $m['name'] }}</td>
-                            <td><code style="font-size:11px;">{{ $m['template'] }}</code></td>
-                            <td>
-                                @if($m['family'] === 'A')
-                                    <span class="badge bg-blue-lt text-blue">Keluarga A</span>
-                                @else
-                                    <span class="badge bg-green-lt text-green">Keluarga B</span>
-                                @endif
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-sm btn-outline-primary" wire:click="openContentEditor('{{ $m['key'] }}', '{{ $m['name'] }}')">
-                                    <x-lucide-edit-3 class="icon icon-sm me-1" /> Edit Konten
-                                </button>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+            @if($viewMode === 'card')
+                @php
+                    $modules = config('pdf-modules.list', []);
+                    $grouped = collect($modules)->groupBy('family');
+                @endphp
+                @foreach($grouped as $family => $familyModules)
+                    @php $famLabel = config("pdf-modules.families.{$family}.label", "Keluarga {$family}"); @endphp
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="badge {{ $family === 'A' ? 'bg-blue-lt text-blue' : 'bg-green-lt text-green' }} px-3 py-1" style="font-size: 12px;">{{ $famLabel }}</span>
+                            <small class="text-muted">{{ $familyModules->count() }} modul</small>
+                        </div>
+                        <div class="row g-3">
+                            @foreach($familyModules as $m)
+                                <div class="col-md-6 col-xl-4">
+                                    @livewire('settings.pdf-module-card', [
+                                        'moduleKey' => $m['key'],
+                                        'moduleName' => $m['name'],
+                                        'family' => $m['family'],
+                                        'viewType' => $m['view_type'],
+                                    ], key('module-card-'.$m['key']))
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endforeach
+            @else
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table table-hover">
+                        <thead>
+                            <tr>
+                                <th width="5%">#</th>
+                                <th>Nama Modul / Fitur</th>
+                                <th>Template View</th>
+                                <th width="12%">Keluarga</th>
+                                <th width="15%">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach(config('pdf-modules.list', []) as $index => $m)
+                            <tr>
+                                <td class="text-muted">{{ $index + 1 }}</td>
+                                <td class="fw-medium">{{ $m['name'] }}</td>
+                                <td><code style="font-size:11px;">{{ $m['template'] }}</code></td>
+                                <td>
+                                    @if($m['family'] === 'A')
+                                        <span class="badge bg-blue-lt text-blue">Keluarga A</span>
+                                    @else
+                                        <span class="badge bg-green-lt text-green">Keluarga B</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-outline-primary" wire:click="openContentEditor('{{ $m['key'] }}', '{{ $m['name'] }}')">
+                                        <x-lucide-edit-3 class="icon icon-sm me-1" /> Edit Konten
+                                    </button>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
 
+            {{-- Family info cards --}}
             @php
-                $modules = config('pdf-modules.list', []);
-                $familyA = collect($modules)->where('family', 'A');
-                $familyB = collect($modules)->where('family', 'B');
+                $moduleStats = config('pdf-modules.list', []);
+                $familyA = collect($moduleStats)->where('family', 'A');
+                $familyB = collect($moduleStats)->where('family', 'B');
             @endphp
             <div class="row g-3 mt-2">
                 <div class="col-md-6">

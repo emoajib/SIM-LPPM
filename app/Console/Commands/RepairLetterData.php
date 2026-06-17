@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Models\Letter;
-use App\Models\Setting;
 use App\Models\User;
 use App\Services\LetterService;
 use Illuminate\Console\Command;

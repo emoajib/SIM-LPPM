@@ -92,6 +92,26 @@ class PdfExportSettings extends Component
     // --- UI State ---
     public string $activePdfTab = 'layout';
 
+    public string $viewMode = 'card'; // 'card' or 'table'
+
+    protected function getListeners(): array
+    {
+        return [
+            'open-content-editor' => 'handleOpenContentEditor',
+            'module-override-updated' => 'handleModuleOverrideUpdated',
+        ];
+    }
+
+    public function handleOpenContentEditor(array $params): void
+    {
+        $this->openContentEditor($params['moduleKey'], $params['moduleName']);
+    }
+
+    public function handleModuleOverrideUpdated(array $params): void
+    {
+        // Child card override status changed; parent may refresh if needed
+    }
+
     public function mount(): void
     {
         abort_unless(Auth::user()?->hasRole('admin lppm') || Auth::user()?->hasRole('superadmin'), 403);

@@ -17,6 +17,7 @@ use Laravel\Fortify\Features;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Spatie\Permission\Exceptions\RoleDoesNotExist;
 
 #[Layout('components.layouts.auth')]
 class Login extends Component
@@ -152,7 +153,7 @@ class Login extends Component
 
         try {
             $user = User::role($roleName)->first();
-        } catch (\Spatie\Permission\Exceptions\RoleDoesNotExist) {
+        } catch (RoleDoesNotExist) {
             $this->addError('email', "Role '$roleName' tidak ditemukan di database. Jalankan `php artisan db:seed --class=RoleSeeder`.");
 
             return;
