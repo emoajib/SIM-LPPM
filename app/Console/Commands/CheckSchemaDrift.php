@@ -223,7 +223,14 @@ class CheckSchemaDrift extends Command
 
                 $expectedValues = $this->getEnumValues($enumClass);
                 $quotedValues = array_map(fn ($v) => preg_quote($v, '/'), $expectedValues);
-                $expectedPattern = "/{$col} IN \('?".implode("', '?", $quotedValues)."'?\)/";
+
+                if ($dbDriver === 'pgsql') {
+                    $pattern = $col.".*= ANY.*ARRAY\\['".implode("'.*'", $quotedValues)."'";
+                } else {
+                    $pattern = $col." IN \\('?".implode("', '?", $quotedValues)."'?\\)";
+                }
+
+                $expectedPattern = "/{$pattern}/";
 
                 if (! preg_match($expectedPattern, $constraint->def)) {
                     $this->error("CHECK constraint mismatch on {$table}.{$col}");
