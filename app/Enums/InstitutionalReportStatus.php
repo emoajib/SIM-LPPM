@@ -19,6 +19,11 @@ enum InstitutionalReportStatus: string
         };
     }
 
+    public static function values(): array
+    {
+        return array_map(fn ($case) => $case->value, self::cases());
+    }
+
     public function color(): string
     {
         return match ($this) {

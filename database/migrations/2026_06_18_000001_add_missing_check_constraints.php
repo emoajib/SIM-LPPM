@@ -27,7 +27,7 @@ return new class extends Migration
         MigrationHelpers::addCheckConstraintToTable(
             'document_signatures',
             'mode',
-            SignatureMode::getValues(),
+            SignatureMode::values(),
             MigrationHelpers::generateConstraintName('document_signatures', 'mode')
         );
     }
