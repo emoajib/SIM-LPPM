@@ -28,9 +28,15 @@ return new class extends Migration
             ->update(['is_active' => '0']);
 
         // Change column type from string to boolean
-        Schema::table('identities', function (Blueprint $table) {
-            $table->boolean('is_active')->default(true)->change();
-        });
+        // PostgreSQL requires explicit USING clause for type casting
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE identities ALTER COLUMN is_active TYPE boolean USING (is_active::int::boolean)');
+            DB::statement('ALTER TABLE identities ALTER COLUMN is_active SET DEFAULT true');
+        } else {
+            Schema::table('identities', function (Blueprint $table) {
+                $table->boolean('is_active')->default(true)->change();
+            });
+        }
     }
 
     /**
