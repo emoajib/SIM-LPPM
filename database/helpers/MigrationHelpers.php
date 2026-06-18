@@ -163,31 +163,19 @@ class MigrationHelpers
             $sql = "{$quotedColumn} IN ({$allowedValuesString})";
             DB::statement("ALTER TABLE {$table} ADD CONSTRAINT {$constraintName} CHECK ({$sql})");
         } else {
-            // MySQL and SQLite: Use ALTER TABLE MODIFY COLUMN
             $allowedValuesString = "'".implode("', '", $newValues)."'";
 
             if ($dbDriver === 'mysql') {
-                DB::statement("ALTER TABLE {$table} MODIFY COLUMN {$column} ENUM({$allowedValuesString})");
+                $q = '`';
+                DB::statement("ALTER TABLE {$table} MODIFY COLUMN {$q}{$column}{$q} ENUM({$allowedValuesString})");
             } else {
-                // SQLite: Need to recreate table
-                // This is more complex and would require table recreation
-                // For now, we'll use a simpler approach
-                DB::statement("ALTER TABLE {$table} ADD COLUMN {$column}_temp VARCHAR(50)");
-
-                // Copy data
-                DB::statement("UPDATE {$table} SET {$column}_temp = {$column}");
-
-                // Drop old column
-                DB::statement("ALTER TABLE {$table} DROP COLUMN {$column}");
-
-                // Add new column
-                DB::statement("ALTER TABLE {$table} ADD COLUMN {$column} VARCHAR(50)");
-
-                // Copy data back
-                DB::statement("UPDATE {$table} SET {$column} = {$column}_temp");
-
-                // Drop temp column
-                DB::statement("ALTER TABLE {$table} DROP COLUMN {$column}_temp");
+                $q = '"';
+                DB::statement("ALTER TABLE {$table} ADD COLUMN {$q}{$column}{$q}_temp VARCHAR(50)");
+                DB::statement("UPDATE {$table} SET {$q}{$column}{$q}_temp = {$q}{$column}{$q}");
+                DB::statement("ALTER TABLE {$table} DROP COLUMN {$q}{$column}{$q}");
+                DB::statement("ALTER TABLE {$table} ADD COLUMN {$q}{$column}{$q} VARCHAR(50)");
+                DB::statement("UPDATE {$table} SET {$q}{$column}{$q} = {$q}{$column}{$q}_temp");
+                DB::statement("ALTER TABLE {$table} DROP COLUMN {$q}{$column}{$q}_temp");
             }
         }
     }

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Schema;
 
 class InstallationService
 {
@@ -32,7 +33,7 @@ class InstallationService
 
         // Check if users table exists and has records
         try {
-            if (! DB::select("SHOW TABLES LIKE 'users'")) {
+            if (! Schema::hasTable('users')) {
                 return false;
             }
             $userCount = DB::table('users')->count();
@@ -61,14 +62,12 @@ class InstallationService
             $status['database_connected'] = true;
 
             // Check if migrations table exists
-            $tables = DB::select("SHOW TABLES LIKE 'migrations'");
-            if (! empty($tables)) {
+            if (Schema::hasTable('migrations')) {
                 $status['migrations_run'] = true;
             }
 
             // Check if users exist
-            $tables = DB::select("SHOW TABLES LIKE 'users'");
-            if (! empty($tables)) {
+            if (Schema::hasTable('users')) {
                 $status['users_exist'] = DB::table('users')->count() > 0;
             }
         } catch (Exception) {

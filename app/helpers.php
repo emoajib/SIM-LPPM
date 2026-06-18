@@ -81,9 +81,11 @@ if (! function_exists('sql_year')) {
     {
         $driver = strtolower(DB::getDriverName());
 
-        return $driver === 'sqlite'
-            ? "strftime('%Y', {$column})"
-            : "YEAR({$column})";
+        return match ($driver) {
+            'sqlite' => "strftime('%Y', {$column})",
+            'pgsql' => "EXTRACT(YEAR FROM {$column})",
+            default => "YEAR({$column})",
+        };
     }
 }
 

@@ -81,7 +81,7 @@ class MonevIndex extends Component
             if (! Schema::hasColumn('proposal_monevs', 'academic_year')) {
                 Schema::table('proposal_monevs', function (Blueprint $table) {
                     $table->string('academic_year')->nullable()->after('proposal_id');
-                    $table->enum('semester', ['ganjil', 'genap'])->nullable()->after('academic_year');
+                    $table->string('semester', 10)->nullable()->after('academic_year');
                 });
 
                 // Populate initial data

@@ -119,7 +119,8 @@ class DatabaseRestoreService
             'is_active',
         ];
 
-        $quoted = array_map(fn ($c) => "`{$c}`", $columns);
+        $quote = DB::getDriverName() === 'mysql' ? '`' : '"';
+        $quoted = array_map(fn ($c) => $quote.$c.$quote, $columns);
         $colList = implode(',', $quoted);
 
         return preg_replace(
@@ -156,9 +157,11 @@ class DatabaseRestoreService
         DB::beginTransaction();
 
         try {
-            DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-            DB::statement('SET UNIQUE_CHECKS = 0');
-            DB::statement('SET SQL_MODE = ""');
+            if (DB::getDriverName() === 'mysql') {
+                DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+                DB::statement('SET UNIQUE_CHECKS = 0');
+                DB::statement('SET SQL_MODE = ""');
+            }
 
             foreach ($statements as $stmt) {
                 try {
@@ -176,8 +179,10 @@ class DatabaseRestoreService
                 }
             }
 
-            DB::statement('SET FOREIGN_KEY_CHECKS = 1');
-            DB::statement('SET UNIQUE_CHECKS = 1');
+            if (DB::getDriverName() === 'mysql') {
+                DB::statement('SET FOREIGN_KEY_CHECKS = 1');
+                DB::statement('SET UNIQUE_CHECKS = 1');
+            }
 
             DB::commit();
 
@@ -254,9 +259,11 @@ class DatabaseRestoreService
         DB::beginTransaction();
 
         try {
-            DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-            DB::statement('SET UNIQUE_CHECKS = 0');
-            DB::statement('SET SQL_MODE = ""');
+            if (DB::getDriverName() === 'mysql') {
+                DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+                DB::statement('SET UNIQUE_CHECKS = 0');
+                DB::statement('SET SQL_MODE = ""');
+            }
 
             foreach ($tablesToDelete as $table) {
                 $count = DB::table($table)->count();
@@ -284,8 +291,10 @@ class DatabaseRestoreService
                 }
             }
 
-            DB::statement('SET FOREIGN_KEY_CHECKS = 1');
-            DB::statement('SET UNIQUE_CHECKS = 1');
+            if (DB::getDriverName() === 'mysql') {
+                DB::statement('SET FOREIGN_KEY_CHECKS = 1');
+                DB::statement('SET UNIQUE_CHECKS = 1');
+            }
 
             DB::commit();
 
@@ -354,9 +363,10 @@ class DatabaseRestoreService
         $filename = "pre_restore_backup_{$timestamp}.sql";
         $path = "{$backupDir}/{$filename}";
 
-        $dbName = config('database.connections.mysql.database');
-        $dbUser = config('database.connections.mysql.username');
-        $dbPass = config('database.connections.mysql.password');
+        $connection = config('database.default');
+        $dbName = config("database.connections.{$connection}.database");
+        $dbUser = config("database.connections.{$connection}.username");
+        $dbPass = config("database.connections.{$connection}.password");
 
         $cmd = ['mysqldump', '-u', $dbUser];
         if ($dbPass) {

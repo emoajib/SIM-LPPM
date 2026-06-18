@@ -49,16 +49,19 @@ class Index extends Component
             if (! Schema::hasColumn('proposal_monevs', 'academic_year')) {
                 Schema::table('proposal_monevs', function (Blueprint $table) {
                     $table->string('academic_year')->nullable()->after('proposal_id');
-                    $table->enum('semester', ['ganjil', 'genap'])->nullable()->after('academic_year');
+                    $table->string('semester', 10)->nullable()->after('academic_year');
                 });
 
                 // Populate initial data
                 DB::statement("
-                    UPDATE proposal_monevs 
-                    INNER JOIN proposals ON proposal_monevs.proposal_id = proposals.id
-                    SET proposal_monevs.academic_year = proposals.start_year,
-                        proposal_monevs.semester = IFNULL(proposals.semester, 'ganjil')
-                    WHERE proposal_monevs.academic_year IS NULL
+                    UPDATE proposal_monevs
+                    SET academic_year = (
+                        SELECT start_year FROM proposals WHERE proposals.id = proposal_monevs.proposal_id
+                    ),
+                        semester = COALESCE((
+                            SELECT semester FROM proposals WHERE proposals.id = proposal_monevs.proposal_id
+                        ), 'ganjil')
+                    WHERE academic_year IS NULL
                 ");
             }
         } catch (\Exception $e) {
