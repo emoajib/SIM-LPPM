@@ -160,6 +160,9 @@ class DatabaseRestoreService
         );
 
         if ($driver === 'pgsql') {
+            // Convert MySQL escaped single quotes (\') to SQL standard ('')
+            $statement = str_replace("\\'", "''", $statement);
+
             // 2. INSERT IGNORE INTO → INSERT INTO ... ON CONFLICT DO NOTHING
             if (preg_match('/^\s*INSERT\s+IGNORE\s+INTO\s/i', $statement)) {
                 $statement = preg_replace('/^\s*INSERT\s+IGNORE\s+INTO\s/i', 'INSERT INTO ', $statement);
@@ -229,9 +232,22 @@ class DatabaseRestoreService
                     if (empty(trim($adapted))) {
                         continue; // Skip statements that became empty after adaptation (e.g. MySQL SET)
                     }
+
+                    if (DB::getDriverName() === 'pgsql') {
+                        DB::unprepared('SAVEPOINT pg_restore_sp;');
+                    }
+
                     DB::unprepared($adapted);
                     $inserted++;
+
+                    if (DB::getDriverName() === 'pgsql') {
+                        DB::unprepared('RELEASE SAVEPOINT pg_restore_sp;');
+                    }
                 } catch (\Throwable $e) {
+                    if (DB::getDriverName() === 'pgsql') {
+                        DB::unprepared('ROLLBACK TO SAVEPOINT pg_restore_sp;');
+                    }
+
                     $errors[] = [
                         'statement' => mb_substr($stmt, 0, 100),
                         'error' => $e->getMessage(),
@@ -380,9 +396,22 @@ class DatabaseRestoreService
                     if (empty(trim($adapted))) {
                         continue; // Skip statements that became empty after adaptation (e.g. MySQL SET)
                     }
+
+                    if (DB::getDriverName() === 'pgsql') {
+                        DB::unprepared('SAVEPOINT pg_restore_sp;');
+                    }
+
                     DB::unprepared($adapted);
                     $inserted++;
+
+                    if (DB::getDriverName() === 'pgsql') {
+                        DB::unprepared('RELEASE SAVEPOINT pg_restore_sp;');
+                    }
                 } catch (\Throwable $e) {
+                    if (DB::getDriverName() === 'pgsql') {
+                        DB::unprepared('ROLLBACK TO SAVEPOINT pg_restore_sp;');
+                    }
+
                     $errors[] = [
                         'statement' => mb_substr($stmt, 0, 100),
                         'error' => $e->getMessage(),
