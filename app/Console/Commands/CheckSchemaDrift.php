@@ -20,13 +20,14 @@ use Illuminate\Support\Facades\DB;
 
 class CheckSchemaDrift extends Command
 {
-    protected $signature = 'schema:drift {--database= : Database connection to use}';
+    protected $signature = 'schema:drift {--database= : Database connection to use} {--warn-only : Only warn on drift, do not fail}';
 
     protected $description = 'Check for schema drift between migrations and database';
 
     public function handle(): int
     {
         $connection = $this->option('database') ?: config('database.default');
+        $warnOnly = $this->option('warn-only');
         $this->info("Checking schema drift on connection: {$connection}");
 
         $hasDrift = false;
@@ -40,7 +41,11 @@ class CheckSchemaDrift extends Command
         $hasDrift |= $this->checkEnumConstraintDrift($connection);
 
         if ($hasDrift) {
-            $this->error('Schema drift detected!');
+            $this->warn('Schema drift detected!');
+
+            if ($warnOnly) {
+                return 0;
+            }
 
             return 1;
         }

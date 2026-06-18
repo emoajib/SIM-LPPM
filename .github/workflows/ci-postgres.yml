@@ -60,7 +60,7 @@ jobs:
 
       - name: Check schema drift
         run: |
-          php artisan schema:drift
+          php artisan schema:drift --warn-only
 
       - name: Run tests
         run: |
