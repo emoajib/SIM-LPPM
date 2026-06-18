@@ -20,6 +20,10 @@ class MigrationRawStatementRule implements Rule
     ): array {
         $errors = [];
 
+        if (! $node instanceof Node\Expr\StaticCall) {
+            return $errors;
+        }
+
         if ($node->class instanceof Node\Name) {
             $className = $node->class->toString();
 

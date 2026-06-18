@@ -20,6 +20,10 @@ class MigrationEnumRule implements Rule
     ): array {
         $errors = [];
 
+        if (! $node instanceof Node\Expr\MethodCall) {
+            return $errors;
+        }
+
         if ($node->name instanceof Node\Identifier && $node->name->toString() === 'enum') {
             $errors[] = RuleErrorBuilder::message('Do not use $table->enum() in migrations. Use string + CHECK constraint pattern instead.')
                 ->build();

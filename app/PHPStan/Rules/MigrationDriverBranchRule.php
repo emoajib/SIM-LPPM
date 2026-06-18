@@ -20,6 +20,10 @@ class MigrationDriverBranchRule implements Rule
     ): array {
         $errors = [];
 
+        if (! $node instanceof Node\Expr\BinaryOp\Identical) {
+            return $errors;
+        }
+
         if ($node->left instanceof Node\Expr\PropertyFetch) {
             $propertyFetch = $node->left;
 
