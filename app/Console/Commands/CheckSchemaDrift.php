@@ -322,7 +322,7 @@ class CheckSchemaDrift extends Command
         foreach ($files as $file) {
             $content = file_get_contents($file);
 
-            $pattern = '/Schema::(?:create|table)\(\s*[\'"]([^\'"]+)[\'"]\s*,\s*function\s*\([^)]*\$table[^)]*\)\s*\{.*?\}\)/s';
+            $pattern = '/Schema::(?:create|table)\(\s*[\'"]([^\'"]+)[\'"]\s*,\s*function\s*\([^)]*\$table[^)]*\)\s*\{.*?\}\);\)/s';
             if (preg_match_all($pattern, $content, $matches)) {
                 foreach ($matches[0] as $tableContent) {
                     if (preg_match_all('/\$table->(string|integer|bigInteger|decimal|boolean|text|json|jsonb|uuid|date|datetime|timestamp|time|float|double|char|varchar|mediumText|longText|mediumInteger|unsignedInteger|unsignedBigInteger|unsignedDecimal|unsignedFloat|unsignedDouble|unsignedMediumInteger|unsignedMediumDecimal|unsignedBigInteger|rememberToken|foreignId|morphs|belongsToMany|hasMany|hasManyThrough|hasOneThrough|hasOne|hasMany|hasManyThrough|hasOneThrough|morphTo|morphMany|morphToMany|morphOne|belongsTo|hasOneThrough|hasMany|hasManyThrough|hasOneThrough|morphTo|morphMany|morphToMany|morphOne|belongsTo|hasOneThrough|hasMany|hasManyThrough|hasOneThrough|morphTo|morphMany|morphToMany|morphOne|belongsTo)/', $tableContent, $columnMatches)) {
