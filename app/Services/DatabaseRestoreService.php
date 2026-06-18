@@ -131,6 +131,60 @@ class DatabaseRestoreService
         );
     }
 
+    /**
+     * Adapt MySQL-dialect SQL to be compatible with the current database driver.
+     *
+     * Handles:
+     * - Backtick identifiers (`table`) → double-quote identifiers ("table") for pgsql/sqlite
+     * - INSERT IGNORE INTO → INSERT INTO ... ON CONFLICT DO NOTHING for pgsql
+     * - REPLACE INTO → INSERT INTO ... ON CONFLICT DO NOTHING for pgsql
+     * - SET statements are no-ops on pgsql (discarded)
+     *
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     */
+    protected function adaptSqlForCurrentDriver(string $statement): string
+    {
+        $driver = DB::getDriverName();
+
+        if ($driver === 'mysql') {
+            // MySQL is the native format — no transformation needed
+            return $statement;
+        }
+
+        // 1. Convert MySQL backtick-quoted identifiers → standard double-quoted identifiers
+        //    Matches `identifier` that contains only word chars (safe for table/column names)
+        $statement = preg_replace_callback(
+            '/`([^`]+)`/',
+            fn ($matches) => '"'.$matches[1].'"',
+            $statement
+        );
+
+        if ($driver === 'pgsql') {
+            // 2. INSERT IGNORE INTO → INSERT INTO ... ON CONFLICT DO NOTHING
+            if (preg_match('/^\s*INSERT\s+IGNORE\s+INTO\s/i', $statement)) {
+                $statement = preg_replace('/^\s*INSERT\s+IGNORE\s+INTO\s/i', 'INSERT INTO ', $statement);
+                // Append ON CONFLICT clause (strip trailing semicolon first, then re-add)
+                $statement = rtrim($statement, '; ');
+                $statement .= ' ON CONFLICT DO NOTHING';
+            }
+
+            // 3. REPLACE INTO → INSERT INTO ... ON CONFLICT DO NOTHING
+            //    (REPLACE = DELETE + INSERT, nearest pgsql equivalent is upsert or ignore)
+            if (preg_match('/^\s*REPLACE\s+INTO\s/i', $statement)) {
+                $statement = preg_replace('/^\s*REPLACE\s+INTO\s/i', 'INSERT INTO ', $statement);
+                $statement = rtrim($statement, '; ');
+                $statement .= ' ON CONFLICT DO NOTHING';
+            }
+
+            // 4. MySQL SET statements (e.g. SET NAMES utf8, SET FOREIGN_KEY_CHECKS) are no-ops
+            if (preg_match('/^\s*SET\s+(?!SEARCH_PATH|ROLE|SESSION|LOCAL)/i', $statement)) {
+                return '';
+            }
+        }
+
+        return $statement;
+    }
+
     public function restore(string $sqlPath, bool $backupFirst = true): array
     {
         if (! file_exists($sqlPath)) {
@@ -168,7 +222,11 @@ class DatabaseRestoreService
 
             foreach ($statements as $stmt) {
                 try {
-                    DB::unprepared($this->fixIdentityStatement($stmt));
+                    $adapted = $this->adaptSqlForCurrentDriver($this->fixIdentityStatement($stmt));
+                    if (empty(trim($adapted))) {
+                        continue; // Skip statements that became empty after adaptation (e.g. MySQL SET)
+                    }
+                    DB::unprepared($adapted);
                     $inserted++;
                 } catch (\Throwable $e) {
                     $errors[] = [
@@ -306,7 +364,11 @@ class DatabaseRestoreService
                 }
 
                 try {
-                    DB::unprepared($this->fixIdentityStatement($stmt));
+                    $adapted = $this->adaptSqlForCurrentDriver($this->fixIdentityStatement($stmt));
+                    if (empty(trim($adapted))) {
+                        continue; // Skip statements that became empty after adaptation (e.g. MySQL SET)
+                    }
+                    DB::unprepared($adapted);
                     $inserted++;
                 } catch (\Throwable $e) {
                     $errors[] = [

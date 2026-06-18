@@ -31,6 +31,10 @@ class ReviewSystemTest extends TestCase
 
     protected ProposalReviewer $reviewAssignment;
 
+    protected ReviewCriteria $criteria1;
+
+    protected ReviewCriteria $criteria2;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -47,8 +51,7 @@ class ReviewSystemTest extends TestCase
         $this->randomDosen->assignRole('dosen');
 
         // Generate criteria
-        ReviewCriteria::create([
-            'id' => 1,
+        $this->criteria1 = ReviewCriteria::create([
             'criteria' => 'Relevansi Topik',
             'weight' => 30, // 30% weight
             'type' => 'research',
@@ -56,8 +59,7 @@ class ReviewSystemTest extends TestCase
             'is_active' => true,
         ]);
 
-        ReviewCriteria::create([
-            'id' => 2,
+        $this->criteria2 = ReviewCriteria::create([
             'criteria' => 'Metodologi',
             'weight' => 70, // 70% weight
             'type' => 'research',
@@ -101,10 +103,10 @@ class ReviewSystemTest extends TestCase
         // Provide valid data but still should fail authorization inside submitReview
         $component->set('reviewNotes', 'Ini notes review minimal 10 karakter')
             ->set('recommendation', 'approved')
-            ->set('scores.1.score', 5)
-            ->set('scores.1.acuan', 'Acuan 1')
-            ->set('scores.2.score', 4)
-            ->set('scores.2.acuan', 'Acuan 2')
+            ->set("scores.{$this->criteria1->id}.score", 5)
+            ->set("scores.{$this->criteria1->id}.acuan", 'Acuan 1')
+            ->set("scores.{$this->criteria2->id}.score", 4)
+            ->set("scores.{$this->criteria2->id}.acuan", 'Acuan 2')
             ->call('submitReview', app(CompleteReviewAction::class))
             ->assertDispatched('error');
     }
@@ -123,10 +125,10 @@ class ReviewSystemTest extends TestCase
         // Total Expected Score = 470
         $component->set('reviewNotes', 'Catatan review ini cukup panjang untuk lolos validasi.')
             ->set('recommendation', 'approved')
-            ->set('scores.1.score', 4)
-            ->set('scores.1.acuan', 'Kesesuaian topik sangat baik')
-            ->set('scores.2.score', 5)
-            ->set('scores.2.acuan', 'Metodologi sempurna');
+            ->set("scores.{$this->criteria1->id}.score", 4)
+            ->set("scores.{$this->criteria1->id}.acuan", 'Kesesuaian topik sangat baik')
+            ->set("scores.{$this->criteria2->id}.score", 5)
+            ->set("scores.{$this->criteria2->id}.acuan", 'Metodologi sempurna');
 
         // Confirm computed total score in UI matches expectation mathematically
         $this->assertEquals(470, $component->get('totalScore'));
@@ -139,7 +141,7 @@ class ReviewSystemTest extends TestCase
         // Lock verification: database state MUST match the mathematical calculation
         $this->assertDatabaseHas('review_scores', [
             'proposal_reviewer_id' => $this->reviewAssignment->id,
-            'review_criteria_id' => 1,
+            'review_criteria_id' => $this->criteria1->id,
             'score' => 4,
             'weight_snapshot' => 30,
             'value' => 120, // Mathematically locked
@@ -147,7 +149,7 @@ class ReviewSystemTest extends TestCase
 
         $this->assertDatabaseHas('review_scores', [
             'proposal_reviewer_id' => $this->reviewAssignment->id,
-            'review_criteria_id' => 2,
+            'review_criteria_id' => $this->criteria2->id,
             'score' => 5,
             'weight_snapshot' => 70,
             'value' => 350, // Mathematically locked
@@ -172,12 +174,12 @@ class ReviewSystemTest extends TestCase
         // Attempting to inject a score of 6 (Max is 5)
         $component->set('reviewNotes', 'Catatan review')
             ->set('recommendation', 'approved')
-            ->set('scores.1.score', 6) // Invalid over max
-            ->set('scores.1.acuan', 'Acuan')
-            ->set('scores.2.score', 0) // Invalid under min
-            ->set('scores.2.acuan', 'Acuan')
+            ->set("scores.{$this->criteria1->id}.score", 6) // Invalid over max
+            ->set("scores.{$this->criteria1->id}.acuan", 'Acuan')
+            ->set("scores.{$this->criteria2->id}.score", 0) // Invalid under min
+            ->set("scores.{$this->criteria2->id}.acuan", 'Acuan')
             ->call('submitReview', app(CompleteReviewAction::class))
-            ->assertHasErrors(['scores.1.score', 'scores.2.score']);
+            ->assertHasErrors(["scores.{$this->criteria1->id}.score", "scores.{$this->criteria2->id}.score"]);
 
         // Verify database is completely untouched
         $this->assertDatabaseMissing('review_scores', [
@@ -200,10 +202,10 @@ class ReviewSystemTest extends TestCase
         // Submit the review with scores for both criteria
         $component->set('reviewNotes', 'Catatan review yang valid dan lengkap.')
             ->set('recommendation', 'approved')
-            ->set('scores.1.score', 5)
-            ->set('scores.1.acuan', 'Acuan 1')
-            ->set('scores.2.score', 4)
-            ->set('scores.2.acuan', 'Acuan 2')
+            ->set("scores.{$this->criteria1->id}.score", 5)
+            ->set("scores.{$this->criteria1->id}.acuan", 'Acuan 1')
+            ->set("scores.{$this->criteria2->id}.score", 4)
+            ->set("scores.{$this->criteria2->id}.acuan", 'Acuan 2')
             ->call('submitReview', app(CompleteReviewAction::class));
 
         // Proposal status should transition to REVIEWED immediately since requirement is 1
@@ -233,10 +235,10 @@ class ReviewSystemTest extends TestCase
         $component = Livewire::test(ReviewerForm::class, ['proposalId' => $this->proposal->id]);
         $component->set('reviewNotes', 'Catatan review yang valid dan lengkap.')
             ->set('recommendation', 'approved')
-            ->set('scores.1.score', 5)
-            ->set('scores.1.acuan', 'Acuan 1')
-            ->set('scores.2.score', 4)
-            ->set('scores.2.acuan', 'Acuan 2')
+            ->set("scores.{$this->criteria1->id}.score", 5)
+            ->set("scores.{$this->criteria1->id}.acuan", 'Acuan 1')
+            ->set("scores.{$this->criteria2->id}.score", 4)
+            ->set("scores.{$this->criteria2->id}.acuan", 'Acuan 2')
             ->call('submitReview', app(CompleteReviewAction::class));
 
         // Proposal status should remain UNDER_REVIEW because requiredCount = 2 and only 1 is assigned/completed
@@ -258,10 +260,10 @@ class ReviewSystemTest extends TestCase
         $component2 = Livewire::test(ReviewerForm::class, ['proposalId' => $this->proposal->id]);
         $component2->set('reviewNotes', 'Catatan review kedua yang valid.')
             ->set('recommendation', 'approved')
-            ->set('scores.1.score', 4)
-            ->set('scores.1.acuan', 'Acuan 1')
-            ->set('scores.2.score', 5)
-            ->set('scores.2.acuan', 'Acuan 2')
+            ->set("scores.{$this->criteria1->id}.score", 4)
+            ->set("scores.{$this->criteria1->id}.acuan", 'Acuan 1')
+            ->set("scores.{$this->criteria2->id}.score", 5)
+            ->set("scores.{$this->criteria2->id}.acuan", 'Acuan 2')
             ->call('submitReview', app(CompleteReviewAction::class));
 
         // Now that 2 reviewers have been assigned and completed their review, status should transition to REVIEWED

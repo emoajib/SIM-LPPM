@@ -444,9 +444,18 @@ class Proposal extends Model
     public function latestKaprodiApproval(): HasOne
     {
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
-        // latestOfMany() defaults to MAX(id) which fails on UUID PKs in PostgreSQL.
-        // Using 'created_at' as the ordering column instead.
-        return $this->hasOne(KaprodiApproval::class)->latestOfMany('created_at');
+        // latestOfMany() includes MAX(id) as a tie-breaker subquery, which fails
+        // on UUID PKs in PostgreSQL (function max(uuid) does not exist).
+        // The cleanest driver-agnostic fix that supports eager loading without N+1
+        // is to use a correlated subquery on the `id` column.
+        return $this->hasOne(KaprodiApproval::class)
+            ->whereRaw('proposal_kaprodi_approvals.id = (
+                SELECT id 
+                FROM proposal_kaprodi_approvals AS sub 
+                WHERE sub.proposal_id = proposal_kaprodi_approvals.proposal_id 
+                ORDER BY sub.created_at DESC 
+                LIMIT 1
+            )');
     }
 
     public function hasApprovedKaprodi(): bool
