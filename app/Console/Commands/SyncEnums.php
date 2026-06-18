@@ -170,7 +170,7 @@ class SyncEnums extends Command
             'strata.category' => StrataCategory::class,
 
             // Approvals & other
-            'kaprodi_approvals.status' => KaprodiStatus::class,
+            'proposal_kaprodi_approvals.status' => KaprodiStatus::class,
             'letters.team_source' => TeamSource::class,
             'document_signatures.mode' => SignatureMode::class,
             'proposal_monevs.semester' => ProposalMonevSemester::class,

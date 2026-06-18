@@ -18,10 +18,10 @@ return new class extends Migration
         );
 
         MigrationHelpers::addCheckConstraintToTable(
-            'kaprodi_approvals',
+            'proposal_kaprodi_approvals',
             'status',
             KaprodiStatus::values(),
-            MigrationHelpers::generateConstraintName('kaprodi_approvals', 'status')
+            MigrationHelpers::generateConstraintName('proposal_kaprodi_approvals', 'status')
         );
 
         MigrationHelpers::addCheckConstraintToTable(
@@ -35,7 +35,7 @@ return new class extends Migration
     public function down(): void
     {
         MigrationHelpers::dropCheckConstraint('institutional_reports', 'status');
-        MigrationHelpers::dropCheckConstraint('kaprodi_approvals', 'status');
+        MigrationHelpers::dropCheckConstraint('proposal_kaprodi_approvals', 'status');
         MigrationHelpers::dropCheckConstraint('document_signatures', 'mode');
     }
 };

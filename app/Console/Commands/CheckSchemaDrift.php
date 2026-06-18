@@ -412,7 +412,7 @@ class CheckSchemaDrift extends Command
             'mandatory_outputs.author_status' => AuthorStatus::class,
             'additional_outputs.status' => AdditionalOutputStatusType::class,
             'institutional_reports.status' => InstitutionalReportStatus::class,
-            'kaprodi_approvals.status' => KaprodiStatus::class,
+            'proposal_kaprodi_approvals.status' => KaprodiStatus::class,
             'letters.team_source' => TeamSource::class,
             'document_signatures.mode' => SignatureMode::class,
         ];
