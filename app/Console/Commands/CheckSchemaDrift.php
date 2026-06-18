@@ -322,7 +322,7 @@ class CheckSchemaDrift extends Command
         foreach ($files as $file) {
             $content = file_get_contents($file);
 
-            if (preg_match_all("/Schema::table\\(\\s*[\'\"](?:[^\'\"\\s]+)[\'\"],\\s*function\\(.*?\\$table\\s*=>.*?\\)\)/s", $content, $matches)) {
+            if (preg_match_all('/Schema::table\(\s*[\'"](?:[^\'"\s]+)[\'"],\s*function\(.*?\\$table\s*=>.*?\)\)/s', $content, $matches)) {
                 $tableContent = $matches[0][0];
 
                 if (preg_match_all('/\$table->(string|integer|bigInteger|decimal|boolean|text|json|jsonb|uuid|date|datetime|timestamp|time|float|double|char|varchar|mediumText|longText|mediumInteger|unsignedInteger|unsignedBigInteger|unsignedDecimal|unsignedFloat|unsignedDouble|unsignedMediumInteger|unsignedMediumDecimal|unsignedBigInteger|rememberToken|foreignId|morphs|belongsToMany|hasMany|hasManyThrough|hasOneThrough|hasOne|hasMany|hasManyThrough|hasOneThrough|morphTo|morphMany|morphToMany|morphOne|belongsTo|hasOneThrough|hasMany|hasManyThrough|hasOneThrough|morphTo|morphMany|morphToMany|morphOne|belongsTo|hasOneThrough|hasMany|hasManyThrough|hasOneThrough|morphTo|morphMany|morphToMany|morphOne|belongsTo)/', $tableContent, $columnMatches)) {
@@ -364,7 +364,7 @@ class CheckSchemaDrift extends Command
         foreach ($files as $file) {
             $content = file_get_contents($file);
 
-            if (preg_match_all("/Schema::table\\(\\s*[\'\"](?:[^\'\"\\s]+)[\'\"],\\s*function\\(.*?\\$table\\s*=>.*?\\)\)/s", $content, $matches)) {
+            if (preg_match_all('/Schema::table\(\s*[\'"](?:[^\'"\s]+)[\'"],\s*function\(.*?\\$table\s*=>.*?\)\)/s', $content, $matches)) {
                 $tableContent = $matches[0][0];
 
                 if (preg_match_all('/\$table->check\\(\\s*[\'"]([^\'"\\s]+)[\'"]\\s*,\\s*[\'"]([^\'"\\s]+)[\'"]\\s*\\)/', $tableContent, $constraintMatches)) {
