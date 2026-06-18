@@ -104,8 +104,8 @@ return new class extends Migration
             // 1. Create new table with correct schema
             DB::statement('CREATE TABLE proposal_reviewer_new (
                 id serial PRIMARY KEY,
-                proposal_id varchar NOT NULL,
-                user_id varchar NOT NULL,
+                proposal_id uuid NOT NULL,
+                user_id uuid NOT NULL,
                 status varchar CHECK (status IN (\'pending\', \'in_progress\', \'completed\', \'re_review_requested\')) NOT NULL DEFAULT \'pending\',
                 review_notes text,
                 recommendation varchar CHECK (recommendation IN (\'approved\', \'rejected\', \'revision_needed\')),
@@ -187,8 +187,8 @@ return new class extends Migration
             // 1. Create old table with original schema
             DB::statement('CREATE TABLE proposal_reviewer_old (
                 id serial PRIMARY KEY,
-                proposal_id varchar NOT NULL,
-                user_id varchar NOT NULL,
+                proposal_id uuid NOT NULL,
+                user_id uuid NOT NULL,
                 status varchar CHECK (status IN (\'pending\', \'reviewing\', \'completed\')) NOT NULL DEFAULT \'pending\',
                 review_notes text,
                 recommendation varchar CHECK (recommendation IN (\'approved\', \'rejected\', \'revision_needed\')),
