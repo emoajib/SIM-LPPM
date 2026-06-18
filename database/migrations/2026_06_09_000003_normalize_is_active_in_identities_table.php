@@ -30,6 +30,7 @@ return new class extends Migration
         // Change column type from string to boolean
         // PostgreSQL requires explicit USING clause for type casting
         if (DB::getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE identities ALTER COLUMN is_active DROP DEFAULT');
             DB::statement('ALTER TABLE identities ALTER COLUMN is_active TYPE boolean USING (is_active::int::boolean)');
             DB::statement('ALTER TABLE identities ALTER COLUMN is_active SET DEFAULT true');
         } else {
