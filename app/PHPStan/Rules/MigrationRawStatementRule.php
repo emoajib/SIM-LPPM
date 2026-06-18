@@ -5,7 +5,7 @@ namespace App\PHPStan\Rules;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
-use PHPStan\Rules\RuleError;
+use PHPStan\Rules\RuleErrorBuilder;
 
 class MigrationRawStatementRule implements Rule
 {
@@ -27,9 +27,8 @@ class MigrationRawStatementRule implements Rule
                 $methodName = $node->name->toString();
 
                 if ($methodName === 'statement') {
-                    $errors[] = RuleError::create(
-                        'Do not use raw DB::statement() for schema changes in migrations. Use Blueprint methods instead.'
-                    );
+                    $errors[] = RuleErrorBuilder::message('Do not use raw DB::statement() for schema changes in migrations. Use Blueprint methods instead.')
+                        ->build();
                 }
             }
         }

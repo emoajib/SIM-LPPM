@@ -5,7 +5,7 @@ namespace App\PHPStan\Rules;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
-use PHPStan\Rules\RuleError;
+use PHPStan\Rules\RuleErrorBuilder;
 
 class MigrationEnumRule implements Rule
 {
@@ -21,9 +21,8 @@ class MigrationEnumRule implements Rule
         $errors = [];
 
         if ($node->name instanceof Node\Identifier && $node->name->toString() === 'enum') {
-            $errors[] = RuleError::create(
-                'Do not use $table->enum() in migrations. Use string + CHECK constraint pattern instead.'
-            );
+            $errors[] = RuleErrorBuilder::message('Do not use $table->enum() in migrations. Use string + CHECK constraint pattern instead.')
+                ->build();
         }
 
         return $errors;

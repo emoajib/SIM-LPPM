@@ -5,7 +5,7 @@ namespace App\PHPStan\Rules;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
-use PHPStan\Rules\RuleError;
+use PHPStan\Rules\RuleErrorBuilder;
 
 class MigrationDriverBranchRule implements Rule
 {
@@ -27,9 +27,8 @@ class MigrationDriverBranchRule implements Rule
                 $propertyName = $propertyFetch->name->toString();
 
                 if ($propertyName === 'driver') {
-                    $errors[] = RuleError::create(
-                        "Do not use driver-specific branches (if (\$driver === 'pgsql')). Use portable migration patterns."
-                    );
+                    $errors[] = RuleErrorBuilder::message("Do not use driver-specific branches (if (\$driver === 'pgsql')). Use portable migration patterns.")
+                        ->build();
                 }
             }
         }
