@@ -387,6 +387,12 @@ class CheckSchemaDrift extends Command
                 "SELECT constraint_name FROM information_schema.table_constraints WHERE table_schema = 'public' AND table_name = ? AND constraint_type = 'CHECK'",
                 [$table]
             );
+            $constraintNames = array_column($constraints, 'constraint_name');
+            $constraintNames = array_filter($constraintNames, function ($name) {
+                return ! preg_match('/^\d+_\d+_\d+_not_null$/', $name);
+            });
+
+            return array_values($constraintNames);
         } elseif ($dbDriver === 'sqlite') {
             $constraints = collect(DB::connection($connection)->select("SELECT name FROM sqlite_master WHERE type = 'table' AND tbl_name = ? AND sql LIKE '%CHECK%'", [$table]))
                 ->map(fn ($constraint) => $constraint->name)
