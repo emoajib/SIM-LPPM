@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('budget_items', function (Blueprint $table) {
-            $table->unsignedTinyInteger('year')->default(1)->after('proposal_id')->comment('Tahun ke-n dari proposal');
+            $table->smallInteger('year')->unsigned()->default(1)->after('proposal_id')->comment('Tahun ke-n dari proposal');
         });
     }
 

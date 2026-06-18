@@ -21,8 +21,8 @@ return new class extends Migration
             $table->text('vision')->nullable();
             $table->json('research_tree')->nullable();
             $table->text('cpl_alignment')->nullable();
-            $table->tinyInteger('tkt_target_min')->default(1);
-            $table->tinyInteger('tkt_target_max')->default(9);
+            $table->smallInteger('tkt_target_min')->default(1);
+            $table->smallInteger('tkt_target_max')->default(9);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libzip-dev \
     libicu-dev \
+    libpq-dev \
     unzip \
     git \
     && rm -rf /var/lib/apt/lists/*
@@ -24,6 +25,7 @@ RUN apt-get update && apt-get install -y \
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
     pdo_mysql \
+    pdo_pgsql \
     bcmath \
     gd \
     zip \

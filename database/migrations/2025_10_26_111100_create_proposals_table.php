@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\ProposalStatus;
+use Database\Helpers\MigrationHelpers;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -29,9 +30,17 @@ return new class extends Migration
             $table->decimal('sbk_value', 15, 2)->nullable()->comment('Nilai SBK');
             $table->integer('duration_in_years')->default(1)->comment('Lama Kegiatan (tahun)');
             $table->text('summary')->nullable()->comment('Ringkasan');
-            $table->enum('status', ProposalStatus::values())->default(ProposalStatus::DRAFT)->comment('Status Proposal');
+            $table->string('status', 50)->default(ProposalStatus::DRAFT->value)->comment('Status Proposal');
             $table->timestamps();
         });
+
+        // Add CHECK constraint for status enum
+        MigrationHelpers::addCheckConstraint(
+            'proposals',
+            'status',
+            ProposalStatus::values(),
+            MigrationHelpers::generateConstraintName('proposals', 'status')
+        );
     }
 
     /**

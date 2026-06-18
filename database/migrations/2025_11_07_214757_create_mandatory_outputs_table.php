@@ -1,5 +1,8 @@
 <?php
 
+use App\Enums\AuthorStatus;
+use App\Enums\OutputStatusType;
+use Database\Helpers\MigrationHelpers;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,8 +20,8 @@ return new class extends Migration
             $table->foreignId('proposal_output_id')->comment('Link to planned output')->constrained('proposal_outputs')->onDelete('cascade');
 
             // Status & Author Information
-            $table->enum('status_type', ['published', 'accepted', 'under_review', 'rejected'])->comment('Publication status');
-            $table->enum('author_status', ['first_author', 'co_author', 'corresponding_author'])->comment('Author role');
+            $table->string('status_type', 50)->comment('Publication status');
+            $table->string('author_status', 50)->comment('Author role');
 
             // Journal Information
             $table->string('journal_title')->comment('Nama jurnal');
@@ -43,6 +46,21 @@ return new class extends Migration
             $table->index('progress_report_id');
             $table->index('proposal_output_id');
         });
+
+        // Add CHECK constraints for enum columns
+        MigrationHelpers::addCheckConstraintToTable(
+            'mandatory_outputs',
+            'status_type',
+            OutputStatusType::values(),
+            MigrationHelpers::generateConstraintName('mandatory_outputs', 'status_type')
+        );
+        
+        MigrationHelpers::addCheckConstraintToTable(
+            'mandatory_outputs',
+            'author_status',
+            AuthorStatus::values(),
+            MigrationHelpers::generateConstraintName('mandatory_outputs', 'author_status')
+        );
     }
 
     /**

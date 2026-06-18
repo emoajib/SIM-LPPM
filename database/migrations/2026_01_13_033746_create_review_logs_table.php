@@ -25,7 +25,7 @@ return new class extends Migration
                 ->comment('Reviewer user')
                 ->constrained('users')
                 ->onDelete('cascade');
-            $table->unsignedInteger('round')
+            $table->integer('round')->unsigned()
                 ->default(1)
                 ->comment('Review round/cycle number');
             $table->text('review_notes')

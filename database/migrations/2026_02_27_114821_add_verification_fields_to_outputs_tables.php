@@ -19,7 +19,8 @@ return new class extends Migration
                 $table->timestamp('verified_at')->nullable()->after('is_verified');
             }
             if (! Schema::hasColumn('additional_outputs', 'verified_by')) {
-                $table->char('verified_by', 36)->nullable()->after('verified_at');
+                // Use uuid type for PostgreSQL compatibility with users.id
+                $table->uuid('verified_by')->nullable()->after('verified_at');
                 $table->foreign('verified_by')->references('id')->on('users')->onDelete('set null');
             }
         });

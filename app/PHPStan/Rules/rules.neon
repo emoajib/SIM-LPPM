@@ -1,0 +1,17 @@
+services:
+    -
+        class: App\PHPStan\Rules\MigrationEnumRule
+        tags:
+            - phpstan.rules.rule
+    -
+        class: App\PHPStan\Rules\MigrationChangeMethodRule
+        tags:
+            - phpstan.rules.rule
+    -
+        class: App\PHPStan\Rules\MigrationRawStatementRule
+        tags:
+            - phpstan.rules.rule
+    -
+        class: App\PHPStan\Rules\MigrationDriverBranchRule
+        tags:
+            - phpstan.rules.rule

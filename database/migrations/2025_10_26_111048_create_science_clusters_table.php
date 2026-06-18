@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('science_clusters', function (Blueprint $table) {
             $table->id();
             $table->foreignId('parent_id')->nullable()->comment('Parent Rumpun Ilmu (Self-reference)')->constrained('science_clusters')->onDelete('cascade');
-            $table->tinyInteger('level')->comment('Level 1, 2, or 3');
+            $table->smallInteger('level')->comment('Level 1, 2, or 3');
             $table->string('name')->comment('Nama Rumpun Ilmu');
             $table->timestamps();
         });

@@ -1,5 +1,6 @@
 includes:
     - vendor/larastan/larastan/extension.neon
+    - app/PHPStan/Rules/rules.neon
 
 parameters:
     tmpDir: storage/framework/cache/phpstan

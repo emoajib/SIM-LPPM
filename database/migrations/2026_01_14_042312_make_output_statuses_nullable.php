@@ -15,7 +15,8 @@ return new class extends Migration
         // Using raw SQL to ensure the column type and nullability are correctly updated
         // as Doctrine DBAL often struggles with modifying ENUMs to Strings or changing nullability of ENUMs.
 
-        if (DB::getDriverName() === 'sqlite') {
+        $driver = DB::getDriverName();
+        if ($driver === 'sqlite') {
             Schema::table('mandatory_outputs', function (Blueprint $table) {
                 $table->string('status_type')->nullable()->change();
                 $table->string('author_status')->nullable()->change();
@@ -24,11 +25,14 @@ return new class extends Migration
             Schema::table('additional_outputs', function (Blueprint $table) {
                 $table->string('status')->nullable()->change();
             });
-        } else {
+        } elseif ($driver === 'mysql') {
             DB::statement('ALTER TABLE mandatory_outputs MODIFY COLUMN status_type VARCHAR(255) NULL');
             DB::statement('ALTER TABLE mandatory_outputs MODIFY COLUMN author_status VARCHAR(255) NULL');
 
             DB::statement('ALTER TABLE additional_outputs MODIFY COLUMN status VARCHAR(255) NULL');
+        } elseif ($driver === 'pgsql') {
+            // PostgreSQL: column already handles nullability via base migration CHECK constraint
+            // No action needed - the CHECK constraint in base migration already allows NULL
         }
     }
 

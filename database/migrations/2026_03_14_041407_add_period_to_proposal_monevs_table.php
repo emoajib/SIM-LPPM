@@ -39,11 +39,17 @@ return new class extends Migration
         ");
 
         // 3. Set columns to NOT NULL after data is populated
-        if (DB::getDriverName() !== 'sqlite') {
-            Schema::table('proposal_monevs', function (Blueprint $table) {
-                $table->string('academic_year')->nullable(false)->change();
-                $table->enum('semester', ['ganjil', 'genap'])->nullable(false)->change();
-            });
+        $driver = DB::getDriverName();
+        if ($driver !== 'sqlite') {
+            if ($driver === 'mysql') {
+                Schema::table('proposal_monevs', function (Blueprint $table) {
+                    $table->string('academic_year')->nullable(false)->change();
+                    $table->enum('semester', ['ganjil', 'genap'])->nullable(false)->change();
+                });
+            } elseif ($driver === 'pgsql') {
+                // PostgreSQL: column already handles NOT NULL via base migration CHECK constraint
+                // No action needed - the CHECK constraint in base migration already enforces NOT NULL
+            }
         }
     }
 

@@ -19,7 +19,7 @@ return new class extends Migration
 
         Schema::table('proposal_reviewer', function (Blueprint $table) {
             // Add round tracking for revision cycles
-            $table->unsignedInteger('round')->default(1)->after('recommendation')
+            $table->integer('round')->unsigned()->default(1)->after('recommendation')
                 ->comment('Review round/cycle number');
 
             // Add timestamp tracking
@@ -39,8 +39,19 @@ return new class extends Migration
 
         // Update status enum to include new statuses
         // Note: MySQL/MariaDB requires dropping and recreating the column for enum changes
-        if (DB::getDriverName() !== 'sqlite') {
+        // PostgreSQL & SQLite use CHECK constraints - update them
+        $driver = DB::getDriverName();
+        if ($driver === 'mysql') {
             DB::statement("ALTER TABLE proposal_reviewer MODIFY COLUMN status ENUM('pending', 'in_progress', 'completed', 're_review_requested') DEFAULT 'pending' COMMENT 'Status Review'");
+        } elseif ($driver === 'pgsql') {
+            // Drop old CHECK constraint, add new one
+            DB::statement('ALTER TABLE proposal_reviewer DROP CONSTRAINT IF EXISTS proposal_reviewer_status_check');
+            DB::statement("ALTER TABLE proposal_reviewer ADD CONSTRAINT proposal_reviewer_status_check CHECK (status IN ('pending', 'in_progress', 'completed', 're_review_requested'))");
+        } elseif ($driver === 'sqlite') {
+            // SQLite: recreate table via Blueprint (Laravel handles)
+            Schema::table('proposal_reviewer', function (Blueprint $table) {
+                $table->enum('status', ['pending', 'in_progress', 'completed', 're_review_requested'])->default('pending')->change();
+            });
         }
 
         // Set assigned_at to created_at for existing records
@@ -66,8 +77,18 @@ return new class extends Migration
             ->update(['status' => 'pending']);
 
         // Revert status enum
-        if (DB::getDriverName() !== 'sqlite') {
+        $driver = DB::getDriverName();
+        if ($driver === 'mysql') {
             DB::statement("ALTER TABLE proposal_reviewer MODIFY COLUMN status ENUM('pending', 'reviewing', 'completed') DEFAULT 'pending' COMMENT 'Status Review'");
+        } elseif ($driver === 'pgsql') {
+            // Drop old CHECK constraint, add new one
+            DB::statement('ALTER TABLE proposal_reviewer DROP CONSTRAINT IF EXISTS proposal_reviewer_status_check');
+            DB::statement("ALTER TABLE proposal_reviewer ADD CONSTRAINT proposal_reviewer_status_check CHECK (status IN ('pending', 'reviewing', 'completed'))");
+        } elseif ($driver === 'sqlite') {
+            // SQLite: recreate table via Blueprint (Laravel handles)
+            Schema::table('proposal_reviewer', function (Blueprint $table) {
+                $table->enum('status', ['pending', 'reviewing', 'completed'])->default('pending')->change();
+            });
         }
 
         Schema::table('proposal_reviewer', function (Blueprint $table) {
