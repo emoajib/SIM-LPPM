@@ -58,8 +58,9 @@ class MigrationHelpers
         string $constraintName
     ): void {
         $allowedValuesString = "'".implode("', '", $allowedValues)."'";
-        $sql = "{$column} IN ({$allowedValuesString})";
         $driver = DB::getDriverName();
+        $quotedColumn = $driver === 'mysql' ? "`{$column}`" : "\"{$column}\"";
+        $sql = "{$quotedColumn} IN ({$allowedValuesString})";
 
         if ($driver === 'sqlite') {
             // SQLite does not support ALTER TABLE ADD CONSTRAINT for CHECK.
@@ -139,26 +140,27 @@ class MigrationHelpers
         if ($dbDriver === 'pgsql') {
             // PostgreSQL: Drop constraint, update data, add constraint
             $constraintName = static::generateConstraintName($table, $column);
+            $quotedColumn = "\"{$column}\"";
 
             DB::statement("ALTER TABLE {$table} DROP CONSTRAINT IF EXISTS {$constraintName}");
 
             // Update data
             if (! empty($valueMapping)) {
                 foreach ($valueMapping as $old => $new) {
-                    DB::statement("UPDATE {$table} SET {$column} = ? WHERE {$column} = ?", [$new, $old]);
+                    DB::statement("UPDATE {$table} SET {$quotedColumn} = ? WHERE {$quotedColumn} = ?", [$new, $old]);
                 }
             } else {
                 // Simple mapping if same order
                 if (count($oldValues) === count($newValues)) {
                     for ($i = 0; $i < count($oldValues); $i++) {
-                        DB::statement("UPDATE {$table} SET {$column} = ? WHERE {$column} = ?", [$newValues[$i], $oldValues[$i]]);
+                        DB::statement("UPDATE {$table} SET {$quotedColumn} = ? WHERE {$quotedColumn} = ?", [$newValues[$i], $oldValues[$i]]);
                     }
                 }
             }
 
             // Add new constraint
             $allowedValuesString = "'".implode("', '", $newValues)."'";
-            $sql = "{$column} IN ({$allowedValuesString})";
+            $sql = "{$quotedColumn} IN ({$allowedValuesString})";
             DB::statement("ALTER TABLE {$table} ADD CONSTRAINT {$constraintName} CHECK ({$sql})");
         } else {
             // MySQL and SQLite: Use ALTER TABLE MODIFY COLUMN
