@@ -88,7 +88,8 @@ class SyncEnums extends Command
                 }
 
                 $expectedValues = $this->getEnumValues($enumClass);
-                $expectedPattern = "/{$col} IN \('?".implode("', '?", $expectedValues)."'?\)/";
+                $quotedValues = array_map(fn ($v) => preg_quote($v, '/'), $expectedValues);
+                $expectedPattern = "/{$col} IN \('?".implode("', '?", $quotedValues)."'?\)/";
 
                 if (! preg_match($expectedPattern, $constraint->def)) {
                     $this->error("❌ CHECK constraint mismatch on {$table}.{$col}");
