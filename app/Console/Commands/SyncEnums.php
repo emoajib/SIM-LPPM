@@ -91,7 +91,7 @@ class SyncEnums extends Command
                 $quotedValues = array_map(fn ($v) => preg_quote($v, '/'), $expectedValues);
 
                 if ($dbDriver === 'pgsql') {
-                    $pattern = $col.".*= ANY.*ARRAY\\['".implode("'.*'", $quotedValues)."'";
+                    $pattern = $col.".*= ANY.*ARRAY\\[.*'".implode("'.*'", $quotedValues)."'";
                 } else {
                     $pattern = $col." IN \\('?".implode("', '?", $quotedValues)."'?\\)";
                 }
