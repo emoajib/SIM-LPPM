@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\SintaScoreSubmissionStatus;
+use Database\Helpers\MigrationHelpers;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -22,7 +24,7 @@ return new class extends Migration
             $table->integer('gs_h_index')->nullable();
             $table->integer('wos_h_index')->nullable();
 
-            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->string('status', 50)->default('pending');
             $table->foreignUuid('verified_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamp('verified_at')->nullable();
             $table->text('verification_notes')->nullable();
@@ -31,6 +33,14 @@ return new class extends Migration
 
             $table->timestamps();
         });
+
+        // Add CHECK constraint for enum column
+        MigrationHelpers::addCheckConstraintToTable(
+            'sinta_score_submissions',
+            'status',
+            SintaScoreSubmissionStatus::values(),
+            MigrationHelpers::generateConstraintName('sinta_score_submissions', 'status')
+        );
     }
 
     /**

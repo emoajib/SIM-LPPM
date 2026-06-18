@@ -1,5 +1,8 @@
 <?php
 
+use App\Enums\PolicyInvolvementLevel;
+use App\Enums\PolicyInvolvementStatus;
+use Database\Helpers\MigrationHelpers;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,15 +19,30 @@ return new class extends Migration
             $table->foreignUuid('user_id')->constrained('users')->onDelete('cascade');
             $table->string('title');
             $table->string('organization');
-            $table->enum('level', ['Internasional', 'Nasional', 'Regional/Institusi'])->default('Nasional');
+            $table->string('level', 50)->default('Nasional');
             $table->string('role')->nullable();
             $table->date('date');
-            $table->enum('status', ['pending', 'verified', 'rejected'])->default('pending');
+            $table->string('status', 50)->default('pending');
             $table->text('description')->nullable();
             $table->timestamp('verified_at')->nullable();
             $table->foreignUuid('verified_by')->nullable()->constrained('users');
             $table->timestamps();
         });
+
+        // Add CHECK constraints for enum columns
+        MigrationHelpers::addCheckConstraintToTable(
+            'policy_involvements',
+            'level',
+            PolicyInvolvementLevel::values(),
+            MigrationHelpers::generateConstraintName('policy_involvements', 'level')
+        );
+
+        MigrationHelpers::addCheckConstraintToTable(
+            'policy_involvements',
+            'status',
+            PolicyInvolvementStatus::values(),
+            MigrationHelpers::generateConstraintName('policy_involvements', 'status')
+        );
     }
 
     /**

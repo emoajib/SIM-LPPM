@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\ReviewRecommendation;
+use Database\Helpers\MigrationHelpers;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -31,7 +33,7 @@ return new class extends Migration
             $table->text('review_notes')
                 ->nullable()
                 ->comment('Reviewer feedback and comments');
-            $table->enum('recommendation', ['approved', 'rejected', 'revision_needed'])
+            $table->string('recommendation', 50)
                 ->nullable()
                 ->comment('Reviewer recommendation');
             $table->timestamp('started_at')
@@ -47,6 +49,14 @@ return new class extends Migration
             $table->index(['user_id', 'round']);
             $table->index(['proposal_reviewer_id', 'round']);
         });
+
+        // Add CHECK constraint for enum column (nullable)
+        MigrationHelpers::addCheckConstraintToTable(
+            'review_logs',
+            'recommendation',
+            ReviewRecommendation::values(),
+            MigrationHelpers::generateConstraintName('review_logs', 'recommendation')
+        );
     }
 
     /**

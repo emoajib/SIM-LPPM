@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\AdditionalOutputStatusType;
+use Database\Helpers\MigrationHelpers;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,7 +19,7 @@ return new class extends Migration
             $table->foreignId('proposal_output_id')->comment('Link to planned output')->constrained('proposal_outputs')->onDelete('cascade');
 
             // Status & Book Information
-            $table->enum('status', ['review', 'editing', 'published'])->comment('Status buku');
+            $table->string('status', 50)->default('draft')->comment('Status buku');
             $table->string('book_title')->comment('Judul buku');
             $table->string('publisher_name')->comment('Nama penerbit');
             $table->string('isbn', 30)->nullable()->comment('ISBN');
@@ -35,6 +37,14 @@ return new class extends Migration
             $table->index('progress_report_id');
             $table->index('proposal_output_id');
         });
+
+        // Add CHECK constraint for enum column (using expanded enum values)
+        MigrationHelpers::addCheckConstraintToTable(
+            'additional_outputs',
+            'status',
+            AdditionalOutputStatusType::values(),
+            MigrationHelpers::generateConstraintName('additional_outputs', 'status')
+        );
     }
 
     /**

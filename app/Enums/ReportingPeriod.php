@@ -2,11 +2,12 @@
 
 namespace App\Enums;
 
-enum PolicyInvolvementLevel: string
+enum ReportingPeriod: string
 {
-    case INTERNASIONAL = 'Internasional';
-    case NASIONAL = 'Nasional';
-    case REGIONAL_INSTITUSI = 'Regional/Institusi';
+    case SEMESTER_1 = 'semester_1';
+    case SEMESTER_2 = 'semester_2';
+    case ANNUAL = 'annual';
+    case FINAL = 'final';
 
     /**
      * Get label in Indonesian
@@ -14,9 +15,10 @@ enum PolicyInvolvementLevel: string
     public function label(): string
     {
         return match ($this) {
-            self::INTERNASIONAL => 'Internasional',
-            self::NASIONAL => 'Nasional',
-            self::REGIONAL_INSTITUSI => 'Regional/Institusi',
+            self::SEMESTER_1 => 'Semester 1',
+            self::SEMESTER_2 => 'Semester 2',
+            self::ANNUAL => 'Tahunan',
+            self::FINAL => 'Akhir',
         };
     }
 

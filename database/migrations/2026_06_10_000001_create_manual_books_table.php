@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\ManualBookStatus;
+use Database\Helpers\MigrationHelpers;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,12 +15,20 @@ return new class extends Migration
             $table->string('title', 255);
             $table->text('description')->nullable();
             $table->string('version_number', 20)->default('1.0');
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->string('status', 50)->default('active');
             $table->json('assigned_roles');
             $table->foreignUuid('created_by')->constrained('users');
             $table->softDeletes();
             $table->timestamps();
         });
+
+        // Add CHECK constraint for enum column
+        MigrationHelpers::addCheckConstraintToTable(
+            'manual_books',
+            'status',
+            ManualBookStatus::values(),
+            MigrationHelpers::generateConstraintName('manual_books', 'status')
+        );
     }
 
     public function down(): void

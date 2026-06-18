@@ -40,4 +40,14 @@ enum AdditionalOutputStatusType: string
             self::REJECTED => 'danger',
         };
     }
+
+    /**
+     * Get all enum values as an array
+     *
+     * @return array<int, string>
+     */
+    public static function values(): array
+    {
+        return array_map(fn ($case) => $case->value, self::cases());
+    }
 }

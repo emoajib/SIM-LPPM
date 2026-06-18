@@ -2,11 +2,10 @@
 
 namespace App\Enums;
 
-enum PolicyInvolvementLevel: string
+enum IdentityType: string
 {
-    case INTERNASIONAL = 'Internasional';
-    case NASIONAL = 'Nasional';
-    case REGIONAL_INSTITUSI = 'Regional/Institusi';
+    case DOSEN = 'dosen';
+    case MAHASISWA = 'mahasiswa';
 
     /**
      * Get label in Indonesian
@@ -14,9 +13,8 @@ enum PolicyInvolvementLevel: string
     public function label(): string
     {
         return match ($this) {
-            self::INTERNASIONAL => 'Internasional',
-            self::NASIONAL => 'Nasional',
-            self::REGIONAL_INSTITUSI => 'Regional/Institusi',
+            self::DOSEN => 'Dosen',
+            self::MAHASISWA => 'Mahasiswa',
         };
     }
 

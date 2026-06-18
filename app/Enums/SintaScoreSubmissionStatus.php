@@ -2,11 +2,11 @@
 
 namespace App\Enums;
 
-enum PolicyInvolvementLevel: string
+enum SintaScoreSubmissionStatus: string
 {
-    case INTERNASIONAL = 'Internasional';
-    case NASIONAL = 'Nasional';
-    case REGIONAL_INSTITUSI = 'Regional/Institusi';
+    case PENDING = 'pending';
+    case APPROVED = 'approved';
+    case REJECTED = 'rejected';
 
     /**
      * Get label in Indonesian
@@ -14,9 +14,9 @@ enum PolicyInvolvementLevel: string
     public function label(): string
     {
         return match ($this) {
-            self::INTERNASIONAL => 'Internasional',
-            self::NASIONAL => 'Nasional',
-            self::REGIONAL_INSTITUSI => 'Regional/Institusi',
+            self::PENDING => 'Menunggu',
+            self::APPROVED => 'Disetujui',
+            self::REJECTED => 'Ditolak',
         };
     }
 

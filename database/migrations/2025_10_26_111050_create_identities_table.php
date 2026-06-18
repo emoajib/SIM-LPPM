@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\IdentityType;
+use Database\Helpers\MigrationHelpers;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +15,7 @@ return new class extends Migration
             $table->string('identity_id')->unique()->comment('NIDN / NIM');
             $table->foreignUuid('user_id')->comment('User')->constrained('users')->onDelete('cascade');
             $table->string('sinta_id')->nullable()->comment('ID SINTA');
-            $table->enum('type', ['dosen', 'mahasiswa'])->comment('Tipe User');
+            $table->string('type', 50)->comment('Tipe User');
             $table->string('address')->nullable()->comment('Alamat');
             $table->date('birthdate')->nullable()->comment('Tanggal Lahir');
             $table->string('birthplace')->nullable()->comment('Tempat Lahir');
@@ -23,6 +25,14 @@ return new class extends Migration
             $table->foreignId('faculty_id')->nullable()->comment('Fakultas')->constrained('faculties')->onDelete('set null');
             $table->timestamps();
         });
+
+        // Add CHECK constraint for enum column
+        MigrationHelpers::addCheckConstraintToTable(
+            'identities',
+            'type',
+            IdentityType::values(),
+            MigrationHelpers::generateConstraintName('identities', 'type')
+        );
     }
 
     public function down(): void

@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\ProposalStatus;
+use Database\Helpers\MigrationHelpers;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,8 +17,8 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('proposal_id');
             $table->uuid('user_id');
-            $table->enum('status_before', ProposalStatus::values());
-            $table->enum('status_after', ProposalStatus::values());
+            $table->string('status_before', 50);
+            $table->string('status_after', 50);
             $table->text('body')->nullable();
             $table->text('notes')->nullable();
             $table->timestamp('at');
@@ -36,6 +37,21 @@ return new class extends Migration
             $table->index(['proposal_id', 'user_id']);
             $table->index('at');
         });
+
+        // Add CHECK constraints for enum columns
+        MigrationHelpers::addCheckConstraintToTable(
+            'proposal_status_logs',
+            'status_before',
+            ProposalStatus::values(),
+            MigrationHelpers::generateConstraintName('proposal_status_logs', 'status_before')
+        );
+
+        MigrationHelpers::addCheckConstraintToTable(
+            'proposal_status_logs',
+            'status_after',
+            ProposalStatus::values(),
+            MigrationHelpers::generateConstraintName('proposal_status_logs', 'status_after')
+        );
     }
 
     /**

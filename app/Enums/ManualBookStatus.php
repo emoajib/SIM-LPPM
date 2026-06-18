@@ -17,4 +17,14 @@ enum ManualBookStatus: string
             self::INACTIVE => 'Tidak Aktif',
         };
     }
+
+    /**
+     * Get all enum values as an array
+     *
+     * @return array<int, string>
+     */
+    public static function values(): array
+    {
+        return array_map(fn ($case) => $case->value, self::cases());
+    }
 }
