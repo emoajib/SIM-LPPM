@@ -5,6 +5,7 @@ namespace App\Services;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
+use Illuminate\Support\Facades\Schema;
 
 class DatabaseRestoreService
 {
@@ -154,15 +155,15 @@ class DatabaseRestoreService
         $inserted = 0;
         $errors = [];
 
+        // Jalankan penonaktifan foreign key sebelum transaksi dimulai
+        Schema::disableForeignKeyConstraints();
+
         DB::beginTransaction();
 
         try {
             if (DB::getDriverName() === 'mysql') {
-                DB::statement('SET FOREIGN_KEY_CHECKS = 0');
                 DB::statement('SET UNIQUE_CHECKS = 0');
                 DB::statement('SET SQL_MODE = ""');
-            } elseif (DB::getDriverName() === 'pgsql') {
-                DB::statement('SET CONSTRAINTS ALL DEFERRED');
             }
 
             foreach ($statements as $stmt) {
@@ -175,20 +176,23 @@ class DatabaseRestoreService
                         'error' => $e->getMessage(),
                     ];
 
-                    if (count($errors) > 50) {
+                    Log::error('SQL Error during statement restore', [
+                        'stmt' => mb_substr($stmt, 0, 250),
+                        'msg' => $e->getMessage(),
+                    ]);
+
+                    if (count($errors) > 500) {
                         throw new \RuntimeException('Terlalu banyak error. Rollback.');
                     }
                 }
             }
 
             if (DB::getDriverName() === 'mysql') {
-                DB::statement('SET FOREIGN_KEY_CHECKS = 1');
                 DB::statement('SET UNIQUE_CHECKS = 1');
-            } elseif (DB::getDriverName() === 'pgsql') {
-                DB::statement('SET CONSTRAINTS ALL IMMEDIATE');
             }
 
             DB::commit();
+            Schema::enableForeignKeyConstraints();
 
             $message = count($errors) === 0
                 ? "✅ Restore berhasil! {$inserted} baris data dipulihkan."
@@ -210,11 +214,10 @@ class DatabaseRestoreService
             ];
         } catch (\Throwable $e) {
             DB::rollBack();
+            Schema::enableForeignKeyConstraints();
+
             if (DB::getDriverName() === 'mysql') {
-                DB::statement('SET FOREIGN_KEY_CHECKS = 1');
                 DB::statement('SET UNIQUE_CHECKS = 1');
-            } elseif (DB::getDriverName() === 'pgsql') {
-                DB::statement('SET CONSTRAINTS ALL IMMEDIATE');
             }
 
             Log::error('Database restore failed', [
@@ -264,22 +267,37 @@ class DatabaseRestoreService
             }
         }
 
+        // Jalankan penonaktifan foreign key sebelum transaksi dimulai
+        Schema::disableForeignKeyConstraints();
+
         DB::beginTransaction();
 
         try {
-            \Schema::disableForeignKeyConstraints();
-
             if (DB::getDriverName() === 'mysql') {
                 DB::statement('SET UNIQUE_CHECKS = 0');
                 DB::statement('SET SQL_MODE = ""');
-            } elseif (DB::getDriverName() === 'pgsql') {
-                DB::statement('SET CONSTRAINTS ALL DEFERRED');
             }
 
-            foreach ($tablesToDelete as $table) {
-                $count = DB::table($table)->count();
-                DB::table($table)->delete();
-                $deleted += $count;
+            if (DB::getDriverName() === 'pgsql') {
+                // Untuk PostgreSQL, kumpulkan semua tabel yang akan dihapus dan gunakan TRUNCATE ... CASCADE dalam satu perintah tunggal
+                if (! empty($tablesToDelete)) {
+                    $quotedTables = array_map(fn ($t) => '"'.$t.'"', $tablesToDelete);
+                    $tableList = implode(', ', $quotedTables);
+
+                    // Hitung estimasi baris sebelum dikosongkan untuk log statistik pencatatan data terhapus
+                    foreach ($tablesToDelete as $table) {
+                        $deleted += DB::table($table)->count();
+                    }
+
+                    DB::statement("TRUNCATE TABLE {$tableList} CASCADE");
+                }
+            } else {
+                // Driver non-Postgres (MySQL/SQLite) tetap menggunakan loop delete standar
+                foreach ($tablesToDelete as $table) {
+                    $count = DB::table($table)->count();
+                    DB::table($table)->delete();
+                    $deleted += $count;
+                }
             }
 
             foreach ($statements as $stmt) {
@@ -296,7 +314,12 @@ class DatabaseRestoreService
                         'error' => $e->getMessage(),
                     ];
 
-                    if (count($errors) > 50) {
+                    Log::error('SQL Error during statement restore', [
+                        'stmt' => mb_substr($stmt, 0, 250),
+                        'msg' => $e->getMessage(),
+                    ]);
+
+                    if (count($errors) > 500) {
                         throw new \RuntimeException('Terlalu banyak error. Rollback.');
                     }
                 }
@@ -304,13 +327,10 @@ class DatabaseRestoreService
 
             if (DB::getDriverName() === 'mysql') {
                 DB::statement('SET UNIQUE_CHECKS = 1');
-            } elseif (DB::getDriverName() === 'pgsql') {
-                DB::statement('SET CONSTRAINTS ALL IMMEDIATE');
             }
 
-            \Schema::enableForeignKeyConstraints();
-
             DB::commit();
+            Schema::enableForeignKeyConstraints();
 
             $skippedPreserved = 0;
             foreach ($preview['tables'] as $table => $count) {
@@ -347,11 +367,10 @@ class DatabaseRestoreService
             ];
         } catch (\Throwable $e) {
             DB::rollBack();
+            Schema::enableForeignKeyConstraints();
+
             if (DB::getDriverName() === 'mysql') {
-                DB::statement('SET FOREIGN_KEY_CHECKS = 1');
                 DB::statement('SET UNIQUE_CHECKS = 1');
-            } elseif (DB::getDriverName() === 'pgsql') {
-                DB::statement('SET CONSTRAINTS ALL IMMEDIATE');
             }
 
             Log::error('Database restore-with-replace failed', [

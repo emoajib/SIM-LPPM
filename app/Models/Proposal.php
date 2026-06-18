@@ -443,7 +443,10 @@ class Proposal extends Model
 
     public function latestKaprodiApproval(): HasOne
     {
-        return $this->hasOne(KaprodiApproval::class)->latestOfMany();
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // latestOfMany() defaults to MAX(id) which fails on UUID PKs in PostgreSQL.
+        // Using 'created_at' as the ordering column instead.
+        return $this->hasOne(KaprodiApproval::class)->latestOfMany('created_at');
     }
 
     public function hasApprovedKaprodi(): bool

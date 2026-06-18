@@ -81,7 +81,7 @@ it('counts draft proposals in member quota', function () {
     ]);
 
     $proposal1->teamMembers()->attach($user->id, [
-        'role' => 'Anggota',
+        'role' => 'anggota',
         'status' => 'accepted',
         'tasks' => 'Research assistant',
     ]);
@@ -95,7 +95,7 @@ it('counts draft proposals in member quota', function () {
     ]);
 
     $proposal2->teamMembers()->attach($user->id, [
-        'role' => 'Anggota',
+        'role' => 'anggota',
         'status' => 'accepted',
         'tasks' => 'Data analyst',
     ]);

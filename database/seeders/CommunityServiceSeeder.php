@@ -354,7 +354,7 @@ class CommunityServiceSeeder extends Seeder
             'progress_report_id' => $report->id,
             'proposal_output_id' => $mandatoryTarget->id,
             'status_type' => 'published',
-            'author_status' => 'author',
+            'author_status' => 'first_author',
             'video_url' => 'https://youtube.com/watch?v='.fake()->uuid,
             'platform' => 'YouTube',
             'publication_year' => date('Y'),

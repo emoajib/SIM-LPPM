@@ -430,6 +430,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('media/{media:uuid}/download', [MediaDownloadController::class, 'download'])
         ->middleware(['auth'])
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Constrain {media} to valid UUID format to prevent PostgreSQL from receiving
+        // invalid UUID strings which would throw SQLSTATE[22P02] instead of a 404.
+        ->where('media', '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}')
         ->name('media.download');
 
     Route::get('monev/{id}/ba-pdf', [ReportExportController::class, 'monevBaPdf'])
