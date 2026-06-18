@@ -3,7 +3,6 @@
 namespace App\PHPStan\Rules;
 
 use PhpParser\Node;
-use PHPParser\Node\Expr\BinaryOp\Identical;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleError;

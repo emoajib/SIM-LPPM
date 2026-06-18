@@ -28,7 +28,7 @@ class MigrationRawStatementRule implements Rule
 
                 if ($methodName === 'statement') {
                     $errors[] = RuleError::create(
-                        "Do not use raw DB::statement() for schema changes in migrations. Use Blueprint methods instead."
+                        'Do not use raw DB::statement() for schema changes in migrations. Use Blueprint methods instead.'
                     );
                 }
             }

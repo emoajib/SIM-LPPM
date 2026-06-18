@@ -2,12 +2,26 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\AdditionalOutputStatus;
+use App\Enums\AuthorStatus;
+use App\Enums\IdentityType;
+use App\Enums\InstitutionalReportStatus;
+use App\Enums\KaprodiStatus;
+use App\Enums\OutputStatusType;
+use App\Enums\ProposalStatus;
+use App\Enums\ReportingPeriod;
+use App\Enums\ReportStatus;
+use App\Enums\ReviewRecommendation;
+use App\Enums\ReviewStatus;
+use App\Enums\SignatureMode;
+use App\Enums\TeamSource;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
 class CheckSchemaDrift extends Command
 {
     protected $signature = 'schema:drift {--database= : Database connection to use}';
+
     protected $description = 'Check for schema drift between migrations and database';
 
     public function handle(): int
@@ -27,10 +41,12 @@ class CheckSchemaDrift extends Command
 
         if ($hasDrift) {
             $this->error('Schema drift detected!');
+
             return 1;
         }
 
         $this->info('✅ No schema drift detected');
+
         return 0;
     }
 
@@ -42,11 +58,12 @@ class CheckSchemaDrift extends Command
 
         $missingTables = array_diff($tablesInMigrations, $tablesInDatabase);
 
-        if (!empty($missingTables)) {
+        if (! empty($missingTables)) {
             $this->error('Missing tables in database:');
             foreach ($missingTables as $table) {
                 $this->line("  - {$table}");
             }
+
             return true;
         }
 
@@ -60,11 +77,12 @@ class CheckSchemaDrift extends Command
 
         $extraTables = array_diff($tablesInDatabase, $tablesInMigrations);
 
-        if (!empty($extraTables)) {
+        if (! empty($extraTables)) {
             $this->error('Extra tables in database (not in migrations):');
             foreach ($extraTables as $table) {
                 $this->line("  - {$table}");
             }
+
             return true;
         }
 
@@ -82,7 +100,7 @@ class CheckSchemaDrift extends Command
 
             $missingColumns = array_diff($columnsInMigrations, $columnsInDatabase);
 
-            if (!empty($missingColumns)) {
+            if (! empty($missingColumns)) {
                 $this->error("Missing columns in table '{$table}':");
                 foreach ($missingColumns as $column) {
                     $this->line("  - {$column}");
@@ -105,7 +123,7 @@ class CheckSchemaDrift extends Command
 
             $extraColumns = array_diff($columnsInDatabase, $columnsInMigrations);
 
-            if (!empty($extraColumns)) {
+            if (! empty($extraColumns)) {
                 $this->error("Extra columns in table '{$table}':");
                 foreach ($extraColumns as $column) {
                     $this->line("  - {$column}");
@@ -128,7 +146,7 @@ class CheckSchemaDrift extends Command
 
             $missingConstraints = array_diff($constraintsInMigrations, $constraintsInDatabase);
 
-            if (!empty($missingConstraints)) {
+            if (! empty($missingConstraints)) {
                 $this->error("Missing constraints in table '{$table}':");
                 foreach ($missingConstraints as $constraint) {
                     $this->line("  - {$constraint}");
@@ -151,7 +169,7 @@ class CheckSchemaDrift extends Command
 
             $extraConstraints = array_diff($constraintsInDatabase, $constraintsInMigrations);
 
-            if (!empty($extraConstraints)) {
+            if (! empty($extraConstraints)) {
                 $this->error("Extra constraints in table '{$table}':");
                 foreach ($extraConstraints as $constraint) {
                     $this->line("  - {$constraint}");
@@ -196,23 +214,24 @@ class CheckSchemaDrift extends Command
                     }
                 }
 
-                if (!$constraint) {
+                if (! $constraint) {
                     $this->error("Missing CHECK constraint: {$constraintName} on {$table}.{$col}");
                     $hasDrift = true;
+
                     continue;
                 }
 
                 $expectedValues = $this->getEnumValues($enumClass);
-                $expectedPattern = "/{$col} IN \('?" . implode("', '?", $expectedValues) . "'?\)/";
+                $expectedPattern = "/{$col} IN \('?".implode("', '?", $expectedValues)."'?\)/";
 
-                if (!preg_match($expectedPattern, $constraint->def)) {
+                if (! preg_match($expectedPattern, $constraint->def)) {
                     $this->error("CHECK constraint mismatch on {$table}.{$col}");
-                    $this->line("  Expected pattern: " . $expectedPattern);
-                    $this->line("  Found: " . $constraint->def);
+                    $this->line('  Expected pattern: '.$expectedPattern);
+                    $this->line('  Found: '.$constraint->def);
                     $hasDrift = true;
                 }
             } catch (\Exception $e) {
-                $this->error("Error checking enum constraint for {$table}.{$col}: " . $e->getMessage());
+                $this->error("Error checking enum constraint for {$table}.{$col}: ".$e->getMessage());
                 $hasDrift = true;
             }
         }
@@ -275,7 +294,7 @@ class CheckSchemaDrift extends Command
         } elseif ($dbDriver === 'sqlite') {
             $tables = collect(DB::connection($connection)->select("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'"))
                 ->filter(function ($table) {
-                    return !in_array($table->name, ['schema_migrations', 'migrations']);
+                    return ! in_array($table->name, ['schema_migrations', 'migrations']);
                 })
                 ->values()
                 ->toArray();
@@ -318,7 +337,7 @@ class CheckSchemaDrift extends Command
             );
         } elseif ($dbDriver === 'sqlite') {
             $columns = collect(DB::connection($connection)->select("PRAGMA table_info({$table})"))
-                ->map(fn($column) => $column->name)
+                ->map(fn ($column) => $column->name)
                 ->values()
                 ->toArray();
         } else {
@@ -342,7 +361,7 @@ class CheckSchemaDrift extends Command
 
                 if (preg_match_all('/\$table->check\\(\\s*[\'"]([^\'"\\s]+)[\'"]\\s*,\\s*[\'"]([^\'"\\s]+)[\'"]\\s*\\)/', $tableContent, $constraintMatches)) {
                     $constraints = array_merge($constraints, [
-                        "{$constraintMatches[2][0]} on {$table}"
+                        "{$constraintMatches[2][0]} on {$table}",
                     ]);
                 }
             }
@@ -362,7 +381,7 @@ class CheckSchemaDrift extends Command
             );
         } elseif ($dbDriver === 'sqlite') {
             $constraints = collect(DB::connection($connection)->select("SELECT name FROM sqlite_master WHERE type = 'table' AND tbl_name = ? AND sql LIKE '%CHECK%'", [$table]))
-                ->map(fn($constraint) => $constraint->name)
+                ->map(fn ($constraint) => $constraint->name)
                 ->values()
                 ->toArray();
         } else {
@@ -375,33 +394,33 @@ class CheckSchemaDrift extends Command
     private function getEnumMap(): array
     {
         return [
-            'proposals.status' => \App\Enums\ProposalStatus::class,
-            'proposal_reviewer.status' => \App\Enums\ReviewStatus::class,
-            'proposal_reviewer.recommendation' => \App\Enums\ReviewRecommendation::class,
-            'progress_reports.status' => \App\Enums\ReportStatus::class,
-            'progress_reports.reporting_period' => \App\Enums\ReportingPeriod::class,
-            'identities.type' => \App\Enums\IdentityType::class,
-            'mandatory_outputs.status_type' => \App\Enums\OutputStatusType::class,
-            'mandatory_outputs.author_status' => \App\Enums\AuthorStatus::class,
-            'additional_outputs.status' => \App\Enums\AdditionalOutputStatus::class,
-            'institutional_reports.status' => \App\Enums\InstitutionalReportStatus::class,
-            'kaprodi_approvals.status' => \App\Enums\KaprodiStatus::class,
-            'letters.team_source' => \App\Enums\TeamSource::class,
-            'document_signatures.mode' => \App\Enums\SignatureMode::class,
+            'proposals.status' => ProposalStatus::class,
+            'proposal_reviewer.status' => ReviewStatus::class,
+            'proposal_reviewer.recommendation' => ReviewRecommendation::class,
+            'progress_reports.status' => ReportStatus::class,
+            'progress_reports.reporting_period' => ReportingPeriod::class,
+            'identities.type' => IdentityType::class,
+            'mandatory_outputs.status_type' => OutputStatusType::class,
+            'mandatory_outputs.author_status' => AuthorStatus::class,
+            'additional_outputs.status' => AdditionalOutputStatus::class,
+            'institutional_reports.status' => InstitutionalReportStatus::class,
+            'kaprodi_approvals.status' => KaprodiStatus::class,
+            'letters.team_source' => TeamSource::class,
+            'document_signatures.mode' => SignatureMode::class,
         ];
     }
 
     private function getEnumValues(string $enumClass): array
     {
-        if (!class_exists($enumClass)) {
+        if (! class_exists($enumClass)) {
             return [];
         }
 
         $reflection = new \ReflectionClass($enumClass);
-        if (!$reflection->isEnum()) {
+        if (! $reflection->isEnum()) {
             return [];
         }
 
-        return array_map(fn($case) => $case->getValue(), $reflection->getCases());
+        return array_map(fn ($case) => $case->getValue(), $reflection->getCases());
     }
 }

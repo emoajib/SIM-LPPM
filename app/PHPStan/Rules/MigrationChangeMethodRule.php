@@ -25,7 +25,7 @@ class MigrationChangeMethodRule implements Rule
 
             if ($methodName === 'change') {
                 $errors[] = RuleError::create(
-                    "Do not use ->change() on enum columns. Use drop+add column pattern instead."
+                    'Do not use ->change() on enum columns. Use drop+add column pattern instead.'
                 );
             }
         }

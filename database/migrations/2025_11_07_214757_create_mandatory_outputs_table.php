@@ -54,7 +54,7 @@ return new class extends Migration
             OutputStatusType::values(),
             MigrationHelpers::generateConstraintName('mandatory_outputs', 'status_type')
         );
-        
+
         MigrationHelpers::addCheckConstraintToTable(
             'mandatory_outputs',
             'author_status',

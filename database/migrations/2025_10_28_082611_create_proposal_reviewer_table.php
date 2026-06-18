@@ -35,7 +35,7 @@ return new class extends Migration
             ReviewStatus::values(),
             MigrationHelpers::generateConstraintName('proposal_reviewer', 'status')
         );
-        
+
         MigrationHelpers::addCheckConstraintToTable(
             'proposal_reviewer',
             'recommendation',
