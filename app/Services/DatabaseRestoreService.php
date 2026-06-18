@@ -518,7 +518,7 @@ class DatabaseRestoreService
         $dbPort = config("database.connections.{$connection}.port");
 
         if ($driver === 'mysql') {
-            $cmd = ['mysqldump', '-u', $dbUser];
+            $cmd = ['mysqldump', '--complete-insert', '-u', $dbUser];
             if ($dbPass) {
                 $cmd[] = "-p{$dbPass}";
             }

@@ -118,7 +118,7 @@ class BackupDownloadController extends Controller
         $dbUser = config('database.connections.mysql.username');
         $dbPass = config('database.connections.mysql.password');
 
-        Process::run("mysqldump -u $dbUser -p$dbPass $dbName > $path");
+        Process::run("mysqldump --complete-insert -u $dbUser -p$dbPass $dbName > $path");
 
         if (! file_exists($path) || filesize($path) === 0) {
             abort(500, 'Gagal membuat file backup database.');
