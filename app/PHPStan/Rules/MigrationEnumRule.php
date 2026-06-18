@@ -15,7 +15,7 @@ class MigrationEnumRule implements Rule
     }
 
     public function processNode(
-        Node\Expr\MethodCall $node,
+        Node $node,
         Scope $scope
     ): array {
         $errors = [];
