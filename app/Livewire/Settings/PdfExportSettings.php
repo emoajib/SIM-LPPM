@@ -103,12 +103,12 @@ class PdfExportSettings extends Component
         ];
     }
 
-    public function handleOpenContentEditor(array $params): void
+    public function handleOpenContentEditor(string $moduleKey, string $moduleName): void
     {
-        $this->openContentEditor($params['moduleKey'], $params['moduleName']);
+        $this->openContentEditor($moduleKey, $moduleName);
     }
 
-    public function handleModuleOverrideUpdated(array $params): void
+    public function handleModuleOverrideUpdated(string $moduleKey, bool $hasOverrides): void
     {
         // Child card override status changed; parent may refresh if needed
     }
