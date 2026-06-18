@@ -59,78 +59,8 @@ return new class extends Migration
 
             // Re-enable foreign keys
             DB::statement('PRAGMA foreign_keys=ON;');
-        } elseif ($driver === 'mysql') {
-            // MySQL: recreate table with new schema
-            Schema::disableForeignKeyConstraints();
-
-            // 1. Create new table with correct schema
-            DB::statement('CREATE TABLE `proposal_reviewer_new` (
-                `id` int unsigned NOT NULL AUTO_INCREMENT,
-                `proposal_id` varchar(255) NOT NULL,
-                `user_id` varchar(255) NOT NULL,
-                `status` enum(\'pending\', \'in_progress\', \'completed\', \'re_review_requested\') NOT NULL DEFAULT \'pending\',
-                `review_notes` text,
-                `recommendation` enum(\'approved\', \'rejected\', \'revision_needed\'),
-                `created_at` datetime DEFAULT NULL,
-                `updated_at` datetime DEFAULT NULL,
-                `round` int NOT NULL DEFAULT 1,
-                `assigned_at` datetime DEFAULT NULL,
-                `deadline_at` datetime DEFAULT NULL,
-                `started_at` datetime DEFAULT NULL,
-                `completed_at` datetime DEFAULT NULL,
-                PRIMARY KEY (`id`),
-                KEY `proposal_reviewer_proposal_id_index` (`proposal_id`),
-                KEY `proposal_reviewer_user_id_index` (`user_id`),
-                KEY `proposal_reviewer_deadline_at_index` (`deadline_at`),
-                KEY `proposal_reviewer_round_index` (`round`),
-                CONSTRAINT `proposal_reviewer_proposal_id_foreign` FOREIGN KEY (`proposal_id`) REFERENCES `proposals` (`id`) ON DELETE CASCADE,
-                CONSTRAINT `proposal_reviewer_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
-
-            // 2. Copy data from old table to new table
-            DB::statement('INSERT INTO `proposal_reviewer_new` SELECT * FROM `proposal_reviewer`');
-
-            // 3. Drop old table
-            Schema::dropIfExists('proposal_reviewer');
-
-            // 4. Rename new table
-            DB::statement('ALTER TABLE `proposal_reviewer_new` RENAME TO `proposal_reviewer`');
-
-            Schema::enableForeignKeyConstraints();
-        } elseif ($driver === 'pgsql') {
-            // PostgreSQL: recreate table with new schema
-            Schema::disableForeignKeyConstraints();
-
-            // 1. Create new table with correct schema
-            DB::statement('CREATE TABLE proposal_reviewer_new (
-                id serial PRIMARY KEY,
-                proposal_id uuid NOT NULL,
-                user_id uuid NOT NULL,
-                status varchar CHECK (status IN (\'pending\', \'in_progress\', \'completed\', \'re_review_requested\')) NOT NULL DEFAULT \'pending\',
-                review_notes text,
-                recommendation varchar CHECK (recommendation IN (\'approved\', \'rejected\', \'revision_needed\')),
-                created_at timestamp(0) without time zone DEFAULT NULL,
-                updated_at timestamp(0) without time zone DEFAULT NULL,
-                round integer NOT NULL DEFAULT 1,
-                assigned_at timestamp(0) without time zone DEFAULT NULL,
-                deadline_at timestamp(0) without time zone DEFAULT NULL,
-                started_at timestamp(0) without time zone DEFAULT NULL,
-                completed_at timestamp(0) without time zone DEFAULT NULL,
-                CONSTRAINT proposal_reviewer_proposal_id_foreign FOREIGN KEY (proposal_id) REFERENCES proposals (id) ON DELETE CASCADE,
-                CONSTRAINT proposal_reviewer_user_id_foreign FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-            )');
-
-            // 2. Copy data from old table to new table
-            DB::statement('INSERT INTO proposal_reviewer_new SELECT * FROM proposal_reviewer');
-
-            // 3. Drop old table
-            Schema::dropIfExists('proposal_reviewer');
-
-            // 4. Rename new table
-            DB::statement('ALTER TABLE proposal_reviewer_new RENAME TO proposal_reviewer');
-
-            Schema::enableForeignKeyConstraints();
         }
+
     }
 
     /**
@@ -142,77 +72,6 @@ return new class extends Migration
         if ($driver === 'sqlite') {
             // Reverting SQLite schema changes manually is complex and risky,
             // we generally assume forward-fix in dev.
-        } elseif ($driver === 'mysql') {
-            // MySQL: recreate old table
-            Schema::disableForeignKeyConstraints();
-
-            // 1. Create old table with original schema
-            DB::statement('CREATE TABLE `proposal_reviewer_old` (
-                `id` int unsigned NOT NULL AUTO_INCREMENT,
-                `proposal_id` varchar(255) NOT NULL,
-                `user_id` varchar(255) NOT NULL,
-                `status` enum(\'pending\', \'reviewing\', \'completed\') NOT NULL DEFAULT \'pending\',
-                `review_notes` text,
-                `recommendation` enum(\'approved\', \'rejected\', \'revision_needed\'),
-                `created_at` datetime DEFAULT NULL,
-                `updated_at` datetime DEFAULT NULL,
-                `round` int NOT NULL DEFAULT 1,
-                `assigned_at` datetime DEFAULT NULL,
-                `deadline_at` datetime DEFAULT NULL,
-                `started_at` datetime DEFAULT NULL,
-                `completed_at` datetime DEFAULT NULL,
-                PRIMARY KEY (`id`),
-                KEY `proposal_reviewer_proposal_id_index` (`proposal_id`),
-                KEY `proposal_reviewer_user_id_index` (`user_id`),
-                KEY `proposal_reviewer_deadline_at_index` (`deadline_at`),
-                KEY `proposal_reviewer_round_index` (`round`),
-                CONSTRAINT `proposal_reviewer_proposal_id_foreign` FOREIGN KEY (`proposal_id`) REFERENCES `proposals` (`id`) ON DELETE CASCADE,
-                CONSTRAINT `proposal_reviewer_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
-
-            // 2. Copy data from new table to old table
-            DB::statement('INSERT INTO `proposal_reviewer_old` SELECT * FROM `proposal_reviewer`');
-
-            // 3. Drop new table
-            Schema::dropIfExists('proposal_reviewer');
-
-            // 4. Rename old table
-            DB::statement('ALTER TABLE `proposal_reviewer_old` RENAME TO `proposal_reviewer`');
-
-            Schema::enableForeignKeyConstraints();
-        } elseif ($driver === 'pgsql') {
-            // PostgreSQL: recreate old table
-            Schema::disableForeignKeyConstraints();
-
-            // 1. Create old table with original schema
-            DB::statement('CREATE TABLE proposal_reviewer_old (
-                id serial PRIMARY KEY,
-                proposal_id uuid NOT NULL,
-                user_id uuid NOT NULL,
-                status varchar CHECK (status IN (\'pending\', \'reviewing\', \'completed\')) NOT NULL DEFAULT \'pending\',
-                review_notes text,
-                recommendation varchar CHECK (recommendation IN (\'approved\', \'rejected\', \'revision_needed\')),
-                created_at timestamp(0) without time zone DEFAULT NULL,
-                updated_at timestamp(0) without time zone DEFAULT NULL,
-                round integer NOT NULL DEFAULT 1,
-                assigned_at timestamp(0) without time zone DEFAULT NULL,
-                deadline_at timestamp(0) without time zone DEFAULT NULL,
-                started_at timestamp(0) without time zone DEFAULT NULL,
-                completed_at timestamp(0) without time zone DEFAULT NULL,
-                CONSTRAINT proposal_reviewer_proposal_id_foreign FOREIGN KEY (proposal_id) REFERENCES proposals (id) ON DELETE CASCADE,
-                CONSTRAINT proposal_reviewer_user_id_foreign FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-            )');
-
-            // 2. Copy data from new table to old table
-            DB::statement('INSERT INTO proposal_reviewer_old SELECT * FROM proposal_reviewer');
-
-            // 3. Drop new table
-            Schema::dropIfExists('proposal_reviewer');
-
-            // 4. Rename old table
-            DB::statement('ALTER TABLE proposal_reviewer_old RENAME TO proposal_reviewer');
-
-            Schema::enableForeignKeyConstraints();
         }
     }
 };
