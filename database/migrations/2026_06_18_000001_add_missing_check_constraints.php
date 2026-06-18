@@ -5,6 +5,8 @@ use App\Enums\KaprodiStatus;
 use App\Enums\SignatureMode;
 use Database\Helpers\MigrationHelpers;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -24,6 +26,12 @@ return new class extends Migration
             MigrationHelpers::generateConstraintName('proposal_kaprodi_approvals', 'status')
         );
 
+        if (! Schema::hasColumn('document_signatures', 'mode')) {
+            Schema::table('document_signatures', function (Blueprint $table) {
+                $table->string('mode', 50)->default('tte')->after('action');
+            });
+        }
+
         MigrationHelpers::addCheckConstraintToTable(
             'document_signatures',
             'mode',
@@ -37,5 +45,11 @@ return new class extends Migration
         MigrationHelpers::dropCheckConstraint('institutional_reports', 'status');
         MigrationHelpers::dropCheckConstraint('proposal_kaprodi_approvals', 'status');
         MigrationHelpers::dropCheckConstraint('document_signatures', 'mode');
+
+        if (Schema::hasColumn('document_signatures', 'mode')) {
+            Schema::table('document_signatures', function (Blueprint $table) {
+                $table->dropColumn('mode');
+            });
+        }
     }
 };
