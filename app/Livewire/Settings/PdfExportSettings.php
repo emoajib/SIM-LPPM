@@ -4,6 +4,7 @@
 
 namespace App\Livewire\Settings;
 
+use App\Constants\PdfConstants;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -273,17 +274,17 @@ class PdfExportSettings extends Component
         $this->editingModule = $moduleKey;
         $this->editingModuleName = $moduleName;
 
-        $this->editingContentIntro = Setting::get("pdf_content_{$moduleKey}_intro", '');
-        $this->editingContentOutro = Setting::get("pdf_content_{$moduleKey}_outro", '');
+        $this->editingContentIntro = Setting::get(PdfConstants::contentKey($moduleKey, PdfConstants::KEY_INTRO), '');
+        $this->editingContentOutro = Setting::get(PdfConstants::contentKey($moduleKey, PdfConstants::KEY_OUTRO), '');
 
-        $this->editingPaperSize = Setting::get("pdf_override_{$moduleKey}_paper_size", '');
-        $this->editingOrientation = Setting::get("pdf_override_{$moduleKey}_orientation", '');
-        $this->editingFontFamily = Setting::get("pdf_override_{$moduleKey}_font_family", '');
-        $this->editingFontSize = Setting::get("pdf_override_{$moduleKey}_font_size", '');
-        $this->editingMarginTop = Setting::get("pdf_override_{$moduleKey}_margin_top", '');
-        $this->editingMarginRight = Setting::get("pdf_override_{$moduleKey}_margin_right", '');
-        $this->editingMarginBottom = Setting::get("pdf_override_{$moduleKey}_margin_bottom", '');
-        $this->editingMarginLeft = Setting::get("pdf_override_{$moduleKey}_margin_left", '');
+        $this->editingPaperSize = Setting::get(PdfConstants::overrideKey($moduleKey, PdfConstants::KEY_PAPER_SIZE), '');
+        $this->editingOrientation = Setting::get(PdfConstants::overrideKey($moduleKey, PdfConstants::KEY_ORIENTATION), '');
+        $this->editingFontFamily = Setting::get(PdfConstants::overrideKey($moduleKey, PdfConstants::KEY_FONT_FAMILY), '');
+        $this->editingFontSize = Setting::get(PdfConstants::overrideKey($moduleKey, PdfConstants::KEY_FONT_SIZE), '');
+        $this->editingMarginTop = Setting::get(PdfConstants::overrideKey($moduleKey, PdfConstants::KEY_MARGIN_TOP), '');
+        $this->editingMarginRight = Setting::get(PdfConstants::overrideKey($moduleKey, PdfConstants::KEY_MARGIN_RIGHT), '');
+        $this->editingMarginBottom = Setting::get(PdfConstants::overrideKey($moduleKey, PdfConstants::KEY_MARGIN_BOTTOM), '');
+        $this->editingMarginLeft = Setting::get(PdfConstants::overrideKey($moduleKey, PdfConstants::KEY_MARGIN_LEFT), '');
 
         $this->contentModalOpen = true;
     }
@@ -295,17 +296,20 @@ class PdfExportSettings extends Component
 
     public function saveContentEditor(): void
     {
-        Setting::set("pdf_content_{$this->editingModule}_intro", $this->editingContentIntro, 'string');
-        Setting::set("pdf_content_{$this->editingModule}_outro", $this->editingContentOutro, 'string');
+        $settingsToSave = [
+            PdfConstants::contentKey($this->editingModule, PdfConstants::KEY_INTRO) => $this->editingContentIntro,
+            PdfConstants::contentKey($this->editingModule, PdfConstants::KEY_OUTRO) => $this->editingContentOutro,
+            PdfConstants::overrideKey($this->editingModule, PdfConstants::KEY_PAPER_SIZE) => $this->editingPaperSize,
+            PdfConstants::overrideKey($this->editingModule, PdfConstants::KEY_ORIENTATION) => $this->editingOrientation,
+            PdfConstants::overrideKey($this->editingModule, PdfConstants::KEY_FONT_FAMILY) => $this->editingFontFamily,
+            PdfConstants::overrideKey($this->editingModule, PdfConstants::KEY_FONT_SIZE) => $this->editingFontSize,
+            PdfConstants::overrideKey($this->editingModule, PdfConstants::KEY_MARGIN_TOP) => $this->editingMarginTop,
+            PdfConstants::overrideKey($this->editingModule, PdfConstants::KEY_MARGIN_RIGHT) => $this->editingMarginRight,
+            PdfConstants::overrideKey($this->editingModule, PdfConstants::KEY_MARGIN_BOTTOM) => $this->editingMarginBottom,
+            PdfConstants::overrideKey($this->editingModule, PdfConstants::KEY_MARGIN_LEFT) => $this->editingMarginLeft,
+        ];
 
-        Setting::set("pdf_override_{$this->editingModule}_paper_size", $this->editingPaperSize, 'string');
-        Setting::set("pdf_override_{$this->editingModule}_orientation", $this->editingOrientation, 'string');
-        Setting::set("pdf_override_{$this->editingModule}_font_family", $this->editingFontFamily, 'string');
-        Setting::set("pdf_override_{$this->editingModule}_font_size", $this->editingFontSize, 'string');
-        Setting::set("pdf_override_{$this->editingModule}_margin_top", $this->editingMarginTop, 'string');
-        Setting::set("pdf_override_{$this->editingModule}_margin_right", $this->editingMarginRight, 'string');
-        Setting::set("pdf_override_{$this->editingModule}_margin_bottom", $this->editingMarginBottom, 'string');
-        Setting::set("pdf_override_{$this->editingModule}_margin_left", $this->editingMarginLeft, 'string');
+        Setting::setMany($settingsToSave);
 
         $this->contentModalOpen = false;
         $this->dispatch('settings-updated', message: "Konfigurasi kustom untuk {$this->editingModuleName} berhasil disimpan.");
@@ -313,8 +317,8 @@ class PdfExportSettings extends Component
 
     public function resetContentEditor(): void
     {
-        Setting::where('key', 'LIKE', "pdf_content_{$this->editingModule}_%")->delete();
-        Setting::where('key', 'LIKE', "pdf_override_{$this->editingModule}_%")->delete();
+        Setting::where('key', 'LIKE', PdfConstants::PREFIX_CONTENT."{$this->editingModule}_%")->delete();
+        Setting::where('key', 'LIKE', PdfConstants::PREFIX_OVERRIDE."{$this->editingModule}_%")->delete();
 
         $this->contentModalOpen = false;
         $this->dispatch('settings-updated', message: "Konfigurasi kustom untuk {$this->editingModuleName} berhasil di-reset ke pengaturan global bawaan.");
@@ -322,10 +326,14 @@ class PdfExportSettings extends Component
 
     public function render(): View
     {
+        // Pre-fetch all pdf overrides for children to eliminate N+1 queries
+        $prefetchedOverrides = Setting::where('key', 'like', 'pdf_%')->pluck('value', 'key')->toArray();
+
         return view('livewire.settings.pdf-export-settings', [
             'cacheStats' => $this->getCacheStats(),
             'hasLogo' => file_exists(public_path('logo.png')),
             'logoUrl' => asset('logo.png'),
+            'prefetchedOverrides' => $prefetchedOverrides,
         ]);
     }
 }

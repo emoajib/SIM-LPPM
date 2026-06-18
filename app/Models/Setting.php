@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -86,6 +87,43 @@ class Setting extends Model implements HasMedia
             ['value' => $processedValue, 'type' => $type]
         );
 
+        self::clearCache();
+    }
+
+    /**
+     * Set multiple setting values at once using bulk upsert.
+     * Expects an array of [key => ['value' => mixed, 'type' => string]] or [key => value] (assumes string).
+     */
+    public static function setMany(array $settings): void
+    {
+        if (empty($settings)) {
+            return;
+        }
+
+        $records = [];
+        $now = now();
+
+        foreach ($settings as $key => $data) {
+            $value = is_array($data) && array_key_exists('value', $data) ? $data['value'] : $data;
+            $type = is_array($data) && array_key_exists('type', $data) ? $data['type'] : 'string';
+
+            $processedValue = match ($type) {
+                'boolean' => $value ? '1' : '0',
+                'json' => json_encode($value),
+                default => (string) $value,
+            };
+
+            $records[] = [
+                'id' => Str::uuid()->toString(),
+                'key' => $key,
+                'value' => $processedValue,
+                'type' => $type,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+
+        static::upsert($records, ['key'], ['value', 'type', 'updated_at']);
         self::clearCache();
     }
 }

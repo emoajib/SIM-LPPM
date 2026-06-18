@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Settings;
 
+use App\Constants\PdfConstants;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -87,50 +88,54 @@ class PdfModuleCard extends Component
     // --- Internal cache ---
     private ?bool $cachedHasOverrides = null;
 
-    public function mount(): void
+    protected array $pendingSaves = [];
+
+    public function mount(?array $prefetchedOverrides = null): void
     {
         abort_unless(Auth::user()?->hasRole('admin lppm') || Auth::user()?->hasRole('superadmin'), 403);
-        $this->loadOverrides();
+        $this->loadOverrides($prefetchedOverrides);
     }
 
-    private function loadOverrides(): void
+    private function loadOverrides(?array $prefetchedOverrides = null): void
     {
-        $keys = collect([
-            "pdf_override_{$this->moduleKey}_font_family",
-            "pdf_override_{$this->moduleKey}_font_size",
-            "pdf_override_{$this->moduleKey}_paper_size",
-            "pdf_override_{$this->moduleKey}_orientation",
-            "pdf_override_{$this->moduleKey}_margin_top",
-            "pdf_override_{$this->moduleKey}_margin_right",
-            "pdf_override_{$this->moduleKey}_margin_bottom",
-            "pdf_override_{$this->moduleKey}_margin_left",
-            "pdf_content_{$this->moduleKey}_intro",
-            "pdf_content_{$this->moduleKey}_outro",
-            "pdf_override_{$this->moduleKey}_show_logo",
-            "pdf_override_{$this->moduleKey}_cover_title",
-            "pdf_override_{$this->moduleKey}_cover_subtitle",
-            "pdf_override_{$this->moduleKey}_cover_show_team",
-        ]);
+        $keys = [
+            PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_FONT_FAMILY),
+            PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_FONT_SIZE),
+            PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_PAPER_SIZE),
+            PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_ORIENTATION),
+            PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_MARGIN_TOP),
+            PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_MARGIN_RIGHT),
+            PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_MARGIN_BOTTOM),
+            PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_MARGIN_LEFT),
+            PdfConstants::contentKey($this->moduleKey, PdfConstants::KEY_INTRO),
+            PdfConstants::contentKey($this->moduleKey, PdfConstants::KEY_OUTRO),
+            PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_SHOW_LOGO),
+            PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_COVER_TITLE),
+            PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_COVER_SUBTITLE),
+            PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_COVER_SHOW_TEAM),
+        ];
 
-        $overrides = Setting::whereIn('key', $keys->all())
-            ->get()
-            ->keyBy('key')
-            ->map(fn ($s) => $s->value);
+        if ($prefetchedOverrides !== null) {
+            $overrides = collect($prefetchedOverrides);
+        } else {
+            $overrides = Setting::whereIn('key', $keys)
+                ->pluck('value', 'key');
+        }
 
-        $this->fontFamily = $overrides->get("pdf_override_{$this->moduleKey}_font_family", '');
-        $this->fontSize = $overrides->get("pdf_override_{$this->moduleKey}_font_size", '');
-        $this->paperSize = $overrides->get("pdf_override_{$this->moduleKey}_paper_size", '');
-        $this->orientation = $overrides->get("pdf_override_{$this->moduleKey}_orientation", '');
-        $this->marginTop = $overrides->get("pdf_override_{$this->moduleKey}_margin_top", '');
-        $this->marginRight = $overrides->get("pdf_override_{$this->moduleKey}_margin_right", '');
-        $this->marginBottom = $overrides->get("pdf_override_{$this->moduleKey}_margin_bottom", '');
-        $this->marginLeft = $overrides->get("pdf_override_{$this->moduleKey}_margin_left", '');
-        $this->introText = $overrides->get("pdf_content_{$this->moduleKey}_intro", '');
-        $this->outroText = $overrides->get("pdf_content_{$this->moduleKey}_outro", '');
-        $this->showLogo = $overrides->get("pdf_override_{$this->moduleKey}_show_logo", '');
-        $this->coverTitle = $overrides->get("pdf_override_{$this->moduleKey}_cover_title", '');
-        $this->coverSubtitle = $overrides->get("pdf_override_{$this->moduleKey}_cover_subtitle", '');
-        $this->coverShowTeam = $overrides->get("pdf_override_{$this->moduleKey}_cover_show_team", '');
+        $this->fontFamily = $overrides->get(PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_FONT_FAMILY), '');
+        $this->fontSize = $overrides->get(PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_FONT_SIZE), '');
+        $this->paperSize = $overrides->get(PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_PAPER_SIZE), '');
+        $this->orientation = $overrides->get(PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_ORIENTATION), '');
+        $this->marginTop = $overrides->get(PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_MARGIN_TOP), '');
+        $this->marginRight = $overrides->get(PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_MARGIN_RIGHT), '');
+        $this->marginBottom = $overrides->get(PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_MARGIN_BOTTOM), '');
+        $this->marginLeft = $overrides->get(PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_MARGIN_LEFT), '');
+        $this->introText = $overrides->get(PdfConstants::contentKey($this->moduleKey, PdfConstants::KEY_INTRO), '');
+        $this->outroText = $overrides->get(PdfConstants::contentKey($this->moduleKey, PdfConstants::KEY_OUTRO), '');
+        $this->showLogo = $overrides->get(PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_SHOW_LOGO), '');
+        $this->coverTitle = $overrides->get(PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_COVER_TITLE), '');
+        $this->coverSubtitle = $overrides->get(PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_COVER_SUBTITLE), '');
+        $this->coverShowTeam = $overrides->get(PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_COVER_SHOW_TEAM), '');
     }
 
     public function hasOverrides(): bool
@@ -166,36 +171,47 @@ class PdfModuleCard extends Component
         $this->cachedHasOverrides = null;
 
         $map = [
-            'fontFamily' => "pdf_override_{$this->moduleKey}_font_family",
-            'fontSize' => "pdf_override_{$this->moduleKey}_font_size",
-            'paperSize' => "pdf_override_{$this->moduleKey}_paper_size",
-            'orientation' => "pdf_override_{$this->moduleKey}_orientation",
-            'marginTop' => "pdf_override_{$this->moduleKey}_margin_top",
-            'marginRight' => "pdf_override_{$this->moduleKey}_margin_right",
-            'marginBottom' => "pdf_override_{$this->moduleKey}_margin_bottom",
-            'marginLeft' => "pdf_override_{$this->moduleKey}_margin_left",
-            'introText' => "pdf_content_{$this->moduleKey}_intro",
-            'outroText' => "pdf_content_{$this->moduleKey}_outro",
-            'showLogo' => "pdf_override_{$this->moduleKey}_show_logo",
-            'coverTitle' => "pdf_override_{$this->moduleKey}_cover_title",
-            'coverSubtitle' => "pdf_override_{$this->moduleKey}_cover_subtitle",
-            'coverShowTeam' => "pdf_override_{$this->moduleKey}_cover_show_team",
+            'fontFamily' => PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_FONT_FAMILY),
+            'fontSize' => PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_FONT_SIZE),
+            'paperSize' => PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_PAPER_SIZE),
+            'orientation' => PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_ORIENTATION),
+            'marginTop' => PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_MARGIN_TOP),
+            'marginRight' => PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_MARGIN_RIGHT),
+            'marginBottom' => PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_MARGIN_BOTTOM),
+            'marginLeft' => PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_MARGIN_LEFT),
+            'introText' => PdfConstants::contentKey($this->moduleKey, PdfConstants::KEY_INTRO),
+            'outroText' => PdfConstants::contentKey($this->moduleKey, PdfConstants::KEY_OUTRO),
+            'showLogo' => PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_SHOW_LOGO),
+            'coverTitle' => PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_COVER_TITLE),
+            'coverSubtitle' => PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_COVER_SUBTITLE),
+            'coverShowTeam' => PdfConstants::overrideKey($this->moduleKey, PdfConstants::KEY_COVER_SHOW_TEAM),
         ];
 
         if (isset($map[$property])) {
             if ($this->$property !== '') {
                 $this->validateOnly($property);
             }
-            Setting::set($map[$property], $this->$property, 'string');
+            // Queue the save for dehydrate() bulk execution
+            $this->pendingSaves[$map[$property]] = $this->$property;
+
+            // Dispatch update to UI immediately so badges feel reactive
             $this->dispatch('module-override-updated', moduleKey: $this->moduleKey, hasOverrides: $this->hasOverrides());
+        }
+    }
+
+    public function dehydrate(): void
+    {
+        if (! empty($this->pendingSaves)) {
+            Setting::setMany($this->pendingSaves);
+            $this->pendingSaves = [];
         }
     }
 
     public function resetOverrides(): void
     {
         Setting::where(function ($q) {
-            $q->where('key', 'like', "pdf_content_{$this->moduleKey}_%")
-                ->orWhere('key', 'like', "pdf_override_{$this->moduleKey}_%");
+            $q->where('key', 'like', PdfConstants::PREFIX_CONTENT."{$this->moduleKey}_%")
+                ->orWhere('key', 'like', PdfConstants::PREFIX_OVERRIDE."{$this->moduleKey}_%");
         })->delete();
 
         $this->cachedHasOverrides = null;

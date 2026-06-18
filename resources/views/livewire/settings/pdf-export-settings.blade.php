@@ -543,6 +543,7 @@
                                         'moduleName' => $m['name'],
                                         'family' => $m['family'],
                                         'viewType' => $m['view_type'],
+                                        'prefetchedOverrides' => $prefetchedOverrides,
                                     ], key('module-card-'.$m['key']))
                                 </div>
                             @endforeach
