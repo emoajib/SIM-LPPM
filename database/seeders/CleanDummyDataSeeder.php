@@ -32,7 +32,12 @@ class CleanDummyDataSeeder extends Seeder
         echo "🗑️  Membersihkan data dummy...\n";
 
         // Disable foreign key checks untuk truncate
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        $driver = DB::getDriverName();
+        if ($driver === 'mysql') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        } elseif ($driver === 'pgsql') {
+            DB::statement('SET CONSTRAINTS ALL DEFERRED;');
+        }
 
         // Urutan penting: hapus child tables dulu, baru parent tables
 
@@ -112,7 +117,11 @@ class CleanDummyDataSeeder extends Seeder
         echo "  ✅ CommunityService: {$communityService} dihapus\n";
 
         // Enable foreign key checks kembali
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        if ($driver === 'mysql') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        } elseif ($driver === 'pgsql') {
+            DB::statement('SET CONSTRAINTS ALL IMMEDIATE;');
+        }
 
         echo "\n✨ Data dummy berhasil dibersihkan!\n";
         echo "📊 Data master (users, roles, skema, budget groups, dll) tetap aman.\n";

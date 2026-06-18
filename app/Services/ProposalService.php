@@ -186,7 +186,7 @@ class ProposalService
     public function getAvailableYears(string $type): array
     {
         return $this->getBaseProposalQuery($type)
-            ->selectRaw('DISTINCT IFNULL(start_year, '.sql_year().') as year')
+            ->selectRaw('DISTINCT COALESCE(start_year, '.sql_year().') as year')
             ->orderByDesc('year')
             ->pluck('year')
             ->toArray();

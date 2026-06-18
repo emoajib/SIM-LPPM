@@ -15,18 +15,23 @@ class InstitutionSeeder extends Seeder
      */
     public function run(): void
     {
-        if (DB::getDriverName() === 'sqlite') {
+        $driver = DB::getDriverName();
+        if ($driver === 'sqlite') {
             DB::statement('PRAGMA foreign_keys = OFF;');
-        } else {
+        } elseif ($driver === 'mysql') {
             DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        } elseif ($driver === 'pgsql') {
+            DB::statement('SET CONSTRAINTS ALL DEFERRED;');
         }
 
         Institution::truncate();
 
-        if (DB::getDriverName() === 'sqlite') {
+        if ($driver === 'sqlite') {
             DB::statement('PRAGMA foreign_keys = ON;');
-        } else {
+        } elseif ($driver === 'mysql') {
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        } elseif ($driver === 'pgsql') {
+            DB::statement('SET CONSTRAINTS ALL IMMEDIATE;');
         }
 
         $installerConfig = Cache::get('installer_institution_config', []);

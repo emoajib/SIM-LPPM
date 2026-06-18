@@ -161,6 +161,8 @@ class DatabaseRestoreService
                 DB::statement('SET FOREIGN_KEY_CHECKS = 0');
                 DB::statement('SET UNIQUE_CHECKS = 0');
                 DB::statement('SET SQL_MODE = ""');
+            } elseif (DB::getDriverName() === 'pgsql') {
+                DB::statement('SET CONSTRAINTS ALL DEFERRED');
             }
 
             foreach ($statements as $stmt) {
@@ -182,6 +184,8 @@ class DatabaseRestoreService
             if (DB::getDriverName() === 'mysql') {
                 DB::statement('SET FOREIGN_KEY_CHECKS = 1');
                 DB::statement('SET UNIQUE_CHECKS = 1');
+            } elseif (DB::getDriverName() === 'pgsql') {
+                DB::statement('SET CONSTRAINTS ALL IMMEDIATE');
             }
 
             DB::commit();
@@ -206,8 +210,12 @@ class DatabaseRestoreService
             ];
         } catch (\Throwable $e) {
             DB::rollBack();
-            DB::statement('SET FOREIGN_KEY_CHECKS = 1');
-            DB::statement('SET UNIQUE_CHECKS = 1');
+            if (DB::getDriverName() === 'mysql') {
+                DB::statement('SET FOREIGN_KEY_CHECKS = 1');
+                DB::statement('SET UNIQUE_CHECKS = 1');
+            } elseif (DB::getDriverName() === 'pgsql') {
+                DB::statement('SET CONSTRAINTS ALL IMMEDIATE');
+            }
 
             Log::error('Database restore failed', [
                 'file' => basename($sqlPath),
@@ -259,10 +267,13 @@ class DatabaseRestoreService
         DB::beginTransaction();
 
         try {
+            \Schema::disableForeignKeyConstraints();
+
             if (DB::getDriverName() === 'mysql') {
-                DB::statement('SET FOREIGN_KEY_CHECKS = 0');
                 DB::statement('SET UNIQUE_CHECKS = 0');
                 DB::statement('SET SQL_MODE = ""');
+            } elseif (DB::getDriverName() === 'pgsql') {
+                DB::statement('SET CONSTRAINTS ALL DEFERRED');
             }
 
             foreach ($tablesToDelete as $table) {
@@ -292,9 +303,12 @@ class DatabaseRestoreService
             }
 
             if (DB::getDriverName() === 'mysql') {
-                DB::statement('SET FOREIGN_KEY_CHECKS = 1');
                 DB::statement('SET UNIQUE_CHECKS = 1');
+            } elseif (DB::getDriverName() === 'pgsql') {
+                DB::statement('SET CONSTRAINTS ALL IMMEDIATE');
             }
+
+            \Schema::enableForeignKeyConstraints();
 
             DB::commit();
 
@@ -333,8 +347,12 @@ class DatabaseRestoreService
             ];
         } catch (\Throwable $e) {
             DB::rollBack();
-            DB::statement('SET FOREIGN_KEY_CHECKS = 1');
-            DB::statement('SET UNIQUE_CHECKS = 1');
+            if (DB::getDriverName() === 'mysql') {
+                DB::statement('SET FOREIGN_KEY_CHECKS = 1');
+                DB::statement('SET UNIQUE_CHECKS = 1');
+            } elseif (DB::getDriverName() === 'pgsql') {
+                DB::statement('SET CONSTRAINTS ALL IMMEDIATE');
+            }
 
             Log::error('Database restore-with-replace failed', [
                 'file' => basename($sqlPath),
@@ -364,15 +382,34 @@ class DatabaseRestoreService
         $path = "{$backupDir}/{$filename}";
 
         $connection = config('database.default');
+        $driver = DB::getDriverName();
         $dbName = config("database.connections.{$connection}.database");
         $dbUser = config("database.connections.{$connection}.username");
         $dbPass = config("database.connections.{$connection}.password");
+        $dbHost = config("database.connections.{$connection}.host");
+        $dbPort = config("database.connections.{$connection}.port");
 
-        $cmd = ['mysqldump', '-u', $dbUser];
-        if ($dbPass) {
-            $cmd[] = "-p{$dbPass}";
+        if ($driver === 'mysql') {
+            $cmd = ['mysqldump', '-u', $dbUser];
+            if ($dbPass) {
+                $cmd[] = "-p{$dbPass}";
+            }
+            $cmd[] = $dbName;
+        } elseif ($driver === 'pgsql') {
+            $cmd = ['pg_dump', '-U', $dbUser, '--column-inserts', '--no-owner', '--no-acl'];
+            if ($dbPass) {
+                putenv("PGPASSWORD={$dbPass}");
+            }
+            $cmd[] = '-h';
+            $cmd[] = $dbHost;
+            $cmd[] = '-p';
+            $cmd[] = $dbPort;
+            $cmd[] = $dbName;
+        } elseif ($driver === 'sqlite') {
+            $cmd = ['sqlite3', $dbName, '.dump'];
+        } else {
+            throw new \RuntimeException('Unsupported database driver for backup: '.$driver);
         }
-        $cmd[] = $dbName;
 
         $result = Process::run($cmd, function () {});
 

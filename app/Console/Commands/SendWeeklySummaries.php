@@ -8,6 +8,7 @@ use App\Models\ProposalReviewer;
 use App\Models\Research;
 use App\Services\NotificationService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class SendWeeklySummaries extends Command
 {
@@ -94,7 +95,7 @@ class SendWeeklySummaries extends Command
             'avg_review_time' => round(
                 ProposalReviewer::whereBetween('updated_at', [$weekStart, $weekEnd])
                     ->where('status', 'completed')
-                    ->selectRaw('AVG(DATEDIFF(updated_at, created_at)) as avg_days')
+                    ->selectRaw('AVG('.(DB::getDriverName() === 'mysql' ? 'DATEDIFF(updated_at, created_at)' : 'EXTRACT(EPOCH FROM (updated_at - created_at)) / 86400').') as avg_days')
                     ->value('avg_days') ?? 0
             ),
         ]);

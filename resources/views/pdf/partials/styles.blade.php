@@ -6,24 +6,29 @@
         margin: {{ $pdfConfig['custom_margins'] ?: $pdfConfig['page_margin'] }};
     }
     body {
-        font-family: {!! $pdfConfig['font_family'] !!};
-        font-size: {{ $pdfConfig['body_font_size'] }}pt;
-        line-height: {{ $pdfConfig['line_height'] }};
+        font-family: {!! $pdfConfig['font_family'] !!}, sans-serif;
+        font-size: {{ $pdfConfig['body_font_size'] ?? 10 }}pt;
+        line-height: {{ $pdfConfig['line_height'] ?? 1.4 }};
         color: #000;
+        margin: 0;
+        padding: 0;
+    }
+    .page-break {
+        page-break-after: always;
     }
     .header-table {
         width: 100%;
         border-bottom: 2px solid #000;
-        margin-bottom: 8px;
-        padding-bottom: 0px;
+        margin-bottom: 15px;
+        padding-bottom: 5px;
         border-collapse: collapse;
     }
     .header-table td {
         padding: 0;
-        vertical-align: bottom;
+        vertical-align: middle;
     }
     .logo {
-        width: 110px;
+        width: 100px;
     }
     .header-text {
         text-align: center;
@@ -32,106 +37,73 @@
         font-size: 14pt;
         font-weight: bold;
         margin: 0;
+        text-transform: uppercase;
     }
     .header-text .dept {
-        font-size: 13pt;
+        font-size: 12pt;
         font-weight: bold;
         margin: 0;
+        text-transform: uppercase;
     }
     .header-text .address {
-        font-size: 9pt;
+        font-size: 8pt;
         font-style: italic;
         margin: 0;
     }
     .header-text .contact {
-        font-size: 9pt;
+        font-size: 8pt;
         margin: 0;
-        margin-bottom: 3px; /* Memberikan jarak sedikit dari garis */
     }
     .title {
         text-align: center;
         font-weight: bold;
         text-decoration: underline;
         margin-top: 20px;
-        margin-bottom: 0;
+        margin-bottom: 10px;
         font-size: 12pt;
-    }
-    .number {
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    .bismillah {
-        text-align: center;
-        font-weight: bold;
-        margin-bottom: 15px;
-        font-size: 11pt;
+        text-transform: uppercase;
     }
     .content {
         text-align: justify;
     }
-    .meta-table {
-        width: 100%;
-        margin-top: 10px;
-    }
-    .meta-table td {
-        border: none;
-        padding: 1px;
-        vertical-align: top;
-    }
     .table-data {
         width: 100%;
         border-collapse: collapse;
-        margin: 8px 0;
+        margin: 15px 0;
+        table-layout: fixed;
     }
     .table-data th, .table-data td {
         border: 1px solid #000;
-        padding: 5px 8px;
+        padding: 8px 10px;
         text-align: left;
-        font-size: 10.5pt;
+        font-size: 9.5pt;
+        word-wrap: break-word;
     }
     .table-data th {
         text-align: center;
-        background-color: #f2f2f2;
+        background-color: #f5f5f5;
+        font-weight: bold;
     }
+    .no-border, .no-border td, .no-border th {
+        border: none !important;
+        padding: 4px 0 !important;
+    }
+    .text-center { text-align: center; }
+    .text-right { text-align: right; }
+    .text-justify { text-align: justify; }
+    .font-bold { font-weight: bold; }
+    
     .signature-table {
         width: 100%;
-        margin-top: 20px;
-    }
-    .signature-box {
-        width: 50%;
-        text-align: left;
-    }
-    .signature-box.right {
-        text-align: left;
-        padding-left: 10%;
-    }
-    .content p {
-        margin: {{ $pdfConfig['paragraph_spacing'] }}px 0;
-        @if($pdfConfig['paragraph_indent'] > 0)
-        text-indent: {{ $pdfConfig['paragraph_indent'] }}px;
-        @endif
-    }
-    .qr-code {
-        margin: 10px 0;
-    }
-    .travel-table {
-        width: 100%;
-        border-top: 1px solid #000;
-        margin-top: 15px;
-        padding-top: 3px;
-        font-size: 11pt;
-    }
-    .travel-table td {
-        border: none;
-        padding: 0px;
-        vertical-align: top;
-    }
-    .line-dots {
-        border-bottom: 1px dotted #000;
-        display: inline-block;
-        width: 150px;
+        margin-top: 30px;
     }
     .sig-spacer {
-        height: 60px;
+        height: 80px;
+    }
+    .footer-note {
+        font-size: 8pt;
+        font-style: italic;
+        color: #666;
+        margin-top: 20px;
     }
 </style>
