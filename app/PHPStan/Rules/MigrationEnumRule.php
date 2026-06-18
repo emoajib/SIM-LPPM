@@ -20,6 +20,11 @@ class MigrationEnumRule implements Rule
     ): array {
         $errors = [];
 
+        // Only apply to migration files
+        if (! str_contains($scope->getFile(), 'database/migrations/')) {
+            return $errors;
+        }
+
         if (! $node instanceof Node\Expr\MethodCall) {
             return $errors;
         }
