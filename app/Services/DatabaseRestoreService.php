@@ -47,6 +47,23 @@ class DatabaseRestoreService
         'telescope_monitoring',
     ];
 
+    private function resyncPostgresSequences(): void
+    {
+        try {
+            $tables = DB::select("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE'");
+            foreach ($tables as $tableInfo) {
+                $tableName = $tableInfo->table_name;
+                try {
+                    DB::statement("SELECT setval(pg_get_serial_sequence('\"{$tableName}\"', 'id'), COALESCE((SELECT MAX(id)+1 FROM \"{$tableName}\"), 1), false)");
+                } catch (\Throwable $e) {
+                    // Abaikan tabel yang tidak memiliki auto-increment 'id' (misalnya tabel pivot tanpa ID primary key)
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Gagal melakukan sinkronisasi sequence PostgreSQL', ['error' => $e->getMessage()]);
+        }
+    }
+
     public function preview(string $sqlPath): array
     {
         if (! file_exists($sqlPath)) {
@@ -274,6 +291,10 @@ class DatabaseRestoreService
             DB::commit();
             Schema::enableForeignKeyConstraints();
 
+            if (DB::getDriverName() === 'pgsql') {
+                $this->resyncPostgresSequences();
+            }
+
             $message = count($errors) === 0
                 ? "✅ Restore berhasil! {$inserted} baris data dipulihkan."
                 : "✅ Restore selesai dengan {$inserted} baris dan ".count($errors).' peringatan.';
@@ -437,6 +458,10 @@ class DatabaseRestoreService
 
             DB::commit();
             Schema::enableForeignKeyConstraints();
+
+            if (DB::getDriverName() === 'pgsql') {
+                $this->resyncPostgresSequences();
+            }
 
             $skippedPreserved = 0;
             foreach ($preview['tables'] as $table => $count) {
