@@ -1,5 +1,6 @@
 <?php
 
+use Database\Helpers\MigrationHelpers;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,8 +13,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('proposals', function (Blueprint $table) {
-            $table->enum('semester', ['ganjil', 'genap'])->nullable()->after('start_year');
+            $table->string('semester', 50)->nullable()->after('start_year');
         });
+
+        MigrationHelpers::addCheckConstraintToTable(
+            'proposals',
+            'semester',
+            ['ganjil', 'genap'],
+            MigrationHelpers::generateConstraintName('proposals', 'semester')
+        );
     }
 
     /**
@@ -21,6 +29,8 @@ return new class extends Migration
      */
     public function down(): void
     {
+        MigrationHelpers::dropCheckConstraint('proposals', 'proposals_semester_check');
+
         Schema::table('proposals', function (Blueprint $table) {
             $table->dropColumn('semester');
         });

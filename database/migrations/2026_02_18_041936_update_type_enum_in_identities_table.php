@@ -1,8 +1,9 @@
 <?php
 
+use App\Enums\IdentityType;
+use Database\Helpers\MigrationHelpers;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -12,27 +13,35 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // PostgreSQL & SQLite: use raw SQL for enum changes
-        // MySQL: handled by Doctrine DBAL
-        $driver = DB::getDriverName();
-        if ($driver === 'mysql') {
-            Schema::table('identities', function (Blueprint $table) {
-                $table->enum('type', ['dosen', 'mahasiswa', 'reviewer', 'tendik'])->comment('Tipe User')->change();
-            });
-        } elseif ($driver === 'pgsql') {
-            // Drop old CHECK constraint, add new one
-            DB::statement('ALTER TABLE identities DROP CONSTRAINT IF EXISTS identities_type_check');
-            DB::statement("ALTER TABLE identities ADD CONSTRAINT identities_type_check CHECK (type IN ('dosen', 'mahasiswa', 'reviewer', 'tendik'))");
-        } elseif ($driver === 'sqlite') {
-            // SQLite: recreate table via Blueprint (Laravel handles)
-            Schema::table('identities', function (Blueprint $table) {
-                $table->enum('type', ['dosen', 'mahasiswa', 'reviewer', 'tendik'])->comment('Tipe User')->change();
-            });
-        }
+        MigrationHelpers::dropCheckConstraint('identities', 'identities_type_check');
+
+        Schema::table('identities', function (Blueprint $table) {
+            $table->string('type', 50)->comment('Tipe User')->change();
+        });
+
+        MigrationHelpers::addCheckConstraintToTable(
+            'identities',
+            'type',
+            IdentityType::values(),
+            MigrationHelpers::generateConstraintName('identities', 'type')
+        );
     }
 
     public function down(): void
     {
-        // Cannot easily revert without data migration
+        // Cannot easily revert without data migration that could lose 'reviewer'/'tendik' data
+        // Best-effort revert: restore original CHECK constraint with old values
+        MigrationHelpers::dropCheckConstraint('identities', 'identities_type_check');
+
+        Schema::table('identities', function (Blueprint $table) {
+            $table->string('type', 50)->change();
+        });
+
+        MigrationHelpers::addCheckConstraintToTable(
+            'identities',
+            'type',
+            ['dosen', 'mahasiswa'],
+            MigrationHelpers::generateConstraintName('identities', 'type')
+        );
     }
 };

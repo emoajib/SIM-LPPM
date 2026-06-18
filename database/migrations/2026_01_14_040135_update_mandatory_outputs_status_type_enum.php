@@ -1,8 +1,9 @@
 <?php
 
+use App\Enums\OutputStatusType;
+use Database\Helpers\MigrationHelpers;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -20,21 +21,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // For MariaDB/MySQL, we need to use raw SQL to modify enum
-        // PostgreSQL & SQLite use CHECK constraints in base migration
-        $driver = DB::getDriverName();
-        if ($driver === 'mysql') {
-            DB::statement("ALTER TABLE mandatory_outputs MODIFY COLUMN status_type ENUM('draft', 'submitted', 'under_review', 'accepted', 'published', 'rejected') NULL COMMENT 'Publication status (BIMA 2025/2026)'");
-        } elseif ($driver === 'pgsql') {
-            // Drop old CHECK constraint, add new one
-            DB::statement('ALTER TABLE mandatory_outputs DROP CONSTRAINT IF EXISTS mandatory_outputs_status_type_check');
-            DB::statement("ALTER TABLE mandatory_outputs ADD CONSTRAINT mandatory_outputs_status_type_check CHECK (status_type IN ('draft', 'submitted', 'under_review', 'accepted', 'published', 'rejected'))");
-        } elseif ($driver === 'sqlite') {
-            // SQLite: recreate table via Blueprint (Laravel handles)
-            Schema::table('mandatory_outputs', function (Blueprint $table) {
-                $table->enum('status_type', ['draft', 'submitted', 'under_review', 'accepted', 'published', 'rejected'])->nullable()->change();
-            });
-        }
+        MigrationHelpers::dropCheckConstraint('mandatory_outputs', 'mandatory_outputs_status_type_check');
+
+        Schema::table('mandatory_outputs', function (Blueprint $table) {
+            $table->string('status_type', 50)->nullable()->comment('Publication status (BIMA 2025/2026)')->change();
+        });
+
+        MigrationHelpers::addCheckConstraintToTable(
+            'mandatory_outputs',
+            'status_type',
+            OutputStatusType::values(),
+            MigrationHelpers::generateConstraintName('mandatory_outputs', 'status_type')
+        );
     }
 
     /**
@@ -43,19 +41,18 @@ return new class extends Migration
     public function down(): void
     {
         // Revert to original enum values
-        // PostgreSQL & SQLite - handled by base migration
-        $driver = DB::getDriverName();
-        if ($driver === 'mysql') {
-            DB::statement("ALTER TABLE mandatory_outputs MODIFY COLUMN status_type ENUM('published', 'accepted', 'under_review', 'rejected') NOT NULL COMMENT 'Publication status'");
-        } elseif ($driver === 'pgsql') {
-            // Drop old CHECK constraint, add new one
-            DB::statement('ALTER TABLE mandatory_outputs DROP CONSTRAINT IF EXISTS mandatory_outputs_status_type_check');
-            DB::statement("ALTER TABLE mandatory_outputs ADD CONSTRAINT mandatory_outputs_status_type_check CHECK (status_type IN ('published', 'accepted', 'under_review', 'rejected'))");
-        } elseif ($driver === 'sqlite') {
-            // SQLite: recreate table via Blueprint (Laravel handles)
-            Schema::table('mandatory_outputs', function (Blueprint $table) {
-                $table->enum('status_type', ['published', 'accepted', 'under_review', 'rejected'])->nullable(false)->change();
-            });
-        }
+        MigrationHelpers::dropCheckConstraint('mandatory_outputs', 'mandatory_outputs_status_type_check');
+
+        Schema::table('mandatory_outputs', function (Blueprint $table) {
+            $table->string('status_type', 50)->nullable(false)->comment('Publication status')->change();
+        });
+
+        $oldValues = ['published', 'accepted', 'under_review', 'rejected'];
+        MigrationHelpers::addCheckConstraintToTable(
+            'mandatory_outputs',
+            'status_type',
+            $oldValues,
+            MigrationHelpers::generateConstraintName('mandatory_outputs', 'status_type')
+        );
     }
 };

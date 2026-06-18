@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\AdditionalOutputStatusType;
+use Database\Helpers\MigrationHelpers;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -20,20 +22,30 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // For MariaDB/MySQL, we need to use raw SQL to modify enum
-        $driver = DB::getDriverName();
-        if ($driver === 'mysql') {
-            DB::statement("ALTER TABLE additional_outputs MODIFY COLUMN status ENUM('draft', 'submitted', 'under_review', 'accepted', 'published', 'rejected') NULL COMMENT 'Publication status (BIMA 2025/2026)'");
-        } elseif ($driver === 'pgsql') {
-            // Drop old CHECK constraint, add new one
-            DB::statement('ALTER TABLE additional_outputs DROP CONSTRAINT IF EXISTS additional_outputs_status_check');
-            DB::statement("ALTER TABLE additional_outputs ADD CONSTRAINT additional_outputs_status_check CHECK (status IN ('draft', 'submitted', 'under_review', 'accepted', 'published', 'rejected'))");
-        } elseif ($driver === 'sqlite') {
-            // SQLite: recreate table via Blueprint (Laravel handles)
-            Schema::table('additional_outputs', function (Blueprint $table) {
-                $table->enum('status', ['draft', 'submitted', 'under_review', 'accepted', 'published', 'rejected'])->nullable()->change();
-            });
-        }
+        MigrationHelpers::dropCheckConstraint('additional_outputs', 'additional_outputs_status_check');
+
+        // Data migration: map old values to new ones
+        // 'review'    -> 'under_review'
+        // 'editing'   -> 'draft'
+        // 'published' -> 'published' (stays the same)
+        DB::table('additional_outputs')
+            ->where('status', 'review')
+            ->update(['status' => 'under_review']);
+
+        DB::table('additional_outputs')
+            ->where('status', 'editing')
+            ->update(['status' => 'draft']);
+
+        Schema::table('additional_outputs', function (Blueprint $table) {
+            $table->string('status', 50)->nullable()->comment('Publication status (BIMA 2025/2026)')->change();
+        });
+
+        MigrationHelpers::addCheckConstraintToTable(
+            'additional_outputs',
+            'status',
+            AdditionalOutputStatusType::values(),
+            MigrationHelpers::generateConstraintName('additional_outputs', 'status')
+        );
     }
 
     /**
@@ -41,19 +53,23 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Revert to original enum values
-        $driver = DB::getDriverName();
-        if ($driver === 'mysql') {
-            DB::statement("ALTER TABLE additional_outputs MODIFY COLUMN status ENUM('review', 'editing', 'published') NOT NULL COMMENT 'Publication status'");
-        } elseif ($driver === 'pgsql') {
-            // Drop old CHECK constraint, add new one
-            DB::statement('ALTER TABLE additional_outputs DROP CONSTRAINT IF EXISTS additional_outputs_status_check');
-            DB::statement("ALTER TABLE additional_outputs ADD CONSTRAINT additional_outputs_status_check CHECK (status IN ('review', 'editing', 'published'))");
-        } elseif ($driver === 'sqlite') {
-            // SQLite: recreate table via Blueprint (Laravel handles)
-            Schema::table('additional_outputs', function (Blueprint $table) {
-                $table->enum('status', ['review', 'editing', 'published'])->nullable(false)->change();
-            });
-        }
+        MigrationHelpers::dropCheckConstraint('additional_outputs', 'additional_outputs_status_check');
+
+        // Map new values back to old (best effort — some data fidelity is lost)
+        DB::table('additional_outputs')
+            ->whereIn('status', ['draft', 'submitted', 'under_review', 'accepted', 'rejected'])
+            ->update(['status' => 'review']);
+
+        Schema::table('additional_outputs', function (Blueprint $table) {
+            $table->string('status', 50)->nullable(false)->comment('Publication status')->change();
+        });
+
+        $oldValues = ['review', 'editing', 'published'];
+        MigrationHelpers::addCheckConstraintToTable(
+            'additional_outputs',
+            'status',
+            $oldValues,
+            MigrationHelpers::generateConstraintName('additional_outputs', 'status')
+        );
     }
 };

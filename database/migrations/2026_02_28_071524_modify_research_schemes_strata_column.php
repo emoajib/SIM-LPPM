@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\ResearchSchemeStrata;
+use Database\Helpers\MigrationHelpers;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,7 +14,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('research_schemes', function (Blueprint $table) {
-            $table->string('strata')->change();
+            $table->string('strata', 50)->change();
         });
     }
 
@@ -22,7 +24,15 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('research_schemes', function (Blueprint $table) {
-            $table->enum('strata', ['Dasar', 'Terapan', 'Pengembangan', 'PKM'])->change();
+            $table->string('strata', 50)->change();
         });
+
+        MigrationHelpers::dropCheckConstraint('research_schemes', 'research_schemes_strata_check');
+        MigrationHelpers::addCheckConstraintToTable(
+            'research_schemes',
+            'strata',
+            ResearchSchemeStrata::values(),
+            MigrationHelpers::generateConstraintName('research_schemes', 'strata')
+        );
     }
 };

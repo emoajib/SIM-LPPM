@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\ProposalMonevSemester;
+use Database\Helpers\MigrationHelpers;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +20,7 @@ return new class extends Migration
                 $table->string('academic_year')->nullable()->after('proposal_id');
             }
             if (! Schema::hasColumn('proposal_monevs', 'semester')) {
-                $table->enum('semester', ['ganjil', 'genap'])->nullable()->after('academic_year');
+                $table->string('semester', 50)->nullable()->after('academic_year');
             }
         });
 
@@ -39,18 +41,18 @@ return new class extends Migration
         ");
 
         // 3. Set columns to NOT NULL after data is populated
-        $driver = DB::getDriverName();
-        if ($driver !== 'sqlite') {
-            if ($driver === 'mysql') {
-                Schema::table('proposal_monevs', function (Blueprint $table) {
-                    $table->string('academic_year')->nullable(false)->change();
-                    $table->enum('semester', ['ganjil', 'genap'])->nullable(false)->change();
-                });
-            } elseif ($driver === 'pgsql') {
-                // PostgreSQL: column already handles NOT NULL via base migration CHECK constraint
-                // No action needed - the CHECK constraint in base migration already enforces NOT NULL
-            }
-        }
+        Schema::table('proposal_monevs', function (Blueprint $table) {
+            $table->string('academic_year')->nullable(false)->change();
+            $table->string('semester', 50)->nullable(false)->change();
+        });
+
+        // 4. Add CHECK constraint for semester values
+        MigrationHelpers::addCheckConstraintToTable(
+            'proposal_monevs',
+            'semester',
+            ProposalMonevSemester::values(),
+            MigrationHelpers::generateConstraintName('proposal_monevs', 'semester')
+        );
     }
 
     /**
@@ -58,6 +60,8 @@ return new class extends Migration
      */
     public function down(): void
     {
+        MigrationHelpers::dropCheckConstraint('proposal_monevs', 'proposal_monevs_semester_check');
+
         Schema::table('proposal_monevs', function (Blueprint $table) {
             $table->dropColumn(['academic_year', 'semester']);
         });

@@ -1,5 +1,6 @@
 <?php
 
+use Database\Helpers\MigrationHelpers;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -12,20 +13,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Add waiting_reviewer status to the enum
-        $driver = DB::getDriverName();
-        if ($driver === 'mysql') {
-            DB::statement("ALTER TABLE proposals MODIFY COLUMN status ENUM('draft','submitted','need_assignment','approved','waiting_reviewer','under_review','reviewed','revision_needed','completed','rejected') NOT NULL DEFAULT 'draft'");
-        } elseif ($driver === 'pgsql') {
-            // Drop old CHECK constraint, add new one
-            DB::statement('ALTER TABLE proposals DROP CONSTRAINT IF EXISTS proposals_status_check');
-            DB::statement("ALTER TABLE proposals ADD CONSTRAINT proposals_status_check CHECK (status IN ('draft','submitted','need_assignment','approved','waiting_reviewer','under_review','reviewed','revision_needed','completed','rejected'))");
-        } elseif ($driver === 'sqlite') {
-            // SQLite: recreate table via Blueprint (Laravel handles)
-            Schema::table('proposals', function (Blueprint $table) {
-                $table->enum('status', ['draft', 'submitted', 'need_assignment', 'approved', 'waiting_reviewer', 'under_review', 'reviewed', 'revision_needed', 'completed', 'rejected'])->default('draft')->change();
-            });
-        }
+        // All ProposalStatus values (including waiting_reviewer)
+        $allValues = ['draft', 'submitted', 'need_assignment', 'approved', 'waiting_reviewer', 'under_review', 'reviewed', 'revision_needed', 'completed', 'rejected'];
+
+        MigrationHelpers::dropCheckConstraint('proposals', 'proposals_status_check');
+
+        Schema::table('proposals', function (Blueprint $table) {
+            $table->string('status', 50)->default('draft')->change();
+        });
+
+        MigrationHelpers::addCheckConstraintToTable(
+            'proposals',
+            'status',
+            $allValues,
+            MigrationHelpers::generateConstraintName('proposals', 'status')
+        );
     }
 
     /**
@@ -38,19 +40,20 @@ return new class extends Migration
             ->where('status', 'waiting_reviewer')
             ->update(['status' => 'approved']);
 
-        // Remove waiting_reviewer from the enum
-        $driver = DB::getDriverName();
-        if ($driver === 'mysql') {
-            DB::statement("ALTER TABLE proposals MODIFY COLUMN status ENUM('draft','submitted','need_assignment','approved','under_review','reviewed','revision_needed','completed','rejected') NOT NULL DEFAULT 'draft'");
-        } elseif ($driver === 'pgsql') {
-            // Drop old CHECK constraint, add new one
-            DB::statement('ALTER TABLE proposals DROP CONSTRAINT IF EXISTS proposals_status_check');
-            DB::statement("ALTER TABLE proposals ADD CONSTRAINT proposals_status_check CHECK (status IN ('draft','submitted','need_assignment','approved','under_review','reviewed','revision_needed','completed','rejected'))");
-        } elseif ($driver === 'sqlite') {
-            // SQLite: recreate table via Blueprint (Laravel handles)
-            Schema::table('proposals', function (Blueprint $table) {
-                $table->enum('status', ['draft', 'submitted', 'need_assignment', 'approved', 'under_review', 'reviewed', 'revision_needed', 'completed', 'rejected'])->default('draft')->change();
-            });
-        }
+        // Old values without waiting_reviewer
+        $oldValues = ['draft', 'submitted', 'need_assignment', 'approved', 'under_review', 'reviewed', 'revision_needed', 'completed', 'rejected'];
+
+        MigrationHelpers::dropCheckConstraint('proposals', 'proposals_status_check');
+
+        Schema::table('proposals', function (Blueprint $table) {
+            $table->string('status', 50)->default('draft')->change();
+        });
+
+        MigrationHelpers::addCheckConstraintToTable(
+            'proposals',
+            'status',
+            $oldValues,
+            MigrationHelpers::generateConstraintName('proposals', 'status')
+        );
     }
 };

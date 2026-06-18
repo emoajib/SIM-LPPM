@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\TeamSource;
+use Database\Helpers\MigrationHelpers;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,8 +15,15 @@ return new class extends Migration
     {
         if (! Schema::hasColumn('letters', 'team_source')) {
             Schema::table('letters', function (Blueprint $table) {
-                $table->enum('team_source', ['proposal', 'manual'])->default('proposal')->after('source');
+                $table->string('team_source', 50)->default('proposal')->after('source');
             });
+
+            MigrationHelpers::addCheckConstraintToTable(
+                'letters',
+                'team_source',
+                TeamSource::values(),
+                MigrationHelpers::generateConstraintName('letters', 'team_source')
+            );
         }
 
         Schema::table('letters', function (Blueprint $table) {
@@ -34,6 +43,8 @@ return new class extends Migration
         });
 
         if (Schema::hasColumn('letters', 'team_source')) {
+            MigrationHelpers::dropCheckConstraint('letters', 'letters_team_source_check');
+
             Schema::table('letters', function (Blueprint $table) {
                 $table->dropColumn('team_source');
             });

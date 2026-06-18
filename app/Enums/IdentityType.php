@@ -6,6 +6,8 @@ enum IdentityType: string
 {
     case DOSEN = 'dosen';
     case MAHASISWA = 'mahasiswa';
+    case REVIEWER = 'reviewer';
+    case TENDIK = 'tendik';
 
     /**
      * Get label in Indonesian
@@ -15,6 +17,8 @@ enum IdentityType: string
         return match ($this) {
             self::DOSEN => 'Dosen',
             self::MAHASISWA => 'Mahasiswa',
+            self::REVIEWER => 'Reviewer',
+            self::TENDIK => 'Tendik',
         };
     }
 
