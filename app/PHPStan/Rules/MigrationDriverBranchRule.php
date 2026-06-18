@@ -15,7 +15,7 @@ class MigrationDriverBranchRule implements Rule
     }
 
     public function processNode(
-        Node\Expr\BinaryOp\Identical $node,
+        Node $node,
         Scope $scope
     ): array {
         $errors = [];

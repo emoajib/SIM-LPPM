@@ -11,16 +11,16 @@ class MigrationChangeMethodRule implements Rule
 {
     public function getNodeType(): string
     {
-        return Node\Expr\Call::class;
+        return Node\Expr\MethodCall::class;
     }
 
     public function processNode(
-        Node\Expr\Call $node,
+        Node $node,
         Scope $scope
     ): array {
         $errors = [];
 
-        if ($node->name instanceof Node\Name) {
+        if ($node instanceof Node\Expr\MethodCall && $node->name instanceof Node\Identifier) {
             $methodName = $node->name->toString();
 
             if ($methodName === 'change') {

@@ -15,7 +15,7 @@ class MigrationRawStatementRule implements Rule
     }
 
     public function processNode(
-        Node\Expr\StaticCall $node,
+        Node $node,
         Scope $scope
     ): array {
         $errors = [];
