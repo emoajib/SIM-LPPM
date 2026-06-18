@@ -404,6 +404,80 @@
                                     </select>
                                 </div>
                             </div>
+
+                            <hr class="my-4">
+
+                            <h5 class="fw-bold mb-3 text-purple">Visibilitas Bagian Proposal</h5>
+                            <div class="row g-3 mb-4">
+                                <div class="col-12 col-md-6">
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="pdfProposalShowCover" wire:model.live="pdfProposalShowCover">
+                                        <label class="form-check-label" for="pdfProposalShowCover">1. Halaman Sampul (Cover)</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="pdfProposalShowSubstance" wire:model.live="pdfProposalShowSubstance">
+                                        <label class="form-check-label" for="pdfProposalShowSubstance">2. Detail Substansi Proposal</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="pdfProposalShowApproval" wire:model.live="pdfProposalShowApproval">
+                                        <label class="form-check-label" for="pdfProposalShowApproval">3. Halaman Persetujuan</label>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="pdfProposalShowDocs" wire:model.live="pdfProposalShowDocs">
+                                        <label class="form-check-label" for="pdfProposalShowDocs">4. Lampiran Dokumen Pendukung</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="pdfProposalShowOtherDocs" wire:model.live="pdfProposalShowOtherDocs">
+                                        <label class="form-check-label" for="pdfProposalShowOtherDocs">5. Lampiran Pendukung Lainnya</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="pdfProposalShowOutro" wire:model.live="pdfProposalShowOutro">
+                                        <label class="form-check-label" for="pdfProposalShowOutro">6. Teks Penutup (Outro)</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h5 class="fw-bold mb-3 text-purple">Visibilitas Bagian Laporan Akhir / Kemajuan</h5>
+                            <div class="row g-3">
+                                <div class="col-12 col-md-6">
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="pdfReportShowCover" wire:model.live="pdfReportShowCover">
+                                        <label class="form-check-label" for="pdfReportShowCover">1. Halaman Sampul (Cover)</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="pdfReportShowBasicInfo" wire:model.live="pdfReportShowBasicInfo">
+                                        <label class="form-check-label" for="pdfReportShowBasicInfo">2. Detail Data Dasar Kegiatan</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="pdfReportShowApproval" wire:model.live="pdfReportShowApproval">
+                                        <label class="form-check-label" for="pdfReportShowApproval">3. Halaman Pengesahan</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="pdfReportShowRealization" wire:model.live="pdfReportShowRealization">
+                                        <label class="form-check-label" for="pdfReportShowRealization">4. Detail Realisasi Pelaksanaan</label>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="pdfReportShowLogbook" wire:model.live="pdfReportShowLogbook">
+                                        <label class="form-check-label" for="pdfReportShowLogbook">5. Catatan Harian (Logbook)</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="pdfReportShowDocs" wire:model.live="pdfReportShowDocs">
+                                        <label class="form-check-label" for="pdfReportShowDocs">6. Lampiran Dokumen Pendukung</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="pdfReportShowOtherDocs" wire:model.live="pdfReportShowOtherDocs">
+                                        <label class="form-check-label" for="pdfReportShowOtherDocs">7. Lampiran Pendukung Lainnya</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" id="pdfReportShowOutro" wire:model.live="pdfReportShowOutro">
+                                        <label class="form-check-label" for="pdfReportShowOutro">8. Teks Penutup (Outro)</label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

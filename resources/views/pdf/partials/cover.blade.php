@@ -21,27 +21,29 @@
     </div>
 
     @if($pdfConfig['cover_show_team'] ?? true)
-    <div style="width: 100%; margin: 20px 0;">
-        <div style="font-weight: bold; margin-bottom: 5px; text-align: center;">Oleh:</div>
-        <table style="width: 100%; border: 0.5pt dashed #000; margin-bottom: 0;">
-            <tr>
-                <td style="width: 15%; border: 0.5pt dashed #000; padding: 8px;">Ketua</td>
-                <td style="width: 45%; border: 0.5pt dashed #000; padding: 8px; font-weight: bold;">{{ $submitterFullName }}</td>
-                <td style="width: 10%; border: 0.5pt dashed #000; padding: 8px;">NIDN</td>
-                <td style="width: 30%; border: 0.5pt dashed #000; padding: 8px; font-weight: bold;">{{ $submitterNidn }}</td>
-            </tr>
-            @php
-                $lecturerMembersCover = $proposal->teamMembers->filter(fn($m) => $m->id !== $proposal->submitter_id && ($m->identity?->type === 'dosen' || $m->pivot->role === 'anggota' || $m->pivot->role === 'dosen'));
-            @endphp
-            @foreach($lecturerMembersCover as $index => $member)
-            <tr>
-                <td style="width: 15%; border: 0.5pt dashed #000; padding: 8px;">Anggota {{ to_roman($index + 1) }}</td>
-                <td style="width: 45%; border: 0.5pt dashed #000; padding: 8px; font-weight: bold;">{{ format_name($member->identity?->title_prefix ?? '', $member->name, $member->identity?->title_suffix ?? '') }}</td>
-                <td style="width: 10%; border: 0.5pt dashed #000; padding: 8px;">NIDN</td>
-                <td style="width: 30%; border: 0.5pt dashed #000; padding: 8px; font-weight: bold;">{{ $member->identity?->identity_id ?? '-' }}</td>
-            </tr>
-            @endforeach
-        </table>
+    <div style="position: absolute; top: 55%; left: 0; right: 0;">
+        <div style="width: 85%; margin: 0 auto;">
+            <div style="font-weight: bold; margin-bottom: 5px; text-align: center;">Oleh:</div>
+            <table style="width: 100%; border: 0.5pt dashed #000; margin-bottom: 0;">
+                <tr>
+                    <td style="width: 15%; border: 0.5pt dashed #000; padding: 8px;">Ketua</td>
+                    <td style="width: 45%; border: 0.5pt dashed #000; padding: 8px; font-weight: bold;">{{ $submitterFullName }}</td>
+                    <td style="width: 10%; border: 0.5pt dashed #000; padding: 8px;">NIDN</td>
+                    <td style="width: 30%; border: 0.5pt dashed #000; padding: 8px; font-weight: bold;">{{ $submitterNidn }}</td>
+                </tr>
+                @php
+                    $lecturerMembersCover = $proposal->teamMembers->filter(fn($m) => $m->id !== $proposal->submitter_id && ($m->identity?->type === 'dosen' || $m->pivot->role === 'anggota' || $m->pivot->role === 'dosen'));
+                @endphp
+                @foreach($lecturerMembersCover as $index => $member)
+                <tr>
+                    <td style="width: 15%; border: 0.5pt dashed #000; padding: 8px;">Anggota {{ to_roman($index + 1) }}</td>
+                    <td style="width: 45%; border: 0.5pt dashed #000; padding: 8px; font-weight: bold;">{{ format_name($member->identity?->title_prefix ?? '', $member->name, $member->identity?->title_suffix ?? '') }}</td>
+                    <td style="width: 10%; border: 0.5pt dashed #000; padding: 8px;">NIDN</td>
+                    <td style="width: 30%; border: 0.5pt dashed #000; padding: 8px; font-weight: bold;">{{ $member->identity?->identity_id ?? '-' }}</td>
+                </tr>
+                @endforeach
+            </table>
+        </div>
     </div>
     @endif
 

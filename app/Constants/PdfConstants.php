@@ -103,6 +103,36 @@ class PdfConstants
 
     public const PROPOSAL_LINE_HEIGHT = 'pdf_proposal_line_height';
 
+    // --- Visibility Setting Keys (Family C: Proposal) ---
+    public const PROPOSAL_SHOW_COVER = 'pdf_proposal_show_cover';
+
+    public const PROPOSAL_SHOW_SUBSTANCE = 'pdf_proposal_show_substance';
+
+    public const PROPOSAL_SHOW_APPROVAL = 'pdf_proposal_show_approval';
+
+    public const PROPOSAL_SHOW_DOCS = 'pdf_proposal_show_docs';
+
+    public const PROPOSAL_SHOW_OTHER_DOCS = 'pdf_proposal_show_other_docs';
+
+    public const PROPOSAL_SHOW_OUTRO = 'pdf_proposal_show_outro';
+
+    // --- Visibility Setting Keys (Family C: Report) ---
+    public const REPORT_SHOW_COVER = 'pdf_report_show_cover';
+
+    public const REPORT_SHOW_BASIC_INFO = 'pdf_report_show_basic_info';
+
+    public const REPORT_SHOW_APPROVAL = 'pdf_report_show_approval';
+
+    public const REPORT_SHOW_REALIZATION = 'pdf_report_show_realization';
+
+    public const REPORT_SHOW_LOGBOOK = 'pdf_report_show_logbook';
+
+    public const REPORT_SHOW_DOCS = 'pdf_report_show_docs';
+
+    public const REPORT_SHOW_OTHER_DOCS = 'pdf_report_show_other_docs';
+
+    public const REPORT_SHOW_OUTRO = 'pdf_report_show_outro';
+
     /**
      * Helper to get full override key for a module.
      */

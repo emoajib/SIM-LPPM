@@ -19,8 +19,7 @@
     @endphp
 </head>
 <body>
-    @include('pdf.partials.section-footer')
-
+    @if(\App\Models\Setting::get(\App\Constants\PdfConstants::REPORT_SHOW_COVER, true))
     @include('pdf.partials.cover', [
         'coverTitle' => 'LAPORAN '.$periodLabel.' '.($proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN').' INTERNAL',
         'coverYear' => $report->reporting_year,
@@ -32,6 +31,11 @@
     ])
 
     <div style="page-break-after: always;"></div>
+    @endif
+
+    @include('pdf.partials.section-footer')
+
+    @if(\App\Models\Setting::get(\App\Constants\PdfConstants::REPORT_SHOW_BASIC_INFO, true))
 
     @include('pdf.partials.header')
 
@@ -89,86 +93,10 @@
 
     @include('pdf.partials.section-anggaran', ['sectionNum' => $sectionNum])
     @php $sectionNum++; @endphp
-
-    <div style="margin-top: 30px; border-top: 2px dashed #000; padding-top: 20px;"></div>
-
-    <div class="section-title">{{ $sectionNum++ }}. RINGKASAN {{ $report->reporting_period === 'final' ? 'AKHIR' : 'KEMAJUAN' }}</div>
-    <div class="text-justify" style="margin-bottom: 15px; border: 1px solid #eee; padding: 10px; font-size: 9pt; line-height: 1.4;">
-        {!! nl2br(e($report->summary_update)) !!}
-    </div>
-
-    <div class="section-title">{{ $sectionNum++ }}. CAPAIAN LUARAN WAJIB</div>
-    <table>
-        <thead>
-            <tr>
-                <th width="5%">No</th>
-                <th width="20%">Jenis Luaran</th>
-                <th width="15%">Status Saat Ini</th>
-                <th width="60%">Keterangan / Detail Capaian</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($report->mandatoryOutputs as $index => $mo)
-                <tr>
-                    <td class="text-center">{{ $index + 1 }}</td>
-                    <td>{{ $mo->proposalOutput->type ?? '-' }}</td>
-                    <td class="text-center">{{ ucfirst($mo->status_type) }}</td>
-                    <td>
-                        @if($mo->article_title) <strong>Judul:</strong> {{ $mo->article_title }}<br> @endif
-                        @if($mo->book_title) <strong>Judul Buku:</strong> {{ $mo->book_title }}<br> @endif
-                        @if($mo->product_name) <strong>Nama Produk:</strong> {{ $mo->product_name }}<br> @endif
-                        @if($mo->journal_title) <strong>Jurnal/Penerbit:</strong> {{ $mo->journal_title }} @if($mo->volume) (Vol {{ $mo->volume }}) @endif<br> @endif
-                        @if($mo->article_url) <strong>Tautan:</strong> {{ $mo->article_url }}<br> @endif
-                        @if($mo->description) <strong>Deskripsi:</strong> {{ $mo->description }}<br> @endif
-                        @if(!$mo->article_title && !$mo->book_title && !$mo->product_name && !$mo->description)
-                            <em>Detail belum dilengkapi</em>
-                        @endif
-                    </td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="4" class="text-center">Belum ada capaian luaran wajib dilaporkan</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
-
-    @if($report->additionalOutputs->count() > 0)
-        <div class="section-title">{{ $sectionNum++ }}. CAPAIAN LUARAN TAMBAHAN</div>
-        <table>
-            <thead>
-                <tr>
-                    <th width="5%">No</th>
-                    <th width="20%">Jenis Luaran</th>
-                    <th width="15%">Status Saat Ini</th>
-                    <th width="60%">Keterangan / Detail Capaian</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($report->additionalOutputs as $index => $ao)
-                    <tr>
-                        <td class="text-center">{{ $index + 1 }}</td>
-                        <td>{{ $ao->proposalOutput->type ?? 'Luaran Tambahan' }}</td>
-                        <td class="text-center">{{ ucfirst($ao->status_type ?? $ao->status ?? '') }}</td>
-                        <td>
-                            @if($ao->article_title) <strong>Judul:</strong> {{ $ao->article_title }}<br> @endif
-                            @if($ao->book_title) <strong>Judul Buku:</strong> {{ $ao->book_title }}<br> @endif
-                            @if($ao->product_name) <strong>Nama Produk:</strong> {{ $ao->product_name }}<br> @endif
-                            @if($ao->journal_title) <strong>Jurnal/Penerbit:</strong> {{ $ao->journal_title }} @if($ao->volume) (Vol {{ $ao->volume }}) @endif<br> @endif
-                            @if($ao->article_url) <strong>Tautan:</strong> {{ $ao->article_url }}<br> @endif
-                            @if($ao->description) <strong>Deskripsi:</strong> {{ $ao->description }}<br> @endif
-                            @if(!$ao->article_title && !$ao->book_title && !$ao->product_name && !$ao->description)
-                                <em>Detail belum dilengkapi</em>
-                            @endif
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
     @endif
 
-    @if(isset($report_approval_mode) && ($report_approval_mode === 'digital' || $report_approval_mode === 'both'))
-        <div class="page-break"></div>
+    @if(\App\Models\Setting::get(\App\Constants\PdfConstants::REPORT_SHOW_APPROVAL, true) && isset($report_approval_mode) && ($report_approval_mode === 'digital' || $report_approval_mode === 'both'))
+        <div style="page-break-before: always;"></div>
         <div style="text-align: center; font-weight: bold; font-size: 11pt; margin-bottom: 20px; text-transform: uppercase;">
             HALAMAN PENGESAHAN LAPORAN {{ $report->reporting_period === 'final' ? 'AKHIR' : 'KEMAJUAN' }}
             {{ $proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN' }}
@@ -328,6 +256,137 @@
         </div>
     @endif
 
+    @if(\App\Models\Setting::get(\App\Constants\PdfConstants::REPORT_SHOW_REALIZATION, true))
+
+    <div style="margin-top: 30px; border-top: 2px dashed #000; padding-top: 20px;"></div>
+
+    <div class="section-title">{{ $sectionNum++ }}. RINGKASAN {{ $report->reporting_period === 'final' ? 'AKHIR' : 'KEMAJUAN' }}</div>
+    <div class="text-justify" style="margin-bottom: 15px; border: 1px solid #eee; padding: 10px; font-size: 9pt; line-height: 1.4;">
+        {!! nl2br(e($report->summary_update)) !!}
+    </div>
+
+    <div class="section-title">{{ $sectionNum++ }}. CAPAIAN LUARAN WAJIB</div>
+    <table>
+        <thead>
+            <tr>
+                <th width="5%">No</th>
+                <th width="20%">Jenis Luaran</th>
+                <th width="15%">Status Saat Ini</th>
+                <th width="60%">Keterangan / Detail Capaian</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($report->mandatoryOutputs as $index => $mo)
+                <tr>
+                    <td class="text-center">{{ $index + 1 }}</td>
+                    <td>{{ $mo->proposalOutput->type ?? '-' }}</td>
+                    <td class="text-center">{{ ucfirst($mo->status_type) }}</td>
+                    <td>
+                        @if($mo->article_title) <strong>Judul:</strong> {{ $mo->article_title }}<br> @endif
+                        @if($mo->book_title) <strong>Judul Buku:</strong> {{ $mo->book_title }}<br> @endif
+                        @if($mo->product_name) <strong>Nama Produk:</strong> {{ $mo->product_name }}<br> @endif
+                        @if($mo->journal_title) <strong>Jurnal/Penerbit:</strong> {{ $mo->journal_title }} @if($mo->volume) (Vol {{ $mo->volume }}) @endif<br> @endif
+                        @if($mo->article_url) <strong>Tautan:</strong> {{ $mo->article_url }}<br> @endif
+                        @if($mo->description) <strong>Deskripsi:</strong> {{ $mo->description }}<br> @endif
+                        @if(!$mo->article_title && !$mo->book_title && !$mo->product_name && !$mo->description)
+                            <em>Detail belum dilengkapi</em>
+                        @endif
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="4" class="text-center">Belum ada capaian luaran wajib dilaporkan</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+
+    @if($report->additionalOutputs->count() > 0)
+        <div class="section-title">{{ $sectionNum++ }}. CAPAIAN LUARAN TAMBAHAN</div>
+        <table>
+            <thead>
+                <tr>
+                    <th width="5%">No</th>
+                    <th width="20%">Jenis Luaran</th>
+                    <th width="15%">Status Saat Ini</th>
+                    <th width="60%">Keterangan / Detail Capaian</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($report->additionalOutputs as $index => $ao)
+                    <tr>
+                        <td class="text-center">{{ $index + 1 }}</td>
+                        <td>{{ $ao->proposalOutput->type ?? 'Luaran Tambahan' }}</td>
+                        <td class="text-center">{{ ucfirst($ao->status_type ?? $ao->status ?? '') }}</td>
+                        <td>
+                            @if($ao->article_title) <strong>Judul:</strong> {{ $ao->article_title }}<br> @endif
+                            @if($ao->book_title) <strong>Judul Buku:</strong> {{ $ao->book_title }}<br> @endif
+                            @if($ao->product_name) <strong>Nama Produk:</strong> {{ $ao->product_name }}<br> @endif
+                            @if($ao->journal_title) <strong>Jurnal/Penerbit:</strong> {{ $ao->journal_title }} @if($ao->volume) (Vol {{ $ao->volume }}) @endif<br> @endif
+                            @if($ao->article_url) <strong>Tautan:</strong> {{ $ao->article_url }}<br> @endif
+                            @if($ao->description) <strong>Deskripsi:</strong> {{ $ao->description }}<br> @endif
+                            @if(!$ao->article_title && !$ao->book_title && !$ao->product_name && !$ao->description)
+                                <em>Detail belum dilengkapi</em>
+                            @endif
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
+    @endif
+
+    @if(\App\Models\Setting::get(\App\Constants\PdfConstants::REPORT_SHOW_LOGBOOK, true))
+        @php
+            $logbooks = $proposal->dailyNotes()->orderBy('activity_date', 'asc')->get();
+        @endphp
+        @if($logbooks->count() > 0)
+            <div class="section-title">{{ $sectionNum++ }}. CATATAN HARIAN (LOGBOOK)</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th width="5%">No</th>
+                        <th width="12%">Tgl</th>
+                        <th width="35%">Aktivitas & Catatan</th>
+                        <th width="15%">Kelompok RAB</th>
+                        <th width="15%">Nominal (Rp)</th>
+                        <th width="8%">Progres</th>
+                        <th width="10%">Bukti</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($logbooks as $index => $note)
+                        <tr>
+                            <td class="text-center">{{ $index + 1 }}</td>
+                            <td class="text-center">{{ $note->activity_date->format('d/m/Y') }}</td>
+                            <td class="text-justify">
+                                <div class="font-bold" style="line-height: 1.4;">{{ $note->activity_description }}</div>
+                                @if ($note->notes)
+                                    <div style="margin-top: 5px; font-style: italic; color: #444; font-size: 8pt; line-height: 1.4;">
+                                        Catatan: {{ $note->notes }}
+                                    </div>
+                                @endif
+                            </td>
+                            <td class="text-center">{{ $note->budgetGroup->name ?? '-' }}</td>
+                            <td class="text-right">{{ $note->amount ? number_format($note->amount, 0, ',', '.') : '-' }}</td>
+                            <td class="text-center">{{ $note->progress_percentage }}%</td>
+                            <td class="text-center">
+                                @if ($note->media->isNotEmpty())
+                                    Ada
+                                @else
+                                    -
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
+    @endif
+
+    {{-- Approval page moved above --}}
+
+    @if(\App\Models\Setting::get(\App\Constants\PdfConstants::REPORT_SHOW_DOCS, true))
     @php
         $supportingDocs = [];
         if ($proposal->detailable?->hasMedia('substance_file')) {
@@ -385,7 +444,9 @@
     @if(count($supportingDocs) > 0)
         @php $sectionNum++; @endphp
     @endif
+    @endif
 
+    @if(\App\Models\Setting::get(\App\Constants\PdfConstants::REPORT_SHOW_OTHER_DOCS, true))
     @php
         $otherDocs = [];
         foreach($proposal->partners as $partner) {
@@ -405,7 +466,9 @@
     @if(count($otherDocs) > 0)
         @php $sectionNum++; @endphp
     @endif
+    @endif
 
+    @if(\App\Models\Setting::get(\App\Constants\PdfConstants::REPORT_SHOW_OUTRO, true))
     @if(!empty($pdfConfig['approval_custom_text'] ?? null))
         <div style="margin-top: 20px; padding: 10px; border: 1px solid #ddd; background: #f9f9f9; text-align: center; font-size: 9pt;">
             {!! nl2br(e($pdfConfig['approval_custom_text'])) !!}
@@ -416,6 +479,7 @@
         <div style="margin-top: 15px; padding: 10px; border: 1px solid #ddd; background: #f9f9f9; text-align: justify; font-size: 9pt;">
             {!! nl2br(e($pdfConfig['outro_text'])) !!}
         </div>
+    @endif
     @endif
 </body>
 </html>

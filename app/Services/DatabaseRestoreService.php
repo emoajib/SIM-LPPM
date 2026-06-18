@@ -219,6 +219,9 @@ class DatabaseRestoreService
                 DB::statement('SET UNIQUE_CHECKS = 0');
                 DB::statement('SET SQL_MODE = ""');
             }
+            if (DB::getDriverName() === 'pgsql') {
+                DB::statement('SET session_replication_role = replica;');
+            }
 
             foreach ($statements as $stmt) {
                 try {
@@ -248,6 +251,9 @@ class DatabaseRestoreService
             if (DB::getDriverName() === 'mysql') {
                 DB::statement('SET UNIQUE_CHECKS = 1');
             }
+            if (DB::getDriverName() === 'pgsql') {
+                DB::statement('SET session_replication_role = DEFAULT;');
+            }
 
             DB::commit();
             Schema::enableForeignKeyConstraints();
@@ -276,6 +282,9 @@ class DatabaseRestoreService
 
             if (DB::getDriverName() === 'mysql') {
                 DB::statement('SET UNIQUE_CHECKS = 1');
+            }
+            if (DB::getDriverName() === 'pgsql') {
+                DB::statement('SET session_replication_role = DEFAULT;');
             }
 
             Log::error('Database restore failed', [
@@ -335,6 +344,9 @@ class DatabaseRestoreService
                 DB::statement('SET UNIQUE_CHECKS = 0');
                 DB::statement('SET SQL_MODE = ""');
             }
+            if (DB::getDriverName() === 'pgsql') {
+                DB::statement('SET session_replication_role = replica;');
+            }
 
             if (DB::getDriverName() === 'pgsql') {
                 // Untuk PostgreSQL, kumpulkan semua tabel yang akan dihapus dan gunakan TRUNCATE ... CASCADE dalam satu perintah tunggal
@@ -390,6 +402,9 @@ class DatabaseRestoreService
             if (DB::getDriverName() === 'mysql') {
                 DB::statement('SET UNIQUE_CHECKS = 1');
             }
+            if (DB::getDriverName() === 'pgsql') {
+                DB::statement('SET session_replication_role = DEFAULT;');
+            }
 
             DB::commit();
             Schema::enableForeignKeyConstraints();
@@ -433,6 +448,9 @@ class DatabaseRestoreService
 
             if (DB::getDriverName() === 'mysql') {
                 DB::statement('SET UNIQUE_CHECKS = 1');
+            }
+            if (DB::getDriverName() === 'pgsql') {
+                DB::statement('SET session_replication_role = DEFAULT;');
             }
 
             Log::error('Database restore-with-replace failed', [

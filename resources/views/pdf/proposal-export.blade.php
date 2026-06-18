@@ -26,20 +26,94 @@
     @endphp
 </head>
 <body>
+    @if(\App\Models\Setting::get(\App\Constants\PdfConstants::PROPOSAL_SHOW_COVER, true))
+        @include('pdf.partials.cover', [
+            'coverTitle' => 'PROPOSAL '.($proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN').' INTERNAL',
+            'coverYear' => $proposal->start_year,
+            'proposal' => $proposal,
+            'submitterFullName' => $submitterFullName,
+            'submitterNidn' => $submitterNidn,
+            'facultyName' => $facultyName,
+            'prodiName' => $prodiName,
+        ])
+        <div style="page-break-after: always;"></div>
+    @endif
+
     @include('pdf.partials.section-footer')
 
-    @include('pdf.partials.cover', [
-        'coverTitle' => 'PROPOSAL '.($proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN').' INTERNAL',
-        'coverYear' => $proposal->start_year,
-        'proposal' => $proposal,
-        'submitterFullName' => $submitterFullName,
-        'submitterNidn' => $submitterNidn,
-        'facultyName' => $facultyName,
-        'prodiName' => $prodiName,
-    ])
+    @if(\App\Models\Setting::get(\App\Constants\PdfConstants::PROPOSAL_SHOW_SUBSTANCE, true))
 
-    @if($proposal_approval_mode === 'digital' || $proposal_approval_mode === 'both')
-        <div class="page-break">
+    {{-- Approval page moved to below substance --}}
+
+    @include('pdf.partials.header')
+
+    @if(!empty($pdfConfig['intro_text'] ?? null))
+        <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; background: #f9f9f9; text-align: justify; font-size: 9pt;">
+            {!! nl2br(e($pdfConfig['intro_text'])) !!}
+        </div>
+    @endif
+
+    <div class="protection-box">
+        <strong>PROTEKSI ISI PROPOSAL</strong><br>
+        Dilarang menyalin, menyimpan, memperbanyak sebagian atau seluruh isi proposal ini dalam bentuk apapun<br>
+        kecuali oleh pengusul dan pengelola administrasi LPPM ITSNU Pekalongan.
+    </div>
+
+    <div class="proposal-type-box">
+        PROPOSAL {{ $proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN' }} {{ $proposal->start_year }}
+    </div>
+
+    <div class="proposal-id">
+        ID Proposal: {{ $proposal->id }}<br>
+        Rencana Pelaksanaan {{ $proposal->detailable_type === 'App\Models\Research' ? 'Penelitian' : 'Pengabdian' }} : tahun {{ $proposal->start_year }} s.d. tahun {{ (int) $proposal->start_year + (int) $proposal->duration_in_years - 1 }}
+    </div>
+
+    @php $sectionNum = 1; @endphp
+
+    @include('pdf.partials.section-judul', ['sectionNum' => $sectionNum])
+    @php $sectionNum++; @endphp
+
+    @include('pdf.partials.section-identitas-pengusul', ['sectionNum' => $sectionNum])
+    @php $sectionNum++; @endphp
+
+    @include('pdf.partials.section-identitas-mahasiswa', ['sectionNum' => $sectionNum])
+    @php $sectionNum++; @endphp
+
+    @include('pdf.partials.section-mitra', ['sectionNum' => $sectionNum, 'showFullDetails' => true])
+    @if($proposal->partners->count() > 0)
+        @php $sectionNum++; @endphp
+    @endif
+
+    @include('pdf.partials.section-asta-cita', ['sectionNum' => $sectionNum])
+    @if(isset($proposal->asta_cita) && $proposal->asta_cita)
+        @php $sectionNum++; @endphp
+    @endif
+
+    @if(isset($proposal->sdgs) && $proposal->sdgs->count() > 0)
+        <div class="section-title">{{ $sectionNum++ }}. Sustainable Development Goals (SDGs)</div>
+        <div style="margin-left: 20px; text-align: justify;">
+            @foreach($proposal->sdgs as $sdg)
+                <div>{{ trim($sdg->name) }} : {{ $sdg->description }}</div>
+            @endforeach
+        </div>
+    @endif
+
+    @if(isset($proposal->iku) && $proposal->iku)
+        <div class="section-title">{{ $sectionNum++ }}. IKU</div>
+        <div style="margin-left: 20px; text-align: justify;">{{ $proposal->iku }}</div>
+    @endif
+
+    @include('pdf.partials.section-luaran-dijanjikan', ['sectionNum' => $sectionNum])
+    @if($proposal->outputs->count() > 0)
+        @php $sectionNum++; @endphp
+    @endif
+
+    @include('pdf.partials.section-anggaran', ['sectionNum' => $sectionNum])
+    @php $sectionNum++; @endphp
+    @endif
+
+    @if(\App\Models\Setting::get(\App\Constants\PdfConstants::PROPOSAL_SHOW_APPROVAL, true) && ($proposal_approval_mode === 'digital' || $proposal_approval_mode === 'both'))
+        <div class="page-break" style="page-break-before: always;">
             <div style="text-align: center; font-weight: bold; font-size: 12pt; color: #1a4d2e; margin-bottom: 25px; text-transform: uppercase;">
                 HALAMAN PERSETUJUAN PROPOSAL {{ $proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN' }}
             </div>
@@ -255,72 +329,7 @@
         </div>
     @endif
 
-    @include('pdf.partials.header')
-
-    @if(!empty($pdfConfig['intro_text'] ?? null))
-        <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; background: #f9f9f9; text-align: justify; font-size: 9pt;">
-            {!! nl2br(e($pdfConfig['intro_text'])) !!}
-        </div>
-    @endif
-
-    <div class="protection-box">
-        <strong>PROTEKSI ISI PROPOSAL</strong><br>
-        Dilarang menyalin, menyimpan, memperbanyak sebagian atau seluruh isi proposal ini dalam bentuk apapun<br>
-        kecuali oleh pengusul dan pengelola administrasi LPPM ITSNU Pekalongan.
-    </div>
-
-    <div class="proposal-type-box">
-        PROPOSAL {{ $proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN' }} {{ $proposal->start_year }}
-    </div>
-
-    <div class="proposal-id">
-        ID Proposal: {{ $proposal->id }}<br>
-        Rencana Pelaksanaan {{ $proposal->detailable_type === 'App\Models\Research' ? 'Penelitian' : 'Pengabdian' }} : tahun {{ $proposal->start_year }} s.d. tahun {{ (int) $proposal->start_year + (int) $proposal->duration_in_years - 1 }}
-    </div>
-
-    @php $sectionNum = 1; @endphp
-
-    @include('pdf.partials.section-judul', ['sectionNum' => $sectionNum])
-    @php $sectionNum++; @endphp
-
-    @include('pdf.partials.section-identitas-pengusul', ['sectionNum' => $sectionNum])
-    @php $sectionNum++; @endphp
-
-    @include('pdf.partials.section-identitas-mahasiswa', ['sectionNum' => $sectionNum])
-    @php $sectionNum++; @endphp
-
-    @include('pdf.partials.section-mitra', ['sectionNum' => $sectionNum, 'showFullDetails' => true])
-    @if($proposal->partners->count() > 0)
-        @php $sectionNum++; @endphp
-    @endif
-
-    @include('pdf.partials.section-asta-cita', ['sectionNum' => $sectionNum])
-    @if(isset($proposal->asta_cita) && $proposal->asta_cita)
-        @php $sectionNum++; @endphp
-    @endif
-
-    @if(isset($proposal->sdgs) && $proposal->sdgs->count() > 0)
-        <div class="section-title">{{ $sectionNum++ }}. Sustainable Development Goals (SDGs)</div>
-        <div style="margin-left: 20px; text-align: justify;">
-            @foreach($proposal->sdgs as $sdg)
-                <div>{{ trim($sdg->name) }} : {{ $sdg->description }}</div>
-            @endforeach
-        </div>
-    @endif
-
-    @if(isset($proposal->iku) && $proposal->iku)
-        <div class="section-title">{{ $sectionNum++ }}. IKU</div>
-        <div style="margin-left: 20px; text-align: justify;">{{ $proposal->iku }}</div>
-    @endif
-
-    @include('pdf.partials.section-luaran-dijanjikan', ['sectionNum' => $sectionNum])
-    @if($proposal->outputs->count() > 0)
-        @php $sectionNum++; @endphp
-    @endif
-
-    @include('pdf.partials.section-anggaran', ['sectionNum' => $sectionNum])
-    @php $sectionNum++; @endphp
-
+    @if(\App\Models\Setting::get(\App\Constants\PdfConstants::PROPOSAL_SHOW_DOCS, true))
     @php
         $supportingDocs = [];
         if ($proposal->detailable?->hasMedia('substance_file')) {
@@ -344,7 +353,9 @@
     @if(count($supportingDocs) > 0)
         @php $sectionNum++; @endphp
     @endif
+    @endif
 
+    @if(\App\Models\Setting::get(\App\Constants\PdfConstants::PROPOSAL_SHOW_OTHER_DOCS, true))
     @php
         $otherDocs = [];
         foreach ($proposal->partners as $partner) {
@@ -368,7 +379,9 @@
     @if(count($otherDocs) > 0)
         @php $sectionNum++; @endphp
     @endif
+    @endif
 
+    @if(\App\Models\Setting::get(\App\Constants\PdfConstants::PROPOSAL_SHOW_OUTRO, true))
     @if(!empty($pdfConfig['approval_custom_text'] ?? null))
         <div style="margin-top: 20px; padding: 10px; border: 1px solid #ddd; background: #f9f9f9; text-align: center; font-size: 9pt;">
             {!! nl2br(e($pdfConfig['approval_custom_text'])) !!}
@@ -379,6 +392,7 @@
         <div style="margin-top: 15px; padding: 10px; border: 1px solid #ddd; background: #f9f9f9; text-align: justify; font-size: 9pt;">
             {!! nl2br(e($pdfConfig['outro_text'])) !!}
         </div>
+    @endif
     @endif
 </body>
 </html>

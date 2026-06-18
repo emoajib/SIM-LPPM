@@ -86,6 +86,36 @@ class PdfExportSettings extends Component
 
     public string $pdfFamilyCLineHeight = '1.5';
 
+    // --- Family C (Visibility: Proposal) ---
+    public bool $pdfProposalShowCover = true;
+
+    public bool $pdfProposalShowSubstance = true;
+
+    public bool $pdfProposalShowApproval = true;
+
+    public bool $pdfProposalShowDocs = true;
+
+    public bool $pdfProposalShowOtherDocs = true;
+
+    public bool $pdfProposalShowOutro = true;
+
+    // --- Family C (Visibility: Report) ---
+    public bool $pdfReportShowCover = true;
+
+    public bool $pdfReportShowBasicInfo = true;
+
+    public bool $pdfReportShowApproval = true;
+
+    public bool $pdfReportShowRealization = true;
+
+    public bool $pdfReportShowLogbook = true;
+
+    public bool $pdfReportShowDocs = true;
+
+    public bool $pdfReportShowOtherDocs = true;
+
+    public bool $pdfReportShowOutro = true;
+
     // --- Modal Editor State ---
     public string $activePdfTab = 'layout';
 
@@ -148,6 +178,22 @@ class PdfExportSettings extends Component
         $this->pdfFamilyCFontFamily = Setting::get(PdfConstants::PROPOSAL_FONT_FAMILY, config('pdf-modules.families.C.default_font', 'Times New Roman, Times, serif'));
         $this->pdfFamilyCFontSize = (int) Setting::get(PdfConstants::PROPOSAL_FONT_SIZE, config('pdf-modules.families.C.default_size', 11));
         $this->pdfFamilyCLineHeight = Setting::get(PdfConstants::PROPOSAL_LINE_HEIGHT, '1.5');
+
+        $this->pdfProposalShowCover = (bool) Setting::get(PdfConstants::PROPOSAL_SHOW_COVER, true);
+        $this->pdfProposalShowSubstance = (bool) Setting::get(PdfConstants::PROPOSAL_SHOW_SUBSTANCE, true);
+        $this->pdfProposalShowApproval = (bool) Setting::get(PdfConstants::PROPOSAL_SHOW_APPROVAL, true);
+        $this->pdfProposalShowDocs = (bool) Setting::get(PdfConstants::PROPOSAL_SHOW_DOCS, true);
+        $this->pdfProposalShowOtherDocs = (bool) Setting::get(PdfConstants::PROPOSAL_SHOW_OTHER_DOCS, true);
+        $this->pdfProposalShowOutro = (bool) Setting::get(PdfConstants::PROPOSAL_SHOW_OUTRO, true);
+
+        $this->pdfReportShowCover = (bool) Setting::get(PdfConstants::REPORT_SHOW_COVER, true);
+        $this->pdfReportShowBasicInfo = (bool) Setting::get(PdfConstants::REPORT_SHOW_BASIC_INFO, true);
+        $this->pdfReportShowApproval = (bool) Setting::get(PdfConstants::REPORT_SHOW_APPROVAL, true);
+        $this->pdfReportShowRealization = (bool) Setting::get(PdfConstants::REPORT_SHOW_REALIZATION, true);
+        $this->pdfReportShowLogbook = (bool) Setting::get(PdfConstants::REPORT_SHOW_LOGBOOK, true);
+        $this->pdfReportShowDocs = (bool) Setting::get(PdfConstants::REPORT_SHOW_DOCS, true);
+        $this->pdfReportShowOtherDocs = (bool) Setting::get(PdfConstants::REPORT_SHOW_OTHER_DOCS, true);
+        $this->pdfReportShowOutro = (bool) Setting::get(PdfConstants::REPORT_SHOW_OUTRO, true);
     }
 
     public function updated(string $property, mixed $value): void
@@ -178,6 +224,20 @@ class PdfExportSettings extends Component
             'pdfFamilyCFontFamily' => [PdfConstants::PROPOSAL_FONT_FAMILY, 'string'],
             'pdfFamilyCFontSize' => [PdfConstants::PROPOSAL_FONT_SIZE, 'integer'],
             'pdfFamilyCLineHeight' => [PdfConstants::PROPOSAL_LINE_HEIGHT, 'string'],
+            'pdfProposalShowCover' => [PdfConstants::PROPOSAL_SHOW_COVER, 'boolean'],
+            'pdfProposalShowSubstance' => [PdfConstants::PROPOSAL_SHOW_SUBSTANCE, 'boolean'],
+            'pdfProposalShowApproval' => [PdfConstants::PROPOSAL_SHOW_APPROVAL, 'boolean'],
+            'pdfProposalShowDocs' => [PdfConstants::PROPOSAL_SHOW_DOCS, 'boolean'],
+            'pdfProposalShowOtherDocs' => [PdfConstants::PROPOSAL_SHOW_OTHER_DOCS, 'boolean'],
+            'pdfProposalShowOutro' => [PdfConstants::PROPOSAL_SHOW_OUTRO, 'boolean'],
+            'pdfReportShowCover' => [PdfConstants::REPORT_SHOW_COVER, 'boolean'],
+            'pdfReportShowBasicInfo' => [PdfConstants::REPORT_SHOW_BASIC_INFO, 'boolean'],
+            'pdfReportShowApproval' => [PdfConstants::REPORT_SHOW_APPROVAL, 'boolean'],
+            'pdfReportShowRealization' => [PdfConstants::REPORT_SHOW_REALIZATION, 'boolean'],
+            'pdfReportShowLogbook' => [PdfConstants::REPORT_SHOW_LOGBOOK, 'boolean'],
+            'pdfReportShowDocs' => [PdfConstants::REPORT_SHOW_DOCS, 'boolean'],
+            'pdfReportShowOtherDocs' => [PdfConstants::REPORT_SHOW_OTHER_DOCS, 'boolean'],
+            'pdfReportShowOutro' => [PdfConstants::REPORT_SHOW_OUTRO, 'boolean'],
         ];
 
         if (isset($map[$property])) {

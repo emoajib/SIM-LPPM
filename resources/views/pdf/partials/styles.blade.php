@@ -106,4 +106,19 @@
         color: #666;
         margin-top: 20px;
     }
+    .footer-institutional {
+        position: fixed;
+        bottom: -30px;
+        left: 0px;
+        right: 0px;
+        height: 50px;
+        text-align: center;
+        font-size: 8pt;
+        border-top: 1px solid #ccc;
+        padding-top: 5px;
+        color: #666;
+    }
+    .footer-institutional .page-number:before {
+        content: counter(page);
+    }
 </style>
