@@ -73,22 +73,11 @@ class PdfExportSettings extends Component
 
     public string $editingContentOutro = '';
 
-    // Override Tipografi & Tata Letak
-    public string $editingPaperSize = '';
+    public string $editingCoverTitle = '';
 
-    public string $editingFontFamily = '';
+    public string $editingCoverSubtitle = '';
 
-    public string $editingFontSize = '';
-
-    public string $editingOrientation = '';
-
-    public string $editingMarginTop = '';
-
-    public string $editingMarginRight = '';
-
-    public string $editingMarginBottom = '';
-
-    public string $editingMarginLeft = '';
+    public bool $editingCoverShowTeam = true;
 
     // --- UI State ---
     public string $activePdfTab = 'layout';
@@ -277,14 +266,9 @@ class PdfExportSettings extends Component
         $this->editingContentIntro = Setting::get(PdfConstants::contentKey($moduleKey, PdfConstants::KEY_INTRO), '');
         $this->editingContentOutro = Setting::get(PdfConstants::contentKey($moduleKey, PdfConstants::KEY_OUTRO), '');
 
-        $this->editingPaperSize = Setting::get(PdfConstants::overrideKey($moduleKey, PdfConstants::KEY_PAPER_SIZE), '');
-        $this->editingOrientation = Setting::get(PdfConstants::overrideKey($moduleKey, PdfConstants::KEY_ORIENTATION), '');
-        $this->editingFontFamily = Setting::get(PdfConstants::overrideKey($moduleKey, PdfConstants::KEY_FONT_FAMILY), '');
-        $this->editingFontSize = Setting::get(PdfConstants::overrideKey($moduleKey, PdfConstants::KEY_FONT_SIZE), '');
-        $this->editingMarginTop = Setting::get(PdfConstants::overrideKey($moduleKey, PdfConstants::KEY_MARGIN_TOP), '');
-        $this->editingMarginRight = Setting::get(PdfConstants::overrideKey($moduleKey, PdfConstants::KEY_MARGIN_RIGHT), '');
-        $this->editingMarginBottom = Setting::get(PdfConstants::overrideKey($moduleKey, PdfConstants::KEY_MARGIN_BOTTOM), '');
-        $this->editingMarginLeft = Setting::get(PdfConstants::overrideKey($moduleKey, PdfConstants::KEY_MARGIN_LEFT), '');
+        $this->editingCoverTitle = Setting::get(PdfConstants::overrideKey($moduleKey, PdfConstants::KEY_COVER_TITLE), '');
+        $this->editingCoverSubtitle = Setting::get(PdfConstants::overrideKey($moduleKey, PdfConstants::KEY_COVER_SUBTITLE), '');
+        $this->editingCoverShowTeam = (bool) Setting::get(PdfConstants::overrideKey($moduleKey, PdfConstants::KEY_COVER_SHOW_TEAM), true);
 
         $this->contentModalOpen = true;
     }
@@ -299,14 +283,9 @@ class PdfExportSettings extends Component
         $settingsToSave = [
             PdfConstants::contentKey($this->editingModule, PdfConstants::KEY_INTRO) => $this->editingContentIntro,
             PdfConstants::contentKey($this->editingModule, PdfConstants::KEY_OUTRO) => $this->editingContentOutro,
-            PdfConstants::overrideKey($this->editingModule, PdfConstants::KEY_PAPER_SIZE) => $this->editingPaperSize,
-            PdfConstants::overrideKey($this->editingModule, PdfConstants::KEY_ORIENTATION) => $this->editingOrientation,
-            PdfConstants::overrideKey($this->editingModule, PdfConstants::KEY_FONT_FAMILY) => $this->editingFontFamily,
-            PdfConstants::overrideKey($this->editingModule, PdfConstants::KEY_FONT_SIZE) => $this->editingFontSize,
-            PdfConstants::overrideKey($this->editingModule, PdfConstants::KEY_MARGIN_TOP) => $this->editingMarginTop,
-            PdfConstants::overrideKey($this->editingModule, PdfConstants::KEY_MARGIN_RIGHT) => $this->editingMarginRight,
-            PdfConstants::overrideKey($this->editingModule, PdfConstants::KEY_MARGIN_BOTTOM) => $this->editingMarginBottom,
-            PdfConstants::overrideKey($this->editingModule, PdfConstants::KEY_MARGIN_LEFT) => $this->editingMarginLeft,
+            PdfConstants::overrideKey($this->editingModule, PdfConstants::KEY_COVER_TITLE) => $this->editingCoverTitle,
+            PdfConstants::overrideKey($this->editingModule, PdfConstants::KEY_COVER_SUBTITLE) => $this->editingCoverSubtitle,
+            PdfConstants::overrideKey($this->editingModule, PdfConstants::KEY_COVER_SHOW_TEAM) => $this->editingCoverShowTeam ? '1' : '0',
         ];
 
         Setting::setMany($settingsToSave);
