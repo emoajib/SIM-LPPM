@@ -79,7 +79,14 @@ class PdfExportSettings extends Component
 
     public bool $editingCoverShowTeam = true;
 
-    // --- UI State ---
+    // --- Family C (Dokumen Usulan & Hasil) ---
+    public string $pdfFamilyCFontFamily = '';
+
+    public int $pdfFamilyCFontSize = 11;
+
+    public string $pdfFamilyCLineHeight = '1.5';
+
+    // --- Modal Editor State ---
     public string $activePdfTab = 'layout';
 
     public string $viewMode = 'card'; // 'card' or 'table'
@@ -133,10 +140,14 @@ class PdfExportSettings extends Component
         $this->pdfCoverShowTeam = (bool) Setting::get('pdf_cover_show_team', true);
         $this->pdfApprovalCustomText = Setting::get('pdf_approval_custom_text', '');
 
-        // Family B
         $this->pdfReportFontFamily = Setting::get('pdf_report_font_family', 'Arial, Helvetica, sans-serif');
         $this->pdfReportFontSize = (int) Setting::get('pdf_report_font_size', 9);
         $this->pdfReportLineHeight = Setting::get('pdf_report_line_height', '1.1');
+
+        // Family C
+        $this->pdfFamilyCFontFamily = Setting::get(PdfConstants::PROPOSAL_FONT_FAMILY, config('pdf-modules.families.C.default_font', 'Times New Roman, Times, serif'));
+        $this->pdfFamilyCFontSize = (int) Setting::get(PdfConstants::PROPOSAL_FONT_SIZE, config('pdf-modules.families.C.default_size', 11));
+        $this->pdfFamilyCLineHeight = Setting::get(PdfConstants::PROPOSAL_LINE_HEIGHT, '1.5');
     }
 
     public function updated(string $property, mixed $value): void
@@ -164,6 +175,9 @@ class PdfExportSettings extends Component
             'pdfReportFontFamily' => ['pdf_report_font_family', 'string'],
             'pdfReportFontSize' => ['pdf_report_font_size', 'integer'],
             'pdfReportLineHeight' => ['pdf_report_line_height', 'string'],
+            'pdfFamilyCFontFamily' => [PdfConstants::PROPOSAL_FONT_FAMILY, 'string'],
+            'pdfFamilyCFontSize' => [PdfConstants::PROPOSAL_FONT_SIZE, 'integer'],
+            'pdfFamilyCLineHeight' => [PdfConstants::PROPOSAL_LINE_HEIGHT, 'string'],
         ];
 
         if (isset($map[$property])) {

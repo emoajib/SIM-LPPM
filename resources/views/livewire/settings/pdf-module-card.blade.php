@@ -15,7 +15,7 @@
                 ></span>
                 <span class="fw-medium text-truncate" style="font-size: 0.9rem;">{{ $moduleName }}</span>
             </div>
-            <span class="badge {{ $family === 'A' ? 'bg-blue-lt text-blue' : 'bg-green-lt text-green' }} ms-2 flex-shrink-0">
+            <span class="badge {{ $family === 'A' ? 'bg-blue-lt text-blue' : ($family === 'B' ? 'bg-green-lt text-green' : 'bg-purple-lt text-purple') }} ms-2 flex-shrink-0">
                 {{ $familyLabel }}
             </span>
         </div>

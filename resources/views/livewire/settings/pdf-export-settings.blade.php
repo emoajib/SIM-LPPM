@@ -367,6 +367,46 @@
                         </div>
                     </div>
 
+                    {{-- === LAPORAN AKHIR & PROPOSAL (Family C) === --}}
+                    <h4 class="card-title mb-3 mt-2">
+                        <x-lucide-file-text class="icon me-1 text-purple" />
+                        Tipografi — Usulan & Hasil (Keluarga C)
+                    </h4>
+
+                    <div class="card mb-4 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label fw-medium">Font Family Usulan/Hasil</label>
+                                    <select class="form-select" wire:model.live="pdfFamilyCFontFamily">
+                                        <option value="Times New Roman, Times, serif">Times New Roman — Default</option>
+                                        <option value="Arial, Helvetica, sans-serif">Arial</option>
+                                        <option value="Georgia, serif">Georgia</option>
+                                        <option value="Courier New, Courier, monospace">Courier New</option>
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label fw-medium">Ukuran Font</label>
+                                    <select class="form-select" wire:model.live="pdfFamilyCFontSize">
+                                        <option value="9">9 pt</option>
+                                        <option value="10">10 pt</option>
+                                        <option value="11">11 pt — Default</option>
+                                        <option value="12">12 pt</option>
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label fw-medium">Spasi Baris</label>
+                                    <select class="form-select" wire:model.live="pdfFamilyCLineHeight">
+                                        <option value="1.15">1.15</option>
+                                        <option value="1.3">1.3 — Normal</option>
+                                        <option value="1.5">1.5 — Longgar (Default)</option>
+                                        <option value="2.0">2.0 — Double</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- === Tanda Tangan reference === --}}
                     <div class="card bg-light border-0 mb-3">
                         <div class="card-body d-flex align-items-center">
@@ -532,7 +572,7 @@
                     @php $famLabel = config("pdf-modules.families.{$family}.label", "Keluarga {$family}"); @endphp
                     <div class="mb-4">
                         <div class="d-flex align-items-center gap-2 mb-2">
-                            <span class="badge {{ $family === 'A' ? 'bg-blue-lt text-blue' : 'bg-green-lt text-green' }} px-3 py-1" style="font-size: 12px;">{{ $famLabel }}</span>
+                            <span class="badge {{ $family === 'A' ? 'bg-blue-lt text-blue' : ($family === 'B' ? 'bg-green-lt text-green' : 'bg-purple-lt text-purple') }} px-3 py-1" style="font-size: 12px;">{{ $famLabel }}</span>
                             <small class="text-muted">{{ $familyModules->count() }} modul</small>
                         </div>
                         <div class="row g-3">
@@ -571,8 +611,10 @@
                                 <td>
                                     @if($m['family'] === 'A')
                                         <span class="badge bg-blue-lt text-blue">Keluarga A</span>
-                                    @else
+                                    @elseif($m['family'] === 'B')
                                         <span class="badge bg-green-lt text-green">Keluarga B</span>
+                                    @else
+                                        <span class="badge bg-purple-lt text-purple">Keluarga C</span>
                                     @endif
                                 </td>
                                 <td>
@@ -592,21 +634,30 @@
                 $moduleStats = config('pdf-modules.list', []);
                 $familyA = collect($moduleStats)->where('family', 'A');
                 $familyB = collect($moduleStats)->where('family', 'B');
+                $familyC = collect($moduleStats)->where('family', 'C');
             @endphp
             <div class="row g-3 mt-2">
-                <div class="col-md-6">
-                    <div class="card bg-blue-lt border-0">
+                <div class="col-md-4">
+                    <div class="card bg-blue-lt border-0 h-100">
                         <div class="card-body">
                             <h5 class="card-title text-blue mb-1">Keluarga A — {{ $familyA->count() }} Modul</h5>
-                            <p class="text-muted small mb-0">Surat resmi, proposal, laporan, logbook, evaluasi reviewer. Menggunakan font <strong>Times New Roman 11pt</strong> sebagai default. Kop surat menggunakan partial <code>header.blade.php</code> yang dikontrol pengaturan posisi logo.</p>
+                            <p class="text-muted small mb-0">Surat resmi dan administrasi. Menggunakan font <strong>Times New Roman 11pt</strong> sebagai default.</p>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="card bg-green-lt border-0">
+                <div class="col-md-4">
+                    <div class="card bg-green-lt border-0 h-100">
                         <div class="card-body">
                             <h5 class="card-title text-green mb-1">Keluarga B — {{ $familyB->count() }} Modul</h5>
-                            <p class="text-muted small mb-0">Laporan rekap IKU, Monev, PKM, Output, Mitra, Reviewer. Menggunakan font <strong>Arial 9pt</strong> sebagai default. Layout lebih padat untuk efisiensi tabel data. Dikontrol pengaturan Laporan Modul.</p>
+                            <p class="text-muted small mb-0">Laporan rekap. Menggunakan font <strong>Arial 9pt</strong> sebagai default. Layout lebih padat untuk efisiensi tabel data.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-purple-lt border-0 h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-purple mb-1">Keluarga C — {{ $familyC->count() }} Modul</h5>
+                            <p class="text-muted small mb-0">Dokumen akademis tebal (Proposal, Laporan Akhir). <strong>Times New Roman 11pt, spasi 1.5</strong>.</p>
                         </div>
                     </div>
                 </div>

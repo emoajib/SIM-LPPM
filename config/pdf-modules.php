@@ -25,18 +25,18 @@ return [
             'template' => 'pdf.letters.surat-keterangan',
         ],
 
-        // Proposal & Laporan (Family A)
+        // Laporan Akhir & Proposal (Family C)
         [
             'key' => 'proposal-export',
             'name' => 'Ekspor Proposal',
-            'family' => 'A',
+            'family' => 'C',
             'view_type' => 'letter',
             'template' => 'pdf.proposal-export',
         ],
         [
             'key' => 'laporan-akhir',
             'name' => 'Laporan Akhir',
-            'family' => 'A',
+            'family' => 'C',
             'view_type' => 'letter',
             'template' => 'pdf.report-export',
         ],
@@ -116,7 +116,7 @@ return [
 
     'families' => [
         'A' => [
-            'label' => 'Surat & Proposal',
+            'label' => 'Surat Administratif',
             'default_font' => "'Times New Roman', Times, serif",
             'default_size' => 11,
         ],
@@ -124,6 +124,11 @@ return [
             'label' => 'Laporan Modul',
             'default_font' => 'Arial, Helvetica, sans-serif',
             'default_size' => 9,
+        ],
+        'C' => [
+            'label' => 'Dokumen Usulan & Hasil',
+            'default_font' => "'Times New Roman', Times, serif",
+            'default_size' => 11,
         ],
     ],
 ];

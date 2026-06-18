@@ -96,6 +96,13 @@ class PdfConstants
 
     public const REPORT_LINE_HEIGHT = 'pdf_report_line_height';
 
+    // --- Global Setting Keys (Family C: Proposal & Laporan Akhir) ---
+    public const PROPOSAL_FONT_FAMILY = 'pdf_proposal_font_family';
+
+    public const PROPOSAL_FONT_SIZE = 'pdf_proposal_font_size';
+
+    public const PROPOSAL_LINE_HEIGHT = 'pdf_proposal_line_height';
+
     /**
      * Helper to get full override key for a module.
      */
