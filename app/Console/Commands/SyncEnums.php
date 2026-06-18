@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Enums\AdditionalOutputStatus;
 use App\Enums\AdditionalOutputStatusType;
 use App\Enums\AuthorStatus;
 use App\Enums\BudgetGroupPercentageType;
@@ -17,7 +16,6 @@ use App\Enums\MonevReviewStatus;
 use App\Enums\OutputStatusType;
 use App\Enums\PolicyInvolvementLevel;
 use App\Enums\PolicyInvolvementStatus;
-use App\Enums\ProgressReportStatus;
 use App\Enums\ProposalMonevSemester;
 use App\Enums\ProposalStatus;
 use App\Enums\ProposalUserRole;
@@ -32,7 +30,6 @@ use App\Enums\StrataCategory;
 use App\Enums\TeamSource;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use ReflectionClass;
 
 class SyncEnums extends Command
 {
@@ -126,34 +123,48 @@ class SyncEnums extends Command
 
     private function getEnumMap(): array
     {
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // PENTING: Jangan tambahkan duplicate key — PHP array akan silently override entry sebelumnya.
+        // Setiap 'table.column' harus muncul tepat SATU kali dengan enum class yang tepat.
         return [
-            // Existing enums
+            // Core proposal flow
             'proposals.status' => ProposalStatus::class,
             'proposal_reviewer.status' => ReviewStatus::class,
             'proposal_reviewer.recommendation' => ReviewRecommendation::class,
+
+            // Progress reports — menggunakan ReportStatus (5 values: draft, submitted,
+            // approved_by_dekan, approved, rejected). BUKAN ProgressReportStatus (3 values).
             'progress_reports.status' => ReportStatus::class,
             'progress_reports.reporting_period' => ReportingPeriod::class,
-            'identities.type' => IdentityType::class,
-            'mandatory_outputs.status_type' => OutputStatusType::class,
-            'mandatory_outputs.author_status' => AuthorStatus::class,
-            'additional_outputs.status' => AdditionalOutputStatus::class,
-            'institutional_reports.status' => InstitutionalReportStatus::class,
-            'kaprodi_approvals.status' => KaprodiStatus::class,
-            'letters.team_source' => TeamSource::class,
-            'document_signatures.mode' => SignatureMode::class,
 
-            // New enums
-            'review_logs.recommendation' => ReviewRecommendation::class,
+            // Identity & user
+            'identities.type' => IdentityType::class,
             'proposal_user.role' => ProposalUserRole::class,
             'proposal_user.status' => ProposalUserStatus::class,
+
+            // Outputs — additional_outputs.status menggunakan AdditionalOutputStatusType
+            // (hasil refactor Batch 2/3). AdditionalOutputStatus (lama) tidak lagi dipakai
+            // sebagai constraint di DB setelah refactor.
+            'mandatory_outputs.status_type' => OutputStatusType::class,
+            'mandatory_outputs.author_status' => AuthorStatus::class,
+            'additional_outputs.status' => AdditionalOutputStatusType::class,
+
+            // Reports & reviews
+            'institutional_reports.status' => InstitutionalReportStatus::class,
+            'review_logs.recommendation' => ReviewRecommendation::class,
             'monev_reviews.status' => MonevReviewStatus::class,
             'monev_reviews.semester' => MonevReviewSemester::class,
+
+            // Schemes & budgets
             'research_schemes.strata' => ResearchSchemeStrata::class,
             'budget_groups.proposal_type' => BudgetGroupProposalType::class,
             'budget_groups.percentage_type' => BudgetGroupPercentageType::class,
             'strata.category' => StrataCategory::class,
-            'additional_outputs.status' => AdditionalOutputStatusType::class,
-            'progress_reports.status' => ProgressReportStatus::class,
+
+            // Approvals & other
+            'kaprodi_approvals.status' => KaprodiStatus::class,
+            'letters.team_source' => TeamSource::class,
+            'document_signatures.mode' => SignatureMode::class,
             'proposal_monevs.semester' => ProposalMonevSemester::class,
             'manual_books.status' => ManualBookStatus::class,
             'iku_output_types.group' => IkuOutputTypeGroup::class,
@@ -164,20 +175,20 @@ class SyncEnums extends Command
 
     private function getEnumValues(string $enumClass): array
     {
-        if (! class_exists($enumClass)) {
+        if (! enum_exists($enumClass)) {
             $this->warn("Enum class not found: {$enumClass}");
 
             return [];
         }
 
-        $reflection = new ReflectionClass($enumClass);
-        if (! $reflection->isEnum()) {
-            $this->warn("Not an enum class: {$enumClass}");
-
-            return [];
+        $values = [];
+        foreach ((new \ReflectionEnum($enumClass))->getCases() as $case) {
+            if ($case instanceof \ReflectionEnumBackedCase) {
+                $values[] = (string) $case->getBackingValue();
+            }
         }
 
-        return array_map(fn ($case) => $case->getValue(), $reflection->getCases());
+        return $values;
     }
 
     private function createCheckConstraint(string $connection, string $table, string $column, string $constraintName, string $enumClass): void

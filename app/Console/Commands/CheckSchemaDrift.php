@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Enums\AdditionalOutputStatus;
+use App\Enums\AdditionalOutputStatusType;
 use App\Enums\AuthorStatus;
 use App\Enums\IdentityType;
 use App\Enums\InstitutionalReportStatus;
@@ -402,7 +402,7 @@ class CheckSchemaDrift extends Command
             'identities.type' => IdentityType::class,
             'mandatory_outputs.status_type' => OutputStatusType::class,
             'mandatory_outputs.author_status' => AuthorStatus::class,
-            'additional_outputs.status' => AdditionalOutputStatus::class,
+            'additional_outputs.status' => AdditionalOutputStatusType::class,
             'institutional_reports.status' => InstitutionalReportStatus::class,
             'kaprodi_approvals.status' => KaprodiStatus::class,
             'letters.team_source' => TeamSource::class,
@@ -412,15 +412,17 @@ class CheckSchemaDrift extends Command
 
     private function getEnumValues(string $enumClass): array
     {
-        if (! class_exists($enumClass)) {
+        if (! enum_exists($enumClass)) {
             return [];
         }
 
-        $reflection = new \ReflectionClass($enumClass);
-        if (! $reflection->isEnum()) {
-            return [];
+        $values = [];
+        foreach ((new \ReflectionEnum($enumClass))->getCases() as $case) {
+            if ($case instanceof \ReflectionEnumBackedCase) {
+                $values[] = (string) $case->getBackingValue();
+            }
         }
 
-        return array_map(fn ($case) => $case->getValue(), $reflection->getCases());
+        return $values;
     }
 }
