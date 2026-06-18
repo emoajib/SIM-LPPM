@@ -322,11 +322,12 @@ class CheckSchemaDrift extends Command
         foreach ($files as $file) {
             $content = file_get_contents($file);
 
-            if (preg_match_all('/Schema::table\(\s*[\'"](?:[^\'"\s]+)[\'"],\s*function\(.*?\\$table\s*=>.*?\)\)/s', $content, $matches)) {
-                $tableContent = $matches[0][0];
-
-                if (preg_match_all('/\$table->(string|integer|bigInteger|decimal|boolean|text|json|jsonb|uuid|date|datetime|timestamp|time|float|double|char|varchar|mediumText|longText|mediumInteger|unsignedInteger|unsignedBigInteger|unsignedDecimal|unsignedFloat|unsignedDouble|unsignedMediumInteger|unsignedMediumDecimal|unsignedBigInteger|rememberToken|foreignId|morphs|belongsToMany|hasMany|hasManyThrough|hasOneThrough|hasOne|hasMany|hasManyThrough|hasOneThrough|morphTo|morphMany|morphToMany|morphOne|belongsTo|hasOneThrough|hasMany|hasManyThrough|hasOneThrough|morphTo|morphMany|morphToMany|morphOne|belongsTo|hasOneThrough|hasMany|hasManyThrough|hasOneThrough|morphTo|morphMany|morphToMany|morphOne|belongsTo)/', $tableContent, $columnMatches)) {
-                    $columns = array_merge($columns, $columnMatches[1]);
+            $pattern = '/Schema::(?:create|table)\(\s*[\'"](?:[^\'"\s]+)[\'"]\s*(?:,\s*function\(.*?\\$table\s*=>.*?\))?\)/s';
+            if (preg_match_all($pattern, $content, $matches)) {
+                foreach ($matches[0] as $tableContent) {
+                    if (preg_match_all('/\$table->(string|integer|bigInteger|decimal|boolean|text|json|jsonb|uuid|date|datetime|timestamp|time|float|double|char|varchar|mediumText|longText|mediumInteger|unsignedInteger|unsignedBigInteger|unsignedDecimal|unsignedFloat|unsignedDouble|unsignedMediumInteger|unsignedMediumDecimal|unsignedBigInteger|rememberToken|foreignId|morphs|belongsToMany|hasMany|hasManyThrough|hasOneThrough|hasOne|hasMany|hasManyThrough|hasOneThrough|morphTo|morphMany|morphToMany|morphOne|belongsTo|hasOneThrough|hasMany|hasManyThrough|hasOneThrough|morphTo|morphMany|morphToMany|morphOne|belongsTo|hasOneThrough|hasMany|hasManyThrough|hasOneThrough|morphTo|morphMany|morphToMany|morphOne|belongsTo)/', $tableContent, $columnMatches)) {
+                        $columns = array_merge($columns, $columnMatches[1]);
+                    }
                 }
             }
         }
