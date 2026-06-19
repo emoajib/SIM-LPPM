@@ -57,7 +57,7 @@
         $facultyClean = preg_replace('/^FAKULTAS\s+/i', '', trim($facultyName));
         $prodiClean = preg_replace('/^(PROGRAM STUDI|PRODI)\s+/i', '', trim($prodiName));
     @endphp
-    <div style="position: absolute; bottom: 0; left: 0; right: 0; text-align: center; font-weight: bold; font-size: 14pt; text-transform: uppercase; line-height: 1.0;">
+    <div style="position: absolute; bottom: 60px; left: 0; right: 0; text-align: center; font-weight: bold; font-size: 14pt; text-transform: uppercase; line-height: 1.0;">
         FAKULTAS {{ strtoupper($facultyClean) }}<br>
         PROGRAM STUDI {{ strtoupper($prodiClean) }}<br>
         ITSNU PEKALONGAN<br>
