@@ -512,8 +512,89 @@ class DatabaseRestoreService
         $statement = $this->fixJsonEscaping($statement);
         $statement = $this->adaptSqlForCurrentDriver($statement);
         $statement = $this->fixBooleanValues($statement);
+        $statement = $this->fixStatementData($statement);
 
         return $statement;
+    }
+
+    /**
+     * Fix data-level incompatibilities between MySQL backup and PG CHECK constraints.
+     * Handles tables where the MySQL source has values that violate PG CHECK constraints
+     * due to schema changes between versions (e.g. enum values renamed).
+     */
+    protected function fixStatementData(string $statement): string
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            return $statement;
+        }
+
+        if (! preg_match('/INSERT\s+(?:IGNORE\s+)?INTO\s+[`"\']?(\w+)[`"\']?\s/i', $statement, $m)) {
+            return $statement;
+        }
+
+        return match ($m[1]) {
+            'proposal_user' => $this->fixProposalUserRoles($statement),
+            'research_schemes' => $this->fixResearchSchemesStrata($statement),
+            default => $statement,
+        };
+    }
+
+    /**
+     * Generic helper to replace specific position values in all VALUES tuples.
+     * Parses tuples respecting string literals, then replaces values at the given
+     * zero-indexed position using the provided mapping.
+     */
+    protected function replaceValuesInStatement(string $statement, int $position, array $replacements): string
+    {
+        return preg_replace_callback(
+            '/VALUES\s+(.*?)(?:\s+ON\s+CONFLICT\s+DO\s+NOTHING\s*)?$/si',
+            function ($matches) use ($position, $replacements) {
+                $clause = $matches[1];
+                $tuples = $this->parseTuples($clause);
+                $converted = [];
+
+                foreach ($tuples as $tuple) {
+                    $parts = $this->splitTupleValues($tuple);
+                    if (count($parts) > $position) {
+                        $val = trim($parts[$position]);
+                        if (isset($replacements[$val])) {
+                            $parts[$position] = $replacements[$val];
+                        }
+                    }
+                    $converted[] = '('.implode(',', $parts).')';
+                }
+
+                $suffix = str_contains($matches[0], 'ON CONFLICT') ? ' ON CONFLICT DO NOTHING' : '';
+
+                return 'VALUES '.implode(',', $converted).$suffix;
+            },
+            $statement
+        );
+    }
+
+    /**
+     * Convert 'dosen' to 'anggota' in proposal_user.role (position 3).
+     * PG CHECK constraint only allows 'ketua' or 'anggota'.
+     */
+    protected function fixProposalUserRoles(string $statement): string
+    {
+        return $this->replaceValuesInStatement($statement, 3, [
+            "'dosen'" => "'anggota'",
+        ]);
+    }
+
+    /**
+     * Convert old strata values to new PG-compatible values in research_schemes.strata (position 2).
+     * PG CHECK constraint only allows: Dasar, Terapan, Pengembangan, PKM.
+     * Mapping: Reguler→Dasar, Kolaborasi Internal→Terapan, Kerja Sama Antar PT→Pengembangan.
+     */
+    protected function fixResearchSchemesStrata(string $statement): string
+    {
+        return $this->replaceValuesInStatement($statement, 2, [
+            "'Reguler'" => "'Dasar'",
+            "'Kolaborasi Internal'" => "'Terapan'",
+            "'Kerja Sama Antar PT'" => "'Pengembangan'",
+        ]);
     }
 
     /**
