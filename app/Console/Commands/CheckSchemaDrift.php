@@ -332,7 +332,7 @@ class CheckSchemaDrift extends Command
             $tables = [];
         }
 
-        return array_map(fn ($t) => is_object($t) ? $t->table_name : $t, $tables);
+        return array_column($tables, 'table_name');
     }
 
     private function getColumnsInMigrationsForTable(string $table): array
@@ -380,7 +380,7 @@ class CheckSchemaDrift extends Command
             $columns = [];
         }
 
-        return array_map(fn ($c) => is_object($c) ? $c->column_name : $c, $columns);
+        return array_column($columns, 'column_name');
     }
 
     private function getConstraintsInMigrationsForTable(string $table): array
@@ -440,7 +440,7 @@ class CheckSchemaDrift extends Command
             $constraints = [];
         }
 
-        return array_map(fn ($c) => is_object($c) ? $c->constraint_name : $c, $constraints);
+        return array_column($constraints, 'constraint_name');
     }
 
     private function getEnumMap(): array

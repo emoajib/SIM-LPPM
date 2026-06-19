@@ -96,32 +96,28 @@ class MigrationHelpers
      * Drop CHECK constraint with cross-DB compatibility.
      *
      * Handles PostgreSQL (DROP CONSTRAINT IF EXISTS),
-     * MySQL 8+ (DROP CHECK), and SQLite (no-op).
+     * MySQL 8+ / MariaDB 10.2.22+ (DROP CHECK), and SQLite (no-op).
      */
     public static function dropCheckConstraint(string $tableName, string $constraintName): void
     {
         $driver = DB::getDriverName();
 
         if ($driver === 'sqlite') {
-            // SQLite doesn't support ALTER TABLE DROP CONSTRAINT
             return;
         }
 
-        // PostgreSQL syntax: ALTER TABLE t DROP CONSTRAINT IF EXISTS c
-        try {
-            DB::statement("ALTER TABLE {$tableName} DROP CONSTRAINT IF EXISTS {$constraintName}");
+        if ($driver === 'mysql') {
+            try {
+                DB::statement("ALTER TABLE {$tableName} DROP CHECK {$constraintName}");
+            } catch (\Exception $e) {
+                // Constraint may not exist
+            }
 
             return;
-        } catch (\Exception $e) {
-            // Not PostgreSQL, try MySQL
         }
 
-        // MySQL 8+ syntax: ALTER TABLE t DROP CHECK c
-        try {
-            DB::statement("ALTER TABLE {$tableName} DROP CHECK {$constraintName}");
-        } catch (\Exception $e) {
-            // Constraint may not exist — that's ok
-        }
+        // PostgreSQL
+        DB::statement("ALTER TABLE {$tableName} DROP CONSTRAINT IF EXISTS {$constraintName}");
     }
 
     /**
