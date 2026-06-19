@@ -1,5 +1,6 @@
 <?php
 
+use App\Constants\PdfConstants;
 use App\Models\Institution;
 use App\Models\Role;
 use App\Models\Setting;
@@ -357,12 +358,12 @@ if (! function_exists('get_pdf_config')) {
             ];
 
             $isReport = str_starts_with($viewType, 'report');
-            $settingFontKey = $isReport ? 'pdf_report_font_family' : 'pdf_font_family';
-            $settingFontSize = $isReport ? 'pdf_report_font_size' : 'pdf_body_font_size';
-            $settingLineHeight = $isReport ? 'pdf_report_line_height' : 'pdf_line_height';
+            $settingFontKey = $isReport ? PdfConstants::REPORT_FONT_FAMILY : PdfConstants::GLOBAL_FONT_FAMILY;
+            $settingFontSize = $isReport ? PdfConstants::REPORT_FONT_SIZE : PdfConstants::GLOBAL_BODY_FONT_SIZE;
+            $settingLineHeight = $isReport ? PdfConstants::REPORT_LINE_HEIGHT : PdfConstants::GLOBAL_LINE_HEIGHT;
 
-            $isCompact = (bool) Setting::get('pdf_layout_compact', false);
-            $pageMarginKey = Setting::get('pdf_page_margin', 'normal');
+            $isCompact = (bool) Setting::get(PdfConstants::GLOBAL_LAYOUT_COMPACT, false);
+            $pageMarginKey = Setting::get(PdfConstants::GLOBAL_PAGE_MARGIN, 'normal');
             $marginMap = [
                 'narrow' => '1.5cm 1cm',
                 'normal' => $marginDefaults[$viewType] ?? '2cm',
@@ -375,25 +376,25 @@ if (! function_exists('get_pdf_config')) {
                 'font_family' => Setting::get($settingFontKey, $fontDefaults[$viewType] ?? 'Arial, Helvetica, sans-serif'),
                 'body_font_size' => (int) Setting::get($settingFontSize, $sizeDefaults[$viewType] ?? 11),
                 'compact' => $isCompact,
-                'show_logo' => (bool) Setting::get('pdf_show_logo', true),
+                'show_logo' => (bool) Setting::get(PdfConstants::GLOBAL_SHOW_LOGO, true),
                 'page_margin' => $marginMap[$pageMarginKey] ?? $marginDefaults[$viewType],
-                'paper_size' => Setting::get('pdf_paper_size', 'a4'),
+                'paper_size' => Setting::get(PdfConstants::GLOBAL_PAPER_SIZE, 'a4'),
                 '_view_type' => $viewType,
                 // Extended layout controls
-                'logo_position' => Setting::get('pdf_logo_position', 'left'),
-                'logo_size' => (int) Setting::get('pdf_logo_size', 110),
+                'logo_position' => Setting::get(PdfConstants::GLOBAL_LOGO_POSITION, 'left'),
+                'logo_size' => (int) Setting::get(PdfConstants::GLOBAL_LOGO_SIZE, 110),
                 'line_height' => Setting::get($settingLineHeight, '1.1'),
-                'paragraph_spacing' => (int) Setting::get('pdf_paragraph_spacing', 6),
-                'paragraph_indent' => (int) Setting::get('pdf_paragraph_indent', 0),
+                'paragraph_spacing' => (int) Setting::get(PdfConstants::GLOBAL_PARAGRAPH_SPACING, 6),
+                'paragraph_indent' => (int) Setting::get(PdfConstants::GLOBAL_PARAGRAPH_INDENT, 0),
                 'custom_margins' => $customMargins,
                 'orientation' => null,
                 'intro_text' => '',
                 'outro_text' => '',
                 // Cover & Approval editor
-                'cover_title' => Setting::get('pdf_cover_title', ''),
-                'cover_subtitle' => Setting::get('pdf_cover_subtitle', ''),
-                'cover_show_team' => (bool) Setting::get('pdf_cover_show_team', true),
-                'approval_custom_text' => Setting::get('pdf_approval_custom_text', ''),
+                'cover_title' => Setting::get(PdfConstants::GLOBAL_COVER_TITLE, ''),
+                'cover_subtitle' => Setting::get(PdfConstants::GLOBAL_COVER_SUBTITLE, ''),
+                'cover_show_team' => (bool) Setting::get(PdfConstants::GLOBAL_COVER_SHOW_TEAM, true),
+                'approval_custom_text' => Setting::get(PdfConstants::GLOBAL_APPROVAL_CUSTOM_TEXT, ''),
             ];
 
             // Apply Module-Specific Overrides
@@ -498,10 +499,10 @@ if (! function_exists('_build_custom_margins')) {
      */
     function _build_custom_margins(string $viewType, array $defaults): string
     {
-        $t = trim((string) Setting::get('pdf_margin_top', ''));
-        $r = trim((string) Setting::get('pdf_margin_right', ''));
-        $b = trim((string) Setting::get('pdf_margin_bottom', ''));
-        $l = trim((string) Setting::get('pdf_margin_left', ''));
+        $t = trim((string) Setting::get(PdfConstants::GLOBAL_MARGIN_TOP, ''));
+        $r = trim((string) Setting::get(PdfConstants::GLOBAL_MARGIN_RIGHT, ''));
+        $b = trim((string) Setting::get(PdfConstants::GLOBAL_MARGIN_BOTTOM, ''));
+        $l = trim((string) Setting::get(PdfConstants::GLOBAL_MARGIN_LEFT, ''));
 
         // Only apply custom margins if at least one side is explicitly set
         if ($t === '' && $r === '' && $b === '' && $l === '') {

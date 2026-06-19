@@ -4,6 +4,7 @@
 
 namespace App\Console\Commands;
 
+use App\Constants\PdfConstants;
 use App\Models\Setting;
 use Illuminate\Console\Command;
 
@@ -68,26 +69,26 @@ class ResetPdfSettings extends Command
     {
         $this->info('Resetting base PDF settings...');
 
-        Setting::set('pdf_margin_top', '0', 'string');
-        Setting::set('pdf_margin_right', '2', 'string');
-        Setting::set('pdf_margin_bottom', '0.5', 'string');
-        Setting::set('pdf_margin_left', '2', 'string');
-        Setting::set('pdf_font_family', "'Times New Roman', Times, serif", 'string');
-        Setting::set('pdf_body_font_size', 11, 'integer');
-        Setting::set('pdf_line_height', '1', 'string');
-        Setting::set('pdf_paragraph_spacing', '6', 'string');
-        Setting::set('pdf_paragraph_indent', '0', 'string');
-        Setting::set('pdf_logo_size', '110', 'string');
-        Setting::set('pdf_show_logo', true, 'boolean');
-        Setting::set('pdf_page_margin', 'normal', 'string');
+        Setting::set(PdfConstants::GLOBAL_MARGIN_TOP, '0', 'string');
+        Setting::set(PdfConstants::GLOBAL_MARGIN_RIGHT, '2', 'string');
+        Setting::set(PdfConstants::GLOBAL_MARGIN_BOTTOM, '0.5', 'string');
+        Setting::set(PdfConstants::GLOBAL_MARGIN_LEFT, '2', 'string');
+        Setting::set(PdfConstants::GLOBAL_FONT_FAMILY, "'Times New Roman', Times, serif", 'string');
+        Setting::set(PdfConstants::GLOBAL_BODY_FONT_SIZE, 11, 'integer');
+        Setting::set(PdfConstants::GLOBAL_LINE_HEIGHT, '1', 'string');
+        Setting::set(PdfConstants::GLOBAL_PARAGRAPH_SPACING, '6', 'string');
+        Setting::set(PdfConstants::GLOBAL_PARAGRAPH_INDENT, '0', 'string');
+        Setting::set(PdfConstants::GLOBAL_LOGO_SIZE, '110', 'string');
+        Setting::set(PdfConstants::GLOBAL_SHOW_LOGO, true, 'boolean');
+        Setting::set(PdfConstants::GLOBAL_PAGE_MARGIN, 'normal', 'string');
 
-        Setting::set('pdf_report_font_family', 'Arial, Helvetica, sans-serif', 'string');
-        Setting::set('pdf_report_font_size', 9, 'integer');
-        Setting::set('pdf_report_line_height', '1.1', 'string');
+        Setting::set(PdfConstants::REPORT_FONT_FAMILY, 'Arial, Helvetica, sans-serif', 'string');
+        Setting::set(PdfConstants::REPORT_FONT_SIZE, 9, 'integer');
+        Setting::set(PdfConstants::REPORT_LINE_HEIGHT, '1.1', 'string');
 
-        Setting::set('pdf_paper_size', 'a4', 'string');
-        Setting::set('pdf_layout_compact', false, 'boolean');
-        Setting::set('pdf_logo_position', 'left', 'string');
+        Setting::set(PdfConstants::GLOBAL_PAPER_SIZE, 'a4', 'string');
+        Setting::set(PdfConstants::GLOBAL_LAYOUT_COMPACT, false, 'boolean');
+        Setting::set(PdfConstants::GLOBAL_LOGO_POSITION, 'left', 'string');
     }
 
     /**
@@ -104,8 +105,8 @@ class ResetPdfSettings extends Command
 
         $this->warn("Resetting overrides for module: {$module}");
 
-        Setting::where('key', 'LIKE', "pdf_content_{$module}_%")->delete();
-        Setting::where('key', 'LIKE', "pdf_override_{$module}_%")->delete();
+        Setting::where('key', 'LIKE', PdfConstants::PREFIX_CONTENT."{$module}_%")->delete();
+        Setting::where('key', 'LIKE', PdfConstants::PREFIX_OVERRIDE."{$module}_%")->delete();
 
         $this->line("  ✓ Overrides for '{$module}' deleted.");
     }
@@ -119,8 +120,8 @@ class ResetPdfSettings extends Command
 
         $keys = $this->getModuleKeys();
         foreach ($keys as $module) {
-            Setting::where('key', 'LIKE', "pdf_content_{$module}_%")->delete();
-            Setting::where('key', 'LIKE', "pdf_override_{$module}_%")->delete();
+            Setting::where('key', 'LIKE', PdfConstants::PREFIX_CONTENT."{$module}_%")->delete();
+            Setting::where('key', 'LIKE', PdfConstants::PREFIX_OVERRIDE."{$module}_%")->delete();
         }
 
         $this->line('  ✓ All module-specific overrides deleted ('.count($keys).' modules).');

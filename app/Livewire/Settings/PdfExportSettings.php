@@ -146,35 +146,35 @@ class PdfExportSettings extends Component
         abort_unless(Auth::user()?->hasRole('admin lppm') || Auth::user()?->hasRole('superadmin'), 403);
 
         // Family A
-        $this->pdfFontFamily = Setting::get('pdf_font_family', 'Times New Roman, Times, serif');
-        $this->pdfBodyFontSize = (int) Setting::get('pdf_body_font_size', 11);
-        $this->pdfLayoutCompact = (bool) Setting::get('pdf_layout_compact', false);
-        $this->pdfShowLogo = (bool) Setting::get('pdf_show_logo', true);
-        $this->pdfPageMargin = Setting::get('pdf_page_margin', 'normal');
-        $this->pdfPaperSize = Setting::get('pdf_paper_size', 'a4');
+        $this->pdfFontFamily = Setting::get(PdfConstants::GLOBAL_FONT_FAMILY, 'Times New Roman, Times, serif');
+        $this->pdfBodyFontSize = (int) Setting::get(PdfConstants::GLOBAL_BODY_FONT_SIZE, 11);
+        $this->pdfLayoutCompact = (bool) Setting::get(PdfConstants::GLOBAL_LAYOUT_COMPACT, false);
+        $this->pdfShowLogo = (bool) Setting::get(PdfConstants::GLOBAL_SHOW_LOGO, true);
+        $this->pdfPageMargin = Setting::get(PdfConstants::GLOBAL_PAGE_MARGIN, 'normal');
+        $this->pdfPaperSize = Setting::get(PdfConstants::GLOBAL_PAPER_SIZE, 'a4');
 
         // Extended layout
-        $this->pdfLogoPosition = Setting::get('pdf_logo_position', 'left');
-        $this->pdfLogoSize = (int) Setting::get('pdf_logo_size', 110);
-        $this->pdfLineHeight = Setting::get('pdf_line_height', '1.1');
-        $this->pdfParagraphSpacing = (int) Setting::get('pdf_paragraph_spacing', 6);
-        $this->pdfParagraphIndent = (int) Setting::get('pdf_paragraph_indent', 0);
+        $this->pdfLogoPosition = Setting::get(PdfConstants::GLOBAL_LOGO_POSITION, 'left');
+        $this->pdfLogoSize = (int) Setting::get(PdfConstants::GLOBAL_LOGO_SIZE, 110);
+        $this->pdfLineHeight = Setting::get(PdfConstants::GLOBAL_LINE_HEIGHT, '1.1');
+        $this->pdfParagraphSpacing = (int) Setting::get(PdfConstants::GLOBAL_PARAGRAPH_SPACING, 6);
+        $this->pdfParagraphIndent = (int) Setting::get(PdfConstants::GLOBAL_PARAGRAPH_INDENT, 0);
 
         // Custom margins
-        $this->pdfMarginTop = Setting::get('pdf_margin_top', '');
-        $this->pdfMarginRight = Setting::get('pdf_margin_right', '');
-        $this->pdfMarginBottom = Setting::get('pdf_margin_bottom', '');
-        $this->pdfMarginLeft = Setting::get('pdf_margin_left', '');
+        $this->pdfMarginTop = Setting::get(PdfConstants::GLOBAL_MARGIN_TOP, '');
+        $this->pdfMarginRight = Setting::get(PdfConstants::GLOBAL_MARGIN_RIGHT, '');
+        $this->pdfMarginBottom = Setting::get(PdfConstants::GLOBAL_MARGIN_BOTTOM, '');
+        $this->pdfMarginLeft = Setting::get(PdfConstants::GLOBAL_MARGIN_LEFT, '');
 
         // Cover & Approval
-        $this->pdfCoverTitle = Setting::get('pdf_cover_title', '');
-        $this->pdfCoverSubtitle = Setting::get('pdf_cover_subtitle', '');
-        $this->pdfCoverShowTeam = (bool) Setting::get('pdf_cover_show_team', true);
-        $this->pdfApprovalCustomText = Setting::get('pdf_approval_custom_text', '');
+        $this->pdfCoverTitle = Setting::get(PdfConstants::GLOBAL_COVER_TITLE, '');
+        $this->pdfCoverSubtitle = Setting::get(PdfConstants::GLOBAL_COVER_SUBTITLE, '');
+        $this->pdfCoverShowTeam = (bool) Setting::get(PdfConstants::GLOBAL_COVER_SHOW_TEAM, true);
+        $this->pdfApprovalCustomText = Setting::get(PdfConstants::GLOBAL_APPROVAL_CUSTOM_TEXT, '');
 
-        $this->pdfReportFontFamily = Setting::get('pdf_report_font_family', 'Arial, Helvetica, sans-serif');
-        $this->pdfReportFontSize = (int) Setting::get('pdf_report_font_size', 9);
-        $this->pdfReportLineHeight = Setting::get('pdf_report_line_height', '1.1');
+        $this->pdfReportFontFamily = Setting::get(PdfConstants::REPORT_FONT_FAMILY, 'Arial, Helvetica, sans-serif');
+        $this->pdfReportFontSize = (int) Setting::get(PdfConstants::REPORT_FONT_SIZE, 9);
+        $this->pdfReportLineHeight = Setting::get(PdfConstants::REPORT_LINE_HEIGHT, '1.1');
 
         // Family C
         $this->pdfFamilyCFontFamily = Setting::get(PdfConstants::PROPOSAL_FONT_FAMILY, config('pdf-modules.families.C.default_font', 'Times New Roman, Times, serif'));
@@ -201,28 +201,28 @@ class PdfExportSettings extends Component
     public function updated(string $property, mixed $value): void
     {
         $map = [
-            'pdfFontFamily' => ['pdf_font_family', 'string'],
-            'pdfBodyFontSize' => ['pdf_body_font_size', 'integer'],
-            'pdfLayoutCompact' => ['pdf_layout_compact', 'boolean'],
-            'pdfShowLogo' => ['pdf_show_logo', 'boolean'],
-            'pdfPageMargin' => ['pdf_page_margin', 'string'],
-            'pdfPaperSize' => ['pdf_paper_size', 'string'],
-            'pdfLogoPosition' => ['pdf_logo_position', 'string'],
-            'pdfLogoSize' => ['pdf_logo_size', 'integer'],
-            'pdfLineHeight' => ['pdf_line_height', 'string'],
-            'pdfParagraphSpacing' => ['pdf_paragraph_spacing', 'integer'],
-            'pdfParagraphIndent' => ['pdf_paragraph_indent', 'integer'],
-            'pdfMarginTop' => ['pdf_margin_top', 'string'],
-            'pdfMarginRight' => ['pdf_margin_right', 'string'],
-            'pdfMarginBottom' => ['pdf_margin_bottom', 'string'],
-            'pdfMarginLeft' => ['pdf_margin_left', 'string'],
-            'pdfCoverTitle' => ['pdf_cover_title', 'string'],
-            'pdfCoverSubtitle' => ['pdf_cover_subtitle', 'string'],
-            'pdfCoverShowTeam' => ['pdf_cover_show_team', 'boolean'],
-            'pdfApprovalCustomText' => ['pdf_approval_custom_text', 'string'],
-            'pdfReportFontFamily' => ['pdf_report_font_family', 'string'],
-            'pdfReportFontSize' => ['pdf_report_font_size', 'integer'],
-            'pdfReportLineHeight' => ['pdf_report_line_height', 'string'],
+            'pdfFontFamily' => [PdfConstants::GLOBAL_FONT_FAMILY, 'string'],
+            'pdfBodyFontSize' => [PdfConstants::GLOBAL_BODY_FONT_SIZE, 'integer'],
+            'pdfLayoutCompact' => [PdfConstants::GLOBAL_LAYOUT_COMPACT, 'boolean'],
+            'pdfShowLogo' => [PdfConstants::GLOBAL_SHOW_LOGO, 'boolean'],
+            'pdfPageMargin' => [PdfConstants::GLOBAL_PAGE_MARGIN, 'string'],
+            'pdfPaperSize' => [PdfConstants::GLOBAL_PAPER_SIZE, 'string'],
+            'pdfLogoPosition' => [PdfConstants::GLOBAL_LOGO_POSITION, 'string'],
+            'pdfLogoSize' => [PdfConstants::GLOBAL_LOGO_SIZE, 'integer'],
+            'pdfLineHeight' => [PdfConstants::GLOBAL_LINE_HEIGHT, 'string'],
+            'pdfParagraphSpacing' => [PdfConstants::GLOBAL_PARAGRAPH_SPACING, 'integer'],
+            'pdfParagraphIndent' => [PdfConstants::GLOBAL_PARAGRAPH_INDENT, 'integer'],
+            'pdfMarginTop' => [PdfConstants::GLOBAL_MARGIN_TOP, 'string'],
+            'pdfMarginRight' => [PdfConstants::GLOBAL_MARGIN_RIGHT, 'string'],
+            'pdfMarginBottom' => [PdfConstants::GLOBAL_MARGIN_BOTTOM, 'string'],
+            'pdfMarginLeft' => [PdfConstants::GLOBAL_MARGIN_LEFT, 'string'],
+            'pdfCoverTitle' => [PdfConstants::GLOBAL_COVER_TITLE, 'string'],
+            'pdfCoverSubtitle' => [PdfConstants::GLOBAL_COVER_SUBTITLE, 'string'],
+            'pdfCoverShowTeam' => [PdfConstants::GLOBAL_COVER_SHOW_TEAM, 'boolean'],
+            'pdfApprovalCustomText' => [PdfConstants::GLOBAL_APPROVAL_CUSTOM_TEXT, 'string'],
+            'pdfReportFontFamily' => [PdfConstants::REPORT_FONT_FAMILY, 'string'],
+            'pdfReportFontSize' => [PdfConstants::REPORT_FONT_SIZE, 'integer'],
+            'pdfReportLineHeight' => [PdfConstants::REPORT_LINE_HEIGHT, 'string'],
             'pdfFamilyCFontFamily' => [PdfConstants::PROPOSAL_FONT_FAMILY, 'string'],
             'pdfFamilyCFontSize' => [PdfConstants::PROPOSAL_FONT_SIZE, 'integer'],
             'pdfFamilyCLineHeight' => [PdfConstants::PROPOSAL_LINE_HEIGHT, 'string'],
