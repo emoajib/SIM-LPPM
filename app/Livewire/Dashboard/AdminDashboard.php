@@ -304,12 +304,11 @@ class AdminDashboard extends Component
             $this->selectedCommunityServiceScheme,
         ]));
 
-        $this->loadTrendChartData();
-
         $data = Cache::remember($cacheKey, 180, function () use ($yearFilter) {
             $this->loadStats($yearFilter);
             $this->loadProcessStats($yearFilter);
             $this->loadRecentProposals($yearFilter);
+            $this->loadTrendChartData();
             $this->loadChartData($yearFilter);
 
             return [

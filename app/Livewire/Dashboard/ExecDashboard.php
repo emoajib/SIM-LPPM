@@ -103,8 +103,8 @@ class ExecDashboard extends Component
     {
         $this->user = Auth::user();
         $this->roleName = active_role();
-        $this->selectedYear = (int) date('Y');
         $this->availableYears = $this->getAvailableYears();
+        $this->selectedYear = $this->availableYears[0] ?? (int) date('Y');
         $this->availableStatuses = ProposalStatus::filterOptions();
         $this->availableFaculties = $this->getFaculties();
 
@@ -179,9 +179,26 @@ class ExecDashboard extends Component
 
     private function getAvailableYears(): array
     {
-        $years = Proposal::select('start_year as year')
-            ->whereNotNull('start_year')
-            ->distinct()
+        $query = Proposal::select('start_year as year')
+            ->whereNotNull('start_year');
+
+        if ($this->isDekanRestricted()) {
+            $facultyId = $this->user->identity?->faculty_id;
+            if ($facultyId) {
+                $query->whereHas('submitter.identity', fn ($q) => $q->where('faculty_id', $facultyId));
+            } else {
+                return [(int) date('Y')];
+            }
+        } elseif ($this->isKaprodiRestricted()) {
+            $studyProgram = StudyProgram::where('kaprodi_user_id', $this->user->id)->first();
+            if ($studyProgram) {
+                $query->whereHas('submitter.identity', fn ($q) => $q->where('study_program_id', $studyProgram->id));
+            } else {
+                return [(int) date('Y')];
+            }
+        }
+
+        $years = $query->distinct()
             ->orderBy('year', 'desc')
             ->pluck('year')
             ->map(fn ($y) => (int) $y)
@@ -754,7 +771,6 @@ class ExecDashboard extends Component
 
     private function transformStats(Collection $raw): array
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $research = $raw->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'Research'));
         $communityService = $raw->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'CommunityService'));
 
@@ -776,6 +792,11 @@ class ExecDashboard extends Component
                     ->tap(fn ($subQ) => $this->applyCommonFilters($subQ))
             )->sum('total_price');
 
+        $scopedActiveIds = Proposal::query()
+            ->tap(fn ($q) => $this->applyCommonFilters($q))
+            ->whereIn('status', ['approved', 'completed'])
+            ->pluck('id');
+
         return [
             'total_research' => $research->sum('count'),
             'total_community_service' => $communityService->sum('count'),
@@ -787,10 +808,10 @@ class ExecDashboard extends Component
                 : ProgressReport::query()
                     ->where('reporting_period', 'final')
                     ->where('status', ReportStatus::SUBMITTED)
-                    ->whereYear('created_at', $this->selectedYear)
+                    ->whereIn('proposal_id', $scopedActiveIds)
                     ->count(),
-            'total_outputs' => MandatoryOutput::whereHas('progressReport', fn ($q) => $q->whereYear('created_at', $this->selectedYear))->count()
-                + AdditionalOutput::whereHas('progressReport', fn ($q) => $q->whereYear('created_at', $this->selectedYear))->count(),
+            'total_outputs' => MandatoryOutput::whereHas('progressReport', fn ($q) => $q->whereIn('proposal_id', $scopedActiveIds))->count()
+                + AdditionalOutput::whereHas('progressReport', fn ($q) => $q->whereIn('proposal_id', $scopedActiveIds))->count(),
             'research_budget' => $researchBudget,
             'pkm_budget' => $pkmBudget,
         ];

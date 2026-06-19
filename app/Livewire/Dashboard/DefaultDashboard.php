@@ -27,8 +27,8 @@ class DefaultDashboard extends Component
     {
         $this->user = Auth::user();
         $this->roleName = active_role();
-        $this->selectedYear = date('Y');
         $this->availableYears = $this->getAvailableYears();
+        $this->selectedYear = $this->availableYears[0] ?? date('Y');
 
         $this->loadAnalytics();
     }

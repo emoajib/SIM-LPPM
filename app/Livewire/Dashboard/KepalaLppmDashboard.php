@@ -301,12 +301,11 @@ class KepalaLppmDashboard extends Component
             $this->selectedCommunityServiceScheme,
         ]));
 
-        $this->loadTrendChartData();
-
         $data = Cache::remember($cacheKey, 180, function () use ($yearFilter) {
             $this->loadStats($yearFilter);
             $this->loadProcessStats((string) $yearFilter);
             $this->loadRecentProposals($yearFilter);
+            $this->loadTrendChartData();
             $this->loadChartData($yearFilter);
 
             return [

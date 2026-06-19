@@ -59,8 +59,8 @@ class DosenDashboard extends Component
     {
         $this->user = Auth::user()->load('identity');
         $this->roleName = active_role();
-        $this->selectedYear = date('Y');
         $this->availableYears = $this->getAvailableYears();
+        $this->selectedYear = $this->availableYears[0] ?? date('Y');
 
         $this->loadAnalytics();
     }
@@ -72,11 +72,16 @@ class DosenDashboard extends Component
 
     private function getAvailableYears(): array
     {
-        // Use start_year (tahun pelaksanaan) as filter basis, not created_at
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $years = Proposal::query()
-            ->distinct()
+            ->where(function ($q) {
+                $q->where('submitter_id', $this->user->id)
+                    ->orWhereHas('teamMembers', fn ($q2) => $q2
+                        ->where('user_id', $this->user->id)
+                        ->where('status', 'accepted')
+                    );
+            })
             ->whereNotNull('start_year')
+            ->distinct()
             ->orderBy('start_year', 'desc')
             ->pluck('start_year')
             ->map(fn ($y) => (string) $y)
@@ -282,11 +287,16 @@ class DosenDashboard extends Component
      */
     private function loadRecentProposals(string $yearFilter): void
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $recentProposals = Proposal::query()
             ->with(['submitter.identity', 'researchScheme', 'communityServiceScheme'])
-            ->where('submitter_id', $this->user->id)
             ->where('start_year', $yearFilter)
+            ->where(function ($q) {
+                $q->where('submitter_id', $this->user->id)
+                    ->orWhereHas('teamMembers', fn ($q2) => $q2
+                        ->where('user_id', $this->user->id)
+                        ->where('status', 'accepted')
+                    );
+            })
             ->latest('updated_at')
             ->limit(20)
             ->get();

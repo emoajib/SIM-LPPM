@@ -44,8 +44,8 @@ class ReviewerDashboard extends Component
     {
         $this->user = Auth::user();
         $this->roleName = active_role();
-        $this->selectedYear = date('Y');
         $this->availableYears = $this->getAvailableYears();
+        $this->selectedYear = $this->availableYears[0] ?? date('Y');
 
         $this->loadAnalytics();
     }
@@ -57,10 +57,15 @@ class ReviewerDashboard extends Component
 
     private function getAvailableYears(): array
     {
-        $years = Proposal::select(DB::raw(sql_year().' as year'))
+        $years = ProposalReviewer::query()
+            ->where('user_id', $this->user->id)
+            ->whereHas('proposal', fn ($q) => $q->whereNotNull('start_year'))
+            ->join('proposals', 'proposal_reviewer.proposal_id', '=', 'proposals.id')
+            ->select('proposals.start_year as year')
             ->distinct()
             ->orderBy('year', 'desc')
             ->pluck('year')
+            ->map(fn ($y) => (string) $y)
             ->toArray();
 
         if (empty($years)) {
