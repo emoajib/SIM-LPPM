@@ -64,8 +64,9 @@
                 $startYear = (int) ($proposal->start_year ?? date('Y'));
                 $duration = (int) ($proposal->duration_in_years ?? 1);
             @endphp
-            <div class="table-responsive">
-                <table class="card-table table table-bordered table-sm">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-vcenter table-sm mb-0">
                     <thead>
                         <tr>
                             <th>Tahun Ke-</th>
@@ -92,6 +93,7 @@
                     </tbody>
                 </table>
             </div>
+            </div>
         @endif
     </div>
 
@@ -112,8 +114,9 @@
                 $startYear = (int) ($proposal->start_year ?? date('Y'));
                 $duration = (int) ($proposal->duration_in_years ?? 1);
             @endphp
-            <div class="table-responsive">
-                <table class="card-table table table-bordered table-sm">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-vcenter table-sm mb-0">
                     <thead>
                         <tr>
                             <th>Tahun Ke-</th>
@@ -139,6 +142,7 @@
                         @endforeach
                     </tbody>
                 </table>
+            </div>
             </div>
         @endif
     </div>

@@ -55,7 +55,7 @@
                 <p class="text-muted small">Belum ada luaran wajib</p>
             @else
                 <div class="table-responsive mb-4">
-                    <table class="table table-bordered table-sm">
+                    <table class="table table-bordered table-vcenter table-sm mb-0">
                         <thead>
                             <tr>
                                 <th>Tahun Ke-</th>
@@ -92,7 +92,7 @@
                 <p class="text-muted small">Belum ada luaran tambahan</p>
             @else
                 <div class="table-responsive">
-                    <table class="table table-bordered table-sm">
+                    <table class="table table-bordered table-vcenter table-sm mb-0">
                         <thead>
                             <tr>
                                 <th>Tahun Ke-</th>
