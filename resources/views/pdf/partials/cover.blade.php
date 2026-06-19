@@ -16,7 +16,7 @@
 
     <div style="margin-top: 100px; margin-bottom: 120px; text-align: center;">
         @if(($pdfConfig['show_logo'] ?? true) && get_logo_base64())
-            <img src="{{ get_logo_base64() }}" style="width: {{ $pdfConfig['logo_size'] ?? 250 }}px;">
+            <img src="{{ get_logo_base64() }}" style="width: {{ $pdfConfig['logo_size'] ?? 350 }}px;">
         @endif
     </div>
 
