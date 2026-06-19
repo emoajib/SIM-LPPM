@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Schema;
+use Spatie\Permission\PermissionRegistrar;
 
 class DatabaseRestoreService
 {
@@ -45,6 +46,9 @@ class DatabaseRestoreService
         'telescope_entries',
         'telescope_entries_tags',
         'telescope_monitoring',
+        'budget_caps',
+        'budget_groups',
+        'budget_components',
     ];
 
     private function resyncPostgresSequences(): void
@@ -148,6 +152,30 @@ class DatabaseRestoreService
         );
     }
 
+    protected function fixUsersStatement(string $statement): string
+    {
+        if (! preg_match('/INSERT\s+(IGNORE\s+)?INTO\s+[`"\']?users[`"\']?\s/i', $statement)) {
+            return $statement;
+        }
+
+        // MySQL dump columns order
+        $columns = [
+            'id', 'name', 'username', 'email', 'email_verified_at', 'password',
+            'two_factor_secret', 'two_factor_recovery_codes', 'two_factor_confirmed_at',
+            'remember_token', 'created_at', 'updated_at', 'last_active_at',
+        ];
+
+        $quote = DB::getDriverName() === 'mysql' ? '`' : '"';
+        $quoted = array_map(fn ($c) => $quote.$c.$quote, $columns);
+        $colList = implode(',', $quoted);
+
+        return preg_replace(
+            '/(INSERT\s+(IGNORE\s+)?INTO\s+[`"\']?users[`"\']?\s*)\s*VALUES\s/i',
+            '$1('.$colList.') VALUES ',
+            $statement
+        );
+    }
+
     /**
      * Adapt MySQL-dialect SQL to be compatible with the current database driver.
      *
@@ -161,6 +189,16 @@ class DatabaseRestoreService
      */
     protected function adaptSqlForCurrentDriver(string $statement): string
     {
+        // --- LEGACY DATA FIX ---
+        // Fix legacy budget_items statements (13 columns -> 12 columns by dropping the obsolete 5th column)
+        if (preg_match('/INSERT\s+(IGNORE\s+)?INTO\s+[`"\']?budget_items[`"\']?\s/i', $statement)) {
+            $statement = preg_replace(
+                '/\(\s*(\d+)\s*,\s*(\'[0-9a-fA-F-]+\')\s*,\s*(\d+|NULL)\s*,\s*(\d+|NULL)\s*,\s*(?:\d+|NULL)\s*,/',
+                '($1,$2,$3,$4,',
+                $statement
+            );
+        }
+
         $driver = DB::getDriverName();
 
         if ($driver === 'mysql') {
@@ -179,6 +217,10 @@ class DatabaseRestoreService
         if ($driver === 'pgsql') {
             // Convert MySQL escaped single quotes (\') to SQL standard ('')
             $statement = str_replace("\\'", "''", $statement);
+
+            // Convert MySQL escaped backslashes (\\) to standard SQL backslashes (\)
+            // e.g. 'App\\Models\\User' -> 'App\Models\User'
+            $statement = str_replace('\\\\', '\\', $statement);
 
             // 2. INSERT IGNORE INTO → INSERT INTO ... ON CONFLICT DO NOTHING
             if (preg_match('/^\s*INSERT\s+IGNORE\s+INTO\s/i', $statement)) {
@@ -245,7 +287,7 @@ class DatabaseRestoreService
 
             foreach ($statements as $stmt) {
                 try {
-                    $adapted = $this->adaptSqlForCurrentDriver($this->fixIdentityStatement($stmt));
+                    $adapted = $this->adaptSqlForCurrentDriver($this->fixUsersStatement($this->fixIdentityStatement($stmt)));
                     if (empty(trim($adapted))) {
                         continue; // Skip statements that became empty after adaptation (e.g. MySQL SET)
                     }
@@ -304,6 +346,12 @@ class DatabaseRestoreService
                 'inserted' => $inserted,
                 'errors' => count($errors),
             ]);
+
+            try {
+                app()->make(PermissionRegistrar::class)->forgetCachedPermissions();
+            } catch (\Throwable $e) {
+                // Ignore if Spatie isn't set up yet
+            }
 
             return [
                 'success' => true,
@@ -413,7 +461,7 @@ class DatabaseRestoreService
                 }
 
                 try {
-                    $adapted = $this->adaptSqlForCurrentDriver($this->fixIdentityStatement($stmt));
+                    $adapted = $this->adaptSqlForCurrentDriver($this->fixUsersStatement($this->fixIdentityStatement($stmt)));
                     if (empty(trim($adapted))) {
                         continue; // Skip statements that became empty after adaptation (e.g. MySQL SET)
                     }
@@ -485,6 +533,12 @@ class DatabaseRestoreService
                 'skipped_preserved' => $skippedPreserved,
                 'errors' => count($errors),
             ]);
+
+            try {
+                app()->make(PermissionRegistrar::class)->forgetCachedPermissions();
+            } catch (\Throwable $e) {
+                // Ignore if Spatie isn't set up yet
+            }
 
             return [
                 'success' => true,
