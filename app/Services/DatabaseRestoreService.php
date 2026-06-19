@@ -10,6 +10,35 @@ use Spatie\Permission\PermissionRegistrar;
 
 class DatabaseRestoreService
 {
+    /**
+     * Source (MySQL) column orders for tables where `after()` was used in migrations.
+     * PostgreSQL ignores `after()`, causing column order mismatch with MySQL dumps.
+     */
+    protected array $mysqlColumnOrders = [
+        'community_service_schemes' => [
+            'id', 'name', 'strata', 'eligibility_rules', 'created_at', 'updated_at',
+        ],
+        'community_services' => [
+            'id', 'macro_research_group_id', 'partner_id', 'partner_issue_summary',
+            'solution_offered', 'created_at', 'updated_at', 'deleted_at',
+        ],
+        'faculties' => [
+            'id', 'institution_id', 'name', 'dean_name', 'dean_id', 'dean_user_id',
+            'research_roadmap', 'code', 'created_at', 'updated_at',
+        ],
+        'institutions' => [
+            'id', 'name', 'code', 'type', 'is_verified', 'lppm_head_name',
+            'lppm_head_id', 'lppm_head_user_id', 'short_name', 'address',
+            'phone', 'email', 'website', 'created_at', 'updated_at',
+        ],
+        'letter_types' => [
+            'id', 'code', 'name', 'description', 'category', 'numbering_format',
+            'template_view', 'template_file_path', 'template_file_original_name',
+            'template_file_size', 'template_uploaded_at', 'template_uploaded_by',
+            'is_uploadable', 'is_active', 'created_at', 'updated_at', 'deleted_at',
+        ],
+    ];
+
     protected array $allowedPrefixes = [
         'INSERT INTO',
         'INSERT IGNORE INTO',
@@ -177,6 +206,221 @@ class DatabaseRestoreService
     }
 
     /**
+     * Inject explicit column list (in source/MySQL order) for tables where `after()` was used.
+     * This prevents PostgreSQL from misinterpreting VALUES due to column order mismatch.
+     */
+    protected function injectColumnList(string $statement): string
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            return $statement;
+        }
+
+        if (! preg_match('/INSERT\s+(IGNORE\s+)?INTO\s+[`"\']?(\w+)[`"\']?\s/i', $statement, $m)) {
+            return $statement;
+        }
+
+        $table = $m[2];
+
+        if (! isset($this->mysqlColumnOrders[$table])) {
+            return $statement;
+        }
+
+        if (preg_match('/INSERT\s+(IGNORE\s+)?INTO\s+[`"\']?\w+[`"\']?\s*\(/', $statement)) {
+            return $statement;
+        }
+
+        $cols = array_map(fn ($c) => '"'.$c.'"', $this->mysqlColumnOrders[$table]);
+        $colList = implode(',', $cols);
+
+        return preg_replace(
+            '/(INSERT\s+(IGNORE\s+)?INTO\s+[`"\']?\w+[`"\']?\s*)\s*VALUES\s/i',
+            '$1('.$colList.') VALUES ',
+            $statement
+        );
+    }
+
+    /**
+     * Fix boolean values in INSERT statements for PostgreSQL compatibility.
+     * Converts MySQL-style integer booleans (0/1) and empty string to proper boolean literals.
+     */
+    protected function fixBooleanValues(string $statement): string
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            return $statement;
+        }
+
+        if (! preg_match('/INSERT\s+(IGNORE\s+)?INTO\s+[`"\']?(\w+)[`"\']?\s*/i', $statement, $m)) {
+            return $statement;
+        }
+
+        $table = $m[2];
+
+        try {
+            $boolCols = DB::select(
+                "SELECT column_name, ordinal_position FROM information_schema.columns
+                 WHERE table_name = ? AND table_schema = 'public' AND data_type IN ('boolean')
+                 ORDER BY ordinal_position",
+                [$table]
+            );
+        } catch (\Throwable $e) {
+            return $statement;
+        }
+
+        if (empty($boolCols)) {
+            return $statement;
+        }
+
+        $boolColumnNames = array_map(fn ($c) => $c->column_name, $boolCols);
+        $colNames = $this->extractColumnNames($statement, $table);
+
+        if (empty($colNames)) {
+            return $statement;
+        }
+
+        $boolPositions = [];
+        foreach ($colNames as $pos => $name) {
+            if (in_array($name, $boolColumnNames, true)) {
+                $boolPositions[] = $pos;
+            }
+        }
+
+        if (empty($boolPositions)) {
+            return $statement;
+        }
+
+        return $this->convertBooleanValuesInSql($statement, $boolPositions);
+    }
+
+    /**
+     * Extract column names from an INSERT statement.
+     * Returns ordered array of column names, or empty array if cannot determine.
+     */
+    protected function extractColumnNames(string $statement, string $table): array
+    {
+        if (preg_match('/INSERT\s+(?:IGNORE\s+)?INTO\s+[`"\']?\w+[`"\']?\s*\(([^)]+)\)\s*VALUES\s/i', $statement, $m)) {
+            return array_map(fn ($c) => trim($c, ' `"'), explode(',', $m[1]));
+        }
+
+        if (isset($this->mysqlColumnOrders[$table])) {
+            return $this->mysqlColumnOrders[$table];
+        }
+
+        try {
+            $cols = DB::select(
+                "SELECT column_name FROM information_schema.columns
+                 WHERE table_name = ? AND table_schema = 'public'
+                 ORDER BY ordinal_position",
+                [$table]
+            );
+
+            return array_map(fn ($c) => $c->column_name, $cols);
+        } catch (\Throwable $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Convert 0/1/'' at the given positions to false/true in all VALUES tuples.
+     */
+    protected function convertBooleanValuesInSql(string $statement, array $boolPositions): string
+    {
+        $sortPos = array_fill_keys($boolPositions, true);
+
+        return preg_replace_callback(
+            '/\(([^)]+)\)/',
+            function ($matches) use ($sortPos) {
+                $tuple = $matches[1];
+                $parts = $this->splitTupleValues($tuple);
+                if (count($parts) <= max(array_keys($sortPos))) {
+                    return $matches[0];
+                }
+
+                foreach ($sortPos as $pos => $_) {
+                    $val = trim($parts[$pos]);
+
+                    if ($val === '0') {
+                        $parts[$pos] = 'false';
+                    } elseif ($val === '1') {
+                        $parts[$pos] = 'true';
+                    } elseif ($val === "''" || $val === '') {
+                        $parts[$pos] = 'false';
+                    }
+                }
+
+                return '('.implode(',', $parts).')';
+            },
+            $statement
+        );
+    }
+
+    /**
+     * Split a VALUES tuple (content between outer parentheses) into individual values,
+     * respecting single-quoted strings.
+     */
+    protected function splitTupleValues(string $tuple): array
+    {
+        $values = [];
+        $current = '';
+        $inString = false;
+        $len = strlen($tuple);
+
+        for ($i = 0; $i < $len; $i++) {
+            $ch = $tuple[$i];
+
+            if ($ch === "'" && ! $inString) {
+                $inString = true;
+                $current .= $ch;
+            } elseif ($ch === "'" && $inString) {
+                if ($i + 1 < $len && $tuple[$i + 1] === "'") {
+                    $current .= $ch;
+                    $i++;
+                }
+                $inString = false;
+                $current .= $ch;
+            } elseif ($ch === ',' && ! $inString) {
+                $values[] = $current;
+                $current = '';
+            } else {
+                $current .= $ch;
+            }
+        }
+
+        if ($current !== '') {
+            $values[] = $current;
+        }
+
+        return $values;
+    }
+
+    /**
+     * Fix MySQL-style escaped quotes within JSON string values for PostgreSQL compatibility.
+     * MySQL mysqldump escapes double quotes inside JSON as \", but PostgreSQL needs unescaped.
+     */
+    protected function fixJsonEscaping(string $statement): string
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            return $statement;
+        }
+
+        return str_replace('\\"', '"', $statement);
+    }
+
+    /**
+     * Apply all statement fixes in the correct order.
+     */
+    protected function processStatement(string $statement): string
+    {
+        $statement = $this->fixUsersStatement($statement);
+        $statement = $this->fixIdentityStatement($statement);
+        $statement = $this->injectColumnList($statement);
+        $statement = $this->fixJsonEscaping($statement);
+        $statement = $this->adaptSqlForCurrentDriver($statement);
+        $statement = $this->fixBooleanValues($statement);
+
+        return $statement;
+    }
+
+    /**
      * Adapt MySQL-dialect SQL to be compatible with the current database driver.
      *
      * Handles:
@@ -287,7 +531,7 @@ class DatabaseRestoreService
 
             foreach ($statements as $stmt) {
                 try {
-                    $adapted = $this->adaptSqlForCurrentDriver($this->fixUsersStatement($this->fixIdentityStatement($stmt)));
+                    $adapted = $this->processStatement($stmt);
                     if (empty(trim($adapted))) {
                         continue; // Skip statements that became empty after adaptation (e.g. MySQL SET)
                     }
@@ -461,7 +705,7 @@ class DatabaseRestoreService
                 }
 
                 try {
-                    $adapted = $this->adaptSqlForCurrentDriver($this->fixUsersStatement($this->fixIdentityStatement($stmt)));
+                    $adapted = $this->processStatement($stmt);
                     if (empty(trim($adapted))) {
                         continue; // Skip statements that became empty after adaptation (e.g. MySQL SET)
                     }
