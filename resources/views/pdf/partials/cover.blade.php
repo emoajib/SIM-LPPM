@@ -1,5 +1,5 @@
 @php $pdfConfig ??= get_pdf_config('letter'); @endphp
-<div style="position: relative; width: 100%; height: 100%;">
+<div>
     <div style="font-size: 16pt; font-weight: bold; margin-bottom: 20px; margin-top: 30px; text-transform: uppercase; text-align: center;">
         {{ $pdfConfig['cover_title'] ?: $coverTitle }}
     </div>
@@ -49,7 +49,7 @@
         $facultyClean = preg_replace('/^FAKULTAS\s+/i', '', trim($facultyName));
         $prodiClean = preg_replace('/^(PROGRAM STUDI|PRODI)\s+/i', '', trim($prodiName));
     @endphp
-    <div style="position: absolute; bottom: 30px; left: 0; right: 0; text-align: center; font-weight: bold; font-size: 14pt; text-transform: uppercase; line-height: 1.4;">
+    <div style="position: absolute; bottom: 0; left: 0; right: 0; text-align: center; font-weight: bold; font-size: 14pt; text-transform: uppercase; line-height: 1.4;">
         FAKULTAS {{ strtoupper($facultyClean) }}<br>
         PROGRAM STUDI {{ strtoupper($prodiClean) }}<br>
         ITSNU PEKALONGAN<br>
