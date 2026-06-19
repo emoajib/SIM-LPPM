@@ -12,7 +12,7 @@
 @endphp
 
 @if($hasStudents)
-    <table>
+    <table class="table-data">
         <thead>
             <tr>
                 <th>Nama Anggota</th>

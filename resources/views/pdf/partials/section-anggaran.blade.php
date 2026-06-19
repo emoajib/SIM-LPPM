@@ -14,7 +14,7 @@
         Total Biaya {{ $groupName }} Rp. {{ number_format($groupTotal, 0, ',', '.') }} 
         ({{ $totalRAB > 0 ? number_format(($groupTotal / $totalRAB) * 100, 2) : 0 }}%)
     </div>
-    <table>
+    <table class="table-data">
         <thead>
             <tr>
                 <th width="20%">Komponen</th>

@@ -1,5 +1,5 @@
 <div class="section-title">{{ $sectionNum }}. IDENTITAS PENGUSUL</div>
-<table>
+<table class="table-data">
     <thead>
         <tr>
             <th width="20%">Nama, Peran</th>

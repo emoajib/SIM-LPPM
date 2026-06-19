@@ -2,7 +2,7 @@
 <div class="section-title">{{ $sectionNum }}. JUDUL {{ $proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN' }}</div>
 <div class="title-border-box">{{ clean_proposal_title($proposal->title) }}</div>
 
-<table>
+<table class="table-data">
     <thead>
         <tr>
             <th>Kelompok Skema</th>

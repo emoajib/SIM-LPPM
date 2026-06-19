@@ -266,7 +266,7 @@
     </div>
 
     <div class="section-title">{{ $sectionNum++ }}. CAPAIAN LUARAN WAJIB</div>
-    <table>
+    <table class="table-data">
         <thead>
             <tr>
                 <th width="5%">No</th>
@@ -303,7 +303,7 @@
 
     @if($report->additionalOutputs->count() > 0)
         <div class="section-title">{{ $sectionNum++ }}. CAPAIAN LUARAN TAMBAHAN</div>
-        <table>
+        <table class="table-data">
             <thead>
                 <tr>
                     <th width="5%">No</th>
@@ -342,7 +342,7 @@
         @endphp
         @if($logbooks->count() > 0)
             <div class="section-title">{{ $sectionNum++ }}. CATATAN HARIAN (LOGBOOK)</div>
-            <table>
+            <table class="table-data">
                 <thead>
                     <tr>
                         <th width="5%">No</th>

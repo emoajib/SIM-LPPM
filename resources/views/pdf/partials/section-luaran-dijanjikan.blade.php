@@ -1,6 +1,6 @@
 @if($proposal->outputs->count() > 0)
     <div class="section-title">{{ $sectionNum }}. LUARAN DIJANJIKAN</div>
-    <table>
+    <table class="table-data">
         <thead>
             <tr>
                 <th>Tahun</th>
