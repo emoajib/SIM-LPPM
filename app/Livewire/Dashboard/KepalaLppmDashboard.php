@@ -248,6 +248,8 @@ class KepalaLppmDashboard extends Component
 
     private function applyCommonFilters(Builder $query): Builder
     {
+        $query->where('start_year', $this->selectedYear);
+
         if ($this->selectedStatus !== 'all') {
             $query->where('status', $this->selectedStatus);
         }

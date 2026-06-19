@@ -103,7 +103,7 @@ class ReviewerDashboard extends Component
         foreach ($years as $year) {
             $reviewCounts[] = ProposalReviewer::query()
                 ->where('user_id', $this->user->id)
-                ->whereHas('proposal', fn ($q) => $q->whereYear('created_at', (string) $year))
+                ->whereHas('proposal', fn ($q) => $q->where('start_year', (string) $year))
                 ->where('status', ReviewStatus::COMPLETED)
                 ->count();
         }
@@ -123,7 +123,7 @@ class ReviewerDashboard extends Component
     {
         $statsRaw = ProposalReviewer::query()
             ->where('user_id', $this->user->id)
-            ->whereHas('proposal', fn ($q) => $q->whereYear('created_at', $yearFilter))
+            ->whereHas('proposal', fn ($q) => $q->where('start_year', $yearFilter))
             ->join('proposals', 'proposal_reviewer.proposal_id', '=', 'proposals.id')
             ->select([
                 'proposal_reviewer.status',
@@ -166,7 +166,7 @@ class ReviewerDashboard extends Component
     {
         $allReviewerStats = ProposalReviewer::with('proposal')
             ->where('user_id', $this->user->id)
-            ->whereHas('proposal', fn ($query) => $query->whereYear('created_at', $yearFilter))
+            ->whereHas('proposal', fn ($query) => $query->where('start_year', $yearFilter))
             ->get();
 
         $this->researchReviewerStats = $allReviewerStats->filter(
@@ -186,7 +186,7 @@ class ReviewerDashboard extends Component
     {
         $urgentReviews = ProposalReviewer::with(['proposal.submitter', 'proposal.detailable', 'proposal.researchScheme', 'proposal.communityServiceScheme'])
             ->where('user_id', $this->user->id)
-            ->whereHas('proposal', fn ($q) => $q->whereYear('created_at', $yearFilter))
+            ->whereHas('proposal', fn ($q) => $q->where('start_year', $yearFilter))
             ->where(function ($query) {
                 $query->where(function ($q) {
                     // Overdue: past deadline, not completed
@@ -236,7 +236,7 @@ class ReviewerDashboard extends Component
                 $query->where('user_id', $this->user->id)
                     ->whereIn('status', $pendingStatuses);
             })
-            ->whereYear('created_at', $yearFilter)
+            ->where('start_year', $yearFilter)
             ->latest()
             ->limit(20)
             ->get();
