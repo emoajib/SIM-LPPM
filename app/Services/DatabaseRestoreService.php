@@ -37,6 +37,47 @@ class DatabaseRestoreService
             'template_file_size', 'template_uploaded_at', 'template_uploaded_by',
             'is_uploadable', 'is_active', 'created_at', 'updated_at', 'deleted_at',
         ],
+        'national_priorities' => [
+            'id', 'name', 'prn_code', 'valid_from', 'valid_until', 'description', 'created_at', 'updated_at',
+        ],
+        'research_schemes' => [
+            'id', 'name', 'strata', 'eligibility_rules', 'description', 'created_at', 'updated_at',
+        ],
+        'proposal_outputs' => [
+            'id', 'proposal_id', 'output_year', 'category', 'group', 'type', 'target_status', 'description', 'created_at', 'updated_at',
+        ],
+        'proposals' => [
+            'id', 'title', 'submitter_id', 'detailable_id', 'detailable_type',
+            'research_scheme_id', 'focus_area_id', 'theme_id', 'topic_id', 'national_priority_id',
+            'cluster_level1_id', 'cluster_level2_id', 'cluster_level3_id', 'sbk_value',
+            'duration_in_years', 'start_year', 'semester', 'summary', 'asta_cita', 'status',
+            'logbook_signed_at', 'student_members', 'created_at', 'updated_at', 'deleted_at',
+            'community_service_scheme_id', 'qualification_snapshot', 'logbook_approved_at',
+            'study_program_roadmap_id', 'bima_proposal_id', 'is_roadmap_validated_by_kaprodi',
+            'kaprodi_validation_notes', 'kaprodi_validated_at', 'kaprodi_id',
+        ],
+        'review_criterias' => [
+            'id', 'type', 'criteria', 'description', 'weight', 'order', 'is_active', 'created_at', 'updated_at',
+        ],
+        'study_programs' => [
+            'id', 'institution_id', 'faculty_id', 'kaprodi_user_id', 'research_roadmap',
+            'roadmap_status', 'name', 'code', 'created_at', 'updated_at',
+        ],
+        'budget_caps' => [
+            'id', 'year', 'semester', 'research_budget_cap', 'community_service_budget_cap',
+            'scheme_caps', 'enforce_percentage', 'created_at', 'updated_at',
+        ],
+        'budget_groups' => [
+            'id', 'code', 'name', 'description', 'percentage', 'proposal_type',
+            'percentage_type', 'is_active', 'created_at', 'updated_at',
+        ],
+        'iku_output_types' => [
+            'id', 'name', 'group', 'is_active', 'created_at', 'updated_at',
+        ],
+        'master_ikus' => [
+            'id', 'code', 'name', 'description', 'target_percentage', 'internal_weight',
+            'is_active', 'created_at', 'updated_at',
+        ],
     ];
 
     protected array $allowedPrefixes = [
@@ -321,36 +362,91 @@ class DatabaseRestoreService
 
     /**
      * Convert 0/1/'' at the given positions to false/true in all VALUES tuples.
+     * Properly handles parentheses inside string literals.
      */
     protected function convertBooleanValuesInSql(string $statement, array $boolPositions): string
     {
         $sortPos = array_fill_keys($boolPositions, true);
 
+        // Find the VALUES clause and extract each tuple properly,
+        // respecting string literals that may contain parentheses
         return preg_replace_callback(
-            '/\(([^)]+)\)/',
+            '/VALUES\s+(.*?)(?:\s+ON\s+CONFLICT\s+DO\s+NOTHING\s*)?$/si',
             function ($matches) use ($sortPos) {
-                $tuple = $matches[1];
-                $parts = $this->splitTupleValues($tuple);
-                if (count($parts) <= max(array_keys($sortPos))) {
-                    return $matches[0];
-                }
+                $clause = $matches[1];
+                $tuples = $this->parseTuples($clause);
+                $converted = [];
 
-                foreach ($sortPos as $pos => $_) {
-                    $val = trim($parts[$pos]);
-
-                    if ($val === '0') {
-                        $parts[$pos] = 'false';
-                    } elseif ($val === '1') {
-                        $parts[$pos] = 'true';
-                    } elseif ($val === "''" || $val === '') {
-                        $parts[$pos] = 'false';
+                foreach ($tuples as $tuple) {
+                    $parts = $this->splitTupleValues($tuple);
+                    if (count($parts) > max(array_keys($sortPos))) {
+                        foreach ($sortPos as $pos => $_) {
+                            $val = trim($parts[$pos]);
+                            if ($val === '0') {
+                                $parts[$pos] = 'false';
+                            } elseif ($val === '1') {
+                                $parts[$pos] = 'true';
+                            } elseif ($val === "''" || $val === '') {
+                                $parts[$pos] = 'false';
+                            }
+                        }
                     }
+                    $converted[] = '('.implode(',', $parts).')';
                 }
 
-                return '('.implode(',', $parts).')';
+                $suffix = str_contains($matches[0], 'ON CONFLICT') ? ' ON CONFLICT DO NOTHING' : '';
+
+                return 'VALUES '.implode(',', $converted).$suffix;
             },
             $statement
         );
+    }
+
+    /**
+     * Parse individual tuples from VALUES clause, handling parentheses inside strings.
+     */
+    protected function parseTuples(string $clause): array
+    {
+        $tuples = [];
+        $depth = 0;
+        $inString = false;
+        $current = '';
+        $len = strlen($clause);
+
+        for ($i = 0; $i < $len; $i++) {
+            $ch = $clause[$i];
+
+            if ($ch === "'" && ! $inString) {
+                $inString = true;
+                $current .= $ch;
+            } elseif ($ch === "'" && $inString) {
+                if ($i + 1 < $len && $clause[$i + 1] === "'") {
+                    $current .= $ch;
+                    $i++;
+                }
+                $inString = false;
+                $current .= $ch;
+            } elseif ($ch === '(' && ! $inString) {
+                if ($depth === 0) {
+                    $current = '';
+                } else {
+                    $current .= $ch;
+                }
+                $depth++;
+            } elseif ($ch === ')' && ! $inString) {
+                $depth--;
+                if ($depth === 0) {
+                    $tuples[] = $current;
+                    $current = '';
+                } else {
+                    $current .= $ch;
+                }
+            } else {
+                $current .= $ch;
+            }
+        }
+
+        return $tuples;
     }
 
     /**
