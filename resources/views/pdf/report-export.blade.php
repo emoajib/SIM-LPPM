@@ -389,30 +389,9 @@
     @if(\App\Models\Setting::get(\App\Constants\PdfConstants::REPORT_SHOW_DOCS, true))
     @php
         $supportingDocs = [];
-        if ($proposal->detailable?->hasMedia('substance_file')) {
-            $media = $proposal->detailable->getFirstMedia('substance_file');
-            $mime = $media->mime_type ?? '';
-            $type = str_starts_with($mime, 'image/') ? 'image' : (str_contains($mime, 'pdf') ? 'pdf' : 'other');
-            $supportingDocs[] = ['label' => 'Substansi Usulan (Proposal)', 'media' => $media, 'type' => $type];
-        }
-        if ($report->hasMedia('substance_file')) {
-            $media = $report->getFirstMedia('substance_file');
-            $mime = $media->mime_type ?? '';
-            $type = str_starts_with($mime, 'image/') ? 'image' : (str_contains($mime, 'pdf') ? 'pdf' : 'other');
-            $supportingDocs[] = ['label' => 'Substansi ' . ($report->reporting_period === 'final' ? 'Laporan Akhir' : 'Laporan Kemajuan'), 'media' => $media, 'type' => $type];
-        }
-        if ($report->hasMedia('realization_file')) {
-            $media = $report->getFirstMedia('realization_file');
-            $mime = $media->mime_type ?? '';
-            $type = str_starts_with($mime, 'image/') ? 'image' : (str_contains($mime, 'pdf') ? 'pdf' : 'other');
-            $supportingDocs[] = ['label' => 'Realisasi Keterlibatan', 'media' => $media, 'type' => $type];
-        }
-        if ($report->hasMedia('presentation_file')) {
-            $media = $report->getFirstMedia('presentation_file');
-            $mime = $media->mime_type ?? '';
-            $type = str_starts_with($mime, 'image/') ? 'image' : (str_contains($mime, 'pdf') ? 'pdf' : 'other');
-            $supportingDocs[] = ['label' => 'Presentasi Hasil', 'media' => $media, 'type' => $type];
-        }
+        // Note: substance_file (proposal & report), realization_file, and presentation_file
+        // are merged directly via FPDI, so we omit them here to avoid redundant textual listing.
+        
         foreach($report->mandatoryOutputs as $mo) {
             $collections = ['journal_article', 'book_document', 'publication_certificate'];
             foreach($collections as $col) {

@@ -10,6 +10,7 @@ use App\Enums\IdentityType;
 use App\Enums\IkuOutputTypeGroup;
 use App\Enums\InstitutionalReportStatus;
 use App\Enums\KaprodiStatus;
+use App\Enums\LetterStatus;
 use App\Enums\ManualBookStatus;
 use App\Enums\MonevReviewSemester;
 use App\Enums\MonevReviewStatus;
@@ -28,6 +29,7 @@ use App\Enums\ReviewStatus;
 use App\Enums\SignatureMode;
 use App\Enums\StrataCategory;
 use App\Enums\TeamSource;
+use Database\Helpers\MigrationHelpers;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -74,6 +76,17 @@ class SyncEnums extends Command
                             break;
                         }
                     }
+                } elseif ($dbDriver === 'mysql') {
+                    $row = DB::connection($connection)->selectOne('
+                        SELECT CHECK_CLAUSE as def
+                        FROM INFORMATION_SCHEMA.CHECK_CONSTRAINTS
+                        WHERE CONSTRAINT_SCHEMA = DATABASE()
+                          AND CONSTRAINT_NAME = ?
+                    ', [$constraintName]);
+
+                    if ($row) {
+                        $constraint = (object) ['def' => "({{$column} {$row->def})"];
+                    }
                 }
 
                 if (! $constraint) {
@@ -92,6 +105,8 @@ class SyncEnums extends Command
 
                 if ($dbDriver === 'pgsql') {
                     $pattern = $col.".*= ANY.*ARRAY\\[.*'".implode("'.*'", $quotedValues)."'";
+                } elseif ($dbDriver === 'mysql') {
+                    $pattern = "`{$col}` IN \\('".implode("', '", $quotedValues)."'\\)";
                 } else {
                     $pattern = $col." IN \\('?".implode("', '?", $quotedValues)."'?\\)";
                 }
@@ -172,6 +187,8 @@ class SyncEnums extends Command
             // Approvals & other
             'proposal_kaprodi_approvals.status' => KaprodiStatus::class,
             'letters.team_source' => TeamSource::class,
+            'letters.status' => LetterStatus::class,
+            'letters.signature_mode' => SignatureMode::class,
             'document_signatures.mode' => SignatureMode::class,
             'proposal_monevs.semester' => ProposalMonevSemester::class,
             'manual_books.status' => ManualBookStatus::class,
@@ -224,17 +241,17 @@ class SyncEnums extends Command
             return;
         }
 
-        DB::connection($connection)->statement("
-            ALTER TABLE {$table}
-            DROP CONSTRAINT IF EXISTS {$constraintName}
-        ");
+        MigrationHelpers::dropCheckConstraint($table, $constraintName);
 
         $valuesList = implode(', ', array_map(fn ($v) => "'{$v}'", $values));
+
+        $dbDriver = DB::connection($connection)->getDriverName();
+        $quotedColumn = $dbDriver === 'mysql' ? "`{$column}`" : "\"{$column}\"";
 
         DB::connection($connection)->statement("
             ALTER TABLE {$table}
             ADD CONSTRAINT {$constraintName}
-            CHECK ({$column} IN ({$valuesList}))
+            CHECK ({$quotedColumn} IN ({$valuesList}))
         ");
 
         $this->info("✅ Recreated CHECK constraint: {$constraintName}");

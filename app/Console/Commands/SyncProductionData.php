@@ -2,29 +2,17 @@
 
 namespace App\Console\Commands;
 
+use App\Services\DatabaseRestoreService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Process;
 
 class SyncProductionData extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:sync-production {--force : Skip confirmation}';
+    protected $signature = 'app:sync-production {--force : Skip confirmation} {--sql-only : Hanya download SQL, jangan auto-import}';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     protected $description = 'Sinkronisasi data dari server produksi ke localhost (Database & Storage)';
 
-    /**
-     * Execute the console command.
-     */
-    public function handle(): int
+    public function handle(DatabaseRestoreService $dbRestore): int
     {
         if (config('app.env') !== 'local' && ! $this->option('force')) {
             $this->error('Command ini hanya boleh dijalankan di lingkungan LOCAL!');
@@ -35,6 +23,8 @@ class SyncProductionData extends Command
         $remoteUser = config('sync.remote_user');
         $remoteHost = config('sync.remote_host');
         $remotePath = config('sync.remote_path');
+        $remoteDbUser = config('sync.remote_db_user');
+        $remoteDbPass = config('sync.remote_db_password');
         $remoteDb = config('sync.remote_db');
 
         if (empty($remoteUser) || empty($remoteHost)) {
@@ -43,11 +33,27 @@ class SyncProductionData extends Command
             return 1;
         }
 
-        $this->info("🚀 Memulai sinkronisasi dari $remoteHost...");
+        $this->info("Memulai sinkronisasi dari $remoteHost...");
 
         // 1. Dump Remote Database
-        $this->comment('📥 1/4 Membuat dump database di server remote...');
-        $dumpCmd = "ssh $remoteUser@$remoteHost \"mysqldump -u $remoteUser -p $remoteDb > $remotePath/prod_dump_temp.sql\"";
+        $this->comment('1/4 Membuat dump database di server remote...');
+        $dumpFile = base_path('prod_dump_temp.sql');
+
+        $auth = '';
+        if (! empty($remoteDbPass)) {
+            $auth = "-p'{$remoteDbPass}'";
+        }
+
+        $dumpCmd = sprintf(
+            'ssh %s@%s "mysqldump -u %s %s --skip-lock-tables --routines --triggers --events %s > %s/prod_dump_temp.sql"',
+            escapeshellarg($remoteUser),
+            escapeshellarg($remoteHost),
+            escapeshellarg($remoteDbUser ?: $remoteUser),
+            $auth,
+            escapeshellarg($remoteDb),
+            escapeshellarg($remotePath)
+        );
+
         $result = Process::run($dumpCmd);
 
         if ($result->failed()) {
@@ -57,39 +63,68 @@ class SyncProductionData extends Command
         }
 
         // 2. Download Dump
-        $this->comment('🚚 2/4 Mendownload file dump...');
-        $scpCmd = "scp $remoteUser@$remoteHost:$remotePath/prod_dump_temp.sql ".base_path('prod_dump_temp.sql');
-        Process::run($scpCmd);
+        $this->comment('2/4 Mendownload file dump...');
+        $scpCmd = sprintf(
+            'scp %s@%s:%s/prod_dump_temp.sql %s',
+            escapeshellarg($remoteUser),
+            escapeshellarg($remoteHost),
+            escapeshellarg($remotePath),
+            escapeshellarg($dumpFile)
+        );
 
-        // 3. Import to Local
-        $this->comment('💾 3/4 Mengimport data ke database lokal...');
-        $dbName = config('database.connections.mysql.database');
-        $dbUser = config('database.connections.mysql.username');
-        $dbPass = config('database.connections.mysql.password');
+        $scpResult = Process::run($scpCmd);
 
-        // Deteksi Docker
-        $isDocker = config('database.connections.mysql.host') === 'mariadb' || config('database.connections.mysql.host') === 'mysql';
+        if ($scpResult->failed()) {
+            $this->error('Gagal mendownload file dump: '.$scpResult->errorOutput());
 
-        if ($isDocker) {
-            // Jika di dalam container, kita butuh cara untuk kirim file ke container db
-            // Tapi biasanya script ini dijalankan di host yang punya akses ke docker exec
-            $importCmd = "docker exec -i sim-lppm-mariadb mariadb -u $dbUser -p$dbPass $dbName < ".base_path('prod_dump_temp.sql');
-        } else {
-            $importCmd = "mysql -u $dbUser -p$dbPass $dbName < ".base_path('prod_dump_temp.sql');
+            return 1;
         }
 
-        $importResult = Process::run($importCmd);
+        // 3. Import to Local (via DatabaseRestoreService)
+        if ($this->option('sql-only')) {
+            $this->comment('3/4 SQL-only mode — file tersimpan di: '.$dumpFile);
+            $this->info('Gunakan php artisan app:restore-backup --sql='.$dumpFile.' untuk import');
+        } else {
+            $this->comment('3/4 Mengimport data ke database lokal (via DatabaseRestoreService)...');
+            $result = $dbRestore->restore($dumpFile, true);
+
+            if ($result['success']) {
+                $this->info($result['message']);
+                if (! empty($result['backup_path']) && file_exists($result['backup_path'])) {
+                    $this->line('Backup pra-restore: '.$result['backup_path']);
+                }
+            } else {
+                $this->error('Gagal import database: '.$result['message']);
+
+                return 1;
+            }
+        }
 
         // 4. Sync Files
-        $this->comment('📂 4/4 Sinkronisasi file storage (rsync)...');
-        $rsyncCmd = "rsync -avz -e ssh $remoteUser@$remoteHost:$remotePath/storage/app/public/ ".storage_path('app/public/');
-        Process::run($rsyncCmd);
+        $this->comment('4/4 Sinkronisasi file storage (rsync)...');
+        $rsyncCmd = sprintf(
+            'rsync -avz -e ssh %s@%s:%s/storage/app/public/ %s',
+            escapeshellarg($remoteUser),
+            escapeshellarg($remoteHost),
+            escapeshellarg($remotePath),
+            escapeshellarg(storage_path('app/public/'))
+        );
 
-        // Cleanup
-        @unlink(base_path('prod_dump_temp.sql'));
-        Process::run("ssh $remoteUser@$remoteHost \"rm $remotePath/prod_dump_temp.sql\"");
+        $rsyncResult = Process::run($rsyncCmd);
 
-        $this->info('✅ Sinkronisasi SELESAI!');
+        if ($rsyncResult->failed()) {
+            $this->warn('Rsync storage gagal (non-fatal): '.$rsyncResult->errorOutput());
+        }
+
+        // Cleanup remote temp file
+        Process::run(sprintf(
+            'ssh %s@%s "rm -f %s/prod_dump_temp.sql"',
+            escapeshellarg($remoteUser),
+            escapeshellarg($remoteHost),
+            escapeshellarg($remotePath)
+        ));
+
+        $this->info('Sinkronisasi SELESAI!');
 
         return 0;
     }

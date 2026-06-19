@@ -92,3 +92,23 @@ id,
 PLAN_CLEANUP.md
 opencode.json
 .gemini/
+
+# Database recovery & import scripts (one-off)
+/check_db.php
+/database_fix_import.php
+/fix_and_restore.php
+/fix_perms.php
+/fix_proposal_user.php
+/fix_research_schemes.php
+/fix_reviewers.php
+/fix_rs_manual.php
+/get_columns.php
+/import_proposals.php
+/import_proposals_out.txt
+/parse_and_insert.php
+/restore_errors.json
+/restore_errors_proposals.json
+/test_insert.php
+/test_research_schemes.php
+/test_restore.php
+/storage_*.zip

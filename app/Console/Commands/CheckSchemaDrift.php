@@ -217,6 +217,17 @@ class CheckSchemaDrift extends Command
                             break;
                         }
                     }
+                } elseif ($dbDriver === 'mysql') {
+                    $row = DB::connection($connection)->selectOne('
+                        SELECT CHECK_CLAUSE as def
+                        FROM INFORMATION_SCHEMA.CHECK_CONSTRAINTS
+                        WHERE CONSTRAINT_SCHEMA = DATABASE()
+                          AND CONSTRAINT_NAME = ?
+                    ', [$constraintName]);
+
+                    if ($row) {
+                        $constraint = (object) ['def' => "(`{$col}` {$row->def})"];
+                    }
                 }
 
                 if (! $constraint) {
@@ -231,6 +242,8 @@ class CheckSchemaDrift extends Command
 
                 if ($dbDriver === 'pgsql') {
                     $pattern = $col.".*= ANY.*ARRAY\\[.*'".implode("'.*'", $quotedValues)."'";
+                } elseif ($dbDriver === 'mysql') {
+                    $pattern = "`{$col}` IN \\('".implode("', '", $quotedValues)."'\\)";
                 } else {
                     $pattern = $col." IN \\('?".implode("', '?", $quotedValues)."'?\\)";
                 }
@@ -311,11 +324,15 @@ class CheckSchemaDrift extends Command
                 })
                 ->values()
                 ->toArray();
+        } elseif ($dbDriver === 'mysql') {
+            $tables = DB::connection($connection)->select(
+                "SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE() AND table_type = 'BASE TABLE'"
+            );
         } else {
             $tables = [];
         }
 
-        return array_column($tables, 'table_name');
+        return array_map(fn ($t) => is_object($t) ? $t->table_name : $t, $tables);
     }
 
     private function getColumnsInMigrationsForTable(string $table): array
@@ -354,11 +371,16 @@ class CheckSchemaDrift extends Command
                 ->map(fn ($column) => $column->name)
                 ->values()
                 ->toArray();
+        } elseif ($dbDriver === 'mysql') {
+            $columns = DB::connection($connection)->select(
+                'SELECT column_name FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = ?',
+                [$table]
+            );
         } else {
             $columns = [];
         }
 
-        return array_column($columns, 'column_name');
+        return array_map(fn ($c) => is_object($c) ? $c->column_name : $c, $columns);
     }
 
     private function getConstraintsInMigrationsForTable(string $table): array
@@ -404,11 +426,21 @@ class CheckSchemaDrift extends Command
                 ->map(fn ($constraint) => $constraint->name)
                 ->values()
                 ->toArray();
+        } elseif ($dbDriver === 'mysql') {
+            $constraints = DB::connection($connection)->select(
+                "SELECT constraint_name FROM information_schema.table_constraints WHERE table_schema = DATABASE() AND table_name = ? AND constraint_type = 'CHECK'",
+                [$table]
+            );
+
+            $constraintNames = array_map(fn ($c) => $c->constraint_name, $constraints);
+            $constraintNames = array_filter($constraintNames, fn ($name) => ! preg_match('/^\d+_\d+_\d+_not_null$/', $name));
+
+            return array_values($constraintNames);
         } else {
             $constraints = [];
         }
 
-        return array_column($constraints, 'constraint_name');
+        return array_map(fn ($c) => is_object($c) ? $c->constraint_name : $c, $constraints);
     }
 
     private function getEnumMap(): array

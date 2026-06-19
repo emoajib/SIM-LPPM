@@ -3,8 +3,18 @@
 <x-slot:pageSubtitle>Detail Proposal Penelitian</x-slot:pageSubtitle>
 <x-slot:pageActions>
     <div class="btn-list">
-        @if (auth()->user()->hasRole('reviewer'))
+        @if (url()->previous() && url()->previous() !== url()->current())
+            <a href="{{ url()->previous() }}" class="btn-outline-secondary btn" wire:navigate.hover>
+                <x-lucide-arrow-left class="icon" />
+                Kembali
+            </a>
+        @elseif (auth()->user()->hasRole('reviewer'))
             <a href="{{ route('review.research') }}" class="btn-outline-secondary btn" wire:navigate.hover>
+                <x-lucide-arrow-left class="icon" />
+                Kembali
+            </a>
+        @elseif (auth()->user()->hasRole('admin lppm'))
+            <a href="{{ route('admin-lppm.dashboard') }}" class="btn-outline-secondary btn" wire:navigate.hover>
                 <x-lucide-arrow-left class="icon" />
                 Kembali
             </a>

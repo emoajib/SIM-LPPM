@@ -127,11 +127,41 @@
                         </div>
 
                         <!-- Assignment Filter -->
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <select class="form-select" wire:model.live="assignmentFilter">
                                 <option value="all">Semua Status</option>
                                 <option value="unassigned">Belum Ditugaskan</option>
                                 <option value="assigned">Sudah Ditugaskan</option>
+                            </select>
+                        </div>
+
+                        <!-- Faculty Filter -->
+                        <div class="col-md-3">
+                            <select class="form-select" wire:model.live="facultyFilter">
+                                <option value="">Semua Fakultas</option>
+                                @foreach($this->faculties as $faculty)
+                                    <option value="{{ $faculty->id }}">{{ $faculty->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Study Program Filter -->
+                        <div class="col-md-2">
+                            <select class="form-select" wire:model.live="studyProgramFilter" @if(!$facultyFilter) disabled @endif>
+                                <option value="">Semua Prodi</option>
+                                @foreach($this->studyPrograms as $prodi)
+                                    <option value="{{ $prodi->id }}">{{ $prodi->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        
+                        <!-- Scheme Filter -->
+                        <div class="col-md-3">
+                            <select class="form-select" wire:model.live="schemeFilter" @if($typeFilter === 'all') disabled @endif>
+                                <option value="">Semua Skema</option>
+                                @foreach($this->schemes as $scheme)
+                                    <option value="{{ $scheme->id }}">{{ $scheme->name }}</option>
+                                @endforeach
                             </select>
                         </div>
 
@@ -224,10 +254,17 @@
                             </td>
                             <td>
                                 <div class="flex-nowrap btn-list">
-                                    <a href="{{ $proposal->detailable_type === 'App\Models\Research' ? route('research.proposal.show', $proposal) : route('community-service.proposal.show', $proposal) }}"
-                                        class="btn btn-sm btn-primary" wire:navigate.hover>
+                                    <button type="button"
+                                        wire:click="openAssignModal('{{ $proposal->id }}')"
+                                        class="btn btn-sm btn-primary"
+                                        data-bs-toggle="modal" data-bs-target="#modal-assign-reviewer">
                                         <x-lucide-user-plus class="icon" />
                                         Tugaskan
+                                    </button>
+                                    <a href="{{ $proposal->detailable_type === 'App\Models\Research' ? route('research.proposal.show', $proposal) : route('community-service.proposal.show', $proposal) }}"
+                                        class="btn btn-sm btn-outline-secondary" wire:navigate.hover>
+                                        <x-lucide-eye class="icon" />
+                                        Detail
                                     </a>
                                 </div>
                             </td>
@@ -252,4 +289,46 @@
             </div>
         @endif
     </div>
+
+    <!-- Assign Reviewer Modal -->
+    @teleport('body')
+        <x-tabler.modal id="modal-assign-reviewer" title="Tugaskan Reviewer" on-show="resetReviewerForm">
+            <x-slot:body>
+                <form wire:submit.prevent="assignReviewers" id="admin-reviewer-assignment-form">
+                    <div class="mb-3">
+                        <label class="form-label" for="selectedReviewer">Pilih Reviewer <span
+                                class="text-danger">*</span></label>
+                        <div wire:ignore>
+                            <select wire:model="selectedReviewer" class="form-select tom-select" id="adminSelectedReviewer"
+                                x-data="tomSelect" placeholder="Pilih reviewer..." required>
+                                <option value="" selected disabled>Pilih reviewer...</option>
+                                @foreach ($this->availableReviewers as $reviewer)
+                                    <option wire:key="admin-reviewer-{{ $reviewer->id }}" value="{{ $reviewer->id }}">
+                                        {{ $reviewer->name }}
+                                        ({{ $reviewer->identity?->identity_id ?? '-' }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        @error('selectedReviewer')
+                            <div class="d-block mt-2 text-danger">{{ $message }}</div>
+                        @enderror
+                        <small class="text-muted form-text">Pilih satu reviewer untuk ditugaskan pada proposal ini.</small>
+                    </div>
+                </form>
+            </x-slot:body>
+
+            <x-slot:footer>
+                <button type="button" class="btn-outline-secondary btn" data-bs-dismiss="modal">
+                    Batal
+                </button>
+                <button type="submit" form="admin-reviewer-assignment-form" class="btn btn-primary" wire:loading.attr="disabled"
+                    data-bs-dismiss="modal">
+                    <x-lucide-send class="icon" />
+                    <span wire:loading.remove>Tugaskan</span>
+                    <span wire:loading>Menyimpan...</span>
+                </button>
+            </x-slot:footer>
+        </x-tabler.modal>
+    @endteleport
 </div>

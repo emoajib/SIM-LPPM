@@ -113,7 +113,8 @@
     @endif
 
     @if(\App\Models\Setting::get(\App\Constants\PdfConstants::PROPOSAL_SHOW_APPROVAL, true) && ($proposal_approval_mode === 'digital' || $proposal_approval_mode === 'both'))
-        <div class="page-break" style="page-break-before: always;">
+        <div style="page-break-before: always;"></div>
+        <div>
             <div style="text-align: center; font-weight: bold; font-size: 12pt; color: #1a4d2e; margin-bottom: 25px; text-transform: uppercase;">
                 HALAMAN PERSETUJUAN PROPOSAL {{ $proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN' }}
             </div>
@@ -332,18 +333,8 @@
     @if(\App\Models\Setting::get(\App\Constants\PdfConstants::PROPOSAL_SHOW_DOCS, true))
     @php
         $supportingDocs = [];
-        if ($proposal->detailable?->hasMedia('substance_file')) {
-            $media = $proposal->detailable->getFirstMedia('substance_file');
-            $mime = $media->mime_type ?? '';
-            $type = str_starts_with($mime, 'image/') ? 'image' : (str_contains($mime, 'pdf') ? 'pdf' : 'other');
-            $supportingDocs[] = ['label' => 'Substansi Usulan', 'media' => $media, 'type' => $type];
-        }
-        if (in_array($proposal_approval_mode, ['upload', 'both']) && $proposal->detailable?->hasMedia('approval_file')) {
-            $media = $proposal->detailable->getFirstMedia('approval_file');
-            $mime = $media->mime_type ?? '';
-            $type = str_starts_with($mime, 'image/') ? 'image' : (str_contains($mime, 'pdf') ? 'pdf' : 'other');
-            $supportingDocs[] = ['label' => 'Lembar Pengesahan (Tanda Tangan Basah)', 'media' => $media, 'type' => $type];
-        }
+        // Note: substance_file and approval_file are merged directly via FPDI, 
+        // so we omit them here to avoid redundant textual listing.
     @endphp
     @include('pdf.partials.section-lampiran', [
         'title' => 'Dokumen Pendukung',

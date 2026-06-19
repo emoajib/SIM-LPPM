@@ -103,7 +103,7 @@
 
 
     <!-- Delete Reviewer Confirmation Modal -->
-    <div style="display: none;">
+    @teleport('body')
         <x-tabler.modal id="deleteReviewerModal" title="Hapus Reviewer?">
             <x-slot:body>
                 <div class="py-4 text-center">
@@ -125,5 +125,5 @@
                 </button>
             </x-slot:footer>
         </x-tabler.modal>
-    </div>
+    @endteleport
 </div>

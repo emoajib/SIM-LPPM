@@ -10,6 +10,7 @@ use App\Models\Proposal;
 use App\Models\Research;
 use App\Models\ReviewCriteria;
 use App\Models\ReviewScore;
+use App\Models\Setting;
 use App\Models\User;
 use Database\Seeders\InstitutionSeeder;
 use Database\Seeders\RoleSeeder;
@@ -133,6 +134,8 @@ class PessimisticSecurityTest extends TestCase
      */
     public function test_proposal_status_only_changes_when_all_reviewers_submit_successfully()
     {
+        Setting::set('reviewer_count_required', 2, 'integer');
+
         // Assign 2 reviewers
         $otherReviewer = User::factory()->create();
         $otherReviewer->assignRole('reviewer');

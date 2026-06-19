@@ -6,6 +6,7 @@ use App\Enums\ProposalStatus;
 use App\Enums\ReviewStatus;
 use App\Models\Proposal;
 use App\Models\ProposalReviewer;
+use App\Models\Setting;
 use App\Models\User;
 use App\Services\NotificationService;
 use Carbon\Carbon;
@@ -41,6 +42,15 @@ class AssignReviewersAction
             return [
                 'success' => false,
                 'message' => 'Reviewer sudah ditugaskan untuk proposal ini.',
+            ];
+        }
+
+        // Validate max limit
+        $requiredCount = (int) Setting::get('reviewer_count_required', 1);
+        if ($proposal->reviewers()->count() >= $requiredCount) {
+            return [
+                'success' => false,
+                'message' => "Jumlah reviewer sudah mencapai batas maksimal ({$requiredCount} reviewer).",
             ];
         }
 
