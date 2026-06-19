@@ -202,7 +202,7 @@
                     wire:model.live="institution_id" x-data="tomSelectWithCreate"
                     placeholder="Pilih atau ketik Institusi">
                     <option value="">Pilih atau ketik Institusi</option>
-                    @foreach ($institutions as $institution)
+                    @foreach ($this->institutions as $institution)
                         <option value="{{ $institution['id'] }}">{{ $institution['name'] }}</option>
                     @endforeach
                 </select>
@@ -217,7 +217,7 @@
                 <select class="form-select @error('faculty_id') is-invalid @enderror" wire:model.live="faculty_id"
                     x-data="tomSelect" placeholder="Pilih Fakultas">
                     <option value="">Pilih Fakultas</option>
-                    @foreach ($faculties as $faculty)
+                    @foreach ($this->faculties as $faculty)
                         <option value="{{ $faculty['id'] }}">{{ $faculty['name'] }}</option>
                     @endforeach
                 </select>
@@ -232,7 +232,7 @@
                 <select class="form-select @error('study_program_id') is-invalid @enderror"
                     wire:model="study_program_id" x-data="tomSelect" placeholder="Pilih Program Studi">
                     <option value="">Pilih Program Studi</option>
-                    @foreach ($studyPrograms as $program)
+                    @foreach ($this->studyPrograms as $program)
                         <option value="{{ $program['id'] }}">{{ $program['name'] }}</option>
                     @endforeach
                 </select>
@@ -248,7 +248,7 @@
                     wire:model="science_cluster_id" x-data="tomSelect"
                     placeholder="Pilih Rumpun Ilmu">
                     <option value="">Pilih Rumpun Ilmu</option>
-                    @foreach ($scienceClusters as $cluster)
+                    @foreach ($this->scienceClusters as $cluster)
                         <option value="{{ $cluster['id'] }}">{{ $cluster['name'] }}</option>
                     @endforeach
                 </select>
