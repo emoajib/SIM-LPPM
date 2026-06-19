@@ -50,6 +50,7 @@ class MigrationHelpers
      * Add CHECK constraint for an enum-style string column.
      *
      * CHECK constraints MUST be added AFTER table creation (not inside Schema::create).
+     * Automatically drops existing constraint with the same name (idempotent).
      */
     public static function addCheckConstraint(
         string $tableName,
@@ -63,11 +64,11 @@ class MigrationHelpers
         $sql = "{$quotedColumn} IN ({$allowedValuesString})";
 
         if ($driver === 'sqlite') {
-            // SQLite does not support ALTER TABLE ADD CONSTRAINT for CHECK.
-            // Constraints must be defined at CREATE TABLE time.
-            // For production SQLite (unlikely), skip silently.
             return;
         }
+
+        // Drop existing constraint first (idempotent — handles rollback + re-migrate)
+        static::dropCheckConstraint($tableName, $constraintName);
 
         DB::statement("ALTER TABLE {$tableName} ADD CONSTRAINT {$constraintName} CHECK ({$sql})");
     }
