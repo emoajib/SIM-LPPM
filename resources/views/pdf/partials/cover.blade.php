@@ -14,13 +14,13 @@
     </div>
     @endif
 
-    <div style="margin-top: 60px; margin-bottom: 60px; text-align: center;">
+    <div style="margin-top: 100px; margin-bottom: 80px; text-align: center;">
         @if(($pdfConfig['show_logo'] ?? true) && get_logo_base64())
-            <img src="{{ get_logo_base64() }}" style="width: {{ $pdfConfig['logo_size'] ?? 160 }}px;">
+            <img src="{{ get_logo_base64() }}" style="width: {{ $pdfConfig['logo_size'] ?? 200 }}px;">
         @endif
     </div>
 
-    <div style="font-size: 16pt; font-weight: bold; margin-bottom: 60px; text-align: center; text-transform: uppercase; line-height: {{ $lineHeight }};">
+    <div style="font-size: 16pt; font-weight: bold; margin-bottom: 120px; text-align: center; text-transform: uppercase; line-height: {{ $lineHeight }};">
         {{ clean_proposal_title($proposal->title) }}
     </div>
 
@@ -57,7 +57,7 @@
         $facultyClean = preg_replace('/^FAKULTAS\s+/i', '', trim($facultyName));
         $prodiClean = preg_replace('/^(PROGRAM STUDI|PRODI)\s+/i', '', trim($prodiName));
     @endphp
-    <div style="text-align: center; font-weight: bold; font-size: 14pt; text-transform: uppercase; line-height: {{ $lineHeight }}; margin-bottom: 40px;">
+    <div style="position: absolute; bottom: 0; left: 0; right: 0; text-align: center; font-weight: bold; font-size: 14pt; text-transform: uppercase; line-height: 1.0;">
         FAKULTAS {{ strtoupper($facultyClean) }}<br>
         PROGRAM STUDI {{ strtoupper($prodiClean) }}<br>
         ITSNU PEKALONGAN<br>
