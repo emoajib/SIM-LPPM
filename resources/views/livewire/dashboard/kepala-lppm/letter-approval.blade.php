@@ -105,7 +105,7 @@
                         </td>
                         <td>
 <div class="btn-list flex-nowrap">
-                                @if($letter->status === 'pending_approval')
+                                @if($letter->status?->value === 'pending_approval')
                                 <button class="btn btn-primary btn-sm shadow-sm" wire:click="preview('{{ $letter->id }}')">
                                     <i class="ti ti-signature me-1"></i> Proses
                                 </button>
@@ -212,13 +212,13 @@
                     @endif
                 </div>
                 <div class="modal-footer">
-                    @if($selectedLetter && $selectedLetter->status === 'pending_approval')
+                    @if($selectedLetter && $selectedLetter->status?->value === 'pending_approval')
                     <button type="button" class="btn btn-outline-danger me-auto" wire:click="openRejectModal('{{ $selectedLetter?->id }}')">
                         Tolak Surat
                     </button>
                     @endif
                     <button type="button" class="btn btn-link link-secondary" wire:click="closePreviewModal">Batal</button>
-                    @if($selectedLetter && $selectedLetter->status === 'pending_approval')
+                    @if($selectedLetter && $selectedLetter->status?->value === 'pending_approval')
                     <button type="button" class="btn btn-success px-4 shadow-sm" wire:click="approve('{{ $selectedLetter?->id }}')">
                         <i class="ti ti-check me-2"></i> Tanda Tangani & Publish
                     </button>

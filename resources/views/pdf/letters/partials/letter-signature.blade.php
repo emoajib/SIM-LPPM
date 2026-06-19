@@ -10,7 +10,7 @@
             {{ $inst['lppm_short'] }} {{ $inst['name'] }}
             
             <div class="qr-code">
-                @if($letter->signature_mode === 'tte' && $letter->status === 'published')
+                @if($letter->signature_mode?->value === 'tte' && $letter->status?->value === 'published')
                     <img src="{{ $qrDataUri }}" alt="QR Code" style="width: 80px; height: 80px;">
                 @else
                     <br><br><br><br><br>

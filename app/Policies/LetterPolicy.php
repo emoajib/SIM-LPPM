@@ -2,6 +2,8 @@
 
 namespace App\Policies;
 
+use App\Enums\LetterStatus;
+use App\Enums\SignatureMode;
 use App\Models\Letter;
 use App\Models\Setting;
 use App\Models\User;
@@ -29,7 +31,7 @@ class LetterPolicy
 
     public function approve(User $user, Letter $letter): bool
     {
-        if ($letter->signature_mode === 'manual'
+        if ($letter->signature_mode === SignatureMode::MANUAL
             && (bool) Setting::get('surat_wet_signature_bypass', false)) {
             return true;
         }
@@ -39,7 +41,7 @@ class LetterPolicy
 
     public function reject(User $user, Letter $letter): bool
     {
-        if ($letter->signature_mode === 'manual'
+        if ($letter->signature_mode === SignatureMode::MANUAL
             && (bool) Setting::get('surat_wet_signature_bypass', false)) {
             return false;
         }
@@ -50,13 +52,13 @@ class LetterPolicy
     public function cancel(User $user, Letter $letter): bool
     {
         return $letter->user_id === $user->id
-            && in_array($letter->status, ['pending_approval', 'rejected']);
+            && in_array($letter->status, [LetterStatus::PENDING_APPROVAL, LetterStatus::REJECTED]);
     }
 
     public function resubmit(User $user, Letter $letter): bool
     {
         return $letter->user_id === $user->id
-            && $letter->status === 'rejected';
+            && $letter->status === LetterStatus::REJECTED;
     }
 
     public function download(User $user, Letter $letter): bool

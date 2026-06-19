@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\LetterStatus;
+use App\Enums\SignatureMode;
 use App\Enums\TeamSource;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,7 +17,7 @@ class Letter extends Model
 {
     use HasFactory, HasUuids, SoftDeletes;
 
-    public const STATUS_IMMUTABLE = ['published', 'ready_to_print'];
+    public const STATUS_IMMUTABLE = [LetterStatus::PUBLISHED->value, LetterStatus::READY_TO_PRINT->value];
 
     protected $fillable = [
         'letter_number',
@@ -41,6 +43,8 @@ class Letter extends Model
         'is_stamped' => 'boolean',
         'published_at' => 'datetime',
         'team_source' => TeamSource::class,
+        'status' => LetterStatus::class,
+        'signature_mode' => SignatureMode::class,
     ];
 
     public function letterType(): BelongsTo
@@ -63,28 +67,18 @@ class Letter extends Model
         return $this->hasMany(LetterLog::class);
     }
 
-    public static function statusLabel(string $status): string
+    public static function statusLabel(string|LetterStatus $status): string
     {
-        return match ($status) {
-            'pending_approval' => 'Menunggu Persetujuan',
-            'published' => 'Diterbitkan',
-            'rejected' => 'Ditolak',
-            'cancelled' => 'Dibatalkan',
-            'ready_to_print' => 'Siap Cetak',
-            default => ucfirst($status),
-        };
+        $value = $status instanceof LetterStatus ? $status->value : $status;
+
+        return LetterStatus::tryFrom($value)?->label() ?? ucfirst($value);
     }
 
-    public static function statusColor(string $status): string
+    public static function statusColor(string|LetterStatus $status): string
     {
-        return match ($status) {
-            'pending_approval' => 'yellow',
-            'published' => 'green',
-            'rejected' => 'red',
-            'cancelled' => 'gray',
-            'ready_to_print' => 'blue',
-            default => 'gray',
-        };
+        $value = $status instanceof LetterStatus ? $status->value : $status;
+
+        return LetterStatus::tryFrom($value)?->color() ?? 'gray';
     }
 
     protected static function boot(): void

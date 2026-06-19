@@ -54,10 +54,10 @@ use App\Livewire\Reports\OutputReports;
 use App\Livewire\Reports\PartnerCollaboration;
 use App\Livewire\Reports\Research;
 use App\Livewire\Reports\ReviewerReport;
-use App\Livewire\Reports\Show;
 use App\Livewire\Research\Proposal\Create;
 use App\Livewire\Research\Proposal\Edit;
 use App\Livewire\Research\Proposal\Index;
+use App\Livewire\Research\Proposal\Show;
 use App\Livewire\Review\CommunityService as ReviewCommunityService;
 use App\Livewire\Review\Research as ReviewResearch;
 use App\Livewire\Review\ReviewHistory;
@@ -168,7 +168,7 @@ Route::middleware(['auth'])->group(function () {
             ->middleware('role:dosen')
             ->name('proposal.create');
 
-        Route::get('proposal/{proposal}', App\Livewire\Research\Proposal\Show::class)->name('proposal.show');
+        Route::get('proposal/{proposal}', Show::class)->name('proposal.show');
         Route::get('proposal/{proposal}/edit', Edit::class)->name('proposal.edit');
 
         Route::get('proposal-revision', App\Livewire\Research\ProposalRevision\Index::class)->name('proposal-revision.index');

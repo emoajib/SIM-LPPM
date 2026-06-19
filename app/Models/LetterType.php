@@ -48,6 +48,6 @@ class LetterType extends Model
 
     public function getSupportsManualSignatureAttribute(): bool
     {
-        return $this->attributes['supports_manual_signature'] ?? true;
+        return true;
     }
 }

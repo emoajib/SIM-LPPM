@@ -10,6 +10,7 @@ enum LetterStatus: string
     case READY_TO_PRINT = 'ready_to_print';
     case PUBLISHED = 'published';
     case REJECTED = 'rejected';
+    case CANCELLED = 'cancelled';
 
     public function label(): string
     {
@@ -20,6 +21,7 @@ enum LetterStatus: string
             self::READY_TO_PRINT => 'Siap Cetak',
             self::PUBLISHED => 'Diterbitkan',
             self::REJECTED => 'Ditolak',
+            self::CANCELLED => 'Dibatalkan',
         };
     }
 
@@ -32,6 +34,7 @@ enum LetterStatus: string
             self::READY_TO_PRINT => 'indigo',
             self::PUBLISHED => 'success',
             self::REJECTED => 'danger',
+            self::CANCELLED => 'gray',
         };
     }
 

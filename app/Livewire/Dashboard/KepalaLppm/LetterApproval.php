@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Dashboard\KepalaLppm;
 
+use App\Enums\LetterStatus;
 use App\Models\Letter;
 use App\Services\LetterService;
 use Illuminate\Support\Facades\Log;
@@ -105,7 +106,7 @@ class LetterApproval extends Component
 
         $this->authorize('approve', $letter);
 
-        if ($letter->status !== 'pending_approval') {
+        if ($letter->status !== LetterStatus::PENDING_APPROVAL) {
             $this->dispatch('swal', title: 'Gagal', text: 'Surat ini sudah diproses.', icon: 'error');
 
             return;
@@ -153,7 +154,7 @@ class LetterApproval extends Component
 
         $this->authorize('reject', $letter);
 
-        if ($letter->status !== 'pending_approval') {
+        if ($letter->status !== LetterStatus::PENDING_APPROVAL) {
             $this->dispatch('swal', title: 'Gagal', text: 'Surat ini sudah diproses.', icon: 'error');
 
             return;
@@ -186,7 +187,7 @@ class LetterApproval extends Component
 
     public function toggleSelectAll(): void
     {
-        $pendingIds = Letter::where('status', 'pending_approval')->pluck('id')->toArray();
+        $pendingIds = Letter::where('status', LetterStatus::PENDING_APPROVAL->value)->pluck('id')->toArray();
 
         if (count($this->selectedIds) === count($pendingIds)) {
             $this->selectedIds = [];
@@ -203,7 +204,7 @@ class LetterApproval extends Component
             return;
         }
 
-        $letters = Letter::whereIn('id', $this->selectedIds)->where('status', 'pending_approval')->get();
+        $letters = Letter::whereIn('id', $this->selectedIds)->where('status', LetterStatus::PENDING_APPROVAL->value)->get();
 
         $results = $service->batchApprove($letters);
 
@@ -232,7 +233,7 @@ class LetterApproval extends Component
             return;
         }
 
-        $letters = Letter::whereIn('id', $this->selectedIds)->where('status', 'pending_approval')->get();
+        $letters = Letter::whereIn('id', $this->selectedIds)->where('status', LetterStatus::PENDING_APPROVAL->value)->get();
 
         $results = $service->batchReject($letters, 'Ditolak secara batch oleh Kepala LPPM.');
 

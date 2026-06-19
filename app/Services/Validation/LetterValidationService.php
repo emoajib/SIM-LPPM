@@ -2,6 +2,7 @@
 
 namespace App\Services\Validation;
 
+use App\Enums\LetterStatus;
 use App\Enums\SignatureMode;
 use App\Models\Letter;
 use App\Models\LetterType;
@@ -189,14 +190,14 @@ class LetterValidationService implements LetterValidationServiceInterface
             ->where('letter_type_id', $letterTypeId)
             ->where('reference_type', $referenceType)
             ->where('reference_id', $referenceId)
-            ->whereIn('status', ['pending_approval', 'published', 'ready_to_print'])
+            ->whereIn('status', [LetterStatus::PENDING_APPROVAL->value, LetterStatus::PUBLISHED->value, LetterStatus::READY_TO_PRINT->value])
             ->first();
 
         if ($existingLetter) {
             $errors['duplicate'] = [
                 'A letter of this type already exists for this proposal.',
                 'Letter ID: '.$existingLetter->id,
-                'Status: '.$existingLetter->status,
+                'Status: '.$existingLetter->status->value,
             ];
         }
 
@@ -246,11 +247,11 @@ class LetterValidationService implements LetterValidationServiceInterface
     private function getValidStatusTransitions(string $currentStatus): array
     {
         $transitions = [
-            'pending_approval' => ['published', 'ready_to_print', 'rejected', 'cancelled'],
-            'published' => [], // Immutable
-            'ready_to_print' => [], // Immutable
-            'rejected' => ['pending_approval'],
-            'cancelled' => [], // Cannot be reactivated
+            LetterStatus::PENDING_APPROVAL->value => [LetterStatus::PUBLISHED->value, LetterStatus::READY_TO_PRINT->value, LetterStatus::REJECTED->value, LetterStatus::CANCELLED->value],
+            LetterStatus::PUBLISHED->value => [], // Immutable
+            LetterStatus::READY_TO_PRINT->value => [], // Immutable
+            LetterStatus::REJECTED->value => [LetterStatus::PENDING_APPROVAL->value],
+            LetterStatus::CANCELLED->value => [], // Cannot be reactivated
         ];
 
         return $transitions[$currentStatus] ?? [];
@@ -293,15 +294,15 @@ class LetterValidationService implements LetterValidationServiceInterface
         $errors = [];
 
         // Check if letter is in pending_approval status
-        if ($letter->status !== 'pending_approval') {
+        if ($letter->status !== LetterStatus::PENDING_APPROVAL) {
             $errors['approval'] = [
                 'Letter is not in pending_approval status.',
-                'Current status: '.$letter->status,
+                'Current status: '.$letter->status->value,
             ];
         }
 
         // Check if approver has permission
-        if ($letter->signature_mode === SignatureMode::MANUAL->value) {
+        if ($letter->signature_mode === SignatureMode::MANUAL) {
             // For manual signatures, only kepala lppm can approve
             if (! auth()->user()->hasRole('kepala lppm') && ! auth()->user()->hasRole('rektor')) {
                 $errors['approval'] = [
@@ -334,10 +335,10 @@ class LetterValidationService implements LetterValidationServiceInterface
         $errors = [];
 
         // Check if letter is in pending_approval status
-        if ($letter->status !== 'pending_approval') {
+        if ($letter->status !== LetterStatus::PENDING_APPROVAL) {
             $errors['rejection'] = [
                 'Letter is not in pending_approval status.',
-                'Current status: '.$letter->status,
+                'Current status: '.$letter->status->value,
             ];
         }
 
@@ -364,11 +365,11 @@ class LetterValidationService implements LetterValidationServiceInterface
         $errors = [];
 
         // Check if letter can be cancelled
-        if (! in_array($letter->status, ['pending_approval', 'rejected'])) {
+        if (! in_array($letter->status, [LetterStatus::PENDING_APPROVAL, LetterStatus::REJECTED])) {
             $errors['cancellation'] = [
                 'Letter cannot be cancelled in current status.',
-                'Current status: '.$letter->status,
-                'Allowed statuses: pending_approval, rejected',
+                'Current status: '.$letter->status->value,
+                'Allowed statuses: '.LetterStatus::PENDING_APPROVAL->value.', '.LetterStatus::REJECTED->value,
             ];
         }
 
@@ -396,10 +397,10 @@ class LetterValidationService implements LetterValidationServiceInterface
         $errors = [];
 
         // Check if letter is rejected
-        if ($letter->status !== 'rejected') {
+        if ($letter->status !== LetterStatus::REJECTED) {
             $errors['resubmission'] = [
                 'Letter is not in rejected status.',
-                'Current status: '.$letter->status,
+                'Current status: '.$letter->status->value,
             ];
         }
 
@@ -427,10 +428,10 @@ class LetterValidationService implements LetterValidationServiceInterface
         $errors = [];
 
         // Check if letter is published or ready_to_print
-        if (! in_array($letter->status, ['published', 'ready_to_print'])) {
+        if (! in_array($letter->status, [LetterStatus::PUBLISHED, LetterStatus::READY_TO_PRINT])) {
             $errors['export'] = [
                 'Letter is not in published or ready_to_print status.',
-                'Current status: '.$letter->status,
+                'Current status: '.$letter->status->value,
             ];
         }
 

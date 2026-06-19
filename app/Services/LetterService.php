@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Enums\LetterStatus;
+use App\Enums\SignatureMode;
 use App\Models\Letter;
 use App\Models\LetterType;
 use App\Models\Proposal;
@@ -150,7 +152,7 @@ class LetterService
         $query = Letter::where('letter_type_id', $letterTypeId)
             ->where('reference_type', get_class($proposal))
             ->where('reference_id', $proposal->id)
-            ->where('status', '!=', 'rejected');
+            ->where('status', '!=', LetterStatus::REJECTED->value);
 
         if ($teamSource !== null) {
             $query->where('team_source', $teamSource);
@@ -161,7 +163,7 @@ class LetterService
 
     private function shouldBypassApproval(): bool
     {
-        return Setting::get('surat_signature_mode', 'tte') === 'manual'
+        return Setting::get('surat_signature_mode', SignatureMode::TTE->value) === SignatureMode::MANUAL->value
             && (bool) Setting::get('surat_wet_signature_bypass', false);
     }
 
@@ -191,7 +193,7 @@ class LetterService
         ];
 
         $bypass = $this->shouldBypassApproval();
-        $status = $bypass ? 'ready_to_print' : 'pending_approval';
+        $status = $bypass ? LetterStatus::READY_TO_PRINT->value : LetterStatus::PENDING_APPROVAL->value;
 
         $letter = Letter::create([
             'letter_type_id' => $data['letterTypeId'],
@@ -200,7 +202,7 @@ class LetterService
             'reference_id' => $proposal->id,
             'source' => 'proposal',
             'team_source' => 'proposal',
-            'signature_mode' => Setting::get('surat_signature_mode', 'tte'),
+            'signature_mode' => Setting::get('surat_signature_mode', SignatureMode::TTE->value),
             'status' => $status,
             'metadata' => $metadata,
             'team_snapshot' => TeamSnapshotBuilder::forProposal($proposal),
@@ -248,7 +250,7 @@ class LetterService
                 ->where('user_id', $user->id)
                 ->when($referenceId, fn ($q) => $q->where('reference_type', $referenceType)->where('reference_id', $referenceId))
                 ->when(! $referenceId, fn ($q) => $q->whereNull('reference_id')->where('source', 'manual'))
-                ->where('status', '!=', 'cancelled')
+                ->where('status', '!=', LetterStatus::CANCELLED->value)
                 ->lockForUpdate()
                 ->exists();
 
@@ -279,7 +281,7 @@ class LetterService
             $teamSource = $referenceId ? 'manual' : 'manual';
 
             $bypass = $this->shouldBypassApproval();
-            $status = $bypass ? 'ready_to_print' : 'pending_approval';
+            $status = $bypass ? LetterStatus::READY_TO_PRINT->value : LetterStatus::PENDING_APPROVAL->value;
 
             $letter = Letter::create([
                 'letter_type_id' => $data['letterTypeId'],
@@ -288,7 +290,7 @@ class LetterService
                 'reference_id' => $referenceId,
                 'source' => $source,
                 'team_source' => $teamSource,
-                'signature_mode' => Setting::get('surat_signature_mode', 'tte'),
+                'signature_mode' => Setting::get('surat_signature_mode', SignatureMode::TTE->value),
                 'status' => $status,
                 'metadata' => $metadata,
                 'team_snapshot' => TeamSnapshotBuilder::forManual($data['team'] ?? [], $user),
@@ -331,7 +333,7 @@ class LetterService
         return DB::transaction(function () use ($letter) {
             // Lock the letter row to prevent double-approve
             $lockedLetter = Letter::where('id', $letter->id)
-                ->where('status', 'pending_approval')
+                ->where('status', LetterStatus::PENDING_APPROVAL->value)
                 ->lockForUpdate()
                 ->first();
 
@@ -345,7 +347,7 @@ class LetterService
             $lockedLetter->update([
                 'letter_number' => $this->generateNextNumber($letterType),
                 'published_at' => now(),
-                'status' => $lockedLetter->signature_mode === 'tte' ? 'published' : 'ready_to_print',
+                'status' => $lockedLetter->signature_mode === SignatureMode::TTE ? LetterStatus::PUBLISHED->value : LetterStatus::READY_TO_PRINT->value,
             ]);
 
             try {
@@ -358,7 +360,7 @@ class LetterService
                 ]);
 
                 $lockedLetter->update([
-                    'status' => 'pending_approval',
+                    'status' => LetterStatus::PENDING_APPROVAL->value,
                     'letter_number' => null,
                     'published_at' => null,
                     'file_path' => null,
@@ -385,7 +387,7 @@ class LetterService
         }
 
         $letter->update([
-            'status' => 'rejected',
+            'status' => LetterStatus::REJECTED->value,
             'rejection_reason' => $reason,
         ]);
     }
@@ -409,7 +411,7 @@ class LetterService
             throw new \DomainException('Bukan surat Anda.');
         }
 
-        $letter->update(['status' => 'cancelled']);
+        $letter->update(['status' => LetterStatus::CANCELLED->value]);
     }
 
     /**
@@ -423,7 +425,7 @@ class LetterService
             throw new \DomainException(implode('\n', $validationErrors));
         }
 
-        if ($letter->status !== 'rejected') {
+        if ($letter->status !== LetterStatus::REJECTED->value) {
             throw new \DomainException('Hanya surat yang ditolak yang bisa diajukan ulang.');
         }
 
@@ -442,7 +444,7 @@ class LetterService
         ]);
 
         $letter->update([
-            'status' => 'pending_approval',
+            'status' => LetterStatus::PENDING_APPROVAL->value,
             'rejection_reason' => null,
             'metadata' => $metadata,
             'team_snapshot' => $data['team'] ?? $letter->team_snapshot,
@@ -494,11 +496,11 @@ class LetterService
     {
         return [
             'total' => Letter::count(),
-            'pending' => Letter::where('status', 'pending_approval')->count(),
-            'published' => Letter::where('status', 'published')->count(),
-            'rejected' => Letter::where('status', 'rejected')->count(),
-            'cancelled' => Letter::where('status', 'cancelled')->count(),
-            'ready_to_print' => Letter::where('status', 'ready_to_print')->count(),
+            'pending' => Letter::where('status', LetterStatus::PENDING_APPROVAL->value)->count(),
+            'published' => Letter::where('status', LetterStatus::PUBLISHED->value)->count(),
+            'rejected' => Letter::where('status', LetterStatus::REJECTED->value)->count(),
+            'cancelled' => Letter::where('status', LetterStatus::CANCELLED->value)->count(),
+            'ready_to_print' => Letter::where('status', LetterStatus::READY_TO_PRINT->value)->count(),
         ];
     }
 
@@ -509,11 +511,11 @@ class LetterService
     {
         return [
             'total' => Letter::where('user_id', $userId)->count(),
-            'pending' => Letter::where('user_id', $userId)->where('status', 'pending_approval')->count(),
-            'published' => Letter::where('user_id', $userId)->where('status', 'published')->count(),
-            'rejected' => Letter::where('user_id', $userId)->where('status', 'rejected')->count(),
-            'cancelled' => Letter::where('user_id', $userId)->where('status', 'cancelled')->count(),
-            'ready_to_print' => Letter::where('user_id', $userId)->where('status', 'ready_to_print')->count(),
+            'pending' => Letter::where('user_id', $userId)->where('status', LetterStatus::PENDING_APPROVAL->value)->count(),
+            'published' => Letter::where('user_id', $userId)->where('status', LetterStatus::PUBLISHED->value)->count(),
+            'rejected' => Letter::where('user_id', $userId)->where('status', LetterStatus::REJECTED->value)->count(),
+            'cancelled' => Letter::where('user_id', $userId)->where('status', LetterStatus::CANCELLED->value)->count(),
+            'ready_to_print' => Letter::where('user_id', $userId)->where('status', LetterStatus::READY_TO_PRINT->value)->count(),
         ];
     }
 

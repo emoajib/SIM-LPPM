@@ -28,7 +28,7 @@
         <div class="grid">
             <div class="row">
                 <div class="k">Status</div>
-                <div class="v"><span class="badge {{ in_array($letter->status, ['published', 'ready_to_print']) ? 'b-valid' : 'b-invalid' }}">{{ $statusLabel }}</span></div>
+                <div class="v"><span class="badge {{ in_array($letter->status?->value, ['published', 'ready_to_print']) ? 'b-valid' : 'b-invalid' }}">{{ $statusLabel }}</span></div>
             </div>
             <div class="row">
                 <div class="k">Jenis Surat</div>
@@ -48,7 +48,7 @@
             </div>
             <div class="row">
                 <div class="k">Mode Tanda Tangan</div>
-                <div class="v">{{ $letter->signature_mode === 'tte' ? 'TTE (QR Code)' : 'Kosong' }}</div>
+                <div class="v">{{ ($letter->signature_mode?->value === 'tte') ? 'TTE (QR Code)' : 'Kosong' }}</div>
             </div>
         </div>
 

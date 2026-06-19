@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\SignatureMode;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -24,11 +25,13 @@ class DocumentSignature extends Model
         'kid',
         'signature',
         'payload',
+        'mode',
     ];
 
     protected $casts = [
         'payload' => 'array',
         'signed_at' => 'datetime',
+        'mode' => SignatureMode::class,
     ];
 
     protected $keyType = 'string';

@@ -30,11 +30,11 @@
                         </td>
                         <td>
                             <span class="text-muted small">
-                                {{ $letter->signature_mode === 'tte' ? 'Digital (Barcode)' : 'Basah (Pena)' }}
+                                {{ ($letter->signature_mode?->value === 'tte') ? 'Digital (Barcode)' : 'Basah (Pena)' }}
                             </span>
                         </td>
                         <td>
-                            @if(in_array($letter->status, ['published', 'ready_to_print']))
+                            @if(in_array($letter->status?->value, ['published', 'ready_to_print']))
                             <a href="{{ route('letter.download', $letter->id) }}" target="_blank" class="btn btn-sm btn-ghost-primary">
                                 <i class="ti ti-download"></i> Unduh PDF
                             </a>
