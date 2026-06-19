@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Research\Proposal;
 
+use App\Enums\ProposalUserStatus;
 use App\Livewire\Concerns\HasToast;
 use App\Models\Proposal;
 use App\Models\User;
@@ -62,7 +63,7 @@ class TeamMemberInvitations extends Component
     #[Computed]
     public function acceptedMembers(): Collection
     {
-        return $this->teamMembers->filter(fn ($member) => $member->pivot->status === 'accepted');
+        return $this->teamMembers->filter(fn ($member) => $member->pivot->status === ProposalUserStatus::ACCEPTED->value);
     }
 
     /**
@@ -98,14 +99,14 @@ class TeamMemberInvitations extends Component
             return;
         }
 
-        if ($member->pivot->getAttribute('status') === 'accepted') {
+        if ($member->pivot->getAttribute('status') === ProposalUserStatus::ACCEPTED->value) {
             $this->toastInfo('Anda sudah menerima undangan');
 
             return;
         }
 
         $proposal->teamMembers()
-            ->updateExistingPivot($user->id, ['status' => 'accepted']);
+            ->updateExistingPivot($user->id, ['status' => ProposalUserStatus::ACCEPTED->value]);
 
         session()->flash('success', 'Undangan diterima');
         $this->toastSuccess('Undangan diterima');

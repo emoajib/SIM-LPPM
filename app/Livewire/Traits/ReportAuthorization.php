@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Traits;
 
+use App\Enums\ProposalUserStatus;
 use App\Models\Proposal;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
@@ -30,7 +31,7 @@ trait ReportAuthorization
             $q->where('submitter_id', $user->id)
                 ->orWhereHas('teamMembers', function ($subQuery) use ($user) {
                     $subQuery->where('user_id', $user->id)
-                        ->where('status', 'accepted');
+                        ->where('status', ProposalUserStatus::ACCEPTED->value);
                 });
         });
     }

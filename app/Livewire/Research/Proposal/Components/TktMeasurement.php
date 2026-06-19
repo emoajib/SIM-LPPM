@@ -134,9 +134,9 @@ class TktMeasurement extends Component
     public static function getTktRangeForStrata(?string $strata): ?array
     {
         return match ($strata) {
-            'Dasar' => [1, 3],
-            'Terapan' => [4, 6],
-            'Pengembangan' => [7, 9],
+            'Reguler' => [1, 3],
+            'Kolaborasi Internal' => [4, 6],
+            'Kerja Sama Antar PT' => [7, 9],
             default => null, // PKM or unknown
         };
     }

@@ -5,6 +5,7 @@
 namespace App\Exports;
 
 use App\Enums\ProposalStatus;
+use App\Enums\ReviewStatus;
 use App\Models\CommunityService;
 use App\Models\Proposal;
 use App\Models\Research;
@@ -80,7 +81,7 @@ class ReviewerReportExport implements FromView, ShouldAutoSize, WithStyles
                     }
                 },
                 'reviews as pending_count' => function ($query) use ($year) {
-                    $query->where('status', 'pending');
+                    $query->where('status', ReviewStatus::PENDING->value);
                     if ($year) {
                         $query->whereHas('proposal', function ($pq) use ($year) {
                             $pq->whereYear('created_at', $year);

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Iku;
 
+use App\Enums\PolicyInvolvementStatus;
 use App\Models\AdditionalOutput;
 use App\Models\MandatoryOutput;
 use App\Models\PolicyInvolvement;
@@ -77,7 +78,7 @@ class IkuVerification extends Component
             ];
 
             if ($modelType === 'policy') {
-                $update['status'] = 'pending';
+                $update['status'] = PolicyInvolvementStatus::PENDING->value;
             } else {
                 $update['is_verified'] = false;
             }
@@ -149,7 +150,7 @@ class IkuVerification extends Component
             });
 
         $policies = PolicyInvolvement::with('user.identity')
-            ->when($this->status === 'unverified', fn ($q) => $q->where('status', 'pending'))
+            ->when($this->status === 'unverified', fn ($q) => $q->where('status', PolicyInvolvementStatus::PENDING->value))
             ->when($this->status === 'verified', fn ($q) => $q->where('status', 'verified'))
             ->when($this->search, function ($q) {
                 $q->where('title', 'like', "%{$this->search}%")

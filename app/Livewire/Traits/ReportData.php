@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Traits;
 
+use App\Enums\ProposalUserStatus;
 use App\Models\Proposal;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -53,7 +54,7 @@ trait ReportData
             return $query->whereHas('teamMembers', function ($teamQuery) use ($user) {
                 $teamQuery->where('user_id', $user->id)
                     ->where('role', 'anggota')
-                    ->where('status', 'accepted');
+                    ->where('status', ProposalUserStatus::ACCEPTED->value);
             });
         }
 

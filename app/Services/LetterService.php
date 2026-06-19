@@ -425,7 +425,7 @@ class LetterService
             throw new \DomainException(implode('\n', $validationErrors));
         }
 
-        if ($letter->status !== LetterStatus::REJECTED->value) {
+        if ($letter->status !== LetterStatus::REJECTED) {
             throw new \DomainException('Hanya surat yang ditolak yang bisa diajukan ulang.');
         }
 

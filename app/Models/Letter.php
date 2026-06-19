@@ -17,7 +17,7 @@ class Letter extends Model
 {
     use HasFactory, HasUuids, SoftDeletes;
 
-    public const STATUS_IMMUTABLE = [LetterStatus::PUBLISHED->value, LetterStatus::READY_TO_PRINT->value];
+    public const STATUS_IMMUTABLE = [LetterStatus::PUBLISHED, LetterStatus::READY_TO_PRINT];
 
     protected $fillable = [
         'letter_number',

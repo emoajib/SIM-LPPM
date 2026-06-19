@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\ProgressReportStatus;
 use App\Enums\ReportingPeriod;
 use Database\Helpers\MigrationHelpers;
 use Illuminate\Database\Migrations\Migration;
@@ -39,7 +38,7 @@ return new class extends Migration
         MigrationHelpers::addCheckConstraintToTable(
             'progress_reports',
             'status',
-            ProgressReportStatus::values(),
+            ['draft', 'submitted', 'approved'], // ProgressReportStatus values (hardcoded — enum removed)
             MigrationHelpers::generateConstraintName('progress_reports', 'status')
         );
     }

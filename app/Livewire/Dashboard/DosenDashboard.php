@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Dashboard;
 
+use App\Enums\ProposalStatus;
+use App\Enums\ProposalUserStatus;
 use App\Livewire\Concerns\HasToast;
 use App\Models\AdditionalOutput;
 use App\Models\CommunityServiceScheme;
@@ -77,7 +79,7 @@ class DosenDashboard extends Component
                 $q->where('submitter_id', $this->user->id)
                     ->orWhereHas('teamMembers', fn ($q2) => $q2
                         ->where('user_id', $this->user->id)
-                        ->where('status', 'accepted')
+                        ->where('status', ProposalUserStatus::ACCEPTED->value)
                     );
             })
             ->whereNotNull('start_year')
@@ -140,7 +142,7 @@ class DosenDashboard extends Component
         $anggotaData = Proposal::query()
             ->where('start_year', '>=', $startYear)
             ->whereHas('teamMembers', fn ($q) => $q->where('user_id', $userId)
-                ->where('status', 'accepted')
+                ->where('status', ProposalUserStatus::ACCEPTED->value)
                 ->where('role', '!=', 'ketua')
             )
             ->where('submitter_id', '!=', $userId)
@@ -222,7 +224,7 @@ class DosenDashboard extends Component
             ->where(function ($q) {
                 $q->where('submitter_id', $this->user->id)
                     ->orWhereHas('teamMembers', fn ($q2) => $q2->where('user_id', $this->user->id)
-                        ->where('status', 'accepted')
+                        ->where('status', ProposalUserStatus::ACCEPTED->value)
                     );
             })
             ->select([
@@ -239,10 +241,10 @@ class DosenDashboard extends Component
         $this->stats = [
             'my_research' => $research->sum('count'),
             'my_community_service' => $communityService->sum('count'),
-            'research_pending' => $research->filter(fn ($r) => ($r->status->value ?? '') === 'submitted')->sum('count'),
-            'community_service_pending' => $communityService->filter(fn ($r) => ($r->status->value ?? '') === 'submitted')->sum('count'),
-            'research_approved' => $research->filter(fn ($r) => in_array($r->status->value ?? '', ['approved', 'completed']))->sum('count'),
-            'community_service_approved' => $communityService->filter(fn ($r) => in_array($r->status->value ?? '', ['approved', 'completed']))->sum('count'),
+            'research_pending' => $research->filter(fn ($r) => ($r->status->value ?? '') === ProposalStatus::SUBMITTED->value)->sum('count'),
+            'community_service_pending' => $communityService->filter(fn ($r) => ($r->status->value ?? '') === ProposalStatus::SUBMITTED->value)->sum('count'),
+            'research_approved' => $research->filter(fn ($r) => in_array($r->status->value ?? '', [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value]))->sum('count'),
+            'community_service_approved' => $communityService->filter(fn ($r) => in_array($r->status->value ?? '', [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value]))->sum('count'),
             'research_schemes_count' => ResearchScheme::count(),
             'community_service_schemes_count' => CommunityServiceScheme::count(),
         ];
@@ -260,7 +262,7 @@ class DosenDashboard extends Component
             ->join('proposal_user', 'proposals.id', '=', 'proposal_user.proposal_id')
             ->where('proposal_user.user_id', $this->user->id)
             ->where('proposal_user.role', '!=', 'ketua') // Hanya hitung jika sebagai Anggota
-            ->where('proposal_user.status', 'accepted') // Hanya hitung yang sudah dikonfirmasi
+            ->where('proposal_user.status', ProposalUserStatus::ACCEPTED->value) // Hanya hitung yang sudah dikonfirmasi
             ->where('proposals.start_year', $yearFilter)
             ->select([
                 'proposals.detailable_type',
@@ -294,7 +296,7 @@ class DosenDashboard extends Component
                 $q->where('submitter_id', $this->user->id)
                     ->orWhereHas('teamMembers', fn ($q2) => $q2
                         ->where('user_id', $this->user->id)
-                        ->where('status', 'accepted')
+                        ->where('status', ProposalUserStatus::ACCEPTED->value)
                     );
             })
             ->latest('updated_at')
@@ -336,7 +338,7 @@ class DosenDashboard extends Component
 
         // 2 & 3. activeProposals: Only funded proposals (approved/completed) require Monev, Reports, and Outputs
         $activeProposals = $proposalsThisYear->filter(function ($p) {
-            return in_array($p->status->value, ['approved', 'completed']);
+            return in_array($p->status->value, [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value]);
         });
         $activeProposalIds = $activeProposals->pluck('id');
 

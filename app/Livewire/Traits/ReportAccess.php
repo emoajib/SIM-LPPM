@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Traits;
 
+use App\Enums\ProposalUserStatus;
 use App\Models\ProgressReport;
 use App\Models\Proposal;
 use Illuminate\Support\Facades\Auth;
@@ -74,7 +75,7 @@ trait ReportAccess
         return $this->proposal->submitter_id === $user->id
             || $this->proposal->teamMembers()
                 ->where('user_id', $user->id)
-                ->where('status', 'accepted')
+                ->where('status', ProposalUserStatus::ACCEPTED->value)
                 ->exists();
     }
 

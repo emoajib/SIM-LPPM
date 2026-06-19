@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Enums\ProposalStatus;
+use App\Enums\ProposalUserStatus;
 use App\Models\CommunityService;
 use App\Models\Proposal;
 use App\Models\Research;
@@ -116,7 +117,7 @@ class HistoricalProposalImport implements SkipsEmptyRows, ToCollection, WithHead
                     // 3. Tambah Ketua ke proposal_user (role: ketua, status: accepted)
                     $proposal->teamMembers()->attach($ketua->id, [
                         'role' => 'ketua',
-                        'status' => 'accepted',
+                        'status' => ProposalUserStatus::ACCEPTED->value,
                         'tasks' => 'Ketua Peneliti',
                     ]);
 
@@ -130,7 +131,7 @@ class HistoricalProposalImport implements SkipsEmptyRows, ToCollection, WithHead
                         $proposal->teamMembers()->syncWithoutDetaching([
                             $anggota->id => [
                                 'role' => 'anggota',
-                                'status' => 'accepted',
+                                'status' => ProposalUserStatus::ACCEPTED->value,
                                 'tasks' => null,
                             ],
                         ]);

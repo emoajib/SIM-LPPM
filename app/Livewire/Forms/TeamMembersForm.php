@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Forms;
 
+use App\Enums\ProposalUserStatus;
 use App\Models\Identity;
 use App\Models\Institution;
 use App\Models\StudyProgram;
@@ -152,7 +153,7 @@ class TeamMembersForm extends Component
                 'name' => $this->member_name,
                 'nidn' => $this->member_nidn,
                 'tugas' => $this->member_tugas,
-                'status' => 'accepted', // Manual entry is implicitly accepted
+                'status' => ProposalUserStatus::ACCEPTED->value, // Manual entry is implicitly accepted
                 'role' => $this->member_type,
                 'email' => $this->member_email,
                 'institution' => $this->member_institution,

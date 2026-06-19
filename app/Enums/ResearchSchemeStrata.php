@@ -4,29 +4,25 @@ namespace App\Enums;
 
 enum ResearchSchemeStrata: string
 {
-    case DASAR = 'Dasar';
-    case TERAPAN = 'Terapan';
-    case PENGEMBANGAN = 'Pengembangan';
-    case PKM = 'PKM';
+    case REGULER = 'Reguler';
+    case KOLABORASI_INTERNAL = 'Kolaborasi Internal';
+    case KERJA_SAMA_ANTAR_PT = 'Kerja Sama Antar PT';
+    case PKM_KE = 'PKM-KE';
+    case PKM_KI = 'PKM-KI';
+    case PKM_REGULER = 'PKM-Reguler';
 
-    /**
-     * Get label in Indonesian
-     */
     public function label(): string
     {
         return match ($this) {
-            self::DASAR => 'Dasar',
-            self::TERAPAN => 'Terapan',
-            self::PENGEMBANGAN => 'Pengembangan',
-            self::PKM => 'PKM',
+            self::REGULER => 'Reguler',
+            self::KOLABORASI_INTERNAL => 'Kolaborasi Internal',
+            self::KERJA_SAMA_ANTAR_PT => 'Kerja Sama Antar PT',
+            self::PKM_KE => 'PKM-KE',
+            self::PKM_KI => 'PKM-KI',
+            self::PKM_REGULER => 'PKM-Reguler',
         };
     }
 
-    /**
-     * Get all enum values as an array
-     *
-     * @return array<int, string>
-     */
     public static function values(): array
     {
         return array_map(fn ($case) => $case->value, self::cases());

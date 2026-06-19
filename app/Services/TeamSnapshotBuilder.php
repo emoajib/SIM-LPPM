@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\ProposalUserStatus;
 use App\Models\Proposal;
 use App\Models\User;
 
@@ -23,7 +24,7 @@ class TeamSnapshotBuilder
                 continue;
             }
             $pivot = $member->pivot;
-            if ($pivot && $pivot->getAttribute('status') === 'accepted') {
+            if ($pivot && $pivot->getAttribute('status') === ProposalUserStatus::ACCEPTED->value) {
                 $team[] = [
                     'name' => $member->name,
                     'role' => 'Anggota',

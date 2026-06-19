@@ -343,11 +343,6 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
-    // Manual Books - Per-role view (all authenticated users)
-    Route::middleware(['auth', 'verified'])->prefix('manual-books')->name('manual-books.')->group(function () {
-        Route::get('/', ManualBookUserIndex::class)->name('index');
-    });
-
     Route::get('settings', SettingsIndex::class)
         ->middleware(['auth', 'verified'])
         ->name('settings');

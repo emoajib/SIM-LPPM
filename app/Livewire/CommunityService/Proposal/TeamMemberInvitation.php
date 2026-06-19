@@ -2,6 +2,7 @@
 
 namespace App\Livewire\CommunityService\Proposal;
 
+use App\Enums\ProposalUserStatus;
 use App\Livewire\Concerns\HasToast;
 use App\Models\Proposal;
 use App\Services\NotificationService;
@@ -29,7 +30,7 @@ class TeamMemberInvitation extends Component
     public function acceptedMembers()
     {
         return $this->proposal->teamMembers()
-            ->wherePivot('status', 'accepted')
+            ->wherePivot('status', ProposalUserStatus::ACCEPTED->value)
             ->get();
     }
 
@@ -58,7 +59,7 @@ class TeamMemberInvitation extends Component
 
         if ($isMember) {
             DB::transaction(function () use ($user): void {
-                $this->proposal->teamMembers()->updateExistingPivot($user->id, ['status' => 'accepted']);
+                $this->proposal->teamMembers()->updateExistingPivot($user->id, ['status' => ProposalUserStatus::ACCEPTED->value]);
 
                 // Send notification
                 $notificationService = app(NotificationService::class);

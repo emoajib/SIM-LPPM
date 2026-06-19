@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\ReviewStatus;
 use App\Models\ProposalReviewer;
 use App\Services\NotificationService;
 use Carbon\Carbon;
@@ -22,7 +23,7 @@ class CheckOverdueReviews extends Command
         $now = Carbon::now()->startOfDay();
 
         $reviewers = ProposalReviewer::query()
-            ->where('status', 'pending')
+            ->where('status', ReviewStatus::PENDING->value)
             ->where('deadline_at', '<', $now)
             ->with(['proposal', 'user'])
             ->get();

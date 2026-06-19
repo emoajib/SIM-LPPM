@@ -2,12 +2,18 @@
 
 namespace App\Models;
 
+use App\Enums\SintaScoreSubmissionStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SintaScoreSubmission extends Model
 {
+    protected $casts = [
+        'status' => SintaScoreSubmissionStatus::class,
+        'verified_at' => 'datetime',
+    ];
+
     protected $fillable = [
         'identity_id',
         'user_id',
@@ -45,7 +51,7 @@ class SintaScoreSubmission extends Model
      */
     public function scopePending($query): Builder
     {
-        return $query->where('status', 'pending');
+        return $query->where('status', SintaScoreSubmissionStatus::PENDING->value);
     }
 
     /**
@@ -54,7 +60,7 @@ class SintaScoreSubmission extends Model
      */
     public function scopeApproved($query): Builder
     {
-        return $query->where('status', 'approved');
+        return $query->where('status', SintaScoreSubmissionStatus::APPROVED->value);
     }
 
     /**

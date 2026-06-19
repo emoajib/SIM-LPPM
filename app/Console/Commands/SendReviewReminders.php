@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\ReviewStatus;
 use App\Models\ProposalReviewer;
 use App\Services\NotificationService;
 use Carbon\Carbon;
@@ -23,7 +24,7 @@ class SendReviewReminders extends Command
         $threeDayEnd = $threeDay->copy()->endOfDay();
 
         $reviewers = ProposalReviewer::query()
-            ->where('status', 'pending')
+            ->where('status', ReviewStatus::PENDING->value)
             ->whereBetween('deadline_at', [$threeDay, $threeDayEnd])
             ->with(['proposal', 'user'])
             ->get();

@@ -629,17 +629,13 @@ class DatabaseRestoreService
     }
 
     /**
-     * Convert old strata values to new PG-compatible values in research_schemes.strata (position 2).
-     * PG CHECK constraint only allows: Dasar, Terapan, Pengembangan, PKM.
-     * Mapping: Reguler→Dasar, Kolaborasi Internal→Terapan, Kerja Sama Antar PT→Pengembangan.
+     * Convert old strata values — currently a no-op since ResearchSchemeStrata enum
+     * now matches actual DB values (Reguler, Kolaborasi Internal, etc.).
+     * Kept as hook for future strata value normalization if needed.
      */
     protected function fixResearchSchemesStrata(string $statement): string
     {
-        return $this->replaceValuesInStatement($statement, 2, [
-            "'Reguler'" => "'Dasar'",
-            "'Kolaborasi Internal'" => "'Terapan'",
-            "'Kerja Sama Antar PT'" => "'Pengembangan'",
-        ]);
+        return $statement;
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Traits;
 
+use App\Enums\ProposalUserStatus;
 use App\Livewire\Concerns\HasToast;
 use App\Models\Proposal;
 use App\Services\NotificationService;
@@ -29,7 +30,7 @@ trait WithTeamManagement
 
         DB::transaction(function () use ($proposal, $userId) {
             $proposal->teamMembers()
-                ->updateExistingPivot($userId, ['status' => 'accepted']);
+                ->updateExistingPivot($userId, ['status' => ProposalUserStatus::ACCEPTED->value]);
 
             $member = $proposal->teamMembers()->find($userId);
             if ($member) {

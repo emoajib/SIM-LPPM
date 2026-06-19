@@ -216,7 +216,8 @@ class LetterValidationService implements LetterValidationServiceInterface
         $errors = [];
 
         // Check if current status is immutable
-        if (in_array($currentStatus, Letter::STATUS_IMMUTABLE) && $currentStatus !== $newStatus) {
+        $immutableValues = array_map(fn ($s) => $s->value, Letter::STATUS_IMMUTABLE);
+        if (in_array($currentStatus, $immutableValues) && $currentStatus !== $newStatus) {
             $errors['status'] = [
                 'Cannot transition from immutable status.',
                 'Current status: '.$currentStatus,

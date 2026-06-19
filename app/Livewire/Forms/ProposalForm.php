@@ -4,6 +4,7 @@ namespace App\Livewire\Forms;
 
 use App\Actions\Proposal\IdentityEligibilityAction;
 use App\Constants\ProposalConstants;
+use App\Enums\ProposalUserStatus;
 use App\Livewire\Research\Proposal\Components\TktMeasurement;
 use App\Models\BudgetCap;
 use App\Models\CommunityService;
@@ -283,7 +284,7 @@ class ProposalForm extends Form
                         'nidn' => $student['identifier'], // Map identifier back to nidn field
                         'tugas' => $student['tasks'],
                         'role' => $student['role'] ?? 'mahasiswa',
-                        'status' => 'accepted', // JSON members are implicitly accepted/manual
+                        'status' => ProposalUserStatus::ACCEPTED->value, // JSON members are implicitly accepted/manual
                         'is_manual' => true,
                         'study_program' => $student['study_program'] ?? $student['studyProgram'] ?? $student['prodi'] ?? '',
                         'institution' => $student['institution'] ?? $student['institution_name'] ?? '',
@@ -872,7 +873,7 @@ class ProposalForm extends Form
         $syncData[$submitterId] = [
             'tasks' => $this->author_tasks,
             'role' => 'ketua',
-            'status' => 'accepted', // Submitter/ketua is always accepted
+            'status' => ProposalUserStatus::ACCEPTED->value, // Submitter/ketua is always accepted
         ];
 
         // Get the submitter user for notifications
@@ -941,7 +942,7 @@ class ProposalForm extends Form
                     $userId = $identity->user_id;
 
                     // Preserve status if already exists, otherwise default to pending
-                    $status = ! empty($member['is_manual']) ? 'accepted' : 'pending';
+                    $status = ! empty($member['is_manual']) ? ProposalUserStatus::ACCEPTED->value : 'pending';
                     if (isset($existingMembers[$userId])) {
                         // Safe way to get pivot status
                         $status = $existingMembers[$userId]->pivot->status ?? 'pending';

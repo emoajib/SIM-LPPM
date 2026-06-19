@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\KaprodiStatus;
 use App\Enums\ProposalStatus;
+use App\Enums\ProposalUserStatus;
 use App\Enums\ReviewStatus;
 use Database\Factories\ProposalFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -497,7 +498,7 @@ class Proposal extends Model
         }
 
         $acceptedMembers = $this->teamMembers()
-            ->wherePivot('status', 'accepted')
+            ->wherePivot('status', ProposalUserStatus::ACCEPTED->value)
             ->count();
 
         return $totalMembers === $acceptedMembers;
@@ -524,7 +525,7 @@ class Proposal extends Model
     public function pendingTeamMembers(): BelongsToMany
     {
         return $this->teamMembers()
-            ->wherePivot('status', 'pending');
+            ->wherePivot('status', ProposalUserStatus::PENDING->value);
     }
 
     /**
@@ -536,8 +537,8 @@ class Proposal extends Model
     {
         return $this->reviewers()
             ->whereIn('status', [
-                'pending',
-                're_review_requested',
+                ReviewStatus::PENDING->value,
+                ReviewStatus::RE_REVIEW_REQUESTED->value,
             ]);
     }
 
@@ -549,7 +550,7 @@ class Proposal extends Model
     public function getPendingTeamMembers(): Collection
     {
         return $this->teamMembers()
-            ->wherePivot('status', '!=', 'accepted')
+            ->wherePivot('status', '!=', ProposalUserStatus::ACCEPTED->value)
             ->get();
     }
 
@@ -734,7 +735,7 @@ class Proposal extends Model
     public function getScoreAttribute(): ?float
     {
         $completedLogs = $this->reviewers()
-            ->where('status', 'completed')
+            ->where('status', ReviewStatus::COMPLETED->value)
             ->get()
             ->map(fn ($r) => $r->latestLog()?->total_score)
             ->filter(fn ($score) => ! is_null($score));

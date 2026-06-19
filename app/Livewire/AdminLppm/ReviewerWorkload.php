@@ -2,6 +2,7 @@
 
 namespace App\Livewire\AdminLppm;
 
+use App\Enums\ReviewStatus;
 use App\Models\Proposal;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -46,14 +47,14 @@ class ReviewerWorkload extends Component
                     });
                 },
                 'reviews as pending_count' => function ($query) use ($year) {
-                    $query->where('status', 'pending')
+                    $query->where('status', ReviewStatus::PENDING->value)
                         ->whereHas('proposal', function ($pq) use ($year) {
                             $pq->when($year, fn ($sub) => $sub->whereYear('created_at', $year))
                                 ->when($this->semesterFilter !== 'all', fn ($sub) => $sub->where('semester', $this->semesterFilter));
                         });
                 },
                 'reviews as completed_count' => function ($query) use ($year) {
-                    $query->where('status', 'completed')
+                    $query->where('status', ReviewStatus::COMPLETED->value)
                         ->whereHas('proposal', function ($pq) use ($year) {
                             $pq->when($year, fn ($sub) => $sub->whereYear('created_at', $year))
                                 ->when($this->semesterFilter !== 'all', fn ($sub) => $sub->where('semester', $this->semesterFilter));

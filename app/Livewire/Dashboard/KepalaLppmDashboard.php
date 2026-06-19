@@ -591,7 +591,7 @@ class KepalaLppmDashboard extends Component
         $didanaiData = [];
         foreach ($years as $year) {
             $usulanData[] = $proposalsData->filter(fn ($p) => (int) $p->getAttribute('year') === $year)->sum('count');
-            $didanaiData[] = $proposalsData->filter(fn ($p) => (int) $p->getAttribute('year') === $year && in_array($p->status->value ?? '', ['approved', 'completed']))->sum('count');
+            $didanaiData[] = $proposalsData->filter(fn ($p) => (int) $p->getAttribute('year') === $year && in_array($p->status->value ?? '', [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value]))->sum('count');
         }
 
         $this->chartData = [
@@ -629,15 +629,15 @@ class KepalaLppmDashboard extends Component
         $research = $raw->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'Research'));
         $communityService = $raw->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'CommunityService'));
 
-        $researchPending = $research->filter(fn ($r) => ($r->status->value ?? '') === 'reviewed')->sum('count');
-        $communityServicePending = $communityService->filter(fn ($r) => ($r->status->value ?? '') === 'reviewed')->sum('count');
+        $researchPending = $research->filter(fn ($r) => ($r->status->value ?? '') === ProposalStatus::REVIEWED->value)->sum('count');
+        $communityServicePending = $communityService->filter(fn ($r) => ($r->status->value ?? '') === ProposalStatus::REVIEWED->value)->sum('count');
 
         $researchBudget = (int) BudgetItem::query()
             ->whereHas(
                 'proposal',
                 fn ($q) => $q
                     ->where('detailable_type', 'App\Models\Research')
-                    ->whereIn('status', ['approved', 'completed'])
+                    ->whereIn('status', [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value])
                     ->tap(fn ($subQ) => $this->applyCommonFilters($subQ))
             )->sum('total_price');
 
@@ -646,7 +646,7 @@ class KepalaLppmDashboard extends Component
                 'proposal',
                 fn ($q) => $q
                     ->where('detailable_type', 'App\Models\CommunityService')
-                    ->whereIn('status', ['approved', 'completed'])
+                    ->whereIn('status', [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value])
                     ->tap(fn ($subQ) => $this->applyCommonFilters($subQ))
             )->sum('total_price');
 
@@ -655,11 +655,11 @@ class KepalaLppmDashboard extends Component
             'total_community_service' => $communityService->sum('count'),
             'research_pending' => $researchPending,
             'community_service_pending' => $communityServicePending,
-            'research_approved' => $research->filter(fn ($r) => in_array($r->status->value ?? '', ['approved', 'completed']))->sum('count'),
-            'community_service_approved' => $communityService->filter(fn ($r) => in_array($r->status->value ?? '', ['approved', 'completed']))->sum('count'),
-            'research_completed' => $research->filter(fn ($r) => ($r->status->value ?? '') === 'completed')->sum('count'),
-            'community_service_completed' => $communityService->filter(fn ($r) => ($r->status->value ?? '') === 'completed')->sum('count'),
-            'pending_initial_approval' => $raw->filter(fn ($r) => ($r->status->value ?? '') === 'submitted')->sum('count'),
+            'research_approved' => $research->filter(fn ($r) => in_array($r->status->value ?? '', [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value]))->sum('count'),
+            'community_service_approved' => $communityService->filter(fn ($r) => in_array($r->status->value ?? '', [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value]))->sum('count'),
+            'research_completed' => $research->filter(fn ($r) => ($r->status->value ?? '') === ProposalStatus::COMPLETED->value)->sum('count'),
+            'community_service_completed' => $communityService->filter(fn ($r) => ($r->status->value ?? '') === ProposalStatus::COMPLETED->value)->sum('count'),
+            'pending_initial_approval' => $raw->filter(fn ($r) => ($r->status->value ?? '') === ProposalStatus::SUBMITTED->value)->sum('count'),
             'pending_final_decision' => $researchPending + $communityServicePending,
             'final_report_pending' => ProgressReport::query()
                 ->where('reporting_period', 'final')
@@ -718,23 +718,23 @@ class KepalaLppmDashboard extends Component
         $proposalsThisYearIds = $proposalsThisYear->pluck('id');
 
         // New Metrics: Draft & Approval Stages
-        $totalDraft = $proposalsThisYear->filter(fn ($p) => ($p->status->value ?? '') === 'draft')->count();
-        $waitingDean = $proposalsThisYear->filter(fn ($p) => ($p->status->value ?? '') === 'submitted')->count();
-        $waitingLppm = $proposalsThisYear->filter(fn ($p) => in_array($p->status->value ?? '', ['approved', 'reviewed']))->count();
+        $totalDraft = $proposalsThisYear->filter(fn ($p) => ($p->status->value ?? '') === ProposalStatus::DRAFT->value)->count();
+        $waitingDean = $proposalsThisYear->filter(fn ($p) => ($p->status->value ?? '') === ProposalStatus::SUBMITTED->value)->count();
+        $waitingLppm = $proposalsThisYear->filter(fn ($p) => in_array($p->status->value ?? '', [ProposalStatus::APPROVED->value, ProposalStatus::REVIEWED->value]))->count();
 
         // 1. Review Status
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $totalReview = Proposal::whereIn('id', $proposalsThisYearIds)
-            ->whereIn('status', ['approved', 'waiting_reviewer', 'under_review', 'reviewed', 'revision_needed', 'completed', 'rejected'])
+            ->whereIn('status', [ProposalStatus::APPROVED->value, ProposalStatus::WAITING_REVIEWER->value, ProposalStatus::UNDER_REVIEW->value, ProposalStatus::REVIEWED->value, ProposalStatus::REVISION_NEEDED->value, ProposalStatus::COMPLETED->value, ProposalStatus::REJECTED->value])
             ->count();
 
         $completedReview = Proposal::whereIn('id', $proposalsThisYearIds)
-            ->whereIn('status', ['reviewed', 'revision_needed', 'completed', 'rejected'])
+            ->whereIn('status', [ProposalStatus::REVIEWED->value, ProposalStatus::REVISION_NEEDED->value, ProposalStatus::COMPLETED->value, ProposalStatus::REJECTED->value])
             ->count();
 
         // 2 & 3. activeProposals: Only funded proposals (approved/completed) require Monev, Reports, and Outputs
         $activeProposals = $proposalsThisYear->filter(function ($p) {
-            return in_array($p->status->value, ['approved', 'completed']);
+            return in_array($p->status->value, [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value]);
         });
         $activeProposalIds = $activeProposals->pluck('id');
 

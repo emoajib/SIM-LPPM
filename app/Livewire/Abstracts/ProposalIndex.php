@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Abstracts;
 
+use App\Enums\ProposalUserStatus;
 use App\Livewire\Concerns\HasToast;
 use App\Livewire\Traits\WithFilters;
 use App\Models\CommunityService;
@@ -105,7 +106,7 @@ abstract class ProposalIndex extends Component
     public function pendingInvitationsCount()
     {
         return Proposal::whereHas('teamMembers', function ($q) {
-            $q->where('user_id', Auth::id())->where('status', 'pending');
+            $q->where('user_id', Auth::id())->where('status', ProposalUserStatus::PENDING->value);
         })->whereHas('detailable', function ($q) {
             $q->where('detailable_type', $this->getProposalType() === 'research' ? Research::class : CommunityService::class);
         })->count();

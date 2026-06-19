@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Notifications;
 
+use App\Enums\ProposalUserStatus;
 use App\Livewire\Concerns\HasToast;
 use App\Models\Proposal;
 use Illuminate\Support\Facades\Auth;
@@ -38,7 +39,7 @@ class NotificationCenter extends Component
 
         $pendingInvitations = Proposal::whereHas('teamMembers', function ($q) use ($user) {
             $q->where('user_id', $user->id)
-                ->where('status', 'pending');
+                ->where('status', ProposalUserStatus::PENDING->value);
         })->with('submitter.identity')->latest()->get();
 
         return view('livewire.notifications.notification-center', [

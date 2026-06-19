@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\ReviewStatus;
 use App\Models\Proposal;
 use App\Models\ProposalReviewer;
 use App\Services\NotificationService;
@@ -50,7 +51,7 @@ class SendDailySummaries extends Command
             'pending_proposals' => Proposal::where('status', 'submitted')->count(),
             'under_review' => Proposal::where('status', 'under_review')->count(),
             'awaiting_decision' => Proposal::where('status', 'reviewed')->count(),
-            'total_reviews_pending' => ProposalReviewer::where('status', 'pending')->count(),
+            'total_reviews_pending' => ProposalReviewer::where('status', ReviewStatus::PENDING->value)->count(),
         ]);
     }
 
@@ -84,7 +85,7 @@ class SendDailySummaries extends Command
         // Note: This is aggregate data for all reviewers
         // Individual reviewers will receive their own specific counts
         return array_merge($data, [
-            'pending_assignments' => ProposalReviewer::where('status', 'pending')->count(),
+            'pending_assignments' => ProposalReviewer::where('status', ReviewStatus::PENDING->value)->count(),
             'completed_today' => ProposalReviewer::where('status', 'completed')
                 ->whereDate('updated_at', now())
                 ->count(),

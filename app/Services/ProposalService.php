@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\ProposalStatus;
+use App\Enums\ProposalUserStatus;
 use App\Livewire\Forms\ProposalForm;
 use App\Models\CommunityService;
 use App\Models\Proposal;
@@ -109,8 +110,7 @@ class ProposalService
         if (isset($filters['status']) && $filters['status'] !== '') {
             $statusValue = (string) $filters['status'];
             // Validate status against ProposalStatus enum values
-            $allStatusValues = ['draft', 'submitted', 'need_assignment', 'approved', 'waiting_reviewer', 'under_review', 'reviewed', 'revision_needed', 'completed', 'rejected'];
-            if (in_array($statusValue, $allStatusValues)) {
+            if (in_array($statusValue, ProposalStatus::values())) {
                 $query->where('status', $statusValue);
             }
         }
@@ -174,8 +174,7 @@ class ProposalService
             ->pluck('count', 'status')
             ->toArray();
 
-        $allStatuses = ['draft', 'submitted', 'need_assignment', 'approved', 'waiting_reviewer', 'under_review', 'reviewed', 'revision_needed', 'completed', 'rejected'];
-        $emptyStats = array_fill_keys($allStatuses, 0);
+        $emptyStats = array_fill_keys(ProposalStatus::values(), 0);
 
         return [
             'total' => $totalCount,
@@ -202,7 +201,7 @@ class ProposalService
             return;
         }
 
-        if ($proposal->teamMembers()->where('status', '!=', 'accepted')->exists()) {
+        if ($proposal->teamMembers()->where('status', '!=', ProposalUserStatus::ACCEPTED->value)->exists()) {
             throw new \Exception('Semua anggota tim harus menerima undangan sebelum proposal dapat disubmit.');
         }
 
