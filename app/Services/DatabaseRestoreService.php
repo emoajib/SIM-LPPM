@@ -282,54 +282,62 @@ class DatabaseRestoreService
 
     /**
      * Fix boolean values in INSERT statements for PostgreSQL compatibility.
-     * Converts MySQL-style integer booleans (0/1) and empty string to proper boolean literals.
+     * DISABLED: Boolean conversion in SQL parser corrupts multi-row INSERT syntax.
+     * All boolean fixes are handled post-restore via fixAllBooleans().
      */
     protected function fixBooleanValues(string $statement): string
     {
+        return $statement;
+    }
+
+    /**
+     * Fix boolean values for ALL tables post-restore.
+     * Converts integer 0/1 to boolean false/true for all boolean columns.
+     */
+    protected function fixAllBooleans(): void
+    {
         if (DB::getDriverName() !== 'pgsql') {
-            return $statement;
+            return;
         }
-
-        if (! preg_match('/INSERT\s+(IGNORE\s+)?INTO\s+[`"\']?(\w+)[`"\']?\s*/i', $statement, $m)) {
-            return $statement;
-        }
-
-        $table = $m[2];
 
         try {
-            $boolCols = DB::select(
-                "SELECT column_name, ordinal_position FROM information_schema.columns
-                 WHERE table_name = ? AND table_schema = 'public' AND data_type IN ('boolean')
-                 ORDER BY ordinal_position",
-                [$table]
-            );
-        } catch (\Throwable $e) {
-            return $statement;
-        }
+            $tables = DB::select("
+                SELECT table_name FROM information_schema.columns
+                WHERE table_schema = 'public' AND data_type = 'boolean'
+                GROUP BY table_name
+            ");
 
-        if (empty($boolCols)) {
-            return $statement;
-        }
+            foreach ($tables as $tableInfo) {
+                $table = $tableInfo->table_name;
+                $cols = DB::select("
+                    SELECT column_name FROM information_schema.columns
+                    WHERE table_schema = 'public' AND table_name = ? AND data_type = 'boolean'
+                ", [$table]);
 
-        $boolColumnNames = array_map(fn ($c) => $c->column_name, $boolCols);
-        $colNames = $this->extractColumnNames($statement, $table);
+                $caseParts = [];
+                foreach ($cols as $col) {
+                    $caseParts[] = "\"{$col->column_name}\" = CASE
+                        WHEN \"{$col->column_name}\" = 0 THEN false
+                        WHEN \"{$col->column_name}\" = 1 THEN true
+                        ELSE \"{$col->column_name}\"
+                    END";
+                }
 
-        if (empty($colNames)) {
-            return $statement;
-        }
+                if (empty($caseParts)) {
+                    continue;
+                }
 
-        $boolPositions = [];
-        foreach ($colNames as $pos => $name) {
-            if (in_array($name, $boolColumnNames, true)) {
-                $boolPositions[] = $pos;
+                $whereParts = [];
+                foreach ($cols as $col) {
+                    $whereParts[] = "\"{$col->column_name}\" IN (0, 1)";
+                }
+
+                $sql = "UPDATE \"{$table}\" SET ".implode(', ', $caseParts).' WHERE '.implode(' OR ', $whereParts);
+                DB::statement($sql);
             }
+        } catch (\Throwable $e) {
+            Log::warning('Failed to fix booleans post-restore', ['error' => $e->getMessage()]);
         }
-
-        if (empty($boolPositions)) {
-            return $statement;
-        }
-
-        return $this->convertBooleanValuesInSql($statement, $boolPositions);
     }
 
     /**
@@ -362,24 +370,26 @@ class DatabaseRestoreService
 
     /**
      * Convert 0/1/'' at the given positions to false/true in all VALUES tuples.
-     * Properly handles parentheses inside string literals.
+     * Uses robust tuple splitting by `),(` separator which only appears at top level.
      */
     protected function convertBooleanValuesInSql(string $statement, array $boolPositions): string
     {
         $sortPos = array_fill_keys($boolPositions, true);
+        $maxPos = max(array_keys($sortPos));
 
-        // Find the VALUES clause and extract each tuple properly,
-        // respecting string literals that may contain parentheses
+        // Find the VALUES clause and extract each tuple properly
         return preg_replace_callback(
             '/VALUES\s+(.*?)(?:\s+ON\s+CONFLICT\s+DO\s+NOTHING\s*)?$/si',
-            function ($matches) use ($sortPos) {
+            function ($matches) use ($sortPos, $maxPos) {
                 $clause = $matches[1];
-                $tuples = $this->parseTuples($clause);
+
+                // Split clause into tuples using `),(` separator (only at top level)
+                $tuples = $this->splitTuplesBySeparator($clause);
                 $converted = [];
 
                 foreach ($tuples as $tuple) {
                     $parts = $this->splitTupleValues($tuple);
-                    if (count($parts) > max(array_keys($sortPos))) {
+                    if (count($parts) > $maxPos) {
                         foreach ($sortPos as $pos => $_) {
                             $val = trim($parts[$pos]);
                             if ($val === '0') {
@@ -403,50 +413,85 @@ class DatabaseRestoreService
     }
 
     /**
-     * Parse individual tuples from VALUES clause, handling parentheses inside strings.
+     * Split VALUES clause into tuples using `),(` separator.
+     * This separator only appears at the top level between tuples, never inside strings.
      */
-    protected function parseTuples(string $clause): array
+    protected function splitTuplesBySeparator(string $clause): array
     {
         $tuples = [];
-        $depth = 0;
-        $inString = false;
         $current = '';
+        $depth = 0;
+        $inSingleQuote = false;
+        $inDoubleQuote = false;
         $len = strlen($clause);
 
         for ($i = 0; $i < $len; $i++) {
             $ch = $clause[$i];
 
-            if ($ch === "'" && ! $inString) {
-                $inString = true;
-                $current .= $ch;
-            } elseif ($ch === "'" && $inString) {
-                if ($i + 1 < $len && $clause[$i + 1] === "'") {
-                    $current .= $ch;
-                    $i++;
+            // Track string states FIRST (before depth changes)
+            if (! $inSingleQuote && ! $inDoubleQuote) {
+                if ($ch === "'") {
+                    $inSingleQuote = true;
                 }
-                $inString = false;
-                $current .= $ch;
-            } elseif ($ch === '(' && ! $inString) {
-                if ($depth === 0) {
-                    $current = '';
-                } else {
-                    $current .= $ch;
+            } elseif ($inSingleQuote && ! $inDoubleQuote) {
+                if ($ch === "'") {
+                    if ($i + 1 < $len && $clause[$i + 1] === "'") {
+                        $i++; // Skip escaped quote
+                    } else {
+                        $inSingleQuote = false;
+                    }
+                } elseif ($ch === '"') {
+                    $inDoubleQuote = true;
                 }
-                $depth++;
-            } elseif ($ch === ')' && ! $inString) {
-                $depth--;
-                if ($depth === 0) {
-                    $tuples[] = $current;
-                    $current = '';
-                } else {
-                    $current .= $ch;
+            } elseif ($inDoubleQuote) {
+                if ($ch === '"') {
+                    if ($i + 1 < $len && $clause[$i + 1] === '"') {
+                        $i++; // Skip escaped double quote
+                    } else {
+                        $inDoubleQuote = false;
+                    }
+                } elseif ($ch === '\\') {
+                    $i++; // Skip escaped character
                 }
-            } else {
-                $current .= $ch;
             }
+
+            // Track depth AFTER string state (so we know if we're inside strings)
+            if (! $inSingleQuote && ! $inDoubleQuote) {
+                if ($ch === '(') {
+                    $depth++;
+                } elseif ($ch === ')') {
+                    // Check for tuple separator `),(` BEFORE decrementing depth
+                    // Separator pattern: `),(` at depth 1 means end of tuple
+                    if ($depth === 1 && $i + 2 < $len && $clause[$i + 1] === ',' && $clause[$i + 2] === '(') {
+                        // Found tuple separator `),(` - save current tuple
+                        $tuples[] = $current;
+                        $current = '';
+                        $i += 2; // Skip `),(` - we've processed `)`, `,`, `(`
+                        $depth = 1; // We're now inside the next tuple (after the skipped `(`)
+
+                        continue; // Skip the rest of loop for this iteration
+                    }
+                    $depth--;
+                }
+            }
+
+            $current .= $ch;
+        }
+
+        // Add the last tuple
+        if ($current !== '') {
+            $tuples[] = $current;
         }
 
         return $tuples;
+    }
+
+    /**
+     * Parse individual tuples from VALUES clause (legacy - kept for compatibility).
+     */
+    protected function parseTuples(string $clause): array
+    {
+        return $this->splitTuplesBySeparator($clause);
     }
 
     /**
@@ -930,6 +975,7 @@ class DatabaseRestoreService
 
             if (DB::getDriverName() === 'pgsql') {
                 $this->resyncPostgresSequences();
+                $this->fixAllBooleans();
             }
 
             $skippedPreserved = 0;

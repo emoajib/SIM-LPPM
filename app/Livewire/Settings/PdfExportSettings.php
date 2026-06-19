@@ -12,6 +12,8 @@ use Livewire\Component;
 
 class PdfExportSettings extends Component
 {
+    protected array $pendingSaves = [];
+
     // --- Family A (Surat / Proposal) ---
     public string $pdfFontFamily = 'Times New Roman, Times, serif';
 
@@ -247,10 +249,21 @@ class PdfExportSettings extends Component
                 'boolean' => (bool) $value,
                 default => (string) $value,
             };
-            Setting::set($key, $castValue, $type);
+
+            $this->pendingSaves[$key] = $castValue;
         }
 
         $this->dispatch('settings-updated', message: 'Pengaturan PDF & Ekspor berhasil diperbarui.');
+    }
+
+    public function dehydrate(): void
+    {
+        if (! empty($this->pendingSaves)) {
+            Setting::setMany($this->pendingSaves);
+            $this->pendingSaves = [];
+
+            clear_pdf_config_cache();
+        }
     }
 
     /**
@@ -363,6 +376,7 @@ class PdfExportSettings extends Component
         ];
 
         Setting::setMany($settingsToSave);
+        clear_pdf_config_cache($this->editingModule);
 
         $this->contentModalOpen = false;
         $this->dispatch('settings-updated', message: "Konfigurasi kustom untuk {$this->editingModuleName} berhasil disimpan.");
@@ -372,6 +386,8 @@ class PdfExportSettings extends Component
     {
         Setting::where('key', 'LIKE', PdfConstants::PREFIX_CONTENT."{$this->editingModule}_%")->delete();
         Setting::where('key', 'LIKE', PdfConstants::PREFIX_OVERRIDE."{$this->editingModule}_%")->delete();
+
+        clear_pdf_config_cache($this->editingModule);
 
         $this->contentModalOpen = false;
         $this->dispatch('settings-updated', message: "Konfigurasi kustom untuk {$this->editingModuleName} berhasil di-reset ke pengaturan global bawaan.");

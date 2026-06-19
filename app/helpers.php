@@ -8,6 +8,7 @@ use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
@@ -327,128 +328,163 @@ if (! function_exists('get_pdf_config')) {
     /**
      * Vetted by AI - Manual Review Required by Senior Engineer/Manager
      * Ambil konfigurasi PDF dari settings. Default = existing hardcode values.
+     * Menggunakan cache layer untuk optimasi module-level caching (Phase 2 Performance).
      *
      * @param  string  $viewType  'letter' | 'report' | 'report_ba' | 'report_compact'
      */
     function get_pdf_config(string $viewType = 'letter', ?string $moduleKey = null): array
     {
-        $fontDefaults = [
-            'letter' => "'Times New Roman', Times, serif",
-            'report' => 'Arial, Helvetica, sans-serif',
-            'report_ba' => 'Arial, Helvetica, sans-serif',
-            'report_compact' => 'Arial, Helvetica, sans-serif',
-        ];
-        $sizeDefaults = [
-            'letter' => 11,
-            'report' => 9,
-            'report_ba' => 11,
-            'report_compact' => 7,
-        ];
-        $marginDefaults = [
-            'letter' => '0cm 2cm 0.5cm 2cm',
-            'report' => '3cm 3cm 3cm 4cm',
-            'report_ba' => '4cm 3cm 3cm 4cm',
-            'report_compact' => '1.5cm 1cm',
-        ];
+        $cacheKey = "pdf_config_{$viewType}".($moduleKey ? "_{$moduleKey}" : '');
 
-        $isReport = str_starts_with($viewType, 'report');
-        $settingFontKey = $isReport ? 'pdf_report_font_family' : 'pdf_font_family';
-        $settingFontSize = $isReport ? 'pdf_report_font_size' : 'pdf_body_font_size';
-        $settingLineHeight = $isReport ? 'pdf_report_line_height' : 'pdf_line_height';
+        return Cache::rememberForever($cacheKey, function () use ($viewType, $moduleKey) {
+            $fontDefaults = [
+                'letter' => "'Times New Roman', Times, serif",
+                'report' => 'Arial, Helvetica, sans-serif',
+                'report_ba' => 'Arial, Helvetica, sans-serif',
+                'report_compact' => 'Arial, Helvetica, sans-serif',
+            ];
+            $sizeDefaults = [
+                'letter' => 11,
+                'report' => 9,
+                'report_ba' => 11,
+                'report_compact' => 7,
+            ];
+            $marginDefaults = [
+                'letter' => '0cm 2cm 0.5cm 2cm',
+                'report' => '3cm 3cm 3cm 4cm',
+                'report_ba' => '4cm 3cm 3cm 4cm',
+                'report_compact' => '1.5cm 1cm',
+            ];
 
-        $isCompact = (bool) Setting::get('pdf_layout_compact', false);
-        $pageMarginKey = Setting::get('pdf_page_margin', 'normal');
-        $marginMap = [
-            'narrow' => '1.5cm 1cm',
-            'normal' => $marginDefaults[$viewType] ?? '2cm',
-            'wide' => '4cm 3.5cm',
-        ];
+            $isReport = str_starts_with($viewType, 'report');
+            $settingFontKey = $isReport ? 'pdf_report_font_family' : 'pdf_font_family';
+            $settingFontSize = $isReport ? 'pdf_report_font_size' : 'pdf_body_font_size';
+            $settingLineHeight = $isReport ? 'pdf_report_line_height' : 'pdf_line_height';
 
-        $customMargins = _build_custom_margins($viewType, $marginDefaults);
+            $isCompact = (bool) Setting::get('pdf_layout_compact', false);
+            $pageMarginKey = Setting::get('pdf_page_margin', 'normal');
+            $marginMap = [
+                'narrow' => '1.5cm 1cm',
+                'normal' => $marginDefaults[$viewType] ?? '2cm',
+                'wide' => '4cm 3.5cm',
+            ];
 
-        $config = [
-            'font_family' => Setting::get($settingFontKey, $fontDefaults[$viewType] ?? 'Arial, Helvetica, sans-serif'),
-            'body_font_size' => (int) Setting::get($settingFontSize, $sizeDefaults[$viewType] ?? 11),
-            'compact' => $isCompact,
-            'show_logo' => (bool) Setting::get('pdf_show_logo', true),
-            'page_margin' => $marginMap[$pageMarginKey] ?? $marginDefaults[$viewType],
-            'paper_size' => Setting::get('pdf_paper_size', 'a4'),
-            '_view_type' => $viewType,
-            // Extended layout controls
-            'logo_position' => Setting::get('pdf_logo_position', 'left'),
-            'logo_size' => (int) Setting::get('pdf_logo_size', 110),
-            'line_height' => Setting::get($settingLineHeight, '1.1'),
-            'paragraph_spacing' => (int) Setting::get('pdf_paragraph_spacing', 6),
-            'paragraph_indent' => (int) Setting::get('pdf_paragraph_indent', 0),
-            'custom_margins' => $customMargins,
-            'orientation' => null,
-            'intro_text' => '',
-            'outro_text' => '',
-            // Cover & Approval editor
-            'cover_title' => Setting::get('pdf_cover_title', ''),
-            'cover_subtitle' => Setting::get('pdf_cover_subtitle', ''),
-            'cover_show_team' => (bool) Setting::get('pdf_cover_show_team', true),
-            'approval_custom_text' => Setting::get('pdf_approval_custom_text', ''),
-        ];
+            $customMargins = _build_custom_margins($viewType, $marginDefaults);
 
-        // Apply Module-Specific Overrides
+            $config = [
+                'font_family' => Setting::get($settingFontKey, $fontDefaults[$viewType] ?? 'Arial, Helvetica, sans-serif'),
+                'body_font_size' => (int) Setting::get($settingFontSize, $sizeDefaults[$viewType] ?? 11),
+                'compact' => $isCompact,
+                'show_logo' => (bool) Setting::get('pdf_show_logo', true),
+                'page_margin' => $marginMap[$pageMarginKey] ?? $marginDefaults[$viewType],
+                'paper_size' => Setting::get('pdf_paper_size', 'a4'),
+                '_view_type' => $viewType,
+                // Extended layout controls
+                'logo_position' => Setting::get('pdf_logo_position', 'left'),
+                'logo_size' => (int) Setting::get('pdf_logo_size', 110),
+                'line_height' => Setting::get($settingLineHeight, '1.1'),
+                'paragraph_spacing' => (int) Setting::get('pdf_paragraph_spacing', 6),
+                'paragraph_indent' => (int) Setting::get('pdf_paragraph_indent', 0),
+                'custom_margins' => $customMargins,
+                'orientation' => null,
+                'intro_text' => '',
+                'outro_text' => '',
+                // Cover & Approval editor
+                'cover_title' => Setting::get('pdf_cover_title', ''),
+                'cover_subtitle' => Setting::get('pdf_cover_subtitle', ''),
+                'cover_show_team' => (bool) Setting::get('pdf_cover_show_team', true),
+                'approval_custom_text' => Setting::get('pdf_approval_custom_text', ''),
+            ];
+
+            // Apply Module-Specific Overrides
+            if ($moduleKey) {
+                $config['intro_text'] = Setting::get("pdf_content_{$moduleKey}_intro", '');
+                $config['outro_text'] = Setting::get("pdf_content_{$moduleKey}_outro", '');
+
+                if ($overrideFont = Setting::get("pdf_override_{$moduleKey}_font_family")) {
+                    $config['font_family'] = $overrideFont;
+                }
+                if ($overrideSize = Setting::get("pdf_override_{$moduleKey}_font_size")) {
+                    $config['body_font_size'] = (int) $overrideSize;
+                }
+                if ($overridePaper = Setting::get("pdf_override_{$moduleKey}_paper_size")) {
+                    $config['paper_size'] = $overridePaper;
+                }
+                if ($overrideOrientation = Setting::get("pdf_override_{$moduleKey}_orientation")) {
+                    $config['orientation'] = $overrideOrientation;
+                }
+
+                // Margin Override
+                $mTop = Setting::get("pdf_override_{$moduleKey}_margin_top", '');
+                $mRight = Setting::get("pdf_override_{$moduleKey}_margin_right", '');
+                $mBottom = Setting::get("pdf_override_{$moduleKey}_margin_bottom", '');
+                $mLeft = Setting::get("pdf_override_{$moduleKey}_margin_left", '');
+
+                if ($mTop !== '' || $mRight !== '' || $mBottom !== '' || $mLeft !== '') {
+                    // Parse default string to fallback array
+                    $defaultMarginStr = $customMargins !== '' ? $customMargins : ($marginMap[$pageMarginKey] ?? $marginDefaults[$viewType] ?? '2cm 2cm 2cm 2cm');
+                    $parts = preg_split('/\s+/', trim($defaultMarginStr)) ?: ['2cm', '2cm', '2cm', '2cm'];
+
+                    $dTop = $parts[0];
+                    $dRight = $parts[1] ?? $parts[0];
+                    $dBottom = $parts[2] ?? $parts[0];
+                    $dLeft = $parts[3] ?? ($parts[1] ?? $parts[0]);
+
+                    $cTop = $mTop !== '' ? $mTop.'cm' : $dTop;
+                    $cRight = $mRight !== '' ? $mRight.'cm' : $dRight;
+                    $cBottom = $mBottom !== '' ? $mBottom.'cm' : $dBottom;
+                    $cLeft = $mLeft !== '' ? $mLeft.'cm' : $dLeft;
+
+                    $config['custom_margins'] = "{$cTop} {$cRight} {$cBottom} {$cLeft}";
+                }
+
+                // Additional per-module overrides
+                if ($showLogo = Setting::get("pdf_override_{$moduleKey}_show_logo")) {
+                    $config['show_logo'] = filter_var($showLogo, FILTER_VALIDATE_BOOLEAN);
+                }
+                if ($coverTitle = Setting::get("pdf_override_{$moduleKey}_cover_title")) {
+                    $config['cover_title'] = $coverTitle;
+                }
+                if ($coverSubtitle = Setting::get("pdf_override_{$moduleKey}_cover_subtitle")) {
+                    $config['cover_subtitle'] = $coverSubtitle;
+                }
+                if ($coverShowTeam = Setting::get("pdf_override_{$moduleKey}_cover_show_team")) {
+                    $config['cover_show_team'] = filter_var($coverShowTeam, FILTER_VALIDATE_BOOLEAN);
+                }
+            }
+
+            return $config;
+        });
+    }
+}
+
+if (! function_exists('clear_pdf_config_cache')) {
+    /**
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Clear the cached pdf configuration.
+     * If moduleKey is provided, only that module's cache is cleared.
+     * If null, ALL pdf configs are cleared (e.g. on global layout change).
+     */
+    function clear_pdf_config_cache(?string $moduleKey = null): void
+    {
+        $types = ['letter', 'report', 'report_ba', 'report_compact'];
+
         if ($moduleKey) {
-            $config['intro_text'] = Setting::get("pdf_content_{$moduleKey}_intro", '');
-            $config['outro_text'] = Setting::get("pdf_content_{$moduleKey}_outro", '');
+            foreach ($types as $type) {
+                Cache::forget("pdf_config_{$type}_{$moduleKey}");
+            }
+        } else {
+            // Global change, clear everything
+            foreach ($types as $type) {
+                Cache::forget("pdf_config_{$type}");
 
-            if ($overrideFont = Setting::get("pdf_override_{$moduleKey}_font_family")) {
-                $config['font_family'] = $overrideFont;
-            }
-            if ($overrideSize = Setting::get("pdf_override_{$moduleKey}_font_size")) {
-                $config['body_font_size'] = (int) $overrideSize;
-            }
-            if ($overridePaper = Setting::get("pdf_override_{$moduleKey}_paper_size")) {
-                $config['paper_size'] = $overridePaper;
-            }
-            if ($overrideOrientation = Setting::get("pdf_override_{$moduleKey}_orientation")) {
-                $config['orientation'] = $overrideOrientation;
-            }
-
-            // Margin Override
-            $mTop = Setting::get("pdf_override_{$moduleKey}_margin_top", '');
-            $mRight = Setting::get("pdf_override_{$moduleKey}_margin_right", '');
-            $mBottom = Setting::get("pdf_override_{$moduleKey}_margin_bottom", '');
-            $mLeft = Setting::get("pdf_override_{$moduleKey}_margin_left", '');
-
-            if ($mTop !== '' || $mRight !== '' || $mBottom !== '' || $mLeft !== '') {
-                // Parse default string to fallback array
-                $defaultMarginStr = $customMargins !== '' ? $customMargins : ($marginMap[$pageMarginKey] ?? $marginDefaults[$viewType] ?? '2cm 2cm 2cm 2cm');
-                $parts = preg_split('/\s+/', trim($defaultMarginStr)) ?: ['2cm', '2cm', '2cm', '2cm'];
-
-                $dTop = $parts[0];
-                $dRight = $parts[1] ?? $parts[0];
-                $dBottom = $parts[2] ?? $parts[0];
-                $dLeft = $parts[3] ?? ($parts[1] ?? $parts[0]);
-
-                $cTop = $mTop !== '' ? $mTop.'cm' : $dTop;
-                $cRight = $mRight !== '' ? $mRight.'cm' : $dRight;
-                $cBottom = $mBottom !== '' ? $mBottom.'cm' : $dBottom;
-                $cLeft = $mLeft !== '' ? $mLeft.'cm' : $dLeft;
-
-                $config['custom_margins'] = "{$cTop} {$cRight} {$cBottom} {$cLeft}";
-            }
-
-            // Additional per-module overrides
-            if ($showLogo = Setting::get("pdf_override_{$moduleKey}_show_logo")) {
-                $config['show_logo'] = filter_var($showLogo, FILTER_VALIDATE_BOOLEAN);
-            }
-            if ($coverTitle = Setting::get("pdf_override_{$moduleKey}_cover_title")) {
-                $config['cover_title'] = $coverTitle;
-            }
-            if ($coverSubtitle = Setting::get("pdf_override_{$moduleKey}_cover_subtitle")) {
-                $config['cover_subtitle'] = $coverSubtitle;
-            }
-            if ($coverShowTeam = Setting::get("pdf_override_{$moduleKey}_cover_show_team")) {
-                $config['cover_show_team'] = filter_var($coverShowTeam, FILTER_VALIDATE_BOOLEAN);
+                // Clear all modules too
+                $modules = config('pdf-modules.list', []);
+                foreach ($modules as $module) {
+                    Cache::forget("pdf_config_{$type}_{$module['key']}");
+                }
             }
         }
-
-        return $config;
     }
 }
 

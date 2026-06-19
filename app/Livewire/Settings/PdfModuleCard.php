@@ -204,6 +204,8 @@ class PdfModuleCard extends Component
         if (! empty($this->pendingSaves)) {
             Setting::setMany($this->pendingSaves);
             $this->pendingSaves = [];
+
+            clear_pdf_config_cache($this->moduleKey);
         }
     }
 
@@ -213,6 +215,8 @@ class PdfModuleCard extends Component
             $q->where('key', 'like', PdfConstants::PREFIX_CONTENT."{$this->moduleKey}_%")
                 ->orWhere('key', 'like', PdfConstants::PREFIX_OVERRIDE."{$this->moduleKey}_%");
         })->delete();
+
+        clear_pdf_config_cache($this->moduleKey);
 
         $this->cachedHasOverrides = null;
         $this->loadOverrides();
