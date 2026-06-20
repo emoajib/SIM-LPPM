@@ -47,9 +47,7 @@ class MenuComposer
             [
                 'title' => 'Panduan',
                 'icon' => 'book-2',
-                'route' => active_has_any_role(['admin lppm', 'superadmin'])
-                    ? 'admin-lppm.manual-books.index'
-                    : 'manual-books.index',
+                'route' => 'admin-lppm.manual-books.index',
                 'roles' => ['dosen', 'kepala lppm', 'admin lppm', 'superadmin', 'rektor', 'dekan', 'kaprodi', 'reviewer'],
             ],
             // Dosen menu (+ dekan for monitoring their faculty proposals)
