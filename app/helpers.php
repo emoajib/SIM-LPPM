@@ -201,7 +201,7 @@ if (! function_exists('format_name')) {
         $name = $name ?? '';
         $suffix = $suffix ?? '';
 
-        $full = trim($name);
+        $full = ucwords(strtolower(trim($name)));
 
         if (
             ! empty($prefix)
