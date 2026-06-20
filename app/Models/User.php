@@ -214,6 +214,14 @@ class User extends Authenticatable implements HasMedia
     }
 
     // attributes
+    public function name(): Attribute
+    {
+        return new Attribute(
+            get: fn (?string $value) => $value ? ucwords(strtolower(trim($value))) : null,
+            set: fn (?string $value) => $value ? ucwords(strtolower(trim($value))) : null,
+        );
+    }
+
     public function profilePicture(): Attribute
     {
         return new Attribute(
