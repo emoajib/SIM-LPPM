@@ -83,7 +83,7 @@
             <form wire:submit="save" id="form-study-program-roadmap">
                 <div class="mb-3">
                     <label class="form-label required">Program Studi</label>
-                    <select wire:model="studyProgramId" class="form-select" @if(auth()->user()->hasRole('kaprodi')) disabled @endif>
+                    <select wire:model="studyProgramId" class="form-select" @if(active_has_role('kaprodi')) disabled @endif>
                         <option value="">-- Pilih Prodi --</option>
                         @foreach ($studyPrograms as $sp)
                             <option value="{{ $sp->id }}">{{ $sp->name }}</option>

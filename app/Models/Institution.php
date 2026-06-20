@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * @property int $id
@@ -55,6 +56,13 @@ class Institution extends Model
         'is_verified' => 'boolean',
         'is_default' => 'boolean',
     ];
+
+    protected static function booted(): void
+    {
+        static::saved(function () {
+            Cache::forget('institution.default');
+        });
+    }
 
     /**
      * Get the user who is the head of LPPM for this institution.

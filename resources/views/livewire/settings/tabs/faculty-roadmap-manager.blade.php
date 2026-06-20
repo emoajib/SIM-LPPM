@@ -73,7 +73,7 @@
             <form wire:submit="save" id="form-faculty-roadmap">
                 <div class="mb-3">
                     <label class="form-label required">Fakultas</label>
-                    <select wire:model="facultyId" class="form-select" @if(auth()->user()->hasRole('dekan')) disabled @endif>
+                    <select wire:model="facultyId" class="form-select" @if(active_has_role('dekan')) disabled @endif>
                         <option value="">-- Pilih Fakultas --</option>
                         @foreach ($faculties as $faculty)
                             <option value="{{ $faculty->id }}">{{ $faculty->name }}</option>

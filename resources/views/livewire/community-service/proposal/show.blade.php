@@ -8,7 +8,7 @@
                 <x-lucide-arrow-left class="icon" />
                 Kembali
             </a>
-        @elseif (auth()->user()->hasRole('reviewer'))
+        @elseif (active_has_role('reviewer'))
             <a href="{{ route('review.community-service') }}" class="btn-outline-secondary btn" wire:navigate.hover>
                 <x-lucide-arrow-left class="icon" />
                 Kembali
@@ -48,7 +48,7 @@
     </div>
 </x-slot:pageActions>
 
-<div class="row" x-data="{ currentStep: {{ auth()->user()->hasRole('reviewer') ? 5 : 1 }} }">
+<div class="row" x-data="{ currentStep: {{ active_has_role('reviewer') ? 5 : 1 }} }">
     <div class="col-md-12">
         <x-tabler.alert />
     </div>
@@ -79,13 +79,13 @@
     @php
         $user = auth()->user();
         $role = 'guest';
-        if ($user->hasRole('reviewer'))
+        if (active_has_role('reviewer'))
             $role = 'reviewer';
-        elseif ($user->hasRole('dekan'))
+        elseif (active_has_role('dekan'))
             $role = 'dekan';
-        elseif ($user->hasRole(['admin lppm']))
+        elseif (active_has_role('admin lppm'))
             $role = 'admin';
-        elseif ($user->hasRole('kepala lppm'))
+        elseif (active_has_role('kepala lppm'))
             $role = 'kepala';
         elseif ($user->id === $proposal->submitter_id)
             $role = 'dosen';

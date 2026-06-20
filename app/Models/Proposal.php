@@ -119,6 +119,7 @@ class Proposal extends Model
         'kaprodi_validation_notes',
         'kaprodi_validated_at',
         'kaprodi_id',
+        'qualification_snapshot',
     ];
 
     /**

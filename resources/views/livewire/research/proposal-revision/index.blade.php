@@ -1,15 +1,15 @@
 <x-slot:title>Perbaikan Usulan Penelitian</x-slot:title>
 <x-slot:pageTitle>
-    @if (auth()->user()->hasRole('dosen'))
+    @if (active_has_role('dosen'))
         Usulan Penelitian Perlu Diperbaiki
     @else
         Usulan Penelitian yang Sudah Direview
     @endif
 </x-slot:pageTitle>
 <x-slot:pageSubtitle>
-    @if (auth()->user()->hasRole('dosen'))
+    @if (active_has_role('dosen'))
         Daftar usulan penelitian yang perlu diperbaiki sesuai catatan reviewer.
-    @elseif(auth()->user()->hasRole('reviewer'))
+    @elseif(active_has_role('reviewer'))
         Daftar usulan penelitian yang sudah Anda review.
     @else
         Daftar usulan penelitian yang sudah memiliki hasil review dari reviewer.
@@ -128,7 +128,7 @@
                                     <x-lucide-inbox class="text-secondary icon icon-lg" />
                                 </div>
                                 <p class="text-secondary">
-                                    @if (auth()->user()->hasRole('dosen'))
+                                    @if (active_has_role('dosen'))
                                         Tidak ada usulan penelitian yang perlu diperbaiki.
                                     @else
                                         Tidak ada usulan penelitian yang sudah direview.

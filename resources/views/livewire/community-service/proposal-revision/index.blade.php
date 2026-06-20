@@ -1,15 +1,15 @@
 <x-slot:title>Perbaikan Usulan Pengabdian</x-slot:title>
 <x-slot:pageTitle>
-    @if (auth()->user()->hasRole('dosen'))
-        Usulan Pengabdian Perlu Diperbaiki
+    @if (active_has_role('dosen'))
+        Usulan Pengabdian Masyarakat Perlu Diperbaiki
     @else
-        Usulan Pengabdian yang Sudah Direview
+        Usulan Pengabdian Masyarakat yang Sudah Direview
     @endif
 </x-slot:pageTitle>
 <x-slot:pageSubtitle>
-    @if (auth()->user()->hasRole('dosen'))
-        Daftar usulan pengabdian yang perlu diperbaiki sesuai catatan reviewer.
-    @elseif(auth()->user()->hasRole('reviewer'))
+    @if (active_has_role('dosen'))
+        Daftar usulan pengabdian masyarakat yang perlu diperbaiki sesuai catatan reviewer.
+    @elseif(active_has_role('reviewer'))
         Daftar usulan pengabdian yang sudah Anda review.
     @else
         Daftar usulan pengabdian yang sudah memiliki hasil review dari reviewer.
@@ -128,7 +128,7 @@
                                     <x-lucide-inbox class="text-secondary icon icon-lg" />
                                 </div>
                                 <p class="text-secondary">
-                                    @if (auth()->user()->hasRole('dosen'))
+                                    @if (active_has_role('dosen'))
                                         Tidak ada usulan pengabdian yang perlu diperbaiki.
                                     @else
                                         Tidak ada usulan pengabdian yang sudah direview.

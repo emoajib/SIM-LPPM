@@ -133,9 +133,8 @@ class User extends Authenticatable implements HasMedia
      */
     protected $hidden = [
         'password',
-        'original_password',
         'two_factor_secret',
-        'two_factory_recovery_codes',
+        'two_factor_recovery_codes',
         'remember_token',
     ];
 

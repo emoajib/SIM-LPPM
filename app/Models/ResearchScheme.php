@@ -19,6 +19,7 @@ class ResearchScheme extends Model
     protected $fillable = [
         'name',
         'strata',
+        'description',
         'eligibility_rules',
     ];
 

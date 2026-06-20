@@ -61,7 +61,7 @@
                             </td>
                             <td>
                                 <div class="btn-list">
-                                    @if($item->roadmap_status === 'submitted' && auth()->user()?->hasRole(['dekan', 'admin lppm', 'superadmin']))
+                                    @if($item->roadmap_status === 'submitted' && active_has_any_role(['dekan', 'admin lppm', 'superadmin']))
                                         <button type="button" class="btn btn-sm btn-success"
                                             wire:click="$set('validatingProgramId', '{{ $item->id }}'); $dispatch('open-modal', { modalId: 'modal-roadmap-validation' })">
                                             <x-lucide-check class="icon me-1" /> Validasi

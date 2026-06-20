@@ -1,7 +1,7 @@
 <div>
     <!-- Reviewer Assignment (Admin Only) -->
     @if (
-            auth()->user()->hasRole(['admin lppm']) &&
+            active_has_role('admin lppm') &&
             in_array($proposal->status, [\App\Enums\ProposalStatus::WAITING_REVIEWER, \App\Enums\ProposalStatus::UNDER_REVIEW])
         )
         <div class="mb-3">
@@ -16,7 +16,7 @@
     </div>
 
     <!-- Dekan Approval (Status: SUBMITTED) -->
-    @if (auth()->user()->hasRole(['dekan']) && $proposal->status === \App\Enums\ProposalStatus::SUBMITTED)
+    @if (active_has_role('dekan') && $proposal->status === \App\Enums\ProposalStatus::SUBMITTED)
         <div class="mb-3 card">
             <div class="card-header">
                 <h3 class="card-title">Persetujuan Dekan</h3>
@@ -65,7 +65,7 @@
     @endif
 
     <!-- Kepala LPPM Initial Approval -->
-    @if (auth()->user()->hasRole(['kepala lppm']) && $proposal->status === \App\Enums\ProposalStatus::APPROVED)
+    @if (active_has_role('kepala lppm') && $proposal->status === \App\Enums\ProposalStatus::APPROVED)
         <div class="mb-3">
             <livewire:community-service.proposal.kepala-lppm-initial-approval :proposalId="$proposal->id"
                 :key="'initial-approval-' . $proposal->id" />
@@ -73,7 +73,7 @@
     @endif
 
     <!-- Kepala LPPM Final Decision (Initial or Revision) -->
-    @if (auth()->user()->hasRole(['kepala lppm']) && in_array($proposal->status, [\App\Enums\ProposalStatus::REVIEWED, \App\Enums\ProposalStatus::REVISION_SUBMITTED]))
+    @if (active_has_role('kepala lppm') && in_array($proposal->status, [\App\Enums\ProposalStatus::REVIEWED, \App\Enums\ProposalStatus::REVISION_SUBMITTED]))
         <div class="mb-3">
             <livewire:community-service.proposal.kepala-lppm-final-decision :proposalId="$proposal->id"
                 :key="'final-decision-' . $proposal->id" />
