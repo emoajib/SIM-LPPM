@@ -24,7 +24,7 @@
         <tbody>
             @foreach($mahasiswaRelation as $member)
                 <tr>
-                    <td>{{ strtoupper($member->name) }}</td>
+                    <td>{{ ucwords(strtolower($member->name)) }}</td>
                     <td>{{ $member->identity?->identity_id ?? '-' }}</td>
                     <td>{{ $member->identity?->studyProgram?->name ?? '-' }}</td>
                     <td>{{ $member->pivot->tasks ?? '-' }}</td>
@@ -32,7 +32,7 @@
             @endforeach
             @foreach($mahasiswaJson as $student)
                 <tr>
-                    <td>{{ strtoupper($student['name'] ?? '-') }}</td>
+                    <td>{{ ucwords(strtolower($student['name'] ?? '-')) }}</td>
                     <td>{{ $student['identifier'] ?? '-' }}</td>
                     <td>{{ $student['study_program'] ?? ($student['prodi'] ?? '-') }}</td>
                     <td>{{ $student['tasks'] ?? '-' }}</td>

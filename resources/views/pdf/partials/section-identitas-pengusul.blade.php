@@ -14,7 +14,7 @@
     <tbody>
         <tr>
             <td>
-                <span class="font-bold">{{ strtoupper($submitterFullName) }}</span><br>
+                <span class="font-bold">{{ $submitterFullName }}</span><br>
                 Ketua Pengusul
             </td>
             <td>{{ $proposal->submitter->identity?->institution?->name ?? '-' }}</td>
@@ -31,7 +31,7 @@
             @if($member->identity?->type === 'dosen' || $member->pivot->role === 'anggota' || $member->pivot->role === 'dosen')
                 <tr>
                     <td>
-                        <span class="font-bold">{{ strtoupper(format_name($member->identity?->title_prefix ?? '', $member->name, $member->identity?->title_suffix ?? '')) }}</span><br>
+                        <span class="font-bold">{{ format_name($member->identity?->title_prefix ?? '', $member->name, $member->identity?->title_suffix ?? '') }}</span><br>
                         Anggota Pelaksana
                     </td>
                     <td>{{ $member->identity?->institution?->name ?? 'ITSNU Pekalongan' }}</td>
