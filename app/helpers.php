@@ -351,7 +351,7 @@ if (! function_exists('get_pdf_config')) {
                 'report_compact' => 7,
             ];
             $marginDefaults = [
-                'letter' => '0cm 2cm 0.5cm 2cm',
+                'letter' => '0.5cm 2cm 0.5cm 2cm',
                 'report' => '3cm 3cm 3cm 4cm',
                 'report_ba' => '4cm 3cm 3cm 4cm',
                 'report_compact' => '1.5cm 1cm',

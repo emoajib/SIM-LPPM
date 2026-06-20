@@ -74,7 +74,7 @@
     }
     .table-data th, .table-data td {
         border: 1px solid #000;
-        padding: 8px 10px;
+        padding: 4px 8px;
         text-align: left;
         font-size: 9.5pt;
         word-wrap: break-word;
@@ -86,7 +86,7 @@
     }
     .no-border, .no-border td, .no-border th {
         border: none !important;
-        padding: 4px 0 !important;
+        padding: 2px 0 !important;
     }
     .text-center { text-align: center; }
     .text-right { text-align: right; }
