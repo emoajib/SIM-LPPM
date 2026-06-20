@@ -263,7 +263,7 @@
                     <tr>
                         <td width="50%" class="text-center" style="vertical-align: top;">
                             Mengetahui,<br>
-                            Dekan Fakultas {{ $proposal->submitter->identity?->faculty?->name ?? '.......................' }}
+                            Dekan Fakultas {{ preg_replace('/^FAKULTAS\s+/i', '', trim($proposal->submitter->identity?->faculty?->name ?? '.......................')) }}
                         </td>
                         <td width="50%" class="text-center" style="vertical-align: top;">
                             Pekalongan, {{ $lecturerSig && $lecturerSig->signed_at ? $lecturerSig->signed_at->format('d F Y') : date('d F Y') }}<br>
