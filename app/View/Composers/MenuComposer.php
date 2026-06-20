@@ -257,11 +257,11 @@ class MenuComposer
                     ],
                 ],
             ],
-            // Laporan - Reports menu (+ kepala lppm for decision-making)
+            // Laporan - Reports menu (+ dekan + kepala lppm for decision-making)
             [
                 'title' => 'Laporan',
                 'icon' => 'report-analytics',
-                'roles' => ['admin lppm', 'rektor', 'kepala lppm'],
+                'roles' => ['admin lppm', 'rektor', 'kepala lppm', 'dekan'],
                 'children' => [
                     [
                         'title' => 'Monitoring Laporan',

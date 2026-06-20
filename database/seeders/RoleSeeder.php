@@ -53,7 +53,7 @@ class RoleSeeder extends Seeder
             'module_reviewer_management' => ['admin lppm'],
             'module_monev' => ['admin lppm'],
             'module_review' => ['reviewer', 'admin lppm'],
-            'module_laporan' => ['admin lppm', 'rektor', 'kepala lppm'],
+            'module_laporan' => ['admin lppm', 'rektor', 'kepala lppm', 'dekan'],
             'module_iku' => ['admin lppm', 'rektor', 'kepala lppm', 'dekan'],
             'module_kelola_pengguna' => ['admin lppm'],
             'module_arsip_data' => ['admin lppm'],
