@@ -48,6 +48,12 @@ class Institution extends Model
         'lppm_head_id',
         'lppm_head_user_id',
         'is_verified',
+        'is_default',
+    ];
+
+    protected $casts = [
+        'is_verified' => 'boolean',
+        'is_default' => 'boolean',
     ];
 
     /**

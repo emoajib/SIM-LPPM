@@ -36,7 +36,12 @@
                                 @endif
                             </td>
                             <td>
-                                <div class="font-weight-medium">{{ $item->name }}</div>
+                                <div class="font-weight-medium">
+                                    {{ $item->name }}
+                                    @if($item->is_default)
+                                        <span class="badge bg-green text-green-fg ms-2">Default</span>
+                                    @endif
+                                </div>
                                 <div class="text-secondary small">{{ $item->address }}</div>
                             </td>
                             <td>
@@ -53,10 +58,20 @@
                                         wire:click="edit('{{ $item->id }}')">
                                         Edit
                                     </button>
-                                    <button type="button" class="btn-outline-danger btn btn-sm"
-                                        wire:click="confirmDelete('{{ $item->id }}')" wire:loading.attr="disabled">
-                                        Hapus
-                                    </button>
+                                    @if(!$item->is_default)
+                                        <button type="button" class="btn-outline-primary btn btn-sm"
+                                            wire:click="setDefault('{{ $item->id }}')" wire:loading.attr="disabled">
+                                            Jadikan Default
+                                        </button>
+                                        <button type="button" class="btn-outline-danger btn btn-sm"
+                                            wire:click="confirmDelete('{{ $item->id }}')" wire:loading.attr="disabled">
+                                            Hapus
+                                        </button>
+                                    @else
+                                        <button type="button" class="btn-outline-danger btn btn-sm" disabled title="Institusi default tidak dapat dihapus">
+                                            Hapus
+                                        </button>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

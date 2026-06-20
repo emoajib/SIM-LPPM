@@ -144,7 +144,7 @@ if (! function_exists('get_institution_config')) {
             return $result;
         }
 
-        $institution = Institution::first();
+        $institution = Institution::where('is_default', true)->first() ?? Institution::first();
 
         $modelMap = [
             'name' => 'name',

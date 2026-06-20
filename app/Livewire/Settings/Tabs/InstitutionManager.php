@@ -160,6 +160,12 @@ class InstitutionManager extends Component
             return;
         }
 
+        if ($institution->is_default) {
+            $this->toastWarning('Tidak dapat menghapus institusi default. Silakan jadikan institusi lain sebagai default terlebih dahulu.');
+
+            return;
+        }
+
         $institution->delete();
 
         $this->resetForm();
@@ -218,6 +224,12 @@ class InstitutionManager extends Component
                 return;
             }
 
+            if ($institution->is_default) {
+                $this->toastWarning('Tidak dapat menghapus institusi default. Silakan jadikan institusi lain sebagai default terlebih dahulu.');
+
+                return;
+            }
+
             $institution->delete();
 
             $message = 'Institusi berhasil dihapus';
@@ -242,5 +254,20 @@ class InstitutionManager extends Component
         $this->deleteItemId = $id;
         $this->deleteItemName = $institution->name;
         $this->dispatch('open-modal', modalId: 'modal-confirm-delete-institution');
+    }
+
+    public function setDefault(int $id): void
+    {
+        $institution = Institution::find($id);
+        if (! $institution) {
+            return;
+        }
+
+        Institution::where('id', '!=', $id)->update(['is_default' => false]);
+        $institution->update(['is_default' => true]);
+
+        $message = "{$institution->name} berhasil dijadikan institusi default.";
+        session()->flash('success', $message);
+        $this->toastSuccess($message);
     }
 }
