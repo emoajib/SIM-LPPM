@@ -261,7 +261,7 @@ class MenuComposer
             [
                 'title' => 'Laporan',
                 'icon' => 'report-analytics',
-                'roles' => ['admin lppm', 'rektor', 'kepala lppm', 'dekan'],
+                'roles' => ['admin lppm', 'rektor', 'kepala lppm'],
                 'children' => [
                     [
                         'title' => 'Monitoring Laporan',
@@ -359,7 +359,7 @@ class MenuComposer
                             [
                                 'title' => 'Sinkronisasi SINTA',
                                 'icon' => 'database-import',
-                                'route' => 'sync-sinta',
+                                'route' => 'users.sync-sinta',
                             ],
                         ],
                     ],
