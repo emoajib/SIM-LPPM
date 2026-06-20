@@ -14,15 +14,15 @@ class OfficialSchemeSeeder extends Seeder
         $researchSchemes = [
             [
                 'name' => 'Skema 1: Reguler',
-                'strata' => 'Dasar',
+                'strata' => 'Reguler',
             ],
             [
                 'name' => 'Skema 2: Kolaborasi Internal',
-                'strata' => 'Dasar',
+                'strata' => 'Kolaborasi Internal',
             ],
             [
                 'name' => 'Skema 3: Kolaborasi Eksternal',
-                'strata' => 'Dasar',
+                'strata' => 'Kerja Sama Antar PT',
             ],
         ];
 

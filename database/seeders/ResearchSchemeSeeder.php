@@ -16,76 +16,76 @@ class ResearchSchemeSeeder extends Seeder
     public function run(): void
     {
         $schemes = [
-            // PENELITIAN DASAR
+            // PENELITIAN DASAR — Reguler
             [
                 'name' => 'Penelitian Dosen Pemula (PDP)',
-                'strata' => 'Dasar',
+                'strata' => 'Reguler',
                 'description' => 'Membina dan mengarahkan dosen pemula dalam penelitian',
             ],
             [
                 'name' => 'Penelitian Pascasarjana - Tesis Magister (PTM)',
-                'strata' => 'Dasar',
+                'strata' => 'Reguler',
                 'description' => 'Meningkatkan produktivitas mahasiswa S2 melalui penelitian tesis',
             ],
             [
                 'name' => 'Penelitian Pascasarjana - Disertasi Doktor (PDD)',
-                'strata' => 'Dasar',
+                'strata' => 'Reguler',
                 'description' => 'Meningkatkan produktivitas mahasiswa S3 melalui penelitian disertasi',
             ],
             [
                 'name' => 'Penelitian Fundamental',
-                'strata' => 'Dasar',
+                'strata' => 'Reguler',
                 'description' => 'Penelitian untuk pengembangan ilmu pengetahuan dan teknologi',
             ],
             [
                 'name' => 'Penelitian Kerja Sama antar Perguruan Tinggi (PKPT)',
-                'strata' => 'Dasar',
+                'strata' => 'Kerja Sama Antar PT',
                 'description' => 'Kerja sama penelitian antara perguruan tinggi pengirim dan mitra',
             ],
 
-            // PENELITIAN TERAPAN
+            // PENELITIAN TERAPAN — Reguler / Kolaborasi Internal
             [
                 'name' => 'Penelitian Terapan - Luaran Prototipe',
-                'strata' => 'Terapan',
+                'strata' => 'Reguler',
                 'description' => 'Penelitian yang menghasilkan prototipe teknologi atau produk',
             ],
             [
                 'name' => 'Penelitian Terapan - Luaran Model',
-                'strata' => 'Terapan',
+                'strata' => 'Reguler',
                 'description' => 'Penelitian yang menghasilkan model, kebijakan, atau karya seni',
             ],
 
-            // PENGABDIAN KEPADA MASYARAKAT
+            // PENGABDIAN KEPADA MASYARAKAT — PKM-Reguler
             [
                 'name' => 'Pemberdayaan Berbasis Masyarakat (PBM)',
-                'strata' => 'PKM',
+                'strata' => 'PKM-Reguler',
                 'description' => 'Pemberdayaan kelompok masyarakat dalam pemecahan masalah',
             ],
             [
                 'name' => 'Pemberdayaan Berbasis Kewirausahaan (PBK)',
-                'strata' => 'PKM',
+                'strata' => 'PKM-Reguler',
                 'description' => 'Pemberdayaan kewirausahaan melalui UPUD atau kelompok usaha',
             ],
             [
                 'name' => 'Pemberdayaan Berbasis Wilayah - Pemberdayaan Desa Binaan (PDB)',
-                'strata' => 'PKM',
+                'strata' => 'PKM-Reguler',
                 'description' => 'Pemberdayaan desa binaan secara berkelanjutan',
             ],
             [
                 'name' => 'Pemberdayaan Berbasis Wilayah - Pemberdayaan Wilayah (PW)',
-                'strata' => 'PKM',
+                'strata' => 'PKM-Reguler',
                 'description' => 'Pemberdayaan wilayah melalui aplikasi ipteks',
             ],
 
             // INTERNAL SCHEMES
             [
                 'name' => 'Penelitian Internal ITSNU',
-                'strata' => 'Dasar',
+                'strata' => 'Reguler',
                 'description' => 'Penelitian yang didanai secara internal oleh ITSNU',
             ],
             [
                 'name' => 'Pengabdian Internal ITSNU',
-                'strata' => 'PKM',
+                'strata' => 'PKM-Reguler',
                 'description' => 'Pengabdian yang didanai secara internal oleh ITSNU',
             ],
         ];

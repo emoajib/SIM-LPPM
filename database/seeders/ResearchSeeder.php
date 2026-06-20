@@ -124,9 +124,9 @@ class ResearchSeeder extends Seeder
                 // Determine TKT based on scheme strata
                 $scheme = $researchSchemes->random();
                 $tktTarget = match ($scheme->strata) {
-                    'Dasar' => rand(1, 3),
-                    'Terapan' => rand(4, 6),
-                    'Pengembangan' => rand(7, 9),
+                    'Reguler' => rand(1, 3),
+                    'Kolaborasi Internal' => rand(4, 6),
+                    'Kerja Sama Antar PT', 'PKM-Reguler', 'PKM-KI', 'PKM-KE' => rand(7, 9),
                     default => rand(1, 3)
                 };
 
@@ -213,7 +213,7 @@ class ResearchSeeder extends Seeder
                 $mandatoryTarget = ProposalOutput::factory()->create([
                     'proposal_id' => $proposal->id,
                     'category' => 'Wajib',
-                    'type' => $scheme->strata === 'Terapan' ? 'Purwarupa/Prototipe' : 'Jurnal Nasional Sinta 1-2',
+                    'type' => $scheme->strata === 'Kolaborasi Internal' ? 'Purwarupa/Prototipe' : 'Jurnal Nasional Sinta 1-2',
                     'target_status' => 'Published',
                     'output_year' => $proposal->duration_in_years,
                 ]);

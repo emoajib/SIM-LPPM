@@ -629,13 +629,20 @@ class DatabaseRestoreService
     }
 
     /**
-     * Convert old strata values — currently a no-op since ResearchSchemeStrata enum
-     * now matches actual DB values (Reguler, Kolaborasi Internal, etc.).
-     * Kept as hook for future strata value normalization if needed.
+     * Convert old strata values (Dasar, Terapan, Pengembangan, PKM) to
+     * current ResearchSchemeStrata enum values (Reguler, Kolaborasi Internal,
+     * Kerja Sama Antar PT, PKM-Reguler, PKM-KI, PKM-KE).
      */
     protected function fixResearchSchemesStrata(string $statement): string
     {
-        return $statement;
+        $replacements = [
+            "'Dasar'" => "'Reguler'",
+            "'Terapan'" => "'Reguler'",
+            "'Pengembangan'" => "'Kerja Sama Antar PT'",
+            "'PKM'" => "'PKM-Reguler'",
+        ];
+
+        return str_replace(array_keys($replacements), array_values($replacements), $statement);
     }
 
     /**

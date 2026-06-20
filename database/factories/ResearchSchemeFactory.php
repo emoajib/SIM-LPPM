@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\ResearchSchemeStrata;
 use App\Models\ResearchScheme;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -25,7 +26,7 @@ class ResearchSchemeFactory extends Factory
                 'Penelitian Dosen Pemula',
                 'Penelitian Kompetitif Nasional',
             ]),
-            'strata' => fake()->randomElement(['Dasar', 'Terapan', 'Pengembangan']),
+            'strata' => fake()->randomElement(ResearchSchemeStrata::values()),
             'description' => fake()->sentence(),
         ];
     }
