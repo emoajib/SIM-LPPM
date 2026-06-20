@@ -27,7 +27,7 @@
     @if($pdfConfig['cover_show_team'] ?? true)
     <div style="width: 100%; margin: 0 auto; margin-bottom: 80px; font-size: 11pt; line-height: {{ $lineHeight }};">
         <div style="font-weight: bold; margin-bottom: 10px; text-align: center;">Oleh:</div>
-        <table style="width: 100%; border: none; border-collapse: collapse;">
+        <table style="margin: 0 auto; border: none; border-collapse: collapse;">
             <tr>
                 <td style="width: 1%; border: none; padding: 2px 2px 2px 0; text-align: left; vertical-align: top; white-space: nowrap;">Ketua</td>
                 <td style="width: 1%; border: none; padding: 2px 4px 2px 2px; text-align: center; vertical-align: top; white-space: nowrap;">:</td>
