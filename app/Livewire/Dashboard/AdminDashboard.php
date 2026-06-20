@@ -5,7 +5,6 @@ namespace App\Livewire\Dashboard;
 use App\Enums\ProposalStatus;
 use App\Enums\ReportStatus;
 use App\Models\AdditionalOutput;
-use App\Models\BudgetItem;
 use App\Models\CommunityServiceScheme;
 use App\Models\Faculty;
 use App\Models\MandatoryOutput;
@@ -638,25 +637,54 @@ class AdminDashboard extends Component
         // Get total dosen count (single query, cached)
         $totalDosen = User::role('dosen')->count();
 
-        // Budget from budget_items (sbk_value is always null/0, real budget lives in budget_items)
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
-        $researchBudget = (int) BudgetItem::query()
-            ->whereHas(
-                'proposal',
-                fn ($q) => $q
-                    ->where('detailable_type', 'App\Models\Research')
-                    ->whereIn('status', [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value])
-                    ->tap(fn ($subQ) => $this->applyCommonFilters($subQ))
-            )->sum('total_price');
+        // Count proposals by scheme (includes all statuses matching filters)
+        $researchCountByScheme = Proposal::query()
+            ->where('detailable_type', 'App\Models\Research')
+            ->tap(fn ($q) => $this->applyCommonFilters($q))
+            ->join('research_schemes', 'proposals.research_scheme_id', '=', 'research_schemes.id')
+            ->selectRaw('research_schemes.name, COUNT(*) as count')
+            ->groupBy('research_schemes.name')
+            ->pluck('count', 'name')
+            ->toArray();
 
-        $pkmBudget = (int) BudgetItem::query()
-            ->whereHas(
-                'proposal',
-                fn ($q) => $q
-                    ->where('detailable_type', 'App\Models\CommunityService')
-                    ->whereIn('status', [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value])
-                    ->tap(fn ($subQ) => $this->applyCommonFilters($subQ))
-            )->sum('total_price');
+        $pkmCountByScheme = Proposal::query()
+            ->where('detailable_type', 'App\Models\CommunityService')
+            ->tap(fn ($q) => $this->applyCommonFilters($q))
+            ->join('community_service_schemes', 'proposals.community_service_scheme_id', '=', 'community_service_schemes.id')
+            ->selectRaw('community_service_schemes.name, COUNT(*) as count')
+            ->groupBy('community_service_schemes.name')
+            ->pluck('count', 'name')
+            ->toArray();
+
+        // Budget calculation with scheme grouping
+        $proposalsWithBudget = Proposal::query()
+            ->whereNotIn('status', [ProposalStatus::DRAFT->value, ProposalStatus::REJECTED->value])
+            ->tap(fn ($q) => $this->applyCommonFilters($q))
+            ->with(['researchScheme', 'communityServiceScheme'])
+            ->withSum('budgetItems', 'total_price')
+            ->get();
+
+        $researchBudget = 0;
+        $pkmBudget = 0;
+        $researchBudgetByScheme = [];
+        $pkmBudgetByScheme = [];
+
+        foreach ($proposalsWithBudget as $p) {
+            $budget = (int) $p->getAttribute('budget_items_sum_total_price');
+            if ($p->detailable_type === 'App\Models\Research') {
+                $researchBudget += $budget;
+                if ($budget > 0) {
+                    $schemeName = $p->researchScheme->name ?? 'Tanpa Skema';
+                    $researchBudgetByScheme[$schemeName] = ($researchBudgetByScheme[$schemeName] ?? 0) + $budget;
+                }
+            } elseif ($p->detailable_type === 'App\Models\CommunityService') {
+                $pkmBudget += $budget;
+                if ($budget > 0) {
+                    $schemeName = $p->communityServiceScheme->name ?? 'Tanpa Skema';
+                    $pkmBudgetByScheme[$schemeName] = ($pkmBudgetByScheme[$schemeName] ?? 0) + $budget;
+                }
+            }
+        }
 
         // FIX ENUM BUG: Laravel Collection whereIn compares by ==, but status
         // is a PHP 8.1 Enum. Must use ->value to get the string for comparison.
@@ -682,6 +710,10 @@ class AdminDashboard extends Component
             'community_service_rejected' => $communityService->filter(fn ($r) => $r->status?->value === ProposalStatus::REJECTED->value)->sum('count'),
             'research_budget' => $researchBudget,
             'pkm_budget' => $pkmBudget,
+            'research_budget_by_scheme' => $researchBudgetByScheme,
+            'pkm_budget_by_scheme' => $pkmBudgetByScheme,
+            'research_count_by_scheme' => $researchCountByScheme,
+            'pkm_count_by_scheme' => $pkmCountByScheme,
             'total_dosen' => $totalDosen,
         ];
     }

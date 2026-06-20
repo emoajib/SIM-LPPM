@@ -149,19 +149,33 @@
             <!-- Approval Summary KPI Cards -->
             <div class="row row-deck row-cards mb-4">
                 <div class="col-sm-6 col-lg-3">
+                    @php
+                        $researchCountSubtitle = '<div class="mt-2"><strong>Total Proposal: ' . ($stats['total_research'] ?? 0) . '</strong><ul class="list-unstyled mb-0 ms-2 small">';
+                        foreach ($stats['research_count_by_scheme'] ?? [] as $scheme => $count) {
+                            $researchCountSubtitle .= '<li>- ' . htmlspecialchars($scheme) . ': ' . $count . '</li>';
+                        }
+                        $researchCountSubtitle .= '</ul></div>';
+                    @endphp
                     <x-dashboard.kpi-widget 
-                        title="Total Penelitian" 
+                        title="Penelitian (Total)" 
                         value="{{ $stats['total_research'] ?? 0 }}" 
-                        subtitle="Proposal terdaftar" 
+                        subtitle="{!! $researchCountSubtitle !!}" 
                         icon="flask" 
                         color="primary" />
                 </div>
 
                 <div class="col-sm-6 col-lg-3">
+                    @php
+                        $pkmCountSubtitle = '<div class="mt-2"><strong>Total Proposal: ' . ($stats['total_community_service'] ?? 0) . '</strong><ul class="list-unstyled mb-0 ms-2 small">';
+                        foreach ($stats['pkm_count_by_scheme'] ?? [] as $scheme => $count) {
+                            $pkmCountSubtitle .= '<li>- ' . htmlspecialchars($scheme) . ': ' . $count . '</li>';
+                        }
+                        $pkmCountSubtitle .= '</ul></div>';
+                    @endphp
                     <x-dashboard.kpi-widget 
                         title="PKM (Total)" 
                         value="{{ $stats['total_community_service'] ?? 0 }}" 
-                        subtitle="Proposal pengabdian" 
+                        subtitle="{!! $pkmCountSubtitle !!}" 
                         icon="users-group" 
                         color="azure" />
                 </div>
@@ -185,10 +199,25 @@
 
                 <!-- KPI Section: Total Budget -->
                 <div class="col-sm-6 col-lg-3">
+            @php
+                $budgetSubtitle = '<div class="mt-2">
+                    <strong>Penelitian: Rp ' . number_format($stats['research_budget'] ?? 0, 0, ',', '.') . '</strong>
+                    <ul class="list-unstyled mb-2 ms-2 small">';
+                foreach ($stats['research_budget_by_scheme'] ?? [] as $scheme => $budget) {
+                    $budgetSubtitle .= '<li>- ' . htmlspecialchars($scheme) . ': Rp ' . number_format($budget, 0, ',', '.') . '</li>';
+                }
+                $budgetSubtitle .= '</ul>
+                    <strong>PKM: Rp ' . number_format($stats['pkm_budget'] ?? 0, 0, ',', '.') . '</strong>
+                    <ul class="list-unstyled mb-0 ms-2 small">';
+                foreach ($stats['pkm_budget_by_scheme'] ?? [] as $scheme => $budget) {
+                    $budgetSubtitle .= '<li>- ' . htmlspecialchars($scheme) . ': Rp ' . number_format($budget, 0, ',', '.') . '</li>';
+                }
+                $budgetSubtitle .= '</ul></div>';
+            @endphp
                     <x-dashboard.kpi-widget 
-                        title="Total Anggaran" 
+                        title="Total Anggaran (Diusulkan)" 
                         value="Rp {{ number_format($totalBudget, 0, ',', '.') }}" 
-                        subtitle="Penelitian: Rp {{ number_format($stats['research_budget'] ?? 0, 0, ',', '.') }} • PKM: Rp {{ number_format($stats['pkm_budget'] ?? 0, 0, ',', '.') }}" 
+                        subtitle="{!! $budgetSubtitle !!}" 
                         icon="cash" 
                         color="purple" />
                 </div>

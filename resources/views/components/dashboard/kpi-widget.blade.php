@@ -27,6 +27,6 @@
                 </span>
             @endif
         </div>
-        <div class="text-muted small">{{ $subtitle }}</div>
+        <div class="text-muted small">{!! $subtitle !!}</div>
     </div>
 </div>

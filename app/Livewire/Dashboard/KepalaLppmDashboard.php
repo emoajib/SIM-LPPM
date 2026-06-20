@@ -5,7 +5,6 @@ namespace App\Livewire\Dashboard;
 use App\Enums\ProposalStatus;
 use App\Enums\ReportStatus;
 use App\Models\AdditionalOutput;
-use App\Models\BudgetItem;
 use App\Models\CommunityServiceScheme;
 use App\Models\Faculty;
 use App\Models\MandatoryOutput;
@@ -632,23 +631,54 @@ class KepalaLppmDashboard extends Component
         $researchPending = $research->filter(fn ($r) => ($r->status->value ?? '') === ProposalStatus::REVIEWED->value)->sum('count');
         $communityServicePending = $communityService->filter(fn ($r) => ($r->status->value ?? '') === ProposalStatus::REVIEWED->value)->sum('count');
 
-        $researchBudget = (int) BudgetItem::query()
-            ->whereHas(
-                'proposal',
-                fn ($q) => $q
-                    ->where('detailable_type', 'App\Models\Research')
-                    ->whereIn('status', [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value])
-                    ->tap(fn ($subQ) => $this->applyCommonFilters($subQ))
-            )->sum('total_price');
+        // Count proposals by scheme (includes all statuses matching filters)
+        $researchCountByScheme = Proposal::query()
+            ->where('detailable_type', 'App\Models\Research')
+            ->tap(fn ($q) => $this->applyCommonFilters($q))
+            ->join('research_schemes', 'proposals.research_scheme_id', '=', 'research_schemes.id')
+            ->selectRaw('research_schemes.name, COUNT(*) as count')
+            ->groupBy('research_schemes.name')
+            ->pluck('count', 'name')
+            ->toArray();
 
-        $pkmBudget = (int) BudgetItem::query()
-            ->whereHas(
-                'proposal',
-                fn ($q) => $q
-                    ->where('detailable_type', 'App\Models\CommunityService')
-                    ->whereIn('status', [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value])
-                    ->tap(fn ($subQ) => $this->applyCommonFilters($subQ))
-            )->sum('total_price');
+        $pkmCountByScheme = Proposal::query()
+            ->where('detailable_type', 'App\Models\CommunityService')
+            ->tap(fn ($q) => $this->applyCommonFilters($q))
+            ->join('community_service_schemes', 'proposals.community_service_scheme_id', '=', 'community_service_schemes.id')
+            ->selectRaw('community_service_schemes.name, COUNT(*) as count')
+            ->groupBy('community_service_schemes.name')
+            ->pluck('count', 'name')
+            ->toArray();
+
+        // Budget calculation with scheme grouping
+        $proposalsWithBudget = Proposal::query()
+            ->whereNotIn('status', [ProposalStatus::DRAFT->value, ProposalStatus::REJECTED->value])
+            ->tap(fn ($q) => $this->applyCommonFilters($q))
+            ->with(['researchScheme', 'communityServiceScheme'])
+            ->withSum('budgetItems', 'total_price')
+            ->get();
+
+        $researchBudget = 0;
+        $pkmBudget = 0;
+        $researchBudgetByScheme = [];
+        $pkmBudgetByScheme = [];
+
+        foreach ($proposalsWithBudget as $p) {
+            $budget = (int) $p->getAttribute('budget_items_sum_total_price');
+            if ($p->detailable_type === 'App\Models\Research') {
+                $researchBudget += $budget;
+                if ($budget > 0) {
+                    $schemeName = $p->researchScheme->name ?? 'Tanpa Skema';
+                    $researchBudgetByScheme[$schemeName] = ($researchBudgetByScheme[$schemeName] ?? 0) + $budget;
+                }
+            } elseif ($p->detailable_type === 'App\Models\CommunityService') {
+                $pkmBudget += $budget;
+                if ($budget > 0) {
+                    $schemeName = $p->communityServiceScheme->name ?? 'Tanpa Skema';
+                    $pkmBudgetByScheme[$schemeName] = ($pkmBudgetByScheme[$schemeName] ?? 0) + $budget;
+                }
+            }
+        }
 
         return [
             'total_research' => $research->sum('count'),
@@ -674,6 +704,10 @@ class KepalaLppmDashboard extends Component
                 })->count(),
             'research_budget' => $researchBudget,
             'pkm_budget' => $pkmBudget,
+            'research_budget_by_scheme' => $researchBudgetByScheme,
+            'pkm_budget_by_scheme' => $pkmBudgetByScheme,
+            'research_count_by_scheme' => $researchCountByScheme,
+            'pkm_count_by_scheme' => $pkmCountByScheme,
         ];
     }
 
