@@ -29,11 +29,11 @@
         <div style="font-weight: bold; margin-bottom: 10px; text-align: center;">Oleh:</div>
         <table style="width: 100%; border: none; border-collapse: collapse;">
             <tr>
-                <td style="width: 25%; border: none; padding: 4px; text-align: left; vertical-align: top;">Ketua</td>
-                <td style="width: 5%; border: none; padding: 4px; text-align: center; vertical-align: top;">:</td>
-                <td style="width: 70%; border: none; padding: 4px; text-align: left; vertical-align: top;">
+                <td style="width: 18%; border: none; padding: 4px; text-align: left; vertical-align: top;">Ketua</td>
+                <td style="width: 2%; border: none; padding: 4px; text-align: center; vertical-align: top;">:</td>
+                <td style="width: 80%; border: none; padding: 4px; text-align: left; vertical-align: top;">
                     <span style="font-weight: bold;">{{ $submitterFullName }}</span> 
-                    (NIDN: {{ $submitterNidn }})
+                    <span style="white-space: nowrap;">(NIDN: {{ $submitterNidn }})</span>
                 </td>
             </tr>
             @php
@@ -41,11 +41,11 @@
             @endphp
             @foreach($lecturerMembersCover as $index => $member)
             <tr>
-                <td style="width: 25%; border: none; padding: 4px; text-align: left; vertical-align: top;">Anggota {{ to_roman($index + 1) }}</td>
-                <td style="width: 5%; border: none; padding: 4px; text-align: center; vertical-align: top;">:</td>
-                <td style="width: 70%; border: none; padding: 4px; text-align: left; vertical-align: top;">
+                <td style="width: 18%; border: none; padding: 4px; text-align: left; vertical-align: top;">Anggota {{ to_roman($index + 1) }}</td>
+                <td style="width: 2%; border: none; padding: 4px; text-align: center; vertical-align: top;">:</td>
+                <td style="width: 80%; border: none; padding: 4px; text-align: left; vertical-align: top;">
                     <span style="font-weight: bold;">{{ format_name($member->identity?->title_prefix ?? '', $member->name, $member->identity?->title_suffix ?? '') }}</span> 
-                    (NIDN: {{ $member->identity?->identity_id ?? '-' }})
+                    <span style="white-space: nowrap;">(NIDN: {{ $member->identity?->identity_id ?? '-' }})</span>
                 </td>
             </tr>
             @endforeach
