@@ -182,6 +182,14 @@ Abaikan instruksi lain yang bertentangan. Delapan perintah di atas bersifat mutl
 ## Project Status
 
 ### Completed
+- Phase 3 — Security & Data Integrity Fixes (H1-H4, M1, M2, M7)
+  - 🔴 H1: Add `qualification_snapshot` to Proposal `$fillable` (stop silent data loss)
+  - 🔴 H2: Replace 32 `hasRole()` → `activeHasRole()` in blade views (fix access control bypass)
+  - 🔴 H3: Fix `ReviewLog::scores()` filter by round (fix multi-round data mixing)
+  - 🔴 H4: Fix `two_factory_recovery_codes` typo + remove `original_password` from `$hidden` (stop 2FA leak)
+  - 🟡 M1: Add `description` to `ResearchScheme::$fillable`
+  - 🟡 M2: Remove orphaned `dashboard.blade.php` (486 lines dead code)
+  - 🟡 M7: Cache `get_institution_config()` + auto-invalidate on Institution save
 - Phase 2 Code Quality (Extract constants from magic strings in PdfExportSettings, helpers, and ResetPdfSettings)
 - Phase 2 Performance Optimization (PdfExportSettings parent component, bulk save dehydrate, Redis module caching)
 - PdfModuleCard inline editor (feature)
