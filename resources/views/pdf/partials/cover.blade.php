@@ -25,15 +25,14 @@
     </div>
 
     @if($pdfConfig['cover_show_team'] ?? true)
-    <div style="width: 80%; margin: 0 auto; margin-bottom: 80px; font-size: 12pt; line-height: {{ $lineHeight }};">
+    <div style="width: 100%; margin: 0 auto; margin-bottom: 80px; font-size: 12pt; line-height: {{ $lineHeight }};">
         <div style="font-weight: bold; margin-bottom: 10px; text-align: center;">Oleh:</div>
         <table style="width: 100%; border: none; border-collapse: collapse;">
             <tr>
                 <td style="width: 18%; border: none; padding: 4px; text-align: left; vertical-align: top;">Ketua</td>
                 <td style="width: 2%; border: none; padding: 4px; text-align: center; vertical-align: top;">:</td>
                 <td style="width: 80%; border: none; padding: 4px; text-align: left; vertical-align: top;">
-                    <span style="font-weight: bold;">{{ $submitterFullName }}</span> 
-                    <span style="white-space: nowrap;">(NIDN: {{ $submitterNidn }})</span>
+                    <span style="font-weight: bold;">{{ $submitterFullName }}</span>&nbsp;(NIDN:&nbsp;{{ $submitterNidn }})
                 </td>
             </tr>
             @php
@@ -44,8 +43,7 @@
                 <td style="width: 18%; border: none; padding: 4px; text-align: left; vertical-align: top;">Anggota {{ to_roman($index + 1) }}</td>
                 <td style="width: 2%; border: none; padding: 4px; text-align: center; vertical-align: top;">:</td>
                 <td style="width: 80%; border: none; padding: 4px; text-align: left; vertical-align: top;">
-                    <span style="font-weight: bold;">{{ format_name($member->identity?->title_prefix ?? '', $member->name, $member->identity?->title_suffix ?? '') }}</span> 
-                    <span style="white-space: nowrap;">(NIDN: {{ $member->identity?->identity_id ?? '-' }})</span>
+                    <span style="font-weight: bold;">{{ format_name($member->identity?->title_prefix ?? '', $member->name, $member->identity?->title_suffix ?? '') }}</span>&nbsp;(NIDN:&nbsp;{{ $member->identity?->identity_id ?? '-' }})
                 </td>
             </tr>
             @endforeach
