@@ -111,7 +111,12 @@ class MigrationHelpers
             try {
                 DB::statement("ALTER TABLE {$tableName} DROP CHECK {$constraintName}");
             } catch (\Exception $e) {
-                // Constraint may not exist
+                try {
+                    // Fallback for MariaDB or older versions
+                    DB::statement("ALTER TABLE {$tableName} DROP CONSTRAINT {$constraintName}");
+                } catch (\Exception $e2) {
+                    // Constraint may not exist
+                }
             }
 
             return;
