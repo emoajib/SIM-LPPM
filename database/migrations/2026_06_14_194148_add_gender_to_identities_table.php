@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('identities', function (Blueprint $table) {
-            $table->string('gender')->nullable()->after('type')->comment('Jenis Kelamin');
-        });
+        if (! Schema::hasColumn('identities', 'gender')) {
+            Schema::table('identities', function (Blueprint $table) {
+                $table->string('gender')->nullable()->after('type')->comment('Jenis Kelamin');
+            });
+        }
     }
 
     /**
