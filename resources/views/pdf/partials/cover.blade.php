@@ -29,9 +29,9 @@
         <div style="font-weight: bold; margin-bottom: 10px; text-align: center;">Oleh:</div>
         <table style="width: 100%; border: none; border-collapse: collapse;">
             <tr>
-                <td style="width: 1%; border: none; padding: 4px; text-align: left; vertical-align: top; white-space: nowrap;">Ketua</td>
-                <td style="width: 1%; border: none; padding: 4px; text-align: center; vertical-align: top; white-space: nowrap;">:</td>
-                <td style="border: none; padding: 4px; text-align: left; vertical-align: top; white-space: nowrap;">
+                <td style="width: 1%; border: none; padding: 2px 2px 2px 0; text-align: left; vertical-align: top; white-space: nowrap;">Ketua</td>
+                <td style="width: 1%; border: none; padding: 2px 4px 2px 2px; text-align: center; vertical-align: top; white-space: nowrap;">:</td>
+                <td style="border: none; padding: 2px 0 2px 2px; text-align: left; vertical-align: top; white-space: nowrap;">
                     <span style="font-weight: bold;">{{ $submitterFullName }}</span>&nbsp;(NIDN:&nbsp;{{ $submitterNidn }})
                 </td>
             </tr>
@@ -40,9 +40,9 @@
             @endphp
             @foreach($lecturerMembersCover as $index => $member)
             <tr>
-                <td style="width: 1%; border: none; padding: 4px; text-align: left; vertical-align: top; white-space: nowrap;">Anggota {{ to_roman($index + 1) }}</td>
-                <td style="width: 1%; border: none; padding: 4px; text-align: center; vertical-align: top; white-space: nowrap;">:</td>
-                <td style="border: none; padding: 4px; text-align: left; vertical-align: top; white-space: nowrap;">
+                <td style="width: 1%; border: none; padding: 2px 2px 2px 0; text-align: left; vertical-align: top; white-space: nowrap;">Anggota {{ to_roman($index + 1) }}</td>
+                <td style="width: 1%; border: none; padding: 2px 4px 2px 2px; text-align: center; vertical-align: top; white-space: nowrap;">:</td>
+                <td style="border: none; padding: 2px 0 2px 2px; text-align: left; vertical-align: top; white-space: nowrap;">
                     <span style="font-weight: bold;">{{ format_name($member->identity?->title_prefix ?? '', $member->name, $member->identity?->title_suffix ?? '') }}</span>&nbsp;(NIDN:&nbsp;{{ $member->identity?->identity_id ?? '-' }})
                 </td>
             </tr>
