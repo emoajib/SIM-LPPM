@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -35,7 +36,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 class ProgressReport extends Model implements HasMedia
 {
     /** @use HasFactory<ProgressReportFactory> */
-    use HasFactory, HasUuids, InteractsWithMedia;
+    use HasFactory, HasUuids, InteractsWithMedia, SoftDeletes;
 
     /**
      * The type of the auto-incrementing ID's primary key.
@@ -67,6 +68,7 @@ class ProgressReport extends Model implements HasMedia
         return [
             'status' => ReportStatus::class,
             'submitted_at' => 'datetime',
+            'deleted_at' => 'datetime',
         ];
     }
 

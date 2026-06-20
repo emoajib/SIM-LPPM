@@ -596,7 +596,10 @@ class Proposal extends Model
      */
     public function scopeForSemester($query, string $semester): Builder
     {
-        return $query->where('semester', $semester);
+        return $query->when(
+            in_array($semester, ['ganjil', 'genap'], true),
+            fn ($q) => $q->where('semester', $semester)
+        );
     }
 
     /**

@@ -352,7 +352,7 @@ Route::middleware(['auth'])->group(function () {
         ->middleware(['permission:module_arsip_data'])
         ->name('admin.archives');
 
-    Route::redirect('settings/profile', '/settings')->name('settings.profile');
+    Route::get('settings/profile', SettingsIndex::class)->name('settings.profile');
     Route::get('settings/password', Password::class)->name('settings.password');
     Route::get('settings/appearance', Appearance::class)
         ->middleware(['permission:module_pengaturan'])
