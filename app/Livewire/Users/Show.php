@@ -67,7 +67,7 @@ class Show extends Component
             ->where('proposal_user.user_id', $this->userId)
             ->where('detailable_type', 'App\Models\Research');
 
-        return $submitted->union($participated)
+        return $submitted->unionAll($participated)
             ->with(['researchScheme', 'statusLogs'])
             ->orderBy('created_at', 'desc')
             ->paginate(5, ['*'], 'researchPage');
@@ -85,7 +85,7 @@ class Show extends Component
             ->where('proposal_user.user_id', $this->userId)
             ->where('detailable_type', 'App\Models\CommunityService');
 
-        return $submitted->union($participated)
+        return $submitted->unionAll($participated)
             ->with(['researchScheme', 'statusLogs'])
             ->orderBy('created_at', 'desc')
             ->paginate(5, ['*'], 'pkmPage');
