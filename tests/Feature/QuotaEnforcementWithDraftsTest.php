@@ -221,7 +221,7 @@ it('separates research and community service quotas', function () {
 
     $pkmScheme = CommunityServiceScheme::create([
         'name' => 'PKM Internal',
-        'strata' => 'Internal',
+        'strata' => 'PKM-KI',
         'eligibility_rules' => [
             'max_total_proposals_as_head' => 1,
         ],

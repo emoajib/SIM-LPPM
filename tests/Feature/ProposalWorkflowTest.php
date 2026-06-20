@@ -378,7 +378,7 @@ class ProposalWorkflowTest extends TestCase
         $pkm = CommunityService::factory()->create();
         $scheme = CommunityServiceScheme::create([
             'name' => 'PKM Reguler',
-            'strata' => 'mandiri',
+            'strata' => 'PKM-Reguler',
         ]);
         $proposal = Proposal::factory()->create([
             'submitter_id' => $this->dosen->id,
