@@ -307,7 +307,7 @@ class DatabaseRestoreService
             return $statement;
         }
 
-        if (! preg_match('/INSERT\s+(?:IGNORE\s+)?INTO\s+[`"\']?(\w+)[`"\']?\s/i', $statement, $m)) {
+        if (! preg_match('/INSERT\s+(?:IGNORE\s+)?INTO\s+[`"\']?(\w+)[`"\']?[\s(]/i', $statement, $m)) {
             return $statement;
         }
 
@@ -632,7 +632,9 @@ class DatabaseRestoreService
 
                 $decoded = json_decode($inner);
                 if (json_last_error() === JSON_ERROR_NONE) {
-                    return "'".json_encode($decoded, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."'";
+                    $encoded = json_encode($decoded, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+                    return "'".str_replace("'", "''", $encoded)."'";
                 }
 
                 // MySQL mysqldump may escape all JSON double-quotes as \"
@@ -640,7 +642,9 @@ class DatabaseRestoreService
                 if ($unescaped !== $inner) {
                     $decoded = json_decode($unescaped);
                     if (json_last_error() === JSON_ERROR_NONE) {
-                        return "'".json_encode($decoded, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."'";
+                        $encoded = json_encode($decoded, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+                        return "'".str_replace("'", "''", $encoded)."'";
                     }
                 }
 
