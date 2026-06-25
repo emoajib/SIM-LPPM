@@ -56,6 +56,11 @@ class DatabaseRestoreService
             'recommendation', 'round', 'assigned_at', 'deadline_at',
             'started_at', 'completed_at', 'created_at', 'updated_at',
         ],
+        'review_logs' => [
+            'id', 'proposal_reviewer_id', 'proposal_id', 'user_id', 'round',
+            'review_notes', 'recommendation', 'total_score', 'started_at',
+            'completed_at', 'created_at', 'updated_at',
+        ],
         'proposals' => [
             'id', 'title', 'submitter_id', 'detailable_id', 'detailable_type',
             'research_scheme_id', 'focus_area_id', 'theme_id', 'topic_id', 'national_priority_id',
@@ -290,14 +295,61 @@ class DatabaseRestoreService
         );
     }
 
+    protected array $booleanColumnCache = [];
+
     /**
      * Fix boolean values in INSERT statements for PostgreSQL compatibility.
-     * DISABLED: Boolean conversion in SQL parser corrupts multi-row INSERT syntax.
-     * All boolean fixes are handled post-restore via fixAllBooleans().
+     * Converts integer 0/1 to boolean false/true inline during INSERT.
      */
     protected function fixBooleanValues(string $statement): string
     {
-        return $statement;
+        if (DB::getDriverName() !== 'pgsql') {
+            return $statement;
+        }
+
+        if (! preg_match('/INSERT\s+(?:IGNORE\s+)?INTO\s+[`"\']?(\w+)[`"\']?\s/i', $statement, $m)) {
+            return $statement;
+        }
+
+        $table = $m[1];
+
+        $colNames = $this->extractColumnNames($statement, $table);
+        if (empty($colNames)) {
+            return $statement;
+        }
+
+        $boolPositions = $this->getBooleanColumnPositions($table, $colNames);
+        if (empty($boolPositions)) {
+            return $statement;
+        }
+
+        return $this->convertBooleanValuesInSql($statement, $boolPositions);
+    }
+
+    protected function getBooleanColumnPositions(string $table, array $colNames): array
+    {
+        if (! isset($this->booleanColumnCache[$table])) {
+            try {
+                $cols = DB::select(
+                    "SELECT column_name FROM information_schema.columns
+                     WHERE table_name = ? AND table_schema = 'public' AND data_type = 'boolean'",
+                    [$table]
+                );
+                $this->booleanColumnCache[$table] = array_map(fn ($c) => $c->column_name, $cols);
+            } catch (\Throwable $e) {
+                $this->booleanColumnCache[$table] = [];
+            }
+        }
+
+        $boolColNames = array_flip($this->booleanColumnCache[$table]);
+        $positions = [];
+        foreach ($colNames as $pos => $colName) {
+            if (isset($boolColNames[$colName])) {
+                $positions[] = $pos;
+            }
+        }
+
+        return $positions;
     }
 
     /**
@@ -389,9 +441,9 @@ class DatabaseRestoreService
 
         // Find the VALUES clause and extract each tuple properly
         return preg_replace_callback(
-            '/VALUES\s+(.*?)(?:\s+ON\s+CONFLICT\s+DO\s+NOTHING\s*)?$/si',
+            '/VALUES\s+(.*?)(?:\s+ON\s+CONFLICT\s+DO\s+NOTHING\s*)?;?\s*$/si',
             function ($matches) use ($sortPos, $maxPos) {
-                $clause = $matches[1];
+                $clause = rtrim($matches[1], '; ');
 
                 // Split clause into tuples using `),(` separator (only at top level)
                 $tuples = $this->splitTuplesBySeparator($clause);
@@ -602,9 +654,9 @@ class DatabaseRestoreService
     protected function replaceValuesInStatement(string $statement, int $position, array $replacements): string
     {
         return preg_replace_callback(
-            '/VALUES\s+(.*?)(?:\s+ON\s+CONFLICT\s+DO\s+NOTHING\s*)?$/si',
+            '/VALUES\s+(.*?)(?:\s+ON\s+CONFLICT\s+DO\s+NOTHING\s*)?;?\s*$/si',
             function ($matches) use ($position, $replacements) {
-                $clause = $matches[1];
+                $clause = rtrim($matches[1], '; ');
                 $tuples = $this->parseTuples($clause);
                 $converted = [];
 
