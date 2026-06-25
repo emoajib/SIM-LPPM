@@ -317,8 +317,12 @@ Route::middleware(['auth'])->group(function () {
         Route::middleware(['permission:module_reviewer_management'])->group(function () {
             Route::get('penugasan-reviewer', ReviewerAssignment::class)->name('assign-reviewers');
             Route::get('beban-kerja-reviewer', ReviewerWorkload::class)->name('reviewer-workload');
-            Route::get('monitoring-review', ReviewMonitoring::class)->name('review-monitoring');
         });
+
+        // Monitoring Review (accessible by Admin, Kepala LPPM, Rektor)
+        Route::get('monitoring-review', ReviewMonitoring::class)
+            ->middleware(['role:admin lppm|kepala lppm|rektor'])
+            ->name('review-monitoring');
 
         // Monev
         Route::get('monev', MonevIndex::class)
