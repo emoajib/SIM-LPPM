@@ -91,7 +91,7 @@
 </div>
 
 <div class="fw-bold" style="font-size: 9.5pt; margin-bottom: 5px;">Komentar / Saran Reviewer:</div>
-<div style="border: 0.5pt solid #000; padding: 10px; min-height: 80px; margin-bottom: 20px; text-align: justify; font-size: 9pt; line-height: 1.4; background-color: #ffffff;">
+<div style="border: 0.5pt solid #000; padding: 8px; min-height: 60px; margin-bottom: 20px; text-align: justify; font-size: 9pt; line-height: 1.2; background-color: #ffffff;">
     {!! nl2br(e($assignment->review_notes)) !!}
 </div>
 
@@ -113,7 +113,7 @@
                 <div style="height: 50px;"></div>
             @endif
             <p style="margin: 0; padding: 1.5px 0; margin-top: 5px;"><strong>({{ format_name($assignment->user->identity?->title_prefix, $assignment->user->name, $assignment->user->identity?->title_suffix) }})</strong></p>
-            <p style="margin: 0; padding: 1.5px 0;">NIDN. {{ $assignment->user->identity?->identity_id ?? '..........................' }}</p>
+            <p style="margin: 0; padding: 1.5px 0;">NIDN. {{ preg_replace('/[^0-9]/', '', $assignment->user->identity?->identity_id) ?: '..........................' }}</p>
         </td>
     </tr>
 </table>

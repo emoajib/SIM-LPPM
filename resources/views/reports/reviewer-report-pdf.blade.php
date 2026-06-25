@@ -162,6 +162,15 @@
         .page-break-before {
             page-break-before: always;
         }
+
+        /* Attachment Header CSS */
+        .header-table { width: 100%; border-bottom: 2px solid #000; margin-bottom: 15px; padding-bottom: 5px; border-collapse: collapse; }
+        .header-table td { padding: 0; vertical-align: middle; }
+        .header-text .univ { font-size: 14pt; font-weight: bold; margin: 0; text-transform: uppercase; }
+        .header-text .dept { font-size: 12pt; font-weight: bold; margin: 0; text-transform: uppercase; }
+        .header-text .address { font-size: 8pt; font-style: italic; margin: 0; }
+        .header-text .contact { font-size: 8pt; margin: 0; }
+
         @include('reports.partials.report-base-styles')
     </style>
 </head>
@@ -180,7 +189,7 @@
                     <img src="{{ $logoSrc }}" class="logo" style="position:absolute; left:0; top:0; width:{{ $pdfConfig['logo_size'] ?? 45 }}px;">
                 @endif
             @endif
-            <div class="header-text" style="margin-{{ $logoPos === 'right' ? 'right' : 'left' }}: {{ $logoPos === 'center' ? '0' : '50px' }};">
+            <div class="header-text" style="margin-{{ $logoPos === 'right' ? 'right' : 'left' }}: {{ $logoPos === 'center' ? '0' : (($pdfConfig['logo_size'] ?? 45) + 15) . 'px' }};">
                 <div class="inst-name">INSTITUT TEKNOLOGI DAN SAINS NAHDLATUL ULAMA PEKALONGAN</div>
                 <div class="lppm-name">LEMBAGA PENELITIAN DAN PENGABDIAN KEPADA MASYARAKAT (LPPM)</div>
                 <div class="inst-address">
