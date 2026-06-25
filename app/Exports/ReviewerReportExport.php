@@ -62,10 +62,37 @@ class ReviewerReportExport implements FromView, ShouldAutoSize, WithStyles
                 'researchScheme',
                 'communityServiceScheme',
                 'reviewers.user',
+                'reviewers.logs',
                 'reviewers.scores.criteria',
             ])
-            ->orderBy('created_at', 'desc')
             ->get();
+
+        $proposals = $proposals->sort(function ($a, $b) {
+            // Primary: Penelitian vs PKM
+            $typeA = $a->detailable_type === Research::class ? 1 : 2;
+            $typeB = $b->detailable_type === Research::class ? 1 : 2;
+
+            if ($typeA !== $typeB) {
+                return $typeA <=> $typeB;
+            }
+
+            // Secondary: Skor Rev 1 Descending
+            $getScore = function ($proposal) {
+                $r = $proposal->reviewers->first();
+
+                return $r && $r->isCompleted() ? (float) ($r->latestLog()->total_score ?? 0) : -1;
+            };
+
+            $scoreA = $getScore($a);
+            $scoreB = $getScore($b);
+
+            if ($scoreA !== $scoreB) {
+                return $scoreB <=> $scoreA; // Descending
+            }
+
+            // Tertiary: created_at descending
+            return $b->created_at <=> $a->created_at;
+        })->values();
 
         // 2. Fetch Reviewers (for workload rekap)
         $reviewers = User::role('reviewer')

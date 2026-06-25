@@ -15,6 +15,7 @@ use App\Models\Research;
 use App\Models\ReviewLog;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -119,7 +120,7 @@ class ReviewerReport extends Component
                 ProposalStatus::COMPLETED,
             ]);
 
-        return $query
+        $proposals = $query
             ->with([
                 'submitter.identity.faculty',
                 'submitter.identity.studyProgram',
@@ -127,6 +128,7 @@ class ReviewerReport extends Component
                 'researchScheme',
                 'communityServiceScheme',
                 'reviewers.user',
+                'reviewers.logs',
             ])
             ->when($this->search, function ($q) {
                 $search = (string) $this->search;
@@ -149,8 +151,46 @@ class ReviewerReport extends Component
             ->when($this->semesterFilter !== 'all', function ($q) {
                 $q->where('semester', $this->semesterFilter);
             })
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
+            ->get();
+
+        $proposals = $proposals->sort(function ($a, $b) {
+            // Primary: Penelitian vs PKM
+            $typeA = $a->detailable_type === Research::class ? 1 : 2;
+            $typeB = $b->detailable_type === Research::class ? 1 : 2;
+
+            if ($typeA !== $typeB) {
+                return $typeA <=> $typeB;
+            }
+
+            // Secondary: Skor Rev 1 Descending
+            $getScore = function ($proposal) {
+                $r = $proposal->reviewers->first();
+
+                return $r && $r->isCompleted() ? (float) ($r->latestLog()->total_score ?? 0) : -1;
+            };
+
+            $scoreA = $getScore($a);
+            $scoreB = $getScore($b);
+
+            if ($scoreA !== $scoreB) {
+                return $scoreB <=> $scoreA; // Descending
+            }
+
+            // Tertiary: created_at descending
+            return $b->created_at <=> $a->created_at;
+        })->values();
+
+        // Manual pagination
+        $page = $this->getPage();
+        $perPage = 15;
+
+        return new LengthAwarePaginator(
+            $proposals->forPage($page, $perPage),
+            $proposals->count(),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
     }
 
     #[Computed]

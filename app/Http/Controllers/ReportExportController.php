@@ -1244,10 +1244,36 @@ class ReportExportController extends Controller
                     'researchScheme',
                     'communityServiceScheme',
                     'reviewers.user.identity',
+                    'reviewers.logs',
                 ])
-                ->orderByRaw("CASE WHEN detailable_type = 'App\\Models\\Research' THEN 1 ELSE 2 END")
-                ->orderBy('created_at', 'desc')
                 ->get();
+
+            $proposals = $proposals->sort(function ($a, $b) {
+                // Primary: Penelitian vs PKM
+                $typeA = $a->detailable_type === 'App\\Models\\Research' ? 1 : 2;
+                $typeB = $b->detailable_type === 'App\\Models\\Research' ? 1 : 2;
+
+                if ($typeA !== $typeB) {
+                    return $typeA <=> $typeB;
+                }
+
+                // Secondary: Skor Rev 1 Descending
+                $getScore = function ($proposal) {
+                    $r = $proposal->reviewers->first();
+
+                    return $r && $r->isCompleted() ? (float) ($r->latestLog()->total_score ?? 0) : -1;
+                };
+
+                $scoreA = $getScore($a);
+                $scoreB = $getScore($b);
+
+                if ($scoreA !== $scoreB) {
+                    return $scoreB <=> $scoreA; // Descending
+                }
+
+                // Tertiary: created_at descending
+                return $b->created_at <=> $a->created_at;
+            })->values();
 
             // Query reviewers
             $reviewers = User::role('reviewer')
