@@ -10,6 +10,16 @@
         </div>
     @endif
 
+@php
+    $isOwnerOrMember = $this->proposal->submitter_id === auth()->id() || $this->proposal->teamMembers->contains('id', auth()->id());
+    $canSeeReviewerIdentity = !$isOwnerOrMember && (
+        active_has_role('admin lppm')
+        || active_has_role('kepala lppm')
+        || active_has_role('dekan')
+        || active_has_role('reviewer')
+    );
+@endphp
+
     @if ($this->allReviews->isNotEmpty() || $this->canReview)
         {{-- Card 1: Status Reviewer Saat Ini --}}
         <div class="shadow-sm mb-3 border-0 card card-md">
@@ -30,13 +40,15 @@
                                 <div class="align-items-start row g-3">
                                     <div class="col-auto">
                                         <span
-                                            class="bg-blue-lt avatar avatar-sm fw-bold">{{ substr($review->user->name, 0, 1) }}</span>
+                                            class="bg-blue-lt avatar avatar-sm fw-bold">{{ $canSeeReviewerIdentity ? substr($review->user->name, 0, 1) : 'P' }}</span>
                                     </div>
                                     <div class="col">
                                         <div class="d-flex align-items-center justify-content-between mb-1">
                                             <div>
-                                                <div class="fw-bold">{{ $review->user->name }}</div>
-                                                <div class="text-secondary small">{{ $review->user->email }}</div>
+                                                <div class="fw-bold">{{ $canSeeReviewerIdentity ? $review->user->name : 'Pereview #' . $loop->iteration }}</div>
+                                                @if($canSeeReviewerIdentity)
+                                                    <div class="text-secondary small">{{ $review->user->email }}</div>
+                                                @endif
                                             </div>
                                             <div class="text-end">
                                                 <x-tabler.badge :color="$review->status->color()" class="mb-1">
@@ -209,7 +221,7 @@
                                                     <div class="align-items-start row g-3">
                                                         <div class="col-auto">
                                                             <span class="bg-blue-lt avatar avatar-sm fw-bold">
-                                                                {{ substr($log->user?->name ?? 'R', 0, 1) }}
+                                                                {{ $canSeeReviewerIdentity ? substr($log->user?->name ?? 'R', 0, 1) : 'P' }}
                                                             </span>
                                                         </div>
                                                         <div class="col">
@@ -217,9 +229,11 @@
                                                                 class="d-flex align-items-center justify-content-between mb-1">
                                                                 <div>
                                                                     <div class="fw-bold">
-                                                                        {{ $log->user?->name ?? 'Reviewer' }}</div>
-                                                                    <div class="text-secondary small">
-                                                                        {{ $log->user?->email }}</div>
+                                                                        {{ $canSeeReviewerIdentity ? ($log->user?->name ?? 'Reviewer') : 'Pereview' }}</div>
+                                                                    @if($canSeeReviewerIdentity)
+                                                                        <div class="text-secondary small">
+                                                                            {{ $log->user?->email }}</div>
+                                                                    @endif
                                                                 </div>
                                                                 <div class="text-end">
                                                                     <span

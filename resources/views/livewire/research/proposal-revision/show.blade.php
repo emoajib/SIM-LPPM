@@ -229,6 +229,13 @@
                 </div>
                 @php
                     $completedReviewers = $proposal->reviewers->where('status', 'completed');
+                    $isOwnerOrMember = $proposal->submitter_id === auth()->id() || $proposal->teamMembers->contains('id', auth()->id());
+                    $canSeeReviewerIdentity = !$isOwnerOrMember && (
+                        active_has_role('admin lppm')
+                        || active_has_role('kepala lppm')
+                        || active_has_role('dekan')
+                        || active_has_role('reviewer')
+                    );
                 @endphp
                 @if ($completedReviewers->isEmpty())
                     <div class="card-body">
@@ -242,7 +249,7 @@
                                     <div class="d-flex align-items-center justify-content-between mb-2">
                                         <div class="d-flex align-items-center">
                                             <x-lucide-user-circle class="me-2 text-primary icon" />
-                                            <div class="fw-bold">{{ $reviewer->user?->name ?? 'Reviewer' }}</div>
+                                            <div class="fw-bold">{{ $canSeeReviewerIdentity ? ($reviewer->user?->name ?? 'Reviewer') : 'Pereview #' . $loop->iteration }}</div>
                                         </div>
                                         <div class="text-end">
                                             <x-tabler.badge :color="$reviewer->recommendation === 'approved' ? 'success' : ($reviewer->recommendation === 'rejected' ? 'danger' : 'warning')">
@@ -356,7 +363,7 @@
                                                         <div
                                                             class="d-flex align-items-center justify-content-between mb-2">
                                                             <div class="fw-bold small">
-                                                                {{ $log->user?->name ?? 'Reviewer' }}</div>
+                                                                {{ $canSeeReviewerIdentity ? ($log->user?->name ?? 'Reviewer') : 'Pereview' }}</div>
                                                             <x-tabler.badge :color="$log->recommendation_color" class="small">
                                                                 {{ $log->recommendation_label }}
                                                             </x-tabler.badge>
