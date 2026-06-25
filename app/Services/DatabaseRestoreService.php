@@ -610,6 +610,7 @@ class DatabaseRestoreService
     /**
      * Fix MySQL-style escaped quotes within JSON string values for PostgreSQL compatibility.
      * MySQL mysqldump escapes double quotes inside JSON as \", but PostgreSQL needs unescaped.
+     * MUST run AFTER adaptSqlForCurrentDriver() so that \\ has already been unescaped to \.
      */
     protected function fixJsonEscaping(string $statement): string
     {
@@ -645,8 +646,8 @@ class DatabaseRestoreService
         $statement = $this->fixUsersStatement($statement);
         $statement = $this->fixIdentityStatement($statement);
         $statement = $this->injectColumnList($statement);
-        $statement = $this->fixJsonEscaping($statement);
         $statement = $this->adaptSqlForCurrentDriver($statement);
+        $statement = $this->fixJsonEscaping($statement);
         $statement = $this->fixBooleanValues($statement);
         $statement = $this->fixStatementData($statement);
         $statement = $this->fixMySqlJsonNulls($statement);
