@@ -452,16 +452,20 @@ class MenuComposer
                 'children' => [],
             ];
 
+            $panduanItem = null;
+
             foreach ($items as $item) {
                 if ($item['title'] === 'Dashboard') {
                     $newItems[] = $item;
+                } elseif ($item['title'] === 'Panduan') {
+                    $panduanItem = $item;
                 } elseif (in_array($item['title'], ['Penelitian', 'Pengabdian', 'Persuratan', 'IKU & Luaran', 'Persetujuan (Awal)', 'Persetujuan (Akhir)', 'Persetujuan Laporan', 'Persetujuan Surat', 'Persetujuan Kaprodi', 'Persetujuan Dekan'])) {
                     $transaksi['children'][] = $item;
                 } elseif (in_array($item['title'], ['Reviewer', 'Monev'])) {
                     $reviewMonev['children'][] = $item;
                 } elseif (in_array($item['title'], ['Laporan', 'Arsip', 'Riwayat Persetujuan'])) {
                     $laporanArsip['children'][] = $item;
-                } elseif (in_array($item['title'], ['Pengaturan', 'Panduan', 'Kelola Peta Jalan'])) {
+                } elseif (in_array($item['title'], ['Pengaturan', 'Kelola Peta Jalan'])) {
                     $sistemPengaturan['children'][] = $item;
                 } else {
                     $newItems[] = $item;
@@ -479,6 +483,9 @@ class MenuComposer
             }
             if (! empty($sistemPengaturan['children'])) {
                 $newItems[] = $sistemPengaturan;
+            }
+            if ($panduanItem !== null) {
+                $newItems[] = $panduanItem;
             }
 
             $items = $newItems;
