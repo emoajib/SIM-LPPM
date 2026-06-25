@@ -589,6 +589,9 @@ class DatabaseRestoreService
                 if ($i + 1 < $len && $tuple[$i + 1] === "'") {
                     $current .= $ch;
                     $i++;
+                    $current .= $ch;
+
+                    continue;
                 }
                 $inString = false;
                 $current .= $ch;
