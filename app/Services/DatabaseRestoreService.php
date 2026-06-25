@@ -609,7 +609,10 @@ class DatabaseRestoreService
 
     /**
      * Fix MySQL-style escaped quotes within JSON string values for PostgreSQL compatibility.
-     * MySQL mysqldump escapes double quotes inside JSON as \", but PostgreSQL needs unescaped.
+     * Uses json_decode/json_encode to properly normalize JSON within SQL string values,
+     * handling all MySQL mysqldump escaping artifacts including \\" (escaped backslash + quote),
+     * \" (backslash + quote), and other edge cases.
+     *
      * MUST run AFTER adaptSqlForCurrentDriver() so that \\ has already been unescaped to \.
      */
     protected function fixJsonEscaping(string $statement): string
@@ -618,7 +621,30 @@ class DatabaseRestoreService
             return $statement;
         }
 
-        return str_replace('\\"', '"', $statement);
+        return preg_replace_callback(
+            "/'(?:[^']*(?:''[^']*)*)'/s",
+            function ($m) {
+                $sqlStr = $m[0];
+                $inner = substr($sqlStr, 1, -1);
+
+                $decoded = json_decode($inner);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    return "'".json_encode($decoded, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."'";
+                }
+
+                // MySQL mysqldump may escape all JSON double-quotes as \"
+                $unescaped = str_replace('\"', '"', $inner);
+                if ($unescaped !== $inner) {
+                    $decoded = json_decode($unescaped);
+                    if (json_last_error() === JSON_ERROR_NONE) {
+                        return "'".json_encode($decoded, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."'";
+                    }
+                }
+
+                return $sqlStr;
+            },
+            $statement
+        );
     }
 
     /**
