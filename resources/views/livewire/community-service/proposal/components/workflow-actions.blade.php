@@ -159,10 +159,13 @@
                 </div>
                 @php
                     $reviewers = $proposal->reviewers;
-                    $canSeeReviewerIdentity = active_has_role('admin lppm')
+                    $isOwnerOrMember = $proposal->submitter_id === auth()->id() || $proposal->teamMembers->contains('id', auth()->id());
+                    $canSeeReviewerIdentity = !$isOwnerOrMember && (
+                        active_has_role('admin lppm')
                         || active_has_role('kepala lppm')
                         || active_has_role('dekan')
-                        || active_has_role('reviewer');
+                        || active_has_role('reviewer')
+                    );
                 @endphp
                 @if ($reviewers->isEmpty())
                     <p class="text-muted">Belum ada reviewer yang ditugaskan</p>
