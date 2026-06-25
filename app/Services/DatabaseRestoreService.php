@@ -484,54 +484,43 @@ class DatabaseRestoreService
         $current = '';
         $depth = 0;
         $inSingleQuote = false;
-        $inDoubleQuote = false;
         $len = strlen($clause);
 
         for ($i = 0; $i < $len; $i++) {
             $ch = $clause[$i];
 
-            // Track string states FIRST (before depth changes)
-            if (! $inSingleQuote && ! $inDoubleQuote) {
+            if ($inSingleQuote) {
+                // Inside a SQL single-quoted string.
+                // In SQL VALUES, double-quote characters are plain text — not string delimiters.
+                // Only '' (doubled single-quote) has special meaning (escaped literal quote).
+                // Backslashes are also plain text in standard SQL single-quoted strings.
+                if ($ch === "'" && $i + 1 < $len && $clause[$i + 1] === "'") {
+                    // Escaped single-quote '': add both chars and skip the second
+                    $current .= $ch;
+                    $i++;
+                    $current .= $clause[$i];
+
+                    continue;
+                } elseif ($ch === "'") {
+                    // End of single-quoted string
+                    $inSingleQuote = false;
+                }
+                // All other chars (including " and \) are literal string content
+            } else {
+                // Outside a string: track parenthesis depth and detect tuple separators
                 if ($ch === "'") {
                     $inSingleQuote = true;
-                }
-            } elseif ($inSingleQuote && ! $inDoubleQuote) {
-                if ($ch === "'") {
-                    if ($i + 1 < $len && $clause[$i + 1] === "'") {
-                        $i++; // Skip escaped quote
-                    } else {
-                        $inSingleQuote = false;
-                    }
-                } elseif ($ch === '"') {
-                    $inDoubleQuote = true;
-                }
-            } elseif ($inDoubleQuote) {
-                if ($ch === '"') {
-                    if ($i + 1 < $len && $clause[$i + 1] === '"') {
-                        $i++; // Skip escaped double quote
-                    } else {
-                        $inDoubleQuote = false;
-                    }
-                } elseif ($ch === '\\') {
-                    $i++; // Skip escaped character
-                }
-            }
-
-            // Track depth AFTER string state (so we know if we're inside strings)
-            if (! $inSingleQuote && ! $inDoubleQuote) {
-                if ($ch === '(') {
+                } elseif ($ch === '(') {
                     $depth++;
                 } elseif ($ch === ')') {
                     // Check for tuple separator `),(` BEFORE decrementing depth
-                    // Separator pattern: `),(` at depth 1 means end of tuple
                     if ($depth === 1 && $i + 2 < $len && $clause[$i + 1] === ',' && $clause[$i + 2] === '(') {
-                        // Found tuple separator `),(` - save current tuple
                         $tuples[] = $current;
                         $current = '';
-                        $i += 2; // Skip `),(` - we've processed `)`, `,`, `(`
-                        $depth = 1; // We're now inside the next tuple (after the skipped `(`)
+                        $i += 2; // Advance past ),(
+                        $depth = 1; // We are now inside the next tuple's opening (
 
-                        continue; // Skip the rest of loop for this iteration
+                        continue;
                     }
                     $depth--;
                 }
