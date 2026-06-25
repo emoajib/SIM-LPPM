@@ -18,7 +18,16 @@
                             <small class="text-muted">{{ $log->at->format('d M Y H:i') }}</small>
                         </div>
                         <p class="mb-1 text-secondary">
-                            Oleh: <strong>{{ $log->user?->name ?? 'Sistem' }}</strong>
+                            @php
+                                $isDosen = auth()->check() && auth()->user()->id === $proposal->submitter_id && !active_has_any_role(['admin lppm', 'kepala lppm']);
+                                $isReviewerAction = in_array($log->status_after->value, ['under_review', 'reviewed', 're_review_requested', 'revision_needed']);
+                                $displayName = $log->user?->name ?? 'Sistem';
+                                
+                                if ($isReviewerAction && $isDosen && $log->user_id !== $proposal->submitter_id) {
+                                    $displayName = 'Reviewer';
+                                }
+                            @endphp
+                            Oleh: <strong>{{ $displayName }}</strong>
                         </p>
                         @if ($log->notes)
                             <div class="mt-2 p-2 bg-light rounded border-start border-3 border-info">

@@ -174,7 +174,7 @@
                             <h3 class="card-title">Riwayat Status</h3>
                         </div>
                         <div class="card-body">
-                            @include('livewire.proposals.proposal-status-history', ['logs' => $proposal->statusLogs])
+                            @include('livewire.proposals.proposal-status-history', ['logs' => $proposal->statusLogs, 'proposal' => $proposal])
                         </div>
                     </div>
                 </div>

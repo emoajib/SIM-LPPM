@@ -257,6 +257,18 @@ class ProposalReviewer extends Model
             'status' => ReviewStatus::IN_PROGRESS->value,
             'started_at' => now(),
         ]);
+
+        $this->proposal->activities()->create([
+            'user_id' => $this->user_id,
+            'activity_type' => 'updated',
+            'description' => 'Reviewer mulai melakukan penilaian',
+            'changes' => [
+                'status_penilaian' => [
+                    'old' => ReviewStatus::PENDING->label(),
+                    'new' => ReviewStatus::IN_PROGRESS->label(),
+                ],
+            ],
+        ]);
     }
 
     /**
@@ -269,6 +281,22 @@ class ProposalReviewer extends Model
             'review_notes' => $reviewNotes,
             'recommendation' => $recommendation,
             'completed_at' => now(),
+        ]);
+
+        $this->proposal->activities()->create([
+            'user_id' => $this->user_id,
+            'activity_type' => 'updated',
+            'description' => 'Reviewer menyelesaikan penilaian',
+            'changes' => [
+                'status_penilaian' => [
+                    'old' => ReviewStatus::IN_PROGRESS->label(),
+                    'new' => ReviewStatus::COMPLETED->label(),
+                ],
+                'rekomendasi' => [
+                    'old' => '-',
+                    'new' => ucfirst($recommendation),
+                ],
+            ],
         ]);
     }
 
@@ -288,6 +316,18 @@ class ProposalReviewer extends Model
             'completed_at' => null,
             'assigned_at' => now(),
         ]);
+
+        $this->proposal->activities()->create([
+            'user_id' => auth()->id(),
+            'activity_type' => 'updated',
+            'description' => 'Permintaan review ulang (Putaran '.($currentRound + 1).')',
+            'changes' => [
+                'status_penilaian' => [
+                    'old' => ReviewStatus::COMPLETED->label(),
+                    'new' => ReviewStatus::RE_REVIEW_REQUESTED->label(),
+                ],
+            ],
+        ]);
     }
 
     /**
@@ -306,6 +346,18 @@ class ProposalReviewer extends Model
             'completed_at' => null,
             'assigned_at' => now(),
             'deadline_at' => now()->addDays($daysToReview),
+        ]);
+
+        $this->proposal->activities()->create([
+            'user_id' => auth()->id(),
+            'activity_type' => 'updated',
+            'description' => 'Reset penugasan untuk putaran baru (Putaran '.($currentRound + 1).')',
+            'changes' => [
+                'putaran_review' => [
+                    'old' => (string) $currentRound,
+                    'new' => (string) ($currentRound + 1),
+                ],
+            ],
         ]);
     }
 

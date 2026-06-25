@@ -96,15 +96,16 @@
             <div class="card">
                 <div class="card-body">
                     <div class="row g-3">
-                        <!-- Search Input -->
+                        <!-- First Row -->
                         <div class="col-md-4">
+                            <label class="form-label">Pencarian</label>
                             <input type="text" class="form-control"
                                 placeholder="Cari berdasarkan judul atau ringkasan..."
                                 wire:model.live.debounce.300ms="search" />
                         </div>
 
-                        <!-- Type Filter -->
                         <div class="col-md-3">
+                            <label class="form-label">Jenis</label>
                             <select class="form-select" wire:model.live="typeFilter">
                                 <option value="all">Semua Jenis</option>
                                 <option value="research">Penelitian</option>
@@ -112,8 +113,18 @@
                             </select>
                         </div>
 
-                        <!-- Year Filter -->
+                        <div class="col-md-3">
+                            <label class="form-label">Skema</label>
+                            <select class="form-select" wire:model.live="schemeFilter" @if($typeFilter === 'all') disabled @endif>
+                                <option value="">Semua Skema</option>
+                                @foreach ($this->availableSchemes as $scheme)
+                                    <option value="{{ $scheme->id }}">{{ $scheme->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
                         <div class="col-md-2">
+                            <label class="form-label">Tahun</label>
                             <select class="form-select" wire:model.live="yearFilter">
                                 <option value="">Semua Tahun</option>
                                 @foreach ($this->availableYears as $year)
@@ -122,10 +133,40 @@
                             </select>
                         </div>
 
-                        <!-- Reset Button -->
+                        <!-- Second Row -->
                         <div class="col-md-3">
+                            <label class="form-label">Rekomendasi Reviewer</label>
+                            <select class="form-select" wire:model.live="recommendationFilter">
+                                <option value="all">Semua Rekomendasi</option>
+                                <option value="all_approved">Semua Disetujui</option>
+                                <option value="needs_revision">Ada Revisi</option>
+                                <option value="rejected">Ada Penolakan</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Fakultas</label>
+                            <select class="form-select" wire:model.live="facultyFilter">
+                                <option value="">Semua Fakultas</option>
+                                @foreach ($this->availableFaculties as $faculty)
+                                    <option value="{{ $faculty->id }}">{{ $faculty->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Program Studi</label>
+                            <select class="form-select" wire:model.live="studyProgramFilter">
+                                <option value="">Semua Prodi</option>
+                                @foreach ($this->availableStudyPrograms as $prodi)
+                                    <option value="{{ $prodi->id }}">{{ $prodi->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-2 d-flex align-items-end">
                             <button type="button" class="btn-outline-secondary w-100 btn" wire:click="resetFilters">
-                                <x-lucide-rotate-ccw class="icon" />
+                                <x-lucide-rotate-ccw class="icon me-1" />
                                 Reset
                             </button>
                         </div>

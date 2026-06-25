@@ -1,6 +1,6 @@
 <div>
     @if ($this->canDecide)
-        @php $isRevisionReview = $proposal->status === \App\Enums\ProposalStatus::REVISION_SUBMITTED; @endphp
+        @php $isRevisionReview = $this->proposal->status === \App\Enums\ProposalStatus::REVISION_SUBMITTED; @endphp
 
         <div class="alert alert-{{ $isRevisionReview ? 'purple' : 'info' }}" role="alert">
             <x-lucide-{{ $isRevisionReview ? 'refresh-cw' : 'clipboard-check' }} class="icon" />
@@ -69,7 +69,7 @@
                     @else
                         <div class="mb-3 text-center">
                             <x-lucide-file-edit class="mb-2 text-warning icon" style="width: 3rem; height: 3rem;" />
-                            <h3>@php $isRevisionReview = $proposal?->status === \App\Enums\ProposalStatus::REVISION_SUBMITTED; @endphp
+                            <h3>@php $isRevisionReview = $this->proposal?->status === \App\Enums\ProposalStatus::REVISION_SUBMITTED; @endphp
                                 {{ $isRevisionReview ? 'Minta Perbaikan Ulang?' : 'Minta Perbaikan Usulan?' }}</h3>
                             <div class="text-secondary">
                                 @if ($isRevisionReview)

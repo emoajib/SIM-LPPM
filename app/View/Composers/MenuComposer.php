@@ -190,22 +190,25 @@ class MenuComposer
             [
                 'title' => 'Reviewer',
                 'icon' => 'clipboard-check',
-                'roles' => ['admin lppm'],
+                'roles' => ['admin lppm', 'kepala lppm', 'rektor'],
                 'children' => [
                     [
                         'title' => 'Penugasan Reviewer',
                         'icon' => 'user-plus',
                         'route' => 'admin-lppm.assign-reviewers',
+                        'roles' => ['admin lppm'],
                     ],
                     [
                         'title' => 'Beban Kerja Reviewer',
                         'icon' => 'chart-bar',
                         'route' => 'admin-lppm.reviewer-workload',
+                        'roles' => ['admin lppm'],
                     ],
                     [
                         'title' => 'Monitoring Review',
                         'icon' => 'eye',
                         'route' => 'admin-lppm.review-monitoring',
+                        'roles' => ['admin lppm', 'kepala lppm', 'rektor'],
                     ],
                 ],
             ],

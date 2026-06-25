@@ -35,8 +35,17 @@
                         <div class="d-flex align-items-start justify-content-between mb-2">
                             <div>
                                 <span class="fw-bold text-dark">{{ $activity->description }}</span>
+                                @php
+                                    $isReviewerAction = str_contains(strtolower($activity->description), 'review');
+                                    $isDosen = auth()->check() && auth()->user()->id === $this->proposal->submitter_id && !active_has_any_role(['admin lppm', 'kepala lppm']);
+                                    $displayName = $activity->user?->name ?? 'Sistem';
+                                    
+                                    if ($isReviewerAction && $isDosen) {
+                                        $displayName = 'Reviewer';
+                                    }
+                                @endphp
                                 <span class="text-muted ms-1">oleh
-                                    <strong>{{ $activity->user?->name ?? 'Sistem' }}</strong></span>
+                                    <strong>{{ $displayName }}</strong></span>
                             </div>
                             <small class="text-muted">{{ $activity->created_at->format('d M Y H:i') }}</small>
                         </div>

@@ -97,6 +97,19 @@ class AssignReviewersAction
                     'deadline_at' => $deadline,
                 ]);
 
+                // Log activity
+                $proposal->activities()->create([
+                    'user_id' => auth()->id(),
+                    'activity_type' => 'updated',
+                    'description' => 'Penugasan reviewer baru: '.$reviewer->name,
+                    'changes' => [
+                        'reviewer' => [
+                            'old' => '-',
+                            'new' => $reviewer->name,
+                        ],
+                    ],
+                ]);
+
                 // Send notifications
                 $this->sendNotifications($proposal, $reviewer, $daysToReview);
 

@@ -6,19 +6,67 @@
     <div class="mb-3 card">
         <div class="card-body">
             <div class="row g-3">
+                <!-- Baris 1: Pencarian -->
                 <div class="col-md-6">
+                    <label class="form-label">Cari Judul Proposal</label>
                     <input type="text" class="form-control" placeholder="Cari judul proposal..."
                         wire:model.live.debounce.300ms="search">
                 </div>
+                <div class="col-md-6">
+                    <label class="form-label">Cari Nama Reviewer</label>
+                    <input type="text" class="form-control" placeholder="Cari nama reviewer..."
+                        wire:model.live.debounce.300ms="reviewerSearch">
+                </div>
+
+                <!-- Baris 2: Kategori Usulan & Progres -->
                 <div class="col-md-4">
+                    <label class="form-label">Jenis Usulan</label>
                     <select class="form-select" wire:model.live="typeFilter">
                         <option value="all">Semua Jenis</option>
                         <option value="research">Penelitian</option>
                         <option value="community_service">Pengabdian</option>
                     </select>
                 </div>
-                <div class="col-md-2">
-                    <button class="btn-outline-secondary w-100 btn" wire:click="resetFilters">Reset</button>
+                <div class="col-md-4">
+                    <label class="form-label">Skema Usulan</label>
+                    <select class="form-select" wire:model.live="schemeFilter" @if($typeFilter === 'all') disabled title="Pilih Jenis Usulan terlebih dahulu" @endif>
+                        <option value="all">Semua Skema</option>
+                        @foreach($this->schemes as $scheme)
+                            <option value="{{ $scheme->id }}">{{ $scheme->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Status Progres</label>
+                    <select class="form-select" wire:model.live="progressFilter">
+                        <option value="all">Semua Progres</option>
+                        <option value="unassigned">Belum Ditugaskan / Kurang Reviewer</option>
+                        <option value="in_progress">Sedang Direview</option>
+                        <option value="completed">Selesai Direview (100%)</option>
+                    </select>
+                </div>
+
+                <!-- Baris 3: Institusi -->
+                <div class="col-md-5">
+                    <label class="form-label">Fakultas Pengusul</label>
+                    <select class="form-select" wire:model.live="facultyFilter">
+                        <option value="all">Semua Fakultas</option>
+                        @foreach($this->faculties as $faculty)
+                            <option value="{{ $faculty->id }}">{{ $faculty->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label">Program Studi Pengusul</label>
+                    <select class="form-select" wire:model.live="prodiFilter" @if($facultyFilter === 'all') disabled title="Pilih Fakultas terlebih dahulu" @endif>
+                        <option value="all">Semua Prodi</option>
+                        @foreach($this->studyPrograms as $prodi)
+                            <option value="{{ $prodi->id }}">{{ $prodi->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button class="btn-outline-secondary w-100 btn" wire:click="resetFilters">Reset Filter</button>
                 </div>
             </div>
         </div>
