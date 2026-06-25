@@ -545,6 +545,18 @@ class DatabaseRestoreService
             $tuples[] = $current;
         }
 
+        // Strip outer parens that are inconsistently included by the separator logic:
+        // - First tuple includes leading `(` (but trailing `)` was consumed by `),(` separator)
+        // - Last tuple includes trailing `)` (but leading `(` was consumed by `),(` separator)
+        // - Single tuple includes both
+        // This ensures all tuples are returned WITHOUT delimiting parens, so callers
+        // that wrap each tuple in `(...)` don't produce double parens.
+        if (! empty($tuples)) {
+            $tuples[0] = substr($tuples[0], 1);
+            $lastIdx = count($tuples) - 1;
+            $tuples[$lastIdx] = substr($tuples[$lastIdx], 0, -1);
+        }
+
         return $tuples;
     }
 
