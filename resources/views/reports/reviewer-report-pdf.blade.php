@@ -406,7 +406,9 @@
                     $signedAt = $assignment->completed_at ?? $assignment->updated_at ?? now();
                     $variant = 'round-'.((int) ($assignment->round ?? 1)).'-'.$signedAt->format('YmdHis');
                     
-                    $signature = $assignment->signatures
+                    $signature = \App\Models\DocumentSignature::query()
+                        ->where('document_type', $assignment->getMorphClass())
+                        ->where('document_id', (string) $assignment->id)
                         ->where('variant', $variant)
                         ->where('action', 'reviewed')
                         ->where('signed_role', 'reviewer')

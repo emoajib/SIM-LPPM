@@ -1246,7 +1246,6 @@ class ReportExportController extends Controller
                     'reviewers.user.identity',
                     'reviewers.logs',
                     'reviewers.scores.criteria',
-                    'reviewers.signatures',
                 ])
                 ->get();
 
