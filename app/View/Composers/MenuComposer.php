@@ -425,7 +425,7 @@ class MenuComposer
             ],
         ];
 
-        if (in_array($activeRole, ['admin lppm', 'kepala lppm', 'superadmin', 'rektor', 'dekan'])) {
+        if ($activeRole === 'admin lppm') {
             $newItems = [];
             $transaksi = [
                 'title' => 'Transaksi & Usulan',
@@ -466,7 +466,7 @@ class MenuComposer
                 } elseif (in_array($item['title'], ['Laporan', 'Arsip', 'Riwayat Persetujuan'])) {
                     $laporanArsip['children'][] = $item;
                 } elseif (in_array($item['title'], ['Pengaturan', 'Kelola Peta Jalan'])) {
-                    if ($activeRole === 'admin lppm' && $item['title'] === 'Pengaturan') {
+                    if ($item['title'] === 'Pengaturan') {
                         foreach ($item['children'] as $child) {
                             if ($child['title'] === 'Pengguna' && isset($child['children'])) {
                                 foreach ($child['children'] as $subChild) {
