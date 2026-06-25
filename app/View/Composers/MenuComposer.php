@@ -32,6 +32,8 @@ class MenuComposer
             }
         }
 
+        $activeRole = active_role();
+
         $roadmapActive = Setting::get('feature_roadmap_active', false);
         $kaprodiValidationActive = Setting::get('feature_kaprodi_validation', false);
         $letteringActive = Setting::get('module_persuratan_active', false);
@@ -422,6 +424,65 @@ class MenuComposer
                 ],
             ],
         ];
+
+        if (in_array($activeRole, ['admin lppm', 'kepala lppm', 'superadmin', 'rektor', 'dekan'])) {
+            $newItems = [];
+            $transaksi = [
+                'title' => 'Transaksi & Usulan',
+                'icon' => 'clipboard-list',
+                'roles' => [$activeRole],
+                'children' => [],
+            ];
+            $reviewMonev = [
+                'title' => 'Review & Monev',
+                'icon' => 'checkbox',
+                'roles' => [$activeRole],
+                'children' => [],
+            ];
+            $laporanArsip = [
+                'title' => 'Laporan & Arsip',
+                'icon' => 'report-analytics',
+                'roles' => [$activeRole],
+                'children' => [],
+            ];
+            $sistemPengaturan = [
+                'title' => 'Sistem & Pengaturan',
+                'icon' => 'settings',
+                'roles' => [$activeRole],
+                'children' => [],
+            ];
+
+            foreach ($items as $item) {
+                if ($item['title'] === 'Dashboard') {
+                    $newItems[] = $item;
+                } elseif (in_array($item['title'], ['Penelitian', 'Pengabdian', 'Persuratan', 'IKU & Luaran', 'Persetujuan (Awal)', 'Persetujuan (Akhir)', 'Persetujuan Laporan', 'Persetujuan Surat', 'Persetujuan Kaprodi', 'Persetujuan Dekan'])) {
+                    $transaksi['children'][] = $item;
+                } elseif (in_array($item['title'], ['Reviewer', 'Monev'])) {
+                    $reviewMonev['children'][] = $item;
+                } elseif (in_array($item['title'], ['Laporan', 'Arsip', 'Riwayat Persetujuan'])) {
+                    $laporanArsip['children'][] = $item;
+                } elseif (in_array($item['title'], ['Pengaturan', 'Panduan', 'Kelola Peta Jalan'])) {
+                    $sistemPengaturan['children'][] = $item;
+                } else {
+                    $newItems[] = $item;
+                }
+            }
+
+            if (! empty($transaksi['children'])) {
+                $newItems[] = $transaksi;
+            }
+            if (! empty($reviewMonev['children'])) {
+                $newItems[] = $reviewMonev;
+            }
+            if (! empty($laporanArsip['children'])) {
+                $newItems[] = $laporanArsip;
+            }
+            if (! empty($sistemPengaturan['children'])) {
+                $newItems[] = $sistemPengaturan;
+            }
+
+            $items = $newItems;
+        }
 
         return array_values(array_filter(array_map(
             fn (array $item) => $this->formatItem($item, $user),
