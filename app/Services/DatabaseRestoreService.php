@@ -621,6 +621,23 @@ class DatabaseRestoreService
     }
 
     /**
+     * Fix MySQL mysqldump NULL representation (\N) within JSON values.
+     * MySQL uses \N for NULL in certain dump contexts, which is invalid JSON
+     * for PostgreSQL json/jsonb columns. Replaces "\N" with null.
+     *
+     * This must run AFTER adaptSqlForCurrentDriver() so that \\N has already
+     * been unescaped to \N by the backslash unescaping step.
+     */
+    protected function fixMySqlJsonNulls(string $statement): string
+    {
+        return preg_replace_callback(
+            "/'(?:[^']*(?:''[^']*)*)'/s",
+            fn ($m) => str_replace('"\\N"', 'null', $m[0]),
+            $statement
+        );
+    }
+
+    /**
      * Apply all statement fixes in the correct order.
      */
     protected function processStatement(string $statement): string
@@ -632,6 +649,7 @@ class DatabaseRestoreService
         $statement = $this->adaptSqlForCurrentDriver($statement);
         $statement = $this->fixBooleanValues($statement);
         $statement = $this->fixStatementData($statement);
+        $statement = $this->fixMySqlJsonNulls($statement);
 
         return $statement;
     }
