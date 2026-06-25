@@ -427,12 +427,8 @@ class MenuComposer
 
         if ($activeRole === 'admin lppm') {
             $newItems = [];
-            $transaksi = [
-                'title' => 'Transaksi & Usulan',
-                'icon' => 'clipboard-list',
-                'roles' => [$activeRole],
-                'children' => [],
-            ];
+            $collectedItems = [];
+
             $reviewMonev = [
                 'title' => 'Review & Monev',
                 'icon' => 'checkbox',
@@ -455,12 +451,8 @@ class MenuComposer
             $panduanItem = null;
 
             foreach ($items as $item) {
-                if ($item['title'] === 'Dashboard') {
-                    $newItems[] = $item;
-                } elseif ($item['title'] === 'Panduan') {
+                if ($item['title'] === 'Panduan') {
                     $panduanItem = $item;
-                } elseif (in_array($item['title'], ['Penelitian', 'Pengabdian', 'Persuratan', 'IKU & Luaran', 'Persetujuan (Awal)', 'Persetujuan (Akhir)', 'Persetujuan Laporan', 'Persetujuan Surat', 'Persetujuan Kaprodi', 'Persetujuan Dekan'])) {
-                    $transaksi['children'][] = $item;
                 } elseif (in_array($item['title'], ['Reviewer', 'Monev'])) {
                     $reviewMonev['children'][] = $item;
                 } elseif (in_array($item['title'], ['Laporan', 'Arsip', 'Riwayat Persetujuan'])) {
@@ -480,13 +472,26 @@ class MenuComposer
                         $sistemPengaturan['children'][] = $item;
                     }
                 } else {
-                    $newItems[] = $item;
+                    $collectedItems[$item['title']] = $item;
                 }
             }
 
-            if (! empty($transaksi['children'])) {
-                $newItems[] = $transaksi;
+            if (isset($collectedItems['Dashboard'])) {
+                $newItems[] = $collectedItems['Dashboard'];
             }
+            if (isset($collectedItems['Penelitian'])) {
+                $newItems[] = $collectedItems['Penelitian'];
+            }
+            if (isset($collectedItems['Pengabdian'])) {
+                $newItems[] = $collectedItems['Pengabdian'];
+            }
+            if (isset($collectedItems['Persuratan'])) {
+                $newItems[] = $collectedItems['Persuratan'];
+            }
+            if (isset($collectedItems['IKU & Luaran'])) {
+                $newItems[] = $collectedItems['IKU & Luaran'];
+            }
+
             if (! empty($reviewMonev['children'])) {
                 $newItems[] = $reviewMonev;
             }
@@ -496,7 +501,14 @@ class MenuComposer
             if (! empty($sistemPengaturan['children'])) {
                 $newItems[] = $sistemPengaturan;
             }
-            if ($panduanItem !== null) {
+
+            foreach ($collectedItems as $title => $item) {
+                if (! in_array($title, ['Dashboard', 'Penelitian', 'Pengabdian', 'Persuratan', 'IKU & Luaran'])) {
+                    $newItems[] = $item;
+                }
+            }
+
+            if ($panduanItem) {
                 $newItems[] = $panduanItem;
             }
 
