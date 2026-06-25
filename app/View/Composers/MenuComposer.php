@@ -466,7 +466,19 @@ class MenuComposer
                 } elseif (in_array($item['title'], ['Laporan', 'Arsip', 'Riwayat Persetujuan'])) {
                     $laporanArsip['children'][] = $item;
                 } elseif (in_array($item['title'], ['Pengaturan', 'Kelola Peta Jalan'])) {
-                    $sistemPengaturan['children'][] = $item;
+                    if ($activeRole === 'admin lppm' && $item['title'] === 'Pengaturan') {
+                        foreach ($item['children'] as $child) {
+                            if ($child['title'] === 'Pengguna' && isset($child['children'])) {
+                                foreach ($child['children'] as $subChild) {
+                                    $sistemPengaturan['children'][] = $subChild;
+                                }
+                            } elseif ($child['title'] !== 'Divider') {
+                                $sistemPengaturan['children'][] = $child;
+                            }
+                        }
+                    } else {
+                        $sistemPengaturan['children'][] = $item;
+                    }
                 } else {
                     $newItems[] = $item;
                 }
