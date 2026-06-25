@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -93,6 +94,14 @@ class ProposalReviewer extends Model
     public function scores(): HasMany
     {
         return $this->hasMany(ReviewScore::class);
+    }
+
+    /**
+     * Get the document signatures for this assignment.
+     */
+    public function signatures(): MorphMany
+    {
+        return $this->morphMany(DocumentSignature::class, 'document');
     }
 
     /**

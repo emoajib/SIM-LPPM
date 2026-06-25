@@ -1245,6 +1245,8 @@ class ReportExportController extends Controller
                     'communityServiceScheme',
                     'reviewers.user.identity',
                     'reviewers.logs',
+                    'reviewers.scores.criteria',
+                    'reviewers.signatures',
                 ])
                 ->get();
 

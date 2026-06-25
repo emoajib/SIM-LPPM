@@ -352,7 +352,7 @@
                         <div class="sign-name" style="font-size: 8pt; margin-top: 5px;">
                             {{ format_name($rektor?->identity?->title_prefix, $rektor?->name ?? 'Rektor', $rektor?->identity?->title_suffix) }}
                         </div>
-                        <div class="sign-nip" style="font-size: 7pt;">NPP. {{ $rektor?->identity?->identity_id ?? '-' }}</div>
+                        <div class="sign-nip" style="font-size: 7pt;">NIDN. {{ $rektor?->identity?->identity_id ?? '-' }}</div>
                     </div>
                 </td>
                 <td width="10%"></td>
@@ -386,7 +386,7 @@
                         <div class="sign-name" style="font-size: 8pt; margin-top: 5px;">
                             {{ format_name($lppmHead?->identity?->title_prefix, $lppmHead?->name ?? 'Kepala LPPM', $lppmHead?->identity?->title_suffix) }}
                         </div>
-                        <div class="sign-nip" style="font-size: 7pt;">NPP. {{ $lppmHead?->identity?->identity_id ?? '-' }}</div>
+                        <div class="sign-nip" style="font-size: 7pt;">NIDN. {{ $lppmHead?->identity?->identity_id ?? '-' }}</div>
                     </div>
                 </td>
             </tr>
@@ -397,6 +397,39 @@
     <div class="footer">
         SIM-LPPM ITSNU Pekalongan | Dicetak oleh: {{ auth()->user()->name ?? 'Administrator' }} | {{ now()->format('d/m/Y H:i') }}
     </div>
+
+    <!-- LAMPIRAN HASIL REVIEWER PER PROPOSAL -->
+    @foreach($proposals as $proposal)
+        @foreach($proposal->reviewers as $assignment)
+            @if($assignment->isCompleted())
+                @php
+                    $signedAt = $assignment->completed_at ?? $assignment->updated_at ?? now();
+                    $variant = 'round-'.((int) ($assignment->round ?? 1)).'-'.$signedAt->format('YmdHis');
+                    
+                    $signature = $assignment->signatures
+                        ->where('variant', $variant)
+                        ->where('action', 'reviewed')
+                        ->where('signed_role', 'reviewer')
+                        ->first();
+                        
+                    $qrUrl = $signature ? \Illuminate\Support\Facades\URL::signedRoute('signatures.verify', ['documentSignature' => $signature->id]) : null;
+                    
+                    $scores = $assignment->scores->where('round', $assignment->round);
+                    $totalScore = $assignment->latestLog()->total_score ?? 0;
+                    $type = $proposal->detailable_type === 'App\Models\Research' ? 'research' : 'community_service';
+                @endphp
+                <div style="page-break-before: always;"></div>
+                @include('pdf.partials.review-evaluation-content', [
+                    'assignment' => $assignment,
+                    'proposal' => $proposal,
+                    'type' => $type,
+                    'scores' => $scores,
+                    'totalScore' => $totalScore,
+                    'qrUrl' => $qrUrl
+                ])
+            @endif
+        @endforeach
+    @endforeach
 </body>
 
 </html>
