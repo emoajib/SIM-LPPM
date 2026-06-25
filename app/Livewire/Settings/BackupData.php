@@ -10,6 +10,8 @@ use ZipArchive;
 
 class BackupData extends Component
 {
+    protected const MAX_OUTPUT_LENGTH = 102400;
+
     public string $output = '';
 
     public bool $isRunning = false;
@@ -23,6 +25,14 @@ class BackupData extends Component
     public array $availableFolders = [];
 
     public array $selectedFolders = [];
+
+    public function updatedOutput(): void
+    {
+        if (strlen($this->output) > self::MAX_OUTPUT_LENGTH) {
+            $this->output = '⏎ [Output dipotong, '.strlen($this->output).' chars]'.PHP_EOL
+                .substr($this->output, -intdiv(self::MAX_OUTPUT_LENGTH, 2));
+        }
+    }
 
     public function mount(): void
     {

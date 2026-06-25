@@ -15,6 +15,8 @@ class RestoreData extends Component
 {
     use WithFileUploads;
 
+    protected const MAX_OUTPUT_LENGTH = 102400;
+
     public $sqlFile = null;
 
     public $zipFile = null;
@@ -52,7 +54,7 @@ class RestoreData extends Component
 
         try {
             $this->validate([
-                'sqlFile' => 'file|mimes:sql,text,plain|max:524288',
+                'sqlFile' => 'file|mimes:sql,text,plain|max:102400',
             ]);
         } catch (ValidationException $e) {
             $this->uploadErrorMessage = $e->getMessage();
@@ -75,7 +77,8 @@ class RestoreData extends Component
         }
 
         $service = app(DatabaseRestoreService::class);
-        $this->preview = $service->preview($this->uploadedSqlPath);
+        $preview = $service->preview($this->uploadedSqlPath);
+        $this->preview = collect($preview)->except(['statements', 'blocked'])->toArray();
         $this->hasPreview = true;
 
         $this->logSqlPreview($filename);
@@ -89,7 +92,7 @@ class RestoreData extends Component
         try {
             Log::info('RestoreData: Validating ZIP file');
             $this->validate([
-                'zipFile' => 'file|mimes:zip|max:524288',
+                'zipFile' => 'file|mimes:zip|max:102400',
             ]);
         } catch (ValidationException $e) {
             Log::warning('RestoreData: Validation failed', ['errors' => $e->errors()]);
@@ -127,6 +130,8 @@ class RestoreData extends Component
 
         $this->hasPreview = true;
         $this->preview = $validation['validation'];
+        $this->preview['total_entries'] = $validation['total_entries'] ?? 0;
+        $this->preview['total_size'] = $validation['total_size'] ?? 0;
         $this->availableZipFolders = $validation['folders'] ?? [];
         $this->selectedZipFolders = $this->availableZipFolders;
 
@@ -146,6 +151,14 @@ class RestoreData extends Component
             }
         } else {
             $this->output .= "\n✅ File ZIP siap. Silakan pilih folder dan mode di bawah.";
+        }
+    }
+
+    public function updatedOutput(): void
+    {
+        if (strlen($this->output) > self::MAX_OUTPUT_LENGTH) {
+            $this->output = '⏎ [Output dipotong, '.strlen($this->output).' chars]'.PHP_EOL
+                .substr($this->output, -intdiv(self::MAX_OUTPUT_LENGTH, 2));
         }
     }
 
