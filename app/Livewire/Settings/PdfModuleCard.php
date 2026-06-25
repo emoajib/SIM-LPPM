@@ -60,11 +60,11 @@ class PdfModuleCard extends Component
         'marginRight' => 'nullable|numeric|min:0|max:10',
         'marginBottom' => 'nullable|numeric|min:0|max:10',
         'marginLeft' => 'nullable|numeric|min:0|max:10',
-        'introText' => 'nullable|string',
-        'outroText' => 'nullable|string',
+        'introText' => 'nullable|string|max:50000',
+        'outroText' => 'nullable|string|max:50000',
         'showLogo' => 'nullable|string|in:0,1',
-        'coverTitle' => 'nullable|string',
-        'coverSubtitle' => 'nullable|string',
+        'coverTitle' => 'nullable|string|max:500',
+        'coverSubtitle' => 'nullable|string|max:500',
         'coverShowTeam' => 'nullable|string|in:0,1',
     ];
 

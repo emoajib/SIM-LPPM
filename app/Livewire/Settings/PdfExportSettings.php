@@ -141,6 +141,26 @@ class PdfExportSettings extends Component
         // Child card override status changed; parent may refresh if needed
     }
 
+    protected $rules = [
+        'editingContentIntro' => 'nullable|string|max:50000',
+        'editingContentOutro' => 'nullable|string|max:50000',
+        'editingCoverTitle' => 'nullable|string|max:500',
+        'editingCoverSubtitle' => 'nullable|string|max:500',
+        'pdfCoverTitle' => 'nullable|string|max:500',
+        'pdfCoverSubtitle' => 'nullable|string|max:500',
+        'pdfApprovalCustomText' => 'nullable|string|max:50000',
+    ];
+
+    protected $validationAttributes = [
+        'editingContentIntro' => 'Teks Pengantar',
+        'editingContentOutro' => 'Teks Penutup',
+        'editingCoverTitle' => 'Judul Cover',
+        'editingCoverSubtitle' => 'Subjudul Cover',
+        'pdfCoverTitle' => 'Judul Cover Global',
+        'pdfCoverSubtitle' => 'Subjudul Cover Global',
+        'pdfApprovalCustomText' => 'Teks Persetujuan',
+    ];
+
     public function mount(): void
     {
         abort_unless(Auth::user()?->hasRole('admin lppm') || Auth::user()?->hasRole('superadmin'), 403);
@@ -363,10 +383,24 @@ class PdfExportSettings extends Component
     public function closeContentEditor(): void
     {
         $this->contentModalOpen = false;
+        $this->editingModule = '';
+        $this->editingModuleName = '';
+        $this->editingContentIntro = '';
+        $this->editingContentOutro = '';
+        $this->editingCoverTitle = '';
+        $this->editingCoverSubtitle = '';
+        $this->editingCoverShowTeam = true;
     }
 
     public function saveContentEditor(): void
     {
+        $this->validate([
+            'editingContentIntro' => 'nullable|string|max:50000',
+            'editingContentOutro' => 'nullable|string|max:50000',
+            'editingCoverTitle' => 'nullable|string|max:500',
+            'editingCoverSubtitle' => 'nullable|string|max:500',
+        ]);
+
         $settingsToSave = [
             PdfConstants::contentKey($this->editingModule, PdfConstants::KEY_INTRO) => $this->editingContentIntro,
             PdfConstants::contentKey($this->editingModule, PdfConstants::KEY_OUTRO) => $this->editingContentOutro,
@@ -389,7 +423,7 @@ class PdfExportSettings extends Component
 
         clear_pdf_config_cache($this->editingModule);
 
-        $this->contentModalOpen = false;
+        $this->closeContentEditor();
         $this->dispatch('settings-updated', message: "Konfigurasi kustom untuk {$this->editingModuleName} berhasil di-reset ke pengaturan global bawaan.");
     }
 
