@@ -157,7 +157,13 @@
                 <div class="card-header">
                     <h4 class="mb-0 card-title">Review Status</h4>
                 </div>
-                @php $reviewers = $proposal->reviewers; @endphp
+                @php
+                    $reviewers = $proposal->reviewers;
+                    $canSeeReviewerIdentity = active_has_role('admin lppm')
+                        || active_has_role('kepala lppm')
+                        || active_has_role('dekan')
+                        || active_has_role('reviewer');
+                @endphp
                 @if ($reviewers->isEmpty())
                     <p class="text-muted">Belum ada reviewer yang ditugaskan</p>
                 @else
@@ -165,15 +171,22 @@
                         <table class="card-table table table-bordered table-sm">
                             <thead>
                                 <tr>
-                                    <th>Reviewer</th>
+                                    <th>{{ $canSeeReviewerIdentity ? 'Reviewer' : 'Pereview' }}</th>
                                     <th>Status</th>
                                     <th>Tanggal Review</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($reviewers as $reviewer)
+                                @foreach ($reviewers as $i => $reviewer)
                                     <tr>
-                                        <td>{{ $reviewer->user?->name ?? '-' }}</td>
+                                        <td>
+                                            @if ($canSeeReviewerIdentity)
+                                                {{ $reviewer->user?->name ?? '-' }}
+                                            @else
+                                                {{-- Blind review: sembunyikan identitas reviewer dari dosen --}}
+                                                <span class="text-muted fst-italic">Pereview #{{ $i + 1 }}</span>
+                                            @endif
+                                        </td>
                                         <td>
                                             <x-tabler.badge :color="$reviewer->status->color()">
                                                 {{ $reviewer->status->label() }}
