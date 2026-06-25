@@ -18,6 +18,11 @@ class DatabaseRestoreService
         'community_service_schemes' => [
             'id', 'name', 'strata', 'eligibility_rules', 'created_at', 'updated_at',
         ],
+        'document_signatures' => [
+            'id', 'document_type', 'document_id', 'variant', 'action', 'mode',
+            'signed_role', 'signed_by', 'signed_at', 'hash_alg', 'document_hash',
+            'kid', 'signature', 'payload', 'created_at', 'updated_at',
+        ],
         'community_services' => [
             'id', 'macro_research_group_id', 'partner_id', 'partner_issue_summary',
             'solution_offered', 'created_at', 'updated_at', 'deleted_at',
@@ -27,7 +32,7 @@ class DatabaseRestoreService
             'research_roadmap', 'code', 'created_at', 'updated_at',
         ],
         'institutions' => [
-            'id', 'name', 'code', 'type', 'is_verified', 'lppm_head_name',
+            'id', 'name', 'is_default', 'code', 'type', 'is_verified', 'lppm_head_name',
             'lppm_head_id', 'lppm_head_user_id', 'short_name', 'address',
             'phone', 'email', 'website', 'created_at', 'updated_at',
         ],
@@ -45,6 +50,11 @@ class DatabaseRestoreService
         ],
         'proposal_outputs' => [
             'id', 'proposal_id', 'output_year', 'category', 'group', 'type', 'target_status', 'description', 'created_at', 'updated_at',
+        ],
+        'proposal_reviewer' => [
+            'id', 'proposal_id', 'user_id', 'status', 'review_notes',
+            'recommendation', 'round', 'assigned_at', 'deadline_at',
+            'started_at', 'completed_at', 'created_at', 'updated_at',
         ],
         'proposals' => [
             'id', 'title', 'submitter_id', 'detailable_id', 'detailable_type',
@@ -804,6 +814,7 @@ class DatabaseRestoreService
 
             if (DB::getDriverName() === 'pgsql') {
                 $this->resyncPostgresSequences();
+                $this->fixAllBooleans();
             }
 
             $message = count($errors) === 0
