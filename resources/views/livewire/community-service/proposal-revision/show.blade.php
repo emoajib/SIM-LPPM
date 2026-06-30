@@ -320,6 +320,14 @@
 
                     <!-- Upload New File (Only for submitter) -->
                     @if ($this->canEdit())
+                        <div class="alert alert-warning mb-3">
+                            <div class="d-flex align-items-start">
+                                <x-lucide-alert-triangle class="icon me-2 text-warning mt-1" />
+                                <div>
+                                    <strong>Perhatian:</strong> Untuk melakukan perbaikan usulan, Anda <strong>wajib</strong> mengunggah kembali Dokumen PDF Substansi Usulan yang telah direvisi (meskipun file lama sudah ada di sistem).
+                                </div>
+                            </div>
+                        </div>
                         <div class="mb-3">
                             <label class="form-label">
                                 <x-lucide-upload class="me-2 icon" />

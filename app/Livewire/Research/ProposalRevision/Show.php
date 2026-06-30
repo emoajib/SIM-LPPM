@@ -28,7 +28,6 @@ use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
-use Spatie\MediaLibrary\HasMedia;
 
 #[Layout('components.layouts.app')]
 #[Title('Detail Revisi Proposal Penelitian')]
@@ -69,14 +68,11 @@ class Show extends Component
                 'macroResearchGroupId' => 'required|exists:macro_research_groups,id',
             ]);
 
-            // Validate that substance file exists
-            $proposal = $this->form->proposal;
-            $detailable = $proposal?->detailable;
-            $hasFileInDatabase = $detailable instanceof HasMedia && $detailable->hasMedia('substance_file');
+            // Validate that new substance file is uploaded
             $hasNewUploadedFile = $this->substanceFile && $this->substanceFile instanceof TemporaryUploadedFile;
 
-            if (! $hasFileInDatabase && ! $hasNewUploadedFile) {
-                $message = 'Dokumen PDF Substansi Usulan wajib diunggah sebelum melanjutkan.';
+            if (! $hasNewUploadedFile) {
+                $message = 'Anda belum mengunggah dokumen PDF Substansi Usulan yang baru. Silakan unggah dokumen perbaikan Anda.';
                 $this->addError('substanceFile', $message);
                 $this->toastError($message);
 
@@ -230,14 +226,11 @@ class Show extends Component
         // Validate basic fields
         $this->validate();
 
-        // Validate that substance file exists
-        $proposal = $this->form->proposal;
-        $detailable = $proposal?->detailable;
-        $hasFileInDatabase = $detailable instanceof HasMedia && $detailable->hasMedia('substance_file');
+        // Validate that new substance file is uploaded
         $hasNewUploadedFile = $this->substanceFile && $this->substanceFile instanceof TemporaryUploadedFile;
 
-        if (! $hasFileInDatabase && ! $hasNewUploadedFile) {
-            $message = 'Dokumen PDF Substansi Usulan wajib diunggah.';
+        if (! $hasNewUploadedFile) {
+            $message = 'Anda belum mengunggah dokumen PDF Substansi Usulan yang baru. Silakan unggah dokumen perbaikan Anda.';
             $this->addError('substanceFile', $message);
             $this->toastError($message);
 
