@@ -214,7 +214,7 @@
                         <div style="margin-bottom: 60px;"></div>
                     @endif
                     <div style="font-weight: bold; text-decoration: underline;">{{ format_name($rektor?->identity?->title_prefix, $rektor?->name ?? 'Rektor', $rektor?->identity?->title_suffix) }}</div>
-                    <div style="font-size: 9pt;">NPP. {{ $rektor?->identity?->identity_id ?? '-' }}</div>
+                    <div style="font-size: 9pt;">NIDN. {{ $rektor?->identity?->identity_id ?? '-' }}</div>
                 </td>
                 <td width="34%" style="border: none;"></td>
                 <td width="33%" style="border: none; text-align: center; padding: 0;">
@@ -233,7 +233,7 @@
                         <div style="margin-bottom: 60px;"></div>
                     @endif
                     <div style="font-weight: bold; text-decoration: underline;">{{ format_name($lppmHead?->identity?->title_prefix, $lppmHead?->name ?? 'Kepala LPPM', $lppmHead?->identity?->title_suffix) }}</div>
-                    <div style="font-size: 9pt;">NPP. {{ $lppmHead?->identity?->identity_id ?? '-' }}</div>
+                    <div style="font-size: 9pt;">NIDN. {{ $lppmHead?->identity?->identity_id ?? '-' }}</div>
                 </td>
             </tr>
         </table>

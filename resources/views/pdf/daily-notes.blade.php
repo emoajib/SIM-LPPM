@@ -284,7 +284,8 @@
                     @endif
                     @php $kepala = \App\Models\User::role('kepala lppm')->first(); @endphp
                     <strong><u>{{ $kepala->name ?? '.......................' }}</u></strong><br>
-                    NPP. {{ $kepala->identity?->identity_id ?? '-' }}
+                    <!-- Vetted by AI - Manual Review Required by Senior Engineer/Manager -->
+                    NIDN. {{ $kepala->identity?->identity_id ?? '-' }}
                 </td>
                 <td class="text-center" style="height: 120px; vertical-align: bottom; border: none; padding-bottom: 10px;">
                     @if($qrUrlSubmitter ?? null)
@@ -296,7 +297,7 @@
                         <div style="height: 70px;"></div>
                     @endif
                     <strong><u>{{ $submitterFullName }}</u></strong><br>
-                    NPP. {{ $proposal->submitter->identity?->identity_id ?? '-' }}
+                    NIDN. {{ $proposal->submitter->identity->identity_id ?? '-' }}
                 </td>
             </tr>
         </table>

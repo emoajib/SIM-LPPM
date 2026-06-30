@@ -200,7 +200,7 @@
                         <div class="sign-name" style="font-size: 8pt; margin-top: 5px;">
                             {{ format_name($rektor?->identity?->title_prefix, $rektor?->name ?? 'Rektor', $rektor?->identity?->title_suffix) }}
                         </div>
-                        <div class="sign-nip" style="font-size: 7pt;">NPP. {{ $rektor?->identity?->identity_id ?? '-' }}</div>
+                        <div class="sign-nip" style="font-size: 7pt;">NIDN. {{ $rektor->identity->identity_id ?? '-' }}</div>
                     </div>
                 </td>
                 <td width="34%"></td>
@@ -222,7 +222,7 @@
                         <div class="sign-name" style="font-size: 8pt; margin-top: 5px;">
                             {{ format_name($lppmHead?->identity?->title_prefix, $lppmHead?->name ?? 'Kepala LPPM', $lppmHead?->identity?->title_suffix) }}
                         </div>
-                        <div class="sign-nip" style="font-size: 7pt;">NPP. {{ $lppmHead?->identity?->identity_id ?? '-' }}</div>
+                        <div class="sign-nip" style="font-size: 7pt;">NIDN. {{ $lppmHead->identity->identity_id ?? '-' }}</div>
                     </div>
                 </td>
             </tr>
