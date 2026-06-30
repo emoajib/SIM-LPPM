@@ -26,7 +26,9 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
+use Spatie\MediaLibrary\HasMedia;
 
 #[Layout('components.layouts.app')]
 #[Title('Detail Revisi Proposal Penelitian')]
@@ -176,6 +178,20 @@ class Show extends Component
 
         // Validate basic fields
         $this->validate();
+
+        // Validate that substance file exists
+        $proposal = $this->form->proposal;
+        $detailable = $proposal?->detailable;
+        $hasFileInDatabase = $detailable instanceof HasMedia && $detailable->hasMedia('substance_file');
+        $hasNewUploadedFile = $this->substanceFile && $this->substanceFile instanceof TemporaryUploadedFile;
+
+        if (! $hasFileInDatabase && ! $hasNewUploadedFile) {
+            $message = 'Dokumen PDF Substansi Usulan wajib diunggah.';
+            $this->addError('substanceFile', $message);
+            $this->toastError($message);
+
+            return;
+        }
 
         // Validate budget items and scheme
         $this->validate([

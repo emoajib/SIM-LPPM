@@ -33,7 +33,9 @@ use Illuminate\Validation\Rule;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
+use Spatie\MediaLibrary\HasMedia;
 
 /**
  * @property-read Collection $schemes
@@ -320,6 +322,19 @@ abstract class ProposalCreate extends Component
     public function save(): void
     {
         $this->form->validate();
+
+        // Validate that substance file exists before final submission
+        $detailable = $this->form->proposal?->detailable;
+        $hasFileInDatabase = $detailable instanceof HasMedia && $detailable->hasMedia('substance_file');
+        $hasNewUploadedFile = $this->form->substance_file && $this->form->substance_file instanceof TemporaryUploadedFile;
+
+        if (! $hasFileInDatabase && ! $hasNewUploadedFile) {
+            $message = 'Dokumen PDF Substansi Usulan wajib diunggah sebelum mengajukan proposal.';
+            $this->addError('form.substance_file', $message);
+            $this->toastError($message);
+
+            return;
+        }
 
         $schemeId = $this->getProposalType() === 'research'
             ? (int) $this->form->research_scheme_id
