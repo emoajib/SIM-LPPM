@@ -6,6 +6,7 @@ use App\Enums\InstitutionalReportStatus;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class InstitutionalReport extends Model
 {
@@ -50,5 +51,14 @@ class InstitutionalReport extends Model
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    /**
+     * Get all digital signatures for the report.
+     */
+    public function signatures(): MorphMany
+    {
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        return $this->morphMany(DocumentSignature::class, 'document', 'document_type', 'document_id');
     }
 }
