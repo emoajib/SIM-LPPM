@@ -15,6 +15,7 @@ use App\Models\User;
 use Database\Seeders\InstitutionSeeder;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Livewire\Livewire;
 use Spatie\Permission\PermissionRegistrar;
 use Tests\TestCase;
@@ -70,11 +71,14 @@ class ReportWorkflowTest extends TestCase
     {
         $this->actingAs($this->dosen);
 
+        $file = UploadedFile::fake()->create('laporan.pdf', 100);
+
         $component = Livewire::test(Show::class, [
             'proposal' => $this->proposal,
         ])
             ->set('form.summaryUpdate', 'This is the final summary.')
             ->set('form.keywordsInput', 'final; report; research')
+            ->set('substanceFile', $file)
             ->call('save');
 
         $component->assertHasNoErrors();

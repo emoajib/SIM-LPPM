@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 
 class Show extends Component
@@ -153,6 +154,18 @@ class Show extends Component
         if ($totalProposedBudget > 0 && $totalUsedBudget != $totalProposedBudget) {
             $message = 'Gagal mengajukan: Total pemakaian anggaran di Catatan Harian (Rp '.number_format($totalUsedBudget, 0, ',', '.').') belum mencapai 100% dari total RAB yang disetujui (Rp '.number_format($totalProposedBudget, 0, ',', '.').').';
             session()->flash('error', $message);
+            $this->toastError($message);
+
+            return;
+        }
+
+        // Validate that substance file exists (either in DB or newly uploaded)
+        $hasFileInDatabase = $this->progressReport && $this->progressReport->hasMedia('substance_file');
+        $hasNewUploadedFile = $this->substanceFile && $this->substanceFile instanceof TemporaryUploadedFile;
+
+        if (! $hasFileInDatabase && ! $hasNewUploadedFile) {
+            $message = 'Gagal mengajukan: Anda wajib mengunggah File Substansi (PDF) laporan akhir.';
+            $this->addError('substanceFile', $message);
             $this->toastError($message);
 
             return;
