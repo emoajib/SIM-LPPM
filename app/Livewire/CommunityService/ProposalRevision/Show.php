@@ -64,6 +64,31 @@ class Show extends Component
      */
     public function setStep(int $step): void
     {
+        if ($step === 2) {
+            $this->validate([
+                'communityServiceSchemeId' => 'required|exists:community_service_schemes,id',
+                'form.semester' => 'required|in:ganjil,genap',
+                'form.start_year' => 'required|integer|min:2020|max:2030',
+                'partnerId' => 'required|exists:partners,id',
+                'partnerIssueSummary' => 'required|string|min:50',
+                'solutionOffered' => 'required|string|min:50',
+            ]);
+
+            // Validate that substance file exists
+            $proposal = $this->form->proposal;
+            $detailable = $proposal?->detailable;
+            $hasFileInDatabase = $detailable instanceof HasMedia && $detailable->hasMedia('substance_file');
+            $hasNewUploadedFile = $this->substanceFile && $this->substanceFile instanceof TemporaryUploadedFile;
+
+            if (! $hasFileInDatabase && ! $hasNewUploadedFile) {
+                $message = 'Dokumen PDF Substansi Usulan wajib diunggah sebelum melanjutkan.';
+                $this->addError('substanceFile', $message);
+                $this->toastError($message);
+
+                return;
+            }
+        }
+
         $this->currentStep = $step;
     }
 

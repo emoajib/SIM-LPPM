@@ -61,6 +61,57 @@ class Show extends Component
      */
     public function setStep(int $step): void
     {
+        if ($step === 2) {
+            $this->validate([
+                'researchSchemeId' => 'required|exists:research_schemes,id',
+                'form.semester' => 'required|in:ganjil,genap',
+                'form.start_year' => 'required|integer|min:2020|max:2030',
+                'macroResearchGroupId' => 'required|exists:macro_research_groups,id',
+            ]);
+
+            // Validate that substance file exists
+            $proposal = $this->form->proposal;
+            $detailable = $proposal?->detailable;
+            $hasFileInDatabase = $detailable instanceof HasMedia && $detailable->hasMedia('substance_file');
+            $hasNewUploadedFile = $this->substanceFile && $this->substanceFile instanceof TemporaryUploadedFile;
+
+            if (! $hasFileInDatabase && ! $hasNewUploadedFile) {
+                $message = 'Dokumen PDF Substansi Usulan wajib diunggah sebelum melanjutkan.';
+                $this->addError('substanceFile', $message);
+                $this->toastError($message);
+
+                return;
+            }
+
+            // Validate TKT level compatibility with the new scheme
+            $tktResults = $this->form->tkt_results;
+            if (! empty($tktResults)) {
+                $achievedLevel = 0;
+                $levels = TktLevel::whereIn('id', array_keys($tktResults))->get();
+                foreach ($levels as $level) {
+                    $data = $tktResults[$level->id] ?? null;
+                    if ($data && isset($data['percentage']) && $data['percentage'] >= 80) {
+                        $achievedLevel = max($achievedLevel, $level->level);
+                    }
+                }
+
+                $newScheme = ResearchScheme::find($this->researchSchemeId);
+                if ($newScheme && $newScheme->strata) {
+                    $range = TktMeasurement::getTktRangeForStrata($newScheme->strata);
+                    if ($range) {
+                        [$min, $max] = $range;
+                        if ($achievedLevel < $min || $achievedLevel > $max) {
+                            $message = "TKT Saat Ini (Level $achievedLevel) tidak sesuai dengan Skema {$newScheme->name} ({$newScheme->strata}) (Target: Level $min - $max).";
+                            $this->addError('researchSchemeId', $message);
+                            $this->toastError($message);
+
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
         $this->currentStep = $step;
     }
 
