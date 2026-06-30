@@ -185,6 +185,8 @@ class Show extends Component
         // Validate budget items and scheme
         $this->validate([
             'communityServiceSchemeId' => 'required|exists:community_service_schemes,id',
+            'form.semester' => 'required|in:ganjil,genap',
+            'form.start_year' => 'required|integer|min:2020|max:2030',
             'form.budget_items' => ['required', 'array', 'min:1'],
             'form.budget_items.*.year' => 'required|integer|min:1|max:10',
             'form.budget_items.*.budget_group_id' => 'required|exists:budget_groups,id',
@@ -197,21 +199,21 @@ class Show extends Component
         try {
             $proposal = $this->form->proposal;
 
-            // Validate budget caps and percentages
+            // Validate budget caps and percentages using the updated year/semester
             $type = 'community-service';
             app(BudgetValidationService::class)->validateBudgetGroupPercentages(
                 $this->form->budget_items,
                 $type,
-                (int) $proposal->start_year,
-                $proposal->semester,
+                (int) $this->form->start_year,
+                $this->form->semester,
                 (int) $this->communityServiceSchemeId
             );
 
             app(BudgetValidationService::class)->validateBudgetCap(
                 $this->form->budget_items,
                 $type,
-                (int) $proposal->start_year,
-                $proposal->semester,
+                (int) $this->form->start_year,
+                $this->form->semester,
                 (int) $this->communityServiceSchemeId
             );
 
@@ -239,6 +241,9 @@ class Show extends Component
             if ($proposal->community_service_scheme_id != $this->communityServiceSchemeId) {
                 $changedFields[] = 'Skema Pengabdian';
             }
+            if ($proposal->semester != $this->form->semester || $proposal->start_year != $this->form->start_year) {
+                $changedFields[] = 'Periode Pelaksanaan';
+            }
 
             // Handle file upload
             if ($this->substanceFile) {
@@ -255,9 +260,11 @@ class Show extends Component
             DB::transaction(function () use ($proposal, $communityService) {
                 $communityService->save();
 
-                // Update proposal scheme
+                // Update proposal scheme, semester, and year
                 $proposal->update([
                     'community_service_scheme_id' => $this->communityServiceSchemeId,
+                    'semester' => $this->form->semester,
+                    'start_year' => (int) $this->form->start_year,
                 ]);
 
                 // Delete old budget items and create new ones

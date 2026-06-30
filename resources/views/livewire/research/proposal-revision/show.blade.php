@@ -81,15 +81,47 @@
                             @endif
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label"><x-lucide-calendar class="me-2 icon" />Tanggal
-                                Pengajuan</label>
+                            <label class="form-label {{ $this->canEdit() ? 'required' : '' }}"><x-lucide-calendar class="me-2 icon" />Tahun Pelaksanaan</label>
+                            @if ($this->canEdit())
+                                <select wire:model="form.start_year" class="form-select form-select-sm @error('form.start_year') is-invalid @enderror">
+                                    <option value="">Pilih Tahun</option>
+                                    @for ($year = date('Y') - 2; $year <= date('Y') + 2; $year++)
+                                        <option value="{{ $year }}">{{ $year }}</option>
+                                    @endfor
+                                </select>
+                                @error('form.start_year')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            @else
+                                <p class="text-reset">{{ $proposal->start_year ?? '—' }}</p>
+                            @endif
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label {{ $this->canEdit() ? 'required' : '' }}"><x-lucide-calendar-check class="me-2 icon" />Semester</label>
+                            @if ($this->canEdit())
+                                <select wire:model="form.semester" class="form-select form-select-sm @error('form.semester') is-invalid @enderror">
+                                    <option value="">Pilih Semester</option>
+                                    <option value="ganjil">Ganjil</option>
+                                    <option value="genap">Genap</option>
+                                </select>
+                                @error('form.semester')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            @else
+                                <p class="text-reset">{{ ucfirst($proposal->semester) ?? '—' }}</p>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <div class="col-md-6">
+                            <label class="form-label"><x-lucide-calendar class="me-2 icon" />Tanggal Pengajuan</label>
                             <p class="text-reset">
                                 {{ $proposal->created_at?->format('d M Y H:i') ?? '—' }}
                             </p>
                         </div>
-                        <div class="col-md-3">
-                            <label class="form-label"><x-lucide-calendar-check class="me-2 icon" />Tanggal
-                                update</label>
+                        <div class="col-md-6">
+                            <label class="form-label"><x-lucide-calendar-check class="me-2 icon" />Tanggal Update</label>
                             <p class="text-reset">
                                 {{ $proposal->detailable->updated_at?->format('d M Y H:i') ?? '—' }}
                             </p>
