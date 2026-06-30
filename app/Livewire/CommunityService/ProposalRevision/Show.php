@@ -4,25 +4,34 @@ declare(strict_types=1);
 
 namespace App\Livewire\CommunityService\ProposalRevision;
 
+// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+
 use App\Livewire\Concerns\HasToast;
 use App\Livewire\Forms\ProposalForm;
+use App\Livewire\Traits\WithProposalWizard;
 use App\Models\CommunityService;
 use App\Models\Partner;
 use App\Models\Proposal;
+use App\Services\BudgetValidationService;
 use App\Services\LecturerEligibilityService;
+use App\Services\MasterDataService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 #[Layout('components.layouts.app')]
 #[Title('Detail Revisi Proposal Pengabdian')]
 class Show extends Component
 {
     use HasToast;
+    use WithFileUploads;
+    use WithProposalWizard;
 
     public ProposalForm $form;
 
@@ -34,6 +43,27 @@ class Show extends Component
 
     #[Validate('required|string|min:50')]
     public string $solutionOffered = '';
+
+    #[Validate('nullable|file|mimes:pdf|max:10240')]
+    public $substanceFile = null;
+
+    public string $communityServiceSchemeId = '';
+
+    public array $budgetValidationErrors = [];
+
+    public int $currentStep = 1;
+
+    public ?string $commitmentUploadPartnerId = null;
+
+    public $commitmentUploadFile = null;
+
+    /**
+     * Set the current active step.
+     */
+    public function setStep(int $step): void
+    {
+        $this->currentStep = $step;
+    }
 
     /**
      * Mount the component with proposal.
@@ -55,7 +85,7 @@ class Show extends Component
         $proposal->load([
             'submitter.identity',
             'focusArea',
-            'researchScheme',
+            'communityServiceScheme',
             'detailable.partner',
             'budgetItems.budgetGroup',
             'budgetItems.budgetComponent',
@@ -74,6 +104,7 @@ class Show extends Component
         $this->partnerId = (string) ($communityService->partner_id ?? '');
         $this->partnerIssueSummary = $communityService->partner_issue_summary ?? '';
         $this->solutionOffered = $communityService->solution_offered ?? '';
+        $this->communityServiceSchemeId = (string) ($proposal->community_service_scheme_id ?? '');
     }
 
     /**
@@ -83,6 +114,41 @@ class Show extends Component
     public function partners()
     {
         return Partner::orderBy('name')->get();
+    }
+
+    /**
+     * Get all community service schemes from LPPM master data.
+     */
+    #[Computed]
+    public function communityServiceSchemes()
+    {
+        return app(MasterDataService::class)->communityServiceSchemes();
+    }
+
+    /**
+     * Get budget groups.
+     */
+    #[Computed]
+    public function budgetGroups()
+    {
+        return app(MasterDataService::class)->budgetGroups();
+    }
+
+    /**
+     * Get budget components.
+     */
+    #[Computed]
+    public function budgetComponents()
+    {
+        return app(MasterDataService::class)->budgetComponents();
+    }
+
+    /**
+     * Required by WithProposalWizard trait.
+     */
+    protected function getProposalTypeForValidation(): string
+    {
+        return 'community-service';
     }
 
     /**
@@ -113,25 +179,128 @@ class Show extends Component
             return;
         }
 
+        // Validate basic fields
         $this->validate();
 
+        // Validate budget items and scheme
+        $this->validate([
+            'communityServiceSchemeId' => 'required|exists:community_service_schemes,id',
+            'form.budget_items' => ['required', 'array', 'min:1'],
+            'form.budget_items.*.year' => 'required|integer|min:1|max:10',
+            'form.budget_items.*.budget_group_id' => 'required|exists:budget_groups,id',
+            'form.budget_items.*.budget_component_id' => 'required|exists:budget_components,id',
+            'form.budget_items.*.item' => 'required|string|max:255',
+            'form.budget_items.*.volume' => 'required|numeric|min:0.01',
+            'form.budget_items.*.unit_price' => 'required|numeric|min:1',
+        ]);
+
         try {
+            $proposal = $this->form->proposal;
+
+            // Validate budget caps and percentages
+            $type = 'community-service';
+            app(BudgetValidationService::class)->validateBudgetGroupPercentages(
+                $this->form->budget_items,
+                $type,
+                (int) $proposal->start_year,
+                $proposal->semester,
+                (int) $this->communityServiceSchemeId
+            );
+
+            app(BudgetValidationService::class)->validateBudgetCap(
+                $this->form->budget_items,
+                $type,
+                (int) $proposal->start_year,
+                $proposal->semester,
+                (int) $this->communityServiceSchemeId
+            );
+
             /** @var CommunityService $communityService */
-            $communityService = $this->form->proposal->detailable;
+            $communityService = $proposal->detailable;
 
             // Update community service data
             $communityService->partner_id = $this->partnerId;
             $communityService->partner_issue_summary = $this->partnerIssueSummary;
             $communityService->solution_offered = $this->solutionOffered;
 
-            $communityService->save();
+            $hasChanges = false;
+            $changedFields = [];
 
-            $message = 'Perubahan berhasil disimpan';
+            // Check what changed
+            if ($communityService->isDirty('partner_id')) {
+                $changedFields[] = 'Mitra';
+            }
+            if ($communityService->isDirty('partner_issue_summary')) {
+                $changedFields[] = 'Ringkasan Masalah Mitra';
+            }
+            if ($communityService->isDirty('solution_offered')) {
+                $changedFields[] = 'Solusi yang Ditawarkan';
+            }
+            if ($proposal->community_service_scheme_id != $this->communityServiceSchemeId) {
+                $changedFields[] = 'Skema Pengabdian';
+            }
+
+            // Handle file upload
+            if ($this->substanceFile) {
+                $communityService
+                    ->addMedia($this->substanceFile->getRealPath())
+                    ->usingName($this->substanceFile->getClientOriginalName())
+                    ->usingFileName($this->substanceFile->hashName())
+                    ->withCustomProperties(['uploaded_by' => Auth::id()])
+                    ->toMediaCollection('substance_file');
+
+                $changedFields[] = 'File Substansi';
+            }
+
+            DB::transaction(function () use ($proposal, $communityService) {
+                $communityService->save();
+
+                // Update proposal scheme
+                $proposal->update([
+                    'community_service_scheme_id' => $this->communityServiceSchemeId,
+                ]);
+
+                // Delete old budget items and create new ones
+                $proposal->budgetItems()->delete();
+
+                foreach ($this->form->budget_items as $item) {
+                    if (empty($item['budget_group_id']) && empty($item['item']) && (empty($item['unit_price']) || $item['unit_price'] == 0)) {
+                        continue;
+                    }
+
+                    $groupId = ! empty($item['budget_group_id']) ? $item['budget_group_id'] : null;
+                    $componentId = ! empty($item['budget_component_id']) ? $item['budget_component_id'] : null;
+
+                    $proposal->budgetItems()->create([
+                        'year' => $item['year'] ?? 1,
+                        'budget_group_id' => $groupId,
+                        'budget_component_id' => $componentId,
+                        'group' => $item['group'] ?? '',
+                        'component' => $item['component'] ?? '',
+                        'item_description' => $item['item'] ?? '',
+                        'volume' => $item['volume'] ?? 0,
+                        'unit_price' => $item['unit_price'] ?? 0,
+                        'total_price' => $item['total'] ?? 0,
+                    ]);
+                }
+            });
+
+            // Always count RAB as changed since it is submitted
+            $changedFields[] = 'Rencana Anggaran Biaya (RAB)';
+
+            $message = 'Perubahan berhasil disimpan: '.implode(', ', $changedFields);
             session()->flash('success', $message);
             $this->toastSuccess($message);
 
             // Refresh proposal data
-            $this->form->setProposal($this->form->proposal->fresh());
+            $this->form->setProposal($proposal->fresh());
+            $this->partnerId = (string) ($communityService->partner_id ?? '');
+            $this->partnerIssueSummary = $communityService->partner_issue_summary ?? '';
+            $this->solutionOffered = $communityService->solution_offered ?? '';
+            $this->communityServiceSchemeId = (string) ($proposal->community_service_scheme_id ?? '');
+
+            // Reset file input
+            $this->substanceFile = null;
         } catch (\Exception $e) {
             $message = 'Gagal menyimpan perubahan: '.$e->getMessage();
             session()->flash('error', $message);

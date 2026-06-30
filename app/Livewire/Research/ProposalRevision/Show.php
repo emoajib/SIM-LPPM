@@ -8,11 +8,18 @@ namespace App\Livewire\Research\ProposalRevision;
 
 use App\Livewire\Concerns\HasToast;
 use App\Livewire\Forms\ProposalForm;
+use App\Livewire\Research\Proposal\Components\TktMeasurement;
+use App\Livewire\Traits\WithProposalWizard;
 use App\Models\MacroResearchGroup;
 use App\Models\Proposal;
 use App\Models\Research;
+use App\Models\ResearchScheme;
+use App\Models\TktLevel;
+use App\Services\BudgetValidationService;
 use App\Services\LecturerEligibilityService;
+use App\Services\MasterDataService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -27,6 +34,7 @@ class Show extends Component
 {
     use HasToast;
     use WithFileUploads;
+    use WithProposalWizard;
 
     public ProposalForm $form;
 
@@ -35,6 +43,24 @@ class Show extends Component
 
     #[Validate('nullable|file|mimes:pdf|max:10240')]
     public $substanceFile = null;
+
+    public string $researchSchemeId = '';
+
+    public array $budgetValidationErrors = [];
+
+    public int $currentStep = 1;
+
+    public ?string $commitmentUploadPartnerId = null;
+
+    public $commitmentUploadFile = null;
+
+    /**
+     * Set the current active step.
+     */
+    public function setStep(int $step): void
+    {
+        $this->currentStep = $step;
+    }
 
     /**
      * Mount the component with proposal.
@@ -72,6 +98,7 @@ class Show extends Component
 
         // Initialize form values
         $this->macroResearchGroupId = (string) ($proposal->detailable->macro_research_group_id ?? '');
+        $this->researchSchemeId = (string) ($proposal->research_scheme_id ?? '');
     }
 
     /**
@@ -81,6 +108,41 @@ class Show extends Component
     public function macroResearchGroups()
     {
         return MacroResearchGroup::orderBy('name')->get();
+    }
+
+    /**
+     * Get all research schemes from LPPM master data.
+     */
+    #[Computed]
+    public function schemes()
+    {
+        return app(MasterDataService::class)->schemes();
+    }
+
+    /**
+     * Get budget groups.
+     */
+    #[Computed]
+    public function budgetGroups()
+    {
+        return app(MasterDataService::class)->budgetGroups();
+    }
+
+    /**
+     * Get budget components.
+     */
+    #[Computed]
+    public function budgetComponents()
+    {
+        return app(MasterDataService::class)->budgetComponents();
+    }
+
+    /**
+     * Required by WithProposalWizard trait.
+     */
+    protected function getProposalTypeForValidation(): string
+    {
+        return 'research';
     }
 
     /**
@@ -112,11 +174,72 @@ class Show extends Component
             return;
         }
 
+        // Validate basic fields
         $this->validate();
 
+        // Validate budget items and scheme
+        $this->validate([
+            'researchSchemeId' => 'required|exists:research_schemes,id',
+            'form.budget_items' => ['required', 'array', 'min:1'],
+            'form.budget_items.*.year' => 'required|integer|min:1|max:10',
+            'form.budget_items.*.budget_group_id' => 'required|exists:budget_groups,id',
+            'form.budget_items.*.budget_component_id' => 'required|exists:budget_components,id',
+            'form.budget_items.*.item' => 'required|string|max:255',
+            'form.budget_items.*.volume' => 'required|numeric|min:0.01',
+            'form.budget_items.*.unit_price' => 'required|numeric|min:1',
+        ]);
+
         try {
+            $proposal = $this->form->proposal;
+
+            // Validate TKT level compatibility with the new scheme
+            $tktResults = $this->form->tkt_results;
+            if (! empty($tktResults)) {
+                $achievedLevel = 0;
+                $levels = TktLevel::whereIn('id', array_keys($tktResults))->get();
+                foreach ($levels as $level) {
+                    $data = $tktResults[$level->id] ?? null;
+                    if ($data && isset($data['percentage']) && $data['percentage'] >= 80) {
+                        $achievedLevel = max($achievedLevel, $level->level);
+                    }
+                }
+
+                $newScheme = ResearchScheme::find($this->researchSchemeId);
+                if ($newScheme && $newScheme->strata) {
+                    $range = TktMeasurement::getTktRangeForStrata($newScheme->strata);
+                    if ($range) {
+                        [$min, $max] = $range;
+                        if ($achievedLevel < $min || $achievedLevel > $max) {
+                            $message = "TKT Saat Ini (Level $achievedLevel) tidak sesuai dengan Skema {$newScheme->name} ({$newScheme->strata}) (Target: Level $min - $max).";
+                            $this->addError('researchSchemeId', $message);
+                            $this->toastError($message);
+
+                            return;
+                        }
+                    }
+                }
+            }
+
+            // Validate budget caps and percentages
+            $type = 'research';
+            app(BudgetValidationService::class)->validateBudgetGroupPercentages(
+                $this->form->budget_items,
+                $type,
+                (int) $proposal->start_year,
+                $proposal->semester,
+                (int) $this->researchSchemeId
+            );
+
+            app(BudgetValidationService::class)->validateBudgetCap(
+                $this->form->budget_items,
+                $type,
+                (int) $proposal->start_year,
+                $proposal->semester,
+                (int) $this->researchSchemeId
+            );
+
             /** @var Research $research */
-            $research = $this->form->proposal->detailable;
+            $research = $proposal->detailable;
 
             // Update macro research group
             $research->macro_research_group_id = $this->macroResearchGroupId;
@@ -128,6 +251,12 @@ class Show extends Component
             if ($research->wasChanged('macro_research_group_id') || $research->isDirty('macro_research_group_id')) {
                 $hasChanges = true;
                 $changedFields[] = 'Kelompok Makro Riset';
+            }
+
+            // Check if scheme changed
+            if ($proposal->research_scheme_id != $this->researchSchemeId) {
+                $hasChanges = true;
+                $changedFields[] = 'Skema Penelitian';
             }
 
             // Handle file upload
@@ -143,11 +272,47 @@ class Show extends Component
                 $changedFields[] = 'File Substansi';
             }
 
-            $research->save();
+            DB::transaction(function () use ($proposal, $research) {
+                $research->save();
+
+                // Update proposal scheme
+                $proposal->update([
+                    'research_scheme_id' => $this->researchSchemeId,
+                ]);
+
+                // Delete old budget items and create new ones
+                $proposal->budgetItems()->delete();
+
+                foreach ($this->form->budget_items as $item) {
+                    if (empty($item['budget_group_id']) && empty($item['item']) && (empty($item['unit_price']) || $item['unit_price'] == 0)) {
+                        continue;
+                    }
+
+                    $groupId = ! empty($item['budget_group_id']) ? $item['budget_group_id'] : null;
+                    $componentId = ! empty($item['budget_component_id']) ? $item['budget_component_id'] : null;
+
+                    $proposal->budgetItems()->create([
+                        'year' => $item['year'] ?? 1,
+                        'budget_group_id' => $groupId,
+                        'budget_component_id' => $componentId,
+                        'group' => $item['group'] ?? '',
+                        'component' => $item['component'] ?? '',
+                        'item_description' => $item['item'] ?? '',
+                        'volume' => $item['volume'] ?? 0,
+                        'unit_price' => $item['unit_price'] ?? 0,
+                        'total_price' => $item['total'] ?? 0,
+                    ]);
+                }
+            });
+
+            // Always count RAB as changed since it is submitted
+            $hasChanges = true;
+            $changedFields[] = 'Rencana Anggaran Biaya (RAB)';
 
             // Refresh proposal data
-            $this->form->setProposal($this->form->proposal->fresh());
+            $this->form->setProposal($proposal->fresh());
             $this->macroResearchGroupId = (string) ($research->macro_research_group_id ?? '');
+            $this->researchSchemeId = (string) ($proposal->research_scheme_id ?? '');
 
             // Flash message
             $message = 'Perubahan berhasil disimpan';

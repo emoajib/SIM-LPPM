@@ -10,9 +10,7 @@
     </div>
 </x-slot:pageActions>
 
-<div class="row" x-data="{
-    currentStep: 1,
-}">
+<div class="row">
     <div class="col-md-12">
         <x-tabler.alert />
     </div>
@@ -22,12 +20,12 @@
         <div class="card">
             <div class="card-body">
                 <ul class="my-4 steps steps-green steps-counter">
-                    <li class="step-item" :class="{ 'active': currentStep === 1 }">
-                        <a href="#" @click.prevent="currentStep = 1" class="text-decoration-none">Substansi
+                    <li class="step-item {{ $currentStep === 1 ? 'active' : '' }}">
+                        <a href="#" wire:click.prevent="setStep(1)" class="text-decoration-none">Substansi
                             Usulan</a>
                     </li>
-                    <li class="step-item" :class="{ 'active': currentStep === 2 }">
-                        <a href="#" @click.prevent="currentStep = 2" class="text-decoration-none">RAB</a>
+                    <li class="step-item {{ $currentStep === 2 ? 'active' : '' }}">
+                        <a href="#" wire:click.prevent="setStep(2)" class="text-decoration-none">RAB</a>
                     </li>
                 </ul>
             </div>
@@ -37,7 +35,8 @@
     <!-- Content Sections -->
     <div class="col-md-12">
         <!-- Section 1: Substansi Usulan -->
-        <div id="section-substansi" x-show="currentStep === 1">
+        @if ($currentStep === 1)
+            <div id="section-substansi">
             <!-- Basic Info Card -->
             <div class="mb-3 card">
                 <div class="card-header">
@@ -65,9 +64,21 @@
                             <p class="text-reset">{{ $proposal->submitter?->name }}</p>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label"><x-lucide-clipboard-list class="me-2 icon" />Skema
+                            <label class="form-label {{ $this->canEdit() ? 'required' : '' }}"><x-lucide-clipboard-list class="me-2 icon" />Skema
                                 Penelitian</label>
-                            <p class="text-reset">{{ $proposal->researchScheme?->name ?? '—' }}</p>
+                            @if ($this->canEdit())
+                                <select wire:model="researchSchemeId" class="form-select form-select-sm @error('researchSchemeId') is-invalid @enderror">
+                                    <option value="">Pilih Skema</option>
+                                    @foreach ($this->schemes as $scheme)
+                                        <option value="{{ $scheme->id }}">{{ $scheme->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('researchSchemeId')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            @else
+                                <p class="text-reset">{{ $proposal->researchScheme?->name ?? '—' }}</p>
+                            @endif
                         </div>
                         <div class="col-md-3">
                             <label class="form-label"><x-lucide-calendar class="me-2 icon" />Tanggal
@@ -418,124 +429,135 @@
                     </div>
                 </div>
             @endif
-
         </div>
+        @endif
 
-        <!-- Section 2: RAB (Read-Only) -->
-        <div id="section-rab" x-show="currentStep === 2">
-            <div class="mb-3 card">
-                <div class="card-header">
-                    <h3 class="card-title">2.1 Rencana Anggaran Biaya (RAB)</h3>
-                    <div class="card-actions">
-                        <x-tabler.badge color="info">Read-Only</x-tabler.badge>
-                    </div>
-                </div>
-                @if ($proposal->budgetItems->isEmpty())
-                    <div class="card-body">
-                        <div class="py-4 text-muted text-center">
-                            <x-lucide-inbox class="mb-2 icon icon-lg" />
-                            <p>Belum ada item anggaran</p>
+        <!-- Section 2: RAB -->
+        @if ($currentStep === 2)
+        <div id="section-rab">
+            @if ($this->canEdit())
+                @include('livewire.research.proposal.steps.rab')
+            @else
+                <div class="mb-3 card">
+                    <div class="card-header">
+                        <h3 class="card-title">2.1 Rencana Anggaran Biaya (RAB)</h3>
+                        <div class="card-actions">
+                            <x-tabler.badge color="info">Read-Only</x-tabler.badge>
                         </div>
                     </div>
-                @else
-                    <div class="table-responsive">
-                        <table class="card-table table table-bordered table-vcenter">
-                            <thead>
-                                <tr>
-                                    <th width="20%">Kelompok</th>
-                                    <th width="25%">Komponen</th>
-                                    <th width="10%">Volume</th>
-                                    <th width="10%">Unit</th>
-                                    <th width="15%">Harga Satuan</th>
-                                    <th width="20%">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($proposal->budgetItems as $item)
+                    @if ($proposal->budgetItems->isEmpty())
+                        <div class="card-body">
+                            <div class="py-4 text-muted text-center">
+                                <x-lucide-inbox class="mb-2 icon icon-lg" />
+                                <p>Belum ada item anggaran</p>
+                            </div>
+                        </div>
+                    @else
+                        <div class="table-responsive">
+                            <table class="card-table table table-bordered table-vcenter">
+                                <thead>
                                     <tr>
-                                        <td>{{ $item->budgetGroup?->name ?? ($item->group ?? '-') }}</td>
-                                        <td>{{ $item->budgetComponent?->name ?? ($item->component ?? '-') }}</td>
-                                        <td class="text-center">{{ $item->volume }}</td>
-                                        <td class="text-center">
-                                            <x-tabler.badge variant="outline">
-                                                {{ $item->budgetComponent?->unit ?? '-' }}
-                                            </x-tabler.badge>
-                                        </td>
-                                        <td class="text-end">Rp
-                                            {{ number_format($item->unit_price, 0, ',', '.') }}
-                                        </td>
-                                        <td class="text-end fw-bold">Rp
-                                            {{ number_format($item->total_price, 0, ',', '.') }}</td>
+                                        <th width="20%">Kelompok</th>
+                                        <th width="25%">Komponen</th>
+                                        <th width="10%">Volume</th>
+                                        <th width="10%">Unit</th>
+                                        <th width="15%">Harga Satuan</th>
+                                        <th width="20%">Total</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                            <tfoot>
-                                <tr class="table-active">
-                                    <th colspan="5" class="text-end">Total Anggaran:</th>
-                                    <th class="text-end">
-                                        <span class="text-primary">
-                                            Rp
-                                            {{ number_format($proposal->budgetItems->sum('total_price'), 0, ',', '.') }}
-                                        </span>
-                                    </th>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                @endif
-            </div>
-
-            <!-- Summary Card -->
-            <div class="mb-3 card">
-                <div class="card-header">
-                    <h3 class="card-title">Ringkasan Anggaran</h3>
+                                </thead>
+                                <tbody>
+                                    @foreach ($proposal->budgetItems as $item)
+                                        <tr>
+                                            <td>{{ $item->budgetGroup?->name ?? ($item->group ?? '-') }}</td>
+                                            <td>{{ $item->budgetComponent?->name ?? ($item->component ?? '-') }}</td>
+                                            <td class="text-center">{{ $item->volume }}</td>
+                                            <td class="text-center">
+                                                <x-tabler.badge variant="outline">
+                                                    {{ $item->budgetComponent?->unit ?? '-' }}
+                                                </x-tabler.badge>
+                                            </td>
+                                            <td class="text-end">Rp
+                                                {{ number_format($item->unit_price, 0, ',', '.') }}
+                                            </td>
+                                            <td class="text-end fw-bold">Rp
+                                                {{ number_format($item->total_price, 0, ',', '.') }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-active">
+                                        <th colspan="5" class="text-end">Total Anggaran:</th>
+                                        <th class="text-end">
+                                            <span class="text-primary">
+                                                Rp
+                                                {{ number_format($proposal->budgetItems->sum('total_price'), 0, ',', '.') }}
+                                            </span>
+                                        </th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    @endif
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Jumlah Item Anggaran</label>
-                                <p class="text-reset h4">{{ $proposal->budgetItems->count() }} item</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Total Anggaran</label>
-                                <p class="text-primary text-reset h4">
-                                    Rp {{ number_format($proposal->budgetItems->sum('total_price'), 0, ',', '.') }}
-                                </p>
-                            </div>
-                        </div>
+
+                <!-- Summary Card -->
+                <div class="mb-3 card">
+                    <div class="card-header">
+                        <h3 class="card-title">Ringkasan Anggaran</h3>
                     </div>
-                    @if ($proposal->sbk_value)
+                    <div class="card-body">
                         <div class="row">
-                            <div class="col-md-12">
-                                <div class="mb-0">
-                                    <label class="form-label">Nilai SBK</label>
-                                    <p class="text-reset">Rp
-                                        {{ number_format($proposal->sbk_value, 0, ',', '.') }}
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Jumlah Item Anggaran</label>
+                                    <p class="text-reset h4">{{ $proposal->budgetItems->count() }} item</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Total Anggaran</label>
+                                    <p class="text-primary text-reset h4">
+                                        Rp {{ number_format($proposal->budgetItems->sum('total_price'), 0, ',', '.') }}
                                     </p>
                                 </div>
                             </div>
                         </div>
-                    @endif
+                        @if ($proposal->sbk_value)
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="mb-0">
+                                        <label class="form-label">Nilai SBK</label>
+                                        <p class="text-reset">Rp
+                                            {{ number_format($proposal->sbk_value, 0, ',', '.') }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
 
+                    </div>
                 </div>
-            </div>
+            @endif
         </div>
+        @endif
 
         <!-- Navigation Buttons -->
         <div class="mt-4">
             <div class="d-flex justify-content-between">
-                <button type="button" class="btn" @click="currentStep--" x-show="currentStep > 1">
-                    <x-lucide-arrow-left class="icon" />
-                    Kembali
-                </button>
-                <div x-show="currentStep === 1"></div>
-                <button type="button" class="btn btn-primary" @click="currentStep++" x-show="currentStep < 2">
-                    Selanjutnya
-                    <x-lucide-arrow-right class="icon" />
-                </button>
+                @if ($currentStep > 1)
+                    <button type="button" class="btn" wire:click="setStep({{ $currentStep - 1 }})">
+                        <x-lucide-arrow-left class="icon" />
+                        Kembali
+                    </button>
+                @else
+                    <div></div>
+                @endif
+                @if ($currentStep < 2)
+                    <button type="button" class="btn btn-primary" wire:click="setStep({{ $currentStep + 1 }})">
+                        Selanjutnya
+                        <x-lucide-arrow-right class="icon" />
+                    </button>
+                @endif
             </div>
         </div>
 
@@ -559,8 +581,7 @@
                     </div>
                     <small class="d-block mt-2 text-muted">
                         <x-lucide-info class="icon icon-sm" />
-                        Pastikan Anda telah memilih kelompok makro riset dan/atau mengunggah file substansi baru
-                        sebelum menyimpan.
+                        Pastikan Anda telah memilih skema penelitian, kelompok makro riset, mengunggah file substansi baru, dan/atau memperbarui RAB sebelum menyimpan.
                     </small>
                 </div>
             </div>
