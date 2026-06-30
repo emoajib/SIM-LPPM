@@ -23,7 +23,9 @@ php artisan down --retry=300
 
 # Pull changes
 echo "Pulling latest changes..."
+git stash
 git pull origin main
+git stash pop || echo "⚠️ Tidak ada stash untuk dikembalikan atau ditolak."
 
 # Install dependencies
 echo "Installing dependencies..."
