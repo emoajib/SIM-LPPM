@@ -19,8 +19,9 @@
     .header-table {
         width: 100%;
         border-bottom: 2px solid #000;
-        margin-bottom: 15px;
-        padding-bottom: 5px;
+        margin-bottom: 5px;
+        padding-bottom: 0px;
+        margin-top: -20px;
         border-collapse: collapse;
     }
     .header-table td {
