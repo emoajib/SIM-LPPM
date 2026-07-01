@@ -16,6 +16,29 @@
         <x-tabler.alert />
     </div>
 
+    @php
+        $latestRevisionLog = $proposal->statusLogs()
+            ->where('status_after', \App\Enums\ProposalStatus::REVISION_NEEDED)
+            ->latest('at')
+            ->first();
+    @endphp
+    @if ($latestRevisionLog && $latestRevisionLog->notes)
+        <div class="col-md-12 mb-3">
+            <div class="alert alert-important alert-warning shadow-sm border-0">
+                <div class="d-flex align-items-start">
+                    <x-lucide-message-square class="alert-icon icon me-2 mt-1" />
+                    <div>
+                        <h4 class="alert-title fw-bold">Catatan Perbaikan dari Kepala LPPM:</h4>
+                        <div class="text-secondary small mt-1" style="white-space: pre-wrap; font-size: 10.5pt; color: #495057 !important;">
+                            {{ $latestRevisionLog->notes }}
+                        </div>
+                        <small class="text-muted d-block mt-2" style="font-size: 8pt;">Ditulis oleh: {{ $latestRevisionLog->user?->name ?? 'Kepala LPPM' }} pada {{ $latestRevisionLog->at->format('d M Y H:i') }}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <!-- Steps Indicator -->
     <div class="mb-3 col-md-12">
         <div class="card">
