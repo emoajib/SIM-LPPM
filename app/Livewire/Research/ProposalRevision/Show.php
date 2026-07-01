@@ -30,7 +30,6 @@ use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
-use Spatie\MediaLibrary\HasMedia;
 
 #[Layout('components.layouts.app')]
 #[Title('Detail Revisi Proposal Penelitian')]
@@ -77,10 +76,10 @@ class Show extends Component
                 && ! $completedRevs->contains('recommendation', 'revision_needed')
                 && ! $completedRevs->contains('recommendation', 'rejected');
 
-            // Validate substance file (wajib upload baru jika ada revisi/penolakan dari reviewer)
+            // Validate substance file (wajib upload baru untuk perbaikan usulan)
             $hasNewUploadedFile = $this->substanceFile && $this->substanceFile instanceof TemporaryUploadedFile;
 
-            if (! $allApproved && ! $hasNewUploadedFile) {
+            if (! $hasNewUploadedFile) {
                 $message = 'Anda belum mengunggah dokumen PDF Substansi Usulan yang baru. Silakan unggah dokumen perbaikan Anda.';
                 $this->addError('substanceFile', $message);
                 $this->toastError($message);
@@ -101,12 +100,12 @@ class Show extends Component
                 }
 
                 $newScheme = ResearchScheme::find($this->researchSchemeId);
-                if ($newScheme && $newScheme->strata) {
-                    $range = TktMeasurement::getTktRangeForStrata($newScheme->strata);
+                if ($newScheme) {
+                    $range = TktMeasurement::getTktRangeForScheme($newScheme->id, $newScheme->strata);
                     if ($range) {
                         [$min, $max] = $range;
                         if ($achievedLevel < $min || $achievedLevel > $max) {
-                            $message = "TKT Saat Ini (Level $achievedLevel) tidak sesuai dengan Skema {$newScheme->name} ({$newScheme->strata}) (Target: Level $min - $max).";
+                            $message = "TKT Saat Ini (Level $achievedLevel) tidak sesuai dengan Skema {$newScheme->name} (Target: Level $min - $max).";
                             $this->addError('researchSchemeId', $message);
                             $this->toastError($message);
 
@@ -264,23 +263,11 @@ class Show extends Component
             && ! $completedReviewers->contains('recommendation', 'revision_needed')
             && ! $completedReviewers->contains('recommendation', 'rejected');
 
-        // Validate substance file:
-        // - Wajib upload baru jika ada reviewer yang meminta revisi (revision_needed / rejected)
-        // - Opsional jika semua reviewer menyetujui (approved) — cukup konfirmasi
+        // Validate substance file: wajib upload file baru untuk semua perbaikan usulan
         $hasNewUploadedFile = $this->substanceFile instanceof TemporaryUploadedFile;
-        $detailable = $this->form->proposal->detailable;
-        $hasExistingFile = $detailable instanceof HasMedia && $detailable->hasMedia('substance_file');
 
-        if (! $allReviewersApproved && ! $hasNewUploadedFile) {
-            $message = 'Anda belum mengunggah dokumen PDF Substansi Usulan yang baru. Silakan unggah dokumen perbaikan Anda sesuai catatan reviewer.';
-            $this->addError('substanceFile', $message);
-            $this->toastError($message);
-
-            return;
-        }
-
-        if ($allReviewersApproved && ! $hasNewUploadedFile && ! $hasExistingFile) {
-            $message = 'Dokumen PDF Substansi Usulan tidak ditemukan. Silakan unggah dokumen terlebih dahulu.';
+        if (! $hasNewUploadedFile) {
+            $message = 'Anda belum mengunggah dokumen PDF Substansi Usulan yang baru. Silakan unggah dokumen perbaikan Anda.';
             $this->addError('substanceFile', $message);
             $this->toastError($message);
 
@@ -317,12 +304,12 @@ class Show extends Component
                 }
 
                 $newScheme = ResearchScheme::find($this->researchSchemeId);
-                if ($newScheme && $newScheme->strata) {
-                    $range = TktMeasurement::getTktRangeForStrata($newScheme->strata);
+                if ($newScheme) {
+                    $range = TktMeasurement::getTktRangeForScheme($newScheme->id, $newScheme->strata);
                     if ($range) {
                         [$min, $max] = $range;
                         if ($achievedLevel < $min || $achievedLevel > $max) {
-                            $message = "TKT Saat Ini (Level $achievedLevel) tidak sesuai dengan Skema {$newScheme->name} ({$newScheme->strata}) (Target: Level $min - $max).";
+                            $message = "TKT Saat Ini (Level $achievedLevel) tidak sesuai dengan Skema {$newScheme->name} (Target: Level $min - $max).";
                             $this->addError('researchSchemeId', $message);
                             $this->toastError($message);
 
@@ -353,8 +340,9 @@ class Show extends Component
             /** @var Research $research */
             $research = $proposal->detailable;
 
-            // Update macro research group
+            // Update macro research group and TKT type
             $research->macro_research_group_id = $this->macroResearchGroupId;
+            $research->tkt_type = $this->form->tkt_type ?: null;
 
             $hasChanges = false;
             $changedFields = [];
@@ -418,10 +406,23 @@ class Show extends Component
                         'group' => $item['group'] ?? '',
                         'component' => $item['component'] ?? '',
                         'item_description' => $item['item'] ?? '',
-                        'volume' => $item['volume'] ?? 0,
+                        'volume' => $item['volume'] ?? 1,
                         'unit_price' => $item['unit_price'] ?? 0,
-                        'total_price' => $item['total'] ?? 0,
+                        'total_price' => ($item['volume'] ?? 1) * ($item['unit_price'] ?? 0),
                     ]);
+                }
+
+                // Sync TKT Levels and Indicators
+                if (! empty($this->form->tkt_results)) {
+                    $research->tktLevels()->sync($this->form->tkt_results);
+                }
+
+                if (! empty($this->form->tkt_indicator_scores)) {
+                    $indicatorSyncData = [];
+                    foreach ($this->form->tkt_indicator_scores as $indicatorId => $score) {
+                        $indicatorSyncData[$indicatorId] = ['score' => $score];
+                    }
+                    $research->tktIndicators()->sync($indicatorSyncData);
                 }
             });
 

@@ -154,7 +154,8 @@
                 @php
                     $targetTktLabel = null;
                     if ($proposal->researchScheme && $proposal->researchScheme->strata) {
-                        $range = \App\Livewire\Research\Proposal\Components\TktMeasurement::getTktRangeForStrata(
+                        $range = \App\Livewire\Research\Proposal\Components\TktMeasurement::getTktRangeForScheme(
+                            $proposal->research_scheme_id,
                             $proposal->researchScheme->strata,
                         );
                         if ($range) {

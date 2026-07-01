@@ -425,7 +425,8 @@
                     ? \App\Models\ResearchScheme::find($form->research_scheme_id)
                     : null;
                 $schemeStrata = $selectedScheme?->strata;
-                $targetRange = \App\Livewire\Research\Proposal\Components\TktMeasurement::getTktRangeForStrata(
+                $targetRange = \App\Livewire\Research\Proposal\Components\TktMeasurement::getTktRangeForScheme(
+                    $selectedScheme?->id,
                     $schemeStrata,
                 );
             @endphp

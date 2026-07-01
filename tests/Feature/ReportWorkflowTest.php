@@ -72,6 +72,8 @@ class ReportWorkflowTest extends TestCase
         $this->actingAs($this->dosen);
 
         $file = UploadedFile::fake()->create('laporan.pdf', 100);
+        $realizationFile = UploadedFile::fake()->create('realization.pdf', 100);
+        $presentationFile = UploadedFile::fake()->create('presentation.pdf', 100);
 
         $component = Livewire::test(Show::class, [
             'proposal' => $this->proposal,
@@ -79,6 +81,8 @@ class ReportWorkflowTest extends TestCase
             ->set('form.summaryUpdate', 'This is the final summary.')
             ->set('form.keywordsInput', 'final; report; research')
             ->set('substanceFile', $file)
+            ->set('realizationFile', $realizationFile)
+            ->set('presentationFile', $presentationFile)
             ->call('save');
 
         $component->assertHasNoErrors();

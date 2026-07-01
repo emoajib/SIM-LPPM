@@ -40,6 +40,11 @@
                                  <x-lucide-printer class="icon" />
                                  <span>PDF & Ekspor</span>
                              </button>
+                             <button wire:click="setActiveTab('tkt-manager')"
+                                 class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'tkt-manager' ? 'active' : '' }}">
+                                 <x-lucide-file-spreadsheet class="icon" />
+                                 <span>Manajemen TKT</span>
+                             </button>
                             <button wire:click="setActiveTab('audit')"
                                 class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'audit' ? 'active' : '' }}">
                                 <x-lucide-eye class="icon" />
@@ -94,6 +99,10 @@
                             <h2 class="mb-4">Pengaturan PDF & Ekspor</h2>
                             <p class="mb-4 card-subtitle">Kelola preferensi tipografi, tata letak, dan logo untuk semua dokumen PDF.</p>
                             <livewire:settings.pdf-export-settings />
+                        </div>
+                    @elseif ($activeTab === 'tkt-manager')
+                        <div>
+                            <livewire:settings.tabs.tkt-manager />
                         </div>
                     @elseif ($activeTab === 'audit')
                         <div>

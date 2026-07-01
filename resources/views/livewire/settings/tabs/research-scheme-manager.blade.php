@@ -74,6 +74,23 @@
                         <div class="d-block invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Minimum Target TKT <span class="text-muted">(opsional)</span></label>
+                        <input type="number" wire:model="min_tkt" class="form-control" placeholder="1-9" min="1" max="9">
+                        <small class="form-hint">Kosongkan untuk mengikuti aturan Strata bawaan.</small>
+                        @error('min_tkt')
+                            <div class="d-block invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Maksimum Target TKT <span class="text-muted">(opsional)</span></label>
+                        <input type="number" wire:model="max_tkt" class="form-control" placeholder="1-9" min="1" max="9">
+                        @error('max_tkt')
+                            <div class="d-block invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
 
                 <hr class="my-4">
                 <h4 class="mb-3 text-primary">Info Eligibilitas (Kriteria Pengusul)</h4>

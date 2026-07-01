@@ -685,8 +685,8 @@ abstract class ProposalCreate extends Component
                         // 2. Get required range for the scheme if selected
                         if ($this->form->research_scheme_id) {
                             $scheme = ResearchScheme::find($this->form->research_scheme_id);
-                            if ($scheme && $scheme->strata) {
-                                $range = TktMeasurement::getTktRangeForStrata($scheme->strata);
+                            if ($scheme) {
+                                $range = TktMeasurement::getTktRangeForScheme($scheme->id, $scheme->strata);
 
                                 // If range exists (not PKM), validate
                                 if ($range) {
@@ -694,7 +694,7 @@ abstract class ProposalCreate extends Component
 
                                     // Check if achieved level is within range
                                     if ($achievedLevel < $min || $achievedLevel > $max) {
-                                        $fail("TKT Saat Ini (Level $achievedLevel) tidak sesuai dengan Skema $scheme->strata (Target: Level $min - $max).");
+                                        $fail("TKT Saat Ini (Level $achievedLevel) tidak sesuai dengan Skema {$scheme->name} (Target: Level $min - $max).");
                                     }
                                 }
                             }

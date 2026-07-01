@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Research\Proposal\Components;
 
+use App\Models\ResearchScheme;
 use App\Models\TktIndicator;
 use App\Models\TktLevel;
 use Livewire\Attributes\On;
@@ -15,7 +16,9 @@ class TktMeasurement extends Component
 {
     public $tktType;
 
-    public $strata; // Research scheme strata: Dasar, Terapan, Pengembangan, PKM
+    public $strata; // Research scheme strata (Legacy fallback)
+
+    public $schemeId; // Current Research Scheme ID
 
     public $levels = [];
 
@@ -44,9 +47,10 @@ class TktMeasurement extends Component
      * Handle tkt-type-selected event from parent component
      */
     #[On('tkt-type-selected')]
-    public function handleTypeSelected($tktType, $existingScores = [], $strata = null)
+    public function handleTypeSelected($tktType, $existingScores = [], $strata = null, $schemeId = null)
     {
         $this->strata = $strata;
+        $this->schemeId = $schemeId;
         $this->loadLevels($tktType);
 
         if (! empty($existingScores)) {
@@ -128,12 +132,24 @@ class TktMeasurement extends Component
     }
 
     /**
-     * Get target TKT range for a given strata
-     * Returns [min, max] or null for PKM
+     * Get target TKT range for a given scheme
+     * Returns [min, max] or null
      */
-    public static function getTktRangeForStrata(?string $strata): ?array
+    public static function getTktRangeForScheme(int|string|null $schemeId, ?string $fallbackStrata = null): ?array
     {
-        return match ($strata) {
+        if ($schemeId) {
+            $scheme = ResearchScheme::find($schemeId);
+            if ($scheme && $scheme->min_tkt !== null && $scheme->max_tkt !== null) {
+                return [(int) $scheme->min_tkt, (int) $scheme->max_tkt];
+            }
+
+            if ($scheme) {
+                $fallbackStrata = $scheme->strata;
+            }
+        }
+
+        // Fallback to legacy strata logic if custom min_tkt / max_tkt are not set
+        return match ($fallbackStrata) {
             'Reguler' => [1, 3],
             'Kolaborasi Internal' => [4, 6],
             'Kerja Sama Antar PT' => [7, 9],
@@ -164,7 +180,7 @@ class TktMeasurement extends Component
      */
     public function isTktWithinTarget(): ?bool
     {
-        $range = self::getTktRangeForStrata($this->strata);
+        $range = self::getTktRangeForScheme($this->schemeId, $this->strata);
         if (! $range) {
             return null;
         } // N/A for PKM

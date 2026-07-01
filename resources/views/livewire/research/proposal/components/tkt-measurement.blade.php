@@ -6,8 +6,9 @@
                 {{-- Target TKT Range Info Card --}}
                 @if ($strata)
                     @php
-                        $targetRange = \App\Livewire\Research\Proposal\Components\TktMeasurement::getTktRangeForStrata(
-                            $strata,
+                        $targetRange = \App\Livewire\Research\Proposal\Components\TktMeasurement::getTktRangeForScheme(
+                            $schemeId ?? null,
+                            $strata ?? null,
                         );
                         $achievedTkt = $this->getAchievedTktLevel();
                         $isWithinTarget = $this->isTktWithinTarget();

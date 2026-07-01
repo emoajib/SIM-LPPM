@@ -19,6 +19,12 @@ class ResearchSchemeManager extends Component
     #[Validate('required|min:3|max:255')]
     public string $strata = '';
 
+    #[Validate('nullable|integer|min:1|max:9')]
+    public ?int $min_tkt = null;
+
+    #[Validate('nullable|integer|min:1|max:9|gte:min_tkt')]
+    public ?int $max_tkt = null;
+
     public ?int $editingId = null;
 
     public string $modalTitle = 'Skema Penelitian';
@@ -87,6 +93,8 @@ class ResearchSchemeManager extends Component
         $data = [
             'name' => $this->name,
             'strata' => $this->strata,
+            'min_tkt' => $this->min_tkt,
+            'max_tkt' => $this->max_tkt,
             'eligibility_rules' => [
                 'allowed_functional_positions' => $this->allowed_functional_positions,
                 'min_sinta_score' => $this->min_sinta_score,
@@ -125,6 +133,8 @@ class ResearchSchemeManager extends Component
         $this->editingId = $researchScheme->id;
         $this->name = $researchScheme->name;
         $this->strata = $researchScheme->strata;
+        $this->min_tkt = $researchScheme->min_tkt;
+        $this->max_tkt = $researchScheme->max_tkt;
         $rules = $researchScheme->eligibility_rules ?? [];
 
         $this->allowed_functional_positions = $rules['allowed_functional_positions'] ?? [];
@@ -160,6 +170,8 @@ class ResearchSchemeManager extends Component
         $this->reset([
             'name',
             'strata',
+            'min_tkt',
+            'max_tkt',
             'editingId',
             'allowed_functional_positions',
             'min_sinta_score',

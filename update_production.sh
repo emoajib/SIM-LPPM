@@ -38,6 +38,11 @@ echo "⏳ Lanjut dalam 5 detik... (Ctrl+C untuk batal)"
 sleep 5
 php artisan migrate --force
 
+# Patch missing Software TKT levels
+echo "Patching Software TKT levels..."
+php artisan patch:software-tkt
+
+
 # Clear & rebuild caches
 echo "Rebuilding caches..."
 php artisan optimize:clear

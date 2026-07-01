@@ -171,6 +171,30 @@ class Show extends Component
             return;
         }
 
+        // Validate that realization file exists (either in DB or newly uploaded)
+        $hasRealizationInDb = $this->progressReport && $this->progressReport->hasMedia('realization_file');
+        $hasNewRealization = $this->realizationFile && $this->realizationFile instanceof TemporaryUploadedFile;
+
+        if (! $hasRealizationInDb && ! $hasNewRealization) {
+            $message = 'Gagal mengajukan: Anda wajib mengunggah File Bukti Realisasi Anggaran.';
+            $this->addError('realizationFile', $message);
+            $this->toastError($message);
+
+            return;
+        }
+
+        // Validate that presentation/poster file exists (either in DB or newly uploaded)
+        $hasPresentationInDb = $this->progressReport && $this->progressReport->hasMedia('presentation_file');
+        $hasNewPresentation = $this->presentationFile && $this->presentationFile instanceof TemporaryUploadedFile;
+
+        if (! $hasPresentationInDb && ! $hasNewPresentation) {
+            $message = 'Gagal mengajukan: Anda wajib mengunggah File Poster/Presentasi.';
+            $this->addError('presentationFile', $message);
+            $this->toastError($message);
+
+            return;
+        }
+
         try {
             DB::transaction(function () {
                 // Submit report via form
