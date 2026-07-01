@@ -79,7 +79,13 @@ class Show extends Component
             // Validate substance file (wajib upload baru untuk perbaikan usulan)
             $hasNewUploadedFile = $this->substanceFile && $this->substanceFile instanceof TemporaryUploadedFile;
 
-            if (! $hasNewUploadedFile) {
+            /** @var Research $detailable */
+            $detailable = $this->form->proposal->detailable;
+            $media = $detailable->getFirstMedia('substance_file');
+
+            $isRevisionUploaded = $hasNewUploadedFile || ($media && $media->getCustomProperty('is_revision') === true);
+
+            if (! $isRevisionUploaded) {
                 $message = 'Anda belum mengunggah dokumen PDF Substansi Usulan yang baru. Silakan unggah dokumen perbaikan Anda.';
                 $this->addError('substanceFile', $message);
                 $this->toastError($message);
@@ -266,7 +272,13 @@ class Show extends Component
         // Validate substance file: wajib upload file baru untuk semua perbaikan usulan
         $hasNewUploadedFile = $this->substanceFile instanceof TemporaryUploadedFile;
 
-        if (! $hasNewUploadedFile) {
+        /** @var Research $detailable */
+        $detailable = $this->form->proposal->detailable;
+        $media = $detailable->getFirstMedia('substance_file');
+
+        $isRevisionUploaded = $hasNewUploadedFile || ($media && $media->getCustomProperty('is_revision') === true);
+
+        if (! $isRevisionUploaded) {
             $message = 'Anda belum mengunggah dokumen PDF Substansi Usulan yang baru. Silakan unggah dokumen perbaikan Anda.';
             $this->addError('substanceFile', $message);
             $this->toastError($message);
@@ -372,7 +384,7 @@ class Show extends Component
                     ->addMedia($this->substanceFile)
                     ->usingName($this->substanceFile->getClientOriginalName())
                     ->usingFileName($this->substanceFile->hashName())
-                    ->withCustomProperties(['uploaded_by' => Auth::id()])
+                    ->withCustomProperties(['uploaded_by' => Auth::id(), 'is_revision' => true])
                     ->toMediaCollection('substance_file');
 
                 $hasChanges = true;

@@ -47,18 +47,10 @@ class SubmitButton extends Component
             ProposalStatus::REVISION_NEEDED,
         ];
 
-        $user = Auth::user();
-        $isEligible = true;
-        if ($user && $user->activeHasRole('dosen')) {
-            $eligibilityService = app(LecturerEligibilityService::class);
-            $eligibility = $eligibilityService->checkEligibility($user);
-            $isEligible = $eligibility['eligible'];
-        }
-
         return in_array($proposal->status, $allowedStatuses)
             && $proposal->allTeamMembersAccepted()
             && Auth::id() === $proposal->submitter_id
-            && $isEligible
+            && $this->eligibility()['eligible']
             && $proposal->budgetItems()->count() > 0;
     }
 
@@ -79,10 +71,18 @@ class SubmitButton extends Component
     #[Computed]
     public function eligibility()
     {
+        $eligibilityService = app(LecturerEligibilityService::class);
+
+        if ($this->proposal->status === ProposalStatus::REVISION_NEEDED) {
+            if (! $eligibilityService->isRevisionOpen('community_service')) {
+                return ['eligible' => false, 'reasons' => ['Masa perbaikan usulan telah ditutup.']];
+            }
+
+            return ['eligible' => true, 'reasons' => []];
+        }
+
         $user = Auth::user();
         if ($user && $user->activeHasRole('dosen')) {
-            $eligibilityService = app(LecturerEligibilityService::class);
-
             return $eligibilityService->checkEligibility($user);
         }
 
