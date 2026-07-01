@@ -409,12 +409,17 @@
                         @if ($communityService && $communityService->hasMedia('substance_file'))
                             @php $media = $communityService->getFirstMedia('substance_file'); @endphp
                             <div class="d-flex align-items-center gap-2">
-                                <a href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}" target="_blank"
+                                <a href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
                                     class="btn-outline-primary btn btn-sm">
-                                    <x-lucide-download class="icon" />
-                                    Download File Substansi
+                                    <x-lucide-download class="icon icon-sm me-1" />
+                                    Download
                                 </a>
-                                <small class="text-muted">
+                                <a href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}?view=1" target="_blank"
+                                    class="btn-outline-info btn btn-sm">
+                                    <x-lucide-eye class="icon icon-sm me-1" />
+                                    Lihat PDF
+                                </a>
+                                <small class="text-muted ms-2">
                                     <x-lucide-check class="text-success icon icon-sm" />
                                     File tersedia ({{ $media->file_name }})
                                 </small>

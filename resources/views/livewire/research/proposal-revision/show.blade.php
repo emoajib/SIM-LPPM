@@ -381,16 +381,22 @@
                     <!-- Current File -->
                     <div class="mb-3">
                         <label class="form-label"><x-lucide-file class="me-2 icon" />File Substansi Saat Ini</label>
-                        @if ($research?->substance_file)
+                        @php $substanceMedia = $research->getFirstMedia('substance_file'); @endphp
+                        @if ($substanceMedia)
                             <div class="d-flex align-items-center gap-2">
-                                <a href="{{ Storage::url($research->substance_file) }}" target="_blank"
+                                <a href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $substanceMedia]) }}"
                                     class="btn-outline-primary btn btn-sm">
-                                    <x-lucide-download class="icon" />
+                                    <x-lucide-download class="icon icon-sm" />
                                     Download File Substansi
                                 </a>
-                                <small class="text-muted">
+                                <a href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $substanceMedia]) }}?view=1" target="_blank"
+                                    class="btn-outline-info btn btn-sm">
+                                    <x-lucide-eye class="icon icon-sm" />
+                                    Lihat PDF
+                                </a>
+                                <small class="text-muted ms-2">
                                     <x-lucide-check class="text-success icon icon-sm" />
-                                    File tersedia
+                                    File tersedia ({{ $substanceMedia->file_name }})
                                 </small>
                             </div>
                         @else
