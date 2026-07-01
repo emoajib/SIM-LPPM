@@ -1,45 +1,27 @@
 <div>
     @if ($this->canDecide)
-        @php $isRevisionReview = $this->proposal->status === \App\Enums\ProposalStatus::REVISION_SUBMITTED; @endphp
-
-        <div class="alert alert-{{ $isRevisionReview ? 'purple' : ($this->isInitialReviewedStage ? 'warning' : 'info') }}" role="alert">
-            <x-lucide-{{ $isRevisionReview ? 'refresh-cw' : ($this->isInitialReviewedStage ? 'clipboard-list' : 'clipboard-check') }} class="icon" />
+        <div class="alert alert-purple" role="alert">
+            <x-lucide-refresh-cw class="icon" />
             <div>
                 <h4 class="alert-heading">
-                    @if ($isRevisionReview)
-                        Keputusan Final &mdash; Revisi Telah Diajukan
-                    @elseif ($this->isInitialReviewedStage)
-                        Analisis Hasil Review &mdash; Kembalikan ke Perbaikan
-                    @else
-                        Keputusan Akhir Kepala LPPM
-                    @endif
+                    Keputusan Final &mdash; Revisi Telah Diajukan
                 </h4>
                 <div class="alert-description">
-                    @if ($isRevisionReview)
-                        Pengusul telah mengajukan revisi proposal. Silakan tinjau dan berikan keputusan akhir (Setujui / Perbaikan Lanjutan / Tolak).
-                    @elseif ($this->isInitialReviewedStage)
-                        Semua reviewer telah menyelesaikan penilaian. <strong>Seluruh proposal wajib melalui tahap Perbaikan Usulan</strong> agar dosen dapat membaca dan merespons catatan reviewer sebelum keputusan akhir dibuat.
-                        <br>
-                        <small class="mt-1 d-block text-muted">Tombol "Setujui" akan tersedia setelah dosen mengajukan ulang dari halaman Perbaikan Usulan.</small>
-                    @else
-                        Semua reviewer telah menyelesaikan review. Silakan berikan keputusan akhir untuk proposal ini.
-                    @endif
+                    Pengusul telah mengajukan revisi proposal. Silakan tinjau dan berikan keputusan akhir (Setujui / Perbaikan Lanjutan / Tolak).
                 </div>
             </div>
         </div>
 
         <div class="btn-list">
-            @if (! $this->isInitialReviewedStage)
-                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#finalDecisionModal"
-                    wire:click="$set('decision', 'completed')">
-                    <x-lucide-check class="icon" />
-                    Setujui Proposal
-                </button>
-            @endif
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#finalDecisionModal"
+                wire:click="$set('decision', 'completed')">
+                <x-lucide-check class="icon" />
+                Setujui Proposal
+            </button>
             <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#finalDecisionModal"
                 wire:click="$set('decision', 'revision_needed')">
                 <x-lucide-file-edit class="icon" />
-                {{ $this->isInitialReviewedStage ? 'Kembalikan ke Perbaikan Usulan' : 'Minta Perbaikan Lanjutan' }}
+                Minta Perbaikan Lanjutan
             </button>
             <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#finalDecisionModal"
                 wire:click="$set('decision', 'rejected')">
@@ -51,10 +33,6 @@
         <div class="alert alert-warning" role="alert">
             <strong>Menunggu Review:</strong> {{ $this->pendingReviewers->count() }} reviewer belum menyelesaikan review
         </div>
-    @else
-        {{-- <div class="alert alert-info" role="alert">
-            Proposal tidak dapat diputuskan saat ini
-        </div> --}}
     @endif
 
     <!-- Decision Confirmation Modal -->
@@ -81,15 +59,9 @@
                     @else
                         <div class="mb-3 text-center">
                             <x-lucide-file-edit class="mb-2 text-warning icon" style="width: 3rem; height: 3rem;" />
-                            <h3>@php $isRevisionReview = $this->proposal?->status === \App\Enums\ProposalStatus::REVISION_SUBMITTED; @endphp
-                                {{ $isRevisionReview ? 'Minta Perbaikan Ulang?' : 'Minta Perbaikan Usulan?' }}</h3>
+                            <h3>Minta Perbaikan Lanjutan?</h3>
                             <div class="text-secondary">
-                                @if ($isRevisionReview)
-                                    Proposal akan dikembalikan ke pengusul untuk melakukan perbaikan lanjutan.
-                                @else
-                                    Proposal akan dikembalikan ke pengusul untuk melakukan perbaikan sesuai dengan catatan
-                                    yang Anda berikan.
-                                @endif
+                                Proposal akan dikembalikan ke pengusul untuk melakukan perbaikan lanjutan.
                             </div>
                         </div>
                     @endif
@@ -123,7 +95,7 @@
                 <div class="w-100">
                     <div class="row">
                         <div class="col">
-                            <button type="button" class="w-100 btn btn-white" data-bs-dismiss="modal">
+                            <button type="button" class="w-100 btn btn-white" data-bs-toggle="modal">
                                 Batal
                             </button>
                         </div>

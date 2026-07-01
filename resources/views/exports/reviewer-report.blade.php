@@ -78,7 +78,7 @@
             <tr>
                 <td style="border: 1px solid black; text-align: center;">{{ $index + 1 }}</td>
                 <td colspan="2" style="border: 1px solid black; font-weight: bold;">{{ $rev->name }}</td>
-                <td colspan="2" style="border: 1px solid black;">{{ $rev->identity->faculty->name ?? '-' }}</td>
+                <td colspan="2" style="border: 1px solid black;">{{ $rev->identity?->faculty?->name ?? '-' }}</td>
                 <td style="border: 1px solid black; text-align: center;">{{ $rev->total_assigned }}</td>
                 <td style="border: 1px solid black; text-align: center; color: green;">{{ $rev->completed_count }}</td>
                 <td style="border: 1px solid black; text-align: center; color: orange;">{{ $rev->pending_count }}</td>

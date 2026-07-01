@@ -291,7 +291,7 @@
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
                     <td class="font-bold">{{ $rev->name }}</td>
-                    <td>{{ $rev->identity->faculty->name ?? '-' }}</td>
+                    <td>{{ $rev->identity?->faculty?->name ?? '-' }}</td>
                     <td class="text-center font-bold">{{ $rev->total_assigned }}</td>
                     <td class="text-center" style="color: green;">{{ $rev->completed_count }}</td>
                     <td class="text-center" style="color: orange;">{{ $rev->pending_count }}</td>

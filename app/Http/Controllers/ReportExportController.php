@@ -234,7 +234,7 @@ class ReportExportController extends Controller
             $this->upsertInstitutionalSignatures($institutionalReport, $variant, $hash);
 
             return $this->pdfDownloadResponse($pdfBinary, $filename);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
 
             Log::error('IKU PDF Export Error: '.$e->getMessage());
 
@@ -254,7 +254,7 @@ class ReportExportController extends Controller
             );
 
             return $download;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
 
             Log::error('IKU Excel Export Error: '.$e->getMessage());
 
@@ -346,7 +346,7 @@ class ReportExportController extends Controller
             $this->upsertInstitutionalSignatures($institutionalReport, $variant, $hash);
 
             return $this->pdfDownloadResponse($pdfBinary, $filename);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
 
             Log::error('Research PDF Export Error: '.$e->getMessage());
 
@@ -375,7 +375,7 @@ class ReportExportController extends Controller
             );
 
             return $download;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
 
             Log::error('Research Excel Export Error: '.$e->getMessage());
 
@@ -467,7 +467,7 @@ class ReportExportController extends Controller
             $this->upsertInstitutionalSignatures($institutionalReport, $variant, $hash);
 
             return $this->pdfDownloadResponse($pdfBinary, $filename);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
 
             Log::error('PKM PDF Export Error: '.$e->getMessage());
 
@@ -496,7 +496,7 @@ class ReportExportController extends Controller
             );
 
             return $download;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
 
             Log::error('PKM Excel Export Error: '.$e->getMessage());
 
@@ -576,7 +576,7 @@ class ReportExportController extends Controller
             $this->upsertInstitutionalSignatures($institutionalReport, $variant, $hash);
 
             return $this->pdfDownloadResponse($pdfBinary, $filename);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
 
             Log::error('Output PDF Export Error: '.$e->getMessage());
 
@@ -607,7 +607,7 @@ class ReportExportController extends Controller
             );
 
             return $download;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
 
             Log::error('Output Excel Export Error: '.$e->getMessage());
 
@@ -736,7 +736,7 @@ class ReportExportController extends Controller
             $this->upsertInstitutionalSignatures($institutionalReport, $variant, $hash);
 
             return $this->pdfDownloadResponse($pdfBinary, $filename);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
 
             Log::error('Partner PDF Export Error: '.$e->getMessage());
 
@@ -760,7 +760,7 @@ class ReportExportController extends Controller
             );
 
             return $download;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
 
             Log::error('Partner Excel Export Error: '.$e->getMessage());
 
@@ -783,7 +783,7 @@ class ReportExportController extends Controller
             );
 
             return $download;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
 
             Log::error('Archive Export Error: '.$e->getMessage());
 
@@ -801,7 +801,7 @@ class ReportExportController extends Controller
             );
 
             return $download;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
 
             Log::error('Archive Template Export Error: '.$e->getMessage());
 
@@ -823,7 +823,7 @@ class ReportExportController extends Controller
             );
 
             return $download;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
 
             Log::error('Dashboard Research Export Error: '.$e->getMessage());
 
@@ -844,7 +844,7 @@ class ReportExportController extends Controller
             );
 
             return $download;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
 
             Log::error('Dashboard Community Service Export Error: '.$e->getMessage());
 
@@ -1118,7 +1118,7 @@ class ReportExportController extends Controller
             }
 
             return $this->pdfInlineResponse($pdfBinary, $filename);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Monev BA PDF Export Error: '.$e->getMessage());
 
             return back()->with('error', 'Gagal menghasilkan Berita Acara: '.$e->getMessage());
@@ -1193,7 +1193,7 @@ class ReportExportController extends Controller
             $this->upsertInstitutionalSignatures($institutionalReport, $variant, $hash);
 
             return $this->pdfDownloadResponse($pdfBinary, $filename);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Monev PDF Export Error: '.$e->getMessage());
 
             return back()->with('error', 'Gagal mengunduh PDF: '.$e->getMessage());
@@ -1499,7 +1499,7 @@ class ReportExportController extends Controller
             $this->upsertInstitutionalSignatures($institutionalReport, $variant, $hash);
 
             return $this->pdfDownloadResponse($pdfBinary, $filename);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Reviewer PDF Export Error: '.$e->getMessage());
 
             return back()->with('error', 'Gagal mengunduh PDF: '.$e->getMessage());
@@ -1519,7 +1519,7 @@ class ReportExportController extends Controller
                 new ReviewerReportExport($period, $type, $search, $semester),
                 'laporan-reviewer-'.$period.'-'.now()->format('YmdHis').'.xlsx'
             );
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Reviewer Excel Export Error: '.$e->getMessage());
 
             return back()->with('error', 'Gagal mengunduh Excel: '.$e->getMessage());
