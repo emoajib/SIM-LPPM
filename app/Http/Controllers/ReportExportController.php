@@ -1204,6 +1204,7 @@ class ReportExportController extends Controller
     // Vetted by AI - Manual Review Required by Senior Engineer/Manager
     public function reviewerPdf(Request $request)
     {
+        @ini_set('memory_limit', '512M');
         try {
             $period = $request->query('period', date('Y'));
             $semester = $request->query('semester');
