@@ -78,6 +78,7 @@ class IdentityEligibilityAction
             ProposalStatus::UNDER_REVIEW->value,
             ProposalStatus::REVIEWED->value,
             ProposalStatus::REVISION_NEEDED->value,
+            ProposalStatus::REVISION_SUBMITTED->value,
         ];
 
         if ($role === 'leader' && isset($rules['max_proposals_as_head'])) {

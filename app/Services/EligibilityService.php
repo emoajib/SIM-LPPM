@@ -63,6 +63,7 @@ class EligibilityService
             'under_review',
             'reviewed',
             'revision_needed',
+            'revision_submitted',
         ];
 
         $headQuery = Proposal::where('submitter_id', $user->id)

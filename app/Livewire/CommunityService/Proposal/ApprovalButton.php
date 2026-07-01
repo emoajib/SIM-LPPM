@@ -44,8 +44,7 @@ class ApprovalButton extends Component
         $proposal = $this->proposal;
 
         return $isAdmin
-            && in_array($proposal->status, [ProposalStatus::REVIEWED, ProposalStatus::REVISION_SUBMITTED])
-            && ($proposal->status === ProposalStatus::REVISION_SUBMITTED || $proposal->allReviewsCompleted());
+            && $proposal->status === ProposalStatus::REVISION_SUBMITTED;
     }
 
     #[Computed]

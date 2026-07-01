@@ -1218,6 +1218,8 @@ class ReportExportController extends Controller
                     ProposalStatus::WAITING_REVIEWER,
                     ProposalStatus::UNDER_REVIEW,
                     ProposalStatus::REVIEWED,
+                    ProposalStatus::REVISION_NEEDED,
+                    ProposalStatus::REVISION_SUBMITTED,
                     ProposalStatus::APPROVED,
                     ProposalStatus::COMPLETED,
                 ])
@@ -1319,6 +1321,8 @@ class ReportExportController extends Controller
                 ->whereHas('proposal', function ($q) use ($year, $semester) {
                     $q->whereIn('status', [
                         ProposalStatus::REVIEWED,
+                        ProposalStatus::REVISION_NEEDED,
+                        ProposalStatus::REVISION_SUBMITTED,
                         ProposalStatus::APPROVED,
                         ProposalStatus::COMPLETED,
                     ])->when($year, fn ($sub) => $sub->whereYear('created_at', $year))

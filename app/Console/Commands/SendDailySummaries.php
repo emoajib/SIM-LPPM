@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\ProposalStatus;
 use App\Enums\ReviewStatus;
 use App\Models\Proposal;
 use App\Models\ProposalReviewer;
@@ -48,9 +49,9 @@ class SendDailySummaries extends Command
     private function getAdminData(array $data): array
     {
         return array_merge($data, [
-            'pending_proposals' => Proposal::where('status', 'submitted')->count(),
-            'under_review' => Proposal::where('status', 'under_review')->count(),
-            'awaiting_decision' => Proposal::where('status', 'reviewed')->count(),
+            'pending_proposals' => Proposal::where('status', ProposalStatus::SUBMITTED->value)->count(),
+            'under_review' => Proposal::where('status', ProposalStatus::UNDER_REVIEW->value)->count(),
+            'awaiting_decision' => Proposal::whereIn('status', [ProposalStatus::REVISION_NEEDED->value, ProposalStatus::REVISION_SUBMITTED->value])->count(),
             'total_reviews_pending' => ProposalReviewer::where('status', ReviewStatus::PENDING->value)->count(),
         ]);
     }
@@ -58,10 +59,10 @@ class SendDailySummaries extends Command
     private function getKepalaData(array $data): array
     {
         return array_merge($data, [
-            'pending_initial_approval' => Proposal::where('status', 'approved')->count(),
-            'needing_reviewer_assignment' => Proposal::where('status', 'need_assignment')->count(),
-            'awaiting_final_decision' => Proposal::where('status', 'reviewed')->count(),
-            'completed_today' => Proposal::where('status', 'completed')
+            'pending_initial_approval' => Proposal::where('status', ProposalStatus::APPROVED->value)->count(),
+            'needing_reviewer_assignment' => Proposal::where('status', ProposalStatus::NEED_ASSIGNMENT->value)->count(),
+            'awaiting_final_decision' => Proposal::whereIn('status', [ProposalStatus::REVISION_NEEDED->value, ProposalStatus::REVISION_SUBMITTED->value])->count(),
+            'completed_today' => Proposal::where('status', ProposalStatus::COMPLETED->value)
                 ->whereDate('updated_at', now())
                 ->count(),
         ]);
@@ -70,11 +71,11 @@ class SendDailySummaries extends Command
     private function getDekanData(array $data): array
     {
         return array_merge($data, [
-            'pending_submissions' => Proposal::where('status', 'submitted')->count(),
-            'approved_today' => Proposal::where('status', 'approved')
+            'pending_submissions' => Proposal::where('status', ProposalStatus::SUBMITTED->value)->count(),
+            'approved_today' => Proposal::where('status', ProposalStatus::APPROVED->value)
                 ->whereDate('updated_at', now())
                 ->count(),
-            'rejected_today' => Proposal::where('status', 'rejected')
+            'rejected_today' => Proposal::where('status', ProposalStatus::REJECTED->value)
                 ->whereDate('updated_at', now())
                 ->count(),
         ]);

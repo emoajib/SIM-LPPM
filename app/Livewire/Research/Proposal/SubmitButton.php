@@ -52,7 +52,6 @@ class SubmitButton extends Component
             ProposalStatus::DRAFT->value,
             ProposalStatus::NEED_ASSIGNMENT->value,
             ProposalStatus::REVISION_NEEDED->value,
-            'revision_needed',
         ];
 
         return in_array($statusValue, $allowedStatuses)
@@ -86,7 +85,7 @@ class SubmitButton extends Component
             : (is_array($rawStatus) ? ($rawStatus['value'] ?? $rawStatus) : $rawStatus);
         $statusValue = (string) $statusValue;
 
-        if ($statusValue === ProposalStatus::REVISION_NEEDED->value || $statusValue === 'revision_needed') {
+        if ($statusValue === ProposalStatus::REVISION_NEEDED->value) {
             if (! $eligibilityService->isRevisionOpen('research')) {
                 return ['eligible' => false, 'reasons' => ['Masa perbaikan usulan telah ditutup.']];
             }

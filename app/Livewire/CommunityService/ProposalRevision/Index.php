@@ -38,12 +38,10 @@ class Index extends Component
         // Filter berdasarkan role user
         if ($user->hasRole('dosen')) {
             // Tampilkan semua proposal milik dosen yang sudah selesai direview:
-            // - REVIEWED: menunggu analisis Kepala LPPM
             // - REVISION_NEEDED: dikembalikan Kepala LPPM untuk perbaikan
             // - REVISION_SUBMITTED: sudah diajukan ulang, menunggu keputusan akhir
             $query->where('submitter_id', $user->id)
                 ->whereIn('status', [
-                    ProposalStatus::REVIEWED,
                     ProposalStatus::REVISION_NEEDED,
                     ProposalStatus::REVISION_SUBMITTED,
                 ]);
@@ -104,7 +102,6 @@ class Index extends Component
         if ($user->hasRole('dosen')) {
             $query->where('submitter_id', $user->id)
                 ->whereIn('status', [
-                    ProposalStatus::REVIEWED,
                     ProposalStatus::REVISION_NEEDED,
                     ProposalStatus::REVISION_SUBMITTED,
                 ]);

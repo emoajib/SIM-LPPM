@@ -35,6 +35,8 @@ class ReviewerReportExport implements FromView, ShouldAutoSize, WithStyles
                 ProposalStatus::WAITING_REVIEWER,
                 ProposalStatus::UNDER_REVIEW,
                 ProposalStatus::REVIEWED,
+                ProposalStatus::REVISION_NEEDED,
+                ProposalStatus::REVISION_SUBMITTED,
                 ProposalStatus::APPROVED,
                 ProposalStatus::COMPLETED,
             ])

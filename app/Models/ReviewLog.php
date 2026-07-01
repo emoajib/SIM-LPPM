@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ProposalStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -99,9 +100,9 @@ class ReviewLog extends Model
     public function getRecommendationLabelAttribute(): string
     {
         return match ($this->recommendation) {
-            'approved' => 'Disetujui',
-            'rejected' => 'Ditolak',
-            'revision_needed' => 'Perlu Revisi',
+            ProposalStatus::APPROVED->value => 'Disetujui',
+            ProposalStatus::REJECTED->value => 'Ditolak',
+            ProposalStatus::REVISION_NEEDED->value => 'Perlu Revisi',
             default => '-',
         };
     }
@@ -112,9 +113,9 @@ class ReviewLog extends Model
     public function getRecommendationColorAttribute(): string
     {
         return match ($this->recommendation) {
-            'approved' => 'success',
-            'rejected' => 'danger',
-            'revision_needed' => 'warning',
+            ProposalStatus::APPROVED->value => 'success',
+            ProposalStatus::REJECTED->value => 'danger',
+            ProposalStatus::REVISION_NEEDED->value => 'warning',
             default => 'secondary',
         };
     }

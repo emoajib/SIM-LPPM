@@ -2,10 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Models\CommunityService;
+use App\Enums\ProposalStatus;
 use App\Models\Proposal;
 use App\Models\ProposalReviewer;
-use App\Models\Research;
 use App\Services\NotificationService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -48,16 +47,16 @@ class SendWeeklySummaries extends Command
         $weekEnd = now()->endOfWeek();
 
         return array_merge($data, [
-            'new_submissions' => Proposal::whereBetween('created_at', [$weekStart, $weekEnd])
-                ->where('status', '!=', 'draft')
+            'new_proposals' => Proposal::whereBetween('created_at', [$weekStart, $weekEnd])
+                ->where('status', '!=', ProposalStatus::DRAFT->value)
                 ->count(),
-            'approved_count' => Proposal::whereBetween('updated_at', [$weekStart, $weekEnd])
-                ->where('status', 'approved')
+            'approved' => Proposal::whereBetween('updated_at', [$weekStart, $weekEnd])
+                ->where('status', ProposalStatus::APPROVED->value)
                 ->count(),
-            'rejected_count' => Proposal::whereBetween('updated_at', [$weekStart, $weekEnd])
-                ->where('status', 'rejected')
+            'rejected' => Proposal::whereBetween('updated_at', [$weekStart, $weekEnd])
+                ->where('status', ProposalStatus::REJECTED->value)
                 ->count(),
-            'total_pending' => Proposal::where('status', 'submitted')->count(),
+            'pending' => Proposal::where('status', ProposalStatus::SUBMITTED->value)->count(),
         ]);
     }
 
@@ -67,16 +66,18 @@ class SendWeeklySummaries extends Command
         $weekEnd = now()->endOfWeek();
 
         return array_merge($data, [
-            'proposals_assigned' => Proposal::whereBetween('updated_at', [$weekStart, $weekEnd])
-                ->where('status', 'under_review')
-                ->count(),
-            'reviews_completed' => ProposalReviewer::whereBetween('updated_at', [$weekStart, $weekEnd])
-                ->where('status', 'completed')
-                ->count(),
-            'final_decisions' => Proposal::whereBetween('updated_at', [$weekStart, $weekEnd])
-                ->whereIn('status', ['completed', 'rejected'])
-                ->count(),
-            'under_review' => Proposal::where('status', 'under_review')->count(),
+            'total_active' => Proposal::whereIn('status', [
+                ProposalStatus::SUBMITTED->value,
+                ProposalStatus::UNDER_REVIEW->value,
+                ProposalStatus::REVISION_NEEDED->value,
+                ProposalStatus::REVISION_SUBMITTED->value,
+            ])->count(),
+            'under_review' => Proposal::where('status', ProposalStatus::UNDER_REVIEW->value)->count(),
+            'reviewed' => Proposal::where('status', ProposalStatus::REVISION_NEEDED->value)->count(),
+            'completed' => Proposal::whereIn('status', [
+                ProposalStatus::COMPLETED->value,
+                ProposalStatus::APPROVED->value,
+            ])->count(),
         ]);
     }
 
@@ -88,16 +89,15 @@ class SendWeeklySummaries extends Command
         return array_merge($data, [
             'total_proposals' => Proposal::count(),
             'completed_this_week' => Proposal::whereBetween('updated_at', [$weekStart, $weekEnd])
-                ->where('status', 'completed')
+                ->where('status', ProposalStatus::COMPLETED->value)
                 ->count(),
-            'total_research' => Proposal::where('detailable_type', Research::class)->count(),
-            'total_community_service' => Proposal::where('detailable_type', CommunityService::class)->count(),
-            'avg_review_time' => round(
+            'avg_process_time' => round(
                 ProposalReviewer::whereBetween('updated_at', [$weekStart, $weekEnd])
                     ->where('status', 'completed')
                     ->selectRaw('AVG('.(DB::getDriverName() === 'mysql' ? 'DATEDIFF(updated_at, created_at)' : 'EXTRACT(EPOCH FROM (updated_at - created_at)) / 86400').') as avg_days')
                     ->value('avg_days') ?? 0
             ),
+            'approval_rate' => round((Proposal::where('status', ProposalStatus::COMPLETED->value)->count() / max(Proposal::count(), 1)) * 100),
         ]);
     }
 }

@@ -250,6 +250,8 @@ class CommunityService extends Component
                 ProposalStatus::WAITING_REVIEWER->value,
                 ProposalStatus::UNDER_REVIEW->value,
                 ProposalStatus::REVIEWED->value,
+                ProposalStatus::REVISION_NEEDED->value,
+                ProposalStatus::REVISION_SUBMITTED->value,
             ])
             ->count();
 

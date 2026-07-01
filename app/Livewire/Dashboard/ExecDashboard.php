@@ -961,7 +961,7 @@ class ExecDashboard extends Component
         // New Metrics: Draft & Approval Stages
         $totalDraft = $proposalsThisYear->filter(fn ($p) => ($p->status->value ?? '') === ProposalStatus::DRAFT->value)->count();
         $waitingDean = $proposalsThisYear->filter(fn ($p) => ($p->status->value ?? '') === ProposalStatus::SUBMITTED->value)->count();
-        $waitingLppm = $proposalsThisYear->filter(fn ($p) => in_array($p->status->value ?? '', [ProposalStatus::APPROVED->value, ProposalStatus::REVIEWED->value]))->count();
+        $waitingLppm = $proposalsThisYear->filter(fn ($p) => in_array($p->status->value ?? '', [ProposalStatus::APPROVED->value, ProposalStatus::REVISION_SUBMITTED->value]))->count();
 
         // 1. Review Status
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
@@ -970,7 +970,7 @@ class ExecDashboard extends Component
             ->count();
 
         $completedReview = Proposal::whereIn('id', $proposalsThisYearIds)
-            ->whereIn('status', [ProposalStatus::REVIEWED->value, ProposalStatus::REVISION_NEEDED->value, ProposalStatus::COMPLETED->value, ProposalStatus::REJECTED->value])
+            ->whereIn('status', [ProposalStatus::REVIEWED->value, ProposalStatus::REVISION_NEEDED->value, ProposalStatus::REVISION_SUBMITTED->value, ProposalStatus::COMPLETED->value, ProposalStatus::REJECTED->value])
             ->count();
 
         // 2 & 3. activeProposals: Only funded proposals (approved/completed) require Monev, Reports, and Outputs

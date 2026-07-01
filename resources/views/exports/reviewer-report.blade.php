@@ -124,7 +124,7 @@
                 @endfor
                 <td style="border: 1px solid black; text-align: center; font-weight: bold; color: blue;">{{ $proposal->score ?? '-' }}</td>
                 <td style="border: 1px solid black; text-align: center;">
-                    {{ $proposal->status === \App\Enums\ProposalStatus::REVIEWED ? 'Selesai' : ($proposal->status === \App\Enums\ProposalStatus::UNDER_REVIEW ? 'Proses' : $proposal->status->label()) }}
+                    {{ in_array($proposal->status, [\App\Enums\ProposalStatus::REVIEWED, \App\Enums\ProposalStatus::REVISION_NEEDED]) ? 'Selesai' : ($proposal->status === \App\Enums\ProposalStatus::UNDER_REVIEW ? 'Proses' : $proposal->status->label()) }}
                 </td>
             </tr>
         @endforeach

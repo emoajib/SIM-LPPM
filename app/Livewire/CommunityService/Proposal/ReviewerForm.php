@@ -2,6 +2,7 @@
 
 namespace App\Livewire\CommunityService\Proposal;
 
+use App\Enums\ProposalStatus;
 use App\Livewire\Actions\CompleteReviewAction;
 use App\Livewire\Concerns\HasToast;
 use App\Models\Proposal;
@@ -92,7 +93,11 @@ class ReviewerForm extends Component
     {
         $rules = [
             'reviewNotes' => 'required|min:10',
-            'recommendation' => 'required|in:approved,rejected,revision_needed',
+            'recommendation' => 'required|in:'.implode(',', [
+                ProposalStatus::APPROVED->value,
+                ProposalStatus::REJECTED->value,
+                ProposalStatus::REVISION_NEEDED->value,
+            ]),
         ];
 
         foreach ($this->activeCriterias as $criteria) {

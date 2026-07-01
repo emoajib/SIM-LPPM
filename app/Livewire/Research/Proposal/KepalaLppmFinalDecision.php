@@ -52,21 +52,7 @@ class KepalaLppmFinalDecision extends Component
         $proposal = $this->proposal;
         $status = $proposal->status;
 
-        if ($status === ProposalStatus::REVISION_SUBMITTED) {
-            return $isKepalaLppm;
-        }
-
-        return $isKepalaLppm && $status === ProposalStatus::REVIEWED && $proposal->allReviewsCompleted();
-    }
-
-    /**
-     * True if proposal is in initial reviewed stage (before any revision round).
-     * At this stage, Kepala LPPM can only send back to revision or reject.
-     */
-    #[Computed]
-    public function isInitialReviewedStage(): bool
-    {
-        return $this->proposal?->status === ProposalStatus::REVIEWED;
+        return $isKepalaLppm && $status === ProposalStatus::REVISION_SUBMITTED;
     }
 
     /**
@@ -119,9 +105,8 @@ class KepalaLppmFinalDecision extends Component
         }
 
         $proposal = $this->proposal;
-        $allowedStatuses = [ProposalStatus::REVIEWED, ProposalStatus::REVISION_SUBMITTED];
 
-        if (! in_array($proposal->status, $allowedStatuses)) {
+        if ($proposal->status !== ProposalStatus::REVISION_SUBMITTED) {
             $message = 'Proposal tidak dalam status yang dapat diputuskan';
             session()->flash('error', $message);
             $this->toastError($message);
@@ -129,24 +114,10 @@ class KepalaLppmFinalDecision extends Component
             return;
         }
 
-        if ($proposal->status === ProposalStatus::REVIEWED && ! $proposal->allReviewsCompleted()) {
-            $message = 'Semua reviewer harus menyelesaikan review terlebih dahulu';
-            session()->flash('error', $message);
-            $this->toastError($message);
-
-            return;
-        }
-
-        // Saat status REVIEWED: Kepala LPPM WAJIB mengembalikan ke perbaikan terlebih dahulu.
-        // Keputusan 'completed' hanya boleh setelah dosen mengajukan ulang (REVISION_SUBMITTED).
-        $validDecisions = $proposal->status === ProposalStatus::REVIEWED
-            ? ['revision_needed', 'rejected']
-            : ['completed', 'revision_needed', 'rejected'];
+        $validDecisions = ['completed', 'revision_needed', 'rejected'];
 
         if (! in_array($this->decision, $validDecisions)) {
-            $message = $proposal->status === ProposalStatus::REVIEWED
-                ? 'Proposal harus dikembalikan ke dosen untuk perbaikan terlebih dahulu sebelum dapat disetujui.'
-                : 'Keputusan tidak valid';
+            $message = 'Keputusan tidak valid';
             session()->flash('error', $message);
             $this->toastError($message);
 

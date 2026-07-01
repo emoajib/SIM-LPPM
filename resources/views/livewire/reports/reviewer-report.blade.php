@@ -392,7 +392,7 @@
                                     {{ $proposal->score ?? '-' }}
                                 </td>
                                 <td class="text-center">
-                                    @if ($proposal->status === \App\Enums\ProposalStatus::REVIEWED)
+                                    @if (in_array($proposal->status, [\App\Enums\ProposalStatus::REVIEWED, \App\Enums\ProposalStatus::REVISION_NEEDED]))
                                         <span class="badge bg-success-lt">Selesai Direview</span>
                                     @elseif ($proposal->status === \App\Enums\ProposalStatus::UNDER_REVIEW)
                                         <span class="badge bg-warning-lt">Proses Review</span>

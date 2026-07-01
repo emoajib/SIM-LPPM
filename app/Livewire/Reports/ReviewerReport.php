@@ -297,6 +297,8 @@ class ReviewerReport extends Component
             ->whereHas('proposal', function ($q) use ($year) {
                 $q->whereIn('status', [
                     ProposalStatus::REVIEWED,
+                    ProposalStatus::REVISION_NEEDED,
+                    ProposalStatus::REVISION_SUBMITTED,
                     ProposalStatus::APPROVED,
                     ProposalStatus::COMPLETED,
                 ])->when($year, fn ($sub) => $sub->whereYear('created_at', $year))

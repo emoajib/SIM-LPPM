@@ -2,6 +2,7 @@
 
 namespace App\Livewire\AdminLppm;
 
+use App\Enums\ProposalStatus;
 use App\Enums\ReviewStatus;
 use App\Models\CommunityService;
 use App\Models\CommunityServiceScheme;
@@ -89,7 +90,12 @@ class ReviewMonitoring extends Component
         $requiredCount = (int) Setting::get('reviewer_count_required', 1);
 
         return Proposal::query()
-            ->whereIn('status', ['under_review', 'reviewed', 'revision_needed', 'revision_submitted'])
+            ->whereIn('status', [
+                ProposalStatus::UNDER_REVIEW->value,
+                ProposalStatus::REVIEWED->value,
+                ProposalStatus::REVISION_NEEDED->value,
+                ProposalStatus::REVISION_SUBMITTED->value,
+            ])
             ->with(['submitter', 'detailable', 'reviewers.user'])
             ->when($this->search, function ($query) {
                 $query->where('title', 'like', "%{$this->search}%");

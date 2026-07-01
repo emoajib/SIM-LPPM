@@ -126,6 +126,6 @@ class ProposalPolicy
     public function review(User $user, Proposal $proposal): bool
     {
         return $proposal->reviewers()->where('user_id', $user->id)->exists()
-            && in_array($proposal->status, [ProposalStatus::UNDER_REVIEW, ProposalStatus::REVIEWED]);
+            && $proposal->status === ProposalStatus::UNDER_REVIEW;
     }
 }

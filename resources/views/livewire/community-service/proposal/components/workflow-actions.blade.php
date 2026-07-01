@@ -73,7 +73,7 @@
     @endif
 
     <!-- Kepala LPPM Final Decision (Initial or Revision) -->
-    @if (active_has_role('kepala lppm') && in_array($proposal->status, [\App\Enums\ProposalStatus::REVIEWED, \App\Enums\ProposalStatus::REVISION_SUBMITTED]))
+    @if (active_has_role('kepala lppm') && $proposal->status === \App\Enums\ProposalStatus::REVISION_SUBMITTED)
         <div class="mb-3">
             <livewire:community-service.proposal.kepala-lppm-final-decision :proposalId="$proposal->id"
                 :key="'final-decision-' . $proposal->id" />
