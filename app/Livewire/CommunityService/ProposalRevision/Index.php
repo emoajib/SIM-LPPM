@@ -37,15 +37,16 @@ class Index extends Component
 
         // Filter berdasarkan role user
         if ($user->hasRole('dosen')) {
-            // Dosen: hanya proposal milik sendiri yang perlu revisi
-            $query->where(function ($q) use ($user) {
-                $q->where('submitter_id', $user->id)
-                    ->where(function ($sq) {
-                        $sq->whereHas('reviewers', function ($ssq) {
-                            $ssq->where('recommendation', 'revision_needed');
-                        })->orWhere('status', ProposalStatus::REVISION_NEEDED);
-                    });
-            });
+            // Tampilkan semua proposal milik dosen yang sudah selesai direview:
+            // - REVIEWED: menunggu analisis Kepala LPPM
+            // - REVISION_NEEDED: dikembalikan Kepala LPPM untuk perbaikan
+            // - REVISION_SUBMITTED: sudah diajukan ulang, menunggu keputusan akhir
+            $query->where('submitter_id', $user->id)
+                ->whereIn('status', [
+                    ProposalStatus::REVIEWED,
+                    ProposalStatus::REVISION_NEEDED,
+                    ProposalStatus::REVISION_SUBMITTED,
+                ]);
         } elseif ($user->hasRole('reviewer')) {
             // Reviewer: proposal yang ditugaskan ke dia dengan review completed
             $query->whereHas('reviewers', function ($q) use ($user) {
@@ -102,7 +103,11 @@ class Index extends Component
 
         if ($user->hasRole('dosen')) {
             $query->where('submitter_id', $user->id)
-                ->where('status', ProposalStatus::REVISION_NEEDED);
+                ->whereIn('status', [
+                    ProposalStatus::REVIEWED,
+                    ProposalStatus::REVISION_NEEDED,
+                    ProposalStatus::REVISION_SUBMITTED,
+                ]);
         } elseif ($user->hasRole('reviewer')) {
             $query->whereHas('reviewers', function ($q) use ($user) {
                 $q->where('user_id', $user->id)
