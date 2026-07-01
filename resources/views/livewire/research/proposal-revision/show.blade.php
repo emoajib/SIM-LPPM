@@ -787,7 +787,8 @@
         @if ($this->canEdit())
             <div class="mt-3 card">
                 <div class="card-body">
-                    <div class="d-flex justify-content-end gap-2">
+                    <div class="d-flex justify-content-end gap-2 align-items-start">
+                        <livewire:research.proposal.submit-button :proposalId="$proposal->id" :key="'submit-button-' . $proposal->id" />
                         <button type="button" wire:click="save" class="position-relative btn btn-primary"
                             wire:loading.attr="disabled" wire:target="save" wire:loading.class="btn-loading">
                             <span wire:loading.remove wire:target="save">

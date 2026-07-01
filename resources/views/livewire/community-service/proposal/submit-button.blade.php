@@ -1,19 +1,27 @@
 <div>
+    @php
+        $isRevision = $this->proposal->status === \App\Enums\ProposalStatus::REVISION_NEEDED;
+        $buttonText = $isRevision ? 'Kirim Perbaikan' : 'Submit Proposal';
+        $modalTitle = $isRevision ? 'Konfirmasi Pengajuan Perbaikan' : 'Konfirmasi Pengajuan Proposal';
+        $modalText = $isRevision 
+            ? 'Apakah Anda yakin ingin mengajukan perbaikan usulan ini ke Kepala LPPM? Pastikan semua revisi telah tersimpan.' 
+            : 'Apakah Anda yakin ingin mengajukan proposal ini? Setelah diajukan, proposal tidak dapat diubah.';
+    @endphp
+    
     <button type="button" class="mb-3 w-full btn btn-success @if(!$this->canSubmit) disabled @endif"
         @if($this->canSubmit) wire:click="confirmSubmit" @endif>
         <x-lucide-send class="icon" />
-        Submit Proposal
+        {{ $buttonText }}
     </button>
 
     @teleport('body')
-        <x-tabler.modal id="confirmSubmitModal" title="Konfirmasi Pengajuan Proposal" component-id="{{ $this->getId() }}">
+        <x-tabler.modal id="confirmSubmitModal" title="{{ $modalTitle }}" component-id="{{ $this->getId() }}">
             <x-slot:body>
                 <div class="py-4 text-center">
                     <x-lucide-send class="mb-2 text-success icon" style="width: 3rem; height: 3rem;" />
-                    <h3>Konfirmasi Pengajuan Proposal</h3>
+                    <h3>{{ $modalTitle }}</h3>
                     <div class="text-secondary">
-                        Apakah Anda yakin ingin mengajukan proposal ini? Setelah diajukan, proposal tidak dapat
-                        diubah.
+                        {{ $modalText }}
                     </div>
                 </div>
             </x-slot:body>
@@ -29,7 +37,7 @@
                         <div class="col">
                             <button type="button" wire:click="submit" class="w-100 btn btn-success"
                                 data-bs-dismiss="modal">
-                                Ya, Ajukan Proposal
+                                Ya, {{ $buttonText }}
                             </button>
                         </div>
                     </div>
