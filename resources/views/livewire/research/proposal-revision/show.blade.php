@@ -189,6 +189,73 @@
                             @endif
                         </div>
                         <div class="col-md-3">
+                            <label class="form-label {{ $this->canEdit() ? 'required' : '' }}"><x-lucide-activity class="me-2 icon" />Kategori TKT</label>
+                            @if ($this->canEdit())
+                                <select wire:model.live="form.tkt_type" class="form-select form-select-sm @error('form.tkt_type') is-invalid @enderror">
+                                    <option value="">Pilih Kategori TKT</option>
+                                    @foreach ($this->tktTypes as $type)
+                                        <option value="{{ $type }}">{{ $type }}</option>
+                                    @endforeach
+                                </select>
+                                @error('form.tkt_type')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            @else
+                                <p class="text-reset">{{ $form->tkt_type ?? '—' }}</p>
+                            @endif
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label"><x-lucide-ruler class="me-2 icon" />Level TKT</label>
+                            @if ($this->canEdit())
+                                <div class="d-flex align-items-center gap-2">
+                                    @php
+                                        $currentTkt = 0;
+                                        if (!empty($form->tkt_results)) {
+                                            foreach ($form->tkt_results as $levelId => $data) {
+                                                if (($data['percentage'] ?? 0) >= 80) {
+                                                    $tktLevel = \App\Models\TktLevel::find($levelId);
+                                                    if ($tktLevel) {
+                                                        $currentTkt = max($currentTkt, $tktLevel->level);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        
+                                        $selectedScheme = $this->researchSchemeId ? \App\Models\ResearchScheme::find($this->researchSchemeId) : null;
+                                        $schemeStrata = $selectedScheme?->strata;
+                                    @endphp
+                                    <span class="badge bg-secondary-lt fs-5">Level {{ $currentTkt }}</span>
+                                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                                        data-bs-target="#tkt-measurement-modal"
+                                        wire:click="$dispatch('tkt-type-selected', { tktType: '{{ $form->tkt_type }}', existingScores: @js($form->tkt_indicator_scores), strata: '{{ $schemeStrata }}' })"
+                                        @if (!$form->tkt_type) disabled @endif>
+                                        Ukur TKT
+                                    </button>
+                                </div>
+                                @error('form.tkt_results')
+                                    <div class="d-block invalid-feedback mt-1">{{ $message }}</div>
+                                @enderror
+                            @else
+                                @php
+                                    $currentTkt = 0;
+                                    if (!empty($form->tkt_results)) {
+                                        foreach ($form->tkt_results as $levelId => $data) {
+                                            if (($data['percentage'] ?? 0) >= 80) {
+                                                $tktLevel = \App\Models\TktLevel::find($levelId);
+                                                if ($tktLevel) {
+                                                    $currentTkt = max($currentTkt, $tktLevel->level);
+                                                }
+                                            }
+                                        }
+                                    }
+                                @endphp
+                                <p class="text-reset">Level {{ $currentTkt }}</p>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <div class="col-md-3">
                             <label class="form-label {{ $this->canEdit() ? 'required' : '' }}"><x-lucide-calendar class="me-2 icon" />Tahun Pelaksanaan</label>
                             @if ($this->canEdit())
                                 <select wire:model="form.start_year" class="form-select form-select-sm @error('form.start_year') is-invalid @enderror">
@@ -735,4 +802,6 @@
             </div>
         @endif
     </div>
+    
+    <livewire:research.proposal.components.tkt-measurement />
 </div>

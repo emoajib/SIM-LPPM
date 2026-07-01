@@ -18,11 +18,13 @@ use App\Models\TktLevel;
 use App\Services\BudgetValidationService;
 use App\Services\LecturerEligibilityService;
 use App\Services\MasterDataService;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -158,6 +160,17 @@ class Show extends Component
     }
 
     /**
+     * Get available TKT types.
+     *
+     * @return Collection<int, string>
+     */
+    #[Computed]
+    public function tktTypes()
+    {
+        return app(MasterDataService::class)->tktTypes('research');
+    }
+
+    /**
      * Get all macro research groups.
      */
     #[Computed]
@@ -214,6 +227,18 @@ class Show extends Component
         $service = app(LecturerEligibilityService::class);
 
         return $service->isRevisionOpen('research');
+    }
+
+    /**
+     * Handle TKT measurement calculation from the modal component.
+     */
+    #[On('tkt-calculated')]
+    public function onTktCalculated(array $levelResults, array $indicatorScores): void
+    {
+        // Only update level results with levels that have actual progress (percentage > 0)
+        $filteredResults = array_filter($levelResults, fn ($data) => ($data['percentage'] ?? 0) > 0);
+        $this->form->tkt_results = $filteredResults;
+        $this->form->tkt_indicator_scores = $indicatorScores;
     }
 
     /**
