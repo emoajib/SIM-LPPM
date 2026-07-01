@@ -89,7 +89,7 @@ class ReviewMonitoring extends Component
         $requiredCount = (int) Setting::get('reviewer_count_required', 1);
 
         return Proposal::query()
-            ->whereIn('status', ['under_review', 'reviewed'])
+            ->whereIn('status', ['under_review', 'reviewed', 'revision_needed', 'revision_submitted'])
             ->with(['submitter', 'detailable', 'reviewers.user'])
             ->when($this->search, function ($query) {
                 $query->where('title', 'like', "%{$this->search}%");
