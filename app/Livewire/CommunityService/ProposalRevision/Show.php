@@ -293,8 +293,9 @@ class Show extends Component
 
             // Handle file upload
             if ($this->substanceFile) {
+                $communityService->clearMediaCollection('substance_file');
                 $communityService
-                    ->addMedia($this->substanceFile->getRealPath())
+                    ->addMedia($this->substanceFile)
                     ->usingName($this->substanceFile->getClientOriginalName())
                     ->usingFileName($this->substanceFile->hashName())
                     ->withCustomProperties(['uploaded_by' => Auth::id()])
