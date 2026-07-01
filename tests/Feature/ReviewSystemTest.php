@@ -209,7 +209,7 @@ class ReviewSystemTest extends TestCase
             ->call('submitReview', app(CompleteReviewAction::class));
 
         // Proposal status should transition to REVIEWED immediately since requirement is 1
-        $this->assertEquals(ProposalStatus::REVIEWED, $this->proposal->fresh()->status);
+        $this->assertEquals(ProposalStatus::REVISION_NEEDED, $this->proposal->fresh()->status);
 
         // Reset the proposal for the next scenario
         DB::table('proposals')
@@ -267,6 +267,6 @@ class ReviewSystemTest extends TestCase
             ->call('submitReview', app(CompleteReviewAction::class));
 
         // Now that 2 reviewers have been assigned and completed their review, status should transition to REVIEWED
-        $this->assertEquals(ProposalStatus::REVIEWED, $this->proposal->fresh()->status);
+        $this->assertEquals(ProposalStatus::REVISION_NEEDED, $this->proposal->fresh()->status);
     }
 }

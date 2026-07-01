@@ -221,7 +221,7 @@ class ProposalWorkflowTest extends TestCase
         $this->assertTrue($result['success']);
 
         // Check if proposal status moved to REVIEWED
-        $this->assertEquals(ProposalStatus::REVIEWED, $proposal->fresh()->status);
+        $this->assertEquals(ProposalStatus::REVISION_NEEDED, $proposal->fresh()->status);
 
         // 7. LPPM Final Decision
         $this->actingAs($kepalaLppm);
@@ -370,7 +370,7 @@ class ProposalWorkflowTest extends TestCase
 
         $result = $completeAction->execute($assignment, 'Forced by LPPM.', 'approved');
         $this->assertTrue($result['success']);
-        $this->assertEquals(ProposalStatus::REVIEWED, $proposal->fresh()->status);
+        $this->assertEquals(ProposalStatus::REVISION_NEEDED, $proposal->fresh()->status);
     }
 
     public function test_community_service_workflow()
@@ -429,7 +429,7 @@ class ProposalWorkflowTest extends TestCase
             'submitter_id' => $this->dosen->id,
             'detailable_id' => $research->id,
             'detailable_type' => Research::class,
-            'status' => ProposalStatus::REVIEWED,
+            'status' => ProposalStatus::REVISION_NEEDED,
         ]);
 
         $reviewer = User::factory()->create();

@@ -186,6 +186,6 @@ class PessimisticSecurityTest extends TestCase
         app(CompleteReviewAction::class)->execute($review2, 'Okay', 'approved');
 
         // Now it should be REVIEWED
-        $this->assertEquals(ProposalStatus::REVIEWED, $this->proposal->fresh()->status);
+        $this->assertEquals(ProposalStatus::REVISION_NEEDED, $this->proposal->fresh()->status);
     }
 }

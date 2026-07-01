@@ -62,7 +62,7 @@ class FinalDecision extends Component
     public function proposals()
     {
         $query = Proposal::query()
-            ->where('status', ProposalStatus::REVIEWED);
+            ->where('status', ProposalStatus::REVISION_SUBMITTED);
 
         return $query
             ->with([
@@ -128,11 +128,11 @@ class FinalDecision extends Component
     public function statusStats(): array
     {
         return [
-            'all' => Proposal::where('status', ProposalStatus::REVIEWED)->count(),
-            'research' => Proposal::where('status', ProposalStatus::REVIEWED)
+            'all' => Proposal::where('status', ProposalStatus::REVISION_SUBMITTED)->count(),
+            'research' => Proposal::where('status', ProposalStatus::REVISION_SUBMITTED)
                 ->where('detailable_type', Research::class)
                 ->count(),
-            'community_service' => Proposal::where('status', ProposalStatus::REVIEWED)
+            'community_service' => Proposal::where('status', ProposalStatus::REVISION_SUBMITTED)
                 ->where('detailable_type', CommunityService::class)
                 ->count(),
         ];
@@ -141,7 +141,7 @@ class FinalDecision extends Component
     #[Computed]
     public function availableYears(): array
     {
-        $years = Proposal::where('status', ProposalStatus::REVIEWED)
+        $years = Proposal::where('status', ProposalStatus::REVISION_SUBMITTED)
             ->selectRaw(sql_year().' as year')
             ->distinct()
             ->orderBy('year', 'desc')

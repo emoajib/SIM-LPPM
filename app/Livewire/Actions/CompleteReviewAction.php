@@ -77,9 +77,9 @@ class CompleteReviewAction
             $this->sendNotifications($proposal, $review->user, $review);
 
             if ($proposal->allReviewsCompleted()) {
-                $proposal->update(['status' => ProposalStatus::REVIEWED]);
+                $proposal->update(['status' => ProposalStatus::REVISION_NEEDED]);
 
-                // Send special notification for all reviews completed
+                // Send notification that revision is needed
                 $this->sendAllReviewsCompletedNotification($proposal);
             }
 
