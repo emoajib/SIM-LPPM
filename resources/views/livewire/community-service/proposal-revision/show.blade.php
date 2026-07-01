@@ -21,7 +21,13 @@
             ->where('status_after', \App\Enums\ProposalStatus::REVISION_NEEDED)
             ->latest('at')
             ->first();
+        $completedReviewers = $proposal->reviewers->where('status', 'completed');
+        $hasRevisionNeeded = $completedReviewers->contains('recommendation', 'revision_needed');
+        $hasRejected       = $completedReviewers->contains('recommendation', 'rejected');
+        $allApproved       = $completedReviewers->isNotEmpty() && !$hasRevisionNeeded && !$hasRejected;
     @endphp
+
+    {{-- Catatan Kepala LPPM --}}
     @if ($latestRevisionLog && $latestRevisionLog->notes)
         <div class="col-md-12 mb-3">
             <div class="alert alert-important alert-warning shadow-sm border-0">
@@ -33,6 +39,83 @@
                             {{ $latestRevisionLog->notes }}
                         </div>
                         <small class="text-muted d-block mt-2" style="font-size: 8pt;">Ditulis oleh: {{ $latestRevisionLog->user?->name ?? 'Kepala LPPM' }} pada {{ $latestRevisionLog->at->format('d M Y H:i') }}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- Ringkasan Rekomendasi Reviewer --}}
+    @if ($completedReviewers->isNotEmpty())
+        <div class="col-md-12 mb-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <x-lucide-users class="icon me-2" />
+                        Ringkasan Rekomendasi Reviewer
+                    </h3>
+                </div>
+                <div class="card-body">
+                    @if ($allApproved)
+                        <div class="alert alert-success mb-3 py-2">
+                            <x-lucide-check-circle class="icon me-2" />
+                            <strong>Semua reviewer menyetujui usulan Anda.</strong>
+                            Baca catatan reviewer di bawah, lalu klik <strong>"Kirim Perbaikan"</strong> untuk mengajukan ke Kepala LPPM.
+                            Upload dokumen PDF baru bersifat <strong>opsional</strong> jika tidak ada perubahan substansi.
+                        </div>
+                    @elseif ($hasRejected)
+                        <div class="alert alert-danger mb-3 py-2">
+                            <x-lucide-alert-triangle class="icon me-2" />
+                            <strong>Ada reviewer yang merekomendasikan penolakan.</strong>
+                            Baca catatan reviewer dengan seksama. Anda tetap dapat mengajukan perbaikan — keputusan akhir ada di tangan Kepala LPPM.
+                        </div>
+                    @else
+                        <div class="alert alert-warning mb-3 py-2">
+                            <x-lucide-file-edit class="icon me-2" />
+                            <strong>Ada reviewer yang meminta revisi.</strong>
+                            Lakukan perbaikan sesuai catatan reviewer, upload dokumen PDF baru, lalu kirim ulang ke Kepala LPPM.
+                        </div>
+                    @endif
+
+                    <div class="row g-2">
+                        @foreach ($completedReviewers as $idx => $reviewer)
+                            <div class="col-md-4">
+                                <div class="card border h-100">
+                                    <div class="card-body py-2 px-3">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="d-flex align-items-center">
+                                                @php
+                                                    $isOwnerOrMember = $proposal->submitter_id === auth()->id() || $proposal->teamMembers->contains('id', auth()->id());
+                                                    $canSeeIdentity = !$isOwnerOrMember && active_has_any_role(['admin lppm','kepala lppm','dekan','reviewer']);
+                                                @endphp
+                                                <x-lucide-user-circle class="icon icon-sm me-2 text-secondary" />
+                                                <span class="fw-semibold small">
+                                                    {{ $canSeeIdentity ? ($reviewer->user?->name ?? 'Reviewer') : 'Pereview #'.($idx+1) }}
+                                                </span>
+                                            </div>
+                                            @php
+                                                $recColor = match($reviewer->recommendation) {
+                                                    'approved' => 'success',
+                                                    'rejected' => 'danger',
+                                                    default    => 'warning',
+                                                };
+                                                $recLabel = match($reviewer->recommendation) {
+                                                    'approved' => 'Disetujui',
+                                                    'rejected' => 'Ditolak',
+                                                    default    => 'Perlu Revisi',
+                                                };
+                                            @endphp
+                                            <x-tabler.badge :color="$recColor" class="small">{{ $recLabel }}</x-tabler.badge>
+                                        </div>
+                                        @if ($reviewer->review_notes)
+                                            <div class="mt-2 text-muted small" style="white-space: pre-wrap; font-size: 9pt; border-left: 3px solid var(--tblr-{{ $recColor }}); padding-left: 8px;">
+                                                {{ Str::limit($reviewer->review_notes, 120) }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
             </div>

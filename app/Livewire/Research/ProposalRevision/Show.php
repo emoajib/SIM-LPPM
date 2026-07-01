@@ -28,6 +28,7 @@ use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
+use Spatie\MediaLibrary\HasMedia;
 
 #[Layout('components.layouts.app')]
 #[Title('Detail Revisi Proposal Penelitian')]
@@ -68,10 +69,16 @@ class Show extends Component
                 'macroResearchGroupId' => 'required|exists:macro_research_groups,id',
             ]);
 
-            // Validate that new substance file is uploaded
+            // Cek apakah semua reviewer sudah approved
+            $completedRevs = $this->form->proposal->reviewers->where('status', 'completed');
+            $allApproved = $completedRevs->isNotEmpty()
+                && ! $completedRevs->contains('recommendation', 'revision_needed')
+                && ! $completedRevs->contains('recommendation', 'rejected');
+
+            // Validate substance file (wajib upload baru jika ada revisi/penolakan dari reviewer)
             $hasNewUploadedFile = $this->substanceFile && $this->substanceFile instanceof TemporaryUploadedFile;
 
-            if (! $hasNewUploadedFile) {
+            if (! $allApproved && ! $hasNewUploadedFile) {
                 $message = 'Anda belum mengunggah dokumen PDF Substansi Usulan yang baru. Silakan unggah dokumen perbaikan Anda.';
                 $this->addError('substanceFile', $message);
                 $this->toastError($message);
@@ -226,11 +233,29 @@ class Show extends Component
         // Validate basic fields
         $this->validate();
 
-        // Validate that new substance file is uploaded
-        $hasNewUploadedFile = $this->substanceFile && $this->substanceFile instanceof TemporaryUploadedFile;
+        // Cek apakah semua reviewer sudah approved (tidak ada revisi diminta)
+        $completedReviewers = $this->form->proposal->reviewers->where('status', 'completed');
+        $allReviewersApproved = $completedReviewers->isNotEmpty()
+            && ! $completedReviewers->contains('recommendation', 'revision_needed')
+            && ! $completedReviewers->contains('recommendation', 'rejected');
 
-        if (! $hasNewUploadedFile) {
-            $message = 'Anda belum mengunggah dokumen PDF Substansi Usulan yang baru. Silakan unggah dokumen perbaikan Anda.';
+        // Validate substance file:
+        // - Wajib upload baru jika ada reviewer yang meminta revisi (revision_needed / rejected)
+        // - Opsional jika semua reviewer menyetujui (approved) — cukup konfirmasi
+        $hasNewUploadedFile = $this->substanceFile instanceof TemporaryUploadedFile;
+        $detailable = $this->form->proposal->detailable;
+        $hasExistingFile = $detailable instanceof HasMedia && $detailable->hasMedia('substance_file');
+
+        if (! $allReviewersApproved && ! $hasNewUploadedFile) {
+            $message = 'Anda belum mengunggah dokumen PDF Substansi Usulan yang baru. Silakan unggah dokumen perbaikan Anda sesuai catatan reviewer.';
+            $this->addError('substanceFile', $message);
+            $this->toastError($message);
+
+            return;
+        }
+
+        if ($allReviewersApproved && ! $hasNewUploadedFile && ! $hasExistingFile) {
+            $message = 'Dokumen PDF Substansi Usulan tidak ditemukan. Silakan unggah dokumen terlebih dahulu.';
             $this->addError('substanceFile', $message);
             $this->toastError($message);
 

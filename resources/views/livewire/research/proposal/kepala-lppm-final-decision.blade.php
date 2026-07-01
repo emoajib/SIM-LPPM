@@ -41,11 +41,14 @@
 
         @php $isRevisionReview = $this->proposal->status === \App\Enums\ProposalStatus::REVISION_SUBMITTED; @endphp
 
-        <div class="alert alert-{{ $isRevisionReview ? 'purple' : 'info' }}" role="alert">
+        <div class="alert alert-{{ $isRevisionReview ? 'purple' : ($this->isInitialReviewedStage ? 'warning' : 'info') }}" role="alert">
             <h4 class="alert-title">
                 @if ($isRevisionReview)
                     <x-lucide-refresh-cw class="icon" />
-                    Keputusan Revisi Proposal
+                    Keputusan Final — Revisi Telah Diajukan
+                @elseif ($this->isInitialReviewedStage)
+                    <x-lucide-clipboard-list class="icon" />
+                    Analisis Hasil Review — Kembalikan ke Perbaikan
                 @else
                     <x-lucide-clipboard-check class="icon" />
                     Keputusan Akhir Kepala LPPM
@@ -53,7 +56,11 @@
             </h4>
             <div class="text-secondary">
                 @if ($isRevisionReview)
-                    Pengusul telah mengajukan revisi proposal. Silakan tinjau dan berikan keputusan akhir.
+                    Pengusul telah mengajukan revisi proposal. Silakan tinjau dan berikan keputusan akhir (Setujui / Perbaikan Lanjutan / Tolak).
+                @elseif ($this->isInitialReviewedStage)
+                    Semua reviewer telah menyelesaikan penilaian. <strong>Seluruh proposal wajib melalui tahap Perbaikan Usulan</strong> agar dosen dapat membaca dan merespons catatan reviewer sebelum keputusan akhir dibuat.
+                    <br>
+                    <small class="mt-1 d-block text-muted">Tombol "Setujui" akan tersedia setelah dosen mengajukan ulang dari halaman Perbaikan Usulan.</small>
                 @else
                     Semua reviewer telah menyelesaikan review. Silakan berikan keputusan akhir untuk proposal ini.
                 @endif
@@ -61,15 +68,17 @@
         </div>
 
         <div class="btn-list">
-            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#finalDecisionModal"
-                wire:click="$set('decision', 'completed')">
-                <x-lucide-check class="icon" />
-                Setujui Proposal
-            </button>
+            @if (! $this->isInitialReviewedStage)
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#finalDecisionModal"
+                    wire:click="$set('decision', 'completed')">
+                    <x-lucide-check class="icon" />
+                    Setujui Proposal
+                </button>
+            @endif
             <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#finalDecisionModal"
                 wire:click="$set('decision', 'revision_needed')">
                 <x-lucide-file-edit class="icon" />
-                Minta Perbaikan Usulan
+                {{ $this->isInitialReviewedStage ? 'Kembalikan ke Perbaikan Usulan' : 'Minta Perbaikan Lanjutan' }}
             </button>
             <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#finalDecisionModal"
                 wire:click="$set('decision', 'rejected')">
@@ -128,16 +137,23 @@
 
                     <div class="mb-3">
                         <label class="form-label">
-                            Catatan {{ in_array($decision, ['revision_needed', 'rejected']) ? '(Wajib)' : '(Opsional)' }}
+                            Catatan
+                            @if ($decision === 'revision_needed')
+                                <span class="text-danger">*</span> <span class="text-muted small">(Wajib)</span>
+                            @elseif ($decision === 'rejected')
+                                <span class="text-danger">*</span> <span class="text-muted small">(Wajib)</span>
+                            @else
+                                <span class="text-muted small">(Opsional)</span>
+                            @endif
                         </label>
                         <textarea class="form-control" rows="4" wire:model="notes" placeholder="Tambahkan catatan atau komentar..."></textarea>
                         @if ($decision === 'revision_needed')
                             <small class="form-hint">
-                                Jelaskan perbaikan yang diperlukan agar pengusul dapat melakukan revisi dengan tepat.
+                                <strong>Wajib diisi.</strong> Jelaskan secara rinci perbaikan yang diperlukan agar dosen dapat melakukan revisi dengan tepat.
                             </small>
                         @elseif ($decision === 'rejected')
                             <small class="form-hint">
-                                Jelaskan alasan penolakan proposal.
+                                <strong>Wajib diisi.</strong> Jelaskan alasan penolakan proposal.
                             </small>
                         @endif
                     </div>

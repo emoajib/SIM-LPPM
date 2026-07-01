@@ -59,6 +59,16 @@ class KepalaLppmFinalDecision extends Component
         return $isKepalaLppm && $status === ProposalStatus::REVIEWED && $proposal->allReviewsCompleted();
     }
 
+    /**
+     * True if proposal is in initial reviewed stage (before any revision round).
+     * At this stage, Kepala LPPM can only send back to revision or reject.
+     */
+    #[Computed]
+    public function isInitialReviewedStage(): bool
+    {
+        return $this->proposal?->status === ProposalStatus::REVIEWED;
+    }
+
     #[Computed]
     public function pendingReviewers()
     {
@@ -121,8 +131,25 @@ class KepalaLppmFinalDecision extends Component
             return;
         }
 
-        if (! in_array($this->decision, ['completed', 'revision_needed', 'rejected'])) {
-            $message = 'Keputusan tidak valid';
+        // Saat status REVIEWED: Kepala LPPM WAJIB mengembalikan ke perbaikan terlebih dahulu.
+        // Keputusan 'completed' hanya boleh setelah dosen mengajukan ulang (REVISION_SUBMITTED).
+        $validDecisions = $proposal->status === ProposalStatus::REVIEWED
+            ? ['revision_needed', 'rejected']
+            : ['completed', 'revision_needed', 'rejected'];
+
+        if (! in_array($this->decision, $validDecisions)) {
+            $message = $proposal->status === ProposalStatus::REVIEWED
+                ? 'Proposal harus dikembalikan ke dosen untuk perbaikan terlebih dahulu sebelum dapat disetujui.'
+                : 'Keputusan tidak valid';
+            session()->flash('error', $message);
+            $this->toastError($message);
+
+            return;
+        }
+
+        // Catatan wajib diisi saat mengembalikan ke perbaikan
+        if ($this->decision === 'revision_needed' && empty(trim($this->notes))) {
+            $message = 'Catatan perbaikan wajib diisi agar dosen mengetahui apa yang harus diperbaiki.';
             session()->flash('error', $message);
             $this->toastError($message);
 
