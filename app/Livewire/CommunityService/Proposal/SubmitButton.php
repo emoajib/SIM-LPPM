@@ -42,12 +42,17 @@ class SubmitButton extends Component
     {
         $proposal = $this->proposal;
 
-        $statusValue = $proposal->status instanceof \BackedEnum ? $proposal->status->value : $proposal->status;
+        $rawStatus = $proposal->status;
+        $statusValue = is_object($rawStatus) && property_exists($rawStatus, 'value')
+            ? $rawStatus->value
+            : (is_array($rawStatus) ? ($rawStatus['value'] ?? '') : $rawStatus);
+        $statusValue = (string) $statusValue;
 
         $allowedStatuses = [
             ProposalStatus::DRAFT->value,
             ProposalStatus::NEED_ASSIGNMENT->value,
             ProposalStatus::REVISION_NEEDED->value,
+            'revision_needed',
         ];
 
         return in_array($statusValue, $allowedStatuses)
@@ -75,9 +80,13 @@ class SubmitButton extends Component
     public function eligibility()
     {
         $eligibilityService = app(LecturerEligibilityService::class);
-        $statusValue = $this->proposal->status instanceof \BackedEnum ? $this->proposal->status->value : $this->proposal->status;
+        $rawStatus = $this->proposal->status;
+        $statusValue = is_object($rawStatus) && property_exists($rawStatus, 'value')
+            ? $rawStatus->value
+            : (is_array($rawStatus) ? ($rawStatus['value'] ?? $rawStatus) : $rawStatus);
+        $statusValue = (string) $statusValue;
 
-        if ($statusValue === ProposalStatus::REVISION_NEEDED->value) {
+        if ($statusValue === ProposalStatus::REVISION_NEEDED->value || $statusValue === 'revision_needed') {
             if (! $eligibilityService->isRevisionOpen('community_service')) {
                 return ['eligible' => false, 'reasons' => ['Masa perbaikan usulan telah ditutup.']];
             }

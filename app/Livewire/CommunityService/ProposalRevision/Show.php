@@ -6,6 +6,7 @@ namespace App\Livewire\CommunityService\ProposalRevision;
 
 // Vetted by AI - Manual Review Required by Senior Engineer/Manager
 
+use App\Enums\ProposalStatus;
 use App\Livewire\Concerns\HasToast;
 use App\Livewire\Forms\ProposalForm;
 use App\Livewire\Traits\WithProposalWizard;
@@ -192,6 +193,14 @@ class Show extends Component
     public function canEdit(): bool
     {
         if ($this->form->proposal->submitter_id !== Auth::id()) {
+            return false;
+        }
+
+        $statusValue = $this->form->proposal->status instanceof \BackedEnum
+            ? $this->form->proposal->status->value
+            : $this->form->proposal->status;
+
+        if ($statusValue !== ProposalStatus::REVISION_NEEDED->value) {
             return false;
         }
 
