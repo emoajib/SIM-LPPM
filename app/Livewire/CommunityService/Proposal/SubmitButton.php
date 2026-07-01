@@ -41,13 +41,16 @@ class SubmitButton extends Component
     public function canSubmit(): bool
     {
         $proposal = $this->proposal;
+
+        $statusValue = $proposal->status instanceof \BackedEnum ? $proposal->status->value : $proposal->status;
+
         $allowedStatuses = [
-            ProposalStatus::DRAFT,
-            ProposalStatus::NEED_ASSIGNMENT,
-            ProposalStatus::REVISION_NEEDED,
+            ProposalStatus::DRAFT->value,
+            ProposalStatus::NEED_ASSIGNMENT->value,
+            ProposalStatus::REVISION_NEEDED->value,
         ];
 
-        return in_array($proposal->status, $allowedStatuses)
+        return in_array($statusValue, $allowedStatuses)
             && $proposal->allTeamMembersAccepted()
             && Auth::id() === $proposal->submitter_id
             && $this->eligibility()['eligible']
@@ -72,8 +75,9 @@ class SubmitButton extends Component
     public function eligibility()
     {
         $eligibilityService = app(LecturerEligibilityService::class);
+        $statusValue = $this->proposal->status instanceof \BackedEnum ? $this->proposal->status->value : $this->proposal->status;
 
-        if ($this->proposal->status === ProposalStatus::REVISION_NEEDED) {
+        if ($statusValue === ProposalStatus::REVISION_NEEDED->value) {
             if (! $eligibilityService->isRevisionOpen('community_service')) {
                 return ['eligible' => false, 'reasons' => ['Masa perbaikan usulan telah ditutup.']];
             }
