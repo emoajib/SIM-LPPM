@@ -46,7 +46,7 @@ class DatabaseRestoreService
             'id', 'name', 'prn_code', 'valid_from', 'valid_until', 'description', 'created_at', 'updated_at',
         ],
         'research_schemes' => [
-            'id', 'name', 'strata', 'eligibility_rules', 'description', 'created_at', 'updated_at',
+            'id', 'name', 'strata', 'min_tkt', 'max_tkt', 'eligibility_rules', 'description', 'created_at', 'updated_at',
         ],
         'proposal_outputs' => [
             'id', 'proposal_id', 'output_year', 'category', 'group', 'type', 'target_status', 'description', 'created_at', 'updated_at',
