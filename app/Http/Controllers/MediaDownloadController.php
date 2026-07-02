@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class MediaDownloadController extends Controller
@@ -21,8 +22,23 @@ class MediaDownloadController extends Controller
                 abort(400, 'Malformed Identifier');
             }
 
-            // 2. Policy-Based Authorization
-            $this->authorize('download', $media);
+            // 2. Signed URL Verification
+            // The URL is generated via URL::temporarySignedRoute() in Blade views.
+            // If the request has a valid signature → skip policy authorization (the URL IS the access token).
+            // If no signature → fall back to policy-based authorization for backward compatibility.
+            if ($request->has('signature') || $request->has('expires')) {
+                if (! URL::hasValidSignature($request)) {
+                    Log::warning('MEDIA DOWNLOAD: Invalid or expired signature', [
+                        'media_uuid' => $media->uuid,
+                        'user_id' => Auth::id(),
+                        'ip' => $request->ip(),
+                    ]);
+                    abort(403, 'Akses Ditolak: Tautan tidak valid atau sudah kadaluwarsa.');
+                }
+            } else {
+                // 2b. Policy-Based Authorization (for non-signed requests)
+                $this->authorize('download', $media);
+            }
 
             $diskName = config('media-library.disk_name', 'public');
 

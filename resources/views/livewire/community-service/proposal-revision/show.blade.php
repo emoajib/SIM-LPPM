@@ -414,7 +414,7 @@
                                     <x-lucide-download class="icon icon-sm me-1" />
                                     Download
                                 </a>
-                                <a href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}?view=1" target="_blank"
+                                <a href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media, 'view' => 1]) }}" target="_blank"
                                     class="btn-outline-info btn btn-sm">
                                     <x-lucide-eye class="icon icon-sm me-1" />
                                     Lihat PDF
