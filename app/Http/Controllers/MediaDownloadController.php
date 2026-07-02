@@ -44,22 +44,20 @@ class MediaDownloadController extends Controller
 
             // 3. Path Traversal & Existence Check for local disks
             $disk = Storage::disk($diskName);
-            // getPath() already returns full path, don't double-prepend disk root
             $path = $media->getPath();
             if (str_contains($path, '..')) {
                 abort(403, 'Invalid file path.');
             }
+
             $realPath = realpath($path);
+            if ($realPath === false) {
+                abort(404, 'File fisik tidak ditemukan di server.');
+            }
 
             // Security Barrier: Ensure path is within the disk's root (not just storage_path)
             $diskRoot = $disk->path('');
-
-            if ($realPath === false || $diskRoot === false || ! str_starts_with($realPath, $diskRoot)) {
+            if ($diskRoot === false || ! str_starts_with($realPath, $diskRoot)) {
                 abort(403, 'Path traversal detected or illegal file path access.');
-            }
-
-            if (! file_exists($realPath)) {
-                abort(404, 'File fisik tidak ditemukan di server.');
             }
 
             // 4. Runtime Integrity Check (Actual MIME vs Record MIME)

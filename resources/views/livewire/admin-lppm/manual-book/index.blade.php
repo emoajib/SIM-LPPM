@@ -19,7 +19,7 @@
                             <div class="flex-shrink-0 me-3">
                                 @if($isImage)
                                     <div class="avatar avatar-lg">
-                                        <img src="{{ route('media.download', $media) }}?view=1" class="rounded" style="width:48px;height:48px;object-fit:cover">
+                                        <img src="{{ route('media.download', ['media' => $media, 'view' => 1]) }}" class="rounded" style="width:48px;height:48px;object-fit:cover">
                                     </div>
                                 @else
                                     <div class="avatar avatar-lg bg-primary text-white">
