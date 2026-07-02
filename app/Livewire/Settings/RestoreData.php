@@ -29,6 +29,10 @@ class RestoreData extends Component
 
     public array $preview = [];
 
+    public array $warnings = [];
+
+    public bool $hasWarnings = false;
+
     public ?string $uploadedSqlPath = null;
 
     public ?string $uploadedZipPath = null;
@@ -79,6 +83,8 @@ class RestoreData extends Component
         $service = app(DatabaseRestoreService::class);
         $preview = $service->preview($this->uploadedSqlPath);
         $this->preview = collect($preview)->except(['statements', 'blocked'])->toArray();
+        $this->warnings = $preview['warnings'] ?? [];
+        $this->hasWarnings = ! empty($this->warnings);
         $this->hasPreview = true;
 
         $this->logSqlPreview($filename);
@@ -168,6 +174,8 @@ class RestoreData extends Component
         $this->uploadErrorMessage = null;
         $this->hasPreview = false;
         $this->preview = [];
+        $this->warnings = [];
+        $this->hasWarnings = false;
         $this->uploadedSqlPath = null;
         $this->uploadedZipPath = null;
         $this->availableZipFolders = [];

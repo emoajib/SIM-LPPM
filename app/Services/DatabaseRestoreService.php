@@ -217,7 +217,63 @@ class DatabaseRestoreService
             'blocked_count' => count($blocked),
             'tables' => $tables,
             'statements' => $filtered,
+            'warnings' => $this->validateColumnOrders($sqlPath),
         ];
+    }
+
+    public function validateColumnOrders(string $sqlPath): array
+    {
+        $warnings = [];
+        $statements = $this->parseStatements($sqlPath);
+
+        foreach ($statements as $i => $stmt) {
+            if (! preg_match('/INSERT\s+(?:IGNORE\s+)?INTO\s+[`"\']?(\w+)[`"\']?/i', $stmt, $m)) {
+                continue;
+            }
+            $table = $m[1];
+            $columnOrders = $this->getMysqlColumnOrders();
+
+            if (! isset($columnOrders[$table])) {
+                continue;
+            }
+            $expected = $columnOrders[$table];
+
+            if (preg_match('/INSERT\s+(?:IGNORE\s+)?INTO\s+[`"\']?\w+[`"\']?\s*\(([^)]+)\)\s*VALUES/i', $stmt, $cm)) {
+                $dumpCols = array_map(fn ($c) => trim($c, ' `"'), explode(',', $cm[1]));
+                $missing = array_diff($expected, $dumpCols);
+                $extra = array_diff($dumpCols, $expected);
+                if ($missing || $extra) {
+                    $warnings[] = "Tabel '{$table}' (line ~".($i + 1).'): kolom tidak sesuai antara dump dan target.';
+                }
+            } else {
+                preg_match('/VALUES\s*\(/i', $stmt, $vm, PREG_OFFSET_CAPTURE);
+                if (! $vm) {
+                    continue;
+                }
+                $sample = substr($stmt, $vm[0][1]);
+                $depth = 0;
+                $count = 0;
+                for ($j = 0; $j < strlen($sample); $j++) {
+                    if ($sample[$j] === '(') {
+                        $depth++;
+                    } elseif ($sample[$j] === ')') {
+                        $depth--;
+                        if ($depth === 0) {
+                            $count++;
+                            break;
+                        }
+                    } elseif ($sample[$j] === ',' && $depth === 1) {
+                        $count++;
+                    }
+                }
+                $dumpCount = $count + 1;
+                if ($dumpCount !== count($expected)) {
+                    $warnings[] = "Tabel '{$table}' (line ~".($i + 1)."): dump {$dumpCount} nilai, target ".count($expected).' kolom.';
+                }
+            }
+        }
+
+        return $warnings;
     }
 
     protected function fixIdentityStatement(string $statement): string

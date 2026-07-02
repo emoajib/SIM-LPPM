@@ -253,6 +253,23 @@
                                 </div>
                             </div>
                         @endif
+
+                        @if ($hasWarnings)
+                            <div class="alert alert-warning border-start border-4 border-warning mb-3" role="alert">
+                                <div class="d-flex gap-2">
+                                    <x-lucide-alert-triangle class="icon mt-1 flex-shrink-0" />
+                                    <div>
+                                        <strong class="d-block mb-1">⚠️ Periksa Kembali</strong>
+                                        <p class="small mb-2">Ditemukan potensi ketidakcocokan kolom. Data mungkin tidak ter-restore sempurna.</p>
+                                        <ul class="mb-0 ps-3 small">
+                                            @foreach ($warnings as $warning)
+                                                <li class="mb-1">{{ $warning }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 @endif
 
