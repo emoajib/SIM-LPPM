@@ -177,6 +177,7 @@ class ProposalWorkflowTest extends TestCase
         $kepalaLppm = User::factory()->create();
         $kepalaLppm->assignRole('kepala lppm');
         $this->actingAs($kepalaLppm);
+        session(['active_role' => 'kepala lppm']);
 
         // Should move to WAITING_REVIEWER
         $proposal->update(['status' => ProposalStatus::WAITING_REVIEWER]);
@@ -225,6 +226,7 @@ class ProposalWorkflowTest extends TestCase
 
         // 7. LPPM Final Decision
         $this->actingAs($kepalaLppm);
+        session(['active_role' => 'kepala lppm']);
         $finalDecisionAction = app(ApproveProposalAction::class);
         $result = $finalDecisionAction->execute($proposal->fresh(), 'completed');
         $this->assertTrue($result['success']);
@@ -295,6 +297,7 @@ class ProposalWorkflowTest extends TestCase
         $kepalaLppm = User::factory()->create();
         $kepalaLppm->assignRole('kepala lppm');
         $this->actingAs($kepalaLppm);
+        session(['active_role' => 'kepala lppm']);
 
         $finalDecisionAction = app(ApproveProposalAction::class);
         $result = $finalDecisionAction->execute($proposal, 'completed');
@@ -445,6 +448,7 @@ class ProposalWorkflowTest extends TestCase
         $kepalaLppm = User::factory()->create();
         $kepalaLppm->assignRole('kepala lppm');
         $this->actingAs($kepalaLppm);
+        session(['active_role' => 'kepala lppm']);
 
         $finalDecisionAction = app(ApproveProposalAction::class);
         $result = $finalDecisionAction->execute($proposal, 'revision_needed', 'Please fix output targets.');

@@ -21,7 +21,7 @@ class ApproveProposalAction
     {
         // Authorization check - only kepala lppm can approve/reject
         $user = Auth::user();
-        if (! $user || ! $user->hasRole('kepala lppm')) {
+        if (! $user || ! $user->activeHasRole('kepala lppm')) {
             return [
                 'success' => false,
                 'message' => 'Anda tidak memiliki akses untuk melakukan keputusan ini.',

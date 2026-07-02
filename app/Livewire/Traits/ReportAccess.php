@@ -38,7 +38,7 @@ trait ReportAccess
             $user = Auth::user();
             $message = 'Anda tidak memiliki akses untuk melihat laporan ini.';
 
-            if ($user?->hasRole('dekan')) {
+            if ($user?->activeHasRole('dekan')) {
                 if (! $user->identity) {
                     $message = 'Profil Anda belum lengkap (Identity tidak ditemukan). Silakan lengkapi profil Anda terlebih dahulu.';
                 } else {
@@ -61,11 +61,11 @@ trait ReportAccess
         $user = Auth::user();
         // dd($user->getRoleNames());
 
-        if ($user->hasAnyRole(['admin lppm', 'kepala lppm', 'rektor'])) {
+        if ($user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor'])) {
             return true;
         }
 
-        if ($user->hasRole('dekan')) {
+        if ($user->activeHasRole('dekan')) {
             $dekanFacultyId = $user->identity?->faculty_id;
             $submitterFacultyId = $this->proposal->submitter->identity?->faculty_id;
 

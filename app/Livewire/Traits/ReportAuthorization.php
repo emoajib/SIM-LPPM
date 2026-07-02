@@ -15,11 +15,11 @@ trait ReportAuthorization
     {
         $user = Auth::user();
 
-        if ($user->hasAnyRole(['admin lppm', 'kepala lppm', 'rektor'])) {
+        if ($user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor'])) {
             return $query;
         }
 
-        if ($user->hasRole('dekan')) {
+        if ($user->activeHasRole('dekan')) {
             $facultyId = $user->identity?->faculty_id;
 
             return $query->whereHas('submitter.identity', function ($q) use ($facultyId) {
@@ -40,7 +40,7 @@ trait ReportAuthorization
     {
         $user = Auth::user();
 
-        if ($user->hasRole(['admin lppm', 'superadmin'])) {
+        if ($user->activeHasAnyRole(['admin lppm', 'superadmin'])) {
             return true;
         }
 

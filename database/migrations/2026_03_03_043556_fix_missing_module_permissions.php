@@ -29,6 +29,8 @@ return new class extends Migration
             'module_arsip_data' => ['admin lppm', 'superadmin'],
             'module_export_sinta' => ['admin lppm', 'superadmin'],
             'module_pengaturan' => ['admin lppm', 'superadmin'],
+            'module_persetujuan_kaprodi' => ['kaprodi', 'superadmin'],
+            'module_manual_book' => ['admin lppm', 'superadmin'],
         ];
 
         foreach ($mappings as $permissionName => $roles) {
