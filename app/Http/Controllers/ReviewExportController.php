@@ -47,7 +47,7 @@ class ReviewExportController extends Controller
 
         // Authorization check
         $isReviewer = $proposalReviewer->user_id === $user->id;
-        $isLppm = $user->hasRole(['admin lppm', 'kepala lppm', 'superadmin', 'rektor']);
+        $isLppm = $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'superadmin', 'rektor']);
 
         if (! $isReviewer && ! $isLppm) {
             abort(403, 'Anda tidak memiliki akses untuk mengekspor penilaian ini.');

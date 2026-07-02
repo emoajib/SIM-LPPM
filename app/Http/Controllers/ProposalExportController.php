@@ -32,7 +32,7 @@ class ProposalExportController extends Controller
 
         $isMember = $proposal->teamMembers()->where('users.id', $user->id)->exists();
         $isSubmitter = $proposal->submitter_id === $user->id;
-        $isLppm = $user->hasRole(['admin lppm', 'kepala lppm', 'superadmin', 'rektor', 'dekan']);
+        $isLppm = $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'superadmin', 'rektor', 'dekan']);
         $isAssignedReviewer = $proposal->reviewers()->where('user_id', $user->id)->exists();
 
         if (! $isSubmitter && ! $isMember && ! $isLppm && ! $isAssignedReviewer) {
@@ -64,7 +64,7 @@ class ProposalExportController extends Controller
 
         $isMember = $proposal->teamMembers()->where('users.id', $user->id)->exists();
         $isSubmitter = $proposal->submitter_id === $user->id;
-        $isLppm = $user->hasRole(['admin lppm', 'kepala lppm', 'superadmin', 'rektor', 'dekan']);
+        $isLppm = $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'superadmin', 'rektor', 'dekan']);
         $isAssignedReviewer = $proposal->reviewers()->where('user_id', $user->id)->exists();
 
         if (! $isSubmitter && ! $isMember && ! $isLppm && ! $isAssignedReviewer) {
@@ -99,7 +99,7 @@ class ProposalExportController extends Controller
 
         $isMember = $proposal->teamMembers()->where('users.id', $user->id)->exists();
         $isSubmitter = $proposal->submitter_id === $user->id;
-        $isLppm = $user->hasRole(['admin lppm', 'kepala lppm', 'superadmin', 'rektor', 'dekan']);
+        $isLppm = $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'superadmin', 'rektor', 'dekan']);
         $isAssignedReviewer = $proposal->reviewers()->where('user_id', $user->id)->exists();
 
         if (! $isSubmitter && ! $isMember && ! $isLppm && ! $isAssignedReviewer) {

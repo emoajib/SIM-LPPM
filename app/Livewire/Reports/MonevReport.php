@@ -103,7 +103,7 @@ class MonevReport extends Component
     protected function baseQuery()
     {
         $user = auth()->user();
-        $facultyId = $user->hasRole('dekan') ? $user->identity?->faculty_id : null;
+        $facultyId = $user->activeHasRole('dekan') ? $user->identity?->faculty_id : null;
 
         return MonevReview::query()
             ->when($facultyId, fn ($q) => $q->whereHas('proposal.submitter.identity', fn ($i) => $i->where('faculty_id', $facultyId)))

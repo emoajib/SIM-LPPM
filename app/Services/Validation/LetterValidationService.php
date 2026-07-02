@@ -305,7 +305,7 @@ class LetterValidationService implements LetterValidationServiceInterface
         // Check if approver has permission
         if ($letter->signature_mode === SignatureMode::MANUAL) {
             // For manual signatures, only kepala lppm can approve
-            if (! auth()->user()->hasRole('kepala lppm') && ! auth()->user()->hasRole('rektor')) {
+            if (! auth()->user()->activeHasRole('kepala lppm') && ! auth()->user()->activeHasRole('rektor')) {
                 $errors['approval'] = [
                     'Only kepala lppm or rektor can approve letters with manual signatures.',
                     'Your role: '.auth()->user()->getRoleNames()->implode(', '),
@@ -313,7 +313,7 @@ class LetterValidationService implements LetterValidationServiceInterface
             }
         } else {
             // For digital signatures, any admin can approve
-            if (! auth()->user()->hasRole('admin lppm') && ! auth()->user()->hasRole('superadmin') && ! auth()->user()->hasRole('kepala lppm') && ! auth()->user()->hasRole('rektor')) {
+            if (! auth()->user()->activeHasRole('admin lppm') && ! auth()->user()->activeHasRole('superadmin') && ! auth()->user()->activeHasRole('kepala lppm') && ! auth()->user()->activeHasRole('rektor')) {
                 $errors['approval'] = [
                     'Only admin lppm, superadmin, kepala lppm, or rektor can approve letters with digital signatures.',
                     'Your role: '.auth()->user()->getRoleNames()->implode(', '),
@@ -344,7 +344,7 @@ class LetterValidationService implements LetterValidationServiceInterface
         }
 
         // Check if rejecter has permission
-        if (! auth()->user()->hasRole('kepala lppm') && ! auth()->user()->hasRole('rektor')) {
+        if (! auth()->user()->activeHasRole('kepala lppm') && ! auth()->user()->activeHasRole('rektor')) {
             $errors['rejection'] = [
                 'Only kepala lppm or rektor can reject letters.',
                 'Your role: '.auth()->user()->getRoleNames()->implode(', '),
@@ -438,10 +438,10 @@ class LetterValidationService implements LetterValidationServiceInterface
 
         // Check if exporter has permission
         if ($letter->user_id !== $exporterId &&
-            ! auth()->user()->hasRole('admin lppm') &&
-            ! auth()->user()->hasRole('superadmin') &&
-            ! auth()->user()->hasRole('kepala lppm') &&
-            ! auth()->user()->hasRole('rektor')) {
+            ! auth()->user()->activeHasRole('admin lppm') &&
+            ! auth()->user()->activeHasRole('superadmin') &&
+            ! auth()->user()->activeHasRole('kepala lppm') &&
+            ! auth()->user()->activeHasRole('rektor')) {
             $errors['export'] = [
                 'Only the letter owner, admin lppm, superadmin, kepala lppm, or rektor can export the letter.',
                 'Letter owner: '.$letter->user_id,

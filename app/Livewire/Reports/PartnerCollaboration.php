@@ -74,7 +74,7 @@ class PartnerCollaboration extends Component
     public function summary(): array
     {
         $user = auth()->user();
-        $facultyId = $user->hasRole('dekan') ? $user->identity?->faculty_id : null;
+        $facultyId = $user->activeHasRole('dekan') ? $user->identity?->faculty_id : null;
 
         $basePartner = Partner::query()
             ->when($facultyId, fn ($q) => $q->whereHas('proposals.submitter.identity', fn ($i) => $i->where('faculty_id', $facultyId)));
@@ -145,7 +145,7 @@ class PartnerCollaboration extends Component
     public function render(GetPartnerReportQuery $action): View
     {
         $user = auth()->user();
-        $facultyId = $user->hasRole('dekan') ? $user->identity?->faculty_id : null;
+        $facultyId = $user->activeHasRole('dekan') ? $user->identity?->faculty_id : null;
 
         $partners = $action->handle($this->search, $this->typeFilter, $this->periodFilter, $facultyId !== null ? (string) $facultyId : null)->paginate(15);
 

@@ -665,7 +665,7 @@ class ReportExportController extends Controller
 
         try {
             $user = Auth::user();
-            $facultyId = $user->hasRole('dekan') ? $user->identity?->faculty_id : null;
+            $facultyId = $user->activeHasRole('dekan') ? $user->identity?->faculty_id : null;
             $search = $request->query('search', '');
             $typeFilter = $request->query('typeFilter', '');
             $periodFilter = $request->query('periodFilter', '');
@@ -749,7 +749,7 @@ class ReportExportController extends Controller
 
         try {
             $user = Auth::user();
-            $facultyId = $user->hasRole('dekan') ? $user->identity?->faculty_id : null;
+            $facultyId = $user->activeHasRole('dekan') ? $user->identity?->faculty_id : null;
             $search = $request->query('search', '');
             $typeFilter = $request->query('typeFilter', '');
             $periodFilter = $request->query('periodFilter', '');
@@ -904,7 +904,7 @@ class ReportExportController extends Controller
                 abort(403);
             }
 
-            if (! $user->hasRole(['admin lppm', 'kepala lppm', 'superadmin']) && $user->id !== $review->reviewer_id) {
+            if (! $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'superadmin']) && $user->id !== $review->reviewer_id) {
                 abort(403);
             }
 

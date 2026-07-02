@@ -33,7 +33,7 @@ class DailyNoteExportController extends Controller
 
         $isMember = $proposal->teamMembers()->where('users.id', $user->id)->exists();
         $isSubmitter = $proposal->submitter_id === $user->id;
-        $isLppm = $user->hasRole(['admin lppm', 'kepala lppm', 'superadmin', 'rektor', 'dekan']);
+        $isLppm = $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'superadmin', 'rektor', 'dekan']);
 
         if (! $isSubmitter && ! $isMember && ! $isLppm) {
             abort(403, 'Anda tidak memiliki akses untuk mengekspor catatan harian ini.');
