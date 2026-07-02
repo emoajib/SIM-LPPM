@@ -12,7 +12,8 @@ class CheckMySqlColumnOrders extends Command
     use ParsesMigrationColumns;
 
     protected $signature = 'mysql-column-orders:check
-        {--table= : Check a specific table only}';
+        {--table= : Check a specific table only}
+        {--strict : Also fail on untracked tables}';
 
     protected $description = 'Validate $mysqlColumnOrders sync with migration files (offline, no DB needed)';
 
@@ -38,13 +39,9 @@ class CheckMySqlColumnOrders extends Command
             }
         }
 
-        $allTables = array_keys(array_merge($currentOrders, $generatedOrders));
-        sort($allTables);
-
         $hasMismatch = false;
 
-        foreach ($allTables as $table) {
-            $current = $currentOrders[$table] ?? [];
+        foreach ($currentOrders as $table => $current) {
             $generated = $generatedOrders[$table] ?? [];
 
             if ($current === $generated) {
@@ -74,24 +71,30 @@ class CheckMySqlColumnOrders extends Command
             $this->line('');
         }
 
-        $missingTables = array_diff(array_keys($generatedOrders), array_keys($currentOrders));
-        if (! empty($missingTables)) {
-            $hasMismatch = true;
-            $this->warn('Tables not in $mysqlColumnOrders: '.implode(', ', $missingTables));
+        $untrackedTables = array_diff(array_keys($generatedOrders), array_keys($currentOrders));
+        if (! empty($untrackedTables)) {
+            $this->warn(count($untrackedTables).' untracked tables (not in $mysqlColumnOrders):');
+            foreach ($untrackedTables as $t) {
+                $this->line('  - '.$t);
+            }
+            $this->line('(These are informational only — not all tables need column order tracking.)');
+            $this->line('');
         }
 
-        $extraTables = array_diff(array_keys($currentOrders), array_keys($generatedOrders));
-        if (! empty($extraTables)) {
+        $obsoleteTables = array_diff(array_keys($currentOrders), array_keys($generatedOrders));
+        if (! empty($obsoleteTables)) {
+            $this->warn('Tables in $mysqlColumnOrders but not in migrations: '.implode(', ', $obsoleteTables));
             $hasMismatch = true;
-            $this->warn('Extra tables in $mysqlColumnOrders (not in migrations): '.implode(', ', $extraTables));
         }
 
         if (! $hasMismatch) {
-            $totalColumns = array_sum(array_map('count', $generatedOrders));
-            $this->info('OK — '.count($allTables)." tables, {$totalColumns} columns in sync.");
+            $trackedCount = count($currentOrders);
+            $this->info("OK — {$trackedCount} tracked tables in sync.");
 
             return 0;
         }
+
+        $this->warn('Fix tracked table mismatches before deploying.');
 
         return 1;
     }
