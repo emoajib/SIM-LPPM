@@ -125,6 +125,7 @@ class BackupData extends Component
         }
         $cmd[] = '--single-transaction';
         $cmd[] = '--quick';
+        $cmd[] = '--complete-insert';
         $cmd[] = '--lock-tables=false';
         $cmd[] = $dbName;
 

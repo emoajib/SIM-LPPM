@@ -24,9 +24,9 @@ echo "📦 Membuat backup database ke ${BACKUP_FILE}..."
 if command -v mysqldump &> /dev/null
 then
     if [ -z "$DB_PASSWORD" ]; then
-        mysqldump -h 127.0.0.1 -u "$DB_USERNAME" "$DB_DATABASE" > "$BACKUP_FILE" 2>/dev/null || BACKUP_FAILED=true
+        mysqldump --complete-insert -h 127.0.0.1 -u "$DB_USERNAME" "$DB_DATABASE" > "$BACKUP_FILE" 2>/dev/null || BACKUP_FAILED=true
     else
-        mysqldump -h 127.0.0.1 -u "$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE" > "$BACKUP_FILE" 2>/dev/null || BACKUP_FAILED=true
+        mysqldump --complete-insert -h 127.0.0.1 -u "$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE" > "$BACKUP_FILE" 2>/dev/null || BACKUP_FAILED=true
     fi
     
     if [ "$BACKUP_FAILED" = true ]; then

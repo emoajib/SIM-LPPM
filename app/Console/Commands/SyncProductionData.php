@@ -45,7 +45,7 @@ class SyncProductionData extends Command
         }
 
         $dumpCmd = sprintf(
-            'ssh %s@%s "mysqldump -u %s %s --skip-lock-tables --routines --triggers --events %s > %s/prod_dump_temp.sql"',
+            'ssh %s@%s "mysqldump --complete-insert -u %s %s --skip-lock-tables --routines --triggers --events %s > %s/prod_dump_temp.sql"',
             escapeshellarg($remoteUser),
             escapeshellarg($remoteHost),
             escapeshellarg($remoteDbUser ?: $remoteUser),

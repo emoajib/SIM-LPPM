@@ -81,6 +81,9 @@ jobs:
       - name: Enum Sync Check
         run: php artisan enum:sync --check || true
 
+      - name: Validate Column Orders vs MySQL Schema
+        run: php artisan mysql-column-orders:validate
+
       - name: Run Tests (MySQL)
         run: ./vendor/bin/pest
         continue-on-error: true

@@ -71,9 +71,9 @@ sync_db() {
         DUMP_CMD="PGPASSWORD='${REMOTE_DB_PASS}' pg_dump -U ${REMOTE_DB_USER} -h localhost ${REMOTE_DB_NAME} --no-owner"
     else
         if [[ -n "${REMOTE_DB_PASS}" ]]; then
-            DUMP_CMD="mysqldump -u ${REMOTE_DB_USER} -p'${REMOTE_DB_PASS}' ${REMOTE_DB_NAME}"
+            DUMP_CMD="mysqldump --complete-insert -u ${REMOTE_DB_USER} -p'${REMOTE_DB_PASS}' ${REMOTE_DB_NAME}"
         else
-            DUMP_CMD="mysqldump -u ${REMOTE_DB_USER} ${REMOTE_DB_NAME}"
+            DUMP_CMD="mysqldump --complete-insert -u ${REMOTE_DB_USER} ${REMOTE_DB_NAME}"
         fi
     fi
 

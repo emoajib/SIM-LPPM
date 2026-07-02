@@ -14,7 +14,7 @@ mkdir -p "$BACKUP_DIR"
 
 # Perform backup using mysqldump
 echo "Starting backup of $DB_NAME at $DATE..."
-mysqldump -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" | gzip > "$BACKUP_FILE"
+mysqldump --complete-insert -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" | gzip > "$BACKUP_FILE"
 
 if [ $? -eq 0 ]; then
     echo "Backup successful: $BACKUP_FILE"

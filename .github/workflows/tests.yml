@@ -134,4 +134,7 @@ jobs:
           DB_CONNECTION: sqlite
           DB_DATABASE: database/database.sqlite
         run: ./vendor/bin/pest
+
+      - name: Check MySQL Column Orders (Offline)
+        run: php artisan mysql-column-orders:check
 # Vetted by AI - Manual Review Required by Senior Engineer/Manager

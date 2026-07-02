@@ -95,6 +95,27 @@ class DatabaseRestoreService
         ],
     ];
 
+    /**
+     * Get MySQL column orders using 3-tier fallback:
+     *   Tier 1: config/restore-column-orders.php (external, overridable)
+     *   Tier 2: $this->mysqlColumnOrders (hardcoded fallback)
+     *   Tier 3: empty array (INSERT passes through unmodified)
+     */
+    public function getMysqlColumnOrders(): array
+    {
+        $fromConfig = config('restore-column-orders');
+
+        if (is_array($fromConfig) && $fromConfig !== []) {
+            return $fromConfig;
+        }
+
+        if ($this->mysqlColumnOrders !== []) {
+            return $this->mysqlColumnOrders;
+        }
+
+        return [];
+    }
+
     protected array $allowedPrefixes = [
         'INSERT INTO',
         'INSERT IGNORE INTO',
@@ -276,8 +297,9 @@ class DatabaseRestoreService
         }
 
         $table = $m[2];
+        $columnOrders = $this->getMysqlColumnOrders();
 
-        if (! isset($this->mysqlColumnOrders[$table])) {
+        if (! isset($columnOrders[$table])) {
             return $statement;
         }
 
@@ -285,7 +307,7 @@ class DatabaseRestoreService
             return $statement;
         }
 
-        $cols = array_map(fn ($c) => '"'.$c.'"', $this->mysqlColumnOrders[$table]);
+        $cols = array_map(fn ($c) => '"'.$c.'"', $columnOrders[$table]);
         $colList = implode(',', $cols);
 
         return preg_replace(
@@ -412,8 +434,10 @@ class DatabaseRestoreService
             return array_map(fn ($c) => trim($c, ' `"'), explode(',', $m[1]));
         }
 
-        if (isset($this->mysqlColumnOrders[$table])) {
-            return $this->mysqlColumnOrders[$table];
+        $columnOrders = $this->getMysqlColumnOrders();
+
+        if (isset($columnOrders[$table])) {
+            return $columnOrders[$table];
         }
 
         try {
