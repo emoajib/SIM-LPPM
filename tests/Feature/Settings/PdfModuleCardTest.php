@@ -224,7 +224,7 @@ it('dispatches module-override-updated event on reset', function () {
     session(['active_role' => 'admin lppm']);
 
     // Pre-create an override so reset has something to clear
-    Setting::set('pdf_override_test-module-font_family', 'Arial', 'string');
+    Setting::set('pdf_override_test-module_font_family', 'Arial', 'string');
 
     Livewire::actingAs($admin)->test(PdfModuleCard::class, [
         'moduleKey' => 'test-module',
