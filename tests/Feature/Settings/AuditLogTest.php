@@ -40,6 +40,7 @@ it('allows admin to view audit logs and filter by user', function () {
     ]);
 
     $this->actingAs($admin);
+    session(['active_role' => 'admin lppm']);
 
     // can open settings index and switch to audit tab
     $component = Livewire::test(SettingsIndex::class);
@@ -60,13 +61,15 @@ it('admin route is protected and accessible', function () {
     $admin = User::factory()->create();
     $admin->assignRole('admin lppm');
 
-    $this->actingAs($admin)
-        ->get(route('admin-lppm.audit-log'))
+    $this->actingAs($admin);
+    session(['active_role' => 'admin lppm']);
+    $this->get(route('admin-lppm.audit-log'))
         ->assertOk();
 
     $user = User::factory()->create();
-    $this->actingAs($user)
-        ->get(route('admin-lppm.audit-log'))
+    $this->actingAs($user);
+    session()->forget('active_role');
+    $this->get(route('admin-lppm.audit-log'))
         ->assertForbidden();
 });
 
@@ -95,6 +98,7 @@ it('can filter by date range and ip address', function () {
     $recent->created_at = now()->subDays(1);
     $recent->save();
 
+    session(['active_role' => 'admin lppm']);
     Livewire::actingAs($admin)
         ->test(AuditLog::class)
         ->set('dateFrom', now()->subDays(2)->format('Y-m-d'))

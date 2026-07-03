@@ -57,7 +57,7 @@ class AuditLog extends Component
      */
     public function mount(): void
     {
-        abort_unless(Auth::user()?->hasRole('admin lppm'), 403);
+        abort_unless(Auth::user()?->activeHasRole('admin lppm'), 403);
     }
 
     public function render(): View

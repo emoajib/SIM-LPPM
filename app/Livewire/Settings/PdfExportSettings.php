@@ -163,7 +163,7 @@ class PdfExportSettings extends Component
 
     public function mount(): void
     {
-        abort_unless(Auth::user()?->hasRole('admin lppm') || Auth::user()?->hasRole('superadmin'), 403);
+        abort_unless(Auth::user()?->activeHasRole('admin lppm') || Auth::user()?->activeHasRole('superadmin'), 403);
 
         // Family A
         $this->pdfFontFamily = Setting::get(PdfConstants::GLOBAL_FONT_FAMILY, 'Times New Roman, Times, serif');
@@ -292,7 +292,7 @@ class PdfExportSettings extends Component
      */
     public function clearPdfCache(string $type = 'all'): void
     {
-        abort_unless(Auth::user()?->hasRole('admin lppm') || Auth::user()?->hasRole('superadmin'), 403);
+        abort_unless(Auth::user()?->activeHasRole('admin lppm') || Auth::user()?->activeHasRole('superadmin'), 403);
 
         $dirMap = [
             'proposals' => ['pdf_cache/proposals'],

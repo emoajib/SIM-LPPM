@@ -18,7 +18,7 @@ class BackupDownloadController extends Controller
      */
     public function downloadDatabase(): StreamedResponse|RedirectResponse
     {
-        abort_unless(Auth::user()?->hasRole('admin lppm'), 403);
+        abort_unless(Auth::user()?->activeHasRole('admin lppm'), 403);
 
         $filename = cache('backup_last_db_file');
 
@@ -41,7 +41,7 @@ class BackupDownloadController extends Controller
      */
     public function downloadStorage(): StreamedResponse|RedirectResponse
     {
-        abort_unless(Auth::user()?->hasRole('admin lppm'), 403);
+        abort_unless(Auth::user()?->activeHasRole('admin lppm'), 403);
 
         $filename = cache('backup_last_storage_file');
 
@@ -104,7 +104,7 @@ class BackupDownloadController extends Controller
      */
     public function downloadDatabaseBackup(): StreamedResponse
     {
-        abort_unless(Auth::user()?->hasRole('admin lppm'), 403);
+        abort_unless(Auth::user()?->activeHasRole('admin lppm'), 403);
 
         $backupDir = storage_path('app/backup');
         if (! is_dir($backupDir)) {

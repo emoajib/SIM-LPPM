@@ -13,15 +13,16 @@ class FakeSdgTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_master_data_sdgs_tab_can_render_without_403()
+    public function test_fake_sdg_page_loads()
     {
         $this->seed(RoleSeeder::class);
 
         $user = User::factory()->create();
         $user->assignRole('admin lppm');
 
-        Livewire::actingAs($user)
-            ->test(MasterData::class, ['group' => 'academic-content', 'activeTab' => 'sdgs'])
+        $this->actingAs($user);
+        session(['active_role' => 'admin lppm']);
+        Livewire::test(MasterData::class, ['group' => 'academic-content', 'activeTab' => 'sdgs'])
             ->assertStatus(200);
     }
 }

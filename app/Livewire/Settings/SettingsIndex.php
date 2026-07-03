@@ -17,7 +17,7 @@ class SettingsIndex extends Component
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $adminOnlyTabs = ['appearance', 'audit', 'sync', 'feature-flags', 'backup', 'restore', 'pdf-export', 'tkt-manager'];
 
-        if (in_array($tab, $adminOnlyTabs) && ! (Auth::user()?->hasRole('admin lppm') || Auth::user()?->hasRole('superadmin'))) {
+        if (in_array($tab, $adminOnlyTabs) && ! (Auth::user()?->activeHasRole('admin lppm') || Auth::user()?->activeHasRole('superadmin'))) {
             abort(403, 'Maaf Anda tidak memiliki akses ke tab ini.');
         }
 

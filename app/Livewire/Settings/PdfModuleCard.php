@@ -92,7 +92,7 @@ class PdfModuleCard extends Component
 
     public function mount(?array $prefetchedOverrides = null): void
     {
-        abort_unless(Auth::user()?->hasRole('admin lppm') || Auth::user()?->hasRole('superadmin'), 403);
+        abort_unless(Auth::user()?->activeHasRole('admin lppm') || Auth::user()?->activeHasRole('superadmin'), 403);
         $this->loadOverrides($prefetchedOverrides);
     }
 

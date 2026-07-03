@@ -35,7 +35,7 @@ class DataSync extends Component
 
     public function mount(): void
     {
-        abort_unless(Auth::user()?->hasRole('admin lppm'), 403);
+        abort_unless(Auth::user()?->activeHasRole('admin lppm'), 403);
 
         $this->lastSync = cache('last_data_sync', 'Belum pernah');
         $this->loadConfig();
@@ -55,7 +55,7 @@ class DataSync extends Component
 
     public function testConnection(): void
     {
-        abort_unless(Auth::user()?->hasRole('admin lppm'), 403);
+        abort_unless(Auth::user()?->activeHasRole('admin lppm'), 403);
 
         if ($this->isRunning) {
             return;
@@ -107,7 +107,7 @@ class DataSync extends Component
 
     public function runSync(): void
     {
-        abort_unless(Auth::user()?->hasRole('admin lppm'), 403);
+        abort_unless(Auth::user()?->activeHasRole('admin lppm'), 403);
 
         if ($this->isRunning) {
             return;

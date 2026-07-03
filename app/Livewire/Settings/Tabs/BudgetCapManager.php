@@ -53,7 +53,7 @@ class BudgetCapManager extends Component
      */
     public function mount(): void
     {
-        if (! Auth::user()->hasRole('admin lppm')) {
+        if (! Auth::user()->activeHasRole('admin lppm')) {
             abort(403, 'Hanya Admin LPPM yang dapat mengakses pengaturan anggaran.');
         }
     }

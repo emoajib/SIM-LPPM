@@ -26,7 +26,7 @@ class FeatureFlags extends Component
 
     public function mount(): void
     {
-        abort_unless(Auth::user()?->hasRole('admin lppm') || Auth::user()?->hasRole('superadmin'), 403);
+        abort_unless(Auth::user()?->activeHasRole('admin lppm') || Auth::user()?->activeHasRole('superadmin'), 403);
 
         $this->featureRoadmapActive = Setting::get('feature_roadmap_active', false);
         $this->featureKaprodiValidation = Setting::get('feature_kaprodi_validation', false);

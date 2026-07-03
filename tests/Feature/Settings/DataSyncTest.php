@@ -31,6 +31,7 @@ test('non-admin user cannot access data sync page', function () {
 
 test('admin lppm can access data sync page', function () {
     $this->actingAs($this->admin);
+    session(['active_role' => 'admin lppm']);
 
     Livewire::test(DataSync::class)
         ->assertOk();
@@ -38,6 +39,7 @@ test('admin lppm can access data sync page', function () {
 
 test('blade shows local-only message in non-local environment', function () {
     $this->actingAs($this->admin);
+    session(['active_role' => 'admin lppm']);
 
     app()->detectEnvironment(fn () => 'production');
 
@@ -48,6 +50,7 @@ test('blade shows local-only message in non-local environment', function () {
 
 test('testConnection shows config-not-complete in local environment', function () {
     $this->actingAs($this->admin);
+    session(['active_role' => 'admin lppm']);
 
     app()->detectEnvironment(fn () => 'local');
 
@@ -59,6 +62,7 @@ test('testConnection shows config-not-complete in local environment', function (
 
 test('testConnection returns local-only message when called in non-local env', function () {
     $this->actingAs($this->admin);
+    session(['active_role' => 'admin lppm']);
 
     app()->detectEnvironment(fn () => 'production');
 

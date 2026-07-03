@@ -26,7 +26,7 @@
                             <span>Log Keamanan</span>
                         </button>
                     </div>
-                    @role('admin lppm')
+                    @if(active_has_role('admin lppm'))
                         <h4 class="mt-4 subheader">Pengaturan Sistem</h4>
                         <div class="list-group list-group-transparent">
                             <button wire:click="setActiveTab('appearance')"
@@ -71,7 +71,7 @@
                                   <span>Pulihkan Data</span>
                               </button>
                          </div>
-                    @endrole
+                     @endif
                 </div>
             </div>
 

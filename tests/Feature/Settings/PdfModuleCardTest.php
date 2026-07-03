@@ -29,6 +29,7 @@ it('loads with global defaults when no overrides exist', function () {
     $this->artisan('db:seed', ['--class' => 'Database\\Seeders\\RoleSeeder'])->run();
     $admin = User::factory()->create();
     $admin->assignRole('admin lppm');
+    session(['active_role' => 'admin lppm']);
 
     $component = Livewire::actingAs($admin)->test(PdfModuleCard::class, [
         'moduleKey' => 'test-module',
@@ -59,6 +60,7 @@ it('can save font family override', function () {
     $this->artisan('db:seed', ['--class' => 'Database\\Seeders\\RoleSeeder'])->run();
     $admin = User::factory()->create();
     $admin->assignRole('admin lppm');
+    session(['active_role' => 'admin lppm']);
 
     $component = Livewire::actingAs($admin)->test(PdfModuleCard::class, [
         'moduleKey' => 'test-module',
@@ -83,6 +85,7 @@ it('can save font size override', function () {
     $this->artisan('db:seed', ['--class' => 'Database\\Seeders\\RoleSeeder'])->run();
     $admin = User::factory()->create();
     $admin->assignRole('admin lppm');
+    session(['active_role' => 'admin lppm']);
 
     $component = Livewire::actingAs($admin)->test(PdfModuleCard::class, [
         'moduleKey' => 'test-module',
@@ -107,6 +110,7 @@ it('can save margin override', function () {
     $this->artisan('db:seed', ['--class' => 'Database\\Seeders\\RoleSeeder'])->run();
     $admin = User::factory()->create();
     $admin->assignRole('admin lppm');
+    session(['active_role' => 'admin lppm']);
 
     // Use margin value within validation limits (max:10)
     $component = Livewire::actingAs($admin)->test(PdfModuleCard::class, [
@@ -132,6 +136,7 @@ it('detects overrides exist after saving', function () {
     $this->artisan('db:seed', ['--class' => 'Database\\Seeders\\RoleSeeder'])->run();
     $admin = User::factory()->create();
     $admin->assignRole('admin lppm');
+    session(['active_role' => 'admin lppm']);
 
     $component = Livewire::actingAs($admin)->test(PdfModuleCard::class, [
         'moduleKey' => 'test-module',
@@ -151,6 +156,7 @@ it('can reset all overrides', function () {
     $this->artisan('db:seed', ['--class' => 'Database\\Seeders\\RoleSeeder'])->run();
     $admin = User::factory()->create();
     $admin->assignRole('admin lppm');
+    session(['active_role' => 'admin lppm']);
 
     // Pre-create multiple overrides
     Setting::set('pdf_override_test-module_font_family', 'Arial', 'string');
@@ -197,6 +203,7 @@ it('dispatches module-override-updated event on save', function () {
     $this->artisan('db:seed', ['--class' => 'Database\\Seeders\\RoleSeeder'])->run();
     $admin = User::factory()->create();
     $admin->assignRole('admin lppm');
+    session(['active_role' => 'admin lppm']);
 
     Livewire::actingAs($admin)->test(PdfModuleCard::class, [
         'moduleKey' => 'test-module',
@@ -214,9 +221,10 @@ it('dispatches module-override-updated event on reset', function () {
     $this->artisan('db:seed', ['--class' => 'Database\\Seeders\\RoleSeeder'])->run();
     $admin = User::factory()->create();
     $admin->assignRole('admin lppm');
+    session(['active_role' => 'admin lppm']);
 
     // Pre-create an override so reset has something to clear
-    Setting::set('pdf_override_test-module_font_family', 'Arial', 'string');
+    Setting::set('pdf_override_test-module-font_family', 'Arial', 'string');
 
     Livewire::actingAs($admin)->test(PdfModuleCard::class, [
         'moduleKey' => 'test-module',
@@ -234,6 +242,7 @@ it('dispatches open-content-editor event', function () {
     $this->artisan('db:seed', ['--class' => 'Database\\Seeders\\RoleSeeder'])->run();
     $admin = User::factory()->create();
     $admin->assignRole('admin lppm');
+    session(['active_role' => 'admin lppm']);
 
     Livewire::actingAs($admin)->test(PdfModuleCard::class, [
         'moduleKey' => 'test-module',
@@ -251,6 +260,7 @@ it('shows content when overrides exist', function () {
     $this->artisan('db:seed', ['--class' => 'Database\\Seeders\\RoleSeeder'])->run();
     $admin = User::factory()->create();
     $admin->assignRole('admin lppm');
+    session(['active_role' => 'admin lppm']);
 
     // Pre-create settings via Setting model to simulate persisted overrides
     Setting::set('pdf_override_test-module_font_family', 'Times New Roman', 'string');
@@ -302,6 +312,7 @@ it('loads overrides from pre-existing settings in database', function () {
     $this->artisan('db:seed', ['--class' => 'Database\\Seeders\\RoleSeeder'])->run();
     $admin = User::factory()->create();
     $admin->assignRole('admin lppm');
+    session(['active_role' => 'admin lppm']);
 
     $component = Livewire::actingAs($admin)->test(PdfModuleCard::class, [
         'moduleKey' => 'test-module',
@@ -332,6 +343,7 @@ it('caches hasOverrides result', function () {
     $this->artisan('db:seed', ['--class' => 'Database\\Seeders\\RoleSeeder'])->run();
     $admin = User::factory()->create();
     $admin->assignRole('admin lppm');
+    session(['active_role' => 'admin lppm']);
 
     $component = Livewire::actingAs($admin)->test(PdfModuleCard::class, [
         'moduleKey' => 'test-module',
@@ -368,6 +380,7 @@ it('handles empty moduleKey gracefully', function () {
     $this->artisan('db:seed', ['--class' => 'Database\\Seeders\\RoleSeeder'])->run();
     $admin = User::factory()->create();
     $admin->assignRole('admin lppm');
+    session(['active_role' => 'admin lppm']);
 
     $component = Livewire::actingAs($admin)->test(PdfModuleCard::class, [
         'moduleKey' => '',
@@ -399,6 +412,7 @@ it('handles partial overrides correctly', function () {
     $this->artisan('db:seed', ['--class' => 'Database\\Seeders\\RoleSeeder'])->run();
     $admin = User::factory()->create();
     $admin->assignRole('admin lppm');
+    session(['active_role' => 'admin lppm']);
 
     // Only set a single override — fontFamily
     Setting::set('pdf_override_test-module_font_family', 'Courier', 'string');
@@ -436,6 +450,7 @@ it('returns false when no overrides exist', function () {
     $this->artisan('db:seed', ['--class' => 'Database\\Seeders\\RoleSeeder'])->run();
     $admin = User::factory()->create();
     $admin->assignRole('admin lppm');
+    session(['active_role' => 'admin lppm']);
 
     $component = Livewire::actingAs($admin)->test(PdfModuleCard::class, [
         'moduleKey' => 'test-module',

@@ -4,6 +4,7 @@ namespace Database\Helpers;
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
 class MigrationHelpers
@@ -23,22 +24,21 @@ class MigrationHelpers
         bool $nullable = false
     ): void {
         $tableName = $table->getTable();
-        $constraintName = static::generateConstraintName($tableName, $column);
 
         // Drop existing enum if it exists
         if (Schema::hasColumn($tableName, $column)) {
             $table->dropColumn($column);
         }
 
-        // Create string column
-        $table->string($column, 50);
+        // Create string column with modifiers
+        $columnDef = $table->string($column, 50);
 
         if ($default !== null) {
-            $table->string($column)->default($default);
+            $columnDef->default($default);
         }
 
         if ($nullable) {
-            $table->string($column)->nullable();
+            $columnDef->nullable();
         }
 
         // CHECK constraint is added via DB::statement() which must happen
@@ -115,7 +115,10 @@ class MigrationHelpers
                     // Fallback for MariaDB or older versions
                     DB::statement("ALTER TABLE {$tableName} DROP CONSTRAINT {$constraintName}");
                 } catch (\Exception $e2) {
-                    // Constraint may not exist
+                    Log::warning("MigrationHelpers: Could not drop constraint {$constraintName} via either method", [
+                        'mysql_error' => $e->getMessage(),
+                        'fallback_error' => $e2->getMessage(),
+                    ]);
                 }
             }
 

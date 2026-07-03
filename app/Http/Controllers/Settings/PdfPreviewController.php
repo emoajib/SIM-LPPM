@@ -27,7 +27,7 @@ class PdfPreviewController extends Controller
     public function preview(Request $request)
     {
         // Hanya Admin LPPM atau Superadmin yang boleh melihat preview ini
-        abort_unless(Auth::user()?->hasRole('admin lppm') || Auth::user()?->hasRole('superadmin'), 403, 'Akses ditolak.');
+        abort_unless(Auth::user()?->activeHasRole('admin lppm') || Auth::user()?->activeHasRole('superadmin'), 403, 'Akses ditolak.');
 
         $paperSize = Setting::get('pdf_paper_size', 'a4');
         $paperSizeArray = normalize_paper_size($paperSize);

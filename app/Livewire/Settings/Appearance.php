@@ -19,7 +19,7 @@ class Appearance extends Component
 
     public function mount()
     {
-        if (! auth()->user()->hasRole('admin lppm')) {
+        if (! auth()->user()->activeHasRole('admin lppm')) {
             abort(403);
         }
 

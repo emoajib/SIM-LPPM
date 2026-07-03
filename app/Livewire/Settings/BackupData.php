@@ -36,7 +36,7 @@ class BackupData extends Component
 
     public function mount(): void
     {
-        abort_unless(Auth::user()?->hasRole('admin lppm'), 403);
+        abort_unless(Auth::user()?->activeHasRole('admin lppm'), 403);
 
         $this->lastBackup = cache('backup_last_time', 'Belum pernah');
         $this->lastDbFile = cache('backup_last_db_file');
@@ -61,7 +61,7 @@ class BackupData extends Component
 
     public function backupDatabase(): void
     {
-        abort_unless(Auth::user()?->hasRole('admin lppm'), 403);
+        abort_unless(Auth::user()?->activeHasRole('admin lppm'), 403);
 
         if ($this->isRunning) {
             return;
@@ -177,7 +177,7 @@ class BackupData extends Component
 
     public function backupStorage(): void
     {
-        abort_unless(Auth::user()?->hasRole('admin lppm'), 403);
+        abort_unless(Auth::user()?->activeHasRole('admin lppm'), 403);
 
         if ($this->isRunning) {
             return;
