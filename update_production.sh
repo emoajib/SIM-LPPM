@@ -16,16 +16,16 @@ tar czf "$BACKUP_DIR/backup-$(date +%Y%m%d-%H%M%S).tar.gz" \
   --exclude="./storage/app/backup" \
   --exclude="./node_modules" \
   --exclude="./.git" \
-  --exclude="./vendor" . || echo "⚠️ Backup gagal, lanjut..."
+  --exclude="./vendor" . || { echo "❌ Backup gagal! Periksa disk space."; exit 1; }
 
 # Maintenance mode ON
 php artisan down --retry=300
 
 # Pull changes
 echo "Pulling latest changes..."
-git stash
+git stash push -m "auto-stash-$(date +%Y%m%d-%H%M%S)" 2>/dev/null || echo "⚠️ Tidak ada perubahan lokal"
 git pull origin main
-git stash pop || echo "⚠️ Tidak ada stash untuk dikembalikan atau ditolak."
+git stash pop 2>/dev/null || { echo "❌ CONFLICT setelah git pull! Perbaiki manual lalu jalankan: php artisan up"; exit 1; }
 
 # Install dependencies
 echo "Installing dependencies..."
@@ -60,8 +60,8 @@ echo "PDF cache cleaned"
 
 # Set permissions
 echo "Setting permissions..."
-find . -type f -print0 | xargs -0 chmod 644
-find . -type d -print0 | xargs -0 chmod 755
+find . -type f -not -path './vendor/*' -not -path './node_modules/*' -print0 | xargs -0 chmod 644
+find . -type d -not -path './vendor/*' -not -path './node_modules/*' -print0 | xargs -0 chmod 755
 chmod -R 775 storage bootstrap/cache
 chmod 755 public
 chmod 644 public/.htaccess
@@ -80,6 +80,10 @@ if (\$p) {
     echo '✗ No proposals found' . PHP_EOL;
 }
 "
+
+# Clear rate limiters (biar user yg kena lockout bisa login lagi)
+php artisan rate-limiter:clear --force
+echo "Rate limiters cleared"
 
 # Maintenance mode OFF
 trap - ERR

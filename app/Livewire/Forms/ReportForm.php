@@ -178,9 +178,6 @@ class ReportForm extends Form
                 'platform' => $output->platform,
                 'product_name' => $output->product_name,
                 'description' => $output->description,
-                'partner_name' => $output->partner_name ?? null,
-                'indicator_type' => $output->indicator_type ?? null,
-                'improvement_value' => $output->improvement_value ?? null,
             ];
 
             // Add file status for final reports
@@ -296,9 +293,6 @@ class ReportForm extends Form
             'platform' => '',
             'product_name' => '',
             'description' => '',
-            'partner_name' => '',
-            'indicator_type' => '',
-            'improvement_value' => '',
         ];
 
         if ($this->type === 'final') {
@@ -412,9 +406,6 @@ class ReportForm extends Form
         } elseif (str_contains($type, 'produk') || str_contains($type, 'jasa') || str_contains($type, 'sistem') || str_contains($type, 'ttg') || str_contains($type, 'purwarupa') || str_contains($type, 'prototipe') || str_contains($type, 'model') || str_contains($group, 'produk')) {
             $rules["mandatoryOutputs.{$outputId}.product_name"] = 'required|string|max:255';
             $rules["mandatoryOutputs.{$outputId}.description"] = 'nullable|string';
-        } elseif (str_contains($type, 'pemberdayaan') || str_contains($type, ' mitra') || str_contains($group, 'pemberdayaan')) {
-            $rules["mandatoryOutputs.{$outputId}.partner_name"] = 'required|string|max:255';
-            $rules["mandatoryOutputs.{$outputId}.indicator_type"] = 'required|string|max:50';
         }
 
         $this->validate($rules);
@@ -856,31 +847,7 @@ class ReportForm extends Form
                 'platform' => $data['platform'] ?? null,
                 'product_name' => $data['product_name'] ?? null,
                 'description' => $data['description'] ?? null,
-                'partner_name' => $data['partner_name'] ?? null, // Check schema if column exists
-                'indicator_type' => $data['indicator_type'] ?? null, // Check schema
-                'improvement_value' => $data['improvement_value'] ?? null, // Check schema
             ];
-
-            // Remove keys that might not exist in schema if necessary, but assuming schema is superset
-            // Note: Schema checked earlier confirms most fields. partner_name/indicator might be mapped to generic fields if not present?
-            // Schema didn't show 'partner_name'. It showed 'implementation_location', 'readiness_level'.
-            // Wait, schema for mandatory_outputs DOES NOT HAVE 'partner_name', 'indicator_type', 'improvement_value'.
-            // It DOES HAVE 'description'.
-            // I should double check schema for pemberdayaan fields.
-            // Schema has: product_name, description, readiness_level, implementation_location.
-            // It seems 'partner_name' is missing from schema I saw.
-            // I'll skip saving those missing fields for now to avoid crash, or map them to 'description'.
-
-            if (isset($data['partner_name'])) {
-                // $outputData['description'] = ($outputData['description'] ? $outputData['description'] . "\n" : "") . "Mitra: " . $data['partner_name'];
-                // Actually, let's just not save them if they don't exist to prevent crash.
-                // Users can put it in description.
-                // Or I can add them to description programmatically if I really want to save them.
-                // For now, I'll comment out the non-existent keys.
-                unset($outputData['partner_name']);
-                unset($outputData['indicator_type']);
-                unset($outputData['improvement_value']);
-            }
 
             if ($output) {
                 $output->update($outputData);
