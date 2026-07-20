@@ -8,13 +8,6 @@
                 <x-lucide-arrow-left class="icon" />
                 Kembali
             </a>
-            @if (auth()->id() === $proposal->submitter_id && (!$progressReport || $progressReport->status->value !== 'approved'))
-                <a href="{{ route('research.proposal.edit', $proposal) }}" class="btn-outline-warning btn"
-                    data-navigate-ignore="true">
-                    <x-lucide-edit class="icon me-2" />
-                    Koreksi Data Proposal
-                </a>
-            @endif
             @if ($progressReport && $progressReport->reporting_period === 'final')
                 <a data-navigate-ignore="true"
                     href="{{ route('reports.export-pdf', ['proposal' => $proposal, 'type' => 'final', 'preview' => 1]) }}" target="_blank"

@@ -230,7 +230,7 @@ class Show extends Component
     protected function saveOutputFiles($report): void
     {
         // Save mandatory output files
-        foreach ($this->mandatoryOutputs as $proposalOutputId => $data) {
+        foreach ($this->form->mandatoryOutputs as $proposalOutputId => $data) {
             if (empty($proposalOutputId)) {
                 continue;
             }
@@ -250,7 +250,7 @@ class Show extends Component
         }
 
         // Save additional output files
-        foreach ($this->additionalOutputs as $proposalOutputId => $data) {
+        foreach ($this->form->additionalOutputs as $proposalOutputId => $data) {
             if (empty($proposalOutputId)) {
                 continue;
             }
@@ -562,8 +562,20 @@ class Show extends Component
      */
     public function render()
     {
+        $mandatoryOutputsMap = collect();
+        $additionalOutputsMap = collect();
+
+        if ($this->progressReport) {
+            $this->progressReport->loadMissing(['mandatoryOutputs', 'additionalOutputs']);
+
+            $mandatoryOutputsMap = $this->progressReport->mandatoryOutputs->keyBy('proposal_output_id');
+            $additionalOutputsMap = $this->progressReport->additionalOutputs->keyBy('proposal_output_id');
+        }
+
         return view('livewire.community-service.final-report.show', [
             'allKeywords' => $this->getAllKeywords(),
+            'mandatoryOutputsMap' => $mandatoryOutputsMap,
+            'additionalOutputsMap' => $additionalOutputsMap,
         ]);
     }
 }

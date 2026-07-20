@@ -338,6 +338,34 @@ class DatabaseRestoreService
         );
     }
 
+    protected function fixBudgetItemsStatement(string $statement): string
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            return $statement;
+        }
+
+        if (! preg_match('/INSERT\s+(IGNORE\s+)?INTO\s+[`"\']?budget_items[`"\']?\s/i', $statement)) {
+            return $statement;
+        }
+
+        // MySQL dump columns order (tidak termasuk year — akan pakai default '1')
+        $columns = [
+            'id', 'proposal_id', 'budget_group_id', 'budget_component_id',
+            'group', 'component', 'item_description', 'volume', 'unit_price',
+            'total_price', 'created_at', 'updated_at',
+        ];
+
+        // In Postgres (already guarded above), use double quotes for identifiers
+        $quoted = array_map(fn ($c) => '"'.$c.'"', $columns);
+        $colList = implode(',', $quoted);
+
+        return preg_replace(
+            '/(INSERT\s+(IGNORE\s+)?INTO\s+[`"\']?budget_items[`"\']?\s*)\s*VALUES\s/i',
+            '$1('.$colList.') VALUES ',
+            $statement
+        );
+    }
+
     /**
      * Inject explicit column list (in source/MySQL order) for tables where `after()` was used.
      * This prevents PostgreSQL from misinterpreting VALUES due to column order mismatch.
@@ -747,6 +775,7 @@ class DatabaseRestoreService
     {
         $statement = $this->fixUsersStatement($statement);
         $statement = $this->fixIdentityStatement($statement);
+        $statement = $this->fixBudgetItemsStatement($statement);
         $statement = $this->injectColumnList($statement);
         $statement = $this->adaptSqlForCurrentDriver($statement);
         $statement = $this->fixJsonEscaping($statement);
@@ -853,16 +882,6 @@ class DatabaseRestoreService
      */
     protected function adaptSqlForCurrentDriver(string $statement): string
     {
-        // --- LEGACY DATA FIX ---
-        // Fix legacy budget_items statements (13 columns -> 12 columns by dropping the obsolete 5th column)
-        if (preg_match('/INSERT\s+(IGNORE\s+)?INTO\s+[`"\']?budget_items[`"\']?\s/i', $statement)) {
-            $statement = preg_replace(
-                '/\(\s*(\d+)\s*,\s*(\'[0-9a-fA-F-]+\')\s*,\s*(\d+|NULL)\s*,\s*(\d+|NULL)\s*,\s*(?:\d+|NULL)\s*,/',
-                '($1,$2,$3,$4,',
-                $statement
-            );
-        }
-
         $driver = DB::getDriverName();
 
         if ($driver === 'mysql') {
