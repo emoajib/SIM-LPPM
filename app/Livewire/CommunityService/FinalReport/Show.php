@@ -9,7 +9,6 @@ use App\Livewire\Concerns\HasToast;
 use App\Livewire\Forms\ReportForm;
 use App\Livewire\Traits\HasFileUploads;
 use App\Livewire\Traits\HasReportTemplates;
-use App\Livewire\Traits\ManagesOutputs;
 use App\Livewire\Traits\ReportAccess;
 use App\Livewire\Traits\ReportAuthorization;
 use App\Livewire\Traits\WithReportApproval;
@@ -33,7 +32,6 @@ class Show extends Component
     use HasFileUploads;
     use HasReportTemplates;
     use HasToast;
-    use ManagesOutputs;
     use ReportAccess;
     use ReportAuthorization;
     use WithFileUploads;
@@ -517,33 +515,21 @@ class Show extends Component
             ->first();
     }
 
-    /**
-     * Override ManagesOutputs trait method to use form object
-     */
     public function editMandatoryOutput(int $proposalOutputId): void
     {
         $this->form->editMandatoryOutput($proposalOutputId);
     }
 
-    /**
-     * Override ManagesOutputs trait method to use form object
-     */
     public function editAdditionalOutput(int $proposalOutputId): void
     {
         $this->form->editAdditionalOutput($proposalOutputId);
     }
 
-    /**
-     * Override ManagesOutputs trait method to use form object
-     */
     public function closeMandatoryModal(): void
     {
         $this->form->closeMandatoryModal();
     }
 
-    /**
-     * Override ManagesOutputs trait method to use form object
-     */
     public function closeAdditionalModal(): void
     {
         $this->form->closeAdditionalModal();
