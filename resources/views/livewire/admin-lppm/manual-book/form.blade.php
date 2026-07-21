@@ -97,8 +97,8 @@
                                 {{ $existingFile ? 'Ganti File' : 'Upload File' }}
                             </label>
                             <input type="file" class="form-control @error('file') is-invalid @enderror"
-                                wire:model="file" accept=".pdf,.jpg,.jpeg,.png,.webp,.gif">
-                            <small class="text-muted">Format: PDF, JPG, PNG, WebP, GIF. Maks 10 MB</small>
+                                wire:model="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp,.gif">
+                            <small class="text-muted">Format: PDF, DOC, DOCX, JPG, PNG, WebP, GIF. Maks 10 MB</small>
                             @error('file') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             <div wire:loading wire:target="file" class="text-info small mt-1">
                                 <i class="icon icon-tabler icon-tabler-loader icon-spin"></i> Mengupload...

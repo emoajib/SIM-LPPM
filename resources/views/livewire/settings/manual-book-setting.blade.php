@@ -161,8 +161,8 @@
                             </div>
                         </div>
                     @endif
-                    <input type="file" wire:model="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png,.webp,.gif">
-                    <small class="text-muted">Format: PDF, JPG, PNG, WebP, GIF. Maks 10 MB</small>
+                    <input type="file" wire:model="file" class="form-control" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp,.gif">
+                    <small class="text-muted">Format: PDF, DOC, DOCX, JPG, PNG, WebP, GIF. Maks 10 MB</small>
                     <div wire:loading wire:target="file" class="text-info small mt-1">
                         @include('components.layouts.partials.menu.icon', ['name' => 'loader', 'class' => 'icon icon-spin']) Mengupload...
                     </div>

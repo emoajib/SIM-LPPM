@@ -31,7 +31,15 @@ class ManualBook extends Model implements HasMedia
     {
         $this->addMediaCollection('manual_book_file')
             ->singleFile()
-            ->acceptsMimeTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+            ->acceptsMimeTypes([
+                'application/pdf',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'image/jpeg',
+                'image/png',
+                'image/webp',
+                'image/gif',
+            ]);
     }
 
     public function creator(): BelongsTo

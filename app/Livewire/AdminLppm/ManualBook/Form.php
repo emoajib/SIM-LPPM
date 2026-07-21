@@ -65,9 +65,9 @@ class Form extends Component
             'status' => 'required|in:active,inactive',
             'assignedRoles' => 'required|array|min:1',
             'assignedRoles.*' => 'string',
-            'file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,gif|max:10240',
+            'file' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png,webp,gif|max:10240',
         ], [
-            'file.mimes' => 'File harus berupa PDF atau gambar (JPG, PNG, WebP, GIF).',
+            'file.mimes' => 'File harus berupa PDF, DOC, DOCX, atau gambar (JPG, PNG, WebP, GIF).',
             'file.max' => 'Ukuran file maksimum 10 MB.',
             'assignedRoles.required' => 'Pilih minimal satu role.',
         ]);

@@ -11,10 +11,10 @@ class ManualBookUploadController extends Controller
     public function upload(Request $request, ManualBook $manualBook)
     {
         $request->validate([
-            'file' => 'required|file|mimes:pdf,jpg,jpeg,png,webp,gif|max:10240',
+            'file' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png,webp,gif|max:10240',
         ], [
             'file.required' => 'Silakan pilih file sebelum mengunggah.',
-            'file.mimes' => 'Format file harus PDF atau gambar (JPG, PNG, WebP, GIF).',
+            'file.mimes' => 'Format file harus PDF, DOC, DOCX, atau gambar (JPG, PNG, WebP, GIF).',
             'file.max' => 'Ukuran file maksimum adalah 10 MB.',
         ]);
 
