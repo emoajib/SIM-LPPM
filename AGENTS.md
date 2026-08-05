@@ -105,9 +105,83 @@ php artisan up
 echo "✅ Deploy selesai!"
 ```
 
-### 6. Verifikasi di Browser
+### 6. Verifikasi di Browser & Produksi
 - Test fitur yang diperbaiki
 - Cek tidak ada error 500/405
+- **Keamanan web-accessible files** (jalankan di terminal cPanel):
+  ```bash
+  cd /home/simlppmi/sim-lppm
+  curl -s -o /dev/null -w "%{http_code}" https://sim-lppm.itsnupekalongan.ac.id/.env
+  # Harusnya 403/404/000, BUKAN 200
+  curl -s -o /dev/null -w "%{http_code}" https://sim-lppm.itsnupekalongan.ac.id/.git/HEAD
+  # Harusnya 403/404/000, BUKAN 200
+  curl -s -o /dev/null -w "%{http_code}" https://sim-lppm.itsnupekalongan.ac.id/storage/app/backup/
+  # Harusnya 301 (trailing slash) atau 403/404, BUKAN 200/directory listing
+  curl -s -o /dev/null -w "%{http_code}" https://sim-lppm.itsnupekalongan.ac.id/storage/app/backup/backup-*.tar.gz
+  # Harusnya 404, BUKAN 200
+  curl -s -o /dev/null -w "%{http_code}" https://sim-lppm.itsnupekalongan.ac.id/phpinfo.php
+  # Harusnya 404
+  curl -s -o /dev/null -w "%{http_code}" https://sim-lppm.itsnupekalongan.ac.id/database/database.sqlite
+  # Harusnya 404
+  ```
+- **Cek log tidak ada error baru:**
+  ```bash
+  tail -20 storage/logs/laravel.log | grep -iE "error|exception|fatal"
+  ```
+- **Cek .env permission masih 600:**
+  ```bash
+  ls -la .env
+  # Harusnya -rw-------
+  ```
+- **Cek backup permission masih 700/600:**
+  ```bash
+  ls -la storage/app/backup/
+  # Dir: drwx------, Files: -rw-------
+  ```
+- **Cek tidak ada file backup lama di root proyek:**
+  ```bash
+  ls *.sql *.zip 2>/dev/null
+  # Harusnya kosong
+  ```
+- **Cek git status bersih di produksi:**
+  ```bash
+  git status --short
+  # Harusnya kosong atau hanya .env (gitignored)
+  ```
+
+## Post-Deploy Security Checklist (Wajib diikuti setiap deploy)
+
+| No | Cek | Perintah |
+|---|---|---|
+| 1 | Backup dibuat & permission aman | `ls -la storage/app/backup/` → dir 700, file 600 |
+| 2 | `.env` tidak bisa diakses web | `curl -s -o /dev/null -w "%{http_code}" https://sim-lppm.itsnupekalongan.ac.id/.env` → bukan 200 |
+| 3 | `.git/` tidak bisa diakses web | `curl -s -o /dev/null -w "%{http_code}" https://sim-lppm.itsnupekalongan.ac.id/.git/HEAD` → bukan 200 |
+| 4 | `storage/app/backup/` tidak bisa di-download | `curl -s -o /dev/null -w "%{http_code}" https://sim-lppm.itsnupekalongan.ac.id/storage/app/backup/backup-*.tar.gz` → 404 |
+| 5 | Tidak ada file sensitif di root proyek | `ls *.sql *.zip 2>/dev/null` → kosong |
+| 6 | `phpinfo.php` tidak ada | `curl -s -o /dev/null -w "%{http_code}" https://sim-lppm.itsnupekalongan.ac.id/phpinfo.php` → 404 |
+| 7 | `database.sqlite` tidak bisa diakses | `curl -s -o /dev/null -w "%{http_code}" https://sim-lppm.itsnupekalongan.ac.id/database/database.sqlite` → 404 |
+| 8 | Tidak ada error baru di log | `tail -20 storage/logs/laravel.log \| grep -iE "error\|exception\|fatal"` |
+| 9 | `.env` permission 600 | `ls -la .env` → `-rw-------` |
+| 10 | Rate limiter dibersihkan | `php artisan rate-limiter:clear --force` |
+
+## Future Update Guidelines
+
+### Setiap Update Modul/Fitur Baru
+1. **Selalu gunakan `update_production.sh`** — jangan `git pull` langsung di produksi
+2. **Sebelum push:** jalankan `php artisan test` — semua harus PASS
+3. **Route baru yang butuh perlindungan:** pastikan ada middleware `auth` atau `signed`
+4. **BOLA check:** setiap endpoint yang akses data user harus cek kepemilikan di controller/policy
+5. **File sensitif baru:** langsung tambahkan ke `.gitignore`
+6. **Setelah deploy:** cek log untuk error baru
+
+### Menjaga `update_production.sh`
+- Jika ada perubahan proses deploy (migrasi baru, dependency baru, seeder baru), update script-nya
+- Script sudah memiliki: backup (700/600), maintenance mode, migrasi preview, cache rebuild, permission hardening, rate limiter clear, auto recovery on failure
+- Jangan hapus `set -euo pipefail` dan `trap` — ini safety net wajib
+
+### `.gitignore` Maintenance
+- Jika ada file sensitif baru yang dibuat (DB dump, zip, dll), langsung tambahkan polanya
+- Pola yang sudah ada: `/*.sql`, `/storage_*.zip`, `.env*`, `.env.*`, `/database/*.sqlite`
 
 ## Security Rules
 
