@@ -259,6 +259,8 @@
         </div>
     @endif
 
+    <div style="page-break-before: always;"></div>
+
     @if(\App\Models\Setting::get(\App\Constants\PdfConstants::REPORT_SHOW_REALIZATION, true))
 
     <div style="margin-top: 30px; border-top: 2px dashed #000; padding-top: 20px;"></div>
