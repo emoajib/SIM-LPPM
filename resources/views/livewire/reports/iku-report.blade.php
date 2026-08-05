@@ -61,7 +61,7 @@
                 </div>
             </div>
         </div>
-        @if(active_role() === 'kepala lppm' || active_role() === 'rektor')
+        @if(active_role_is('kepala lppm') || active_role_is('rektor'))
             <div class="card mb-3 border-primary shadow-sm glass-card">
                 <div class="card-body d-flex align-items-center justify-content-between">
                     <div>
@@ -98,7 +98,7 @@
                             <i class="ti ti-eye me-2"></i> Tinjau PDF
                         </a>
 
-                        @if(active_role() === 'kepala lppm' && (!$institutionalReport || in_array($institutionalReport->status, [\App\Enums\InstitutionalReportStatus::DRAFT, \App\Enums\InstitutionalReportStatus::REJECTED])))
+                        @if(active_role_is('kepala lppm') && (!$institutionalReport || in_array($institutionalReport->status, [\App\Enums\InstitutionalReportStatus::DRAFT, \App\Enums\InstitutionalReportStatus::REJECTED])))
                             <button class="btn btn-primary shadow-sm"
                                 wire:click="submitInstitutionalReport('iku', {{ $period }}, {{ json_encode($currentFilters) }})"
                                 wire:loading.attr="disabled">
@@ -107,7 +107,7 @@
                             </button>
                         @endif
 
-                        @if(active_role() === 'rektor' && ($institutionalReport?->status === \App\Enums\InstitutionalReportStatus::SUBMITTED))
+                        @if(active_role_is('rektor') && ($institutionalReport?->status === \App\Enums\InstitutionalReportStatus::SUBMITTED))
                             <button class="btn btn-outline-danger shadow-sm" data-bs-toggle="modal"
                                 data-bs-target="#modal-reject-institutional">
                                 <i class="ti ti-x me-2"></i>
@@ -354,7 +354,7 @@
         </div>
     </div>
 
-    @if(active_role() === 'rektor')
+    @if(active_role_is('rektor'))
         <div class="modal modal-blur fade" id="modal-reject-institutional" tabindex="-1" role="dialog" aria-hidden="true"
             wire:ignore.self>
             <div class="modal-dialog modal-dialog-centered" role="document">

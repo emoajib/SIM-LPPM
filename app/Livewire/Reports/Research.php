@@ -2,438 +2,53 @@
 
 namespace App\Livewire\Reports;
 
-use App\Enums\ProposalStatus;
-use App\Livewire\Concerns\HasToast;
-use App\Livewire\Traits\WithInstitutionalApproval;
-use App\Models\AdditionalOutput;
-use App\Models\Faculty;
-use App\Models\MandatoryOutput;
-use App\Models\Proposal;
-use App\Models\ResearchScheme;
-use Illuminate\Support\Collection;
-use Illuminate\View\View;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\On;
-use Livewire\Component;
-use Livewire\WithPagination;
 
 #[Layout('components.layouts.app', ['title' => 'Laporan Penelitian', 'pageTitle' => 'Laporan Penelitian'])]
-class Research extends Component
+class Research extends AbstractInstitutionalReport
 {
-    use HasToast, WithInstitutionalApproval, WithPagination;
-
-    public string $period;
-
-    public string $search = '';
-
-    public string $selectedScheme = 'all';
-
-    public string $selectedFaculty = 'all';
-
-    public string $selectedSemester = 'all';
-
-    public function updatedSearch(): void
+    protected function displayName(): string
     {
-        $this->resetPage();
+        return 'Penelitian';
     }
 
-    public function updatedSelectedScheme(): void
+    protected function detailableType(): string
     {
-        $this->resetPage();
+        return 'App\Models\Research';
     }
 
-    public function updatedSelectedFaculty(): void
+    protected function schemeColumn(): string
     {
-        if (active_role() === 'dekan' || auth()->user()->activeHasRole('dekan')) {
-            $this->selectedFaculty = (string) (auth()->user()->identity->faculty_id ?? 'all');
-        }
-        $this->resetPage();
+        return 'research_scheme_id';
     }
 
-    public function updatedSelectedSemester(): void
+    protected function schemeRelation(): string
     {
-        $this->resetPage();
+        return 'researchScheme';
     }
 
-    public function resetFilters(): void
+    protected function reportType(): string
     {
-        $this->search = '';
-        $this->selectedScheme = 'all';
-        $this->selectedSemester = 'all';
-
-        if (active_role() === 'dekan' || auth()->user()->activeHasRole('dekan')) {
-            $this->selectedFaculty = (string) (auth()->user()->identity->faculty_id ?? 'all');
-        } else {
-            $this->selectedFaculty = 'all';
-        }
-
-        $this->period = (string) date('Y');
-        $this->resetPage();
+        return 'research';
     }
 
-    public function mount()
+    protected function viewName(): string
     {
-        $this->period = request()->query('period', (string) date('Y'));
-
-        if (active_role() === 'dekan' || auth()->user()->activeHasRole('dekan')) {
-            $this->selectedFaculty = (string) (auth()->user()->identity->faculty_id ?? 'all');
-        }
-
-        // Load metadata from existing report if available
-        $report = $this->getInstitutionalReport('research', (int) $this->period);
-        if ($report && $report->metadata) {
-            $this->search = $report->metadata['search'] ?? '';
-            $this->selectedScheme = $report->metadata['scheme'] ?? 'all';
-            $this->selectedSemester = $report->metadata['semester'] ?? 'all';
-
-            // Only override faculty if not dekan
-            if (active_role() !== 'dekan' && ! auth()->user()->activeHasRole('dekan')) {
-                $this->selectedFaculty = $report->metadata['faculty'] ?? 'all';
-            }
-        } else {
-            // Check query params if no report metadata
-            $this->search = request()->query('search', '');
-            $this->selectedScheme = request()->query('scheme', 'all');
-            $this->selectedSemester = request()->query('semester', 'all');
-
-            // Only override faculty if not dekan
-            if (active_role() !== 'dekan' && ! auth()->user()->activeHasRole('dekan')) {
-                $this->selectedFaculty = request()->query('faculty', 'all');
-            }
-        }
+        return 'livewire.reports.research';
     }
 
-    /**
-     * Update the selected reporting period.
-     */
-    #[On('set-period')]
-    public function setPeriod(string $period): void
+    protected function pdfRoute(): string
     {
-        $this->period = $period;
+        return 'reports.research.pdf';
     }
 
-    #[On('export-pdf')]
-    public function exportPdf(): void
+    protected function excelRoute(): string
     {
-        $params = [
-            'period' => $this->period,
-            'semester' => $this->selectedSemester,
-            'search' => $this->search,
-            'scheme' => $this->selectedScheme,
-            'faculty' => $this->selectedFaculty,
-        ];
-
-        $this->dispatch('download-file', url: route('reports.research.pdf', $params));
+        return 'reports.research.excel';
     }
 
-    #[On('preview-pdf')]
-    public function previewPdf(): void
+    protected function detailRoute(): string
     {
-        $params = [
-            'period' => $this->period,
-            'semester' => $this->selectedSemester,
-            'search' => $this->search,
-            'scheme' => $this->selectedScheme,
-            'faculty' => $this->selectedFaculty,
-            'preview' => true,
-        ];
-
-        $this->dispatch('preview-pdf', url: route('reports.research.pdf', $params));
-    }
-
-    #[On('export-excel')]
-    public function exportExcel(): void
-    {
-        $params = [
-            'period' => $this->period,
-            'semester' => $this->selectedSemester,
-            'search' => $this->search,
-            'scheme' => $this->selectedScheme,
-            'faculty' => $this->selectedFaculty,
-        ];
-
-        $this->dispatch('download-file', url: route('reports.research.excel', $params));
-    }
-
-    /**
-     * Render the component view.
-     */
-    public function render(): View
-    {
-        return view('livewire.reports.research', [
-            'periods' => $this->availablePeriods(),
-            'summary' => $this->summaryMetrics(),
-            'schemes' => $this->researchByScheme(),
-            'focusAreas' => $this->researchByFocusArea(),
-            'faculties' => $this->researchByFaculty(),
-            'outputStats' => $this->outputAnalytics(),
-            'proposals' => $this->proposals(),
-            'allSchemes' => ResearchScheme::orderBy('name')->get(),
-            'allFaculties' => Faculty::orderBy('name')->get(),
-            'institutionalReport' => $this->getInstitutionalReport('research', (int) $this->period),
-        ]);
-    }
-
-    /**
-     * Get all research proposals for the current period with pagination.
-     */
-    protected function proposals()
-    {
-        return Proposal::query()
-            ->where('detailable_type', 'App\Models\Research')
-            ->where('start_year', $this->period)
-            ->when($this->selectedSemester !== 'all', fn ($q) => $q->where('semester', $this->selectedSemester))
-            ->when($this->selectedScheme !== 'all', fn ($q) => $q->where('research_scheme_id', $this->selectedScheme))
-            ->when($this->selectedFaculty !== 'all', function ($q) {
-                $q->whereHas('submitter.identity', fn ($iq) => $iq->where('faculty_id', $this->selectedFaculty));
-            })
-            ->when($this->search, function ($q) {
-                $q->where(function ($sq) {
-                    $sq->where('title', 'like', "%{$this->search}%")
-                        ->orWhereHas('submitter', fn ($uq) => $uq->where('name', 'like', "%{$this->search}%"));
-                });
-            })
-            ->with(['submitter.identity.faculty', 'submitter.identity.studyProgram', 'researchScheme', 'budgetItems'])
-            ->latest()
-            ->paginate(15);
-    }
-
-    /**
-     * Get available years from proposals.
-     */
-    protected function availablePeriods(): array
-    {
-        return Proposal::query()
-            ->distinct()
-            ->whereNotNull('start_year')
-            ->orderBy('start_year', 'desc')
-            ->pluck('start_year')
-            ->map(fn ($year) => (string) $year)
-            ->toArray() ?: [(string) date('Y')];
-    }
-
-    /**
-     * Aggregate report metrics for the dashboard cards.
-     */
-    protected function summaryMetrics(): array
-    {
-        $query = Proposal::query()
-            ->where('detailable_type', 'App\Models\Research')
-            ->where('start_year', $this->period)
-            ->when($this->selectedSemester !== 'all', fn ($q) => $q->where('semester', $this->selectedSemester))
-            ->when($this->selectedScheme !== 'all', fn ($q) => $q->where('research_scheme_id', $this->selectedScheme))
-            ->when($this->selectedFaculty !== 'all', function ($q) {
-                $q->whereHas('submitter.identity', fn ($iq) => $iq->where('faculty_id', $this->selectedFaculty));
-            })
-            ->when($this->search, function ($q) {
-                $q->where(function ($sq) {
-                    $sq->where('title', 'like', "%{$this->search}%")
-                        ->orWhereHas('submitter', fn ($uq) => $uq->where('name', 'like', "%{$this->search}%"));
-                });
-            });
-
-        $totalApproved = (clone $query)
-            ->whereIn('status', [
-                ProposalStatus::APPROVED->value,
-                ProposalStatus::COMPLETED->value,
-                ProposalStatus::WAITING_REVIEWER->value,
-                ProposalStatus::UNDER_REVIEW->value,
-                ProposalStatus::REVIEWED->value,
-                ProposalStatus::REVISION_NEEDED->value,
-                ProposalStatus::REVISION_SUBMITTED->value,
-            ])
-            ->count();
-
-        $totalBudget = (clone $query)
-            ->whereIn('status', [
-                ProposalStatus::APPROVED->value,
-                ProposalStatus::COMPLETED->value,
-            ])
-            ->get()
-            ->sum(fn ($p) => ($p->sbk_value && $p->sbk_value > 0) ? (float) $p->sbk_value : $p->budgetItems->sum('total_price'));
-
-        $reportsCount = (clone $query)
-            ->whereHas('progressReports')
-            ->count();
-
-        return [
-            [
-                'label' => __('Proposal'),
-                'value' => $totalApproved,
-                'icon' => 'check',
-                'variant' => 'bg-green-lt text-green',
-            ],
-            [
-                'label' => __('Anggaran'),
-                'value' => 'Rp '.number_format($totalBudget, 0, ',', '.'),
-                'icon' => 'currency-dollar',
-                'variant' => 'bg-blue-lt text-blue',
-            ],
-            [
-                'label' => __('Laporan'),
-                'value' => $reportsCount,
-                'icon' => 'file-text',
-                'variant' => 'bg-yellow-lt text-yellow',
-            ],
-        ];
-    }
-
-    /**
-     * Aggregate output statistics for the current period.
-     */
-    protected function outputAnalytics(): Collection
-    {
-        $proposalIds = Proposal::query()
-            ->where('detailable_type', 'App\Models\Research')
-            ->where('start_year', $this->period)
-            ->when($this->selectedSemester !== 'all', fn ($q) => $q->where('semester', $this->selectedSemester))
-            ->when($this->selectedScheme !== 'all', fn ($q) => $q->where('research_scheme_id', $this->selectedScheme))
-            ->when($this->selectedFaculty !== 'all', function ($q) {
-                $q->whereHas('submitter.identity', fn ($iq) => $iq->where('faculty_id', $this->selectedFaculty));
-            })
-            ->when($this->search, function ($q) {
-                $q->where(function ($sq) {
-                    $sq->where('title', 'like', "%{$this->search}%")
-                        ->orWhereHas('submitter', fn ($uq) => $uq->where('name', 'like', "%{$this->search}%"));
-                });
-            })
-            ->pluck('id');
-
-        $mandatory = MandatoryOutput::query()
-            ->whereHas('progressReport', fn ($q) => $q->whereIn('proposal_id', $proposalIds))
-            ->with('proposalOutput')
-            ->get();
-
-        $additional = AdditionalOutput::query()
-            ->whereHas('progressReport', fn ($q) => $q->whereIn('proposal_id', $proposalIds))
-            ->with('proposalOutput')
-            ->get();
-
-        return $mandatory->concat($additional)
-            ->groupBy(fn ($output) => $output->proposalOutput->category ?? 'Lainnya')
-            ->map(fn ($group, $key) => [
-                'category' => $this->translateCategory($key),
-                'count' => $group->count(),
-                'published' => $group->filter(fn ($o) => in_array($o->status_type ?? $o->status, [
-                    'published',
-                    'terbit',
-                    'granted',
-                ]))->count(),
-            ])
-            ->sortByDesc('count');
-    }
-
-    /**
-     * Simple category translation.
-     */
-    protected function translateCategory(string $key): string
-    {
-        $categories = [
-            'journal' => __('Jurnal'),
-            'book' => __('Buku'),
-            'hki' => __('HKI'),
-            'product' => __('Produk'),
-            'media' => __('Media Massa'),
-            'video' => __('Video'),
-        ];
-
-        return $categories[strtolower($key)] ?? ucfirst($key);
-    }
-
-    /**
-     * Group research by scheme for the current period.
-     */
-    protected function researchByScheme(): Collection
-    {
-        return Proposal::query()
-            ->where('detailable_type', 'App\Models\Research')
-            ->where('start_year', $this->period)
-            ->when($this->selectedSemester !== 'all', fn ($q) => $q->where('semester', $this->selectedSemester))
-            ->when($this->selectedFaculty !== 'all', function ($q) {
-                $q->whereHas('submitter.identity', fn ($iq) => $iq->where('faculty_id', $this->selectedFaculty));
-            })
-            ->when($this->search, function ($q) {
-                $q->where(function ($sq) {
-                    $sq->where('title', 'like', "%{$this->search}%")
-                        ->orWhereHas('submitter', fn ($uq) => $uq->where('name', 'like', "%{$this->search}%"));
-                });
-            })
-            ->with(['researchScheme', 'budgetItems'])
-            ->get()
-            ->groupBy('research_scheme_id')
-            ->map(function ($proposals) {
-                $first = $proposals->first();
-
-                return [
-                    'name' => $first->researchScheme->name ?? __('Tanpa Skema'),
-                    'count' => $proposals->count(),
-                    'budget' => $proposals->sum(fn ($p) => ($p->sbk_value && $p->sbk_value > 0) ? (float) $p->sbk_value :
-                        $p->budgetItems->sum('total_price')),
-                ];
-            })
-            ->sortByDesc('count');
-    }
-
-    /**
-     * Group research by focus area for the current period.
-     */
-    protected function researchByFocusArea(): Collection
-    {
-        return Proposal::query()
-            ->where('detailable_type', 'App\Models\Research')
-            ->where('start_year', $this->period)
-            ->when($this->selectedSemester !== 'all', fn ($q) => $q->where('semester', $this->selectedSemester))
-            ->when($this->selectedScheme !== 'all', fn ($q) => $q->where('research_scheme_id', $this->selectedScheme))
-            ->when($this->selectedFaculty !== 'all', function ($q) {
-                $q->whereHas('submitter.identity', fn ($iq) => $iq->where('faculty_id', $this->selectedFaculty));
-            })
-            ->when($this->search, function ($q) {
-                $q->where(function ($sq) {
-                    $sq->where('title', 'like', "%{$this->search}%")
-                        ->orWhereHas('submitter', fn ($uq) => $uq->where('name', 'like', "%{$this->search}%"));
-                });
-            })
-            ->with('focusArea')
-            ->get()
-            ->groupBy('focus_area_id')
-            ->map(function ($proposals) {
-                $first = $proposals->first();
-
-                return [
-                    'name' => $first->focusArea->name ?? __('Lainnya'),
-                    'count' => $proposals->count(),
-                ];
-            })
-            ->sortByDesc('count');
-    }
-
-    /**
-     * Group research by faculty for the current period.
-     */
-    protected function researchByFaculty(): Collection
-    {
-        return Proposal::query()
-            ->where('detailable_type', 'App\Models\Research')
-            ->where('start_year', $this->period)
-            ->when($this->selectedSemester !== 'all', fn ($q) => $q->where('semester', $this->selectedSemester))
-            ->when($this->selectedScheme !== 'all', fn ($q) => $q->where('research_scheme_id', $this->selectedScheme))
-            ->when($this->search, function ($q) {
-                $q->where(function ($sq) {
-                    $sq->where('title', 'like', "%{$this->search}%")
-                        ->orWhereHas('submitter', fn ($uq) => $uq->where('name', 'like', "%{$this->search}%"));
-                });
-            })
-            ->with(['submitter.identity.faculty'])
-            ->get()
-            ->groupBy(fn ($p) => $p->submitter->identity->faculty_id)
-            ->map(function ($proposals) {
-                $first = $proposals->first();
-
-                return [
-                    'name' => $first->submitter->identity->faculty->name ?? __('Pusat/Lainnya'),
-                    'count' => $proposals->count(),
-                ];
-            })
-            ->sortByDesc('count');
+        return 'research.proposal.show';
     }
 }

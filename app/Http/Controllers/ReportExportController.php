@@ -59,6 +59,26 @@ class ReportExportController extends Controller
         return 'institutional-reports/'.$report->id.'/'.$variant.'.pdf';
     }
 
+    protected function normalizeFilterValue(mixed $value): string
+    {
+        return in_array($value, [null, '', 'all'], true) ? 'all' : (string) $value;
+    }
+
+    protected function institutionalFiltersMatch(?InstitutionalReport $report, array $request, array $keys): bool
+    {
+        if (! $report || empty($report->metadata)) {
+            return false;
+        }
+
+        foreach ($keys as $key) {
+            if ($this->normalizeFilterValue($request[$key] ?? null) !== $this->normalizeFilterValue($report->metadata[$key] ?? null)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     protected function upsertInstitutionalSignatures(InstitutionalReport $report, string $variant, string $documentHash): void
     {
         $service = app(DocumentSignatureService::class);
@@ -333,6 +353,15 @@ class ReportExportController extends Controller
                 return $this->pdfDownloadResponse($pdf->output(), $filename);
             }
 
+            if (! $this->institutionalFiltersMatch($institutionalReport, [
+                'search' => $search,
+                'semester' => $semester,
+                'scheme' => $scheme,
+                'faculty' => $faculty,
+            ], ['search', 'semester', 'scheme', 'faculty'])) {
+                return $this->pdfDownloadResponse($pdf->output(), $filename);
+            }
+
             $cachePath = $this->institutionalPdfCachePath($institutionalReport, $variant);
             $pdfBinary = Storage::disk('local')->exists($cachePath)
                 ? Storage::disk('local')->get($cachePath)
@@ -454,6 +483,15 @@ class ReportExportController extends Controller
                 return $this->pdfDownloadResponse($pdf->output(), $filename);
             }
 
+            if (! $this->institutionalFiltersMatch($institutionalReport, [
+                'search' => $search,
+                'semester' => $semester,
+                'scheme' => $scheme,
+                'faculty' => $faculty,
+            ], ['search', 'semester', 'scheme', 'faculty'])) {
+                return $this->pdfDownloadResponse($pdf->output(), $filename);
+            }
+
             $cachePath = $this->institutionalPdfCachePath($institutionalReport, $variant);
             $pdfBinary = Storage::disk('local')->exists($cachePath)
                 ? Storage::disk('local')->get($cachePath)
@@ -560,6 +598,16 @@ class ReportExportController extends Controller
                 $variant .= '-semester-'.$semester;
             }
             if (! $institutionalReport || ! $variant) {
+                return $this->pdfDownloadResponse($pdf->output(), $filename);
+            }
+
+            if (! $this->institutionalFiltersMatch($institutionalReport, [
+                'search' => $search,
+                'scheme' => $scheme,
+                'faculty' => $faculty,
+                'outputType' => $outputType,
+                'activeTab' => $activeTab,
+            ], ['search', 'scheme', 'faculty', 'outputType', 'activeTab'])) {
                 return $this->pdfDownloadResponse($pdf->output(), $filename);
             }
 
@@ -720,6 +768,14 @@ class ReportExportController extends Controller
 
             $variant = $this->institutionalVariant($institutionalReport);
             if (! $institutionalReport || ! $variant) {
+                return $this->pdfDownloadResponse($pdf->output(), $filename);
+            }
+
+            if (! $this->institutionalFiltersMatch($institutionalReport, [
+                'search' => $search,
+                'typeFilter' => $typeFilter,
+                'periodFilter' => $periodFilter,
+            ], ['search', 'typeFilter', 'periodFilter'])) {
                 return $this->pdfDownloadResponse($pdf->output(), $filename);
             }
 
@@ -1180,6 +1236,12 @@ class ReportExportController extends Controller
                 return $this->pdfDownloadResponse($pdf->output(), $filename);
             }
 
+            if (! $this->institutionalFiltersMatch($institutionalReport, [
+                'semester' => $semester,
+            ], ['semester'])) {
+                return $this->pdfDownloadResponse($pdf->output(), $filename);
+            }
+
             $cachePath = $this->institutionalPdfCachePath($institutionalReport, $variant);
             $pdfBinary = Storage::disk('local')->exists($cachePath)
                 ? Storage::disk('local')->get($cachePath)
@@ -1485,6 +1547,14 @@ class ReportExportController extends Controller
             }
             if (! $institutionalReport || ! $variant) {
                 return $this->pdfDownloadResponse($pdf->output(), $filename);
+            }
+
+            if (! $this->institutionalFiltersMatch($institutionalReport, [
+                'search' => $search,
+                'type' => $type,
+                'semester' => $semester,
+            ], ['search', 'type', 'semester'])) {
+                return $this->pdfDownloadResponse($pdfBinary, $filename);
             }
 
             $cachePath = $this->institutionalPdfCachePath($institutionalReport, $variant);

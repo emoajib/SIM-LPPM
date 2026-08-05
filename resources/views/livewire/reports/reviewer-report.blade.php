@@ -58,7 +58,7 @@
                                 </div>
                             </div>
                             <div class="col-auto">
-                                @if(active_role() === 'kepala lppm')
+                                @if(active_role_is('kepala lppm'))
                                     @if(!$report || $report->status->value === 'rejected')
                                         <button class="btn btn-primary btn-sm d-flex align-items-center gap-1" 
                                                 wire:click="submitToRektor"
@@ -70,7 +70,7 @@
                                             <i class="ti ti-rotate"></i> Reset Pengajuan
                                         </button>
                                     @endif
-                                @elseif(active_role() === 'rektor' && $report && $report->status->value === 'submitted')
+                                @elseif(active_role_is('rektor') && $report && $report->status->value === 'submitted')
                                     <div class="d-flex align-items-center gap-2">
                                         <input type="text" class="form-control form-control-sm" placeholder="Catatan perbaikan..." wire:model="approvalNotes">
                                         <button class="btn btn-danger btn-sm" wire:click="rejectReport" wire:confirm="Kembalikan laporan ini ke Kepala LPPM?">
