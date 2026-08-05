@@ -259,13 +259,11 @@
         </div>
     @endif
 
-    <div style="page-break-before: always;"></div>
-
     @if(\App\Models\Setting::get(\App\Constants\PdfConstants::REPORT_SHOW_REALIZATION, true))
 
-    <div style="margin-top: 30px; border-top: 2px dashed #000; padding-top: 20px;"></div>
-
-    <div class="section-title">{{ $sectionNum++ }}. RINGKASAN {{ $report->reporting_period === 'final' ? 'AKHIR' : 'KEMAJUAN' }}</div>
+    <!-- Hard page break before RINGKASAN so the heading is never orphaned at the bottom of the Halaman Pengesahan page.
+         Must be applied to a real element (not an empty div) — dompdf ignores page-break-before on empty boxes. -->
+    <div class="section-title" style="page-break-before: always;">{{ $sectionNum++ }}. RINGKASAN {{ $report->reporting_period === 'final' ? 'AKHIR' : 'KEMAJUAN' }}</div>
     <div class="text-justify" style="margin-bottom: 15px; border: 1px solid #eee; padding: 10px; font-size: 9pt; line-height: 1.4;">
         {!! nl2br(e($report->summary_update)) !!}
     </div>

@@ -34,6 +34,31 @@ class ProposalPdfService
     ) {}
 
     /**
+     * Cache-busting version derived from the PDF blade templates.
+     *
+     * The PDF cache file names are keyed on data timestamps only, so a template
+     * change would otherwise keep serving stale PDFs for records whose data has
+     * not changed (e.g. a pagination fix would never be visible for cached files).
+     *
+     * @param  string  $mainView  view name, e.g. "pdf.report-export"
+     */
+    private function pdfTemplateVersion(string $mainView): int
+    {
+        $files = [resource_path(str_replace('.', '/', $mainView).'.blade.php')];
+        $files = array_merge($files, glob(resource_path('views/pdf/partials/*.blade.php')) ?: []);
+
+        $version = 0;
+        foreach ($files as $file) {
+            $mtime = @filemtime($file);
+            if ($mtime !== false) {
+                $version = max($version, $mtime);
+            }
+        }
+
+        return $version;
+    }
+
+    /**
      * Get a local PDF path for a media file.
      * Returns null if the file cannot be found.
      *
@@ -113,10 +138,11 @@ class ProposalPdfService
         ]);
 
         $cacheFileName = sprintf(
-            '%sproposal_%s_%s.pdf',
+            '%sproposal_%s_%s_t%s.pdf',
             $isPreview ? 'preview_' : '',
             $proposal->id,
-            $latestTimestamp
+            $latestTimestamp,
+            $this->pdfTemplateVersion('pdf.proposal-export')
         );
         $cachePath = $cacheDir.DIRECTORY_SEPARATOR.$cacheFileName;
 
@@ -646,10 +672,11 @@ class ProposalPdfService
         }
 
         $cacheFileName = sprintf(
-            '%sreport_%s_%s.pdf',
+            '%sreport_%s_%s_t%s.pdf',
             $isPreview ? 'preview_' : '',
             $report->id,
-            $latestTimestamp
+            $latestTimestamp,
+            $this->pdfTemplateVersion('pdf.report-export')
         );
         $cachePath = $cacheDir.DIRECTORY_SEPARATOR.$cacheFileName;
 
