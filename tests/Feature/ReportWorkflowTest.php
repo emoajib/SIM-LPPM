@@ -99,6 +99,36 @@ class ReportWorkflowTest extends TestCase
         $this->assertEquals(ReportStatus::SUBMITTED, $report->fresh()->status);
     }
 
+    public function test_dosen_can_submit_final_report_without_presentation_file()
+    {
+        $this->actingAs($this->dosen);
+
+        $file = UploadedFile::fake()->create('laporan.pdf', 100);
+        $realizationFile = UploadedFile::fake()->create('realization.pdf', 100);
+
+        $component = Livewire::test(Show::class, [
+            'proposal' => $this->proposal,
+        ])
+            ->set('form.summaryUpdate', 'This is the final summary.')
+            ->set('form.keywordsInput', 'final; report; research')
+            ->set('substanceFile', $file)
+            ->set('realizationFile', $realizationFile)
+            ->call('save');
+
+        $component->assertHasNoErrors();
+
+        $this->proposal->refresh();
+        $report = $this->proposal->progressReports()->where('reporting_period', 'final')->first();
+
+        $this->assertNotNull($report);
+        $this->assertEquals(ReportStatus::DRAFT, $report->status);
+
+        // Submit without presentation file (presentation should only be required for Community Service/PKM)
+        $component->call('submit');
+        $component->assertHasNoErrors();
+        $this->assertEquals(ReportStatus::SUBMITTED, $report->fresh()->status);
+    }
+
     public function test_dosen_can_add_daily_note()
     {
         $this->actingAs($this->dosen);

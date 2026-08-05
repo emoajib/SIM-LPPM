@@ -271,45 +271,7 @@
                         </div>
                     @endif
                 </div>
-
-                <div class="mb-3">
-                    <label class="form-label">File Presentasi Hasil (PDF/PPTX)</label>
-                    <input type="file" wire:model="presentationFile"
-                        class="form-control @error('presentationFile') is-invalid @enderror" accept=".pdf,.pptx"
-                        @disabled(!$canEdit) />
-                    @error('presentationFile')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                    <small class="form-hint">Maksimal 50MB, format PDF atau PPTX</small>
-
-                    <div wire:loading wire:target="presentationFile">
-                        <small class="text-muted">
-                            <span class="spinner-border spinner-border-sm me-2"></span>
-                            Uploading...
-                        </small>
-                    </div>
-
-                    @if ($progressReport && $progressReport->hasMedia('presentation_file'))
-                        @php
-                            $media = $progressReport->getFirstMedia('presentation_file');
-                        @endphp
-                        <div class="alert alert-success mb-0 mt-2">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <x-lucide-file-check class="text-success icon me-2" />
-                                    <strong>{{ $media->name }}</strong>
-                                    <small class="text-muted ms-2">({{ $media->human_readable_size }})</small>
-                                </div>
-                                <a data-navigate-ignore="true"
-                                    href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                                    target="_blank" class="btn btn-sm btn-primary">
-                                    <x-lucide-eye class="icon" /> Lihat
-                                </a>
-                            </div>
-                        </div>
-                    @endif
-                </div>
-
+                
                 @if ($this->reportApprovalMode === 'upload')
                     <div class="mb-3 border-top pt-3 mt-3">
                         <div class="d-flex justify-content-between align-items-center mb-2">

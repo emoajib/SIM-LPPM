@@ -115,10 +115,9 @@ class Show extends Component
                 // Mark as existing draft
                 $this->isFinalReportDraft = true;
 
-                // Save report files
+                // Save report files (presentation file only for Community Service/PKM)
                 $this->saveSubstanceFile($report, 'final');
                 $this->saveRealizationFile($report, 'final');
-                $this->savePresentationFile($report, 'final');
 
                 // Save output files
                 $this->saveOutputFiles($report);
@@ -183,18 +182,6 @@ class Show extends Component
             return;
         }
 
-        // Validate that presentation/poster file exists (either in DB or newly uploaded)
-        $hasPresentationInDb = $this->progressReport && $this->progressReport->hasMedia('presentation_file');
-        $hasNewPresentation = $this->presentationFile && $this->presentationFile instanceof TemporaryUploadedFile;
-
-        if (! $hasPresentationInDb && ! $hasNewPresentation) {
-            $message = 'Gagal mengajukan: Anda wajib mengunggah File Poster/Presentasi.';
-            $this->addError('presentationFile', $message);
-            $this->toastError($message);
-
-            return;
-        }
-
         try {
             DB::transaction(function () {
                 // Submit report via form
@@ -202,10 +189,9 @@ class Show extends Component
                 $this->progressReport = $report;
                 $this->isFinalReportDraft = true;
 
-                // Save report files
+                // Save report files (presentation file only for Community Service/PKM)
                 $this->saveSubstanceFile($report, 'final');
                 $this->saveRealizationFile($report, 'final');
-                $this->savePresentationFile($report, 'final');
 
                 // Save output files
                 $this->saveOutputFiles($report);
