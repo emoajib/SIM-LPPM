@@ -224,11 +224,19 @@
                                     <strong>{{ $media->name }}</strong>
                                     <small class="text-muted ms-2">({{ $media->human_readable_size }})</small>
                                 </div>
-                                <a data-navigate-ignore="true"
-                                    href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                                    target="_blank" class="btn btn-sm btn-primary">
-                                    <x-lucide-eye class="icon" /> Lihat
-                                </a>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a data-navigate-ignore="true"
+                                        href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
+                                        target="_blank" class="btn btn-sm btn-primary">
+                                        <x-lucide-eye class="icon" /> Lihat
+                                    </a>
+                                    @if ($canEdit)
+                                        <button type="button" wire:click="removeSubstanceFile"
+                                            class="btn btn-sm btn-danger" wire:confirm="Yakin ingin menghapus file ini?">
+                                            <x-lucide-trash-2 class="icon" /> Hapus
+                                        </button>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     @endif
@@ -262,11 +270,19 @@
                                     <strong>{{ $media->name }}</strong>
                                     <small class="text-muted ms-2">({{ $media->human_readable_size }})</small>
                                 </div>
-                                <a data-navigate-ignore="true"
-                                    href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                                    target="_blank" class="btn btn-sm btn-primary">
-                                    <x-lucide-eye class="icon" /> Lihat
-                                </a>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a data-navigate-ignore="true"
+                                        href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
+                                        target="_blank" class="btn btn-sm btn-primary">
+                                        <x-lucide-eye class="icon" /> Lihat
+                                    </a>
+                                    @if ($canEdit)
+                                        <button type="button" wire:click="removeRealizationFile"
+                                            class="btn btn-sm btn-danger" wire:confirm="Yakin ingin menghapus file ini?">
+                                            <x-lucide-trash-2 class="icon" /> Hapus
+                                        </button>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     @endif
@@ -300,11 +316,19 @@
                                     <strong>{{ $media->name }}</strong>
                                     <small class="text-muted ms-2">({{ $media->human_readable_size }})</small>
                                 </div>
-                                <a data-navigate-ignore="true"
-                                    href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                                    target="_blank" class="btn btn-sm btn-primary">
-                                    <x-lucide-eye class="icon" /> Lihat
-                                </a>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a data-navigate-ignore="true"
+                                        href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
+                                        target="_blank" class="btn btn-sm btn-primary">
+                                        <x-lucide-eye class="icon" /> Lihat
+                                    </a>
+                                    @if ($canEdit)
+                                        <button type="button" wire:click="removePresentationFile"
+                                            class="btn btn-sm btn-danger" wire:confirm="Yakin ingin menghapus file ini?">
+                                            <x-lucide-trash-2 class="icon" /> Hapus
+                                        </button>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     @endif
@@ -345,11 +369,19 @@
                                         <strong>{{ $media->name }}</strong>
                                         <small class="text-muted ms-2">({{ $media->human_readable_size }})</small>
                                     </div>
-                                    <a data-navigate-ignore="true"
-                                        href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                                        target="_blank" class="btn btn-sm btn-primary">
-                                        <x-lucide-eye class="icon" /> Lihat
-                                    </a>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a data-navigate-ignore="true"
+                                            href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
+                                            target="_blank" class="btn btn-sm btn-primary">
+                                            <x-lucide-eye class="icon" /> Lihat
+                                        </a>
+                                        @if ($canEdit)
+                                            <button type="button" wire:click="removeSignatureFile"
+                                                class="btn btn-sm btn-danger" wire:confirm="Yakin ingin menghapus halaman pengesahan ini?">
+                                                <x-lucide-trash-2 class="icon" /> Hapus
+                                            </button>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         @endif

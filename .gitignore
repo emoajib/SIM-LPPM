@@ -112,3 +112,4 @@ opencode.json
 /test_research_schemes.php
 /test_restore.php
 /storage_*.zip
+.env.bak*

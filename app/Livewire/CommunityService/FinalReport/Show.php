@@ -366,6 +366,23 @@ class Show extends Component
     }
 
     /**
+     * Remove signature page file
+     */
+    public function removeSignatureFile(): void
+    {
+        if (! $this->canEdit) {
+            abort(403);
+        }
+
+        if ($this->progressReport) {
+            $this->progressReport->clearMediaCollection('signature_page');
+            $message = 'Halaman pengesahan berhasil dihapus.';
+            session()->flash('success', $message);
+            $this->toastSuccess($message);
+        }
+    }
+
+    /**
      * Save mandatory output after validation
      */
     public function saveMandatoryOutput(int $proposalOutputId): void
