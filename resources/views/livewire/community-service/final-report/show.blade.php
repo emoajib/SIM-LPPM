@@ -213,6 +213,31 @@
                         </small>
                     </div>
 
+                    @if ($substanceFile instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile)
+                        <div class="alert alert-info mb-0 mt-2">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <x-lucide-file-warning class="text-info icon me-2" />
+                                    <strong>{{ $substanceFile->getClientOriginalName() }}</strong>
+                                    <small class="text-muted ms-2">
+                                        ({{ number_format($substanceFile->getSize() / 1024, 1) }} KB)
+                                    </small>
+                                    <small class="d-block text-muted">File belum disimpan ke laporan.</small>
+                                </div>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{{ $substanceFile->temporaryUrl() }}" target="_blank"
+                                        class="btn btn-sm btn-outline-primary">
+                                        <x-lucide-eye class="icon" /> Cek File
+                                    </a>
+                                    <button type="button" wire:click="saveSubstanceFileNow"
+                                        wire:loading.attr="disabled" class="btn btn-sm btn-success">
+                                        <x-lucide-save class="icon" /> Simpan
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
                     @if ($progressReport && $progressReport->hasMedia('substance_file'))
                         @php
                             $media = $progressReport->getFirstMedia('substance_file');

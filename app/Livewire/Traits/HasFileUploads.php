@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Livewire\Traits;
 
+use App\Enums\ReportStatus;
 use App\Models\AdditionalOutput;
 use App\Models\MandatoryOutput;
 use App\Models\ProgressReport;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 trait HasFileUploads
@@ -402,5 +405,61 @@ trait HasFileUploads
             'tempAdditionalFiles',
             'tempAdditionalCerts',
         ]);
+    }
+
+    /**
+     * Save only the substance file immediately (without submitting the whole report).
+     * Creates a final draft report if none exists yet.
+     */
+    public function saveSubstanceFileNow(): void
+    {
+        if (! $this->canEdit) {
+            abort(403);
+        }
+
+        if (! $this->substanceFile instanceof TemporaryUploadedFile) {
+            $message = 'Pilih file substansi (PDF) terlebih dahulu.';
+            session()->flash('error', $message);
+            $this->toastError($message);
+
+            return;
+        }
+
+        $this->validateSubstanceFile();
+
+        try {
+            DB::transaction(function () {
+                $report = $this->progressReport;
+
+                // Create a final draft report if it does not exist yet
+                if (! $report || $report->reporting_period !== 'final') {
+                    $report = ProgressReport::create([
+                        'proposal_id' => $this->proposal->id,
+                        'summary_update' => $this->form->summaryUpdate ?: ($this->proposal->summary ?? 'Draft Report'),
+                        'reporting_year' => $this->form->reportingYear ?: (int) date('Y'),
+                        'reporting_period' => 'final',
+                        'status' => ReportStatus::DRAFT->value,
+                    ]);
+                    $this->isFinalReportDraft = true;
+                }
+
+                $this->saveSubstanceFile($report, 'final');
+                $this->progressReport = $report;
+            });
+
+            $this->substanceFile = null;
+
+            $this->dispatch('report-saved');
+
+            $message = 'File substansi berhasil disimpan.';
+            session()->flash('success', $message);
+            $this->toastSuccess($message);
+        } catch (ValidationException $e) {
+            throw $e;
+        } catch (\Exception $e) {
+            $message = 'Gagal menyimpan file substansi: '.$e->getMessage();
+            session()->flash('error', $message);
+            $this->toastError($message);
+        }
     }
 }

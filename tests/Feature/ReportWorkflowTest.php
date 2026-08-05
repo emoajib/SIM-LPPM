@@ -187,4 +187,45 @@ class ReportWorkflowTest extends TestCase
         $this->assertNotNull($report);
         $this->assertEquals('Mitra baru ditambahkan: Universitas ABC.', $report->partner_changes);
     }
+
+    public function test_dosen_can_save_substance_file_without_submitting_report()
+    {
+        $this->actingAs($this->dosen);
+
+        $file = UploadedFile::fake()->createWithContent(
+            'substansi.pdf',
+            "%PDF-1.4\n% Test PDF content for substance file.\n%%EOF"
+        );
+
+        Livewire::test(Show::class, [
+            'proposal' => $this->proposal,
+        ])
+            ->set('substanceFile', $file)
+            ->call('saveSubstanceFileNow')
+            ->assertHasNoErrors()
+            ->assertDispatched('report-saved');
+
+        $this->proposal->refresh();
+        $report = $this->proposal->progressReports()->where('reporting_period', 'final')->first();
+
+        $this->assertNotNull($report);
+        $this->assertEquals(ReportStatus::DRAFT, $report->status);
+        $this->assertTrue($report->hasMedia('substance_file'));
+        $this->assertEquals('substansi.pdf', $report->getFirstMedia('substance_file')->name);
+    }
+
+    public function test_save_substance_file_now_requires_file()
+    {
+        $this->actingAs($this->dosen);
+
+        Livewire::test(Show::class, [
+            'proposal' => $this->proposal,
+        ])
+            ->call('saveSubstanceFileNow');
+
+        $this->assertDatabaseMissing('progress_reports', [
+            'proposal_id' => $this->proposal->id,
+            'reporting_period' => 'final',
+        ]);
+    }
 }
