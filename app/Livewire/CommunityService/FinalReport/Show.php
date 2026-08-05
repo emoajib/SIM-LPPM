@@ -117,6 +117,8 @@ class Show extends Component
                 $this->saveSubstanceFile($report, 'final');
                 $this->saveRealizationFile($report, 'final');
                 $this->savePresentationFile($report, 'final');
+                $this->saveCooperationProofFile($report);
+                $this->saveImplementationProofFile($report);
 
                 // Save output files
                 $this->saveOutputFiles($report);
@@ -204,6 +206,8 @@ class Show extends Component
                 $this->saveSubstanceFile($report, 'final');
                 $this->saveRealizationFile($report, 'final');
                 $this->savePresentationFile($report, 'final');
+                $this->saveCooperationProofFile($report);
+                $this->saveImplementationProofFile($report);
 
                 // Save output files
                 $this->saveOutputFiles($report);
@@ -315,6 +319,34 @@ class Show extends Component
     }
 
     /**
+     * Handle partner cooperation proof file upload (real-time)
+     */
+    public function updatedCooperationProofFile(): void
+    {
+        if (! $this->canEdit) {
+            $this->cooperationProofFile = null;
+
+            return;
+        }
+
+        $this->validateCooperationProofFile();
+    }
+
+    /**
+     * Handle partner implementation proof file upload (real-time)
+     */
+    public function updatedImplementationProofFile(): void
+    {
+        if (! $this->canEdit) {
+            $this->implementationProofFile = null;
+
+            return;
+        }
+
+        $this->validateImplementationProofFile();
+    }
+
+    /**
      * Remove substance file
      */
     public function removeSubstanceFile(): void
@@ -377,6 +409,40 @@ class Show extends Component
         if ($this->progressReport) {
             $this->progressReport->clearMediaCollection('signature_page');
             $message = 'Halaman pengesahan berhasil dihapus.';
+            session()->flash('success', $message);
+            $this->toastSuccess($message);
+        }
+    }
+
+    /**
+     * Remove partner cooperation proof file
+     */
+    public function removeCooperationProofFile(): void
+    {
+        if (! $this->canEdit) {
+            abort(403);
+        }
+
+        if ($this->progressReport) {
+            $this->progressReport->clearMediaCollection('partner_cooperation_proof');
+            $message = 'Dokumen bukti kerjasama mitra berhasil dihapus.';
+            session()->flash('success', $message);
+            $this->toastSuccess($message);
+        }
+    }
+
+    /**
+     * Remove partner implementation proof file
+     */
+    public function removeImplementationProofFile(): void
+    {
+        if (! $this->canEdit) {
+            abort(403);
+        }
+
+        if ($this->progressReport) {
+            $this->progressReport->clearMediaCollection('partner_implementation_proof');
+            $message = 'Dokumen bukti implementasi mitra berhasil dihapus.';
             session()->flash('success', $message);
             $this->toastSuccess($message);
         }

@@ -27,6 +27,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  * @property string|null $status
  * @property string|null $submitted_by
  * @property Carbon|null $submitted_at
+ * @property string|null $partner_changes
  * @property-read Proposal $proposal
  * @property-read User|null $submitter
  * @property-read Collection|Keyword[] $keywords
@@ -56,6 +57,7 @@ class ProgressReport extends Model implements HasMedia
         'status',
         'submitted_by',
         'submitted_at',
+        'partner_changes',
     ];
 
     /**
@@ -172,6 +174,14 @@ class ProgressReport extends Model implements HasMedia
         // Halaman pengesahan tanda tangan fisik (Optional Final Report)
         $this->addMediaCollection('signature_page')
             ->singleFile()
+            ->acceptsMimeTypes(['application/pdf', 'image/jpeg', 'image/png']);
+
+        // Bukti kerjasama mitra (Final Report — partner change documentation)
+        $this->addMediaCollection('partner_cooperation_proof')
+            ->acceptsMimeTypes(['application/pdf', 'image/jpeg', 'image/png']);
+
+        // Bukti implementasi mitra (Final Report — partner change documentation)
+        $this->addMediaCollection('partner_implementation_proof')
             ->acceptsMimeTypes(['application/pdf', 'image/jpeg', 'image/png']);
     }
 }

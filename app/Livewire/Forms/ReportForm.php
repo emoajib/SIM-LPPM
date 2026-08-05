@@ -54,6 +54,14 @@ class ReportForm extends Form
 
     public $signatureFile;
 
+    // Partner change documentation (final report only)
+    public $cooperationProofFile;
+
+    public $implementationProofFile;
+
+    // Partner change notes (final report only)
+    public string $partnerChanges = '';
+
     // Report configuration
     public ?string $type = 'progress'; // 'progress' or 'final'
 
@@ -62,6 +70,8 @@ class ReportForm extends Form
         'realizationFile' => 'nullable|file|mimes:pdf,docx|max:10240',
         'presentationFile' => 'nullable|file|mimes:pdf,ppt,pptx|max:51200',
         'signatureFile' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+        'cooperationProofFile' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
+        'implementationProofFile' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
     ];
 
     /**
@@ -121,6 +131,7 @@ class ReportForm extends Form
         $this->summaryUpdate = $report->summary_update ?? '';
         $this->keywordsInput = $report->keywords->pluck('name')->implode('; ');
         $this->reportingYear = (int) $report->reporting_year;
+        $this->partnerChanges = $report->partner_changes ?? '';
 
         // Determine if we are cloning from a previous period
         $isCloning = false;
@@ -463,6 +474,7 @@ class ReportForm extends Form
                 'summary_update' => $this->summaryUpdate,
                 'reporting_year' => $this->reportingYear,
                 'reporting_period' => $this->reportingPeriod,
+                'partner_changes' => $this->partnerChanges,
             ];
 
             // Check if existing report matches the target period
@@ -728,6 +740,9 @@ class ReportForm extends Form
         if ($this->signatureFile instanceof UploadedFile && $this->signatureFile->isValid()) {
             $this->saveFileToCollection($report, $this->signatureFile, 'signature_page');
         }
+
+        // Partner change documents are saved by trait methods in the component
+        // (saveCooperationProofFile, saveImplementationProofFile)
     }
 
     /**

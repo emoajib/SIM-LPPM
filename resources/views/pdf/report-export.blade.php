@@ -67,7 +67,7 @@
     @include('pdf.partials.section-identitas-mahasiswa', ['sectionNum' => $sectionNum])
     @php $sectionNum++; @endphp
 
-    @include('pdf.partials.section-mitra', ['sectionNum' => $sectionNum])
+    @include('pdf.partials.section-mitra', ['sectionNum' => $sectionNum, 'report' => $report])
     @if($proposal->partners->count() > 0)
         @php $sectionNum++; @endphp
     @endif
@@ -437,6 +437,21 @@
                 $mime = $media->mime_type ?? '';
                 $type = str_starts_with($mime, 'image/') ? 'image' : (str_contains($mime, 'pdf') ? 'pdf' : 'other');
                 $otherDocs[] = ['label' => 'Surat Pernyataan Kerjasama Mitra - ' . $partner->name, 'media' => $media, 'type' => $type];
+            }
+        }
+        // Add partner change documentation from final report
+        if ($report->reporting_period === 'final') {
+            if ($report->hasMedia('partner_cooperation_proof')) {
+                $media = $report->getFirstMedia('partner_cooperation_proof');
+                $mime = $media->mime_type ?? '';
+                $type = str_starts_with($mime, 'image/') ? 'image' : (str_contains($mime, 'pdf') ? 'pdf' : 'other');
+                $otherDocs[] = ['label' => 'Dokumen Bukti Perubahan Kerjasama Mitra', 'media' => $media, 'type' => $type];
+            }
+            if ($report->hasMedia('partner_implementation_proof')) {
+                $media = $report->getFirstMedia('partner_implementation_proof');
+                $mime = $media->mime_type ?? '';
+                $type = str_starts_with($mime, 'image/') ? 'image' : (str_contains($mime, 'pdf') ? 'pdf' : 'other');
+                $otherDocs[] = ['label' => 'Dokumen Bukti Implementasi Perubahan Mitra', 'media' => $media, 'type' => $type];
             }
         }
     @endphp

@@ -161,4 +161,30 @@ class ReportWorkflowTest extends TestCase
         ])
             ->assertStatus(200);
     }
+
+    public function test_dosen_can_set_partner_changes_in_final_report()
+    {
+        $this->actingAs($this->dosen);
+
+        $file = UploadedFile::fake()->create('laporan.pdf', 100);
+        $realizationFile = UploadedFile::fake()->create('realization.pdf', 100);
+
+        $component = Livewire::test(Show::class, [
+            'proposal' => $this->proposal,
+        ])
+            ->set('form.summaryUpdate', 'Final summary with partner changes.')
+            ->set('form.keywordsInput', 'final; partner; change')
+            ->set('form.partnerChanges', 'Mitra baru ditambahkan: Universitas ABC.')
+            ->set('substanceFile', $file)
+            ->set('realizationFile', $realizationFile)
+            ->call('save');
+
+        $component->assertHasNoErrors();
+
+        $this->proposal->refresh();
+        $report = $this->proposal->progressReports()->where('reporting_period', 'final')->first();
+
+        $this->assertNotNull($report);
+        $this->assertEquals('Mitra baru ditambahkan: Universitas ABC.', $report->partner_changes);
+    }
 }

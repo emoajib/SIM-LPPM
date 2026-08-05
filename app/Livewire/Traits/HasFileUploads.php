@@ -21,6 +21,13 @@ trait HasFileUploads
 
     public $presentationFile;
 
+    public $signatureFile;
+
+    // Partner change documentation (final report only)
+    public $cooperationProofFile;
+
+    public $implementationProofFile;
+
     // Temporary file uploads
     public array $tempMandatoryFiles = [];
 
@@ -85,6 +92,26 @@ trait HasFileUploads
     {
         $this->validate([
             "tempAdditionalCerts.{$proposalOutputId}" => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
+        ]);
+    }
+
+    /**
+     * Validate partner cooperation proof file upload
+     */
+    public function validateCooperationProofFile(): void
+    {
+        $this->validate([
+            'cooperationProofFile' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
+        ]);
+    }
+
+    /**
+     * Validate partner implementation proof file upload
+     */
+    public function validateImplementationProofFile(): void
+    {
+        $this->validate([
+            'implementationProofFile' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
         ]);
     }
 
@@ -163,6 +190,58 @@ trait HasFileUploads
                 ->toMediaCollection('presentation_file');
         } catch (\Exception $e) {
             Log::error('Upload report presentation file failed: '.$e->getMessage());
+        }
+    }
+
+    /**
+     * Save partner cooperation proof file to media collection (final report only)
+     */
+    protected function saveCooperationProofFile(ProgressReport $report): void
+    {
+        if (! $this->cooperationProofFile || ! $this->cooperationProofFile instanceof TemporaryUploadedFile) {
+            return;
+        }
+
+        try {
+            $report->clearMediaCollection('partner_cooperation_proof');
+            $report
+                ->addMedia($this->cooperationProofFile->getRealPath())
+                ->usingName($this->cooperationProofFile->getClientOriginalName())
+                ->usingFileName($this->cooperationProofFile->hashName())
+                ->withCustomProperties([
+                    'uploaded_by' => Auth::id(),
+                    'proposal_id' => $report->proposal_id,
+                    'report_type' => 'final',
+                ])
+                ->toMediaCollection('partner_cooperation_proof');
+        } catch (\Exception $e) {
+            Log::error('Upload partner cooperation proof file failed: '.$e->getMessage());
+        }
+    }
+
+    /**
+     * Save partner implementation proof file to media collection (final report only)
+     */
+    protected function saveImplementationProofFile(ProgressReport $report): void
+    {
+        if (! $this->implementationProofFile || ! $this->implementationProofFile instanceof TemporaryUploadedFile) {
+            return;
+        }
+
+        try {
+            $report->clearMediaCollection('partner_implementation_proof');
+            $report
+                ->addMedia($this->implementationProofFile->getRealPath())
+                ->usingName($this->implementationProofFile->getClientOriginalName())
+                ->usingFileName($this->implementationProofFile->hashName())
+                ->withCustomProperties([
+                    'uploaded_by' => Auth::id(),
+                    'proposal_id' => $report->proposal_id,
+                    'report_type' => 'final',
+                ])
+                ->toMediaCollection('partner_implementation_proof');
+        } catch (\Exception $e) {
+            Log::error('Upload partner implementation proof file failed: '.$e->getMessage());
         }
     }
 

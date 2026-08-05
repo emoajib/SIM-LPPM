@@ -391,6 +391,131 @@
         </div>
     </div>
 
+    <!-- Partner Changes Documentation (Final Report) -->
+    @if ($isFinalReportDraft)
+        <div class="card mb-3">
+            <div class="card-header">
+                <h3 class="card-title"><x-lucide-handshake class="icon me-2" />Perubahan Mitra</h3>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label" for="partnerChanges">Deskripsi Perubahan Mitra</label>
+                    <textarea wire:model="partnerChanges" id="partnerChanges"
+                        class="form-control @error('partnerChanges') is-invalid @enderror"
+                        rows="3" placeholder="Jelaskan perubahan yang terjadi pada mitra..."
+                        @disabled(!$canEdit)></textarea>
+                    @error('partnerChanges')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                    <small class="form-hint">Opsional: Jelaskan jika ada perubahan pada mitra
+                        (penambahan, penggantian, atau perubahan peran)</small>
+                </div>
+
+                <!-- Cooperation Proof File -->
+                <div class="mb-3">
+                    <label class="form-label" for="cooperationProofFile">Dokumen Bukti Kerjasama
+                        Mitra</label>
+                    <input type="file" wire:model="cooperationProofFile"
+                        class="form-control @error('cooperationProofFile') is-invalid @enderror"
+                        accept=".pdf,.jpg,.jpeg,.png" @disabled(!$canEdit) />
+                    @error('cooperationProofFile')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                    <small class="form-hint">Maksimal 10MB, format PDF atau Gambar
+                        (JPG/JPEG/PNG)</small>
+
+                    <div wire:loading wire:target="cooperationProofFile">
+                        <small class="text-muted">
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                            Uploading...
+                        </small>
+                    </div>
+
+                    @if ($progressReport && $progressReport->hasMedia('partner_cooperation_proof'))
+                        @php
+                            $media = $progressReport->getFirstMedia('partner_cooperation_proof');
+                        @endphp
+                        <div class="bg-blue-lt mt-2 rounded border p-2">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <x-lucide-file-check class="text-blue icon me-2" />
+                                    <strong>{{ $media->name }}</strong>
+                                    <small class="text-muted ms-2">({{ $media->human_readable_size }})</small>
+                                </div>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a data-navigate-ignore="true"
+                                        href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
+                                        target="_blank" class="btn btn-sm btn-primary">
+                                        <x-lucide-eye class="icon" /> Lihat
+                                    </a>
+                                    @if ($canEdit)
+                                        <button type="button"
+                                            wire:click="removeCooperationProofFile"
+                                            class="btn btn-sm btn-danger"
+                                            wire:confirm="Yakin ingin menghapus dokumen bukti kerjasama ini?">
+                                            <x-lucide-trash-2 class="icon" /> Hapus
+                                        </button>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
+                <!-- Implementation Proof File -->
+                <div class="mb-3">
+                    <label class="form-label" for="implementationProofFile">Dokumen Bukti
+                        Implementasi Mitra</label>
+                    <input type="file" wire:model="implementationProofFile"
+                        class="form-control @error('implementationProofFile') is-invalid @enderror"
+                        accept=".pdf,.jpg,.jpeg,.png" @disabled(!$canEdit) />
+                    @error('implementationProofFile')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                    <small class="form-hint">Maksimal 10MB, format PDF atau Gambar
+                        (JPG/JPEG/PNG)</small>
+
+                    <div wire:loading wire:target="implementationProofFile">
+                        <small class="text-muted">
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                            Uploading...
+                        </small>
+                    </div>
+
+                    @if ($progressReport && $progressReport->hasMedia('partner_implementation_proof'))
+                        @php
+                            $media = $progressReport->getFirstMedia('partner_implementation_proof');
+                        @endphp
+                        <div class="bg-blue-lt mt-2 rounded border p-2">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <x-lucide-file-check class="text-blue icon me-2" />
+                                    <strong>{{ $media->name }}</strong>
+                                    <small class="text-muted ms-2">({{ $media->human_readable_size }})</small>
+                                </div>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a data-navigate-ignore="true"
+                                        href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
+                                        target="_blank" class="btn btn-sm btn-primary">
+                                        <x-lucide-eye class="icon" /> Lihat
+                                    </a>
+                                    @if ($canEdit)
+                                        <button type="button"
+                                            wire:click="removeImplementationProofFile"
+                                            class="btn btn-sm btn-danger"
+                                            wire:confirm="Yakin ingin menghapus dokumen bukti implementasi ini?">
+                                            <x-lucide-trash-2 class="icon" /> Hapus
+                                        </button>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    @endif
+
     <!-- Luaran Wajib -->
     @if ($isFinalReportDraft)
         <div class="card mb-3">

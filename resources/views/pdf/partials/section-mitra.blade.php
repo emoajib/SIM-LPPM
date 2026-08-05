@@ -12,6 +12,13 @@
         </div>
     @endforeach
 
+    @if(isset($report) && !empty($report->partner_changes))
+        <div style="margin-top: 10px;">
+            <strong>Perubahan Mitra:</strong>
+            <div style="margin-left: 20px; text-align: justify; margin-bottom: 5px;">{{ $report->partner_changes }}</div>
+        </div>
+    @endif
+
     @if($proposal->detailable_type === 'App\Models\CommunityService')
         <div style="margin-top: 10px;">
             <strong>Ringkasan Permasalahan Mitra:</strong>
