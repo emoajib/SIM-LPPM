@@ -36,7 +36,6 @@ tar czf "$BACKUP_DIR/backup-$(date +%Y%m%d-%H%M%S).tar.gz" \
 # Pull changes — gunakan git rm --cached agar file yg masuk gitignore tidak konflik
 echo "Pulling latest changes..."
 git rm --cached -r storage/backups/ 2>/dev/null || true
-git stash drop 2>/dev/null || true
 git checkout -- . 2>/dev/null || true
 git clean -fd 2>/dev/null || true
 git pull origin main || { echo "❌ git pull gagal! Periksa koneksi atau konflik manual, lalu jalankan: php artisan up"; exit 1; }
@@ -75,9 +74,7 @@ php -r 'if (function_exists("opcache_reset")) { opcache_reset(); echo "OPcache c
 [[ -d storage/app/public/pdf_cache ]] && rm -rf storage/app/public/pdf_cache 2>/dev/null || true
 echo "PDF cache cleaned"
 
-# Set permissions — .env harus 600 SEBELUM bulk chmod (TOCTOU prevention)
-chmod 600 .env
-
+# Set permissions
 echo "Setting permissions..."
 find . -type f -not -path './.git/*' -not -path './vendor/*' -not -path './node_modules/*' -print0 | xargs -0 chmod 644
 find . -type d -not -path './.git/*' -not -path './vendor/*' -not -path './node_modules/*' -print0 | xargs -0 chmod 755
@@ -88,6 +85,10 @@ chmod 755 public
 chmod 644 public/.htaccess
 chmod 644 public/index.php
 chmod 600 .env     # KRITIS: .env hanya boleh dibaca owner
+
+# Harden backup agar tidak terbaca user lain di shared hosting
+chmod 700 storage/app/backup
+find storage/app/backup -type f -print0 | xargs -0 chmod 600 2>/dev/null || true
 
 # Test application
 echo "Testing application..."
