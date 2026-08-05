@@ -14,7 +14,7 @@
                 Kembali
             </a>
         @elseif (active_has_role('admin lppm'))
-            <a href="{{ route('admin-lppm.dashboard') }}" class="btn-outline-secondary btn" wire:navigate.hover>
+            <a href="{{ route('admin-lppm.letters.dashboard') }}" class="btn-outline-secondary btn" wire:navigate.hover>
                 <x-lucide-arrow-left class="icon" />
                 Kembali
             </a>
