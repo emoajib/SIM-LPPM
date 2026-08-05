@@ -442,15 +442,15 @@ Route::middleware(['auth'])->group(function () {
 require __DIR__.'/auth.php';
 
 Route::get('/verify/reports/{institutionalReport}', [ReportVerificationController::class, 'show'])
-    ->middleware(['signed'])
+    ->middleware(['signed', 'throttle:30,1'])
     ->name('reports.verify');
 
 Route::get('/verify/signatures/{documentSignature}', [DocumentSignatureVerificationController::class, 'show'])
-    ->middleware(['signed'])
+    ->middleware(['signed', 'throttle:30,1'])
     ->name('signatures.verify');
 
 Route::get('/verify/letters/{letter}', [LetterVerificationController::class, 'show'])
-    ->middleware(['signed', 'letter.active'])
+    ->middleware(['signed', 'letter.active', 'throttle:30,1'])
     ->name('letters.verify');
 
 // Rute Ekspor Laporan (Dekan & Role dengan module_laporan)

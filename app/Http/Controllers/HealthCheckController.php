@@ -45,10 +45,7 @@ class HealthCheckController extends Controller
                 'message' => 'Connection established',
             ];
         } catch (\Throwable $e) {
-            return [
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ];
+            return $this->failure($e);
         }
     }
 
@@ -63,10 +60,20 @@ class HealthCheckController extends Controller
                 'message' => 'Disk readable and writable',
             ];
         } catch (\Throwable $e) {
-            return [
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ];
+            return $this->failure($e);
         }
+    }
+
+    /**
+     * Failure payload WITHOUT the raw exception message — a database or
+     * storage error can leak hostnames, paths, or credentials, and this
+     * endpoint is unauthenticated.
+     */
+    protected function failure(\Throwable $e): array
+    {
+        return [
+            'status' => 'error',
+            'message' => 'Component unavailable ('.class_basename($e).')',
+        ];
     }
 }

@@ -118,7 +118,29 @@ class BackupDownloadController extends Controller
         $dbUser = config('database.connections.mysql.username');
         $dbPass = config('database.connections.mysql.password');
 
-        Process::run("mysqldump --complete-insert -u $dbUser -p$dbPass $dbName > $path");
+        // Never pass the DB password as a CLI argument (visible in `ps`).
+        // Use a 0600 temp defaults-file instead.
+        $defaultsFile = tempnam(sys_get_temp_dir(), 'mycnf');
+        if ($defaultsFile === false) {
+            abort(500, 'Gagal membuat file konfigurasi sementara.');
+        }
+
+        file_put_contents($defaultsFile, "[client]\nuser={$dbUser}\npassword={$dbPass}\n");
+        chmod($defaultsFile, 0600);
+
+        $escapedDefaults = escapeshellarg($defaultsFile);
+        $escapedDbName = escapeshellarg($dbName);
+        $escapedPath = escapeshellarg($path);
+
+        try {
+            $result = Process::run("mysqldump --defaults-extra-file={$escapedDefaults} --complete-insert {$escapedDbName} > {$escapedPath}");
+
+            if (! $result->successful()) {
+                abort(500, 'Gagal membuat file backup database.');
+            }
+        } finally {
+            @unlink($defaultsFile);
+        }
 
         if (! file_exists($path) || filesize($path) === 0) {
             abort(500, 'Gagal membuat file backup database.');

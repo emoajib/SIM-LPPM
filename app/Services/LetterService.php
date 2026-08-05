@@ -175,7 +175,7 @@ class LetterService
         // Validate letter creation
         $validationErrors = $this->letterValidationService->validateLetterCreation($data, $user->id);
         if (! empty($validationErrors)) {
-            throw new \DomainException(implode('\n', $validationErrors));
+            throw new \DomainException($this->formatValidationErrors($validationErrors));
         }
 
         $metadata = [
@@ -238,7 +238,7 @@ class LetterService
         // Validate letter creation
         $validationErrors = $this->letterValidationService->validateLetterCreation($data, $user->id);
         if (! empty($validationErrors)) {
-            throw new \DomainException(implode('\n', $validationErrors));
+            throw new \DomainException($this->formatValidationErrors($validationErrors));
         }
 
         return DB::transaction(function () use ($user, $data) {
@@ -327,7 +327,7 @@ class LetterService
         // Validate letter approval
         $validationErrors = $this->letterValidationService->validateLetterApproval($letter, auth()->id());
         if (! empty($validationErrors)) {
-            throw new \DomainException(implode('\n', $validationErrors));
+            throw new \DomainException($this->formatValidationErrors($validationErrors));
         }
 
         return DB::transaction(function () use ($letter) {
@@ -379,7 +379,7 @@ class LetterService
         // Validate letter rejection
         $validationErrors = $this->letterValidationService->validateLetterRejection($letter, auth()->id());
         if (! empty($validationErrors)) {
-            throw new \DomainException(implode('\n', $validationErrors));
+            throw new \DomainException($this->formatValidationErrors($validationErrors));
         }
 
         if (in_array($letter->status, Letter::STATUS_IMMUTABLE)) {
@@ -400,7 +400,7 @@ class LetterService
         // Validate letter cancellation
         $validationErrors = $this->letterValidationService->validateLetterCancellation($letter, auth()->id());
         if (! empty($validationErrors)) {
-            throw new \DomainException(implode('\n', $validationErrors));
+            throw new \DomainException($this->formatValidationErrors($validationErrors));
         }
 
         if (in_array($letter->status, Letter::STATUS_IMMUTABLE)) {
@@ -422,7 +422,7 @@ class LetterService
         // Validate letter resubmission
         $validationErrors = $this->letterValidationService->validateLetterResubmission($letter, auth()->id());
         if (! empty($validationErrors)) {
-            throw new \DomainException(implode('\n', $validationErrors));
+            throw new \DomainException($this->formatValidationErrors($validationErrors));
         }
 
         if ($letter->status !== LetterStatus::REJECTED) {
@@ -534,5 +534,21 @@ class LetterService
             ->select('id', 'name', 'email')
             ->limit(10)
             ->get();
+    }
+
+    /**
+     * Flatten (possibly nested) validation messages into a single newline-
+     * separated string. Validation services return per-field arrays that may
+     * themselves contain arrays; imploding those directly raises
+     * "Array to string conversion".
+     */
+    private function formatValidationErrors(array $validationErrors): string
+    {
+        $flattened = array_map(
+            static fn ($messages) => is_array($messages) ? implode(', ', array_map('strval', $messages)) : (string) $messages,
+            $validationErrors
+        );
+
+        return implode(PHP_EOL, $flattened);
     }
 }

@@ -39,6 +39,11 @@ class LetterProposalLinkedRequest extends Component
 
     public function mount(Proposal $proposal): void
     {
+        // Authorization: prevent BOLA/IDOR — only users who can view this
+        // proposal (submitter, team member, assigned reviewer, LPPM staff,
+        // same-faculty dekan) may request a letter from it.
+        $this->authorize('view', $proposal);
+
         $this->proposal = $proposal;
         $this->letterTypes = LetterType::where('is_active', true)->orderBy('code')->get();
 
@@ -60,6 +65,9 @@ class LetterProposalLinkedRequest extends Component
 
     public function submit(): void
     {
+        // Authorization (defense in depth): re-check ownership on write path.
+        $this->authorize('view', $this->proposal);
+
         $this->validate([
             'letterTypeId' => 'required|exists:letter_types,id',
             'title' => 'required|string|min:3',

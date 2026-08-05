@@ -21,6 +21,18 @@ class LetterValidationService implements LetterValidationServiceInterface
     {
         $errors = [];
 
+        // Normalize key style: callers may pass either snake_case
+        // (reference_type/reference_id, as in LetterService) or camelCase.
+        // Without this, the reference ownership/compatibility checks below
+        // are silently skipped — a BOLA that lets any user attach a letter
+        // to someone else's proposal.
+        if (isset($data['reference_type']) && ! isset($data['referenceType'])) {
+            $data['referenceType'] = $data['reference_type'];
+        }
+        if (isset($data['reference_id']) && ! isset($data['referenceId'])) {
+            $data['referenceId'] = $data['reference_id'];
+        }
+
         // Validate letter type and proposal compatibility
         if (isset($data['letterTypeId']) && isset($data['referenceType'])) {
             $letterTypeErrors = $this->validateLetterTypeProposalCompatibility(

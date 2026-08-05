@@ -15,7 +15,8 @@ class PublicResearchController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = $request->query('limit', 10);
+        // Cap the public-facing page size to prevent resource exhaustion.
+        $limit = max(1, min((int) $request->query('limit', 10), 100));
 
         $research = Research::whereHas('proposal', function ($query) {
             $query->where('status', ProposalStatus::COMPLETED);

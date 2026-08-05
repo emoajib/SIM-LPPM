@@ -81,6 +81,12 @@ if (! function_exists('sql_year')) {
      */
     function sql_year(string $column = 'created_at'): string
     {
+        // Whitelist: only allow safe identifier characters so this helper can
+        // never become an SQL injection sink through a caller-supplied column.
+        if (! preg_match('/^[a-zA-Z0-9_]+$/', $column)) {
+            throw new InvalidArgumentException('Invalid column name for sql_year().');
+        }
+
         $driver = strtolower(DB::getDriverName());
 
         return match ($driver) {
