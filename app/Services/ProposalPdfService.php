@@ -1132,6 +1132,39 @@ class ProposalPdfService
         $cachePath = $cacheDir.'/financial_'.$proposal->id.($isPreview ? '_preview' : '').'.pdf';
         $pdf->save($cachePath);
 
+        if ($proposal->hasMedia('logbook_approval_file')) {
+            try {
+                $tempPath = tempnam(sys_get_temp_dir(), 'fin_info_').'.pdf';
+                copy($cachePath, $tempPath);
+
+                $fpdi = new Fpdi;
+                $pageCount = $fpdi->setSourceFile($tempPath);
+                for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
+                    $templateId = $fpdi->importPage($pageNo);
+                    $size = $fpdi->getTemplateSize($templateId);
+                    $fpdi->AddPage($size['orientation'], [$size['width'], $size['height']]);
+                    $fpdi->useTemplate($templateId);
+                }
+
+                $scanMedia = $proposal->getFirstMedia('logbook_approval_file');
+                $scanPath = $scanMedia->getPath();
+                if (file_exists($scanPath) && strtolower(pathinfo($scanPath, PATHINFO_EXTENSION)) === 'pdf') {
+                    $scanPageCount = $fpdi->setSourceFile($scanPath);
+                    for ($p = 1; $p <= $scanPageCount; $p++) {
+                        $templateId = $fpdi->importPage($p);
+                        $size = $fpdi->getTemplateSize($templateId);
+                        $fpdi->AddPage($size['orientation'], [$size['width'], $size['height']]);
+                        $fpdi->useTemplate($templateId);
+                    }
+                }
+
+                $fpdi->Output('F', $cachePath);
+                @unlink($tempPath);
+            } catch (\Throwable $e) {
+                Log::warning('Failed to merge logbook approval scan into financial report: '.$e->getMessage());
+            }
+        }
+
         return $cachePath;
     }
 }

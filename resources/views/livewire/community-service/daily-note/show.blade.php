@@ -60,6 +60,8 @@
         </div>
     </div>
 
+    @include('livewire.partials.logbook-approval-upload')
+
     @if ($budget_groups->count() > 0)
         <div class="mt-3 mb-3 border bg-white rounded">
             <div class="p-3 border-bottom d-flex align-items-center justify-content-between">

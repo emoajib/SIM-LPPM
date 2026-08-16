@@ -12,8 +12,10 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
+use setasign\Fpdi\Fpdi;
 
 class DailyNoteExportController extends Controller
 {
@@ -167,12 +169,55 @@ class DailyNoteExportController extends Controller
 
         $title = preg_replace('/[^A-Za-z0-9_\-]/', '_', substr($proposal->title, 0, 50));
         $filename = 'Catatan_Harian_'.$title.'.pdf';
+        $outputPdfBinary = $pdf->output();
 
-        if ($request->query('download') === 'true') {
-            return $pdf->download($filename);
+        if ($proposal->hasMedia('logbook_approval_file')) {
+            try {
+                $tempPath = tempnam(sys_get_temp_dir(), 'dn_info_').'.pdf';
+                file_put_contents($tempPath, $outputPdfBinary);
+
+                $fpdi = new Fpdi;
+                $pageCount = $fpdi->setSourceFile($tempPath);
+                for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
+                    $templateId = $fpdi->importPage($pageNo);
+                    $size = $fpdi->getTemplateSize($templateId);
+                    $fpdi->AddPage($size['orientation'], [$size['width'], $size['height']]);
+                    $fpdi->useTemplate($templateId);
+                }
+
+                $scanMedia = $proposal->getFirstMedia('logbook_approval_file');
+                $scanPath = $scanMedia->getPath();
+                if (file_exists($scanPath) && strtolower(pathinfo($scanPath, PATHINFO_EXTENSION)) === 'pdf') {
+                    $scanPageCount = $fpdi->setSourceFile($scanPath);
+                    for ($p = 1; $p <= $scanPageCount; $p++) {
+                        $templateId = $fpdi->importPage($p);
+                        $size = $fpdi->getTemplateSize($templateId);
+                        $fpdi->AddPage($size['orientation'], [$size['width'], $size['height']]);
+                        $fpdi->useTemplate($templateId);
+                    }
+                }
+
+                $mergedPath = tempnam(sys_get_temp_dir(), 'dn_merged_').'.pdf';
+                $fpdi->Output('F', $mergedPath);
+                $outputPdfBinary = file_get_contents($mergedPath);
+                @unlink($tempPath);
+                @unlink($mergedPath);
+            } catch (\Throwable $e) {
+                Log::warning('Failed to merge logbook approval scan: '.$e->getMessage());
+            }
         }
 
-        return $pdf->stream($filename);
+        if ($request->query('download') === 'true') {
+            return response($outputPdfBinary, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+            ]);
+        }
+
+        return response($outputPdfBinary, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$filename.'"',
+        ]);
     }
 
     /**

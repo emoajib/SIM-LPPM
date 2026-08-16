@@ -19,6 +19,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
 /**
  * @property string $id
@@ -72,12 +74,21 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read Collection|DocumentSignature[] $signatures
  * @property-read User $user
  */
-class Proposal extends Model
+class Proposal extends Model implements HasMedia
 {
     /** @use HasFactory<ProposalFactory> */
-    use HasFactory, HasUuids, SoftDeletes;
+    use HasFactory, HasUuids, InteractsWithMedia, SoftDeletes;
 
     public ?string $notes = null;
+
+    /**
+     * Register media collections for logbook approval
+     */
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('logbook_approval_file')
+            ->singleFile();
+    }
 
     /**
      * The type of the auto-incrementing ID's primary key.

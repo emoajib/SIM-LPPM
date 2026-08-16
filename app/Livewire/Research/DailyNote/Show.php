@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
@@ -45,6 +46,8 @@ class Show extends Component
     public $evidence = [];
 
     public ?string $editingId = null;
+
+    public $logbookApprovalFile;
 
     public function mount(Proposal $proposal): void
     {
@@ -292,6 +295,47 @@ class Show extends Component
 
         $message = 'Catatan harian berhasil divalidasi oleh Kepala LPPM.';
         session()->flash('success', $message);
+        $this->toastSuccess($message);
+    }
+
+    public function saveLogbookApprovalFile(): void
+    {
+        if (! $this->canManage($this->proposal)) {
+            abort(403);
+        }
+
+        $this->validate([
+            'logbookApprovalFile' => 'required|file|mimes:pdf|max:10240',
+        ], [
+            'logbookApprovalFile.required' => 'Berkas scan lembar pengesahan wajib dipilih.',
+            'logbookApprovalFile.mimes' => 'Format berkas harus PDF.',
+            'logbookApprovalFile.max' => 'Ukuran berkas maksimal 10MB.',
+        ]);
+
+        $this->proposal->clearMediaCollection('logbook_approval_file');
+        /** @var TemporaryUploadedFile $file */
+        $file = $this->logbookApprovalFile;
+        $this->proposal->addMedia($file->getRealPath())
+            ->usingFileName($file->getClientOriginalName())
+            ->toMediaCollection('logbook_approval_file');
+
+        $this->reset('logbookApprovalFile');
+
+        $message = 'Berkas scan lembar pengesahan basah berhasil diunggah.';
+        session()->flash('success', $message);
+        $this->toastSuccess($message);
+    }
+
+    public function removeLogbookApprovalFile(): void
+    {
+        if (! $this->canManage($this->proposal)) {
+            abort(403);
+        }
+
+        $this->proposal->clearMediaCollection('logbook_approval_file');
+
+        $message = 'Berkas scan lembar pengesahan basah berhasil dihapus.';
+        session()->flash('info', $message);
         $this->toastSuccess($message);
     }
 }
