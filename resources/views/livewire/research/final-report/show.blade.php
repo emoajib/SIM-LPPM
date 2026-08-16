@@ -608,6 +608,9 @@
         </div>
     </div>
 
+    <!-- Title Change Request Section (Final Report) -->
+    @include('livewire.partials.title-change-form')
+
     <!-- Partner Changes Documentation (Final Report) -->
     @if ($isFinalReportDraft)
         <div class="card mb-3">

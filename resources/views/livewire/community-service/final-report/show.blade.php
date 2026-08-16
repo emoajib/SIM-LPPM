@@ -735,6 +735,9 @@
             </div>
         </div>
 
+        <!-- Title Change Request Section (Final Report) -->
+        @include('livewire.partials.title-change-form')
+
         {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
         <!-- Lampiran Standar Laporan Pengabdian (Lampiran 3 - 12) -->
         <div class="card mb-3">

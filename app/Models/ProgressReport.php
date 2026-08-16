@@ -58,6 +58,12 @@ class ProgressReport extends Model implements HasMedia
         'submitted_by',
         'submitted_at',
         'partner_changes',
+        'proposed_title',
+        'title_change_reason',
+        'title_change_status',
+        'title_change_reviewed_at',
+        'title_change_reviewer_id',
+        'title_change_review_notes',
     ];
 
     /**
@@ -71,6 +77,7 @@ class ProgressReport extends Model implements HasMedia
             'status' => ReportStatus::class,
             'submitted_at' => 'datetime',
             'deleted_at' => 'datetime',
+            'title_change_reviewed_at' => 'datetime',
         ];
     }
 
@@ -88,6 +95,14 @@ class ProgressReport extends Model implements HasMedia
     public function submitter(): BelongsTo
     {
         return $this->belongsTo(User::class, 'submitted_by');
+    }
+
+    /**
+     * Get the user who reviewed the title change request.
+     */
+    public function titleChangeReviewer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'title_change_reviewer_id');
     }
 
     /**

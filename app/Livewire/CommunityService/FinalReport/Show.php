@@ -51,6 +51,15 @@ class Show extends Component
 
     public ?string $contractDate = null;
 
+    // Title Change Request properties
+    public bool $isRequestingTitleChange = false;
+
+    public ?string $proposedTitle = null;
+
+    public ?string $titleChangeReason = null;
+
+    public ?string $titleChangeReviewNotes = null;
+
     /**
      * Mount the component
      */
@@ -99,10 +108,155 @@ class Show extends Component
         if ($this->progressReport) {
             // Load existing report data into form
             $this->form->setReport($this->progressReport);
+            $this->proposedTitle = $this->progressReport->proposed_title;
+            $this->titleChangeReason = $this->progressReport->title_change_reason;
+            $this->titleChangeReviewNotes = $this->progressReport->title_change_review_notes;
+            $this->isRequestingTitleChange = ! empty($this->progressReport->proposed_title) || ! empty($this->progressReport->title_change_status);
         } else {
             // Initialize new report structure
             $this->form->initializeNewReport();
         }
+    }
+
+    /**
+     * Save / submit title change request by Lecturer
+     */
+    public function saveTitleChangeRequest(): void
+    {
+        if (! $this->canEdit) {
+            abort(403);
+        }
+
+        $this->validate([
+            'proposedTitle' => 'required|string|min:10|max:500',
+            'titleChangeReason' => 'required|string|min:10|max:1000',
+        ], [
+            'proposedTitle.required' => 'Judul baru yang diajukan wajib diisi.',
+            'proposedTitle.min' => 'Judul baru minimal 10 karakter.',
+            'titleChangeReason.required' => 'Alasan/justifikasi perubahan judul wajib diisi.',
+            'titleChangeReason.min' => 'Alasan perubahan minimal 10 karakter.',
+        ]);
+
+        if (! $this->progressReport) {
+            $this->progressReport = $this->form->save($this->progressReport);
+            $this->isFinalReportDraft = true;
+        }
+
+        $this->progressReport->update([
+            'proposed_title' => $this->proposedTitle,
+            'title_change_reason' => $this->titleChangeReason,
+            'title_change_status' => 'pending',
+            'title_change_reviewed_at' => null,
+            'title_change_reviewer_id' => null,
+            'title_change_review_notes' => null,
+        ]);
+
+        $this->isRequestingTitleChange = true;
+
+        $this->dispatch('banner-message', [
+            'style' => 'success',
+            'message' => 'Pengajuan perubahan judul berhasil dikirim ke LPPM untuk ditinjau.',
+        ]);
+    }
+
+    /**
+     * Cancel title change request by Lecturer
+     */
+    public function cancelTitleChangeRequest(): void
+    {
+        if (! $this->canEdit) {
+            abort(403);
+        }
+
+        if ($this->progressReport && $this->progressReport->title_change_status === 'pending') {
+            $this->progressReport->update([
+                'proposed_title' => null,
+                'title_change_reason' => null,
+                'title_change_status' => null,
+            ]);
+
+            $this->proposedTitle = null;
+            $this->titleChangeReason = null;
+            $this->isRequestingTitleChange = false;
+
+            $this->dispatch('banner-message', [
+                'style' => 'info',
+                'message' => 'Pengajuan perubahan judul telah dibatalkan.',
+            ]);
+        }
+    }
+
+    /**
+     * Approve title change by Admin LPPM
+     */
+    public function approveTitleChange(): void
+    {
+        /** @var User $user */
+        $user = Auth::user();
+        if (! $user->activeHasAnyRole(['admin lppm', 'admin lppm saintek', 'admin lppm dekabita', 'kepala lppm', 'superadmin'])) {
+            abort(403, 'Hanya Admin LPPM yang berwenang menyetujui perubahan judul.');
+        }
+
+        if (! $this->progressReport || ! $this->progressReport->proposed_title) {
+            $this->dispatch('banner-message', [
+                'style' => 'danger',
+                'message' => 'Tidak ada pengajuan judul baru untuk disetujui.',
+            ]);
+
+            return;
+        }
+
+        $newTitle = $this->progressReport->proposed_title;
+
+        $this->progressReport->update([
+            'title_change_status' => 'approved',
+            'title_change_reviewed_at' => now(),
+            'title_change_reviewer_id' => $user->id,
+            'title_change_review_notes' => $this->titleChangeReviewNotes,
+        ]);
+
+        $this->proposal->update([
+            'title' => $newTitle,
+        ]);
+
+        $this->dispatch('banner-message', [
+            'style' => 'success',
+            'message' => 'Perubahan judul berhasil disetujui dan diterapkan pada sistem.',
+        ]);
+    }
+
+    /**
+     * Reject title change by Admin LPPM
+     */
+    public function rejectTitleChange(): void
+    {
+        /** @var User $user */
+        $user = Auth::user();
+        if (! $user->activeHasAnyRole(['admin lppm', 'admin lppm saintek', 'admin lppm dekabita', 'kepala lppm', 'superadmin'])) {
+            abort(403, 'Hanya Admin LPPM yang berwenang menolak perubahan judul.');
+        }
+
+        if (! $this->progressReport) {
+            return;
+        }
+
+        $this->validate([
+            'titleChangeReviewNotes' => 'required|string|min:5|max:500',
+        ], [
+            'titleChangeReviewNotes.required' => 'Catatan alasan penolakan wajib diisi.',
+        ]);
+
+        $this->progressReport->update([
+            'title_change_status' => 'rejected',
+            'title_change_reviewed_at' => now(),
+            'title_change_reviewer_id' => $user->id,
+            'title_change_review_notes' => $this->titleChangeReviewNotes,
+        ]);
+
+        $this->dispatch('banner-message', [
+            'style' => 'warning',
+            'message' => 'Pengajuan perubahan judul telah ditolak.',
+        ]);
     }
 
     /**
