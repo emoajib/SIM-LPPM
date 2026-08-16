@@ -8,8 +8,10 @@ use App\Livewire\Traits\WithApproval;
 use App\Livewire\Traits\WithTeamManagement;
 use App\Models\Proposal;
 use App\Models\Setting;
+use App\Models\User;
 use App\Services\LecturerEligibilityService;
 use App\Services\ProposalService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -37,6 +39,11 @@ abstract class ProposalShow extends Component
 
     public Proposal $proposal;
 
+    // Contract info for Admin LPPM
+    public string $contractNumber = '';
+
+    public ?string $contractDate = null;
+
     protected ProposalService $proposalService;
 
     public function boot(): void
@@ -52,6 +59,8 @@ abstract class ProposalShow extends Component
             $this->form->setProposal($proposal);
             // CRITICAL: Use the form's proposal which has detailable & relationships loaded
             $this->proposal = $this->form->proposal;
+            $this->contractNumber = $this->proposal->contract_number ?? '';
+            $this->contractDate = $this->proposal->contract_date ? Carbon::parse($this->proposal->contract_date)->format('Y-m-d') : null;
         } catch (\Throwable $e) {
             \Log::error('Error in ProposalShow mount', [
                 'proposal_id' => $proposal->id,
@@ -61,6 +70,30 @@ abstract class ProposalShow extends Component
             ]);
             throw $e;
         }
+    }
+
+    /**
+     * Update contract number by Admin LPPM
+     */
+    public function saveContract(): void
+    {
+        /** @var User $user */
+        $user = Auth::user();
+        if (! $user->activeHasAnyRole(['admin lppm', 'admin lppm saintek', 'admin lppm dekabita', 'kepala lppm', 'superadmin'])) {
+            abort(403, 'Hanya Admin LPPM yang berwenang mengubah nomor kontrak.');
+        }
+
+        $this->validate([
+            'contractNumber' => 'nullable|string|max:100',
+            'contractDate' => 'nullable|date',
+        ]);
+
+        $this->proposal->update([
+            'contract_number' => $this->contractNumber ?: null,
+            'contract_date' => $this->contractDate ?: null,
+        ]);
+
+        $this->toastSuccess('Nomor kontrak berhasil disimpan.');
     }
 
     abstract protected function getProposalType(): string;

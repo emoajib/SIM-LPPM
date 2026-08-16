@@ -63,6 +63,7 @@ use App\Livewire\Review\Research as ReviewResearch;
 use App\Livewire\Review\ReviewHistory;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\AuditLog;
+use App\Livewire\Settings\ContractManager;
 use App\Livewire\Settings\ManualBookSetting;
 use App\Livewire\Settings\MasterData;
 use App\Livewire\Settings\Password;
@@ -371,6 +372,7 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('settings/proposal-schedule', ProposalSchedule::class)->name('settings.proposal-schedule');
         Route::get('settings/proposal-template', ProposalTemplate::class)->name('settings.proposal-template');
+        Route::get('settings/contracts', ContractManager::class)->name('settings.contracts');
         Route::get('settings/manual-books', ManualBookSetting::class)->name('settings.manual-books');
         Route::get('admin/eligibility-dashboard', EligibilityDashboard::class)->name('admin.eligibility-dashboard');
 
@@ -426,6 +428,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('daily-notes/{proposal}/export-pdf', [DailyNoteExportController::class, 'download'])
         ->name('daily-notes.export-pdf');
+
+    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    Route::get('financial-reports/{proposal}/export-pdf', [DailyNoteExportController::class, 'financialReport'])
+        ->name('financial-reports.export-pdf');
 
     Route::get('media/{media:uuid}/download', [MediaDownloadController::class, 'download'])
         ->middleware(['auth'])

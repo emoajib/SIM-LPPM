@@ -416,6 +416,12 @@ class MenuComposer
                         'route' => 'settings.proposal-template',
                     ],
                     [
+                        'title' => 'Nomor Kontrak Usulan',
+                        'icon' => 'file-check',
+                        'route' => 'settings.contracts',
+                        'roles' => ['admin lppm', 'superadmin'],
+                    ],
+                    [
                         'title' => 'Manual Book',
                         'icon' => 'book-upload',
                         'route' => 'settings.manual-books',

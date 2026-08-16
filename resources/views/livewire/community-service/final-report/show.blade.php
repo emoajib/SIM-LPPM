@@ -19,7 +19,13 @@
                     href="{{ route('reports.export-pdf', ['proposal' => $proposal, 'type' => 'final', 'download' => 'true']) }}"
                     class="btn btn-primary shadow-sm">
                     <x-lucide-download class="icon me-2" />
-                    Unduh Laporan
+                    Unduh Laporan Akhir
+                </a>
+                <a data-navigate-ignore="true"
+                    href="{{ route('financial-reports.export-pdf', ['proposal' => $proposal, 'download' => 'true']) }}"
+                    class="btn btn-outline-success shadow-sm">
+                    <x-lucide-file-spreadsheet class="icon me-2" />
+                    Unduh Laporan Keuangan
                 </a>
             @endif
         </div>
@@ -36,6 +42,45 @@
     }
 ">
         <x-tabler.alert />
+
+        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+        <!-- Admin LPPM: Kelola Nomor Kontrak -->
+        @if(auth()->user()->activeHasAnyRole(['admin lppm', 'admin lppm saintek', 'admin lppm dekabita', 'kepala lppm', 'superadmin']))
+            <div class="card mb-3 border-info shadow-sm">
+                <div class="card-header bg-info-lt d-flex justify-content-between align-items-center py-2">
+                    <h3 class="card-title text-info mb-0 fs-4">
+                        <x-lucide-file-text class="icon me-2" />
+                        Nomor Kontrak Pengabdian (Admin LPPM)
+                    </h3>
+                    @if($proposal->contract_number)
+                        <span class="badge bg-green text-white">Kontrak Terdaftar</span>
+                    @else
+                        <span class="badge bg-secondary text-white">Belum Diterbitkan</span>
+                    @endif
+                </div>
+                <div class="card-body py-3">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-6">
+                            <label class="form-label mb-1 fs-5">Nomor Kontrak Perjanjian Penugasan</label>
+                            <input type="text" wire:model="contractNumber" class="form-control" placeholder="Contoh: 013/ITSNU/LPPM/KTR-PKM/VIII/2026" />
+                            @error('contractNumber') <small class="text-danger">{{ $message }}</small> @enderror
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label mb-1 fs-5">Tanggal Kontrak</label>
+                            <input type="date" wire:model="contractDate" class="form-control" />
+                            @error('contractDate') <small class="text-danger">{{ $message }}</small> @enderror
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" wire:click="saveContract" wire:loading.attr="disabled" class="btn btn-info w-100">
+                                <span wire:loading.remove wire:target="saveContract"><x-lucide-save class="icon me-1" /> Simpan</span>
+                                <span wire:loading wire:target="saveContract"><span class="spinner-border spinner-border-sm"></span></span>
+                            </button>
+                        </div>
+                    </div>
+                    <small class="text-muted mt-2 d-block">Nomor kontrak ini akan otomatis muncul pada Cover Laporan Pengabdian dan Cover Laporan Keuangan.</small>
+                </div>
+            </div>
+        @endif
 
         <!-- Approval Section -->
         @if ($progressReport)
@@ -104,22 +149,389 @@
                     <x-lucide-info class="icon alert-icon" />
                 </div>
                 <div>
-                    <h4 class="alert-title">Panduan Pengisian Laporan Akhir</h4>
+                    <h4 class="alert-title">Panduan Pengisian Laporan Akhir PKM</h4>
                     <div class="text-secondary">
                         <p class="mb-2">
-                            Silakan periksa dan lengkapi form berikut untuk mengajukan Laporan Akhir.
+                            Silakan periksa dan lengkapi berkas dan form berikut untuk mengajukan Laporan Akhir Pengabdian kepada Masyarakat.
                         </p>
                         <ol class="mb-0 ps-3">
-                            <li>Lengkapi <strong>Ringkasan & Kata Kunci</strong> serta upload dokumen laporan akhir.
-                            </li>
+                            <li>Lengkapi <strong>Ringkasan & Kata Kunci</strong> serta upload dokumen laporan akhir.</li>
+                            <li>Upload berkas lampiran pendukung pengabdian (Lampiran 3 s.d. 12).</li>
                             <li>Klik tombol <strong>Simpan Draft</strong> untuk menyimpan data sementara.</li>
-                            <li>Setelah draft tersimpan, kolom upload <strong>Luaran Wajib</strong> dan <strong>Luaran
-                                    Tambahan</strong> akan muncul.</li>
-                            <li>Upload bukti luaran yang diperlukan pada bagian tersebut.</li>
-                            <li>Jika semua data sudah lengkap, klik <strong>Ajukan Laporan Akhir</strong> untuk mengirim
-                                laporan.</li>
+                            <li>Setelah draft tersimpan, lengkapi bukti luaran wajib dan tambahan.</li>
+                            <li>Jika semua data sudah lengkap, klik <strong>Ajukan Laporan Akhir</strong> untuk mengirim laporan ke Dekan & LPPM.</li>
                         </ol>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+        <!-- Checklist Kelengkapan Dokumen & Lampiran Laporan Akhir PKM (1-12) -->
+        @php
+            $hasSubstance = $progressReport && $progressReport->hasMedia('substance_file');
+            $hasBudget = $proposal->budgetItems->count() > 0;
+            $hasTeam = $proposal->teamMembers->count() > 0;
+            $hasL3 = $progressReport && $progressReport->hasMedia('partner_agreement_letter');
+            $hasL4 = $progressReport && $progressReport->hasMedia('chairperson_statement_letter');
+            $hasL5 = $progressReport && $progressReport->hasMedia('service_location_map');
+            $hasL6 = $progressReport && $progressReport->hasMedia('official_report_pkm');
+            $hasL7 = $progressReport && $progressReport->hasMedia('assignment_letter_pkm');
+            $hasL8 = $progressReport && $progressReport->hasMedia('questionnaire_pkm');
+            $hasL9 = $progressReport && $progressReport->hasMedia('team_attendance_list');
+            $hasL10 = $progressReport && $progressReport->hasMedia('participant_attendance_list');
+            $hasL11 = $progressReport && $progressReport->hasMedia('training_material_pkm');
+            $hasL12 = $progressReport && $progressReport->hasMedia('activity_photos_pkm');
+
+            $itemsCompleted = collect([$hasSubstance, $hasBudget, $hasTeam, $hasL3, $hasL4, $hasL5, $hasL6, $hasL7, $hasL8, $hasL9, $hasL10, $hasL11, $hasL12])->filter()->count();
+            $totalChecklistItems = 13;
+            $completionPct = round(($itemsCompleted / $totalChecklistItems) * 100);
+        @endphp
+
+        <div class="card mb-3 shadow-sm border-primary">
+            <div class="card-header bg-primary-lt d-flex justify-content-between align-items-center py-2">
+                <h3 class="card-title text-primary mb-0 fs-4">
+                    <x-lucide-check-square class="icon me-2" />
+                    Checklist Kelengkapan Berkas Substansi & Lampiran PKM (Lampiran 1 s.d. 12)
+                </h3>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge {{ $itemsCompleted === $totalChecklistItems ? 'bg-success' : 'bg-warning' }} text-white">
+                        {{ $itemsCompleted }}/{{ $totalChecklistItems }} Lengkap ({{ $completionPct }}%)
+                    </span>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-vcenter table-hover table-striped mb-0">
+                        <thead>
+                            <tr>
+                                <th class="w-1 text-center">No</th>
+                                <th>Dokumen / Lampiran</th>
+                                <th>Mekanisme / Sumber</th>
+                                <th class="w-1 text-center">Status</th>
+                                <th>Keterangan / Berkas</th>
+                                <th class="w-1 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Item 0: Substansi -->
+                            <tr>
+                                <td class="text-center">#</td>
+                                <td><strong>File Substansi Laporan Akhir PKM (PDF)</strong></td>
+                                <td><span class="badge bg-secondary-lt">Upload PDF</span></td>
+                                <td class="text-center">
+                                    @if($hasSubstance)
+                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Lengkap</span>
+                                    @else
+                                        <span class="badge bg-danger"><x-lucide-alert-circle class="icon icon-inline me-1" /> Belum Diunggah</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($hasSubstance)
+                                        @php $subMedia = $progressReport->getFirstMedia('substance_file'); @endphp
+                                        <span class="text-muted small">{{ $subMedia->name }} ({{ number_format($subMedia->size / 1024, 1) }} KB)</span>
+                                    @else
+                                        <span class="text-muted small italic">Upload naskah laporan akhir lengkap PKM</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if($hasSubstance && $subMedia)
+                                        <a href="{{ route('media.download', $subMedia) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh Berkas Substansi">
+                                            <x-lucide-download class="icon" />
+                                        </a>
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                            </tr>
+                            <!-- Item 1: Lampiran 1 -->
+                            <tr>
+                                <td class="text-center">1</td>
+                                <td><strong>Lampiran 1. Alokasi Penggunaan Dana</strong></td>
+                                <td><span class="badge bg-blue-lt">Otomatis Sistem</span></td>
+                                <td class="text-center">
+                                    @if($hasBudget)
+                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Siap Cetak</span>
+                                    @else
+                                        <span class="badge bg-warning"><x-lucide-alert-triangle class="icon icon-inline me-1" /> Kosong</span>
+                                    @endif
+                                </td>
+                                <td><small class="text-muted">Tabel rekapitulasi realisasi anggaran otomatis digenerate ke PDF</small></td>
+                                <td class="text-center"><span class="badge bg-light text-muted">Auto</span></td>
+                            </tr>
+                            <!-- Item 2: Lampiran 2 -->
+                            <tr>
+                                <td class="text-center">2</td>
+                                <td><strong>Lampiran 2. Format Biodata Ketua & Anggota Tim Pengusul</strong></td>
+                                <td><span class="badge bg-blue-lt">Otomatis Sistem</span></td>
+                                <td class="text-center">
+                                    <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Siap Cetak</span>
+                                </td>
+                                <td><small class="text-muted">{{ $proposal->teamMembers->count() }} Anggota tim terdaftar</small></td>
+                                <td class="text-center"><span class="badge bg-light text-muted">Auto</span></td>
+                            </tr>
+                            <!-- Item 3: Lampiran 3 -->
+                            <tr>
+                                <td class="text-center">3</td>
+                                <td><strong>Lampiran 3. Surat Kesediaan Mitra</strong></td>
+                                <td><span class="badge bg-secondary-lt">Upload PDF/Gambar</span></td>
+                                <td class="text-center">
+                                    @if($hasL3)
+                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Lengkap</span>
+                                    @else
+                                        <span class="badge bg-warning"><x-lucide-alert-triangle class="icon icon-inline me-1" /> Belum Diunggah</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($hasL3)
+                                        @php $m3 = $progressReport->getFirstMedia('partner_agreement_letter'); @endphp
+                                        <span class="text-muted small">{{ $m3->name }}</span>
+                                    @else
+                                        <span class="text-muted small italic">Surat kesediaan dan persetujuan mitra sasaran PKM</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if($hasL3 && $m3)
+                                        <a href="{{ route('media.download', $m3) }}" target="_blank" class="btn btn-sm btn-outline-primary"><x-lucide-download class="icon" /></a>
+                                    @else - @endif
+                                </td>
+                            </tr>
+                            <!-- Item 4: Lampiran 4 -->
+                            <tr>
+                                <td class="text-center">4</td>
+                                <td><strong>Lampiran 4. Surat Pernyataan Ketua</strong></td>
+                                <td><span class="badge bg-secondary-lt">Upload PDF</span></td>
+                                <td class="text-center">
+                                    @if($hasL4)
+                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Lengkap</span>
+                                    @else
+                                        <span class="badge bg-warning"><x-lucide-alert-triangle class="icon icon-inline me-1" /> Belum Diunggah</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($hasL4)
+                                        @php $m4 = $progressReport->getFirstMedia('chairperson_statement_letter'); @endphp
+                                        <span class="text-muted small">{{ $m4->name }}</span>
+                                    @else
+                                        <span class="text-muted small italic">Surat pernyataan ketua pelaksana pengabdian</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if($hasL4 && $m4)
+                                        <a href="{{ route('media.download', $m4) }}" target="_blank" class="btn btn-sm btn-outline-primary"><x-lucide-download class="icon" /></a>
+                                    @else - @endif
+                                </td>
+                            </tr>
+                            <!-- Item 5: Lampiran 5 -->
+                            <tr>
+                                <td class="text-center">5</td>
+                                <td><strong>Lampiran 5. Peta Lokasi Pengabdian</strong></td>
+                                <td><span class="badge bg-secondary-lt">Upload PDF/Gambar</span></td>
+                                <td class="text-center">
+                                    @if($hasL5)
+                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Lengkap</span>
+                                    @else
+                                        <span class="badge bg-warning"><x-lucide-alert-triangle class="icon icon-inline me-1" /> Belum Diunggah</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($hasL5)
+                                        @php $m5 = $progressReport->getFirstMedia('service_location_map'); @endphp
+                                        <span class="text-muted small">{{ $m5->name }}</span>
+                                    @else
+                                        <span class="text-muted small italic">Denah/peta koordinat wilayah sasaran PKM</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if($hasL5 && $m5)
+                                        <a href="{{ route('media.download', $m5) }}" target="_blank" class="btn btn-sm btn-outline-primary"><x-lucide-download class="icon" /></a>
+                                    @else - @endif
+                                </td>
+                            </tr>
+                            <!-- Item 6: Lampiran 6 -->
+                            <tr>
+                                <td class="text-center">6</td>
+                                <td><strong>Lampiran 6. Berita Acara Pelaksanaan PKM</strong></td>
+                                <td><span class="badge bg-secondary-lt">Upload PDF</span></td>
+                                <td class="text-center">
+                                    @if($hasL6)
+                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Lengkap</span>
+                                    @else
+                                        <span class="badge bg-warning"><x-lucide-alert-triangle class="icon icon-inline me-1" /> Belum Diunggah</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($hasL6)
+                                        @php $m6 = $progressReport->getFirstMedia('official_report_pkm'); @endphp
+                                        <span class="text-muted small">{{ $m6->name }}</span>
+                                    @else
+                                        <span class="text-muted small italic">Berita acara kegiatan pelaksanaan pengabdian</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if($hasL6 && $m6)
+                                        <a href="{{ route('media.download', $m6) }}" target="_blank" class="btn btn-sm btn-outline-primary"><x-lucide-download class="icon" /></a>
+                                    @else - @endif
+                                </td>
+                            </tr>
+                            <!-- Item 7: Lampiran 7 -->
+                            <tr>
+                                <td class="text-center">7</td>
+                                <td><strong>Lampiran 7. Surat Tugas Pelaksanaan PKM</strong></td>
+                                <td><span class="badge bg-secondary-lt">Upload PDF</span></td>
+                                <td class="text-center">
+                                    @if($hasL7)
+                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Lengkap</span>
+                                    @else
+                                        <span class="badge bg-warning"><x-lucide-alert-triangle class="icon icon-inline me-1" /> Belum Diunggah</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($hasL7)
+                                        @php $m7 = $progressReport->getFirstMedia('assignment_letter_pkm'); @endphp
+                                        <span class="text-muted small">{{ $m7->name }}</span>
+                                    @else
+                                        <span class="text-muted small italic">Surat tugas dari dekan / LPPM ITSNU</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if($hasL7 && $m7)
+                                        <a href="{{ route('media.download', $m7) }}" target="_blank" class="btn btn-sm btn-outline-primary"><x-lucide-download class="icon" /></a>
+                                    @else - @endif
+                                </td>
+                            </tr>
+                            <!-- Item 8: Lampiran 8 -->
+                            <tr>
+                                <td class="text-center">8</td>
+                                <td><strong>Lampiran 8. Kuisioner Pengabdian</strong></td>
+                                <td><span class="badge bg-secondary-lt">Upload PDF</span></td>
+                                <td class="text-center">
+                                    @if($hasL8)
+                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Lengkap</span>
+                                    @else
+                                        <span class="badge bg-warning"><x-lucide-alert-triangle class="icon icon-inline me-1" /> Belum Diunggah</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($hasL8)
+                                        @php $m8 = $progressReport->getFirstMedia('questionnaire_pkm'); @endphp
+                                        <span class="text-muted small">{{ $m8->name }}</span>
+                                    @else
+                                        <span class="text-muted small italic">Instrumen kuisioner evaluasi kepuasan mitra</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if($hasL8 && $m8)
+                                        <a href="{{ route('media.download', $m8) }}" target="_blank" class="btn btn-sm btn-outline-primary"><x-lucide-download class="icon" /></a>
+                                    @else - @endif
+                                </td>
+                            </tr>
+                            <!-- Item 9: Lampiran 9 -->
+                            <tr>
+                                <td class="text-center">9</td>
+                                <td><strong>Lampiran 9. Daftar Hadir Tim PKM (Dosen & Mahasiswa)</strong></td>
+                                <td><span class="badge bg-secondary-lt">Upload PDF</span></td>
+                                <td class="text-center">
+                                    @if($hasL9)
+                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Lengkap</span>
+                                    @else
+                                        <span class="badge bg-warning"><x-lucide-alert-triangle class="icon icon-inline me-1" /> Belum Diunggah</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($hasL9)
+                                        @php $m9 = $progressReport->getFirstMedia('team_attendance_list'); @endphp
+                                        <span class="text-muted small">{{ $m9->name }}</span>
+                                    @else
+                                        <span class="text-muted small italic">Presensi kehadiran tim pelaksana pengabdian</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if($hasL9 && $m9)
+                                        <a href="{{ route('media.download', $m9) }}" target="_blank" class="btn btn-sm btn-outline-primary"><x-lucide-download class="icon" /></a>
+                                    @else - @endif
+                                </td>
+                            </tr>
+                            <!-- Item 10: Lampiran 10 -->
+                            <tr>
+                                <td class="text-center">10</td>
+                                <td><strong>Lampiran 10. Daftar Hadir Peserta PKM</strong></td>
+                                <td><span class="badge bg-secondary-lt">Upload PDF</span></td>
+                                <td class="text-center">
+                                    @if($hasL10)
+                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Lengkap</span>
+                                    @else
+                                        <span class="badge bg-warning"><x-lucide-alert-triangle class="icon icon-inline me-1" /> Belum Diunggah</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($hasL10)
+                                        @php $m10 = $progressReport->getFirstMedia('participant_attendance_list'); @endphp
+                                        <span class="text-muted small">{{ $m10->name }}</span>
+                                    @else
+                                        <span class="text-muted small italic">Presensi kehadiran peserta / masyarakat sasaran</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if($hasL10 && $m10)
+                                        <a href="{{ route('media.download', $m10) }}" target="_blank" class="btn btn-sm btn-outline-primary"><x-lucide-download class="icon" /></a>
+                                    @else - @endif
+                                </td>
+                            </tr>
+                            <!-- Item 11: Lampiran 11 -->
+                            <tr>
+                                <td class="text-center">11</td>
+                                <td><strong>Lampiran 11. Materi Kegiatan PKM</strong></td>
+                                <td><span class="badge bg-secondary-lt">Upload PDF/PPT</span></td>
+                                <td class="text-center">
+                                    @if($hasL11)
+                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Lengkap</span>
+                                    @else
+                                        <span class="badge bg-warning"><x-lucide-alert-triangle class="icon icon-inline me-1" /> Belum Diunggah</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($hasL11)
+                                        @php $m11 = $progressReport->getFirstMedia('training_material_pkm'); @endphp
+                                        <span class="text-muted small">{{ $m11->name }}</span>
+                                    @else
+                                        <span class="text-muted small italic">Slide materi / modul pelatihan pengabdian</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if($hasL11 && $m11)
+                                        <a href="{{ route('media.download', $m11) }}" target="_blank" class="btn btn-sm btn-outline-primary"><x-lucide-download class="icon" /></a>
+                                    @else - @endif
+                                </td>
+                            </tr>
+                            <!-- Item 12: Lampiran 12 -->
+                            <tr>
+                                <td class="text-center">12</td>
+                                <td><strong>Lampiran 12. Foto Kegiatan PKM</strong></td>
+                                <td><span class="badge bg-secondary-lt">Upload Berkas Foto</span></td>
+                                <td class="text-center">
+                                    @if($hasL12)
+                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Lengkap</span>
+                                    @else
+                                        <span class="badge bg-warning"><x-lucide-alert-triangle class="icon icon-inline me-1" /> Belum Diunggah</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($hasL12)
+                                        @php $m12 = $progressReport->getFirstMedia('activity_photos_pkm'); @endphp
+                                        <span class="text-muted small">{{ $m12->name }}</span>
+                                    @else
+                                        <span class="text-muted small italic">Dokumentasi foto pelaksanaan pengabdian</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if($hasL12 && $m12)
+                                        <a href="{{ route('media.download', $m12) }}" target="_blank" class="btn btn-sm btn-outline-primary"><x-lucide-download class="icon" /></a>
+                                    @else - @endif
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -267,98 +679,6 @@
                     @endif
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">File Realisasi Keterlibatan (PDF/DOCX)</label>
-                    <input type="file" wire:model="realizationFile"
-                        class="form-control @error('realizationFile') is-invalid @enderror" accept=".pdf,.docx"
-                        @disabled(!$canEdit) />
-                    @error('realizationFile')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                    <small class="form-hint">Maksimal 10MB, format PDF atau DOCX</small>
-
-                    <div wire:loading wire:target="realizationFile">
-                        <small class="text-muted">
-                            <span class="spinner-border spinner-border-sm me-2"></span>
-                            Uploading...
-                        </small>
-                    </div>
-
-                    @if ($progressReport && $progressReport->hasMedia('realization_file'))
-                        @php
-                            $media = $progressReport->getFirstMedia('realization_file');
-                        @endphp
-                        <div class="alert alert-success mb-0 mt-2">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <x-lucide-file-check class="text-success icon me-2" />
-                                    <strong>{{ $media->name }}</strong>
-                                    <small class="text-muted ms-2">({{ $media->human_readable_size }})</small>
-                                </div>
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <a data-navigate-ignore="true"
-                                        href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                                        target="_blank" class="btn btn-sm btn-primary">
-                                        <x-lucide-eye class="icon" /> Lihat
-                                    </a>
-                                    @if ($canEdit)
-                                        <button type="button" wire:click="removeRealizationFile"
-                                            class="btn btn-sm btn-danger" wire:confirm="Yakin ingin menghapus file ini?">
-                                            <x-lucide-trash-2 class="icon" /> Hapus
-                                        </button>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">File Presentasi Hasil (PDF/PPTX)</label>
-                    <input type="file" wire:model="presentationFile"
-                        class="form-control @error('presentationFile') is-invalid @enderror" accept=".pdf,.pptx"
-                        @disabled(!$canEdit) />
-                    @error('presentationFile')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                    <small class="form-hint">Maksimal 50MB, format PDF atau PPTX</small>
-
-                    <div wire:loading wire:target="presentationFile">
-                        <small class="text-muted">
-                            <span class="spinner-border spinner-border-sm me-2"></span>
-                            Uploading...
-                        </small>
-                    </div>
-
-                    @if ($progressReport && $progressReport->hasMedia('presentation_file'))
-                        @php
-                            $media = $progressReport->getFirstMedia('presentation_file');
-                        @endphp
-                        <div class="alert alert-success mb-0 mt-2">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <x-lucide-file-check class="text-success icon me-2" />
-                                    <strong>{{ $media->name }}</strong>
-                                    <small class="text-muted ms-2">({{ $media->human_readable_size }})</small>
-                                </div>
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <a data-navigate-ignore="true"
-                                        href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                                        target="_blank" class="btn btn-sm btn-primary">
-                                        <x-lucide-eye class="icon" /> Lihat
-                                    </a>
-                                    @if ($canEdit)
-                                        <button type="button" wire:click="removePresentationFile"
-                                            class="btn btn-sm btn-danger" wire:confirm="Yakin ingin menghapus file ini?">
-                                            <x-lucide-trash-2 class="icon" /> Hapus
-                                        </button>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-                </div>
-
                 @if ($this->reportApprovalMode === 'upload')
                     <div class="mb-3 border-top pt-3 mt-3">
                         <div class="d-flex justify-content-between align-items-center mb-2">
@@ -414,132 +734,159 @@
                 @endif
             </div>
         </div>
-    </div>
 
-    <!-- Partner Changes Documentation (Final Report) -->
-    @if ($isFinalReportDraft)
+        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+        <!-- Lampiran Standar Laporan Pengabdian (Lampiran 3 - 12) -->
         <div class="card mb-3">
-            <div class="card-header">
-                <h3 class="card-title"><x-lucide-handshake class="icon me-2" />Perubahan Mitra</h3>
+            <div class="card-header bg-azure-lt py-2">
+                <h3 class="card-title text-azure mb-0">
+                    <x-lucide-paperclip class="icon me-2" />
+                    Berkas Lampiran Pengabdian (Lampiran 3 s/d 12)
+                </h3>
             </div>
             <div class="card-body">
-                <div class="mb-3">
-                    <label class="form-label" for="partnerChanges">Deskripsi Perubahan Mitra</label>
-                    <textarea wire:model="partnerChanges" id="partnerChanges"
-                        class="form-control @error('partnerChanges') is-invalid @enderror"
-                        rows="3" placeholder="Jelaskan perubahan yang terjadi pada mitra..."
-                        @disabled(!$canEdit)></textarea>
-                    @error('partnerChanges')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                    <small class="form-hint">Opsional: Jelaskan jika ada perubahan pada mitra
-                        (penambahan, penggantian, atau perubahan peran)</small>
-                </div>
+                <p class="text-secondary small mb-3">
+                    Unggah berkas lampiran pendukung laporan akhir pengabdian di bawah ini. Seluruh berkas PDF/Gambar yang diunggah akan otomatis digabungkan ke dalam dokumen Laporan Akhir sesuai nomor urut lampiran.
+                </p>
 
-                <!-- Cooperation Proof File -->
-                <div class="mb-3">
-                    <label class="form-label" for="cooperationProofFile">Dokumen Bukti Kerjasama
-                        Mitra</label>
-                    <input type="file" wire:model="cooperationProofFile"
-                        class="form-control @error('cooperationProofFile') is-invalid @enderror"
-                        accept=".pdf,.jpg,.jpeg,.png" @disabled(!$canEdit) />
-                    @error('cooperationProofFile')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                    <small class="form-hint">Maksimal 10MB, format PDF atau Gambar
-                        (JPG/JPEG/PNG)</small>
-
-                    <div wire:loading wire:target="cooperationProofFile">
-                        <small class="text-muted">
-                            <span class="spinner-border spinner-border-sm me-2"></span>
-                            Uploading...
-                        </small>
+                <div class="row g-3">
+                    {{-- Lampiran 3 --}}
+                    <div class="col-md-6">
+                        <label class="form-label mb-1">Lampiran 3: Surat Kesediaan Mitra (PDF)</label>
+                        <input type="file" wire:model="partnerAgreementFile" class="form-control form-control-sm" accept=".pdf" @disabled(!$canEdit) />
+                        @if ($progressReport && $progressReport->hasMedia('partner_agreement_letter'))
+                            @php $media = $progressReport->getFirstMedia('partner_agreement_letter'); @endphp
+                            <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
+                                <small class="text-success text-truncate"><x-lucide-check class="icon icon-sm" /> {{ $media->name }}</small>
+                                <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
+                            </div>
+                        @endif
                     </div>
 
-                    @if ($progressReport && $progressReport->hasMedia('partner_cooperation_proof'))
-                        @php
-                            $media = $progressReport->getFirstMedia('partner_cooperation_proof');
-                        @endphp
-                        <div class="bg-blue-lt mt-2 rounded border p-2">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <x-lucide-file-check class="text-blue icon me-2" />
-                                    <strong>{{ $media->name }}</strong>
-                                    <small class="text-muted ms-2">({{ $media->human_readable_size }})</small>
-                                </div>
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <a data-navigate-ignore="true"
-                                        href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                                        target="_blank" class="btn btn-sm btn-primary">
-                                        <x-lucide-eye class="icon" /> Lihat
-                                    </a>
-                                    @if ($canEdit)
-                                        <button type="button"
-                                            wire:click="removeCooperationProofFile"
-                                            class="btn btn-sm btn-danger"
-                                            wire:confirm="Yakin ingin menghapus dokumen bukti kerjasama ini?">
-                                            <x-lucide-trash-2 class="icon" /> Hapus
-                                        </button>
-                                    @endif
-                                </div>
+                    {{-- Lampiran 4 --}}
+                    <div class="col-md-6">
+                        <label class="form-label mb-1">Lampiran 4: Surat Pernyataan Ketua (PDF)</label>
+                        <input type="file" wire:model="chairpersonStatementFile" class="form-control form-control-sm" accept=".pdf" @disabled(!$canEdit) />
+                        @if ($progressReport && $progressReport->hasMedia('chairperson_statement_letter'))
+                            @php $media = $progressReport->getFirstMedia('chairperson_statement_letter'); @endphp
+                            <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
+                                <small class="text-success text-truncate"><x-lucide-check class="icon icon-sm" /> {{ $media->name }}</small>
+                                <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
                             </div>
-                        </div>
-                    @endif
-                </div>
-
-                <!-- Implementation Proof File -->
-                <div class="mb-3">
-                    <label class="form-label" for="implementationProofFile">Dokumen Bukti
-                        Implementasi Mitra</label>
-                    <input type="file" wire:model="implementationProofFile"
-                        class="form-control @error('implementationProofFile') is-invalid @enderror"
-                        accept=".pdf,.jpg,.jpeg,.png" @disabled(!$canEdit) />
-                    @error('implementationProofFile')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                    <small class="form-hint">Maksimal 10MB, format PDF atau Gambar
-                        (JPG/JPEG/PNG)</small>
-
-                    <div wire:loading wire:target="implementationProofFile">
-                        <small class="text-muted">
-                            <span class="spinner-border spinner-border-sm me-2"></span>
-                            Uploading...
-                        </small>
+                        @endif
                     </div>
 
-                    @if ($progressReport && $progressReport->hasMedia('partner_implementation_proof'))
-                        @php
-                            $media = $progressReport->getFirstMedia('partner_implementation_proof');
-                        @endphp
-                        <div class="bg-blue-lt mt-2 rounded border p-2">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <x-lucide-file-check class="text-blue icon me-2" />
-                                    <strong>{{ $media->name }}</strong>
-                                    <small class="text-muted ms-2">({{ $media->human_readable_size }})</small>
-                                </div>
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <a data-navigate-ignore="true"
-                                        href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                                        target="_blank" class="btn btn-sm btn-primary">
-                                        <x-lucide-eye class="icon" /> Lihat
-                                    </a>
-                                    @if ($canEdit)
-                                        <button type="button"
-                                            wire:click="removeImplementationProofFile"
-                                            class="btn btn-sm btn-danger"
-                                            wire:confirm="Yakin ingin menghapus dokumen bukti implementasi ini?">
-                                            <x-lucide-trash-2 class="icon" /> Hapus
-                                        </button>
-                                    @endif
+                    {{-- Lampiran 5 --}}
+                    <div class="col-md-6">
+                        <label class="form-label mb-1">Lampiran 5: Peta Lokasi Pengabdian (PDF/Gambar)</label>
+                        <input type="file" wire:model="serviceLocationMapFile" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png" @disabled(!$canEdit) />
+                        @if ($progressReport && $progressReport->hasMedia('service_location_map'))
+                            @php $media = $progressReport->getFirstMedia('service_location_map'); @endphp
+                            <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
+                                <small class="text-success text-truncate"><x-lucide-check class="icon icon-sm" /> {{ $media->name }}</small>
+                                <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
+                            </div>
+                        @endif
+                    </div>
+
+                    {{-- Lampiran 6 --}}
+                    <div class="col-md-6">
+                        <label class="form-label mb-1">Lampiran 6: Berita Acara Pelaksanaan PKM (PDF)</label>
+                        <input type="file" wire:model="officialReportPkmFile" class="form-control form-control-sm" accept=".pdf" @disabled(!$canEdit) />
+                        @if ($progressReport && $progressReport->hasMedia('official_report_pkm'))
+                            @php $media = $progressReport->getFirstMedia('official_report_pkm'); @endphp
+                            <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
+                                <small class="text-success text-truncate"><x-lucide-check class="icon icon-sm" /> {{ $media->name }}</small>
+                                <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
+                            </div>
+                        @endif
+                    </div>
+
+                    {{-- Lampiran 7 --}}
+                    <div class="col-md-6">
+                        <label class="form-label mb-1">Lampiran 7: Surat Tugas Pelaksanaan PKM (PDF)</label>
+                        <input type="file" wire:model="assignmentLetterPkmFile" class="form-control form-control-sm" accept=".pdf" @disabled(!$canEdit) />
+                        @if ($progressReport && $progressReport->hasMedia('assignment_letter_pkm'))
+                            @php $media = $progressReport->getFirstMedia('assignment_letter_pkm'); @endphp
+                            <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
+                                <small class="text-success text-truncate"><x-lucide-check class="icon icon-sm" /> {{ $media->name }}</small>
+                                <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
+                            </div>
+                        @endif
+                    </div>
+
+                    {{-- Lampiran 8 --}}
+                    <div class="col-md-6">
+                        <label class="form-label mb-1">Lampiran 8: Kuisioner Pengabdian (PDF)</label>
+                        <input type="file" wire:model="questionnairePkmFile" class="form-control form-control-sm" accept=".pdf" @disabled(!$canEdit) />
+                        @if ($progressReport && $progressReport->hasMedia('questionnaire_pkm'))
+                            @php $media = $progressReport->getFirstMedia('questionnaire_pkm'); @endphp
+                            <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
+                                <small class="text-success text-truncate"><x-lucide-check class="icon icon-sm" /> {{ $media->name }}</small>
+                                <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
+                            </div>
+                        @endif
+                    </div>
+
+                    {{-- Lampiran 9 --}}
+                    <div class="col-md-6">
+                        <label class="form-label mb-1">Lampiran 9: Daftar Hadir Tim PKM (Dosen & Mhs) (PDF)</label>
+                        <input type="file" wire:model="teamAttendanceFile" class="form-control form-control-sm" accept=".pdf" @disabled(!$canEdit) />
+                        @if ($progressReport && $progressReport->hasMedia('team_attendance_list'))
+                            @php $media = $progressReport->getFirstMedia('team_attendance_list'); @endphp
+                            <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
+                                <small class="text-success text-truncate"><x-lucide-check class="icon icon-sm" /> {{ $media->name }}</small>
+                                <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
+                            </div>
+                        @endif
+                    </div>
+
+                    {{-- Lampiran 10 --}}
+                    <div class="col-md-6">
+                        <label class="form-label mb-1">Lampiran 10: Daftar Hadir Peserta PKM (PDF)</label>
+                        <input type="file" wire:model="participantAttendanceFile" class="form-control form-control-sm" accept=".pdf" @disabled(!$canEdit) />
+                        @if ($progressReport && $progressReport->hasMedia('participant_attendance_list'))
+                            @php $media = $progressReport->getFirstMedia('participant_attendance_list'); @endphp
+                            <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
+                                <small class="text-success text-truncate"><x-lucide-check class="icon icon-sm" /> {{ $media->name }}</small>
+                                <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
+                            </div>
+                        @endif
+                    </div>
+
+                    {{-- Lampiran 11 --}}
+                    <div class="col-md-6">
+                        <label class="form-label mb-1">Lampiran 11: Materi Kegiatan PKM (PDF)</label>
+                        <input type="file" wire:model="trainingMaterialFile" class="form-control form-control-sm" accept=".pdf" @disabled(!$canEdit) />
+                        @if ($progressReport && $progressReport->hasMedia('training_material_pkm'))
+                            @php $media = $progressReport->getFirstMedia('training_material_pkm'); @endphp
+                            <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
+                                <small class="text-success text-truncate"><x-lucide-check class="icon icon-sm" /> {{ $media->name }}</small>
+                                <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
+                            </div>
+                        @endif
+                    </div>
+
+                    {{-- Lampiran 12 --}}
+                    <div class="col-md-6">
+                        <label class="form-label mb-1">Lampiran 12: Foto Kegiatan PKM (Bisa Banyak File PDF)</label>
+                        <input type="file" wire:model="activityPhotosFiles" multiple class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png" @disabled(!$canEdit) />
+                        @if ($progressReport && $progressReport->hasMedia('activity_photos_pkm'))
+                            <div class="mt-1 p-1 bg-light rounded">
+                                <small class="text-success d-block mb-1"><x-lucide-check class="icon icon-sm" /> {{ $progressReport->getMedia('activity_photos_pkm')->count() }} Foto/Berkas tersimpan:</small>
+                                <div class="d-flex flex-wrap gap-1">
+                                    @foreach($progressReport->getMedia('activity_photos_pkm') as $photo)
+                                        <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $photo]) }}" target="_blank" class="badge bg-blue-lt text-decoration-none">
+                                            {{ \Illuminate\Support\Str::limit($photo->name, 15) }}
+                                        </a>
+                                    @endforeach
                                 </div>
                             </div>
-                        </div>
-                    @endif
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
-    @endif
 
     <!-- Luaran Wajib -->
     @if ($isFinalReportDraft)
@@ -1158,10 +1505,12 @@
     @teleport('body')
     @php
         $modalAdditionalTitle = 'Luaran Tambahan';
+        $currentAdditionalOutputGroup = '';
         if ($form->editingAdditionalId) {
             $currentOutput = $proposal->outputs->find($form->editingAdditionalId);
             if ($currentOutput) {
                 $modalAdditionalTitle .= ' - ' . $currentOutput->type;
+                $currentAdditionalOutputGroup = strtolower($currentOutput->group ?? '');
             }
         }
     @endphp
@@ -1191,170 +1540,11 @@
             @endif
 
             @if ($form->editingAdditionalId)
-                <div class="row g-3">
-                    <!-- Status -->
-                    <div class="col-md-12">
-                        <label class="form-label required">Status</label>
-                        <select wire:model="form.additionalOutputs.{{ $form->editingAdditionalId }}.status"
-                            class="form-select" @disabled(!$canEdit)>
-                            <option value="">Pilih Status</option>
-                            <option value="draft">Draft</option>
-                            <option value="submitted">Submitted</option>
-                            <option value="under_review">Under Review</option>
-                            <option value="accepted">Accepted</option>
-                            <option value="published">Published</option>
-                            <option value="rejected">Rejected</option>
-                        </select>
-                        @error("form.additionalOutputs.{$form->editingAdditionalId}.status")
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <!-- Book Title -->
-                    <div class="col-md-12">
-                        <label class="form-label required">Judul Buku</label>
-                        <input type="text" wire:model="form.additionalOutputs.{{ $form->editingAdditionalId }}.book_title"
-                            class="form-control" placeholder="Masukkan judul buku" @disabled(!$canEdit) />
-                        @error("form.additionalOutputs.{$form->editingAdditionalId}.book_title")
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <!-- Publisher Name -->
-                    <div class="col-md-6">
-                        <label class="form-label required">Nama Penerbit</label>
-                        <input type="text"
-                            wire:model="form.additionalOutputs.{{ $form->editingAdditionalId }}.publisher_name"
-                            class="form-control" placeholder="Masukkan nama penerbit" @disabled(!$canEdit) />
-                        @error("form.additionalOutputs.{$form->editingAdditionalId}.publisher_name")
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <!-- ISBN -->
-                    <div class="col-md-6">
-                        <label class="form-label">ISBN</label>
-                        <input type="text" wire:model="form.additionalOutputs.{{ $form->editingAdditionalId }}.isbn"
-                            class="form-control" placeholder="978-xxx-xxx-xxx-x" @disabled(!$canEdit) />
-                        @error("form.additionalOutputs.{$form->editingAdditionalId}.isbn")
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <!-- Publication Year -->
-                    <div class="col-md-6">
-                        <label class="form-label">Tahun Terbit</label>
-                        <input type="number"
-                            wire:model="form.additionalOutputs.{{ $form->editingAdditionalId }}.publication_year"
-                            class="form-control" min="2000" max="2030" @disabled(!$canEdit) />
-                        @error("form.additionalOutputs.{$form->editingAdditionalId}.publication_year")
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <!-- Total Pages -->
-                    <div class="col-md-6">
-                        <label class="form-label">Jumlah Halaman</label>
-                        <input type="number"
-                            wire:model="form.additionalOutputs.{{ $form->editingAdditionalId }}.total_pages"
-                            class="form-control" placeholder="100" @disabled(!$canEdit) />
-                        @error("form.additionalOutputs.{$form->editingAdditionalId}.total_pages")
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <!-- Publisher URL -->
-                    <div class="col-md-6">
-                        <label class="form-label">URL Web Penerbit</label>
-                        <input type="url" wire:model="form.additionalOutputs.{{ $form->editingAdditionalId }}.publisher_url"
-                            class="form-control" placeholder="https://" @disabled(!$canEdit) />
-                        @error("form.additionalOutputs.{$form->editingAdditionalId}.publisher_url")
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <!-- Book URL -->
-                    <div class="col-md-6">
-                        <label class="form-label">URL Buku</label>
-                        <input type="url" wire:model="form.additionalOutputs.{{ $form->editingAdditionalId }}.book_url"
-                            class="form-control" placeholder="https://" @disabled(!$canEdit) />
-                        @error("form.additionalOutputs.{$form->editingAdditionalId}.book_url")
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <!-- Document File -->
-                    <div class="col-md-6">
-                        <label class="form-label">Dokumen Buku/Draft</label>
-                        <input type="file" wire:model="tempAdditionalFiles.{{ $form->editingAdditionalId }}"
-                            class="form-control" accept=".pdf" @disabled(!$canEdit) />
-                        @error("tempAdditionalFiles.{$form->editingAdditionalId}")
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                        <div wire:loading wire:target="tempAdditionalFiles.{{ $form->editingAdditionalId }}">
-                            <small class="text-muted">
-                                <span class="spinner-border spinner-border-sm me-2"></span>
-                                Uploading...
-                            </small>
-                        </div>
-                        @if ($additionalOutput = $this->additionalOutput)
-                            @if ($media = $additionalOutput->getFirstMedia('book_document'))
-                                <div class="bg-body-tertiary mt-2 rounded border p-2">
-                                    <div class="d-flex align-items-center">
-                                        <x-lucide-file-text class="text-primary icon me-2" />
-                                        <div class="flex-fill">
-                                            <small class="text-muted">File yang sudah diunggah:</small><br>
-                                            <strong>{{ $media->name }}</strong>
-                                            <small class="text-muted">({{ number_format($media->size / 1024, 2) }}
-                                                KB)</small>
-                                        </div>
-                                        <a data-navigate-ignore="true"
-                                            href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                                            target="_blank" class="btn btn-sm btn-primary">
-                                            <x-lucide-download class="icon" /> Download
-                                        </a>
-                                    </div>
-                                </div>
-                            @endif
-                        @endif
-                    </div>
-
-                    <!-- Publication Certificate -->
-                    <div class="col-md-6">
-                        <label class="form-label">Surat Keterangan Terbit</label>
-                        <input type="file" wire:model="tempAdditionalCerts.{{ $form->editingAdditionalId }}"
-                            class="form-control" accept=".pdf" @disabled(!$canEdit) />
-                        @error("tempAdditionalCerts.{$form->editingAdditionalId}")
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                        <div wire:loading wire:target="tempAdditionalCerts.{{ $form->editingAdditionalId }}">
-                            <small class="text-muted">
-                                <span class="spinner-border spinner-border-sm me-2"></span>
-                                Uploading...
-                            </small>
-                        </div>
-                        @if ($additionalOutput = $this->additionalOutput)
-                            @if ($media = $additionalOutput->getFirstMedia('publication_certificate'))
-                                <div class="bg-body-tertiary mt-2 rounded border p-2">
-                                    <div class="d-flex align-items-center">
-                                        <x-lucide-file-text class="text-primary icon me-2" />
-                                        <div class="flex-fill">
-                                            <small class="text-muted">File yang sudah diunggah:</small><br>
-                                            <strong>{{ $media->name }}</strong>
-                                            <small class="text-muted">({{ number_format($media->size / 1024, 2) }}
-                                                KB)</small>
-                                        </div>
-                                        <a data-navigate-ignore="true"
-                                            href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                                            target="_blank" class="btn btn-sm btn-primary">
-                                            <x-lucide-download class="icon" /> Download
-                                        </a>
-                                    </div>
-                                </div>
-                            @endif
-                        @endif
-                    </div>
-                </div>
+                @include('livewire.partials.additional-output-form', [
+                    'outputId'        => $form->editingAdditionalId,
+                    'outputGroup'     => $currentAdditionalOutputGroup,
+                    'additionalOutput'=> $this->additionalOutput,
+                ])
             @else
                 <p class="text-muted">Tidak ada data yang sedang diedit</p>
             @endif

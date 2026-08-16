@@ -58,6 +58,46 @@
         <x-tabler.alert />
     </div>
 
+    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+    @if(auth()->user()->activeHasAnyRole(['admin lppm', 'admin lppm saintek', 'admin lppm dekabita', 'kepala lppm', 'superadmin']))
+        <div class="col-md-12 mb-3">
+            <div class="card border-info shadow-sm">
+                <div class="card-header bg-info-lt d-flex justify-content-between align-items-center py-2">
+                    <h3 class="card-title text-info mb-0 fs-4">
+                        <x-lucide-file-text class="icon me-2" />
+                        Nomor Kontrak Penelitian (Admin LPPM)
+                    </h3>
+                    @if($proposal->contract_number)
+                        <span class="badge bg-green text-white">Kontrak Terdaftar</span>
+                    @else
+                        <span class="badge bg-secondary text-white">Belum Diterbitkan</span>
+                    @endif
+                </div>
+                <div class="card-body py-3">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-6">
+                            <label class="form-label mb-1 fs-5">Nomor Kontrak Perjanjian Penugasan</label>
+                            <input type="text" wire:model="contractNumber" class="form-control" placeholder="Contoh: 012/ITSNU/LPPM/KTR-L/VIII/2026" />
+                            @error('contractNumber') <small class="text-danger">{{ $message }}</small> @enderror
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label mb-1 fs-5">Tanggal Kontrak</label>
+                            <input type="date" wire:model="contractDate" class="form-control" />
+                            @error('contractDate') <small class="text-danger">{{ $message }}</small> @enderror
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" wire:click="saveContract" wire:loading.attr="disabled" class="btn btn-info w-100">
+                                <span wire:loading.remove wire:target="saveContract"><x-lucide-save class="icon me-1" /> Simpan</span>
+                                <span wire:loading wire:target="saveContract"><span class="spinner-border spinner-border-sm"></span></span>
+                            </button>
+                        </div>
+                    </div>
+                    <small class="text-muted mt-2 d-block">Nomor kontrak ini akan otomatis muncul pada Cover Laporan Penelitian dan Cover Laporan Keuangan.</small>
+                </div>
+            </div>
+        </div>
+    @endif
+
     {{-- Schedule Closed Banner: only visible to submitter when draft & window is closed --}}
     @if ($proposal->status === \App\Enums\ProposalStatus::DRAFT
         && $proposal->submitter_id === auth()->id()

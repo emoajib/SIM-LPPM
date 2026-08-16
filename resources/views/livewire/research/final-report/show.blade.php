@@ -19,7 +19,13 @@
                     href="{{ route('reports.export-pdf', ['proposal' => $proposal, 'type' => 'final', 'download' => 'true']) }}"
                     class="btn btn-primary shadow-sm">
                     <x-lucide-download class="icon me-2" />
-                    Unduh Laporan
+                    Unduh Laporan Akhir
+                </a>
+                <a data-navigate-ignore="true"
+                    href="{{ route('financial-reports.export-pdf', ['proposal' => $proposal, 'download' => 'true']) }}"
+                    class="btn btn-outline-success shadow-sm">
+                    <x-lucide-file-spreadsheet class="icon me-2" />
+                    Unduh Laporan Keuangan
                 </a>
             @endif
         </div>
@@ -36,6 +42,45 @@
     }
 ">
         <x-tabler.alert />
+
+        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+        <!-- Admin LPPM: Kelola Nomor Kontrak -->
+        @if(auth()->user()->activeHasAnyRole(['admin lppm', 'admin lppm saintek', 'admin lppm dekabita', 'kepala lppm', 'superadmin']))
+            <div class="card mb-3 border-info shadow-sm">
+                <div class="card-header bg-info-lt d-flex justify-content-between align-items-center py-2">
+                    <h3 class="card-title text-info mb-0 fs-4">
+                        <x-lucide-file-text class="icon me-2" />
+                        Nomor Kontrak Penelitian (Admin LPPM)
+                    </h3>
+                    @if($proposal->contract_number)
+                        <span class="badge bg-green text-white">Kontrak Terdaftar</span>
+                    @else
+                        <span class="badge bg-secondary text-white">Belum Diterbitkan</span>
+                    @endif
+                </div>
+                <div class="card-body py-3">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-6">
+                            <label class="form-label mb-1 fs-5">Nomor Kontrak Perjanjian Penugasan</label>
+                            <input type="text" wire:model="contractNumber" class="form-control" placeholder="Contoh: 012/ITSNU/LPPM/KTR-L/VIII/2026" />
+                            @error('contractNumber') <small class="text-danger">{{ $message }}</small> @enderror
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label mb-1 fs-5">Tanggal Kontrak</label>
+                            <input type="date" wire:model="contractDate" class="form-control" />
+                            @error('contractDate') <small class="text-danger">{{ $message }}</small> @enderror
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" wire:click="saveContract" wire:loading.attr="disabled" class="btn btn-info w-100">
+                                <span wire:loading.remove wire:target="saveContract"><x-lucide-save class="icon me-1" /> Simpan</span>
+                                <span wire:loading wire:target="saveContract"><span class="spinner-border spinner-border-sm"></span></span>
+                            </button>
+                        </div>
+                    </div>
+                    <small class="text-muted mt-2 d-block">Nomor kontrak ini akan otomatis muncul pada Cover Laporan Penelitian dan Cover Laporan Keuangan.</small>
+                </div>
+            </div>
+        @endif
 
         <!-- Approval Section -->
         @if ($progressReport)
@@ -110,16 +155,200 @@
                             Silakan periksa dan lengkapi form berikut untuk mengajukan Laporan Akhir.
                         </p>
                         <ol class="mb-0 ps-3">
-                            <li>Lengkapi <strong>Ringkasan & Kata Kunci</strong> serta upload dokumen laporan akhir.
-                            </li>
+                            <li>Lengkapi <strong>Ringkasan & Kata Kunci</strong> serta upload dokumen laporan akhir.</li>
                             <li>Klik tombol <strong>Simpan Draft</strong> untuk menyimpan data sementara.</li>
-                            <li>Setelah draft tersimpan, kolom upload <strong>Luaran Wajib</strong> dan <strong>Luaran
-                                    Tambahan</strong> akan muncul.</li>
+                            <li>Setelah draft tersimpan, kolom upload <strong>Luaran Wajib</strong> dan <strong>Luaran Tambahan</strong> akan muncul.</li>
                             <li>Upload bukti luaran yang diperlukan pada bagian tersebut.</li>
-                            <li>Jika semua data sudah lengkap, klik <strong>Ajukan Laporan Akhir</strong> untuk mengirim
-                                laporan.</li>
+                            <li>Jika semua data sudah lengkap, klik <strong>Ajukan Laporan Akhir</strong> untuk mengirim laporan.</li>
                         </ol>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+        <!-- Checklist Kelengkapan Dokumen & Lampiran Laporan Akhir Penelitian -->
+        @php
+            $hasSubstance = $progressReport && $progressReport->hasMedia('substance_file');
+            $hasBudget = $proposal->budgetItems->count() > 0;
+            $hasTeam = $proposal->teamMembers->count() > 0;
+            $hasSchedule = true;
+            $hasOutputs = $progressReport && ($progressReport->mandatoryOutputs->some(fn($o) => $o->hasMedia('journal_article') || $o->hasMedia('book_document') || $o->hasMedia('publication_certificate') || $o->hasMedia('output_file')) || $progressReport->additionalOutputs->some(fn($o) => $o->hasMedia('journal_article') || $o->hasMedia('book_document') || $o->hasMedia('publication_certificate') || $o->hasMedia('output_file')));
+            $hasTeachingMaterial = $progressReport && $progressReport->hasMedia('teaching_material_file');
+            $hasLogbook = $proposal->dailyNotes->count() > 0;
+
+            $itemsCompleted = collect([$hasSubstance, $hasBudget, $hasTeam, $hasSchedule, $hasOutputs, $hasTeachingMaterial, $hasLogbook])->filter()->count();
+            $totalChecklistItems = 7;
+            $completionPct = round(($itemsCompleted / $totalChecklistItems) * 100);
+        @endphp
+
+        <div class="card mb-3 shadow-sm border-primary">
+            <div class="card-header bg-primary-lt d-flex justify-content-between align-items-center py-2">
+                <h3 class="card-title text-primary mb-0 fs-4">
+                    <x-lucide-check-square class="icon me-2" />
+                    Checklist Kelengkapan Substansi & Lampiran Laporan Akhir Penelitian
+                </h3>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge {{ $itemsCompleted === $totalChecklistItems ? 'bg-success' : 'bg-warning' }} text-white">
+                        {{ $itemsCompleted }}/{{ $totalChecklistItems }} Lengkap ({{ $completionPct }}%)
+                    </span>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-vcenter table-hover table-striped mb-0">
+                        <thead>
+                            <tr>
+                                <th class="w-1 text-center">No</th>
+                                <th>Dokumen / Lampiran</th>
+                                <th>Mekanisme / Sumber</th>
+                                <th class="w-1 text-center">Status</th>
+                                <th>Keterangan / Berkas</th>
+                                <th class="w-1 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Item 0: Substansi -->
+                            <tr>
+                                <td class="text-center">#</td>
+                                <td><strong>File Substansi Laporan Akhir (PDF)</strong></td>
+                                <td><span class="badge bg-secondary-lt">Upload PDF</span></td>
+                                <td class="text-center">
+                                    @if($hasSubstance)
+                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Lengkap</span>
+                                    @else
+                                        <span class="badge bg-danger"><x-lucide-alert-circle class="icon icon-inline me-1" /> Belum Diunggah</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($hasSubstance)
+                                        @php $subMedia = $progressReport->getFirstMedia('substance_file'); @endphp
+                                        <span class="text-muted small">{{ $subMedia->name }} ({{ number_format($subMedia->size / 1024, 1) }} KB)</span>
+                                    @else
+                                        <span class="text-muted small italic">Upload naskah laporan akhir lengkap (Bab 1 s.d. Kesimpulan)</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if($hasSubstance && $subMedia)
+                                        <a href="{{ route('media.download', $subMedia) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh Berkas Substansi">
+                                            <x-lucide-download class="icon" />
+                                        </a>
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                            </tr>
+                            <!-- Item 1: Lampiran 1 -->
+                            <tr>
+                                <td class="text-center">1</td>
+                                <td><strong>Lampiran 1. Alokasi Penggunaan Dana</strong></td>
+                                <td><span class="badge bg-blue-lt">Otomatis Sistem</span></td>
+                                <td class="text-center">
+                                    @if($hasBudget)
+                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Siap Cetak</span>
+                                    @else
+                                        <span class="badge bg-warning"><x-lucide-alert-triangle class="icon icon-inline me-1" /> Kosong</span>
+                                    @endif
+                                </td>
+                                <td><small class="text-muted">Tabel rekapitulasi realisasi anggaran otomatis digenerate ke PDF</small></td>
+                                <td class="text-center">
+                                    <span class="badge bg-light text-muted">Auto</span>
+                                </td>
+                            </tr>
+                            <!-- Item 2: Lampiran 2 -->
+                            <tr>
+                                <td class="text-center">2</td>
+                                <td><strong>Lampiran 2. Biodata Tim Peneliti (Dosen & Mahasiswa)</strong></td>
+                                <td><span class="badge bg-blue-lt">Otomatis Sistem</span></td>
+                                <td class="text-center">
+                                    <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Siap Cetak</span>
+                                </td>
+                                <td><small class="text-muted">{{ $proposal->teamMembers->count() }} Anggota terdaftar pada data tim usulan</small></td>
+                                <td class="text-center">
+                                    <span class="badge bg-light text-muted">Auto</span>
+                                </td>
+                            </tr>
+                            <!-- Item 3: Lampiran 3 -->
+                            <tr>
+                                <td class="text-center">3</td>
+                                <td><strong>Lampiran 3. Jadwal Penelitian</strong></td>
+                                <td><span class="badge bg-blue-lt">Otomatis Sistem</span></td>
+                                <td class="text-center">
+                                    <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Siap Cetak</span>
+                                </td>
+                                <td><small class="text-muted">Jadwal pelaksanaan tahapan penelitian terintegrasi</small></td>
+                                <td class="text-center">
+                                    <span class="badge bg-light text-muted">Auto</span>
+                                </td>
+                            </tr>
+                            <!-- Item 4: Lampiran 4 -->
+                            <tr>
+                                <td class="text-center">4</td>
+                                <td><strong>Lampiran 4. Publikasi (Jurnal / Buku Luaran)</strong></td>
+                                <td><span class="badge bg-secondary-lt">Upload PDF</span></td>
+                                <td class="text-center">
+                                    @if($hasOutputs)
+                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Lengkap</span>
+                                    @else
+                                        <span class="badge bg-warning"><x-lucide-alert-triangle class="icon icon-inline me-1" /> Belum Diisi</span>
+                                    @endif
+                                </td>
+                                <td><small class="text-muted">Naskah artikel publikasi / draft buku luaran penelitian</small></td>
+                                <td class="text-center">
+                                    <span class="badge bg-light text-muted">Di Bagian Bawah</span>
+                                </td>
+                            </tr>
+                            <!-- Item 5: Lampiran 5 -->
+                            <tr>
+                                <td class="text-center">5</td>
+                                <td><strong>Lampiran 5. RPS atau Bahan Ajar</strong></td>
+                                <td><span class="badge bg-secondary-lt">Upload PDF/DOCX</span></td>
+                                <td class="text-center">
+                                    @if($hasTeachingMaterial)
+                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Lengkap</span>
+                                    @else
+                                        <span class="badge bg-warning"><x-lucide-alert-triangle class="icon icon-inline me-1" /> Belum Diunggah</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($hasTeachingMaterial)
+                                        @php $tmMedia = $progressReport->getFirstMedia('teaching_material_file'); @endphp
+                                        <span class="text-muted small">{{ $tmMedia->name }} ({{ number_format($tmMedia->size / 1024, 1) }} KB)</span>
+                                    @else
+                                        <span class="text-muted small italic">Upload berkas integrasi pembelajaran RPS / Bahan Ajar</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if($hasTeachingMaterial && $tmMedia)
+                                        <a href="{{ route('media.download', $tmMedia) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                            <x-lucide-download class="icon" />
+                                        </a>
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                            </tr>
+                            <!-- Item 6: Lampiran 6 -->
+                            <tr>
+                                <td class="text-center">6</td>
+                                <td><strong>Lampiran 6. Logbook Kegiatan</strong></td>
+                                <td><span class="badge bg-blue-lt">Tabel Catatan Harian</span></td>
+                                <td class="text-center">
+                                    @if($hasLogbook)
+                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> {{ $proposal->dailyNotes->count() }} Catatan</span>
+                                    @else
+                                        <span class="badge bg-warning"><x-lucide-alert-triangle class="icon icon-inline me-1" /> Belum Terisi</span>
+                                    @endif
+                                </td>
+                                <td><small class="text-muted">Catatan aktivitas harian penelitian (tanpa nota)</small></td>
+                                <td class="text-center">
+                                    <a href="{{ route('research.daily-note.show', $proposal) }}" target="_blank" class="btn btn-sm btn-outline-info" title="Buka Catatan Harian">
+                                        <x-lucide-external-link class="icon" />
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -267,26 +496,41 @@
                     @endif
                 </div>
 
+                {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
                 <div class="mb-3">
-                    <label class="form-label">File Realisasi Keterlibatan (PDF/DOCX)</label>
-                    <input type="file" wire:model="realizationFile"
-                        class="form-control @error('realizationFile') is-invalid @enderror" accept=".pdf,.docx"
+                    <label class="form-label">Lampiran 5: RPS atau Bahan Ajar (PDF/DOCX)</label>
+                    <input type="file" wire:model="teachingMaterialFile"
+                        class="form-control @error('teachingMaterialFile') is-invalid @enderror" accept=".pdf,.docx"
                         @disabled(!$canEdit) />
-                    @error('realizationFile')
+                    @error('teachingMaterialFile')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                    <small class="form-hint">Maksimal 10MB, format PDF atau DOCX</small>
+                    <small class="form-hint">Maksimal 10MB, format PDF atau DOCX (Rencana Pembelajaran Semester atau Dokumen Bahan Ajar)</small>
 
-                    <div wire:loading wire:target="realizationFile">
+                    <div wire:loading wire:target="teachingMaterialFile">
                         <small class="text-muted">
                             <span class="spinner-border spinner-border-sm me-2"></span>
                             Uploading...
                         </small>
                     </div>
 
-                    @if ($progressReport && $progressReport->hasMedia('realization_file'))
+                    @if ($teachingMaterialFile instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile)
+                        <div class="alert alert-info mb-0 mt-2">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <x-lucide-file-warning class="text-info icon me-2" />
+                                    <strong>{{ $teachingMaterialFile->getClientOriginalName() }}</strong>
+                                    <small class="text-muted ms-2">
+                                        ({{ number_format($teachingMaterialFile->getSize() / 1024, 1) }} KB)
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                    @if ($progressReport && $progressReport->hasMedia('teaching_material_file'))
                         @php
-                            $media = $progressReport->getFirstMedia('realization_file');
+                            $media = $progressReport->getFirstMedia('teaching_material_file');
                         @endphp
                         <div class="alert alert-success mb-0 mt-2">
                             <div class="d-flex align-items-center justify-content-between">
@@ -301,18 +545,12 @@
                                         target="_blank" class="btn btn-sm btn-primary">
                                         <x-lucide-eye class="icon" /> Lihat
                                     </a>
-                                    @if ($canEdit)
-                                        <button type="button" wire:click="removeRealizationFile"
-                                            class="btn btn-sm btn-danger" wire:confirm="Yakin ingin menghapus file ini?">
-                                            <x-lucide-trash-2 class="icon" /> Hapus
-                                        </button>
-                                    @endif
                                 </div>
                             </div>
                         </div>
                     @endif
                 </div>
-                
+
                 @if ($this->reportApprovalMode === 'upload')
                     <div class="mb-3 border-top pt-3 mt-3">
                         <div class="d-flex justify-content-between align-items-center mb-2">
@@ -386,22 +624,19 @@
                     @error('partnerChanges')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                    <small class="form-hint">Opsional: Jelaskan jika ada perubahan pada mitra
-                        (penambahan, penggantian, atau perubahan peran)</small>
+                    <small class="form-hint">Opsional: Jelaskan jika ada perubahan pada mitra (penambahan, penggantian, atau perubahan peran)</small>
                 </div>
 
                 <!-- Cooperation Proof File -->
                 <div class="mb-3">
-                    <label class="form-label" for="cooperationProofFile">Dokumen Bukti Kerjasama
-                        Mitra</label>
+                    <label class="form-label" for="cooperationProofFile">Dokumen Bukti Kerjasama Mitra (Opsional jika ada PKS)</label>
                     <input type="file" wire:model="cooperationProofFile"
                         class="form-control @error('cooperationProofFile') is-invalid @enderror"
-                        accept=".pdf,.jpg,.jpeg,.png" @disabled(!$canEdit) />
+                        accept=".pdf" @disabled(!$canEdit) />
                     @error('cooperationProofFile')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                    <small class="form-hint">Maksimal 10MB, format PDF atau Gambar
-                        (JPG/JPEG/PNG)</small>
+                    <small class="form-hint">Maksimal 10MB, format PDF</small>
 
                     <div wire:loading wire:target="cooperationProofFile">
                         <small class="text-muted">
@@ -443,16 +678,14 @@
 
                 <!-- Implementation Proof File -->
                 <div class="mb-3">
-                    <label class="form-label" for="implementationProofFile">Dokumen Bukti
-                        Implementasi Mitra</label>
+                    <label class="form-label" for="implementationProofFile">Dokumen Bukti Implementasi Mitra (Opsional jika ada IA)</label>
                     <input type="file" wire:model="implementationProofFile"
                         class="form-control @error('implementationProofFile') is-invalid @enderror"
-                        accept=".pdf,.jpg,.jpeg,.png" @disabled(!$canEdit) />
+                        accept=".pdf" @disabled(!$canEdit) />
                     @error('implementationProofFile')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                    <small class="form-hint">Maksimal 10MB, format PDF atau Gambar
-                        (JPG/JPEG/PNG)</small>
+                    <small class="form-hint">Maksimal 10MB, format PDF</small>
 
                     <div wire:loading wire:target="implementationProofFile">
                         <small class="text-muted">
@@ -1112,10 +1345,12 @@
     @teleport('body')
     @php
         $modalAdditionalTitle = 'Luaran Tambahan';
+        $currentAdditionalOutputGroup = '';
         if ($form->editingAdditionalId) {
             $currentOutput = $proposal->outputs->find($form->editingAdditionalId);
             if ($currentOutput) {
                 $modalAdditionalTitle .= ' - ' . $currentOutput->type;
+                $currentAdditionalOutputGroup = strtolower($currentOutput->group ?? '');
             }
         }
     @endphp
@@ -1145,170 +1380,11 @@
             @endif
 
             @if ($form->editingAdditionalId)
-                <div class="row g-3">
-                    <!-- Status -->
-                    <div class="col-md-12">
-                        <label class="form-label required">Status</label>
-                        <select wire:model="form.additionalOutputs.{{ $form->editingAdditionalId }}.status"
-                            class="form-select" @disabled(!$canEdit)>
-                            <option value="">Pilih Status</option>
-                            <option value="draft">Draft</option>
-                            <option value="submitted">Submitted</option>
-                            <option value="under_review">Under Review</option>
-                            <option value="accepted">Accepted</option>
-                            <option value="published">Published</option>
-                            <option value="rejected">Rejected</option>
-                        </select>
-                        @error("form.additionalOutputs.{$form->editingAdditionalId}.status")
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <!-- Book Title -->
-                    <div class="col-md-12">
-                        <label class="form-label required">Judul Buku</label>
-                        <input type="text" wire:model="form.additionalOutputs.{{ $form->editingAdditionalId }}.book_title"
-                            class="form-control" placeholder="Masukkan judul buku" @disabled(!$canEdit) />
-                        @error("form.additionalOutputs.{$form->editingAdditionalId}.book_title")
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <!-- Publisher Name -->
-                    <div class="col-md-6">
-                        <label class="form-label required">Nama Penerbit</label>
-                        <input type="text"
-                            wire:model="form.additionalOutputs.{{ $form->editingAdditionalId }}.publisher_name"
-                            class="form-control" placeholder="Masukkan nama penerbit" @disabled(!$canEdit) />
-                        @error("form.additionalOutputs.{$form->editingAdditionalId}.publisher_name")
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <!-- ISBN -->
-                    <div class="col-md-6">
-                        <label class="form-label">ISBN</label>
-                        <input type="text" wire:model="form.additionalOutputs.{{ $form->editingAdditionalId }}.isbn"
-                            class="form-control" placeholder="978-xxx-xxx-xxx-x" @disabled(!$canEdit) />
-                        @error("form.additionalOutputs.{$form->editingAdditionalId}.isbn")
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <!-- Publication Year -->
-                    <div class="col-md-6">
-                        <label class="form-label">Tahun Terbit</label>
-                        <input type="number"
-                            wire:model="form.additionalOutputs.{{ $form->editingAdditionalId }}.publication_year"
-                            class="form-control" min="2000" max="2030" @disabled(!$canEdit) />
-                        @error("form.additionalOutputs.{$form->editingAdditionalId}.publication_year")
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <!-- Total Pages -->
-                    <div class="col-md-6">
-                        <label class="form-label">Jumlah Halaman</label>
-                        <input type="number"
-                            wire:model="form.additionalOutputs.{{ $form->editingAdditionalId }}.total_pages"
-                            class="form-control" placeholder="100" @disabled(!$canEdit) />
-                        @error("form.additionalOutputs.{$form->editingAdditionalId}.total_pages")
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <!-- Publisher URL -->
-                    <div class="col-md-6">
-                        <label class="form-label">URL Web Penerbit</label>
-                        <input type="url" wire:model="form.additionalOutputs.{{ $form->editingAdditionalId }}.publisher_url"
-                            class="form-control" placeholder="https://" @disabled(!$canEdit) />
-                        @error("form.additionalOutputs.{$form->editingAdditionalId}.publisher_url")
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <!-- Book URL -->
-                    <div class="col-md-6">
-                        <label class="form-label">URL Buku</label>
-                        <input type="url" wire:model="form.additionalOutputs.{{ $form->editingAdditionalId }}.book_url"
-                            class="form-control" placeholder="https://" @disabled(!$canEdit) />
-                        @error("form.additionalOutputs.{$form->editingAdditionalId}.book_url")
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <!-- Document File -->
-                    <div class="col-md-6">
-                        <label class="form-label">Dokumen Buku/Draft</label>
-                        <input type="file" wire:model="tempAdditionalFiles.{{ $form->editingAdditionalId }}"
-                            class="form-control" accept=".pdf" @disabled(!$canEdit) />
-                        @error("tempAdditionalFiles.{$form->editingAdditionalId}")
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                        <div wire:loading wire:target="tempAdditionalFiles.{{ $form->editingAdditionalId }}">
-                            <small class="text-muted">
-                                <span class="spinner-border spinner-border-sm me-2"></span>
-                                Uploading...
-                            </small>
-                        </div>
-                        @if ($additionalOutput = $this->additionalOutput)
-                            @if ($media = $additionalOutput->getFirstMedia('book_document'))
-                                <div class="bg-body-tertiary mt-2 rounded border p-2">
-                                    <div class="d-flex align-items-center">
-                                        <x-lucide-file-text class="text-primary icon me-2" />
-                                        <div class="flex-fill">
-                                            <small class="text-muted">File yang sudah diunggah:</small><br>
-                                            <strong>{{ $media->name }}</strong>
-                                            <small class="text-muted">({{ number_format($media->size / 1024, 2) }}
-                                                KB)</small>
-                                        </div>
-                                        <a data-navigate-ignore="true"
-                                            href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                                            target="_blank" class="btn btn-sm btn-primary">
-                                            <x-lucide-download class="icon" /> Download
-                                        </a>
-                                    </div>
-                                </div>
-                            @endif
-                        @endif
-                    </div>
-
-                    <!-- Publication Certificate -->
-                    <div class="col-md-6">
-                        <label class="form-label">Surat Keterangan Terbit</label>
-                        <input type="file" wire:model="tempAdditionalCerts.{{ $form->editingAdditionalId }}"
-                            class="form-control" accept=".pdf" @disabled(!$canEdit) />
-                        @error("tempAdditionalCerts.{$form->editingAdditionalId}")
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                        <div wire:loading wire:target="tempAdditionalCerts.{{ $form->editingAdditionalId }}">
-                            <small class="text-muted">
-                                <span class="spinner-border spinner-border-sm me-2"></span>
-                                Uploading...
-                            </small>
-                        </div>
-                        @if ($additionalOutput = $this->additionalOutput)
-                            @if ($media = $additionalOutput->getFirstMedia('publication_certificate'))
-                                <div class="bg-body-tertiary mt-2 rounded border p-2">
-                                    <div class="d-flex align-items-center">
-                                        <x-lucide-file-text class="text-primary icon me-2" />
-                                        <div class="flex-fill">
-                                            <small class="text-muted">File yang sudah diunggah:</small><br>
-                                            <strong>{{ $media->name }}</strong>
-                                            <small class="text-muted">({{ number_format($media->size / 1024, 2) }}
-                                                KB)</small>
-                                        </div>
-                                        <a data-navigate-ignore="true"
-                                            href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                                            target="_blank" class="btn btn-sm btn-primary">
-                                            <x-lucide-download class="icon" /> Download
-                                        </a>
-                                    </div>
-                                </div>
-                            @endif
-                        @endif
-                    </div>
-                </div>
+                @include('livewire.partials.additional-output-form', [
+                    'outputId'        => $form->editingAdditionalId,
+                    'outputGroup'     => $currentAdditionalOutputGroup,
+                    'additionalOutput'=> $this->additionalOutput,
+                ])
             @else
                 <p class="text-muted">Tidak ada data yang sedang diedit</p>
             @endif

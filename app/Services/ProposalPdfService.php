@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Enums\ProposalStatus;
 use App\Models\CommunityService;
-use App\Models\DailyNote;
 use App\Models\DocumentSignature;
 use App\Models\Faculty;
 use App\Models\Identity;
@@ -847,6 +846,7 @@ class ProposalPdfService
 
         $pdf = new Fpdi;
 
+        // 1. Add pages from Front Info PDF (Cover, Halaman Pengesahan, Ringkasan, Capaian Luaran)
         $pageCount = $pdf->setSourceFile($tempInfoPath);
         for ($i = 1; $i <= $pageCount; $i++) {
             $templateId = $pdf->importPage($i);
@@ -875,7 +875,7 @@ class ProposalPdfService
             }
         }
 
-        // 2. Add pages from the report's substance file
+        // 2. Add pages from the report's substance file (NASKAH SUBSTANSI LAPORAN AKHIR PDF)
         /** @var ?Media $substanceFile */
         $substanceFile = $report->getFirstMedia('substance_file');
         if ($substanceFile) {
@@ -895,145 +895,242 @@ class ProposalPdfService
             }
         }
 
-        // 3. Add pages from Realisasi Keterlibatan file
-        /** @var ?Media $realizationFile */
-        $realizationFile = $report->getFirstMedia('realization_file');
-        if ($realizationFile) {
-            $realizationPath = $this->getLocalPdfPath($realizationFile);
-            if ($realizationPath !== null && str_contains($realizationFile->mime_type ?? '', 'pdf')) {
-                try {
-                    $realizationPageCount = $pdf->setSourceFile($realizationPath);
-                    for ($i = 1; $i <= $realizationPageCount; $i++) {
-                        $templateId = $pdf->importPage($i);
-                        $size = $pdf->getTemplateSize($templateId);
-                        $pdf->AddPage($size['orientation'], [$size['width'], $size['height']]);
-                        $pdf->useTemplate($templateId);
+        // 3. Render and Add Lampiran 1 (Alokasi Dana), Lampiran 2 (Biodata Tim), Lampiran 3 (Jadwal)
+        $l123DomPdf = Pdf::loadView('pdf.report-appendices', [
+            'proposal' => $proposal,
+            'report' => $report,
+            'pdfConfig' => $pdfConfig,
+            'part' => 'l1_l2_l3',
+        ])
+            ->setPaper(normalize_paper_size($pdfConfig['paper_size'] ?? 'a4'), $pdfConfig['orientation'] ?? 'portrait')
+            ->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => true,
+                'defaultFont' => 'times-roman',
+            ])->output();
+
+        $tempL123Path = tempnam($cacheDir, 'report_l123_');
+        file_put_contents($tempL123Path, $l123DomPdf);
+
+        try {
+            $l123PageCount = $pdf->setSourceFile($tempL123Path);
+            for ($i = 1; $i <= $l123PageCount; $i++) {
+                $templateId = $pdf->importPage($i);
+                $size = $pdf->getTemplateSize($templateId);
+                $pdf->AddPage($size['orientation'], [$size['width'], $size['height']]);
+                $pdf->useTemplate($templateId);
+            }
+        } catch (\Throwable $e) {
+            Log::warning('FPDI Merge Fail (L1-L3 Appendices) for '.$report->id.': '.$e->getMessage());
+        }
+
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // 4. Attachments merging based on Proposal Type
+        if ($proposal->detailable_type === 'App\Models\Research') {
+            // Lampiran 4: Output files (Journal / Publication)
+            $outputModels = $report->mandatoryOutputs->concat($report->additionalOutputs);
+            foreach ($outputModels as $outputRecord) {
+                $collections = ['journal_article', 'book_document', 'publication_certificate', 'output_file'];
+                foreach ($collections as $collection) {
+                    /** @var ?Media $outputMedia */
+                    $outputMedia = $outputRecord->getFirstMedia($collection);
+                    if ($outputMedia) {
+                        $this->mergePdfMedia($pdf, $outputMedia, $report->id, "Research Output - {$collection}");
                     }
-                } catch (\Throwable $e) {
-                    Log::warning('FPDI Merge Fail (Realization File) for '.$report->id.': '.$e->getMessage());
+                }
+            }
+
+            // Lampiran 5: RPS atau Bahan Ajar
+            /** @var ?Media $teachingMaterial */
+            $teachingMaterial = $report->getFirstMedia('teaching_material_file');
+            if ($teachingMaterial) {
+                $this->mergePdfMedia($pdf, $teachingMaterial, $report->id, 'Teaching Material / RPS');
+            }
+        } elseif ($proposal->detailable_type === 'App\Models\CommunityService') {
+            // Lampiran 3: Surat Kesediaan Mitra
+            if ($pAgreement = $report->getFirstMedia('partner_agreement_letter')) {
+                $this->mergePdfMedia($pdf, $pAgreement, $report->id, 'Partner Agreement');
+            }
+            // Lampiran 4: Surat Pernyataan Ketua
+            if ($cStatement = $report->getFirstMedia('chairperson_statement_letter')) {
+                $this->mergePdfMedia($pdf, $cStatement, $report->id, 'Chairperson Statement');
+            }
+            // Lampiran 5: Peta Lokasi Pengabdian
+            if ($locMap = $report->getFirstMedia('service_location_map')) {
+                $this->mergePdfMedia($pdf, $locMap, $report->id, 'Service Location Map');
+            }
+            // Lampiran 6: Berita Acara Pelaksanaan PKM
+            if ($offReport = $report->getFirstMedia('official_report_pkm')) {
+                $this->mergePdfMedia($pdf, $offReport, $report->id, 'Official Report PKM');
+            }
+            // Lampiran 7: Surat Tugas Pelaksanaan PKM
+            if ($assLetter = $report->getFirstMedia('assignment_letter_pkm')) {
+                $this->mergePdfMedia($pdf, $assLetter, $report->id, 'Assignment Letter PKM');
+            }
+            // Lampiran 8: Kuisioner Pengabdian
+            if ($quest = $report->getFirstMedia('questionnaire_pkm')) {
+                $this->mergePdfMedia($pdf, $quest, $report->id, 'Questionnaire PKM');
+            }
+            // Lampiran 9: Daftar Hadir Tim PKM
+            if ($teamAtt = $report->getFirstMedia('team_attendance_list')) {
+                $this->mergePdfMedia($pdf, $teamAtt, $report->id, 'Team Attendance');
+            }
+            // Lampiran 10: Daftar Hadir Peserta PKM
+            if ($partAtt = $report->getFirstMedia('participant_attendance_list')) {
+                $this->mergePdfMedia($pdf, $partAtt, $report->id, 'Participant Attendance');
+            }
+            // Lampiran 11: Materi Kegiatan PKM (or Presentation File)
+            $trainMat = $report->getFirstMedia('training_material_pkm') ?: $report->getFirstMedia('presentation_file');
+            if ($trainMat) {
+                $this->mergePdfMedia($pdf, $trainMat, $report->id, 'Training Material PKM');
+            }
+            // Lampiran 12: Foto Kegiatan PKM
+            foreach ($report->getMedia('activity_photos_pkm') as $photoMedia) {
+                $this->mergePdfMedia($pdf, $photoMedia, $report->id, 'Activity Photo PKM');
+            }
+
+            // Output files (if any)
+            $outputModels = $report->mandatoryOutputs->concat($report->additionalOutputs);
+            foreach ($outputModels as $outputRecord) {
+                $collections = ['journal_article', 'book_document', 'publication_certificate', 'output_file'];
+                foreach ($collections as $collection) {
+                    if ($outputMedia = $outputRecord->getFirstMedia($collection)) {
+                        $this->mergePdfMedia($pdf, $outputMedia, $report->id, "PKM Output - {$collection}");
+                    }
                 }
             }
         }
 
-        // 4. Add pages from Presentation file (Community Service only)
-        if ($proposal->detailable_type === 'App\Models\CommunityService') {
-            /** @var ?Media $presentationFile */
-            $presentationFile = $report->getFirstMedia('presentation_file');
-            if ($presentationFile) {
-                $presentationPath = $this->getLocalPdfPath($presentationFile);
-                if ($presentationPath !== null && str_contains($presentationFile->mime_type ?? '', 'pdf')) {
-                    try {
-                        $presentationPageCount = $pdf->setSourceFile($presentationPath);
-                        for ($i = 1; $i <= $presentationPageCount; $i++) {
-                            $templateId = $pdf->importPage($i);
-                            $size = $pdf->getTemplateSize($templateId);
-                            $pdf->AddPage($size['orientation'], [$size['width'], $size['height']]);
-                            $pdf->useTemplate($templateId);
-                        }
-                    } catch (\Throwable $e) {
-                        Log::warning('FPDI Merge Fail (Presentation File) for '.$report->id.': '.$e->getMessage());
-                    }
-                }
+        // 5. Render and Add Lampiran Logbook (Catatan Harian)
+        $logbookDomPdf = Pdf::loadView('pdf.report-appendices', [
+            'proposal' => $proposal,
+            'report' => $report,
+            'pdfConfig' => $pdfConfig,
+            'part' => 'logbook',
+        ])
+            ->setPaper(normalize_paper_size($pdfConfig['paper_size'] ?? 'a4'), $pdfConfig['orientation'] ?? 'portrait')
+            ->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => true,
+                'defaultFont' => 'times-roman',
+            ])->output();
+
+        $tempLogbookPath = tempnam($cacheDir, 'report_logbook_');
+        file_put_contents($tempLogbookPath, $logbookDomPdf);
+
+        try {
+            $logbookPageCount = $pdf->setSourceFile($tempLogbookPath);
+            for ($i = 1; $i <= $logbookPageCount; $i++) {
+                $templateId = $pdf->importPage($i);
+                $size = $pdf->getTemplateSize($templateId);
+                $pdf->AddPage($size['orientation'], [$size['width'], $size['height']]);
+                $pdf->useTemplate($templateId);
             }
+        } catch (\Throwable $e) {
+            Log::warning('FPDI Merge Fail (Logbook Appendix) for '.$report->id.': '.$e->getMessage());
         }
 
-        // Add pages from output files (if they are PDFs)
-        $outputModels = $report->mandatoryOutputs->concat($report->additionalOutputs);
-        foreach ($outputModels as $outputRecord) {
-            // Check all possible PDF-containing collections for outputs
-            $collections = ['journal_article', 'book_document', 'publication_certificate', 'output_file'];
+        $pdf->Output('F', $cachePath);
+        @unlink($tempInfoPath);
 
-            foreach ($collections as $collection) {
-                /** @var ?Media $outputMedia */
-                $outputMedia = $outputRecord->getFirstMedia($collection);
-                if ($outputMedia) {
-                    $outputPath = $this->getLocalPdfPath($outputMedia);
-                    if ($outputPath !== null && str_contains($outputMedia->mime_type ?? '', 'pdf')) {
-                        try {
-                            $outputPageCount = $pdf->setSourceFile($outputPath);
-                            for ($i = 1; $i <= $outputPageCount; $i++) {
-                                $templateId = $pdf->importPage($i);
-                                $size = $pdf->getTemplateSize($templateId);
-                                $pdf->AddPage($size['orientation'], [$size['width'], $size['height']]);
-                                $pdf->useTemplate($templateId);
-                            }
-                        } catch (\Throwable $e) {
-                            Log::warning("FPDI Merge Fail (Output File - {$collection}) for report ".$report->id.': '.$e->getMessage());
-                        }
-                    }
-                }
-            }
-        }
+        return $cachePath;
+    }
 
-        // Add pages from Daily Notes
-        $dailyNotes = DailyNote::where('proposal_id', $proposal->id)
-            ->with(['budgetGroup', 'media'])
-            ->orderBy('activity_date', 'asc')
-            ->get();
-
-        if ($dailyNotes->isNotEmpty()) {
-            // Prepare submitter information for daily notes view
-            $submitterIdentity = $proposal->submitter->identity;
-            $submitterFullName = format_name($submitterIdentity?->title_prefix, $proposal->submitter->name, $submitterIdentity?->title_suffix);
-            $facultyName = $submitterIdentity?->faculty->name ?? '-';
-            $prodiName = $submitterIdentity?->studyProgram->name ?? '-';
-            $institutionName = $submitterIdentity?->institution->name ?? 'ITSNU Pekalongan';
-            $academicYear = $proposal->start_year.'/'.($proposal->start_year + 1);
-
-            // Get QR URLs for daily notes signatures
-            $logbookSigs = $proposal->signatures()
-                ->where('variant', 'logbook')
-                ->get()
-                ->keyBy(function (Model $s) {
-                    /** @var DocumentSignature $s */
-                    return "{$s->action}|{$s->signed_role}";
-                });
-
-            $qrUrlSubmitter = isset($logbookSigs['submitted|lecturer'])
-                ? URL::signedRoute('signatures.verify', ['documentSignature' => $logbookSigs['submitted|lecturer']->id])
-                : null;
-
-            $qrUrlLppm = isset($logbookSigs['approved|kepala_lppm'])
-                ? URL::signedRoute('signatures.verify', ['documentSignature' => $logbookSigs['approved|kepala_lppm']->id])
-                : null;
-
-            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
-            $notesPdfContent = Pdf::loadView('pdf.daily-notes', [
-                'proposal' => $proposal,
-                'notes' => $dailyNotes,
-                'isSigned' => $proposal->logbook_signed_at !== null,
-                'isApproved' => $proposal->logbook_approved_at !== null,
-                'logbookApprovalMode' => Setting::where('key', 'logbook_approval_mode')->value('value') ?? 'digital',
-                'submitterFullName' => $submitterFullName,
-                'facultyName' => $facultyName,
-                'prodiName' => $prodiName,
-                'institutionName' => $institutionName,
-                'academicYear' => $academicYear,
-                'docTitle' => 'CATATAN HARIAN '.($proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN').' INTERNAL',
-                'qrUrlSubmitter' => $qrUrlSubmitter,
-                'qrUrlLppm' => $qrUrlLppm,
-                'pdfConfig' => $pdfConfig,
-            ])->setPaper(normalize_paper_size($pdfConfig['paper_size'] ?? 'a4'), $pdfConfig['orientation'] ?? 'portrait')->output();
-
-            $tempNotesPath = tempnam(storage_path('app'), 'report_notes_');
-            file_put_contents($tempNotesPath, $notesPdfContent);
-
+    /**
+     * Helper to merge a single media PDF with FPDI.
+     */
+    protected function mergePdfMedia(Fpdi $pdf, Media $media, string $reportId, string $label): void
+    {
+        $mediaPath = $this->getLocalPdfPath($media);
+        if ($mediaPath !== null && str_contains($media->mime_type ?? '', 'pdf')) {
             try {
-                $notesPageCount = $pdf->setSourceFile($tempNotesPath);
-                for ($i = 1; $i <= $notesPageCount; $i++) {
+                $pageCount = $pdf->setSourceFile($mediaPath);
+                for ($i = 1; $i <= $pageCount; $i++) {
                     $templateId = $pdf->importPage($i);
                     $size = $pdf->getTemplateSize($templateId);
                     $pdf->AddPage($size['orientation'], [$size['width'], $size['height']]);
                     $pdf->useTemplate($templateId);
                 }
             } catch (\Throwable $e) {
-                Log::warning('FPDI Merge Fail (Daily Notes) for '.$report->id.': '.$e->getMessage());
+                Log::warning("FPDI Merge Fail ({$label}) for {$reportId}: ".$e->getMessage());
             }
-            @unlink($tempNotesPath);
+        }
+    }
+
+    /**
+     * Export Financial Report (LPJ) as a separate PDF.
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     */
+    public function exportFinancialReport(Proposal $proposal, bool $isPreview = false): string
+    {
+        $cacheDir = storage_path('app/pdf_cache/financial');
+        if (! file_exists($cacheDir)) {
+            mkdir($cacheDir, 0755, true);
         }
 
-        $pdf->Output('F', $cachePath);
-        @unlink($tempInfoPath);
+        $proposal->load([
+            'submitter.identity.faculty',
+            'submitter.identity.studyProgram',
+            'submitter.identity.institution',
+            'teamMembers.identity',
+            'budgetItems.budgetGroup',
+            'budgetItems.budgetComponent',
+            'dailyNotes.budgetGroup',
+            'dailyNotes.media',
+            'researchScheme',
+            'communityServiceScheme',
+            'signatures',
+        ]);
+
+        $submitterIdentity = $proposal->submitter->identity;
+        $submitterFullName = format_name($submitterIdentity?->title_prefix, $proposal->submitter->name, $submitterIdentity?->title_suffix);
+        $submitterNidn = $submitterIdentity->identity_id ?? '-';
+        $facultyName = $submitterIdentity?->faculty->name ?? '.......................';
+        $prodiName = $submitterIdentity?->studyProgram->name ?? '.......................';
+        $institutionName = $submitterIdentity?->institution->name ?? 'ITSNU Pekalongan';
+        $academicYear = $proposal->start_year.'/'.($proposal->start_year + 1);
+
+        $logbookSigs = $proposal->signatures()
+            ->where('variant', 'logbook')
+            ->get()
+            ->keyBy(function (Model $s) {
+                /** @var DocumentSignature $s */
+                return "{$s->action}|{$s->signed_role}";
+            });
+
+        $qrUrlSubmitter = isset($logbookSigs['submitted|lecturer'])
+            ? URL::signedRoute('signatures.verify', ['documentSignature' => $logbookSigs['submitted|lecturer']->id])
+            : null;
+
+        $qrUrlLppm = isset($logbookSigs['approved|kepala_lppm'])
+            ? URL::signedRoute('signatures.verify', ['documentSignature' => $logbookSigs['approved|kepala_lppm']->id])
+            : null;
+
+        $pdfConfig = get_pdf_config('letter', 'logbook');
+
+        $pdf = Pdf::loadView('pdf.financial-report', [
+            'proposal' => $proposal,
+            'isSigned' => $proposal->logbook_signed_at !== null,
+            'isApproved' => $proposal->logbook_approved_at !== null,
+            'logbookApprovalMode' => Setting::where('key', 'logbook_approval_mode')->value('value') ?? 'digital',
+            'qrUrlSubmitter' => $qrUrlSubmitter,
+            'qrUrlLppm' => $qrUrlLppm,
+            'submitterFullName' => $submitterFullName,
+            'submitterNidn' => $submitterNidn,
+            'facultyName' => $facultyName,
+            'prodiName' => $prodiName,
+            'institutionName' => $institutionName,
+            'academicYear' => $academicYear,
+            'pdfConfig' => $pdfConfig,
+        ])->setPaper(normalize_paper_size($pdfConfig['paper_size'] ?? 'a4'), $pdfConfig['orientation'] ?? 'portrait')
+            ->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => true,
+                'defaultFont' => 'times-roman',
+            ]);
+
+        $cachePath = $cacheDir.'/financial_'.$proposal->id.($isPreview ? '_preview' : '').'.pdf';
+        $pdf->save($cachePath);
 
         return $cachePath;
     }

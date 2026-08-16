@@ -14,6 +14,13 @@
     </div>
     @endif
 
+    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+    @if(!empty($proposal->contract_number))
+    <div style="font-size: 11pt; margin-top: -10px; margin-bottom: 20px; text-align: center; line-height: {{ $lineHeight }};">
+        Nomor Kontrak: <strong>{{ $proposal->contract_number }}</strong>
+    </div>
+    @endif
+
     <div style="margin-top: 100px; margin-bottom: 120px; text-align: center;">
         @if(($pdfConfig['show_logo'] ?? true) && get_logo_base64())
             <img src="{{ get_logo_base64() }}" style="width: {{ $pdfConfig['logo_size'] ?? 350 }}px;">

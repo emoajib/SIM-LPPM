@@ -31,6 +31,31 @@ trait HasFileUploads
 
     public $implementationProofFile;
 
+    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Research Attachments
+    public $teachingMaterialFile; // Lampiran 5: RPS / Bahan Ajar
+
+    // PKM Attachments
+    public $partnerAgreementFile; // Lampiran 3: Surat Kesediaan Mitra
+
+    public $chairpersonStatementFile; // Lampiran 4: Surat Pernyataan Ketua
+
+    public $serviceLocationMapFile; // Lampiran 5: Peta Lokasi Pengabdian
+
+    public $officialReportPkmFile; // Lampiran 6: Berita Acara Pelaksanaan PKM
+
+    public $assignmentLetterPkmFile; // Lampiran 7: Surat Tugas Pelaksanaan PKM
+
+    public $questionnairePkmFile; // Lampiran 8: Kuisioner Pengabdian
+
+    public $teamAttendanceFile; // Lampiran 9: Daftar Hadir Tim PKM
+
+    public $participantAttendanceFile; // Lampiran 10: Daftar Hadir Peserta PKM
+
+    public $trainingMaterialFile; // Lampiran 11: Materi Kegiatan PKM
+
+    public $activityPhotosFiles = []; // Lampiran 12: Foto Kegiatan PKM
+
     // Temporary file uploads
     public array $tempMandatoryFiles = [];
 
@@ -245,6 +270,90 @@ trait HasFileUploads
                 ->toMediaCollection('partner_implementation_proof');
         } catch (\Exception $e) {
             Log::error('Upload partner implementation proof file failed: '.$e->getMessage());
+        }
+    }
+
+    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    protected function saveSingleAttachment(ProgressReport $report, ?TemporaryUploadedFile $file, string $collectionName): void
+    {
+        if (! $file) {
+            return;
+        }
+
+        try {
+            $report->clearMediaCollection($collectionName);
+            $report
+                ->addMedia($file->getRealPath())
+                ->usingName($file->getClientOriginalName())
+                ->usingFileName($file->hashName())
+                ->withCustomProperties([
+                    'uploaded_by' => Auth::id(),
+                    'proposal_id' => $report->proposal_id,
+                    'report_type' => 'final',
+                ])
+                ->toMediaCollection($collectionName);
+        } catch (\Exception $e) {
+            Log::error("Upload {$collectionName} failed: ".$e->getMessage());
+        }
+    }
+
+    protected function saveResearchAttachments(ProgressReport $report): void
+    {
+        if ($this->teachingMaterialFile instanceof TemporaryUploadedFile) {
+            $this->saveSingleAttachment($report, $this->teachingMaterialFile, 'teaching_material_file');
+        }
+    }
+
+    protected function savePkmAttachments(ProgressReport $report): void
+    {
+        if ($this->partnerAgreementFile instanceof TemporaryUploadedFile) {
+            $this->saveSingleAttachment($report, $this->partnerAgreementFile, 'partner_agreement_letter');
+        }
+        if ($this->chairpersonStatementFile instanceof TemporaryUploadedFile) {
+            $this->saveSingleAttachment($report, $this->chairpersonStatementFile, 'chairperson_statement_letter');
+        }
+        if ($this->serviceLocationMapFile instanceof TemporaryUploadedFile) {
+            $this->saveSingleAttachment($report, $this->serviceLocationMapFile, 'service_location_map');
+        }
+        if ($this->officialReportPkmFile instanceof TemporaryUploadedFile) {
+            $this->saveSingleAttachment($report, $this->officialReportPkmFile, 'official_report_pkm');
+        }
+        if ($this->assignmentLetterPkmFile instanceof TemporaryUploadedFile) {
+            $this->saveSingleAttachment($report, $this->assignmentLetterPkmFile, 'assignment_letter_pkm');
+        }
+        if ($this->questionnairePkmFile instanceof TemporaryUploadedFile) {
+            $this->saveSingleAttachment($report, $this->questionnairePkmFile, 'questionnaire_pkm');
+        }
+        if ($this->teamAttendanceFile instanceof TemporaryUploadedFile) {
+            $this->saveSingleAttachment($report, $this->teamAttendanceFile, 'team_attendance_list');
+        }
+        if ($this->participantAttendanceFile instanceof TemporaryUploadedFile) {
+            $this->saveSingleAttachment($report, $this->participantAttendanceFile, 'participant_attendance_list');
+        }
+        if ($this->trainingMaterialFile instanceof TemporaryUploadedFile) {
+            $this->saveSingleAttachment($report, $this->trainingMaterialFile, 'training_material_pkm');
+        }
+
+        // Multiple photo uploads
+        if (! empty($this->activityPhotosFiles)) {
+            foreach ($this->activityPhotosFiles as $photo) {
+                if ($photo instanceof TemporaryUploadedFile) {
+                    try {
+                        $report
+                            ->addMedia($photo->getRealPath())
+                            ->usingName($photo->getClientOriginalName())
+                            ->usingFileName($photo->hashName())
+                            ->withCustomProperties([
+                                'uploaded_by' => Auth::id(),
+                                'proposal_id' => $report->proposal_id,
+                                'report_type' => 'final',
+                            ])
+                            ->toMediaCollection('activity_photos_pkm');
+                    } catch (\Exception $e) {
+                        Log::error('Upload activity_photos_pkm failed: '.$e->getMessage());
+                    }
+                }
+            }
         }
     }
 

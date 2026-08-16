@@ -177,11 +177,48 @@
             @endforeach
 
             @php
-                $nextNum = 4 + $lecturerMembers->count();
+                $mahasiswaRelation = $proposal->teamMembers->filter(fn($m) => ($m->identity?->type === 'mahasiswa' || $m->pivot?->role === 'mahasiswa'));
+                $mahasiswaJson = [];
+                if (!empty($proposal->student_members)) {
+                    $decoded = is_string($proposal->student_members) ? json_decode($proposal->student_members, true) : $proposal->student_members;
+                    if (is_array($decoded)) {
+                        $mahasiswaJson = $decoded;
+                    }
+                }
+                $itemNum = 3 + $lecturerMembers->count();
+            @endphp
+
+            @if($mahasiswaRelation->count() > 0 || count($mahasiswaJson) > 0)
+                @php $itemNum++; @endphp
+                <tr>
+                    <td class="text-center">{{ $itemNum }}.</td>
+                    <td colspan="2">Anggota Mahasiswa yang Terlibat</td>
+                </tr>
+                @php $mhsIdx = 0; @endphp
+                @foreach($mahasiswaRelation as $mhs)
+                    @php $mhsIdx++; @endphp
+                    <tr>
+                        <td></td>
+                        <td style="padding-left: 20px;">{{ chr(96 + $mhsIdx) }}. Nama / NIM</td>
+                        <td>{{ ucwords(strtolower($mhs->name)) }} / {{ $mhs->identity?->identity_id ?? '-' }} (Prodi: {{ $mhs->identity?->studyProgram?->name ?? '-' }})</td>
+                    </tr>
+                @endforeach
+                @foreach($mahasiswaJson as $mhs)
+                    @php $mhsIdx++; @endphp
+                    <tr>
+                        <td></td>
+                        <td style="padding-left: 20px;">{{ chr(96 + $mhsIdx) }}. Nama / NIM</td>
+                        <td>{{ ucwords(strtolower($mhs['name'] ?? '-')) }} / {{ $mhs['identifier'] ?? '-' }} (Prodi: {{ $mhs['study_program'] ?? ($mhs['prodi'] ?? '-') }})</td>
+                    </tr>
+                @endforeach
+            @endif
+
+            @php
+                $itemNum++;
             @endphp
 
             <tr>
-                <td class="text-center">{{ $nextNum }}.</td>
+                <td class="text-center">{{ $itemNum }}.</td>
                 <td>Biaya Laporan {{ $report->reporting_period === 'final' ? 'Akhir' : 'Kemajuan' }}</td>
                 <td>Rp {{ number_format($totalRAB, 0, ',', '.') }}</td>
             </tr>
@@ -230,7 +267,7 @@
             <table class="no-border" style="width: 100%;">
                 <tr>
                     <td class="text-center" style="vertical-align: top;">
-                        Menyetujui,<br>
+                        Mengesahkan,<br>
                         Kepala LPPM ITSNU Pekalongan
                     </td>
                 </tr>
@@ -336,132 +373,6 @@
                 @endforeach
             </tbody>
         </table>
-    @endif
-    @endif
-
-    @if(\App\Models\Setting::get(\App\Constants\PdfConstants::REPORT_SHOW_LOGBOOK, true))
-        @php
-            $logbooks = $proposal->dailyNotes()->orderBy('activity_date', 'asc')->get();
-        @endphp
-        @if($logbooks->count() > 0)
-            <div class="section-title">{{ $sectionNum++ }}. CATATAN HARIAN (LOGBOOK)</div>
-            <table class="table-data">
-                <thead>
-                    <tr>
-                        <th width="5%">No</th>
-                        <th width="12%">Tgl</th>
-                        <th width="35%">Aktivitas & Catatan</th>
-                        <th width="15%">Kelompok RAB</th>
-                        <th width="15%">Nominal (Rp)</th>
-                        <th width="8%">Progres</th>
-                        <th width="10%">Bukti</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($logbooks as $index => $note)
-                        <tr>
-                            <td class="text-center">{{ $index + 1 }}</td>
-                            <td class="text-center">{{ $note->activity_date->format('d/m/Y') }}</td>
-                            <td class="text-justify">
-                                <div class="font-bold" style="line-height: 1.4;">{{ $note->activity_description }}</div>
-                                @if ($note->notes)
-                                    <div style="margin-top: 5px; font-style: italic; color: #444; font-size: 8pt; line-height: 1.4;">
-                                        Catatan: {{ $note->notes }}
-                                    </div>
-                                @endif
-                            </td>
-                            <td class="text-center">{{ $note->budgetGroup->name ?? '-' }}</td>
-                            <td class="text-right">{{ $note->amount ? number_format($note->amount, 0, ',', '.') : '-' }}</td>
-                            <td class="text-center">{{ $note->progress_percentage }}%</td>
-                            <td class="text-center">
-                                @if ($note->media->isNotEmpty())
-                                    Ada
-                                @else
-                                    -
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        @endif
-    @endif
-
-    {{-- Approval page moved above --}}
-
-    @if(\App\Models\Setting::get(\App\Constants\PdfConstants::REPORT_SHOW_DOCS, true))
-    @php
-        $supportingDocs = [];
-        // Note: substance_file (proposal & report), realization_file, and presentation_file
-        // are merged directly via FPDI, so we omit them here to avoid redundant textual listing.
-        
-        foreach($report->mandatoryOutputs as $mo) {
-            $collections = ['journal_article', 'book_document', 'publication_certificate'];
-            foreach($collections as $col) {
-                if ($mo->hasMedia($col)) {
-                    $media = $mo->getFirstMedia($col);
-                    $mime = $media->mime_type ?? '';
-                    $type = str_starts_with($mime, 'image/') ? 'image' : (str_contains($mime, 'pdf') ? 'pdf' : 'other');
-                    $supportingDocs[] = ['label' => 'Luaran Wajib: ' . ($mo->proposalOutput->type ?? 'Output') . ' - ' . $media->name, 'media' => $media, 'type' => $type];
-                }
-            }
-        }
-        foreach($report->additionalOutputs as $ao) {
-            $collections = ['journal_article', 'book_document', 'publication_certificate'];
-            foreach($collections as $col) {
-                if ($ao->hasMedia($col)) {
-                    $media = $ao->getFirstMedia($col);
-                    $mime = $media->mime_type ?? '';
-                    $type = str_starts_with($mime, 'image/') ? 'image' : (str_contains($mime, 'pdf') ? 'pdf' : 'other');
-                    $supportingDocs[] = ['label' => 'Luaran Tambahan: ' . ($ao->proposalOutput->type ?? 'Output') . ' - ' . $media->name, 'media' => $media, 'type' => $type];
-                }
-            }
-        }
-    @endphp
-    @include('pdf.partials.section-lampiran', [
-        'title' => 'Dokumen Pendukung',
-        'items' => $supportingDocs,
-        'sectionNum' => $sectionNum,
-    ])
-    @if(count($supportingDocs) > 0)
-        @php $sectionNum++; @endphp
-    @endif
-    @endif
-
-    @if(\App\Models\Setting::get(\App\Constants\PdfConstants::REPORT_SHOW_OTHER_DOCS, true))
-    @php
-        $otherDocs = [];
-        foreach($proposal->partners as $partner) {
-            if ($partner->hasMedia('commitment_letter')) {
-                $media = $partner->getFirstMedia('commitment_letter');
-                $mime = $media->mime_type ?? '';
-                $type = str_starts_with($mime, 'image/') ? 'image' : (str_contains($mime, 'pdf') ? 'pdf' : 'other');
-                $otherDocs[] = ['label' => 'Surat Pernyataan Kerjasama Mitra - ' . $partner->name, 'media' => $media, 'type' => $type];
-            }
-        }
-        // Add partner change documentation from final report
-        if ($report->reporting_period === 'final') {
-            if ($report->hasMedia('partner_cooperation_proof')) {
-                $media = $report->getFirstMedia('partner_cooperation_proof');
-                $mime = $media->mime_type ?? '';
-                $type = str_starts_with($mime, 'image/') ? 'image' : (str_contains($mime, 'pdf') ? 'pdf' : 'other');
-                $otherDocs[] = ['label' => 'Dokumen Bukti Perubahan Kerjasama Mitra', 'media' => $media, 'type' => $type];
-            }
-            if ($report->hasMedia('partner_implementation_proof')) {
-                $media = $report->getFirstMedia('partner_implementation_proof');
-                $mime = $media->mime_type ?? '';
-                $type = str_starts_with($mime, 'image/') ? 'image' : (str_contains($mime, 'pdf') ? 'pdf' : 'other');
-                $otherDocs[] = ['label' => 'Dokumen Bukti Implementasi Perubahan Mitra', 'media' => $media, 'type' => $type];
-            }
-        }
-    @endphp
-    @include('pdf.partials.section-lampiran', [
-        'title' => 'Dokumen Pendukung Lainnya',
-        'items' => $otherDocs,
-        'sectionNum' => $sectionNum,
-    ])
-    @if(count($otherDocs) > 0)
-        @php $sectionNum++; @endphp
     @endif
     @endif
 

@@ -7,6 +7,7 @@ use App\Models\Proposal;
 use App\Models\Setting;
 use App\Models\User;
 use App\Services\DocumentSignatureService;
+use App\Services\ProposalPdfService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -18,9 +19,50 @@ class DailyNoteExportController extends Controller
 {
     protected $signatureService;
 
-    public function __construct(DocumentSignatureService $signatureService)
+    protected $pdfService;
+
+    public function __construct(DocumentSignatureService $signatureService, ProposalPdfService $pdfService)
     {
         $this->signatureService = $signatureService;
+        $this->pdfService = $pdfService;
+    }
+
+    /**
+     * Download the Financial Report (LPJ) PDF.
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     */
+    public function financialReport(Proposal $proposal, Request $request)
+    {
+        /** @var User $user */
+        $user = Auth::user();
+
+        $isMember = $proposal->teamMembers()->where('users.id', $user->id)->exists();
+        $isSubmitter = $proposal->submitter_id === $user->id;
+        $isLppm = $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'superadmin', 'rektor', 'dekan']);
+
+        if (! $isSubmitter && ! $isMember && ! $isLppm) {
+            abort(403, 'Anda tidak memiliki akses untuk mengekspor laporan keuangan ini.');
+        }
+
+        try {
+            $pdfPath = $this->pdfService->exportFinancialReport($proposal, $request->has('preview'));
+
+            $title = preg_replace('/[^A-Za-z0-9_\-]/', '_', substr($proposal->title, 0, 50));
+            $filename = 'Laporan_Keuangan_'.$title.'.pdf';
+
+            if ($request->query('download') === 'true') {
+                return response()->download($pdfPath, $filename);
+            }
+
+            return response()->file($pdfPath, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="'.$filename.'"',
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Financial Report PDF Export Error: '.$e->getMessage());
+
+            return back()->with('error', 'Gagal mengunduh laporan keuangan: '.$e->getMessage());
+        }
     }
 
     /**

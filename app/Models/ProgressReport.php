@@ -183,5 +183,60 @@ class ProgressReport extends Model implements HasMedia
         // Bukti implementasi mitra (Final Report — partner change documentation)
         $this->addMediaCollection('partner_implementation_proof')
             ->acceptsMimeTypes(['application/pdf', 'image/jpeg', 'image/png']);
+
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Lampiran 5 Penelitian: RPS atau Bahan Ajar
+        $this->addMediaCollection('teaching_material_file')
+            ->singleFile()
+            ->acceptsMimeTypes(['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']);
+
+        // Lampiran 3 Pengabdian: Surat Kesediaan Mitra
+        $this->addMediaCollection('partner_agreement_letter')
+            ->singleFile()
+            ->acceptsMimeTypes(['application/pdf', 'image/jpeg', 'image/png']);
+
+        // Lampiran 4 Pengabdian: Surat Pernyataan Ketua
+        $this->addMediaCollection('chairperson_statement_letter')
+            ->singleFile()
+            ->acceptsMimeTypes(['application/pdf']);
+
+        // Lampiran 5 Pengabdian: Peta Lokasi Pengabdian
+        $this->addMediaCollection('service_location_map')
+            ->singleFile()
+            ->acceptsMimeTypes(['application/pdf', 'image/jpeg', 'image/png']);
+
+        // Lampiran 6 Pengabdian: Berita Acara Pelaksanaan PKM
+        $this->addMediaCollection('official_report_pkm')
+            ->singleFile()
+            ->acceptsMimeTypes(['application/pdf']);
+
+        // Lampiran 7 Pengabdian: Surat Tugas Pelaksanaan PKM
+        $this->addMediaCollection('assignment_letter_pkm')
+            ->singleFile()
+            ->acceptsMimeTypes(['application/pdf']);
+
+        // Lampiran 8 Pengabdian: Kuisioner Pengabdian
+        $this->addMediaCollection('questionnaire_pkm')
+            ->singleFile()
+            ->acceptsMimeTypes(['application/pdf']);
+
+        // Lampiran 9 Pengabdian: Daftar Hadir Tim PKM (Dosen dan Mahasiswa)
+        $this->addMediaCollection('team_attendance_list')
+            ->singleFile()
+            ->acceptsMimeTypes(['application/pdf']);
+
+        // Lampiran 10 Pengabdian: Daftar Hadir Peserta PKM
+        $this->addMediaCollection('participant_attendance_list')
+            ->singleFile()
+            ->acceptsMimeTypes(['application/pdf']);
+
+        // Lampiran 11 Pengabdian: Materi Kegiatan PKM
+        $this->addMediaCollection('training_material_pkm')
+            ->singleFile()
+            ->acceptsMimeTypes(['application/pdf', 'application/vnd.openxmlformats-officedocument.presentationml.presentation']);
+
+        // Lampiran 12 Pengabdian: Foto Kegiatan PKM
+        $this->addMediaCollection('activity_photos_pkm')
+            ->acceptsMimeTypes(['application/pdf', 'image/jpeg', 'image/png']);
     }
 }

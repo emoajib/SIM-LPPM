@@ -17,8 +17,11 @@ use App\Models\Keyword;
 use App\Models\MandatoryOutput;
 use App\Models\ProgressReport;
 use App\Models\Proposal;
+use App\Models\User;
 use App\Services\LecturerEligibilityService;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Computed;
@@ -42,12 +45,19 @@ class Show extends Component
     // State to track if final report draft exists
     public bool $isFinalReportDraft = false;
 
+    // Contract info for Admin LPPM
+    public string $contractNumber = '';
+
+    public ?string $contractDate = null;
+
     /**
      * Mount the component
      */
     public function mount(Proposal $proposal): void
     {
         $this->proposal = $proposal;
+        $this->contractNumber = $proposal->contract_number ?? '';
+        $this->contractDate = $proposal->contract_date ? Carbon::parse($proposal->contract_date)->format('Y-m-d') : null;
 
         // Check if proposal is completed
         if ($this->proposal->status !== ProposalStatus::COMPLETED) {
@@ -98,6 +108,30 @@ class Show extends Component
     }
 
     /**
+     * Update contract number by Admin LPPM
+     */
+    public function saveContract(): void
+    {
+        /** @var User $user */
+        $user = Auth::user();
+        if (! $user->activeHasAnyRole(['admin lppm', 'admin lppm saintek', 'admin lppm dekabita', 'kepala lppm', 'superadmin'])) {
+            abort(403, 'Hanya Admin LPPM yang berwenang mengubah nomor kontrak.');
+        }
+
+        $this->validate([
+            'contractNumber' => 'nullable|string|max:100',
+            'contractDate' => 'nullable|date',
+        ]);
+
+        $this->proposal->update([
+            'contract_number' => $this->contractNumber ?: null,
+            'contract_date' => $this->contractDate ?: null,
+        ]);
+
+        $this->toastSuccess('Nomor kontrak berhasil disimpan.');
+    }
+
+    /**
      * Save the report as draft
      */
     public function save(): void
@@ -120,6 +154,7 @@ class Show extends Component
                 $this->saveRealizationFile($report, 'final');
                 $this->saveCooperationProofFile($report);
                 $this->saveImplementationProofFile($report);
+                $this->saveResearchAttachments($report);
 
                 // Save output files
                 $this->saveOutputFiles($report);
@@ -196,6 +231,7 @@ class Show extends Component
                 $this->saveRealizationFile($report, 'final');
                 $this->saveCooperationProofFile($report);
                 $this->saveImplementationProofFile($report);
+                $this->saveResearchAttachments($report);
 
                 // Save output files
                 $this->saveOutputFiles($report);

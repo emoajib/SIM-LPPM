@@ -10,6 +10,10 @@
         <x-lucide-eye class="me-2 icon" />
         Tinjau (PDF)
     </a>
+    <a data-navigate-ignore="true" href="{{ route('financial-reports.export-pdf', ['proposal' => $proposal, 'download' => 'true']) }}" target="_blank" class="btn-outline-success btn">
+        <x-lucide-file-spreadsheet class="me-2 icon" />
+        Laporan Keuangan (LPJ)
+    </a>
     @if ($proposal->logbook_approved_at)
         <span class="badge bg-success me-2">
             <x-lucide-check-circle class="me-1 icon icon-inline" /> Telah Disetujui LPPM
