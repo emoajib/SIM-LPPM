@@ -308,3 +308,95 @@
         @endif
     </div>
 </div>
+
+<!-- Section: Jadwal Pelaksanaan Pengabdian (Lampiran 3 PDF) -->
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+            <div class="d-flex align-items-center">
+                <x-lucide-calendar class="icon me-3" />
+                <h3 class="card-title mb-0">Jadwal Pelaksanaan Pengabdian
+                    <small class="text-muted fw-normal ms-2" style="font-size:0.85rem;">(Lampiran 3 PDF)</small>
+                </h3>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="button" wire:click="initDefaultSchedule" class="btn btn-outline-secondary btn-sm"
+                    wire:confirm="Muat ulang template jadwal default?">
+                    <x-lucide-rotate-ccw class="icon icon-sm me-1" /> Template Default
+                </button>
+                <button type="button" wire:click="addScheduleItem" class="btn btn-primary btn-sm">
+                    <x-lucide-plus class="icon icon-sm me-1" /> Tambah Baris
+                </button>
+            </div>
+        </div>
+
+        @if (empty($form->schedule_items))
+            <div class="text-center text-muted py-4 border rounded-2">
+                <x-lucide-calendar-x class="icon mb-2 text-secondary" style="width: 2rem; height: 2rem;" />
+                <p class="mb-2">Belum ada jadwal kegiatan.</p>
+                <button type="button" wire:click="initDefaultSchedule" class="btn btn-sm btn-outline-primary">
+                    <x-lucide-wand-2 class="icon icon-sm me-1" /> Generate Template Otomatis
+                </button>
+            </div>
+        @else
+            <div class="table-responsive">
+                <table class="table table-bordered table-sm align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="5%" class="text-center">No</th>
+                            <th width="45%">Nama Kegiatan / Tahapan</th>
+                            <th width="15%" class="text-center">Tahun Ke-</th>
+                            <th width="15%" class="text-center">Bulan Mulai</th>
+                            <th width="15%" class="text-center">Bulan Selesai</th>
+                            <th width="5%" class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($form->schedule_items as $sIdx => $sItem)
+                            <tr wire:key="proposal-schedule-{{ $sIdx }}">
+                                <td class="text-center text-muted">{{ $sIdx + 1 }}</td>
+                                <td>
+                                    <input type="text"
+                                        wire:model="form.schedule_items.{{ $sIdx }}.activity_name"
+                                        class="form-control form-control-sm"
+                                        placeholder="Nama kegiatan/tahapan">
+                                </td>
+                                <td>
+                                    <select wire:model="form.schedule_items.{{ $sIdx }}.year"
+                                        class="form-select form-select-sm text-center">
+                                        @for ($y = 1; $y <= max((int) ($form->duration_in_years ?: 1), 1); $y++)
+                                            <option value="{{ $y }}">Tahun {{ $y }}</option>
+                                        @endfor
+                                    </select>
+                                </td>
+                                <td>
+                                    <select wire:model="form.schedule_items.{{ $sIdx }}.start_month"
+                                        class="form-select form-select-sm text-center">
+                                        @for ($m = 1; $m <= 12; $m++)
+                                            <option value="{{ $m }}">Bulan {{ $m }}</option>
+                                        @endfor
+                                    </select>
+                                </td>
+                                <td>
+                                    <select wire:model="form.schedule_items.{{ $sIdx }}.end_month"
+                                        class="form-select form-select-sm text-center">
+                                        @for ($m = 1; $m <= 12; $m++)
+                                            <option value="{{ $m }}">Bulan {{ $m }}</option>
+                                        @endfor
+                                    </select>
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" wire:click="removeScheduleItem({{ $sIdx }})"
+                                        class="btn btn-ghost-danger btn-sm btn-icon" title="Hapus Baris">
+                                        <x-lucide-trash-2 class="icon icon-sm" />
+                                    </button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+    </div>
+</div>
+

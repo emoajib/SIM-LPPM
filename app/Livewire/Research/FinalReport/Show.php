@@ -59,6 +59,9 @@ class Show extends Component
 
     public ?string $titleChangeReviewNotes = null;
 
+    // Schedule editing properties
+    public array $scheduleItems = [];
+
     /**
      * Mount the component
      */
@@ -118,6 +121,130 @@ class Show extends Component
             // Initialize new report structure
             $this->form->initializeNewReport();
         }
+
+        // Load existing schedule items or generate defaults
+        $this->proposal->loadMissing('activitySchedules');
+        $existingSchedules = $this->proposal->activitySchedules;
+
+        if ($existingSchedules->isNotEmpty()) {
+            $this->scheduleItems = $existingSchedules->map(fn ($s) => [
+                'activity_name' => $s->activity_name,
+                'year' => (int) ($s->year ?? 1),
+                'start_month' => (int) ($s->start_month ?? 1),
+                'end_month' => (int) ($s->end_month ?? 12),
+            ])->toArray();
+        } else {
+            $this->scheduleItems = $this->generateDefaultSchedule();
+        }
+    }
+
+    /**
+     * Generate template default schedule based on duration_in_years
+     */
+    public function generateDefaultSchedule(): array
+    {
+        $duration = max((int) ($this->proposal->duration_in_years ?: 1), 1);
+        $items = [];
+
+        $templates = [
+            ['activity_name' => 'Studi Literatur & Persiapan', 'start_month' => 1, 'end_month' => 3],
+            ['activity_name' => 'Pengumpulan Data / Observasi', 'start_month' => 4, 'end_month' => 7],
+            ['activity_name' => 'Analisis & Pengolahan Data', 'start_month' => 8, 'end_month' => 10],
+            ['activity_name' => 'Penyusunan Laporan & Publikasi', 'start_month' => 11, 'end_month' => 12],
+        ];
+
+        for ($year = 1; $year <= $duration; $year++) {
+            foreach ($templates as $t) {
+                $items[] = array_merge($t, ['year' => $year]);
+            }
+        }
+
+        return $items;
+    }
+
+    /**
+     * Add a new schedule row
+     */
+    public function addScheduleItem(): void
+    {
+        if (! $this->canEdit) {
+            abort(403);
+        }
+
+        $this->scheduleItems[] = [
+            'activity_name' => '',
+            'year' => 1,
+            'start_month' => 1,
+            'end_month' => 3,
+        ];
+    }
+
+    /**
+     * Remove a schedule row
+     */
+    public function removeScheduleItem(int $index): void
+    {
+        if (! $this->canEdit) {
+            abort(403);
+        }
+
+        unset($this->scheduleItems[$index]);
+        $this->scheduleItems = array_values($this->scheduleItems);
+    }
+
+    /**
+     * Reset schedule to default template
+     */
+    public function resetScheduleToDefault(): void
+    {
+        if (! $this->canEdit) {
+            abort(403);
+        }
+
+        $this->scheduleItems = $this->generateDefaultSchedule();
+        $this->toastInfo('Jadwal diatur ulang ke template default. Klik "Simpan Jadwal" untuk menerapkan.');
+    }
+
+    /**
+     * Save schedule items to database
+     */
+    public function saveScheduleItems(): void
+    {
+        if (! $this->canEdit) {
+            abort(403);
+        }
+
+        $this->validate([
+            'scheduleItems' => 'nullable|array|max:50',
+            'scheduleItems.*.activity_name' => 'required|string|max:255',
+            'scheduleItems.*.year' => 'required|integer|min:1|max:10',
+            'scheduleItems.*.start_month' => 'required|integer|min:1|max:12',
+            'scheduleItems.*.end_month' => 'required|integer|min:1|max:12',
+        ], [
+            'scheduleItems.*.activity_name.required' => 'Nama kegiatan/tahapan wajib diisi.',
+        ]);
+
+        DB::transaction(function (): void {
+            $this->proposal->activitySchedules()->delete();
+
+            foreach ($this->scheduleItems as $item) {
+                if (empty(trim($item['activity_name'] ?? ''))) {
+                    continue;
+                }
+
+                $this->proposal->activitySchedules()->create([
+                    'activity_name' => trim($item['activity_name']),
+                    'year' => (int) ($item['year'] ?? 1),
+                    'start_month' => (int) ($item['start_month'] ?? 1),
+                    'end_month' => (int) ($item['end_month'] ?? 12),
+                ]);
+            }
+        });
+
+        // Touch proposal to invalidate PDF cache
+        $this->proposal->touch();
+
+        $this->toastSuccess('Jadwal pelaksanaan kegiatan berhasil disimpan.');
     }
 
     /**

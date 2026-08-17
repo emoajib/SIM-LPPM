@@ -536,6 +536,9 @@
             </div>
         </div>
 
+        <!-- Section: Jadwal Pelaksanaan Kegiatan (Lampiran 3 PDF) -->
+        @include('livewire.partials.schedule-editor')
+
         @if ($errors->any())
             <div class="alert alert-danger alert-dismissible mb-3" role="alert">
                 <div class="d-flex">

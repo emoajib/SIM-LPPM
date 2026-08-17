@@ -3,9 +3,11 @@
 namespace App\Livewire\Abstracts;
 
 use App\Enums\ProposalStatus;
+use App\Enums\ReportStatus;
 use App\Livewire\Forms\ProposalForm;
 use App\Livewire\Traits\WithApproval;
 use App\Livewire\Traits\WithTeamManagement;
+use App\Models\ProgressReport;
 use App\Models\Proposal;
 use App\Models\Setting;
 use App\Models\User;
@@ -156,11 +158,23 @@ abstract class ProposalShow extends Component
     public function canEdit(): bool
     {
         $user = Auth::user();
+        if (! $user) {
+            return false;
+        }
 
-        // Allow editing for draft, revision_needed, or need_assignment proposals by submitter
+        // Allow editing for draft, revision_needed, need_assignment, or completed (if final report not yet approved)
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
-        if (! in_array($this->proposal->status, [ProposalStatus::DRAFT, ProposalStatus::REVISION_NEEDED, ProposalStatus::NEED_ASSIGNMENT])
-            || $this->proposal->submitter_id !== $user->id) {
+        $isEditableStatus = in_array($this->proposal->status, [ProposalStatus::DRAFT, ProposalStatus::REVISION_NEEDED, ProposalStatus::NEED_ASSIGNMENT]);
+
+        if (! $isEditableStatus && $this->proposal->status === ProposalStatus::COMPLETED) {
+            /** @var ProgressReport|null $finalReport */
+            $finalReport = $this->proposal->progressReports()->where('reporting_period', 'final')->latest()->first();
+            if (! $finalReport || $finalReport->status !== ReportStatus::APPROVED) {
+                $isEditableStatus = true;
+            }
+        }
+
+        if (! $isEditableStatus || $this->proposal->submitter_id !== $user->id) {
             return false;
         }
 

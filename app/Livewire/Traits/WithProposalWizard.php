@@ -59,6 +59,49 @@ trait WithProposalWizard
         $this->form->budget_items[$index]['total'] = $volume * $price;
     }
 
+    public function addScheduleItem(): void
+    {
+        $this->form->schedule_items[] = [
+            'activity_name' => '',
+            'year' => 1,
+            'start_month' => 1,
+            'end_month' => 3,
+        ];
+    }
+
+    public function removeScheduleItem(int $index): void
+    {
+        unset($this->form->schedule_items[$index]);
+        $this->form->schedule_items = array_values($this->form->schedule_items);
+    }
+
+    public function initDefaultSchedule(): void
+    {
+        $duration = max((int) ($this->form->duration_in_years ?: 1), 1);
+        $isPkm = $this->getProposalTypeForValidation() === 'community-service';
+        $items = [];
+
+        $templates = $isPkm ? [
+            ['activity_name' => 'Sosialisasi & Koordinasi Mitra', 'start_month' => 1, 'end_month' => 3],
+            ['activity_name' => 'Pelaksanaan Kegiatan / Pelatihan', 'start_month' => 4, 'end_month' => 7],
+            ['activity_name' => 'Pendampingan & Evaluasi Mitra', 'start_month' => 8, 'end_month' => 10],
+            ['activity_name' => 'Penyusunan Laporan & Publikasi PKM', 'start_month' => 11, 'end_month' => 12],
+        ] : [
+            ['activity_name' => 'Studi Literatur & Persiapan', 'start_month' => 1, 'end_month' => 3],
+            ['activity_name' => 'Pengumpulan Data / Observasi', 'start_month' => 4, 'end_month' => 7],
+            ['activity_name' => 'Analisis & Pengolahan Data', 'start_month' => 8, 'end_month' => 10],
+            ['activity_name' => 'Penyusunan Laporan & Publikasi', 'start_month' => 11, 'end_month' => 12],
+        ];
+
+        for ($year = 1; $year <= $duration; $year++) {
+            foreach ($templates as $t) {
+                $items[] = array_merge($t, ['year' => $year]);
+            }
+        }
+
+        $this->form->schedule_items = $items;
+    }
+
     public function saveNewPartner(): void
     {
         $isPkm = $this->getProposalTypeForValidation() === 'community-service';

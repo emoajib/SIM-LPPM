@@ -139,6 +139,10 @@ class ProposalForm extends Form
     #[Validate('nullable|array')]
     public array $budget_items = [];
 
+    // Step 3: Jadwal Pelaksanaan (Activity Schedules)
+    #[Validate('nullable|array')]
+    public array $schedule_items = [];
+
     // Eligibility Check dummy field
     public string $eligibility_check = '';
 
@@ -173,6 +177,7 @@ class ProposalForm extends Form
             'reviewers.user',
             'sdgs',
             'targetedIkus',
+            'activitySchedules',
         ]);
 
         $proposal->loadMorph('detailable', [
@@ -329,6 +334,16 @@ class ProposalForm extends Form
             ];
         })->toArray();
 
+        // Load schedule items
+        $this->schedule_items = $proposal->activitySchedules->map(function ($item) {
+            return [
+                'activity_name' => $item->activity_name,
+                'year' => (int) ($item->year ?? 1),
+                'start_month' => (int) ($item->start_month ?? 1),
+                'end_month' => (int) ($item->end_month ?? 12),
+            ];
+        })->toArray();
+
         // Load partners
         $this->partner_ids = $proposal->partners->pluck('id')->toArray();
     }
@@ -427,6 +442,7 @@ class ProposalForm extends Form
         $this->attachTeamMembers($proposal, $submitterId);
         $this->attachOutputs($proposal);
         $this->attachBudgetItems($proposal);
+        $this->attachScheduleItems($proposal);
         $this->attachPartners($proposal);
         $this->attachKeywords($proposal);
         $this->attachSdgs($proposal);
@@ -525,6 +541,7 @@ class ProposalForm extends Form
         $this->attachTeamMembers($proposal, $submitterId);
         $this->attachOutputs($proposal);
         $this->attachBudgetItems($proposal);
+        $this->attachScheduleItems($proposal);
         $this->attachPartners($proposal);
         $this->attachKeywords($proposal);
         $this->attachSdgs($proposal);
@@ -686,6 +703,12 @@ class ProposalForm extends Form
                 // Update budget items (delete old, create new)
                 $this->proposal->budgetItems()->delete();
                 $this->attachBudgetItems($this->proposal);
+
+                // Update schedule items (delete old, create new)
+                if (! empty($this->schedule_items)) {
+                    $this->proposal->activitySchedules()->delete();
+                    $this->attachScheduleItems($this->proposal);
+                }
 
                 // Update partners (sync)
                 $this->attachPartners($this->proposal);
@@ -1016,6 +1039,24 @@ class ProposalForm extends Form
                     'volume' => $item['volume'] ?? 0,
                     'unit_price' => $item['unit_price'] ?? 0,
                     'total_price' => $item['total'] ?? 0,
+                ]);
+            }
+        }
+    }
+
+    private function attachScheduleItems(Proposal $proposal): void
+    {
+        if (! empty($this->schedule_items)) {
+            foreach ($this->schedule_items as $item) {
+                if (empty(trim($item['activity_name'] ?? ''))) {
+                    continue;
+                }
+
+                $proposal->activitySchedules()->create([
+                    'activity_name' => trim($item['activity_name']),
+                    'year' => (int) ($item['year'] ?? 1),
+                    'start_month' => (int) ($item['start_month'] ?? 1),
+                    'end_month' => (int) ($item['end_month'] ?? 12),
                 ]);
             }
         }
