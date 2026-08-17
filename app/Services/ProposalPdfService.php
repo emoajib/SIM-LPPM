@@ -149,8 +149,8 @@ class ProposalPdfService
             return $cachePath;
         }
 
-        // Cleanup old versions of this proposal's PDF
-        $oldPdfs = glob($cacheDir.DIRECTORY_SEPARATOR."proposal_{$proposal->id}_*.pdf");
+        // Cleanup old versions of this proposal's PDF (both preview and regular)
+        $oldPdfs = glob($cacheDir.DIRECTORY_SEPARATOR."*proposal_{$proposal->id}_*.pdf");
         foreach ($oldPdfs as $oldPdf) {
             @unlink($oldPdf);
         }
@@ -634,8 +634,8 @@ class ProposalPdfService
             mkdir($cacheDir, 0755, true);
         }
 
-        // Calculate latest timestamp including media
-        $latestTimestamp = $report->updated_at->timestamp;
+        // Calculate latest timestamp including media and proposal update (such as contract_number)
+        $latestTimestamp = max($report->updated_at->timestamp, $proposal->updated_at->timestamp);
 
         // Check report media
         $collections = ['substance_file', 'realization_file', 'presentation_file', 'signature_page'];
@@ -683,8 +683,8 @@ class ProposalPdfService
             return $cachePath;
         }
 
-        // Cleanup old versions of this report's PDF
-        $oldPdfs = glob($cacheDir.DIRECTORY_SEPARATOR."report_{$report->id}_*.pdf");
+        // Cleanup old versions of this report's PDF (both preview and regular)
+        $oldPdfs = glob($cacheDir.DIRECTORY_SEPARATOR."*report_{$report->id}_*.pdf");
         foreach ($oldPdfs as $oldPdf) {
             @unlink($oldPdf);
         }
@@ -804,6 +804,8 @@ class ProposalPdfService
                 'outputs',
                 'sdgs',
                 'signatures',
+                'activitySchedules',
+                'researchStages',
             ]),
             'report' => $report->load([
                 'mandatoryOutputs.proposalOutput',

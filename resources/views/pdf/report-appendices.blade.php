@@ -189,7 +189,7 @@
                 Matriks jadwal pelaksanaan tahapan kegiatan penelitian:
             </div>
             @php
-                $schedules = $proposal->research?->schedules ?? collect();
+                $schedules = $proposal->activitySchedules ?? collect();
             @endphp
             <table class="table-data mb-4">
                 <thead>
@@ -209,9 +209,20 @@
                             <td class="text-center">Bulan {{ $sch->start_month }} s.d. Bulan {{ $sch->end_month }}</td>
                         </tr>
                     @empty
-                        <tr>
-                            <td colspan="4" class="text-center">Jadwal pelaksanaan penelitian mengikuti matriks usulan proposal.</td>
-                        </tr>
+                        @if(isset($proposal->researchStages) && $proposal->researchStages->count() > 0)
+                            @foreach($proposal->researchStages as $rsIdx => $stage)
+                                <tr>
+                                    <td class="text-center">{{ $rsIdx + 1 }}</td>
+                                    <td>{{ $stage->process_name }}</td>
+                                    <td class="text-center">Tahun 1</td>
+                                    <td class="text-center">Tahap {{ $stage->stage_number ?? ($rsIdx + 1) }}</td>
+                                </tr>
+                            @endforeach
+                        @else
+                            <tr>
+                                <td colspan="4" class="text-center">Jadwal pelaksanaan penelitian mengikuti matriks usulan proposal.</td>
+                            </tr>
+                        @endif
                     @endforelse
                 </tbody>
             </table>
