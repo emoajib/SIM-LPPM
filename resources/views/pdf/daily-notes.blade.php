@@ -301,20 +301,17 @@
                                 File: {{ $media->file_name }}
                             </div>
 
-                            @if (str_starts_with($media->mime_type, 'image/'))
+                            @if (str_starts_with($media->mime_type ?? '', 'image/'))
                                 @php
-                                    // Attempt to get optimized 'pdf_image', fallback to original local path
-                                    $imagePath = $media->hasGeneratedConversion('pdf_image') && file_exists($media->getPath('pdf_image'))
-                                        ? $media->getPath('pdf_image')
-                                        : $media->getPath();
+                                    $imgBase64 = embed_attachment_image($media);
                                 @endphp
 
-                                @if(file_exists($imagePath))
-                                    <img src="{{ $imagePath }}"
+                                @if($imgBase64)
+                                    <img src="{{ $imgBase64 }}"
                                         style="max-width: 100%; max-height: 500px; display: block; margin: 0 auto; border: 1px solid #ddd; padding: 3px;">
                                 @else
                                     <div style="background: #fff0f0; border: 1px dashed red; padding: 10px; color: red;">
-                                        Error: File gambar fisik tidak ditemukan di server.
+                                        Error: File gambar fisik ({{ $media->file_name }}) tidak ditemukan di server.
                                     </div>
                                 @endif
                             @else

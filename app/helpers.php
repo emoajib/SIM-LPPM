@@ -11,6 +11,7 @@ use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 if (! function_exists('active_role')) {
@@ -543,6 +544,27 @@ if (! function_exists('embed_attachment_image')) {
             ? $media->getPath('pdf_image')
             : $media->getPath();
 
-        return file_exists($path) ? $path : null;
+        if (! file_exists($path)) {
+            $disk = $media->disk ?: config('media-library.disk_name', 'public');
+            if (Storage::disk($disk)->exists($media->getPathRelativeToRoot())) {
+                $path = Storage::disk($disk)->path($media->getPathRelativeToRoot());
+            }
+        }
+
+        if (! file_exists($path) || ! is_readable($path)) {
+            return null;
+        }
+
+        $content = @file_get_contents($path);
+        if ($content === false || empty($content)) {
+            return null;
+        }
+
+        $mime = $media->mime_type ?: 'image/jpeg';
+        if (str_contains($mime, 'svg')) {
+            $mime = 'image/svg+xml';
+        }
+
+        return 'data:'.$mime.';base64,'.base64_encode($content);
     }
 }

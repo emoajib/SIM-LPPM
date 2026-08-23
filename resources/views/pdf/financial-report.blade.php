@@ -365,19 +365,17 @@
                             Nama Berkas: {{ $media->file_name }}
                         </div>
 
-                        @if (str_starts_with($media->mime_type, 'image/'))
+                        @if (str_starts_with($media->mime_type ?? '', 'image/'))
                             @php
-                                $imagePath = $media->hasGeneratedConversion('pdf_image') && file_exists($media->getPath('pdf_image'))
-                                    ? $media->getPath('pdf_image')
-                                    : $media->getPath();
+                                $imgBase64 = embed_attachment_image($media);
                             @endphp
 
-                            @if(file_exists($imagePath))
-                                <img src="{{ $imagePath }}"
+                            @if($imgBase64)
+                                <img src="{{ $imgBase64 }}"
                                     style="max-width: 100%; max-height: 460px; display: block; margin: 0 auto; border: 1px solid #ddd; padding: 2px;">
                             @else
                                 <div style="background: #fff0f0; border: 1px dashed red; padding: 8px; color: red; font-size: 8pt;">
-                                    Berkas gambar bukti tidak ditemukan di server.
+                                    Berkas gambar bukti ({{ $media->file_name }}) tidak ditemukan di server.
                                 </div>
                             @endif
                         @else
