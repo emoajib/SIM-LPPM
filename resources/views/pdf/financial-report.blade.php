@@ -29,9 +29,12 @@
     <style>
         @page {
             margin-top: 15mm;
-            margin-bottom: 22mm;
+            margin-bottom: 25mm;
             margin-left: 20mm;
             margin-right: 20mm;
+        }
+        tr {
+            page-break-inside: avoid;
         }
         .document-title {
             text-align: center;

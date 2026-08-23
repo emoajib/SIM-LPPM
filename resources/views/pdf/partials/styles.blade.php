@@ -107,16 +107,19 @@
         color: #666;
         margin-top: 20px;
     }
+    tr {
+        page-break-inside: avoid;
+    }
     .footer-institutional {
         position: fixed;
-        bottom: -20px;
+        bottom: -20mm;
         left: 0px;
         right: 0px;
-        height: 35px;
+        height: 12mm;
         text-align: center;
         font-size: 8pt;
         border-top: 0.5pt solid #ccc;
-        padding-top: 4px;
+        padding-top: 3px;
         color: #666;
     }
     .footer-institutional .page-number:after {
