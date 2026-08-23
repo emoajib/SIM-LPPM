@@ -16,18 +16,18 @@
 
     {{-- Nomor Kontrak dipindah ke bawah Tim Pelaksana (format baru) --}}
 
-    <div style="margin-top: 100px; margin-bottom: 120px; text-align: center;">
+    <div style="margin-top: 30px; margin-bottom: 25px; text-align: center;">
         @if(($pdfConfig['show_logo'] ?? true) && get_logo_base64())
             <img src="{{ get_logo_base64() }}" style="width: {{ $pdfConfig['logo_size'] ?? 350 }}px;">
         @endif
     </div>
 
-    <div style="font-size: 16pt; font-weight: bold; margin-bottom: 120px; text-align: center; text-transform: uppercase; line-height: {{ $lineHeight }};">
+    <div style="font-size: 14pt; font-weight: bold; margin-bottom: 20px; text-align: center; text-transform: uppercase; line-height: {{ $lineHeight }};">
         {{ clean_proposal_title($proposal->title) }}
     </div>
 
     @if($pdfConfig['cover_show_team'] ?? true)
-    <div style="width: 100%; margin: 0 auto; margin-bottom: 80px; font-size: 11pt; line-height: {{ $lineHeight }};">
+    <div style="width: 100%; margin: 0 auto; margin-bottom: 15px; font-size: 11pt; line-height: {{ $lineHeight }};">
         <div style="font-weight: bold; margin-bottom: 10px; text-align: center;">Oleh:</div>
         <table style="margin: 0 auto; border: none; border-collapse: collapse;">
             <tr>
@@ -64,7 +64,7 @@
         $facultyClean = preg_replace('/^FAKULTAS\s+/i', '', trim($facultyName));
         $prodiClean = preg_replace('/^(PROGRAM STUDI|PRODI)\s+/i', '', trim($prodiName));
     @endphp
-    <div style="position: absolute; bottom: 100px; left: 0; right: 0; text-align: center; font-weight: bold; font-size: 14pt; text-transform: uppercase; line-height: 1.0;">
+    <div style="position: absolute; bottom: 60px; left: 0; right: 0; text-align: center; font-weight: bold; font-size: 12pt; text-transform: uppercase; line-height: 1.4;">
         FAKULTAS {{ strtoupper($facultyClean) }}<br>
         PROGRAM STUDI {{ strtoupper($prodiClean) }}<br>
         ITSNU PEKALONGAN<br>
