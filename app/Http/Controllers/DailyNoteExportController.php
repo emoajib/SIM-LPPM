@@ -59,6 +59,9 @@ class DailyNoteExportController extends Controller
             return response()->file($pdfPath, [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'inline; filename="'.$filename.'"',
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Pragma' => 'no-cache',
+                'Expires' => '0',
             ]);
         } catch (\Exception $e) {
             \Log::error('Financial Report PDF Export Error: '.$e->getMessage());

@@ -1139,6 +1139,9 @@ class ProposalPdfService
             ]);
 
         $cachePath = $cacheDir.'/financial_'.$proposal->id.($isPreview ? '_preview' : '').'.pdf';
+        if ($isPreview && file_exists($cachePath)) {
+            @unlink($cachePath);
+        }
         $pdf->save($cachePath);
 
         if ($proposal->hasMedia('logbook_approval_file')) {
