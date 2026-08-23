@@ -1141,19 +1141,40 @@ class ProposalPdfService
 
                 $fpdi = new Fpdi;
                 $pageCount = $fpdi->setSourceFile($tempPath);
-                for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
-                    $templateId = $fpdi->importPage($pageNo);
+
+                // 1. Add Cover (Page 1)
+                if ($pageCount >= 1) {
+                    $templateId = $fpdi->importPage(1);
                     $size = $fpdi->getTemplateSize($templateId);
                     $fpdi->AddPage($size['orientation'], [$size['width'], $size['height']]);
                     $fpdi->useTemplate($templateId);
                 }
 
+                // 2. Add uploaded signed scan page(s) (replacing the generated unsigned Page 2)
                 $scanMedia = $proposal->getFirstMedia('logbook_approval_file');
-                $scanPath = $scanMedia->getPath();
-                if (file_exists($scanPath) && strtolower(pathinfo($scanPath, PATHINFO_EXTENSION)) === 'pdf') {
+                $scanPath = $scanMedia ? $scanMedia->getPath() : null;
+                if ($scanPath && file_exists($scanPath) && strtolower(pathinfo($scanPath, PATHINFO_EXTENSION)) === 'pdf') {
                     $scanPageCount = $fpdi->setSourceFile($scanPath);
                     for ($p = 1; $p <= $scanPageCount; $p++) {
                         $templateId = $fpdi->importPage($p);
+                        $size = $fpdi->getTemplateSize($templateId);
+                        $fpdi->AddPage($size['orientation'], [$size['width'], $size['height']]);
+                        $fpdi->useTemplate($templateId);
+                    }
+                } elseif ($pageCount >= 2) {
+                    // Fallback: If scan is not a valid PDF, keep original page 2
+                    $fpdi->setSourceFile($tempPath);
+                    $templateId = $fpdi->importPage(2);
+                    $size = $fpdi->getTemplateSize($templateId);
+                    $fpdi->AddPage($size['orientation'], [$size['width'], $size['height']]);
+                    $fpdi->useTemplate($templateId);
+                }
+
+                // 3. Add remaining pages (Page 3 onwards: Catatan Harian Logbook & Lampiran Bukti Fisik)
+                if ($pageCount >= 3) {
+                    $fpdi->setSourceFile($tempPath);
+                    for ($pageNo = 3; $pageNo <= $pageCount; $pageNo++) {
+                        $templateId = $fpdi->importPage($pageNo);
                         $size = $fpdi->getTemplateSize($templateId);
                         $fpdi->AddPage($size['orientation'], [$size['width'], $size['height']]);
                         $fpdi->useTemplate($templateId);
