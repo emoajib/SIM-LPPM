@@ -183,45 +183,6 @@
         </tbody>
     </table>
 
-    <div class="section-title" style="margin-top: 20px;">B. RINCIAN PENGELUARAN DANA (CATATAN HARIAN)</div>
-    <table>
-        <thead>
-            <tr>
-                <th width="5%">No</th>
-                <th width="12%">Tanggal</th>
-                <th width="40%">Uraian Aktivitas & Pengeluaran</th>
-                <th width="23%">Kelompok Anggaran</th>
-                <th width="20%">Nominal (Rp)</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($proposal->dailyNotes()->orderBy('activity_date', 'asc')->get() as $index => $note)
-                <tr>
-                    <td class="text-center">{{ $index + 1 }}</td>
-                    <td class="text-center">{{ $note->activity_date->format('d/m/Y') }}</td>
-                    <td>
-                        <div class="font-bold">{{ $note->activity_description }}</div>
-                        @if ($note->notes)
-                            <div style="margin-top: 3px; font-style: italic; color: #555; font-size: 7.5pt;">
-                                Catatan: {{ $note->notes }}
-                            </div>
-                        @endif
-                    </td>
-                    <td class="text-center">{{ $note->budgetGroup->name ?? '-' }}</td>
-                    <td class="text-right">{{ $note->amount ? number_format($note->amount, 0, ',', '.') : '-' }}</td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="5" class="text-center">Belum ada rincian pengeluaran dana.</td>
-                </tr>
-            @endforelse
-            <tr style="background-color: #f2f2f2; font-weight: bold;">
-                <td colspan="4" class="text-center">TOTAL REALISASI PENGELUARAN</td>
-                <td class="text-right">Rp {{ number_format($totalRealized, 0, ',', '.') }}</td>
-            </tr>
-        </tbody>
-    </table>
-
     {{-- Pengesahan Keuangan --}}
     <div style="margin-top: 25px; page-break-inside: avoid;">
         <table class="no-border" style="width: 100%;">
@@ -270,7 +231,7 @@
     @include('pdf.partials.header')
 
     <div class="document-title">
-        C. CATATAN HARIAN KEGIATAN (LOGBOOK)
+        B. CATATAN HARIAN KEGIATAN (LOGBOOK)
     </div>
 
     <table class="no-border" style="margin-bottom: 12px;">
