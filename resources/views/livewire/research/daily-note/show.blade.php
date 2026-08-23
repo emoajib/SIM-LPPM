@@ -10,10 +10,12 @@
         <x-lucide-eye class="me-2 icon" />
         Pratinjau LPJ
     </a>
-    <a data-navigate-ignore="true" href="{{ route('financial-reports.export-pdf', ['proposal' => $proposal, 'download' => 'true']) }}" target="_blank" class="btn-outline-success btn">
-        <x-lucide-download class="me-2 icon" />
-        Unduh LPJ
-    </a>
+    @if ($this->logbookApprovalMode !== 'upload')
+        <a data-navigate-ignore="true" href="{{ route('financial-reports.export-pdf', ['proposal' => $proposal, 'download' => 'true']) }}" target="_blank" class="btn-outline-success btn">
+            <x-lucide-download class="me-2 icon" />
+            Unduh LPJ
+        </a>
+    @endif
     @if ($proposal->logbook_approved_at)
         <span class="badge bg-success">
             <x-lucide-check-circle class="me-1 icon icon-inline" /> Telah Disetujui LPPM
@@ -23,9 +25,9 @@
             <x-lucide-shield-check class="me-2 icon" />
             Validasi Kepala LPPM
         </button>
-    @elseif ($proposal->logbook_signed_at)
+    @elseif ($proposal->logbook_signed_at && $this->logbookApprovalMode !== 'upload')
         <span class="badge bg-warning">Menunggu Validasi LPPM</span>
-    @elseif ($this->canManage($proposal))
+    @elseif ($this->logbookApprovalMode !== 'upload' && $this->canManage($proposal))
         <button type="button" class="btn-primary btn" x-data @click="if(confirm('Apakah Anda yakin ingin menandatangani logbook dan laporan keuangan ini secara digital? Tanda tangan ini menyatakan keabsahan seluruh aktivitas harian beserta laporannya.')) { Livewire.dispatch('sign-logbook') }">
             <x-lucide-check-square class="me-2 icon" />
             Tandatangani & Unduh LPJ
