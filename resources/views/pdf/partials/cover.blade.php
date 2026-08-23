@@ -18,7 +18,7 @@
 
     <div style="margin-top: 30px; margin-bottom: 25px; text-align: center;">
         @if(($pdfConfig['show_logo'] ?? true) && get_logo_base64())
-            <img src="{{ get_logo_base64() }}" style="width: {{ $pdfConfig['logo_size'] ?? 350 }}px;">
+            <img src="{{ get_logo_base64() }}" style="width: {{ $pdfConfig['logo_size'] ?? 120 }}px;">
         @endif
     </div>
 
@@ -27,26 +27,24 @@
     </div>
 
     @if($pdfConfig['cover_show_team'] ?? true)
-    <div style="width: 100%; margin: 0 auto; margin-bottom: 15px; font-size: 11pt; line-height: {{ $lineHeight }};">
-        <div style="font-weight: bold; margin-bottom: 10px; text-align: center;">Oleh:</div>
-        <table style="margin: 0 auto; border: none; border-collapse: collapse;">
+    <div style="width: 100%; margin: 0 auto; margin-bottom: 15px; font-size: 10.5pt;">
+        <div style="font-weight: bold; margin-bottom: 5px; text-align: center;">Tim Pelaksana:</div>
+        <table style="width: 100%; border: 0.5pt dashed #000; border-collapse: collapse; margin-bottom: 0;">
             <tr>
-                <td style="width: 1%; border: none; padding: 2px 2px 2px 0; text-align: left; vertical-align: top; white-space: nowrap;">Ketua</td>
-                <td style="width: 1%; border: none; padding: 2px 4px 2px 2px; text-align: center; vertical-align: top; white-space: nowrap;">:</td>
-                <td style="border: none; padding: 2px 0 2px 2px; text-align: left; vertical-align: top; white-space: nowrap;">
-                    <span style="font-weight: bold;">{{ $submitterFullName }}</span>&nbsp;(NIDN:&nbsp;{{ $submitterNidn }})
-                </td>
+                <td style="width: 15%; border: 0.5pt dashed #000; padding: 6px;">Ketua</td>
+                <td style="width: 45%; border: 0.5pt dashed #000; padding: 6px; font-weight: bold;">{{ $submitterFullName }}</td>
+                <td style="width: 10%; border: 0.5pt dashed #000; padding: 6px;">NIDN</td>
+                <td style="width: 30%; border: 0.5pt dashed #000; padding: 6px; font-weight: bold;">{{ $submitterNidn }}</td>
             </tr>
             @php
                 $lecturerMembersCover = $proposal->teamMembers->filter(fn($m) => $m->id !== $proposal->submitter_id && ($m->identity?->type === 'dosen' || $m->pivot->role === 'anggota' || $m->pivot->role === 'dosen'))->values();
             @endphp
             @foreach($lecturerMembersCover as $index => $member)
             <tr>
-                <td style="width: 1%; border: none; padding: 2px 2px 2px 0; text-align: left; vertical-align: top; white-space: nowrap;">Anggota {{ to_roman($index + 1) }}</td>
-                <td style="width: 1%; border: none; padding: 2px 4px 2px 2px; text-align: center; vertical-align: top; white-space: nowrap;">:</td>
-                <td style="border: none; padding: 2px 0 2px 2px; text-align: left; vertical-align: top; white-space: nowrap;">
-                    <span style="font-weight: bold;">{{ format_name($member->identity?->title_prefix ?? '', $member->name, $member->identity?->title_suffix ?? '') }}</span>&nbsp;(NIDN:&nbsp;{{ $member->identity?->identity_id ?? '-' }})
-                </td>
+                <td style="width: 15%; border: 0.5pt dashed #000; padding: 6px;">Anggota {{ to_roman($index + 1) }}</td>
+                <td style="width: 45%; border: 0.5pt dashed #000; padding: 6px; font-weight: bold;">{{ format_name($member->identity?->title_prefix ?? '', $member->name, $member->identity?->title_suffix ?? '') }}</td>
+                <td style="width: 10%; border: 0.5pt dashed #000; padding: 6px;">NIDN</td>
+                <td style="width: 30%; border: 0.5pt dashed #000; padding: 6px; font-weight: bold;">{{ $member->identity?->identity_id ?? '-' }}</td>
             </tr>
             @endforeach
         </table>
