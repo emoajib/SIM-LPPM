@@ -189,7 +189,7 @@ class DailyNoteExportController extends Controller
 
                 // 2. Add uploaded signed scan page(s) (replacing the generated unsigned Page 2)
                 $scanMedia = $proposal->getFirstMedia('logbook_approval_file');
-                $scanPath = $scanMedia ? $scanMedia->getPath() : null;
+                $scanPath = $scanMedia ? $this->pdfService->getLocalPdfPath($scanMedia) : null;
                 if ($scanPath && file_exists($scanPath) && strtolower(pathinfo($scanPath, PATHINFO_EXTENSION)) === 'pdf') {
                     $scanPageCount = $fpdi->setSourceFile($scanPath);
                     for ($p = 1; $p <= $scanPageCount; $p++) {

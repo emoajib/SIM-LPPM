@@ -63,11 +63,18 @@ class ProposalPdfService
      *
      * For local disks: resolves to the absolute filesystem path.
      */
-    private function getLocalPdfPath(Media $media): ?string
+    public function getLocalPdfPath(Media $media): ?string
     {
-        $diskName = config('media-library.disk_name', 'public');
+        $diskName = $media->disk ?: config('media-library.disk_name', 'public');
         $path = $media->getPath();
         $fullPath = str_starts_with($path, '/') ? $path : Storage::disk($diskName)->path($path);
+
+        if (! file_exists($fullPath)) {
+            $relPath = $media->getPathRelativeToRoot();
+            if ($relPath && Storage::disk($diskName)->exists($relPath)) {
+                $fullPath = Storage::disk($diskName)->path($relPath);
+            }
+        }
 
         return file_exists($fullPath) ? $fullPath : null;
     }
@@ -1152,7 +1159,7 @@ class ProposalPdfService
 
                 // 2. Add uploaded signed scan page(s) (replacing the generated unsigned Page 2)
                 $scanMedia = $proposal->getFirstMedia('logbook_approval_file');
-                $scanPath = $scanMedia ? $scanMedia->getPath() : null;
+                $scanPath = $scanMedia ? $this->getLocalPdfPath($scanMedia) : null;
                 if ($scanPath && file_exists($scanPath) && strtolower(pathinfo($scanPath, PATHINFO_EXTENSION)) === 'pdf') {
                     $scanPageCount = $fpdi->setSourceFile($scanPath);
                     for ($p = 1; $p <= $scanPageCount; $p++) {
