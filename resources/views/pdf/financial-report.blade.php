@@ -27,25 +27,31 @@
     <title>Laporan Keuangan - {{ $proposal->id }}</title>
     @include('pdf.partials.styles')
     <style>
+        @page {
+            margin-top: 15mm;
+            margin-bottom: 22mm;
+            margin-left: 20mm;
+            margin-right: 20mm;
+        }
         .document-title {
             text-align: center;
-            margin: 15px 0;
+            margin: 8px 0;
             font-weight: bold;
-            font-size: 13pt;
+            font-size: 11pt;
             text-transform: uppercase;
             text-decoration: underline;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
         th, td {
             border: 0.5pt solid #000;
-            padding: 5px 6px;
+            padding: 3.5px 5px;
             text-align: left;
             vertical-align: top;
-            font-size: 8.5pt;
+            font-size: 8pt;
         }
         th {
             background-color: #f2f2f2;
@@ -55,7 +61,8 @@
         }
         .no-border, .no-border td, .no-border th {
             border: none !important;
-            padding: 2px !important;
+            padding: 1.5px 0 !important;
+            font-size: 8pt;
         }
         .text-center { text-align: center; }
         .text-right { text-align: right; }
@@ -65,9 +72,9 @@
         
         .section-title {
             font-weight: bold;
-            margin-top: 15px;
-            margin-bottom: 6px;
-            font-size: 9.5pt;
+            margin-top: 8px;
+            margin-bottom: 4px;
+            font-size: 8.5pt;
             text-transform: uppercase;
         }
     </style>
@@ -100,7 +107,7 @@
         LAPORAN PERTANGGUNGJAWABAN BIAYA (LPJ)
     </div>
 
-    <table class="no-border" style="margin-bottom: 15px;">
+    <table class="no-border" style="margin-bottom: 8px;">
         <tr>
             <td style="width: 22%;">Judul Usulan</td>
             <td style="width: 2%;">:</td>
@@ -169,7 +176,7 @@
     </table>
 
     {{-- Pengesahan Keuangan --}}
-    <div style="margin-top: 25px; page-break-inside: avoid;">
+    <div style="margin-top: 15px; page-break-inside: avoid;">
         <table class="no-border" style="width: 100%;">
             <tr>
                 <td width="50%" class="text-center" style="vertical-align: top; border: none;">
@@ -182,27 +189,27 @@
                 </td>
             </tr>
             <tr>
-                <td class="text-center" style="height: 110px; vertical-align: bottom; border: none; padding-bottom: 5px;">
+                <td class="text-center" style="height: 80px; vertical-align: bottom; border: none; padding-bottom: 3px;">
                     @if($qrUrlLppm ?? null)
-                        <div style="margin-bottom: 3px;">
-                            <img src="{{ generate_qr_code_data_uri($qrUrlLppm, 130) }}" width="65">
+                        <div style="margin-bottom: 2px;">
+                            <img src="{{ generate_qr_code_data_uri($qrUrlLppm, 110) }}" width="55">
                         </div>
-                        <div style="font-size: 7pt; color: #059669; font-weight: bold; margin-bottom: 3px;">VERIFIED BY LPPM</div>
+                        <div style="font-size: 6.5pt; color: #059669; font-weight: bold; margin-bottom: 2px;">VERIFIED BY LPPM</div>
                     @else
-                        <div style="height: 65px;"></div>
+                        <div style="height: 55px;"></div>
                     @endif
                     @php $kepala = \App\Models\User::role('kepala lppm')->first(); @endphp
                     <strong><u>{{ $kepala->name ?? '.......................' }}</u></strong><br>
                     NIDN. {{ $kepala->identity?->identity_id ?? '-' }}
                 </td>
-                <td class="text-center" style="height: 110px; vertical-align: bottom; border: none; padding-bottom: 5px;">
+                <td class="text-center" style="height: 80px; vertical-align: bottom; border: none; padding-bottom: 3px;">
                     @if($qrUrlSubmitter ?? null)
-                        <div style="margin-bottom: 3px;">
-                            <img src="{{ generate_qr_code_data_uri($qrUrlSubmitter, 130) }}" width="65">
+                        <div style="margin-bottom: 2px;">
+                            <img src="{{ generate_qr_code_data_uri($qrUrlSubmitter, 110) }}" width="55">
                         </div>
-                        <div style="font-size: 7pt; color: #555; font-weight: bold; margin-bottom: 3px;">DIGITALLY SIGNED</div>
+                        <div style="font-size: 6.5pt; color: #555; font-weight: bold; margin-bottom: 2px;">DIGITALLY SIGNED</div>
                     @else
-                        <div style="height: 65px;"></div>
+                        <div style="height: 55px;"></div>
                     @endif
                     <strong><u>{{ $submitterFullName }}</u></strong><br>
                     NIDN. {{ $proposal->submitter->identity->identity_id ?? '-' }}

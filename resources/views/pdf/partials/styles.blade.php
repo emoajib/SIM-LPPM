@@ -109,14 +109,14 @@
     }
     .footer-institutional {
         position: fixed;
-        bottom: -30px;
+        bottom: -20px;
         left: 0px;
         right: 0px;
-        height: 50px;
+        height: 35px;
         text-align: center;
         font-size: 8pt;
-        border-top: 1px solid #ccc;
-        padding-top: 5px;
+        border-top: 0.5pt solid #ccc;
+        padding-top: 4px;
         color: #666;
     }
     .footer-institutional .page-number:after {
