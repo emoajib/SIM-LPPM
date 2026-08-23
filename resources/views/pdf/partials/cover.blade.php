@@ -54,7 +54,7 @@
     {{-- Blok "Dibiayai Oleh" + Nomor Kontrak (format baru) --}}
     <div style="margin-top: 20px; text-align: center; font-size: 11pt; line-height: 1.6; margin-bottom: 20px;">
         Dibiayai Oleh {{ get_institution_config('name') ?: 'Institut Teknologi dan Sains Nahdlatul Ulama Pekalongan' }}<br>
-        Berdasarkan Kontrak Pelaksanaan Penelitian/Pengabdian Masyarakat<br>
+        Berdasarkan Kontrak Pelaksanaan {{ $proposal->detailable_type === 'App\Models\Research' ? 'Penelitian' : 'Pengabdian Masyarakat' }}<br>
         <strong>No. Kontrak : {{ $proposal->contract_number ?: 'xxxxxxxxxx' }}</strong>
     </div>
 

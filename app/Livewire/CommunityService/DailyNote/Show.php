@@ -268,11 +268,19 @@ class Show extends Component
             }
         }
 
-        $message = 'Catatan harian berhasil ditandatangani.';
+        $message = 'Catatan harian dan laporan keuangan berhasil ditandatangani.';
         session()->flash('success', $message);
         $this->toastSuccess($message);
 
-        return redirect()->route('daily-notes.export-pdf', ['proposal' => $this->proposal, 'signed' => 'true']);
+        // Invalidate cached financial PDF so signature updates
+        $financialFiles = glob(storage_path('app/pdf_cache/financial/financial_'.$this->proposal->id.'*.pdf'));
+        if (is_array($financialFiles)) {
+            foreach ($financialFiles as $file) {
+                @unlink($file);
+            }
+        }
+
+        return redirect()->route('financial-reports.export-pdf', ['proposal' => $this->proposal, 'download' => 'true']);
     }
 
     public function canApprove(Proposal $proposal): bool
@@ -288,6 +296,7 @@ class Show extends Component
         }
 
         $this->proposal->update(['logbook_approved_at' => now()]);
+        $this->clearFinancialPdfCache();
 
         $message = 'Catatan harian berhasil divalidasi oleh Kepala LPPM.';
         session()->flash('success', $message);
@@ -316,6 +325,7 @@ class Show extends Component
             ->toMediaCollection('logbook_approval_file');
 
         $this->reset('logbookApprovalFile');
+        $this->clearFinancialPdfCache();
 
         $message = 'Berkas scan lembar pengesahan basah berhasil diunggah.';
         session()->flash('success', $message);
@@ -329,9 +339,20 @@ class Show extends Component
         }
 
         $this->proposal->clearMediaCollection('logbook_approval_file');
+        $this->clearFinancialPdfCache();
 
         $message = 'Berkas scan lembar pengesahan basah berhasil dihapus.';
         session()->flash('info', $message);
         $this->toastSuccess($message);
+    }
+
+    protected function clearFinancialPdfCache(): void
+    {
+        $financialFiles = glob(storage_path('app/pdf_cache/financial/financial_'.$this->proposal->id.'*.pdf'));
+        if (is_array($financialFiles)) {
+            foreach ($financialFiles as $file) {
+                @unlink($file);
+            }
+        }
     }
 }

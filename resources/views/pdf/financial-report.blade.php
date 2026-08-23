@@ -96,60 +96,16 @@
 
     {{-- ===================== HALAMAN 1: COVER LAPORAN KEUANGAN ===================== --}}
     <div class="page-break">
-        <div style="font-size: 15pt; font-weight: bold; margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; text-align: center; line-height: 1.3;">
-            LAPORAN KEUANGAN (LPJ)<br>
-            {{ $proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN KEPADA MASYARAKAT' }} INTERNAL
-        </div>
-
-        {{-- Nomor Kontrak dipindah ke bawah Tim Pelaksana (format baru) --}}
-        
-        <div style="margin: 30px 0; text-align: center;">
-            @if(($pdfConfig['show_logo'] ?? true) && get_logo_base64())
-                <img src="{{ get_logo_base64() }}" style="width: {{ $pdfConfig['logo_size'] ?? 110 }}px;">
-            @endif
-        </div>
-
-        <div style="font-size: 13pt; font-weight: bold; margin-bottom: 25px; line-height: 1.3; text-align: center; text-transform: uppercase;">
-            {{ clean_proposal_title($proposal->title) }}
-        </div>
-
-        <div style="width: 100%; margin: 15px 0;">
-            <div style="font-weight: bold; margin-bottom: 5px; text-align: center;">Tim Pelaksana:</div>
-            <table style="width: 100%; border: 0.5pt dashed #000; margin-bottom: 0;">
-                <tr>
-                    <td style="width: 15%; border: 0.5pt dashed #000; padding: 6px;">Ketua</td>
-                    <td style="width: 45%; border: 0.5pt dashed #000; padding: 6px; font-weight: bold;">{{ $submitterFullName }}</td>
-                    <td style="width: 10%; border: 0.5pt dashed #000; padding: 6px;">NIDN</td>
-                    <td style="width: 30%; border: 0.5pt dashed #000; padding: 6px; font-weight: bold;">{{ $proposal->submitter->identity?->identity_id ?? '-' }}</td>
-                </tr>
-                @php
-                    $lecturerMembersCover = $proposal->teamMembers->filter(fn($m) => $m->id !== $proposal->submitter_id && ($m->identity?->type === 'dosen' || $m->pivot->role === 'anggota' || $m->pivot->role === 'dosen'));
-                @endphp
-                @foreach($lecturerMembersCover as $index => $member)
-                <tr>
-                    <td style="width: 15%; border: 0.5pt dashed #000; padding: 6px;">Anggota {{ to_roman($index + 1) }}</td>
-                    <td style="width: 45%; border: 0.5pt dashed #000; padding: 6px; font-weight: bold;">{{ format_name($member->identity?->title_prefix ?? '', $member->name, $member->identity?->title_suffix ?? '') }}</td>
-                    <td style="width: 10%; border: 0.5pt dashed #000; padding: 6px;">NIDN</td>
-                    <td style="width: 30%; border: 0.5pt dashed #000; padding: 6px; font-weight: bold;">{{ $member->identity?->identity_id ?? '-' }}</td>
-                </tr>
-                @endforeach
-            </table>
-        </div>
-
-        {{-- Blok "Dibiayai Oleh" + Nomor Kontrak (format baru) --}}
-        <div style="margin-top: 18px; text-align: center; font-size: 10.5pt; line-height: 1.6;">
-            Dibiayai Oleh {{ get_institution_config('name') ?: 'Institut Teknologi dan Sains Nahdlatul Ulama Pekalongan' }}<br>
-            Berdasarkan Kontrak Pelaksanaan
-            {{ $proposal->detailable_type === 'App\Models\Research' ? 'Penelitian' : 'Pengabdian Masyarakat' }}<br>
-            <strong>No. Kontrak : {{ $proposal->contract_number ?: 'xxxxxxxxxx' }}</strong>
-        </div>
-
-        <div style="position: absolute; bottom: 2cm; width: 100%; text-align: center; font-weight: bold; font-size: 11pt; text-transform: uppercase; line-height: 1.3;">
-            FAKULTAS {{ strtoupper($proposal->submitter->identity?->faculty?->name ?? '-') }}<br>
-            PROGRAM STUDI {{ strtoupper($proposal->submitter->identity?->studyProgram?->name ?? '-') }}<br>
-            ITSNU PEKALONGAN<br>
-            TAHUN {{ $proposal->start_year }}
-        </div>
+        @include('pdf.partials.cover', [
+            'coverTitle' => 'LAPORAN KEUANGAN (LPJ)<br>' . ($proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN KEPADA MASYARAKAT') . ' INTERNAL',
+            'coverYear' => $proposal->start_year,
+            'proposal' => $proposal,
+            'submitterFullName' => $submitterFullName,
+            'submitterNidn' => $proposal->submitter->identity?->identity_id ?? '-',
+            'facultyName' => $proposal->submitter->identity?->faculty?->name ?? '-',
+            'prodiName' => $proposal->submitter->identity?->studyProgram?->name ?? '-',
+            'pdfConfig' => $pdfConfig,
+        ])
     </div>
 
     {{-- ===================== HALAMAN 2: REKAPITULASI & RINCIAN ANGGARAN ===================== --}}
@@ -308,6 +264,80 @@
             </tr>
         </table>
     </div>
+
+    {{-- ===================== HALAMAN 3: CATATAN HARIAN KEGIATAN (LOGBOOK) ===================== --}}
+    <div class="page-break"></div>
+    @include('pdf.partials.header')
+
+    <div class="document-title">
+        C. CATATAN HARIAN KEGIATAN (LOGBOOK)
+    </div>
+
+    <table class="no-border" style="margin-bottom: 12px;">
+        <tr>
+            <td style="width: 22%;">Judul Usulan</td>
+            <td style="width: 2%;">:</td>
+            <td style="font-weight: bold;">{{ clean_proposal_title($proposal->title) }}</td>
+        </tr>
+        <tr>
+            <td>Ketua Pelaksana</td>
+            <td>:</td>
+            <td>{{ $submitterFullName }} (NIDN: {{ $proposal->submitter->identity?->identity_id ?? '-' }})</td>
+        </tr>
+        <tr>
+            <td>Tahun Pelaksanaan</td>
+            <td>:</td>
+            <td>{{ $proposal->start_year }}</td>
+        </tr>
+    </table>
+
+    <table>
+        <thead>
+            <tr>
+                <th width="5%">No</th>
+                <th width="12%">Tanggal</th>
+                <th width="33%">Aktivitas & Catatan</th>
+                <th width="15%">Kelompok RAB</th>
+                <th width="13%">Nominal (Rp)</th>
+                <th width="8%">Progres</th>
+                <th width="14%">Bukti (File)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($proposal->dailyNotes->sortBy('activity_date') as $index => $note)
+                <tr>
+                    <td class="text-center">{{ $index + 1 }}</td>
+                    <td class="text-center">{{ $note->activity_date->format('d/m/Y') }}</td>
+                    <td>
+                        <div class="font-bold">{{ $note->activity_description }}</div>
+                        @if ($note->notes)
+                            <div style="margin-top: 3px; font-style: italic; color: #444; font-size: 8pt;">
+                                Catatan: {{ $note->notes }}
+                            </div>
+                        @endif
+                    </td>
+                    <td class="text-center">{{ $note->budgetGroup->name ?? '-' }}</td>
+                    <td class="text-right">{{ $note->amount ? number_format($note->amount, 0, ',', '.') : '-' }}</td>
+                    <td class="text-center">{{ $note->progress_percentage ?? 0 }}%</td>
+                    <td style="font-size: 7.5pt;">
+                        @if ($note->media->isNotEmpty())
+                            <ul style="margin: 0; padding-left: 12px;">
+                                @foreach ($note->media as $m)
+                                    <li>{{ \Illuminate\Support\Str::limit($m->file_name, 18) }}</li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <div style="text-align: center; color: #888">-</div>
+                        @endif
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="7" class="text-center">Belum ada catatan aktivitas harian.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
 
     {{-- ===================== HALAMAN LAMPIRAN BUKTI FISIK NOTA / KWITANSI ===================== --}}
     @php

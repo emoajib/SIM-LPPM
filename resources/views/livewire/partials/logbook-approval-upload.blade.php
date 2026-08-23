@@ -24,12 +24,9 @@
             <div class="row g-3 align-items-center">
                 <div class="col-md-5">
                     <label class="form-label font-weight-bold small mb-1">Langkah 1: Unduh Lembar Pengesahan</label>
-                    <div class="d-flex gap-2">
-                        <a data-navigate-ignore="true" href="{{ route('daily-notes.export-pdf', ['proposal' => $proposal, 'download' => 'true']) }}" target="_blank" class="btn btn-outline-primary btn-sm flex-fill">
-                            <x-lucide-download class="icon icon-sm me-1" /> Unduh Logbook
-                        </a>
-                        <a data-navigate-ignore="true" href="{{ route('financial-reports.export-pdf', ['proposal' => $proposal, 'download' => 'true']) }}" target="_blank" class="btn btn-outline-success btn-sm flex-fill">
-                            <x-lucide-download class="icon icon-sm me-1" /> Unduh LPJ Keuangan
+                    <div>
+                        <a data-navigate-ignore="true" href="{{ route('financial-reports.export-pdf', ['proposal' => $proposal, 'download' => 'true']) }}" target="_blank" class="btn btn-outline-success btn-sm w-100">
+                            <x-lucide-download class="icon icon-sm me-1" /> Unduh Laporan Keuangan (LPJ)
                         </a>
                     </div>
                 </div>

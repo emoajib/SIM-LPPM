@@ -123,51 +123,16 @@
     </div>
 
     <div class="page-break">
-        <div style="font-size: 14pt; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; text-align: center;">
-            CATATAN HARIAN {{ $proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN' }} INTERNAL
-        </div>
-        
-        <div style="margin: 40px 0; text-align: center;">
-            @php $pdfConfig ??= get_pdf_config('letter'); @endphp
-            @if(($pdfConfig['show_logo'] ?? true) && get_logo_base64())
-                {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
-                <img src="{{ get_logo_base64() }}" style="width: {{ $pdfConfig['logo_size'] ?? 110 }}px;">
-            @endif
-        </div>
-
-        <div style="font-size: 14pt; font-weight: bold; margin-bottom: 30px; line-height: 1.3; text-align: center;">
-            {{ clean_proposal_title($proposal->title) }}
-        </div>
-
-        <div style="width: 100%; margin: 20px 0;">
-            <div style="font-weight: bold; margin-bottom: 5px; text-align: center;">Oleh:</div>
-            <table style="width: 100%; border: 0.5pt dashed #000; margin-bottom: 0;">
-                <tr>
-                    <td style="width: 15%; border: 0.5pt dashed #000; padding: 8px;">Ketua</td>
-                    <td style="width: 45%; border: 0.5pt dashed #000; padding: 8px; font-weight: bold;">{{ format_name($proposal->submitter->identity?->title_prefix ?? '', $proposal->submitter->name, $proposal->submitter->identity?->title_suffix ?? '') }}</td>
-                    <td style="width: 10%; border: 0.5pt dashed #000; padding: 8px;">NIDN</td>
-                    <td style="width: 30%; border: 0.5pt dashed #000; padding: 8px; font-weight: bold;">{{ $proposal->submitter->identity?->identity_id ?? '-' }}</td>
-                </tr>
-                @php
-                    $lecturerMembersCover = $proposal->teamMembers->filter(fn($m) => $m->id !== $proposal->submitter_id && ($m->identity?->type === 'dosen' || $m->pivot->role === 'anggota' || $m->pivot->role === 'dosen'));
-                @endphp
-                @foreach($lecturerMembersCover as $index => $member)
-                <tr>
-                    <td style="width: 15%; border: 0.5pt dashed #000; padding: 8px;">Anggota {{ to_roman($index + 1) }}</td>
-                    <td style="width: 45%; border: 0.5pt dashed #000; padding: 8px; font-weight: bold;">{{ format_name($member->identity?->title_prefix ?? '', $member->name, $member->identity?->title_suffix ?? '') }}</td>
-                    <td style="width: 10%; border: 0.5pt dashed #000; padding: 8px;">NIDN</td>
-                    <td style="width: 30%; border: 0.5pt dashed #000; padding: 8px; font-weight: bold;">{{ $member->identity?->identity_id ?? '-' }}</td>
-                </tr>
-                @endforeach
-            </table>
-        </div>
-
-        <div style="position: absolute; bottom: 2cm; width: 100%; text-align: center; font-weight: bold; font-size: 12pt; text-transform: uppercase;">
-            FAKULTAS {{ strtoupper($proposal->submitter->identity?->faculty?->name ?? '-') }}<br>
-            PROGRAM STUDI {{ strtoupper($proposal->submitter->identity?->studyProgram?->name ?? '-') }}<br>
-            ITSNU PEKALONGAN<br>
-            TAHUN {{ $proposal->start_year }}
-        </div>
+        @include('pdf.partials.cover', [
+            'coverTitle' => 'CATATAN HARIAN<br>' . ($proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN') . ' INTERNAL',
+            'coverYear' => $proposal->start_year,
+            'proposal' => $proposal,
+            'submitterFullName' => $submitterFullName,
+            'submitterNidn' => $submitterNidn,
+            'facultyName' => $facultyName,
+            'prodiName' => $prodiName,
+            'pdfConfig' => $pdfConfig,
+        ])
     </div>
     {{-- Standardized Header --}}
     @include('pdf.partials.header')
