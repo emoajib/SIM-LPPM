@@ -101,11 +101,7 @@
             {{ $proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN KEPADA MASYARAKAT' }} INTERNAL
         </div>
 
-        @if(!empty($proposal->contract_number))
-        <div style="font-size: 11pt; text-align: center; margin-bottom: 15px; font-weight: bold;">
-            Nomor Kontrak: {{ $proposal->contract_number }}
-        </div>
-        @endif
+        {{-- Nomor Kontrak dipindah ke bawah Tim Pelaksana (format baru) --}}
         
         <div style="margin: 30px 0; text-align: center;">
             @if(($pdfConfig['show_logo'] ?? true) && get_logo_base64())
@@ -138,6 +134,14 @@
                 </tr>
                 @endforeach
             </table>
+        </div>
+
+        {{-- Blok "Dibiayai Oleh" + Nomor Kontrak (format baru) --}}
+        <div style="margin-top: 18px; text-align: center; font-size: 10.5pt; line-height: 1.6;">
+            Dibiayai Oleh {{ get_institution_config('name') ?: 'Institut Teknologi dan Sains Nahdlatul Ulama Pekalongan' }}<br>
+            Berdasarkan Kontrak Pelaksanaan
+            {{ $proposal->detailable_type === 'App\Models\Research' ? 'Penelitian' : 'Pengabdian Masyarakat' }}<br>
+            <strong>No. Kontrak : {{ $proposal->contract_number ?: 'xxxxxxxxxx' }}</strong>
         </div>
 
         <div style="position: absolute; bottom: 2cm; width: 100%; text-align: center; font-weight: bold; font-size: 11pt; text-transform: uppercase; line-height: 1.3;">
