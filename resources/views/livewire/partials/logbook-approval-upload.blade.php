@@ -18,16 +18,19 @@
         </div>
         <div class="card-body">
             <p class="text-secondary small mb-3">
-                Unduh lembar rekapitulasi pengesahan di bawah ini untuk dibubuhi <strong>tanda tangan basah Ketua Pengusul dan tanda tangan serta cap basah Kepala LPPM</strong>. Setelah selesai, scan dokumen dalam format PDF dan unggah kembali di sini.
+                Unduh dokumen LPJ / lembar pengesahan di bawah ini untuk dibubuhi <strong>tanda tangan basah Ketua Pengusul dan tanda tangan serta cap basah Kepala LPPM</strong>. Setelah selesai ditandatangani, scan dokumen pengesahan dalam format PDF dan unggah kembali pada Langkah 2.
             </p>
 
             <div class="row g-3 align-items-center">
                 <div class="col-md-5">
-                    <label class="form-label font-weight-bold small mb-1">Langkah 1: Unduh Lembar Pengesahan</label>
+                    <label class="form-label font-weight-bold small mb-1">Langkah 1: Unduh Lembar Pengesahan LPJ</label>
                     <div>
                         <a data-navigate-ignore="true" href="{{ route('financial-reports.export-pdf', ['proposal' => $proposal, 'download' => 'true']) }}" target="_blank" class="btn btn-outline-success btn-sm w-100">
-                            <x-lucide-download class="icon icon-sm me-1" /> Unduh Laporan Keuangan (LPJ)
+                            <x-lucide-download class="icon icon-sm me-1" /> Unduh Dokumen LPJ (Untuk TTD Basah)
                         </a>
+                        <div class="text-secondary small mt-1" style="font-size: 0.75rem;">
+                            Cetak lembar rekapitulasi & pengesahan (Halaman 2), bubuhi tanda tangan dosen & Kepala LPPM + cap basah.
+                        </div>
                     </div>
                 </div>
 

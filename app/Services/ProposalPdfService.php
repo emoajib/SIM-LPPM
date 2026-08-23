@@ -1099,6 +1099,8 @@ class ProposalPdfService
         $institutionName = $submitterIdentity?->institution->name ?? 'ITSNU Pekalongan';
         $academicYear = $proposal->start_year.'/'.($proposal->start_year + 1);
 
+        $logbookApprovalMode = Setting::where('key', 'logbook_approval_mode')->value('value') ?? 'digital';
+
         $logbookSigs = $proposal->signatures()
             ->where('variant', 'logbook')
             ->get()
@@ -1107,11 +1109,11 @@ class ProposalPdfService
                 return "{$s->action}|{$s->signed_role}";
             });
 
-        $qrUrlSubmitter = isset($logbookSigs['submitted|lecturer'])
+        $qrUrlSubmitter = ($logbookApprovalMode !== 'upload' && isset($logbookSigs['submitted|lecturer']))
             ? URL::signedRoute('signatures.verify', ['documentSignature' => $logbookSigs['submitted|lecturer']->id])
             : null;
 
-        $qrUrlLppm = isset($logbookSigs['approved|kepala_lppm'])
+        $qrUrlLppm = ($logbookApprovalMode !== 'upload' && isset($logbookSigs['approved|kepala_lppm']))
             ? URL::signedRoute('signatures.verify', ['documentSignature' => $logbookSigs['approved|kepala_lppm']->id])
             : null;
 
@@ -1121,7 +1123,7 @@ class ProposalPdfService
             'proposal' => $proposal,
             'isSigned' => $proposal->logbook_signed_at !== null,
             'isApproved' => $proposal->logbook_approved_at !== null,
-            'logbookApprovalMode' => Setting::where('key', 'logbook_approval_mode')->value('value') ?? 'digital',
+            'logbookApprovalMode' => $logbookApprovalMode,
             'qrUrlSubmitter' => $qrUrlSubmitter,
             'qrUrlLppm' => $qrUrlLppm,
             'submitterFullName' => $submitterFullName,
