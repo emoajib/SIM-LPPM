@@ -119,7 +119,7 @@
         padding-top: 5px;
         color: #666;
     }
-    .footer-institutional .page-number:before {
+    .footer-institutional .page-number:after {
         content: counter(page);
     }
 </style>

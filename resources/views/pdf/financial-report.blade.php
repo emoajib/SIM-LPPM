@@ -70,21 +70,6 @@
             font-size: 9.5pt;
             text-transform: uppercase;
         }
-        
-        .footer-institutional {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 8pt;
-            border-top: 1px solid #ccc;
-            padding-top: 3px;
-            color: #444;
-        }
-        .page-number::after {
-            content: counter(page);
-        }
     </style>
 </head>
 <body>
@@ -312,17 +297,17 @@
         </div>
 
         @foreach ($notesWithMedia as $note)
-            <div style="margin-bottom: 25px; border: 1px solid #ccc; padding: 12px; page-break-inside: avoid;">
-                <div style="margin-top: 0; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 6px; font-weight: bold; font-size: 10pt;">
-                    Transaksi: {{ $note->activity_date->format('d F Y') }} — Nominal: Rp {{ number_format($note->amount ?? 0, 0, ',', '.') }}
-                    <div style="font-weight: normal; font-size: 8.5pt; color: #444; margin-top: 3px;">
-                        Uraian: {{ $note->activity_description }} (Kelompok: {{ $note->budgetGroup->name ?? '-' }})
+            @foreach ($note->media as $media)
+                <div style="margin-bottom: 18px; border: 1px solid #d0d0d0; padding: 10px; page-break-inside: avoid; background: #fff;">
+                    <div style="margin-top: 0; margin-bottom: 8px; border-bottom: 1px solid #e5e5e5; padding-bottom: 5px; font-weight: bold; font-size: 9pt;">
+                        Transaksi: {{ $note->activity_date->format('d F Y') }} &mdash; Nominal: Rp {{ number_format($note->amount ?? 0, 0, ',', '.') }}
+                        <div style="font-weight: normal; font-size: 8pt; color: #555; margin-top: 2px;">
+                            Uraian: {{ $note->activity_description }} (Kelompok: {{ $note->budgetGroup->name ?? '-' }})
+                        </div>
                     </div>
-                </div>
 
-                @foreach ($note->media as $media)
-                    <div style="margin-bottom: 15px; text-align: center;">
-                        <div style="font-weight: bold; margin-bottom: 6px; font-size: 7.5pt; text-align: left; background: #f9f9f9; padding: 3px 6px; border-left: 3px solid #0054a6;">
+                    <div style="text-align: center;">
+                        <div style="font-weight: bold; margin-bottom: 6px; font-size: 7.5pt; text-align: left; background: #f8f9fa; padding: 3px 6px; border-left: 3px solid #0054a6;">
                             Nama Berkas: {{ $media->file_name }}
                         </div>
 
@@ -332,22 +317,24 @@
                             @endphp
 
                             @if($imgBase64)
-                                <img src="{{ $imgBase64 }}"
-                                    style="max-width: 100%; max-height: 460px; display: block; margin: 0 auto; border: 1px solid #ddd; padding: 2px;">
+                                <div style="margin: 5px auto; text-align: center;">
+                                    <img src="{{ $imgBase64 }}"
+                                        style="max-width: 95%; max-height: 360px; display: inline-block; border: 1px solid #ccc; padding: 2px;">
+                                </div>
                             @else
                                 <div style="background: #fff0f0; border: 1px dashed red; padding: 8px; color: red; font-size: 8pt;">
                                     Berkas gambar bukti ({{ $media->file_name }}) tidak ditemukan di server.
                                 </div>
                             @endif
                         @else
-                            <div style="background: #f8f9fa; border: 1px dashed #aaa; padding: 15px; color: #555; font-size: 8pt;">
+                            <div style="background: #f8f9fa; border: 1px dashed #aaa; padding: 12px; color: #555; font-size: 8pt;">
                                 Dokumen Bukti Eksternal (<span style="text-transform: uppercase">{{ $media->extension }}</span>)<br>
                                 <small style="font-style: italic;">Berkas PDF / Dokumen terlampir pada sistem.</small>
                             </div>
                         @endif
                     </div>
-                @endforeach
-            </div>
+                </div>
+            @endforeach
         @endforeach
     @endif
 </body>

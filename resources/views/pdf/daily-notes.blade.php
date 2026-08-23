@@ -72,21 +72,6 @@
             font-size: 10pt;
             text-transform: uppercase;
         }
-        
-        .footer-institutional {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 8pt;
-            border-top: 1px solid #ccc;
-            padding-top: 3px;
-            color: #444;
-        }
-        .page-number::after {
-            content: counter(page);
-        }
         .log-content {
             margin-top: 5px;
             font-size: 8.5pt;
@@ -307,8 +292,10 @@
                                 @endphp
 
                                 @if($imgBase64)
-                                    <img src="{{ $imgBase64 }}"
-                                        style="max-width: 100%; max-height: 500px; display: block; margin: 0 auto; border: 1px solid #ddd; padding: 3px;">
+                                    <div style="margin: 5px auto; text-align: center;">
+                                        <img src="{{ $imgBase64 }}"
+                                            style="max-width: 95%; max-height: 360px; display: inline-block; border: 1px solid #ccc; padding: 2px;">
+                                    </div>
                                 @else
                                     <div style="background: #fff0f0; border: 1px dashed red; padding: 10px; color: red;">
                                         Error: File gambar fisik ({{ $media->file_name }}) tidak ditemukan di server.
