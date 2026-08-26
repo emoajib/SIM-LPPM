@@ -464,16 +464,26 @@ class Show extends Component
             abort(403);
         }
 
-        // Validate 100% Budget Usage
+        // Validate Budget Usage (Threshold 70% if Daily Notes exist)
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $totalProposedBudget = (float) $this->proposal->budgetItems()->sum('total_price');
         $totalUsedBudget = (float) $this->proposal->dailyNotes()->sum('amount');
 
-        if ($totalProposedBudget > 0 && $totalUsedBudget != $totalProposedBudget) {
-            $message = 'Gagal mengajukan: Total pemakaian anggaran di Catatan Harian (Rp '.number_format($totalUsedBudget, 0, ',', '.').') belum mencapai 100% dari total RAB yang disetujui (Rp '.number_format($totalProposedBudget, 0, ',', '.').').';
-            session()->flash('error', $message);
-            $this->toastError($message);
+        if ($totalProposedBudget > 0 && $totalUsedBudget > 0) {
+            $percentage = ($totalUsedBudget / $totalProposedBudget) * 100;
 
-            return;
+            if ($percentage < 70) {
+                $message = sprintf(
+                    'Gagal mengajukan: Realisasi anggaran di Catatan Harian baru %.1f%% (Rp %s dari Rp %s). Minimal 70%% diperlukan untuk mengajukan laporan akhir.',
+                    $percentage,
+                    number_format($totalUsedBudget, 0, ',', '.'),
+                    number_format($totalProposedBudget, 0, ',', '.')
+                );
+                session()->flash('error', $message);
+                $this->toastError($message);
+
+                return;
+            }
         }
 
         // Validate that substance file exists (either in DB or newly uploaded)

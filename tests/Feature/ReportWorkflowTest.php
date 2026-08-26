@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Enums\ProposalStatus;
 use App\Enums\ReportStatus;
 use App\Livewire\Research\FinalReport\Show;
+use App\Models\BudgetItem;
+use App\Models\DailyNote;
 use App\Models\Faculty;
 use App\Models\Identity;
 use App\Models\Institution;
@@ -227,5 +229,81 @@ class ReportWorkflowTest extends TestCase
             'proposal_id' => $this->proposal->id,
             'reporting_period' => 'final',
         ]);
+    }
+
+    public function test_dosen_cannot_submit_final_report_if_daily_notes_under_70_percent_of_budget()
+    {
+        $this->actingAs($this->dosen);
+
+        // Add 10,000,000 budget
+        BudgetItem::factory()->create([
+            'proposal_id' => $this->proposal->id,
+            'volume' => 1,
+            'unit_price' => 10000000,
+            'total_price' => 10000000,
+        ]);
+
+        // Add 5,000,000 daily note (50% - under 70%)
+        DailyNote::factory()->create([
+            'proposal_id' => $this->proposal->id,
+            'amount' => 5000000,
+            'activity_date' => now(),
+            'activity_description' => 'Field research',
+        ]);
+
+        $file = UploadedFile::fake()->create('laporan.pdf', 100);
+        $realizationFile = UploadedFile::fake()->create('realization.pdf', 100);
+
+        $component = Livewire::test(Show::class, [
+            'proposal' => $this->proposal,
+        ])
+            ->set('form.summaryUpdate', 'Final summary')
+            ->set('form.keywordsInput', 'final; test')
+            ->set('substanceFile', $file)
+            ->set('realizationFile', $realizationFile)
+            ->call('save');
+
+        $component->call('submit');
+
+        $report = $this->proposal->progressReports()->where('reporting_period', 'final')->first();
+        $this->assertEquals(ReportStatus::DRAFT, $report->status);
+    }
+
+    public function test_dosen_can_submit_final_report_if_daily_notes_reach_70_percent_of_budget()
+    {
+        $this->actingAs($this->dosen);
+
+        // Add 10,000,000 budget
+        BudgetItem::factory()->create([
+            'proposal_id' => $this->proposal->id,
+            'volume' => 1,
+            'unit_price' => 10000000,
+            'total_price' => 10000000,
+        ]);
+
+        // Add 7,000,000 daily note (70% - should pass)
+        DailyNote::factory()->create([
+            'proposal_id' => $this->proposal->id,
+            'amount' => 7000000,
+            'activity_date' => now(),
+            'activity_description' => 'Field research',
+        ]);
+
+        $file = UploadedFile::fake()->create('laporan.pdf', 100);
+        $realizationFile = UploadedFile::fake()->create('realization.pdf', 100);
+
+        $component = Livewire::test(Show::class, [
+            'proposal' => $this->proposal,
+        ])
+            ->set('form.summaryUpdate', 'Final summary')
+            ->set('form.keywordsInput', 'final; test')
+            ->set('substanceFile', $file)
+            ->set('realizationFile', $realizationFile)
+            ->call('save');
+
+        $component->call('submit');
+
+        $report = $this->proposal->progressReports()->where('reporting_period', 'final')->first();
+        $this->assertEquals(ReportStatus::SUBMITTED, $report->status);
     }
 }
