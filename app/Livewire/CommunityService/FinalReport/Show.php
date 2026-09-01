@@ -21,7 +21,6 @@ use App\Models\User;
 use App\Services\LecturerEligibilityService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -432,6 +431,7 @@ class Show extends Component
                 $this->saveSubstanceFile($report, 'final');
                 $this->saveRealizationFile($report, 'final');
                 $this->savePresentationFile($report, 'final');
+                $this->saveSignatureFile($report, 'final');
                 $this->saveCooperationProofFile($report);
                 $this->saveImplementationProofFile($report);
                 $this->savePkmAttachments($report);
@@ -532,6 +532,7 @@ class Show extends Component
                 $this->saveSubstanceFile($report, 'final');
                 $this->saveRealizationFile($report, 'final');
                 $this->savePresentationFile($report, 'final');
+                $this->saveSignatureFile($report, 'final');
                 $this->saveCooperationProofFile($report);
                 $this->saveImplementationProofFile($report);
                 $this->savePkmAttachments($report);
@@ -573,7 +574,7 @@ class Show extends Component
                 ->where('proposal_output_id', $proposalOutputId)
                 ->first();
 
-            if ($mandatoryOutput) {
+            if ($mandatoryOutput && isset($this->tempMandatoryFiles[$proposalOutputId])) {
                 $this->saveMandatoryOutputFile($mandatoryOutput, $proposalOutputId, 'final');
             }
         }
@@ -594,8 +595,12 @@ class Show extends Component
                 ->first();
 
             if ($additionalOutput) {
-                $this->saveAdditionalOutputFile($additionalOutput, $proposalOutputId, 'final');
-                $this->saveAdditionalOutputCert($additionalOutput, $proposalOutputId, 'final');
+                if (isset($this->tempAdditionalFiles[$proposalOutputId])) {
+                    $this->saveAdditionalOutputFile($additionalOutput, $proposalOutputId, 'final');
+                }
+                if (isset($this->tempAdditionalCerts[$proposalOutputId])) {
+                    $this->saveAdditionalOutputCert($additionalOutput, $proposalOutputId, 'final');
+                }
             }
         }
     }
@@ -646,6 +651,20 @@ class Show extends Component
     }
 
     /**
+     * Handle signature page file upload (real-time)
+     */
+    public function updatedSignatureFile(): void
+    {
+        if (! $this->canEdit) {
+            $this->signatureFile = null;
+
+            return;
+        }
+
+        $this->validateSignatureFile();
+    }
+
+    /**
      * Handle partner cooperation proof file upload (real-time)
      */
     public function updatedCooperationProofFile(): void
@@ -671,6 +690,116 @@ class Show extends Component
         }
 
         $this->validateImplementationProofFile();
+    }
+
+    public function updatedPartnerAgreementFile(): void
+    {
+        if (! $this->canEdit) {
+            $this->partnerAgreementFile = null;
+
+            return;
+        }
+
+        $this->validatePartnerAgreementFile();
+    }
+
+    public function updatedChairpersonStatementFile(): void
+    {
+        if (! $this->canEdit) {
+            $this->chairpersonStatementFile = null;
+
+            return;
+        }
+
+        $this->validateChairpersonStatementFile();
+    }
+
+    public function updatedServiceLocationMapFile(): void
+    {
+        if (! $this->canEdit) {
+            $this->serviceLocationMapFile = null;
+
+            return;
+        }
+
+        $this->validateServiceLocationMapFile();
+    }
+
+    public function updatedOfficialReportPkmFile(): void
+    {
+        if (! $this->canEdit) {
+            $this->officialReportPkmFile = null;
+
+            return;
+        }
+
+        $this->validateOfficialReportPkmFile();
+    }
+
+    public function updatedAssignmentLetterPkmFile(): void
+    {
+        if (! $this->canEdit) {
+            $this->assignmentLetterPkmFile = null;
+
+            return;
+        }
+
+        $this->validateAssignmentLetterPkmFile();
+    }
+
+    public function updatedQuestionnairePkmFile(): void
+    {
+        if (! $this->canEdit) {
+            $this->questionnairePkmFile = null;
+
+            return;
+        }
+
+        $this->validateQuestionnairePkmFile();
+    }
+
+    public function updatedTeamAttendanceFile(): void
+    {
+        if (! $this->canEdit) {
+            $this->teamAttendanceFile = null;
+
+            return;
+        }
+
+        $this->validateTeamAttendanceFile();
+    }
+
+    public function updatedParticipantAttendanceFile(): void
+    {
+        if (! $this->canEdit) {
+            $this->participantAttendanceFile = null;
+
+            return;
+        }
+
+        $this->validateParticipantAttendanceFile();
+    }
+
+    public function updatedTrainingMaterialFile(): void
+    {
+        if (! $this->canEdit) {
+            $this->trainingMaterialFile = null;
+
+            return;
+        }
+
+        $this->validateTrainingMaterialFile();
+    }
+
+    public function updatedActivityPhotosFiles(): void
+    {
+        if (! $this->canEdit) {
+            $this->activityPhotosFiles = [];
+
+            return;
+        }
+
+        $this->validateActivityPhotosFiles();
     }
 
     /**
@@ -775,6 +904,126 @@ class Show extends Component
         }
     }
 
+    public function removePartnerAgreementFile(): void
+    {
+        if (! $this->canEdit) {
+            abort(403);
+        }
+
+        if ($this->progressReport) {
+            $this->progressReport->clearMediaCollection('partner_agreement_letter');
+            $this->toastSuccess('Lampiran surat kesediaan mitra berhasil dihapus.');
+        }
+    }
+
+    public function removeChairpersonStatementFile(): void
+    {
+        if (! $this->canEdit) {
+            abort(403);
+        }
+
+        if ($this->progressReport) {
+            $this->progressReport->clearMediaCollection('chairperson_statement_letter');
+            $this->toastSuccess('Lampiran surat pernyataan ketua berhasil dihapus.');
+        }
+    }
+
+    public function removeServiceLocationMapFile(): void
+    {
+        if (! $this->canEdit) {
+            abort(403);
+        }
+
+        if ($this->progressReport) {
+            $this->progressReport->clearMediaCollection('service_location_map');
+            $this->toastSuccess('Lampiran peta lokasi pengabdian berhasil dihapus.');
+        }
+    }
+
+    public function removeOfficialReportPkmFile(): void
+    {
+        if (! $this->canEdit) {
+            abort(403);
+        }
+
+        if ($this->progressReport) {
+            $this->progressReport->clearMediaCollection('official_report_pkm');
+            $this->toastSuccess('Lampiran berita acara pelaksanaan PKM berhasil dihapus.');
+        }
+    }
+
+    public function removeAssignmentLetterPkmFile(): void
+    {
+        if (! $this->canEdit) {
+            abort(403);
+        }
+
+        if ($this->progressReport) {
+            $this->progressReport->clearMediaCollection('assignment_letter_pkm');
+            $this->toastSuccess('Lampiran surat tugas pelaksanaan PKM berhasil dihapus.');
+        }
+    }
+
+    public function removeQuestionnairePkmFile(): void
+    {
+        if (! $this->canEdit) {
+            abort(403);
+        }
+
+        if ($this->progressReport) {
+            $this->progressReport->clearMediaCollection('questionnaire_pkm');
+            $this->toastSuccess('Lampiran kuisioner pengabdian berhasil dihapus.');
+        }
+    }
+
+    public function removeTeamAttendanceFile(): void
+    {
+        if (! $this->canEdit) {
+            abort(403);
+        }
+
+        if ($this->progressReport) {
+            $this->progressReport->clearMediaCollection('team_attendance_list');
+            $this->toastSuccess('Lampiran daftar hadir tim PKM berhasil dihapus.');
+        }
+    }
+
+    public function removeParticipantAttendanceFile(): void
+    {
+        if (! $this->canEdit) {
+            abort(403);
+        }
+
+        if ($this->progressReport) {
+            $this->progressReport->clearMediaCollection('participant_attendance_list');
+            $this->toastSuccess('Lampiran daftar hadir peserta PKM berhasil dihapus.');
+        }
+    }
+
+    public function removeTrainingMaterialFile(): void
+    {
+        if (! $this->canEdit) {
+            abort(403);
+        }
+
+        if ($this->progressReport) {
+            $this->progressReport->clearMediaCollection('training_material_pkm');
+            $this->toastSuccess('Lampiran materi kegiatan PKM berhasil dihapus.');
+        }
+    }
+
+    public function removeActivityPhotosFiles(): void
+    {
+        if (! $this->canEdit) {
+            abort(403);
+        }
+
+        if ($this->progressReport) {
+            $this->progressReport->clearMediaCollection('activity_photos_pkm');
+            $this->toastSuccess('Lampiran foto kegiatan PKM berhasil dihapus.');
+        }
+    }
+
     /**
      * Save mandatory output after validation
      */
@@ -832,7 +1081,11 @@ class Show extends Component
      */
     public function updatedTempMandatoryFiles($value, $key): void
     {
-        if ($value instanceof UploadedFile) {
+        if (! $this->canEdit) {
+            return;
+        }
+
+        try {
             $this->validateMandatoryFile((int) $key);
 
             $this->form->tempMandatoryFiles[(int) $key] = $value;
@@ -844,6 +1097,10 @@ class Show extends Component
             $message = 'Data luaran wajib berhasil disimpan.';
             session()->flash('success', $message);
             $this->toastSuccess($message);
+        } catch (\Exception $e) {
+            $message = 'Gagal mengunggah file: '.$e->getMessage();
+            session()->flash('error', $message);
+            $this->toastError($message);
         }
     }
 
@@ -852,7 +1109,11 @@ class Show extends Component
      */
     public function updatedTempAdditionalFiles($value, $key): void
     {
-        if ($value instanceof UploadedFile) {
+        if (! $this->canEdit) {
+            return;
+        }
+
+        try {
             $this->validateAdditionalFile((int) $key);
 
             $this->form->tempAdditionalFiles[(int) $key] = $value;
@@ -864,6 +1125,10 @@ class Show extends Component
             $message = 'File luaran tambahan berhasil disimpan.';
             session()->flash('success', $message);
             $this->toastSuccess($message);
+        } catch (\Exception $e) {
+            $message = 'Gagal mengunggah file: '.$e->getMessage();
+            session()->flash('error', $message);
+            $this->toastError($message);
         }
     }
 
@@ -872,7 +1137,11 @@ class Show extends Component
      */
     public function updatedTempAdditionalCerts($value, $key): void
     {
-        if ($value instanceof UploadedFile) {
+        if (! $this->canEdit) {
+            return;
+        }
+
+        try {
             $this->validateAdditionalCert((int) $key);
 
             $this->form->tempAdditionalCerts[(int) $key] = $value;
@@ -884,6 +1153,10 @@ class Show extends Component
             $message = 'Sertifikat berhasil disimpan.';
             session()->flash('success', $message);
             $this->toastSuccess($message);
+        } catch (\Exception $e) {
+            $message = 'Gagal mengunggah file: '.$e->getMessage();
+            session()->flash('error', $message);
+            $this->toastError($message);
         }
     }
 

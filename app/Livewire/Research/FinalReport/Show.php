@@ -433,6 +433,7 @@ class Show extends Component
                 // Save report files (presentation file only for Community Service/PKM)
                 $this->saveSubstanceFile($report, 'final');
                 $this->saveRealizationFile($report, 'final');
+                $this->saveSignatureFile($report, 'final');
                 $this->saveCooperationProofFile($report);
                 $this->saveImplementationProofFile($report);
                 $this->saveResearchAttachments($report);
@@ -520,6 +521,7 @@ class Show extends Component
                 // Save report files (presentation file only for Community Service/PKM)
                 $this->saveSubstanceFile($report, 'final');
                 $this->saveRealizationFile($report, 'final');
+                $this->saveSignatureFile($report, 'final');
                 $this->saveCooperationProofFile($report);
                 $this->saveImplementationProofFile($report);
                 $this->saveResearchAttachments($report);
@@ -635,6 +637,34 @@ class Show extends Component
 
         // Validate file
         $this->validatePresentationFile();
+    }
+
+    /**
+     * Handle signature page file upload (real-time)
+     */
+    public function updatedSignatureFile(): void
+    {
+        if (! $this->canEdit) {
+            $this->signatureFile = null;
+
+            return;
+        }
+
+        $this->validateSignatureFile();
+    }
+
+    /**
+     * Handle research teaching material file upload (real-time)
+     */
+    public function updatedTeachingMaterialFile(): void
+    {
+        if (! $this->canEdit) {
+            $this->teachingMaterialFile = null;
+
+            return;
+        }
+
+        $this->validateTeachingMaterialFile();
     }
 
     /**
@@ -816,6 +846,23 @@ class Show extends Component
         if ($this->progressReport) {
             $this->progressReport->clearMediaCollection('signature_page');
             $message = 'Halaman pengesahan berhasil dihapus.';
+            session()->flash('success', $message);
+            $this->toastSuccess($message);
+        }
+    }
+
+    /**
+     * Remove research teaching material file
+     */
+    public function removeTeachingMaterialFile(): void
+    {
+        if (! $this->canEdit) {
+            abort(403);
+        }
+
+        if ($this->progressReport) {
+            $this->progressReport->clearMediaCollection('teaching_material_file');
+            $message = 'Berkas bahan ajar berhasil dihapus.';
             session()->flash('success', $message);
             $this->toastSuccess($message);
         }

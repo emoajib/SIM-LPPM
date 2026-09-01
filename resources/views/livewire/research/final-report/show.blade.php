@@ -548,6 +548,12 @@
                                         target="_blank" class="btn btn-sm btn-primary">
                                         <x-lucide-eye class="icon" /> Lihat
                                     </a>
+                                    @if ($canEdit)
+                                        <button type="button" wire:click="removeTeachingMaterialFile"
+                                            class="btn btn-sm btn-danger" wire:confirm="Yakin ingin menghapus file ini?">
+                                            <x-lucide-trash-2 class="icon" /> Hapus
+                                        </button>
+                                    @endif
                                 </div>
                             </div>
                         </div>

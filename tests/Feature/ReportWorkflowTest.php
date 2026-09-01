@@ -6,6 +6,7 @@ use App\Enums\ProposalStatus;
 use App\Enums\ReportStatus;
 use App\Livewire\Research\FinalReport\Show;
 use App\Models\BudgetItem;
+use App\Models\CommunityService;
 use App\Models\DailyNote;
 use App\Models\Faculty;
 use App\Models\Identity;
@@ -305,5 +306,105 @@ class ReportWorkflowTest extends TestCase
 
         $report = $this->proposal->progressReports()->where('reporting_period', 'final')->first();
         $this->assertEquals(ReportStatus::SUBMITTED, $report->status);
+    }
+
+    public function test_dosen_can_upload_and_save_research_attachments_and_signature()
+    {
+        $this->actingAs($this->dosen);
+
+        $pdfContent = "%PDF-1.4\n1 0 obj\n<<>>\nendobj\ntrailer\n<<>>\n%%EOF";
+        $file = UploadedFile::fake()->createWithContent('laporan.pdf', $pdfContent);
+        $realizationFile = UploadedFile::fake()->createWithContent('realization.pdf', $pdfContent);
+        $signatureFile = UploadedFile::fake()->createWithContent('pengesahan.pdf', $pdfContent);
+        $teachingMaterialFile = UploadedFile::fake()->createWithContent('bahan_ajar.pdf', $pdfContent);
+
+        $component = Livewire::test(Show::class, [
+            'proposal' => $this->proposal,
+        ])
+            ->set('form.summaryUpdate', 'Final summary with attachments')
+            ->set('form.keywordsInput', 'final; test; attachment')
+            ->set('substanceFile', $file)
+            ->set('realizationFile', $realizationFile)
+            ->set('signatureFile', $signatureFile)
+            ->set('teachingMaterialFile', $teachingMaterialFile)
+            ->call('save');
+
+        $component->assertHasNoErrors();
+
+        $report = $this->proposal->progressReports()->where('reporting_period', 'final')->first();
+        $this->assertNotNull($report);
+        $this->assertTrue($report->hasMedia('signature_page'));
+        $this->assertTrue($report->hasMedia('teaching_material_file'));
+
+        // Test removing teaching material file
+        $component->call('removeTeachingMaterialFile');
+        $report->refresh();
+        $this->assertFalse($report->hasMedia('teaching_material_file'));
+    }
+
+    public function test_dosen_can_upload_and_save_community_service_attachments()
+    {
+        $communityService = CommunityService::factory()->create();
+        $csProposal = Proposal::factory()->create([
+            'submitter_id' => $this->dosen->id,
+            'detailable_id' => $communityService->id,
+            'detailable_type' => CommunityService::class,
+            'status' => ProposalStatus::COMPLETED,
+        ]);
+
+        $this->actingAs($this->dosen);
+
+        $pdfContent = "%PDF-1.4\n1 0 obj\n<<>>\nendobj\ntrailer\n<<>>\n%%EOF";
+        $file = UploadedFile::fake()->createWithContent('laporan_pkm.pdf', $pdfContent);
+        $realizationFile = UploadedFile::fake()->createWithContent('realization_pkm.pdf', $pdfContent);
+        $partnerAgreement = UploadedFile::fake()->createWithContent('kesediaan_mitra.pdf', $pdfContent);
+        $chairpersonStatement = UploadedFile::fake()->createWithContent('pernyataan_ketua.pdf', $pdfContent);
+        $serviceLocationMap = UploadedFile::fake()->createWithContent('peta_lokasi.pdf', $pdfContent);
+        $officialReport = UploadedFile::fake()->createWithContent('berita_acara.pdf', $pdfContent);
+        $assignmentLetter = UploadedFile::fake()->createWithContent('surat_tugas.pdf', $pdfContent);
+        $questionnaire = UploadedFile::fake()->createWithContent('kuisioner.pdf', $pdfContent);
+        $teamAttendance = UploadedFile::fake()->createWithContent('hadir_tim.pdf', $pdfContent);
+        $participantAttendance = UploadedFile::fake()->createWithContent('hadir_peserta.pdf', $pdfContent);
+        $trainingMaterial = UploadedFile::fake()->createWithContent('materi_pkm.pdf', $pdfContent);
+        $activityPhoto = UploadedFile::fake()->createWithContent('foto_kegiatan.pdf', $pdfContent);
+
+        $component = Livewire::test(\App\Livewire\CommunityService\FinalReport\Show::class, [
+            'proposal' => $csProposal,
+        ])
+            ->set('form.summaryUpdate', 'Final summary PKM with attachments')
+            ->set('form.keywordsInput', 'pkm; final; test')
+            ->set('substanceFile', $file)
+            ->set('realizationFile', $realizationFile)
+            ->set('partnerAgreementFile', $partnerAgreement)
+            ->set('chairpersonStatementFile', $chairpersonStatement)
+            ->set('serviceLocationMapFile', $serviceLocationMap)
+            ->set('officialReportPkmFile', $officialReport)
+            ->set('assignmentLetterPkmFile', $assignmentLetter)
+            ->set('questionnairePkmFile', $questionnaire)
+            ->set('teamAttendanceFile', $teamAttendance)
+            ->set('participantAttendanceFile', $participantAttendance)
+            ->set('trainingMaterialFile', $trainingMaterial)
+            ->set('activityPhotosFiles', [$activityPhoto])
+            ->call('save');
+
+        $component->assertHasNoErrors();
+
+        $report = $csProposal->progressReports()->where('reporting_period', 'final')->first();
+        $this->assertNotNull($report);
+        $this->assertTrue($report->hasMedia('partner_agreement_letter'));
+        $this->assertTrue($report->hasMedia('chairperson_statement_letter'));
+        $this->assertTrue($report->hasMedia('service_location_map'));
+        $this->assertTrue($report->hasMedia('official_report_pkm'));
+        $this->assertTrue($report->hasMedia('assignment_letter_pkm'));
+        $this->assertTrue($report->hasMedia('questionnaire_pkm'));
+        $this->assertTrue($report->hasMedia('team_attendance_list'));
+        $this->assertTrue($report->hasMedia('participant_attendance_list'));
+        $this->assertTrue($report->hasMedia('training_material_pkm'));
+        $this->assertTrue($report->hasMedia('activity_photos_pkm'));
+
+        // Test removing an attachment
+        $component->call('removePartnerAgreementFile');
+        $report->refresh();
+        $this->assertFalse($report->hasMedia('partner_agreement_letter'));
     }
 }

@@ -764,7 +764,12 @@
                             @php $media = $progressReport->getFirstMedia('partner_agreement_letter'); @endphp
                             <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
                                 <small class="text-success text-truncate"><x-lucide-check class="icon icon-sm" /> {{ $media->name }}</small>
-                                <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
+                                    @if ($canEdit)
+                                        <button type="button" wire:click="removePartnerAgreementFile" class="btn btn-sm btn-link text-danger p-0" wire:confirm="Hapus berkas ini?">Hapus</button>
+                                    @endif
+                                </div>
                             </div>
                         @endif
                     </div>
@@ -777,7 +782,12 @@
                             @php $media = $progressReport->getFirstMedia('chairperson_statement_letter'); @endphp
                             <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
                                 <small class="text-success text-truncate"><x-lucide-check class="icon icon-sm" /> {{ $media->name }}</small>
-                                <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
+                                    @if ($canEdit)
+                                        <button type="button" wire:click="removeChairpersonStatementFile" class="btn btn-sm btn-link text-danger p-0" wire:confirm="Hapus berkas ini?">Hapus</button>
+                                    @endif
+                                </div>
                             </div>
                         @endif
                     </div>
@@ -790,7 +800,12 @@
                             @php $media = $progressReport->getFirstMedia('service_location_map'); @endphp
                             <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
                                 <small class="text-success text-truncate"><x-lucide-check class="icon icon-sm" /> {{ $media->name }}</small>
-                                <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
+                                    @if ($canEdit)
+                                        <button type="button" wire:click="removeServiceLocationMapFile" class="btn btn-sm btn-link text-danger p-0" wire:confirm="Hapus berkas ini?">Hapus</button>
+                                    @endif
+                                </div>
                             </div>
                         @endif
                     </div>
@@ -803,7 +818,12 @@
                             @php $media = $progressReport->getFirstMedia('official_report_pkm'); @endphp
                             <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
                                 <small class="text-success text-truncate"><x-lucide-check class="icon icon-sm" /> {{ $media->name }}</small>
-                                <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
+                                    @if ($canEdit)
+                                        <button type="button" wire:click="removeOfficialReportPkmFile" class="btn btn-sm btn-link text-danger p-0" wire:confirm="Hapus berkas ini?">Hapus</button>
+                                    @endif
+                                </div>
                             </div>
                         @endif
                     </div>
@@ -816,7 +836,12 @@
                             @php $media = $progressReport->getFirstMedia('assignment_letter_pkm'); @endphp
                             <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
                                 <small class="text-success text-truncate"><x-lucide-check class="icon icon-sm" /> {{ $media->name }}</small>
-                                <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
+                                    @if ($canEdit)
+                                        <button type="button" wire:click="removeAssignmentLetterPkmFile" class="btn btn-sm btn-link text-danger p-0" wire:confirm="Hapus berkas ini?">Hapus</button>
+                                    @endif
+                                </div>
                             </div>
                         @endif
                     </div>
@@ -829,7 +854,12 @@
                             @php $media = $progressReport->getFirstMedia('questionnaire_pkm'); @endphp
                             <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
                                 <small class="text-success text-truncate"><x-lucide-check class="icon icon-sm" /> {{ $media->name }}</small>
-                                <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
+                                    @if ($canEdit)
+                                        <button type="button" wire:click="removeQuestionnairePkmFile" class="btn btn-sm btn-link text-danger p-0" wire:confirm="Hapus berkas ini?">Hapus</button>
+                                    @endif
+                                </div>
                             </div>
                         @endif
                     </div>
@@ -842,7 +872,12 @@
                             @php $media = $progressReport->getFirstMedia('team_attendance_list'); @endphp
                             <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
                                 <small class="text-success text-truncate"><x-lucide-check class="icon icon-sm" /> {{ $media->name }}</small>
-                                <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
+                                    @if ($canEdit)
+                                        <button type="button" wire:click="removeTeamAttendanceFile" class="btn btn-sm btn-link text-danger p-0" wire:confirm="Hapus berkas ini?">Hapus</button>
+                                    @endif
+                                </div>
                             </div>
                         @endif
                     </div>
@@ -855,7 +890,12 @@
                             @php $media = $progressReport->getFirstMedia('participant_attendance_list'); @endphp
                             <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
                                 <small class="text-success text-truncate"><x-lucide-check class="icon icon-sm" /> {{ $media->name }}</small>
-                                <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
+                                    @if ($canEdit)
+                                        <button type="button" wire:click="removeParticipantAttendanceFile" class="btn btn-sm btn-link text-danger p-0" wire:confirm="Hapus berkas ini?">Hapus</button>
+                                    @endif
+                                </div>
                             </div>
                         @endif
                     </div>
@@ -868,7 +908,12 @@
                             @php $media = $progressReport->getFirstMedia('training_material_pkm'); @endphp
                             <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
                                 <small class="text-success text-truncate"><x-lucide-check class="icon icon-sm" /> {{ $media->name }}</small>
-                                <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
+                                    @if ($canEdit)
+                                        <button type="button" wire:click="removeTrainingMaterialFile" class="btn btn-sm btn-link text-danger p-0" wire:confirm="Hapus berkas ini?">Hapus</button>
+                                    @endif
+                                </div>
                             </div>
                         @endif
                     </div>
@@ -879,7 +924,12 @@
                         <input type="file" wire:model="activityPhotosFiles" multiple class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png" @disabled(!$canEdit) />
                         @if ($progressReport && $progressReport->hasMedia('activity_photos_pkm'))
                             <div class="mt-1 p-1 bg-light rounded">
-                                <small class="text-success d-block mb-1"><x-lucide-check class="icon icon-sm" /> {{ $progressReport->getMedia('activity_photos_pkm')->count() }} Foto/Berkas tersimpan:</small>
+                                <div class="d-flex align-items-center justify-content-between mb-1">
+                                    <small class="text-success"><x-lucide-check class="icon icon-sm" /> {{ $progressReport->getMedia('activity_photos_pkm')->count() }} Foto/Berkas tersimpan:</small>
+                                    @if ($canEdit)
+                                        <button type="button" wire:click="removeActivityPhotosFiles" class="btn btn-sm btn-link text-danger p-0" wire:confirm="Hapus semua foto kegiatan?">Hapus Semua</button>
+                                    @endif
+                                </div>
                                 <div class="d-flex flex-wrap gap-1">
                                     @foreach($progressReport->getMedia('activity_photos_pkm') as $photo)
                                         <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $photo]) }}" target="_blank" class="badge bg-blue-lt text-decoration-none">

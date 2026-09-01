@@ -8,6 +8,7 @@ use App\Enums\ReportStatus;
 use App\Models\AdditionalOutput;
 use App\Models\MandatoryOutput;
 use App\Models\ProgressReport;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -144,11 +145,132 @@ trait HasFileUploads
     }
 
     /**
+     * Validate signature page file upload
+     */
+    public function validateSignatureFile(): void
+    {
+        $this->validate([
+            'signatureFile' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+        ]);
+    }
+
+    /**
+     * Validate research teaching material file upload
+     */
+    public function validateTeachingMaterialFile(): void
+    {
+        $this->validate([
+            'teachingMaterialFile' => 'nullable|file|mimes:pdf,docx|max:10240',
+        ]);
+    }
+
+    /**
+     * Validate PKM partner agreement file upload
+     */
+    public function validatePartnerAgreementFile(): void
+    {
+        $this->validate([
+            'partnerAgreementFile' => 'nullable|file|mimes:pdf|max:10240',
+        ]);
+    }
+
+    /**
+     * Validate PKM chairperson statement file upload
+     */
+    public function validateChairpersonStatementFile(): void
+    {
+        $this->validate([
+            'chairpersonStatementFile' => 'nullable|file|mimes:pdf|max:10240',
+        ]);
+    }
+
+    /**
+     * Validate PKM service location map file upload
+     */
+    public function validateServiceLocationMapFile(): void
+    {
+        $this->validate([
+            'serviceLocationMapFile' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
+        ]);
+    }
+
+    /**
+     * Validate PKM official report file upload
+     */
+    public function validateOfficialReportPkmFile(): void
+    {
+        $this->validate([
+            'officialReportPkmFile' => 'nullable|file|mimes:pdf|max:10240',
+        ]);
+    }
+
+    /**
+     * Validate PKM assignment letter file upload
+     */
+    public function validateAssignmentLetterPkmFile(): void
+    {
+        $this->validate([
+            'assignmentLetterPkmFile' => 'nullable|file|mimes:pdf|max:10240',
+        ]);
+    }
+
+    /**
+     * Validate PKM questionnaire file upload
+     */
+    public function validateQuestionnairePkmFile(): void
+    {
+        $this->validate([
+            'questionnairePkmFile' => 'nullable|file|mimes:pdf|max:10240',
+        ]);
+    }
+
+    /**
+     * Validate PKM team attendance file upload
+     */
+    public function validateTeamAttendanceFile(): void
+    {
+        $this->validate([
+            'teamAttendanceFile' => 'nullable|file|mimes:pdf|max:10240',
+        ]);
+    }
+
+    /**
+     * Validate PKM participant attendance file upload
+     */
+    public function validateParticipantAttendanceFile(): void
+    {
+        $this->validate([
+            'participantAttendanceFile' => 'nullable|file|mimes:pdf|max:10240',
+        ]);
+    }
+
+    /**
+     * Validate PKM training material file upload
+     */
+    public function validateTrainingMaterialFile(): void
+    {
+        $this->validate([
+            'trainingMaterialFile' => 'nullable|file|mimes:pdf|max:10240',
+        ]);
+    }
+
+    /**
+     * Validate PKM activity photos file upload
+     */
+    public function validateActivityPhotosFiles(): void
+    {
+        $this->validate([
+            'activityPhotosFiles' => 'nullable|array|max:10',
+            'activityPhotosFiles.*' => 'file|mimes:pdf,jpg,jpeg,png|max:10240',
+        ]);
+    }
+
+    /**
      * Save substance file to media collection
      */
     protected function saveSubstanceFile(ProgressReport $report, string $reportType = 'progress'): void
     {
-        if (! $this->substanceFile || ! $this->substanceFile instanceof TemporaryUploadedFile) {
+        if (! $this->substanceFile || ! ($this->substanceFile instanceof TemporaryUploadedFile || $this->substanceFile instanceof UploadedFile)) {
             return;
         }
 
@@ -174,7 +296,7 @@ trait HasFileUploads
      */
     protected function saveRealizationFile(ProgressReport $report, string $reportType = 'final'): void
     {
-        if (! $this->realizationFile || ! $this->realizationFile instanceof TemporaryUploadedFile) {
+        if (! $this->realizationFile || ! ($this->realizationFile instanceof TemporaryUploadedFile || $this->realizationFile instanceof UploadedFile)) {
             return;
         }
 
@@ -200,7 +322,7 @@ trait HasFileUploads
      */
     protected function savePresentationFile(ProgressReport $report, string $reportType = 'final'): void
     {
-        if (! $this->presentationFile || ! $this->presentationFile instanceof TemporaryUploadedFile) {
+        if (! $this->presentationFile || ! ($this->presentationFile instanceof TemporaryUploadedFile || $this->presentationFile instanceof UploadedFile)) {
             return;
         }
 
@@ -222,11 +344,37 @@ trait HasFileUploads
     }
 
     /**
+     * Save signature file to media collection
+     */
+    protected function saveSignatureFile(ProgressReport $report, string $reportType = 'final'): void
+    {
+        if (! $this->signatureFile || ! ($this->signatureFile instanceof TemporaryUploadedFile || $this->signatureFile instanceof UploadedFile)) {
+            return;
+        }
+
+        try {
+            $report->clearMediaCollection('signature_page');
+            $report
+                ->addMedia($this->signatureFile->getRealPath())
+                ->usingName($this->signatureFile->getClientOriginalName())
+                ->usingFileName($this->signatureFile->hashName())
+                ->withCustomProperties([
+                    'uploaded_by' => Auth::id(),
+                    'proposal_id' => $report->proposal_id,
+                    'report_type' => $reportType,
+                ])
+                ->toMediaCollection('signature_page');
+        } catch (\Exception $e) {
+            Log::error('Upload report signature file failed: '.$e->getMessage());
+        }
+    }
+
+    /**
      * Save partner cooperation proof file to media collection (final report only)
      */
     protected function saveCooperationProofFile(ProgressReport $report): void
     {
-        if (! $this->cooperationProofFile || ! $this->cooperationProofFile instanceof TemporaryUploadedFile) {
+        if (! $this->cooperationProofFile || ! ($this->cooperationProofFile instanceof TemporaryUploadedFile || $this->cooperationProofFile instanceof UploadedFile)) {
             return;
         }
 
@@ -252,7 +400,7 @@ trait HasFileUploads
      */
     protected function saveImplementationProofFile(ProgressReport $report): void
     {
-        if (! $this->implementationProofFile || ! $this->implementationProofFile instanceof TemporaryUploadedFile) {
+        if (! $this->implementationProofFile || ! ($this->implementationProofFile instanceof TemporaryUploadedFile || $this->implementationProofFile instanceof UploadedFile)) {
             return;
         }
 
@@ -274,9 +422,9 @@ trait HasFileUploads
     }
 
     // Vetted by AI - Manual Review Required by Senior Engineer/Manager
-    protected function saveSingleAttachment(ProgressReport $report, ?TemporaryUploadedFile $file, string $collectionName): void
+    protected function saveSingleAttachment(ProgressReport $report, mixed $file, string $collectionName): void
     {
-        if (! $file) {
+        if (! $file || ! ($file instanceof TemporaryUploadedFile || $file instanceof UploadedFile)) {
             return;
         }
 
@@ -299,45 +447,45 @@ trait HasFileUploads
 
     protected function saveResearchAttachments(ProgressReport $report): void
     {
-        if ($this->teachingMaterialFile instanceof TemporaryUploadedFile) {
+        if ($this->teachingMaterialFile instanceof TemporaryUploadedFile || $this->teachingMaterialFile instanceof UploadedFile) {
             $this->saveSingleAttachment($report, $this->teachingMaterialFile, 'teaching_material_file');
         }
     }
 
     protected function savePkmAttachments(ProgressReport $report): void
     {
-        if ($this->partnerAgreementFile instanceof TemporaryUploadedFile) {
+        if ($this->partnerAgreementFile instanceof TemporaryUploadedFile || $this->partnerAgreementFile instanceof UploadedFile) {
             $this->saveSingleAttachment($report, $this->partnerAgreementFile, 'partner_agreement_letter');
         }
-        if ($this->chairpersonStatementFile instanceof TemporaryUploadedFile) {
+        if ($this->chairpersonStatementFile instanceof TemporaryUploadedFile || $this->chairpersonStatementFile instanceof UploadedFile) {
             $this->saveSingleAttachment($report, $this->chairpersonStatementFile, 'chairperson_statement_letter');
         }
-        if ($this->serviceLocationMapFile instanceof TemporaryUploadedFile) {
+        if ($this->serviceLocationMapFile instanceof TemporaryUploadedFile || $this->serviceLocationMapFile instanceof UploadedFile) {
             $this->saveSingleAttachment($report, $this->serviceLocationMapFile, 'service_location_map');
         }
-        if ($this->officialReportPkmFile instanceof TemporaryUploadedFile) {
+        if ($this->officialReportPkmFile instanceof TemporaryUploadedFile || $this->officialReportPkmFile instanceof UploadedFile) {
             $this->saveSingleAttachment($report, $this->officialReportPkmFile, 'official_report_pkm');
         }
-        if ($this->assignmentLetterPkmFile instanceof TemporaryUploadedFile) {
+        if ($this->assignmentLetterPkmFile instanceof TemporaryUploadedFile || $this->assignmentLetterPkmFile instanceof UploadedFile) {
             $this->saveSingleAttachment($report, $this->assignmentLetterPkmFile, 'assignment_letter_pkm');
         }
-        if ($this->questionnairePkmFile instanceof TemporaryUploadedFile) {
+        if ($this->questionnairePkmFile instanceof TemporaryUploadedFile || $this->questionnairePkmFile instanceof UploadedFile) {
             $this->saveSingleAttachment($report, $this->questionnairePkmFile, 'questionnaire_pkm');
         }
-        if ($this->teamAttendanceFile instanceof TemporaryUploadedFile) {
+        if ($this->teamAttendanceFile instanceof TemporaryUploadedFile || $this->teamAttendanceFile instanceof UploadedFile) {
             $this->saveSingleAttachment($report, $this->teamAttendanceFile, 'team_attendance_list');
         }
-        if ($this->participantAttendanceFile instanceof TemporaryUploadedFile) {
+        if ($this->participantAttendanceFile instanceof TemporaryUploadedFile || $this->participantAttendanceFile instanceof UploadedFile) {
             $this->saveSingleAttachment($report, $this->participantAttendanceFile, 'participant_attendance_list');
         }
-        if ($this->trainingMaterialFile instanceof TemporaryUploadedFile) {
+        if ($this->trainingMaterialFile instanceof TemporaryUploadedFile || $this->trainingMaterialFile instanceof UploadedFile) {
             $this->saveSingleAttachment($report, $this->trainingMaterialFile, 'training_material_pkm');
         }
 
         // Multiple photo uploads
         if (! empty($this->activityPhotosFiles)) {
             foreach ($this->activityPhotosFiles as $photo) {
-                if ($photo instanceof TemporaryUploadedFile) {
+                if ($photo instanceof TemporaryUploadedFile || $photo instanceof UploadedFile) {
                     try {
                         $report
                             ->addMedia($photo->getRealPath())
@@ -510,6 +658,20 @@ trait HasFileUploads
             'substanceFile',
             'realizationFile',
             'presentationFile',
+            'signatureFile',
+            'cooperationProofFile',
+            'implementationProofFile',
+            'teachingMaterialFile',
+            'partnerAgreementFile',
+            'chairpersonStatementFile',
+            'serviceLocationMapFile',
+            'officialReportPkmFile',
+            'assignmentLetterPkmFile',
+            'questionnairePkmFile',
+            'teamAttendanceFile',
+            'participantAttendanceFile',
+            'trainingMaterialFile',
+            'activityPhotosFiles',
             'tempMandatoryFiles',
             'tempAdditionalFiles',
             'tempAdditionalCerts',
