@@ -997,17 +997,16 @@
         <div class="card">
             <div class="card-body">
                 <div class="justify-content-end btn-list">
-                    @if (!$isFinalReportDraft)
-                        <button type="button" wire:click="save" class="btn btn-primary" wire:loading.attr="disabled">
-                            <span wire:loading.remove wire:target="save">
-                                <x-lucide-save class="icon" /> Simpan Draft
-                            </span>
-                            <span wire:loading wire:target="save">
-                                <span class="spinner-border spinner-border-sm me-2"></span>
-                                Menyimpan...
-                            </span>
-                        </button>
-                    @else
+                    <button type="button" wire:click="save" class="btn btn-outline-primary" wire:loading.attr="disabled">
+                        <span wire:loading.remove wire:target="save">
+                            <x-lucide-save class="icon" /> Simpan Draft
+                        </span>
+                        <span wire:loading wire:target="save">
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                            Menyimpan...
+                        </span>
+                    </button>
+                    @if ($isFinalReportDraft)
                         <button type="button" wire:click="submit" class="btn btn-success" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="submit">
                                 <x-lucide-send class="icon" /> Ajukan Laporan Akhir
