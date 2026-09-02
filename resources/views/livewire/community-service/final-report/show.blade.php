@@ -27,9 +27,13 @@
                     <x-lucide-file-spreadsheet class="icon me-2" />
                     Unduh Laporan Keuangan
                 </a>
+                <button type="button" wire:click="doCheckCompleteness" class="btn btn-outline-warning shadow-sm">
+                    <x-lucide-search-check class="icon me-1" />
+                    Cek Kelengkapan
+                </button>
             @endif
-        </div>
-    </x-slot:pageActions>
+            </div>
+        </x-slot:pageActions>
 
     <div x-on:close-modal.window="
     const modalId = $event.detail.modalId || $event.detail[0]?.modalId;

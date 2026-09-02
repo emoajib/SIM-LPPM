@@ -21,6 +21,7 @@ use App\Models\User;
 use App\Services\LecturerEligibilityService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -44,6 +45,27 @@ class Show extends Component
 
     // State to track if final report draft exists
     public bool $isFinalReportDraft = false;
+
+    // Completeness check results
+    public array $completenessMissing = [];
+
+    /**
+     * Run completeness check and store results
+     */
+    public function doCheckCompleteness(): void
+    {
+        $this->completenessMissing = $this->checkCompleteness();
+
+        if (empty($this->completenessMissing)) {
+            $this->toastSuccess('Semua lampiran dan dokumen sudah lengkap. Anda bisa langsung mengajukan laporan.');
+        } else {
+            $list = collect($this->completenessMissing)->map(fn ($item) => '• '.$item)->implode('<br>');
+            $this->dispatch('banner-message', [
+                'style' => 'warning',
+                'message' => 'Berikut dokumen/lampiran yang belum lengkap:<br>'.$list,
+            ]);
+        }
+    }
 
     // Contract info for Admin LPPM
     public string $contractNumber = '';
@@ -79,16 +101,7 @@ class Show extends Component
         // Check access
         $this->checkAccess();
 
-        // Enforce schedule
-        $type = 'community_service';
-        /** @var LecturerEligibilityService $service */
-        $service = app(LecturerEligibilityService::class);
-
-        if ($this->canEdit && ! $service->isFinalReportOpen($type)) {
-            $this->canEdit = false;
-        }
-
-        // Load existing final report
+        // Load existing final report FIRST
         /** @var ProgressReport|null $finalReport */
         $finalReport = $proposal->progressReports()->where('reporting_period', 'final')->latest()->first();
 
@@ -101,6 +114,16 @@ class Show extends Component
             $latestReport = $proposal->progressReports()->latest()->first();
             $this->progressReport = $latestReport;
             $this->isFinalReportDraft = false;
+        }
+
+        // Enforce schedule: only block NEW submissions if period is closed
+        // Allow access to existing drafts even if period is closed
+        $type = 'community_service';
+        /** @var LecturerEligibilityService $service */
+        $service = app(LecturerEligibilityService::class);
+
+        if ($this->canEdit && ! $service->isFinalReportOpen($type) && ! $this->isFinalReportDraft) {
+            $this->canEdit = false;
         }
 
         // Initialize Livewire Form
@@ -452,6 +475,100 @@ class Show extends Component
             session()->flash('error', $message);
             $this->toastError($message);
         }
+    }
+
+    /**
+     * Check if all required PKM report attachments are complete
+     */
+    public function checkCompleteness(): array
+    {
+        $missing = [];
+
+        // Substance file
+        $hasSubstance = $this->progressReport && $this->progressReport->hasMedia('substance_file');
+        $hasNewSubstance = $this->substanceFile && $this->substanceFile instanceof TemporaryUploadedFile;
+        if (! $hasSubstance && ! $hasNewSubstance) {
+            $missing[] = 'File Substansi (PDF)';
+        }
+
+        // Budget
+        if ($this->proposal->budgetItems->count() === 0) {
+            $missing[] = 'Rencana Anggaran (RAB)';
+        }
+
+        // Team
+        if ($this->proposal->teamMembers->count() === 0) {
+            $missing[] = 'Data Tim Pelaksana';
+        }
+
+        // Realization file
+        $hasRealization = $this->progressReport && $this->progressReport->hasMedia('realization_file');
+        $hasNewRealization = $this->realizationFile && $this->realizationFile instanceof TemporaryUploadedFile;
+        if (! $hasRealization && ! $hasNewRealization) {
+            $missing[] = 'Bukti Realisasi Anggaran';
+        }
+
+        // Presentation file
+        $hasPresentation = $this->progressReport && $this->progressReport->hasMedia('presentation_file');
+        $hasNewPresentation = $this->presentationFile && $this->presentationFile instanceof TemporaryUploadedFile;
+        if (! $hasPresentation && ! $hasNewPresentation) {
+            $missing[] = 'File Poster/Presentasi';
+        }
+
+        // PKM Attachments (Lampiran 3 s.d. 12)
+        if (! ($this->partnerAgreementFile instanceof TemporaryUploadedFile || $this->partnerAgreementFile instanceof UploadedFile)
+            && (! $this->progressReport || ! $this->progressReport->hasMedia('partner_agreement_letter'))) {
+            $missing[] = 'Lampiran 3: Surat Kesediaan Mitra';
+        }
+
+        if (! ($this->chairpersonStatementFile instanceof TemporaryUploadedFile || $this->chairpersonStatementFile instanceof UploadedFile)
+            && (! $this->progressReport || ! $this->progressReport->hasMedia('chairperson_statement_letter'))) {
+            $missing[] = 'Lampiran 4: Surat Pernyataan Ketua';
+        }
+
+        if (! ($this->serviceLocationMapFile instanceof TemporaryUploadedFile || $this->serviceLocationMapFile instanceof UploadedFile)
+            && (! $this->progressReport || ! $this->progressReport->hasMedia('service_location_map'))) {
+            $missing[] = 'Lampiran 5: Peta Lokasi Pengabdian';
+        }
+
+        if (! ($this->officialReportPkmFile instanceof TemporaryUploadedFile || $this->officialReportPkmFile instanceof UploadedFile)
+            && (! $this->progressReport || ! $this->progressReport->hasMedia('official_report_pkm'))) {
+            $missing[] = 'Lampiran 6: Berita Acara Pelaksanaan PKM';
+        }
+
+        if (! ($this->assignmentLetterPkmFile instanceof TemporaryUploadedFile || $this->assignmentLetterPkmFile instanceof UploadedFile)
+            && (! $this->progressReport || ! $this->progressReport->hasMedia('assignment_letter_pkm'))) {
+            $missing[] = 'Lampiran 7: Surat Tugas Pelaksanaan PKM';
+        }
+
+        if (! ($this->questionnairePkmFile instanceof TemporaryUploadedFile || $this->questionnairePkmFile instanceof UploadedFile)
+            && (! $this->progressReport || ! $this->progressReport->hasMedia('questionnaire_pkm'))) {
+            $missing[] = 'Lampiran 8: Kuisioner Pengabdian';
+        }
+
+        if (! ($this->teamAttendanceFile instanceof TemporaryUploadedFile || $this->teamAttendanceFile instanceof UploadedFile)
+            && (! $this->progressReport || ! $this->progressReport->hasMedia('team_attendance_list'))) {
+            $missing[] = 'Lampiran 9: Daftar Hadir Tim PKM';
+        }
+
+        if (! ($this->participantAttendanceFile instanceof TemporaryUploadedFile || $this->participantAttendanceFile instanceof UploadedFile)
+            && (! $this->progressReport || ! $this->progressReport->hasMedia('participant_attendance_list'))) {
+            $missing[] = 'Lampiran 10: Daftar Hadir Peserta PKM';
+        }
+
+        if (! ($this->trainingMaterialFile instanceof TemporaryUploadedFile || $this->trainingMaterialFile instanceof UploadedFile)
+            && (! $this->progressReport || ! $this->progressReport->hasMedia('training_material_pkm'))) {
+            $missing[] = 'Lampiran 11: Materi Kegiatan PKM';
+        }
+
+        // Activity photos (can be multiple files)
+        $hasActivityPhotos = ! empty($this->activityPhotosFiles)
+            || ($this->progressReport && $this->progressReport->hasMedia('activity_photos_pkm'));
+        if (! $hasActivityPhotos) {
+            $missing[] = 'Lampiran 12: Foto Kegiatan PKM';
+        }
+
+        return $missing;
     }
 
     /**

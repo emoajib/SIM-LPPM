@@ -21,6 +21,7 @@ use App\Models\User;
 use App\Services\LecturerEligibilityService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -44,6 +45,27 @@ class Show extends Component
 
     // State to track if final report draft exists
     public bool $isFinalReportDraft = false;
+
+    // Completeness check results
+    public array $completenessMissing = [];
+
+    /**
+     * Run completeness check and store results
+     */
+    public function doCheckCompleteness(): void
+    {
+        $this->completenessMissing = $this->checkCompleteness();
+
+        if (empty($this->completenessMissing)) {
+            $this->toastSuccess('Semua lampiran dan dokumen sudah lengkap. Anda bisa langsung mengajukan laporan.');
+        } else {
+            $list = collect($this->completenessMissing)->map(fn ($item) => '• '.$item)->implode('<br>');
+            $this->dispatch('banner-message', [
+                'style' => 'warning',
+                'message' => 'Berikut dokumen/lampiran yang belum lengkap:<br>'.$list,
+            ]);
+        }
+    }
 
     // Contract info for Admin LPPM
     public string $contractNumber = '';
@@ -79,16 +101,7 @@ class Show extends Component
         // Check access
         $this->checkAccess();
 
-        // Enforce schedule
-        $type = 'research';
-        /** @var LecturerEligibilityService $service */
-        $service = app(LecturerEligibilityService::class);
-
-        if ($this->canEdit && ! $service->isFinalReportOpen($type)) {
-            $this->canEdit = false;
-        }
-
-        // Load existing final report
+        // Load existing final report FIRST
         /** @var ProgressReport|null $finalReport */
         $finalReport = $proposal->progressReports()
             ->where('reporting_period', 'final')
@@ -104,6 +117,16 @@ class Show extends Component
             $latestReport = $proposal->progressReports()->latest()->first();
             $this->progressReport = $latestReport;
             $this->isFinalReportDraft = false;
+        }
+
+        // Enforce schedule: only block NEW submissions if period is closed
+        // Allow access to existing drafts even if period is closed
+        $type = 'research';
+        /** @var LecturerEligibilityService $service */
+        $service = app(LecturerEligibilityService::class);
+
+        if ($this->canEdit && ! $service->isFinalReportOpen($type) && ! $this->isFinalReportDraft) {
+            $this->canEdit = false;
         }
 
         // Initialize Livewire Form
@@ -454,6 +477,53 @@ class Show extends Component
             session()->flash('error', $message);
             $this->toastError($message);
         }
+    }
+
+    /**
+     * Check if all required report components are complete
+     */
+    public function checkCompleteness(): array
+    {
+        $missing = [];
+
+        // Substance file
+        $hasSubstance = $this->progressReport && $this->progressReport->hasMedia('substance_file');
+        $hasNewSubstance = $this->substanceFile && $this->substanceFile instanceof TemporaryUploadedFile;
+        if (! $hasSubstance && ! $hasNewSubstance) {
+            $missing[] = 'File Substansi (PDF) laporan akhir';
+        }
+
+        // Budget
+        if ($this->proposal->budgetItems->count() === 0) {
+            $missing[] = 'Rencana Anggaran (RAB)';
+        }
+
+        // Team
+        if ($this->proposal->teamMembers->count() === 0) {
+            $missing[] = 'Data Tim Pelaksana';
+        }
+
+        // Outputs (mandatory)
+        if ($this->progressReport) {
+            $hasMandatoryOutputs = $this->progressReport->mandatoryOutputs->some(fn ($o) => $o->hasMedia('journal_article') || $o->hasMedia('book_document') || $o->hasMedia('publication_certificate') || $o->hasMedia('output_file')
+            );
+            if (! $hasMandatoryOutputs) {
+                $missing[] = 'Luaran Wajib (bukti dokumen)';
+            }
+        }
+
+        // Teaching Material (Lampiran 5: RPS/Bahan Ajar)
+        $hasTeachingMaterial = $this->teachingMaterialFile instanceof TemporaryUploadedFile || $this->teachingMaterialFile instanceof UploadedFile;
+        if (! $hasTeachingMaterial && (! $this->progressReport || ! $this->progressReport->hasMedia('teaching_material_file'))) {
+            $missing[] = 'Lampiran 5: RPS / Bahan Ajar';
+        }
+
+        // Logbook
+        if ($this->proposal->dailyNotes->count() === 0) {
+            $missing[] = 'Logbook Harian';
+        }
+
+        return $missing;
     }
 
     /**
