@@ -430,8 +430,20 @@ trait HasFileUploads
 
         try {
             $report->clearMediaCollection($collectionName);
+
+            // Resolve path: if Livewire temp file has been cleaned up, store permanently first
+            if ($file instanceof TemporaryUploadedFile) {
+                $realPath = $file->getRealPath();
+                if (! file_exists($realPath)) {
+                    $storedPath = $file->store('attachments', 'public');
+                    $realPath = storage_path('app/public/'.$storedPath);
+                }
+            } else {
+                $realPath = $file->getRealPath();
+            }
+
             $report
-                ->addMedia($file->getRealPath())
+                ->addMedia($realPath)
                 ->usingName($file->getClientOriginalName())
                 ->usingFileName($file->hashName())
                 ->withCustomProperties([
@@ -487,8 +499,19 @@ trait HasFileUploads
             foreach ($this->activityPhotosFiles as $photo) {
                 if ($photo instanceof TemporaryUploadedFile || $photo instanceof UploadedFile) {
                     try {
+                        // Resolve path: if Livewire temp file has been cleaned up, store permanently first
+                        if ($photo instanceof TemporaryUploadedFile) {
+                            $realPath = $photo->getRealPath();
+                            if (! file_exists($realPath)) {
+                                $storedPath = $photo->store('attachments', 'public');
+                                $realPath = storage_path('app/public/'.$storedPath);
+                            }
+                        } else {
+                            $realPath = $photo->getRealPath();
+                        }
+
                         $report
-                            ->addMedia($photo->getRealPath())
+                            ->addMedia($realPath)
                             ->usingName($photo->getClientOriginalName())
                             ->usingFileName($photo->hashName())
                             ->withCustomProperties([
