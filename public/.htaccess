@@ -5,6 +5,39 @@
 
     RewriteEngine On
 
+    # Block access to sensitive files
+    RewriteRule ^\.env$ - [F,L]
+    RewriteRule ^\.gitignore$ - [F,L]
+    RewriteRule ^\.gitattributes$ - [F,L]
+    RewriteRule ^\.htaccess$ - [F,L]
+    RewriteRule ^composer\.json$ - [F,L]
+    RewriteRule ^composer\.lock$ - [F,L]
+    RewriteRule ^phpunit\.xml$ - [F,L]
+    RewriteRule ^package\.json$ - [F,L]
+    RewriteRule ^mix-manifest\.json$ - [F,L]
+    RewriteRule ^tsconfig\.json$ - [F,L]
+    RewriteRule ^webpack\.mix\.js$ - [F,L]
+    RewriteRule ^postcss\.config\.js$ - [F,L]
+    RewriteRule ^babel\.config\.js$ - [F,L]
+    RewriteRule ^eslint\.config\.js$ - [F,L]
+    RewriteRule ^vitest\.config\.js$ - [F,L]
+    RewriteRule ^phpstan\.neon$ - [F,L]
+    RewriteRule ^pint\.xml$ - [F,L]
+    RewriteRule ^test\.xml$ - [F,L]
+    RewriteRule ^artisan$ - [F,L]
+    RewriteRule ^docker-compose\.yml$ - [F,L]
+    RewriteRule ^Dockerfile$ - [F,L]
+    RewriteRule ^README\.md$ - [F,L]
+    RewriteRule ^CHANGELOG$ - [F,L]
+    RewriteRule ^LICENSE$ - [F,L]
+
+    # Block access to sensitive directories
+    RewriteRule ^\.git/ - [F,L]
+    RewriteRule ^node_modules/ - [F,L]
+    RewriteRule ^storage/app/backup/ - [F,L]
+    RewriteRule ^storage/logs/ - [F,L]
+    RewriteRule ^database/database\.sqlite$ - [F,L]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
