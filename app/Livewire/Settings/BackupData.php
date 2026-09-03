@@ -194,6 +194,8 @@ class BackupData extends Component
         $this->isRunning = true;
         $this->output = 'Membuat backup file storage (Folder terpilih: '.implode(', ', $this->selectedFolders).")...\n";
 
+        $this->cleanOldBackups('storage_*');
+
         $backupDir = storage_path('app/backup');
         if (! is_dir($backupDir)) {
             mkdir($backupDir, 0755, true);
@@ -247,7 +249,6 @@ class BackupData extends Component
 
     private function finalizeStorageBackup(string $filename, string $path): void
     {
-        $this->cleanOldBackups('storage_*');
         cache(['backup_last_storage_file' => $filename]);
         $this->lastStorageFile = $filename;
 
