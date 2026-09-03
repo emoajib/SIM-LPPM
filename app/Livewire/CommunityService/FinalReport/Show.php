@@ -505,26 +505,8 @@ class Show extends Component
             $missing[] = 'Data Tim Pelaksana';
         }
 
-        // Presentation file
-        $hasPresentation = $this->progressReport && $this->progressReport->hasMedia('presentation_file');
-        $hasNewPresentation = $this->presentationFile && $this->presentationFile instanceof TemporaryUploadedFile;
-        $fileExists = $hasPresentation || $hasNewPresentation;
-
-        // Try one more thing: check if there's a previously uploaded presentation file
-        // that might have been saved but the session state lost
-        if (! $fileExists && $this->progressReport) {
-            $allMedia = $this->progressReport->getMedia();
-            $hasPresentationAny = $allMedia->contains(function ($media) {
-                return $media->collection_name === 'presentation_file';
-            });
-            if ($hasPresentationAny) {
-                $fileExists = true;
-            }
-        }
-
-        if (! $fileExists) {
-            $missing[] = 'File Poster/Presentasi';
-        }
+        // Presentation file is optional
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
 
         // PKM Attachments (Lampiran 3 s.d. 12)
         if (! ($this->partnerAgreementFile instanceof TemporaryUploadedFile || $this->partnerAgreementFile instanceof UploadedFile)
@@ -625,20 +607,8 @@ class Show extends Component
             return;
         }
 
-        // Realization file is optional for final report submission
+        // Realization file and presentation file are optional for final report submission
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
-
-        // Validate that presentation/poster file exists (either in DB or newly uploaded)
-        $hasPresentationInDb = $this->progressReport && $this->progressReport->hasMedia('presentation_file');
-        $hasNewPresentation = $this->presentationFile && $this->presentationFile instanceof TemporaryUploadedFile;
-
-        if (! $hasPresentationInDb && ! $hasNewPresentation) {
-            $message = 'Gagal mengajukan: Anda wajib mengunggah File Poster/Presentasi.';
-            $this->addError('presentationFile', $message);
-            $this->toastError($message);
-
-            return;
-        }
 
         try {
             DB::transaction(function () {

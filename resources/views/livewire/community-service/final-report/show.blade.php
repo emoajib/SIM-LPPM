@@ -733,16 +733,17 @@
                     @endif
                 </div>
 
-                {{-- File Poster/Presentasi --}}
+                {{-- File Poster/Presentasi (Opsional) --}}
+                {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
                 <div class="mb-3">
-                    <label class="form-label mb-0 required">File Poster/Presentasi (PDF)</label>
+                    <label class="form-label mb-0">File Poster/Presentasi (PDF) <span class="badge bg-secondary-lt ms-1">Opsional</span></label>
                     <input type="file" wire:model="presentationFile"
                         class="form-control @error('presentationFile') is-invalid @enderror" accept=".pdf"
                         @disabled(!$canEdit) />
                     @error('presentationFile')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                    <small class="form-hint">Maksimal 10MB, format PDF</small>
+                    <small class="form-hint">Maksimal 10MB, format PDF (Opsional jika ada poster/presentasi kegiatan PKM)</small>
 
                     <div wire:loading wire:target="presentationFile">
                         <small class="text-muted">
