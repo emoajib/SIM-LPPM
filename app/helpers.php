@@ -44,6 +44,7 @@ if (! function_exists('format_role_name')) {
         $replacements = [
             'admin lppm' => 'Admin Lppm',
             'kepala lppm' => 'Kepala Lppm',
+            'dosis' => 'Dosen',
         ];
 
         $result = str_replace(array_keys($replacements), array_values($replacements), $role);

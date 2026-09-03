@@ -28,14 +28,6 @@ class RoleSwitcherController extends Controller
         // Store active role in session
         session(['active_role' => $role]);
 
-        return redirect()->back()->with('success', 'Peran berhasil diubah ke: '.$this->formatRoleName($role));
-    }
-
-    /**
-     * Format role name for display (convert to title case).
-     */
-    private function formatRoleName(string $role): string
-    {
-        return ucwords(str_replace(['admin lppm ', 'lppm'], ['', 'LPPM '], $role));
+        return redirect()->back()->with('success', 'Peran berhasil diubah ke: '.format_role_name($role));
     }
 }
