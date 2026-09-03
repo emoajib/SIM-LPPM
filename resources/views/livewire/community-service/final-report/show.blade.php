@@ -855,9 +855,18 @@
 
                 <div class="row g-3">
                     {{-- Lampiran 3 --}}
-                    <div class="col-md-6">
+                    <div class="col-md-6" wire:key="lampiran-card-3-partner-agreement">
                         <label class="form-label mb-1">Lampiran 3: Surat Kesediaan Mitra (PDF)</label>
                         <input type="file" wire:model="partnerAgreementFile" class="form-control form-control-sm" accept=".pdf" @disabled(!$canEdit) />
+                        <div wire:loading wire:target="partnerAgreementFile">
+                            <small class="text-muted"><span class="spinner-border spinner-border-sm me-1"></span> Mengunggah Lampiran 3...</small>
+                        </div>
+                        @if ($partnerAgreementFile instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile)
+                            <div class="alert alert-info py-1 px-2 mt-1 mb-0 small">
+                                <x-lucide-file-check class="icon icon-inline me-1 text-info" />
+                                <strong>{{ $partnerAgreementFile->getClientOriginalName() }}</strong> (Siap disimpan)
+                            </div>
+                        @endif
                         @if ($progressReport && $progressReport->hasMedia('partner_agreement_letter'))
                             @php $media = $progressReport->getFirstMedia('partner_agreement_letter'); @endphp
                             <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
@@ -873,9 +882,18 @@
                     </div>
 
                     {{-- Lampiran 4 --}}
-                    <div class="col-md-6">
+                    <div class="col-md-6" wire:key="lampiran-card-4-chairperson-statement">
                         <label class="form-label mb-1">Lampiran 4: Surat Pernyataan Ketua (PDF)</label>
                         <input type="file" wire:model="chairpersonStatementFile" class="form-control form-control-sm" accept=".pdf" @disabled(!$canEdit) />
+                        <div wire:loading wire:target="chairpersonStatementFile">
+                            <small class="text-muted"><span class="spinner-border spinner-border-sm me-1"></span> Mengunggah Lampiran 4...</small>
+                        </div>
+                        @if ($chairpersonStatementFile instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile)
+                            <div class="alert alert-info py-1 px-2 mt-1 mb-0 small">
+                                <x-lucide-file-check class="icon icon-inline me-1 text-info" />
+                                <strong>{{ $chairpersonStatementFile->getClientOriginalName() }}</strong> (Siap disimpan)
+                            </div>
+                        @endif
                         @if ($progressReport && $progressReport->hasMedia('chairperson_statement_letter'))
                             @php $media = $progressReport->getFirstMedia('chairperson_statement_letter'); @endphp
                             <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
@@ -891,9 +909,18 @@
                     </div>
 
                     {{-- Lampiran 5 --}}
-                    <div class="col-md-6">
+                    <div class="col-md-6" wire:key="lampiran-card-5-service-location-map">
                         <label class="form-label mb-1">Lampiran 5: Peta Lokasi Pengabdian (PDF/Gambar)</label>
                         <input type="file" wire:model="serviceLocationMapFile" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png" @disabled(!$canEdit) />
+                        <div wire:loading wire:target="serviceLocationMapFile">
+                            <small class="text-muted"><span class="spinner-border spinner-border-sm me-1"></span> Mengunggah Lampiran 5...</small>
+                        </div>
+                        @if ($serviceLocationMapFile instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile)
+                            <div class="alert alert-info py-1 px-2 mt-1 mb-0 small">
+                                <x-lucide-file-check class="icon icon-inline me-1 text-info" />
+                                <strong>{{ $serviceLocationMapFile->getClientOriginalName() }}</strong> (Siap disimpan)
+                            </div>
+                        @endif
                         @if ($progressReport && $progressReport->hasMedia('service_location_map'))
                             @php $media = $progressReport->getFirstMedia('service_location_map'); @endphp
                             <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
@@ -909,9 +936,18 @@
                     </div>
 
                     {{-- Lampiran 6 --}}
-                    <div class="col-md-6">
+                    <div class="col-md-6" wire:key="lampiran-card-6-official-report">
                         <label class="form-label mb-1">Lampiran 6: Berita Acara Pelaksanaan PKM (PDF)</label>
                         <input type="file" wire:model="officialReportPkmFile" class="form-control form-control-sm" accept=".pdf" @disabled(!$canEdit) />
+                        <div wire:loading wire:target="officialReportPkmFile">
+                            <small class="text-muted"><span class="spinner-border spinner-border-sm me-1"></span> Mengunggah Lampiran 6...</small>
+                        </div>
+                        @if ($officialReportPkmFile instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile)
+                            <div class="alert alert-info py-1 px-2 mt-1 mb-0 small">
+                                <x-lucide-file-check class="icon icon-inline me-1 text-info" />
+                                <strong>{{ $officialReportPkmFile->getClientOriginalName() }}</strong> (Siap disimpan)
+                            </div>
+                        @endif
                         @if ($progressReport && $progressReport->hasMedia('official_report_pkm'))
                             @php $media = $progressReport->getFirstMedia('official_report_pkm'); @endphp
                             <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
@@ -927,9 +963,18 @@
                     </div>
 
                     {{-- Lampiran 7 --}}
-                    <div class="col-md-6">
+                    <div class="col-md-6" wire:key="lampiran-card-7-assignment-letter">
                         <label class="form-label mb-1">Lampiran 7: Surat Tugas Pelaksanaan PKM (PDF)</label>
                         <input type="file" wire:model="assignmentLetterPkmFile" class="form-control form-control-sm" accept=".pdf" @disabled(!$canEdit) />
+                        <div wire:loading wire:target="assignmentLetterPkmFile">
+                            <small class="text-muted"><span class="spinner-border spinner-border-sm me-1"></span> Mengunggah Lampiran 7...</small>
+                        </div>
+                        @if ($assignmentLetterPkmFile instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile)
+                            <div class="alert alert-info py-1 px-2 mt-1 mb-0 small">
+                                <x-lucide-file-check class="icon icon-inline me-1 text-info" />
+                                <strong>{{ $assignmentLetterPkmFile->getClientOriginalName() }}</strong> (Siap disimpan)
+                            </div>
+                        @endif
                         @if ($progressReport && $progressReport->hasMedia('assignment_letter_pkm'))
                             @php $media = $progressReport->getFirstMedia('assignment_letter_pkm'); @endphp
                             <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
@@ -945,9 +990,18 @@
                     </div>
 
                     {{-- Lampiran 8 --}}
-                    <div class="col-md-6">
+                    <div class="col-md-6" wire:key="lampiran-card-8-questionnaire">
                         <label class="form-label mb-1">Lampiran 8: Kuisioner Pengabdian (PDF)</label>
                         <input type="file" wire:model="questionnairePkmFile" class="form-control form-control-sm" accept=".pdf" @disabled(!$canEdit) />
+                        <div wire:loading wire:target="questionnairePkmFile">
+                            <small class="text-muted"><span class="spinner-border spinner-border-sm me-1"></span> Mengunggah Lampiran 8...</small>
+                        </div>
+                        @if ($questionnairePkmFile instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile)
+                            <div class="alert alert-info py-1 px-2 mt-1 mb-0 small">
+                                <x-lucide-file-check class="icon icon-inline me-1 text-info" />
+                                <strong>{{ $questionnairePkmFile->getClientOriginalName() }}</strong> (Siap disimpan)
+                            </div>
+                        @endif
                         @if ($progressReport && $progressReport->hasMedia('questionnaire_pkm'))
                             @php $media = $progressReport->getFirstMedia('questionnaire_pkm'); @endphp
                             <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
@@ -963,9 +1017,18 @@
                     </div>
 
                     {{-- Lampiran 9 --}}
-                    <div class="col-md-6">
+                    <div class="col-md-6" wire:key="lampiran-card-9-team-attendance">
                         <label class="form-label mb-1">Lampiran 9: Daftar Hadir Tim PKM (Dosen & Mhs) (PDF)</label>
                         <input type="file" wire:model="teamAttendanceFile" class="form-control form-control-sm" accept=".pdf" @disabled(!$canEdit) />
+                        <div wire:loading wire:target="teamAttendanceFile">
+                            <small class="text-muted"><span class="spinner-border spinner-border-sm me-1"></span> Mengunggah Lampiran 9...</small>
+                        </div>
+                        @if ($teamAttendanceFile instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile)
+                            <div class="alert alert-info py-1 px-2 mt-1 mb-0 small">
+                                <x-lucide-file-check class="icon icon-inline me-1 text-info" />
+                                <strong>{{ $teamAttendanceFile->getClientOriginalName() }}</strong> (Siap disimpan)
+                            </div>
+                        @endif
                         @if ($progressReport && $progressReport->hasMedia('team_attendance_list'))
                             @php $media = $progressReport->getFirstMedia('team_attendance_list'); @endphp
                             <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
@@ -981,9 +1044,18 @@
                     </div>
 
                     {{-- Lampiran 10 --}}
-                    <div class="col-md-6">
+                    <div class="col-md-6" wire:key="lampiran-card-10-participant-attendance">
                         <label class="form-label mb-1">Lampiran 10: Daftar Hadir Peserta PKM (PDF)</label>
                         <input type="file" wire:model="participantAttendanceFile" class="form-control form-control-sm" accept=".pdf" @disabled(!$canEdit) />
+                        <div wire:loading wire:target="participantAttendanceFile">
+                            <small class="text-muted"><span class="spinner-border spinner-border-sm me-1"></span> Mengunggah Lampiran 10...</small>
+                        </div>
+                        @if ($participantAttendanceFile instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile)
+                            <div class="alert alert-info py-1 px-2 mt-1 mb-0 small">
+                                <x-lucide-file-check class="icon icon-inline me-1 text-info" />
+                                <strong>{{ $participantAttendanceFile->getClientOriginalName() }}</strong> (Siap disimpan)
+                            </div>
+                        @endif
                         @if ($progressReport && $progressReport->hasMedia('participant_attendance_list'))
                             @php $media = $progressReport->getFirstMedia('participant_attendance_list'); @endphp
                             <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
@@ -999,9 +1071,18 @@
                     </div>
 
                     {{-- Lampiran 11 --}}
-                    <div class="col-md-6">
+                    <div class="col-md-6" wire:key="lampiran-card-11-training-material">
                         <label class="form-label mb-1">Lampiran 11: Materi Kegiatan PKM (PDF)</label>
                         <input type="file" wire:model="trainingMaterialFile" class="form-control form-control-sm" accept=".pdf" @disabled(!$canEdit) />
+                        <div wire:loading wire:target="trainingMaterialFile">
+                            <small class="text-muted"><span class="spinner-border spinner-border-sm me-1"></span> Mengunggah Lampiran 11...</small>
+                        </div>
+                        @if ($trainingMaterialFile instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile)
+                            <div class="alert alert-info py-1 px-2 mt-1 mb-0 small">
+                                <x-lucide-file-check class="icon icon-inline me-1 text-info" />
+                                <strong>{{ $trainingMaterialFile->getClientOriginalName() }}</strong> (Siap disimpan)
+                            </div>
+                        @endif
                         @if ($progressReport && $progressReport->hasMedia('training_material_pkm'))
                             @php $media = $progressReport->getFirstMedia('training_material_pkm'); @endphp
                             <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
@@ -1017,9 +1098,18 @@
                     </div>
 
                     {{-- Lampiran 12 --}}
-                    <div class="col-md-6">
+                    <div class="col-md-6" wire:key="lampiran-card-12-activity-photos">
                         <label class="form-label mb-1">Lampiran 12: Foto Kegiatan PKM (Bisa Banyak File PDF)</label>
                         <input type="file" wire:model="activityPhotosFiles" multiple class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png" @disabled(!$canEdit) />
+                        <div wire:loading wire:target="activityPhotosFiles">
+                            <small class="text-muted"><span class="spinner-border spinner-border-sm me-1"></span> Mengunggah Lampiran 12...</small>
+                        </div>
+                        @if (! empty($activityPhotosFiles))
+                            <div class="alert alert-info py-1 px-2 mt-1 mb-0 small">
+                                <x-lucide-file-check class="icon icon-inline me-1 text-info" />
+                                <strong>{{ count($activityPhotosFiles) }} berkas dipilih</strong> (Siap disimpan)
+                            </div>
+                        @endif
                         @if ($progressReport && $progressReport->hasMedia('activity_photos_pkm'))
                             <div class="mt-1 p-1 bg-light rounded">
                                 <div class="d-flex align-items-center justify-content-between mb-1">

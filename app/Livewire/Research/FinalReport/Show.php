@@ -463,6 +463,10 @@ class Show extends Component
 
                 // Save output files
                 $this->saveOutputFiles($report);
+
+                // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+                // Ensure media and outputs relations are freshly loaded in Livewire state
+                $this->progressReport = $report->fresh(['media', 'mandatoryOutputs', 'additionalOutputs']);
             });
 
             $this->dispatch('report-saved');

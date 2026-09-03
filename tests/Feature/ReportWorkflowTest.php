@@ -434,5 +434,20 @@ class ReportWorkflowTest extends TestCase
         $component->call('removePartnerAgreementFile');
         $report->refresh();
         $this->assertFalse($report->hasMedia('partner_agreement_letter'));
+
+        // Test sequential uploading of Lampiran 10 and Lampiran 11
+        $newParticipantAttendance = UploadedFile::fake()->createWithContent('hadir_peserta_baru.pdf', $pdfContent);
+        $newTrainingMaterial = UploadedFile::fake()->createWithContent('materi_pkm_baru.pdf', $pdfContent);
+
+        $component->set('participantAttendanceFile', $newParticipantAttendance)
+            ->set('trainingMaterialFile', $newTrainingMaterial)
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $report->refresh();
+        $this->assertTrue($report->hasMedia('participant_attendance_list'));
+        $this->assertTrue($report->hasMedia('training_material_pkm'));
+        $this->assertEquals('hadir_peserta_baru.pdf', $report->getFirstMedia('participant_attendance_list')->name);
+        $this->assertEquals('materi_pkm_baru.pdf', $report->getFirstMedia('training_material_pkm')->name);
     }
 }

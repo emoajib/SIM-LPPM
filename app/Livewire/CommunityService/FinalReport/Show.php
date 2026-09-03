@@ -461,6 +461,10 @@ class Show extends Component
 
                 // Save output files
                 $this->saveOutputFiles($report);
+
+                // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+                // Ensure media and outputs relations are freshly loaded in Livewire state
+                $this->progressReport = $report->fresh(['media', 'mandatoryOutputs', 'additionalOutputs']);
             });
 
             $this->dispatch('report-saved');
@@ -1027,6 +1031,8 @@ class Show extends Component
 
         if ($this->progressReport) {
             $this->progressReport->clearMediaCollection('partner_agreement_letter');
+            $this->progressReport->unsetRelation('media');
+            $this->progressReport->load('media');
             $this->toastSuccess('Lampiran surat kesediaan mitra berhasil dihapus.');
         }
     }
@@ -1039,6 +1045,8 @@ class Show extends Component
 
         if ($this->progressReport) {
             $this->progressReport->clearMediaCollection('chairperson_statement_letter');
+            $this->progressReport->unsetRelation('media');
+            $this->progressReport->load('media');
             $this->toastSuccess('Lampiran surat pernyataan ketua berhasil dihapus.');
         }
     }
@@ -1051,6 +1059,8 @@ class Show extends Component
 
         if ($this->progressReport) {
             $this->progressReport->clearMediaCollection('service_location_map');
+            $this->progressReport->unsetRelation('media');
+            $this->progressReport->load('media');
             $this->toastSuccess('Lampiran peta lokasi pengabdian berhasil dihapus.');
         }
     }
@@ -1063,6 +1073,8 @@ class Show extends Component
 
         if ($this->progressReport) {
             $this->progressReport->clearMediaCollection('official_report_pkm');
+            $this->progressReport->unsetRelation('media');
+            $this->progressReport->load('media');
             $this->toastSuccess('Lampiran berita acara pelaksanaan PKM berhasil dihapus.');
         }
     }
@@ -1075,6 +1087,8 @@ class Show extends Component
 
         if ($this->progressReport) {
             $this->progressReport->clearMediaCollection('assignment_letter_pkm');
+            $this->progressReport->unsetRelation('media');
+            $this->progressReport->load('media');
             $this->toastSuccess('Lampiran surat tugas pelaksanaan PKM berhasil dihapus.');
         }
     }
@@ -1087,6 +1101,8 @@ class Show extends Component
 
         if ($this->progressReport) {
             $this->progressReport->clearMediaCollection('questionnaire_pkm');
+            $this->progressReport->unsetRelation('media');
+            $this->progressReport->load('media');
             $this->toastSuccess('Lampiran kuisioner pengabdian berhasil dihapus.');
         }
     }
@@ -1099,6 +1115,8 @@ class Show extends Component
 
         if ($this->progressReport) {
             $this->progressReport->clearMediaCollection('team_attendance_list');
+            $this->progressReport->unsetRelation('media');
+            $this->progressReport->load('media');
             $this->toastSuccess('Lampiran daftar hadir tim PKM berhasil dihapus.');
         }
     }
@@ -1111,6 +1129,8 @@ class Show extends Component
 
         if ($this->progressReport) {
             $this->progressReport->clearMediaCollection('participant_attendance_list');
+            $this->progressReport->unsetRelation('media');
+            $this->progressReport->load('media');
             $this->toastSuccess('Lampiran daftar hadir peserta PKM berhasil dihapus.');
         }
     }
@@ -1123,6 +1143,8 @@ class Show extends Component
 
         if ($this->progressReport) {
             $this->progressReport->clearMediaCollection('training_material_pkm');
+            $this->progressReport->unsetRelation('media');
+            $this->progressReport->load('media');
             $this->toastSuccess('Lampiran materi kegiatan PKM berhasil dihapus.');
         }
     }
@@ -1135,6 +1157,8 @@ class Show extends Component
 
         if ($this->progressReport) {
             $this->progressReport->clearMediaCollection('activity_photos_pkm');
+            $this->progressReport->unsetRelation('media');
+            $this->progressReport->load('media');
             $this->toastSuccess('Lampiran foto kegiatan PKM berhasil dihapus.');
         }
     }

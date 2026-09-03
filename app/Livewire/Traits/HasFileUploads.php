@@ -462,6 +462,11 @@ trait HasFileUploads
         if ($this->teachingMaterialFile instanceof TemporaryUploadedFile || $this->teachingMaterialFile instanceof UploadedFile) {
             $this->saveSingleAttachment($report, $this->teachingMaterialFile, 'teaching_material_file');
         }
+
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        $this->teachingMaterialFile = null;
+        $report->unsetRelation('media');
+        $report->load('media');
     }
 
     protected function savePkmAttachments(ProgressReport $report): void
@@ -526,6 +531,23 @@ trait HasFileUploads
                 }
             }
         }
+
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Reset temporary attachment properties after persisting to Spatie
+        $this->partnerAgreementFile = null;
+        $this->chairpersonStatementFile = null;
+        $this->serviceLocationMapFile = null;
+        $this->officialReportPkmFile = null;
+        $this->assignmentLetterPkmFile = null;
+        $this->questionnairePkmFile = null;
+        $this->teamAttendanceFile = null;
+        $this->participantAttendanceFile = null;
+        $this->trainingMaterialFile = null;
+        $this->activityPhotosFiles = [];
+
+        // Refresh media relation on report model instance
+        $report->unsetRelation('media');
+        $report->load('media');
     }
 
     /**
