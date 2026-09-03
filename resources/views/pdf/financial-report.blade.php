@@ -92,7 +92,7 @@
     {{-- ===================== HALAMAN 1: COVER LAPORAN KEUANGAN ===================== --}}
     <div class="page-break">
         @include('pdf.partials.cover', [
-            'coverTitle' => 'LAPORAN KEUANGAN (LPJ)<br>' . ($proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN KEPADA MASYARAKAT') . ' INTERNAL',
+            'coverTitle' => 'LAPORAN KEUANGAN (LPJ) ' . ($proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN KEPADA MASYARAKAT') . ' INTERNAL',
             'coverYear' => $proposal->start_year,
             'proposal' => $proposal,
             'submitterFullName' => $submitterFullName,
