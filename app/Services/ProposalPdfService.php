@@ -1146,7 +1146,21 @@ class ProposalPdfService
         }
         $pdf->save($cachePath);
 
-        if ($proposal->hasMedia('logbook_approval_file')) {
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Collect all Daily Notes PDF evidence media to append at the end of the LPJ
+        $dailyNotesPdfMedia = [];
+        foreach ($proposal->dailyNotes as $note) {
+            foreach ($note->media as $media) {
+                if (str_contains($media->mime_type ?? '', 'pdf') || strtolower($media->extension ?? '') === 'pdf') {
+                    $dailyNotesPdfMedia[] = $media;
+                }
+            }
+        }
+
+        $hasLogbookScan = $proposal->hasMedia('logbook_approval_file');
+        $needsFpdi = $hasLogbookScan || ! empty($dailyNotesPdfMedia);
+
+        if ($needsFpdi) {
             try {
                 $tempPath = tempnam(sys_get_temp_dir(), 'fin_info_').'.pdf';
                 copy($cachePath, $tempPath);
@@ -1162,8 +1176,8 @@ class ProposalPdfService
                     $fpdi->useTemplate($templateId);
                 }
 
-                // 2. Add uploaded signed scan page(s) (replacing the generated unsigned Page 2)
-                $scanMedia = $proposal->getFirstMedia('logbook_approval_file');
+                // 2. Add uploaded signed scan page(s) (replacing the generated unsigned Page 2 if present)
+                $scanMedia = $hasLogbookScan ? $proposal->getFirstMedia('logbook_approval_file') : null;
                 $scanPath = $scanMedia ? $this->getLocalPdfPath($scanMedia) : null;
                 if ($scanPath && file_exists($scanPath) && strtolower(pathinfo($scanPath, PATHINFO_EXTENSION)) === 'pdf') {
                     $scanPageCount = $fpdi->setSourceFile($scanPath);
@@ -1174,7 +1188,7 @@ class ProposalPdfService
                         $fpdi->useTemplate($templateId);
                     }
                 } elseif ($pageCount >= 2) {
-                    // Fallback: If scan is not a valid PDF, keep original page 2
+                    // Fallback: If scan is not present or not a valid PDF, keep original page 2
                     $fpdi->setSourceFile($tempPath);
                     $templateId = $fpdi->importPage(2);
                     $size = $fpdi->getTemplateSize($templateId);
@@ -1182,7 +1196,7 @@ class ProposalPdfService
                     $fpdi->useTemplate($templateId);
                 }
 
-                // 3. Add remaining pages (Page 3 onwards: Catatan Harian Logbook & Lampiran Bukti Fisik)
+                // 3. Add remaining pages (Page 3 onwards: Catatan Harian Logbook & Lampiran Bukti Fisik list)
                 if ($pageCount >= 3) {
                     $fpdi->setSourceFile($tempPath);
                     for ($pageNo = 3; $pageNo <= $pageCount; $pageNo++) {
@@ -1193,10 +1207,15 @@ class ProposalPdfService
                     }
                 }
 
+                // 4. Append all Daily Notes PDF evidence files at the end of the LPJ
+                foreach ($dailyNotesPdfMedia as $media) {
+                    $this->mergePdfMedia($fpdi, $media, (string) $proposal->id, 'Daily Note Evidence');
+                }
+
                 $fpdi->Output('F', $cachePath);
                 @unlink($tempPath);
             } catch (\Throwable $e) {
-                Log::warning('Failed to merge logbook approval scan into financial report: '.$e->getMessage());
+                Log::warning('Failed to merge logbook approval scan or daily note evidence into financial report: '.$e->getMessage());
             }
         }
 

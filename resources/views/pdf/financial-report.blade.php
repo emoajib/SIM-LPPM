@@ -337,9 +337,12 @@
                                 </div>
                             @endif
                         @else
-                            <div style="background: #f8f9fa; border: 1px dashed #aaa; padding: 12px; color: #555; font-size: 8pt;">
-                                Dokumen Bukti Eksternal (<span style="text-transform: uppercase">{{ $media->extension }}</span>)<br>
-                                <small style="font-style: italic;">Berkas PDF / Dokumen terlampir pada sistem.</small>
+                            {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                            <div style="background: #f0f7ff; border: 1px dashed #0054a6; padding: 10px; color: #333; font-size: 8pt;">
+                                <strong>Dokumen Bukti Eksternal (<span style="text-transform: uppercase">{{ $media->extension }}</span>):</strong> {{ $media->file_name }}<br>
+                                <small style="color: #0054a6; font-weight: bold; font-style: italic;">
+                                    [Lembar dokumen bukti fisik PDF ini dilampirkan lengkap pada bagian akhir dokumen laporan ini]
+                                </small>
                             </div>
                         @endif
                     </div>
