@@ -688,14 +688,14 @@
 
                 {{-- Bukti Realisasi Anggaran --}}
                 <div class="mb-3">
-                    <label class="form-label mb-0 required">Bukti Realisasi Anggaran (PDF/DOCX)</label>
+                    <label class="form-label mb-0">Bukti Realisasi Anggaran (PDF/DOCX) <span class="badge bg-secondary-lt ms-1">Opsional</span></label>
                     <input type="file" wire:model="realizationFile"
                         class="form-control @error('realizationFile') is-invalid @enderror" accept=".pdf,.docx"
                         @disabled(!$canEdit) />
                     @error('realizationFile')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                    <small class="form-hint">Maksimal 10MB, format PDF atau DOCX</small>
+                    <small class="form-hint">Maksimal 10MB, format PDF atau DOCX. Dapat dilampirkan jika ada atau diserahkan terpisah via Laporan Realisasi Keuangan LPPM.</small>
 
                     <div wire:loading wire:target="realizationFile">
                         <small class="text-muted">

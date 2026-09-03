@@ -501,27 +501,6 @@ class Show extends Component
             $missing[] = 'Data Tim Pelaksana';
         }
 
-        // Realization file
-        $hasRealization = $this->progressReport && $this->progressReport->hasMedia('realization_file');
-        $hasNewRealization = $this->realizationFile && $this->realizationFile instanceof TemporaryUploadedFile;
-        $fileExists = $hasRealization || $hasNewRealization;
-
-        // Try one more thing: check if there's a previously uploaded realization file
-        // that might have been saved but the session state lost
-        if (! $fileExists && $this->progressReport) {
-            $allMedia = $this->progressReport->getMedia();
-            $hasRealizationAny = $allMedia->contains(function ($media) {
-                return $media->collection_name === 'realization_file';
-            });
-            if ($hasRealizationAny) {
-                $fileExists = true;
-            }
-        }
-
-        if (! $fileExists) {
-            $missing[] = 'Bukti Realisasi Anggaran';
-        }
-
         // Presentation file
         $hasPresentation = $this->progressReport && $this->progressReport->hasMedia('presentation_file');
         $hasNewPresentation = $this->presentationFile && $this->presentationFile instanceof TemporaryUploadedFile;
@@ -642,17 +621,8 @@ class Show extends Component
             return;
         }
 
-        // Validate that realization file exists (either in DB or newly uploaded)
-        $hasRealizationInDb = $this->progressReport && $this->progressReport->hasMedia('realization_file');
-        $hasNewRealization = $this->realizationFile && $this->realizationFile instanceof TemporaryUploadedFile;
-
-        if (! $hasRealizationInDb && ! $hasNewRealization) {
-            $message = 'Gagal mengajukan: Anda wajib mengunggah File Bukti Realisasi Anggaran.';
-            $this->addError('realizationFile', $message);
-            $this->toastError($message);
-
-            return;
-        }
+        // Realization file is optional for final report submission
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
 
         // Validate that presentation/poster file exists (either in DB or newly uploaded)
         $hasPresentationInDb = $this->progressReport && $this->progressReport->hasMedia('presentation_file');
