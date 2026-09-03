@@ -611,52 +611,7 @@
                     @endif
                 </div>
 
-                {{-- File Poster/Presentasi --}}
-                <div class="mb-3">
-                    <label class="form-label mb-0 required">File Poster/Presentasi (PDF)</label>
-                    <input type="file" wire:model="presentationFile"
-                        class="form-control @error('presentationFile') is-invalid @enderror" accept=".pdf"
-                        @disabled(!$canEdit) />
-                    @error('presentationFile')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                    <small class="form-hint">Maksimal 10MB, format PDF</small>
-
-                    <div wire:loading wire:target="presentationFile">
-                        <small class="text-muted">
-                            <span class="spinner-border spinner-border-sm me-2"></span>
-                            Uploading...
-                        </small>
-                    </div>
-
-                    @if ($progressReport && $progressReport->hasMedia('presentation_file'))
-                        @php
-                            $media = $progressReport->getFirstMedia('presentation_file');
-                        @endphp
-                        <div class="alert alert-success mb-0 mt-2">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <x-lucide-file-check class="text-success icon me-2" />
-                                    <strong>{{ $media->name }}</strong>
-                                    <small class="text-muted ms-2">({{ $media->human_readable_size }})</small>
-                                </div>
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <a data-navigate-ignore="true"
-                                        href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                                        target="_blank" class="btn btn-sm btn-primary">
-                                        <x-lucide-eye class="icon" /> Lihat
-                                    </a>
-                                    @if ($canEdit)
-                                        <button type="button" wire:click="removePresentationFile"
-                                            class="btn btn-sm btn-danger" wire:confirm="Yakin ingin menghapus file ini?">
-                                            <x-lucide-trash-2 class="icon" /> Hapus
-                                        </button>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-                </div>
+                {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
 
                 @if ($this->reportApprovalMode === 'upload')
                     <div class="mb-3 border-top pt-3 mt-3">
