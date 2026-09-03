@@ -3,6 +3,7 @@
 namespace App\Livewire\Settings;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Process;
 use Illuminate\View\View;
 use Livewire\Component;
@@ -135,6 +136,7 @@ class BackupData extends Component
 
         if ($result->successful()) {
             file_put_contents($path, $result->output());
+            chmod($path, 0644);
 
             if (file_exists($path) && filesize($path) > 0) {
                 cache([
@@ -210,8 +212,6 @@ class BackupData extends Component
             return;
         }
 
-        $this->cleanOldBackups('storage_*');
-
         // Optimasi: Gunakan perintah native 'zip' jika tersedia
         $zipPath = $this->findZipCommand();
         if ($zipPath) {
@@ -233,6 +233,7 @@ class BackupData extends Component
             });
 
             if ($result->successful() && file_exists($path) && filesize($path) > 0) {
+                chmod($path, 0644);
                 $this->finalizeStorageBackup($filename, $path);
 
                 return;
@@ -246,6 +247,7 @@ class BackupData extends Component
 
     private function finalizeStorageBackup(string $filename, string $path): void
     {
+        $this->cleanOldBackups('storage_*');
         cache(['backup_last_storage_file' => $filename]);
         $this->lastStorageFile = $filename;
 
@@ -301,6 +303,7 @@ class BackupData extends Component
             $zip->close();
 
             if ($count > 0 && file_exists($path) && filesize($path) > 0) {
+                chmod($path, 0644);
                 $this->finalizeStorageBackup($filename, $path);
             } else {
                 @unlink($path);
@@ -321,6 +324,12 @@ class BackupData extends Component
 
     private function cleanOldBackups(string $pattern): void
     {
+        if ($pattern === 'storage_*') {
+            Cache::forget('backup_last_storage_file');
+        } elseif ($pattern === 'db_*') {
+            Cache::forget('backup_last_db_file');
+        }
+
         $files = glob(storage_path("app/backup/{$pattern}"));
         if ($files) {
             foreach ($files as $file) {

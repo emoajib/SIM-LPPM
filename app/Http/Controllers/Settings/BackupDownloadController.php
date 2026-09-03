@@ -159,28 +159,28 @@ class BackupDownloadController extends Controller
     /**
      * Stream file dari folder backup dengan validasi keamanan.
      */
-    private function streamFile(string $filename, string $mime): StreamedResponse
+    private function streamFile(string $filename, string $mime): StreamedResponse|RedirectResponse
     {
         $backupDir = storage_path('app/backup');
         $fullPath = $backupDir.'/'.$filename;
 
-        $realPath = realpath($fullPath);
-        if ($realPath !== false) {
-            if (! str_starts_with($realPath, $backupDir) || ! file_exists($realPath)) {
-                abort(404, 'File backup tidak ditemukan.');
-            }
-            $path = $realPath;
-        } else {
-            if (! file_exists($fullPath)) {
-                abort(404, 'File backup tidak ditemukan.');
-            }
-            $path = $fullPath;
+        if (! file_exists($fullPath) || ! is_readable($fullPath)) {
+            return redirect()->to(route('settings'))->with('error', 'File backup tidak ditemukan atau tidak dapat dibaca.');
+        }
+
+        $size = filesize($fullPath);
+        if ($size === 0) {
+            return redirect()->to(route('settings'))->with('error', 'File backup kosong.');
         }
 
         return response()->streamDownload(
-            fn () => readfile($path),
+            fn () => @readfile($fullPath),
             $filename,
-            ['Content-Type' => $mime]
+            [
+                'Content-Type' => $mime,
+                'Content-Length' => $size,
+                'Accept-Ranges' => 'bytes',
+            ]
         );
     }
 }
