@@ -518,6 +518,13 @@ class Show extends Component
             $missing[] = 'Lampiran 5: RPS / Bahan Ajar';
         }
 
+        // Realization File (Bukti Realisasi Anggaran)
+        $hasRealization = $this->progressReport && $this->progressReport->hasMedia('realization_file');
+        $hasNewRealization = $this->realizationFile && $this->realizationFile instanceof TemporaryUploadedFile;
+        if (! $hasRealization && ! $hasNewRealization) {
+            $missing[] = 'Bukti Realisasi Anggaran';
+        }
+
         // Logbook
         if ($this->proposal->dailyNotes->count() === 0) {
             $missing[] = 'Logbook Harian';
@@ -570,15 +577,36 @@ class Show extends Component
         }
 
         // Validate that realization file exists (either in DB or newly uploaded)
+        // Check DB first - look for any existing realization file in the progress report
         $hasRealizationInDb = $this->progressReport && $this->progressReport->hasMedia('realization_file');
+
+        // Check if there's a new file being uploaded in this request
         $hasNewRealization = $this->realizationFile && $this->realizationFile instanceof TemporaryUploadedFile;
 
-        if (! $hasRealizationInDb && ! $hasNewRealization) {
-            $message = 'Gagal mengajukan: Anda wajib mengunggah File Bukti Realisasi Anggaran.';
-            $this->addError('realizationFile', $message);
-            $this->toastError($message);
+        // If file not in DB and no new upload, check if there's a previously uploaded file
+        // that might have been saved but the session state lost
+        $fileExists = $hasRealizationInDb || $hasNewRealization;
 
-            return;
+        if (! $fileExists) {
+            // Try one more thing: check if the progress report has any media at all
+            // that could be the realization file with a different name/tag
+            if ($this->progressReport) {
+                $allMedia = $this->progressReport->getMedia();
+                $hasRealizationAny = $allMedia->contains(function ($media) {
+                    return $media->collection_name === 'realization_file';
+                });
+                if ($hasRealizationAny) {
+                    $fileExists = true;
+                }
+            }
+
+            if (! $fileExists) {
+                $message = 'Gagal mengajukan: Anda wajib mengunggah File Bukti Realisasi Anggaran.';
+                $this->addError('realizationFile', $message);
+                $this->toastError($message);
+
+                return;
+            }
         }
 
         try {

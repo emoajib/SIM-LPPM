@@ -504,14 +504,42 @@ class Show extends Component
         // Realization file
         $hasRealization = $this->progressReport && $this->progressReport->hasMedia('realization_file');
         $hasNewRealization = $this->realizationFile && $this->realizationFile instanceof TemporaryUploadedFile;
-        if (! $hasRealization && ! $hasNewRealization) {
+        $fileExists = $hasRealization || $hasNewRealization;
+
+        // Try one more thing: check if there's a previously uploaded realization file
+        // that might have been saved but the session state lost
+        if (! $fileExists && $this->progressReport) {
+            $allMedia = $this->progressReport->getMedia();
+            $hasRealizationAny = $allMedia->contains(function ($media) {
+                return $media->collection_name === 'realization_file';
+            });
+            if ($hasRealizationAny) {
+                $fileExists = true;
+            }
+        }
+
+        if (! $fileExists) {
             $missing[] = 'Bukti Realisasi Anggaran';
         }
 
         // Presentation file
         $hasPresentation = $this->progressReport && $this->progressReport->hasMedia('presentation_file');
         $hasNewPresentation = $this->presentationFile && $this->presentationFile instanceof TemporaryUploadedFile;
-        if (! $hasPresentation && ! $hasNewPresentation) {
+        $fileExists = $hasPresentation || $hasNewPresentation;
+
+        // Try one more thing: check if there's a previously uploaded presentation file
+        // that might have been saved but the session state lost
+        if (! $fileExists && $this->progressReport) {
+            $allMedia = $this->progressReport->getMedia();
+            $hasPresentationAny = $allMedia->contains(function ($media) {
+                return $media->collection_name === 'presentation_file';
+            });
+            if ($hasPresentationAny) {
+                $fileExists = true;
+            }
+        }
+
+        if (! $fileExists) {
             $missing[] = 'File Poster/Presentasi';
         }
 

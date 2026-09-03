@@ -114,7 +114,7 @@
                                                         => 'M16 7a4 4 0 1 0-8 0a4 4 0 0 0 8 0zM12 14a7 7 0 0 0-7 7h14a7 7 0 0 0-7-7z',
                                                 };
                                             @endphp
-                                                <form method="POST" action="{{ route('role.switch') }}" class="d-inline" wire:key="role-{{ $role }}">
+                                                <form method="POST" action="{{ route('role.switch') }}" class="d-inline">
                                                  @csrf
                                                  <input type="hidden" name="role" value="{{ $role }}">
                                                  <button type="submit" class="w-100 text-start dropdown-item">
