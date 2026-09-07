@@ -83,15 +83,15 @@ class ProposalPdfService
         // Fallback: try legacy path format generated when submitter was null at upload time.
         // Format: {collection}/{modelSlug}-{first8ofId}/{mediaId}/{filename}
         $modelSlug = Str::slug(class_basename($media->model_type));
-        $modelId8  = is_string($media->model_id) ? substr($media->model_id, 0, 8) : $media->model_id;
+        $modelId8 = is_string($media->model_id) ? substr($media->model_id, 0, 8) : $media->model_id;
         $legacyRelPath = $media->collection_name.'/'.$modelSlug.'-'.$modelId8.'/'.$media->id.'/'.$media->file_name;
         $legacyFullPath = Storage::disk($diskName)->path($legacyRelPath);
 
         if (file_exists($legacyFullPath)) {
             Log::debug('getLocalPdfPath: using legacy fallback path', [
-                'media_id'    => $media->id,
-                'primary'     => $fullPath,
-                'legacy'      => $legacyFullPath,
+                'media_id' => $media->id,
+                'primary' => $fullPath,
+                'legacy' => $legacyFullPath,
             ]);
 
             return $legacyFullPath;

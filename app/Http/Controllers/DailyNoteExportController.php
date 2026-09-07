@@ -174,7 +174,21 @@ class DailyNoteExportController extends Controller
         $filename = 'Catatan_Harian_'.$title.'.pdf';
         $outputPdfBinary = $pdf->output();
 
-        if ($proposal->hasMedia('logbook_approval_file')) {
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Collect all Daily Notes PDF evidence media to append at the end of the Logbook
+        $dailyNotesPdfMedia = [];
+        foreach ($proposal->dailyNotes as $note) {
+            foreach ($note->media as $media) {
+                if (str_contains($media->mime_type ?? '', 'pdf') || strtolower($media->extension ?? '') === 'pdf') {
+                    $dailyNotesPdfMedia[] = $media;
+                }
+            }
+        }
+
+        $hasLogbookScan = $proposal->hasMedia('logbook_approval_file');
+        $needsFpdi = $hasLogbookScan || ! empty($dailyNotesPdfMedia);
+
+        if ($needsFpdi) {
             try {
                 $tempPath = tempnam(sys_get_temp_dir(), 'dn_info_').'.pdf';
                 file_put_contents($tempPath, $outputPdfBinary);
@@ -182,47 +196,62 @@ class DailyNoteExportController extends Controller
                 $fpdi = new Fpdi;
                 $pageCount = $fpdi->setSourceFile($tempPath);
 
-                // 1. Add Cover (Page 1)
-                if ($pageCount >= 1) {
-                    $templateId = $fpdi->importPage(1);
-                    $size = $fpdi->getTemplateSize($templateId);
-                    $fpdi->AddPage($size['orientation'], [$size['width'], $size['height']]);
-                    $fpdi->useTemplate($templateId);
-                }
+                if ($hasLogbookScan) {
+                    // 1. Add Cover (Page 1)
+                    if ($pageCount >= 1) {
+                        $templateId = $fpdi->importPage(1);
+                        $size = $fpdi->getTemplateSize($templateId);
+                        $fpdi->AddPage($size['orientation'], [$size['width'], $size['height']]);
+                        $fpdi->useTemplate($templateId);
+                    }
 
-                // 2. Add uploaded signed scan page(s) (replacing the generated unsigned Page 2)
-                $scanMedia = $proposal->getFirstMedia('logbook_approval_file');
-                $scanPath = $scanMedia ? $this->pdfService->getLocalPdfPath($scanMedia) : null;
-                if ($scanPath && file_exists($scanPath)) {
-                    $ext = strtolower(pathinfo($scanPath, PATHINFO_EXTENSION));
-                    if ($ext === 'pdf') {
-                        $scanPageCount = $fpdi->setSourceFile($scanPath);
-                        for ($p = 1; $p <= $scanPageCount; $p++) {
-                            $templateId = $fpdi->importPage($p);
+                    // 2. Add uploaded signed scan page(s) (replacing the generated unsigned Page 2)
+                    $scanMedia = $proposal->getFirstMedia('logbook_approval_file');
+                    $scanPath = $scanMedia ? $this->pdfService->getLocalPdfPath($scanMedia) : null;
+                    if ($scanPath && file_exists($scanPath)) {
+                        $ext = strtolower(pathinfo($scanPath, PATHINFO_EXTENSION));
+                        if ($ext === 'pdf') {
+                            $scanPageCount = $fpdi->setSourceFile($scanPath);
+                            for ($p = 1; $p <= $scanPageCount; $p++) {
+                                $templateId = $fpdi->importPage($p);
+                                $size = $fpdi->getTemplateSize($templateId);
+                                $fpdi->AddPage($size['orientation'], [$size['width'], $size['height']]);
+                                $fpdi->useTemplate($templateId);
+                            }
+                        } elseif (in_array($ext, ['jpg', 'jpeg', 'png'], true)) {
+                            $this->pdfService->mergeMediaItem($fpdi, $scanMedia, (string) $proposal->id, 'Logbook Approval Scan Image');
+                        }
+                    } elseif ($pageCount >= 2) {
+                        $fpdi->setSourceFile($tempPath);
+                        $templateId = $fpdi->importPage(2);
+                        $size = $fpdi->getTemplateSize($templateId);
+                        $fpdi->AddPage($size['orientation'], [$size['width'], $size['height']]);
+                        $fpdi->useTemplate($templateId);
+                    }
+
+                    // 3. Add remaining pages (Page 3 onwards)
+                    if ($pageCount >= 3) {
+                        $fpdi->setSourceFile($tempPath);
+                        for ($pageNo = 3; $pageNo <= $pageCount; $pageNo++) {
+                            $templateId = $fpdi->importPage($pageNo);
                             $size = $fpdi->getTemplateSize($templateId);
                             $fpdi->AddPage($size['orientation'], [$size['width'], $size['height']]);
                             $fpdi->useTemplate($templateId);
                         }
-                    } elseif (in_array($ext, ['jpg', 'jpeg', 'png'], true)) {
-                        $this->pdfService->mergeMediaItem($fpdi, $scanMedia, (string) $proposal->id, 'Logbook Approval Scan Image');
                     }
-                } elseif ($pageCount >= 2) {
-                    $fpdi->setSourceFile($tempPath);
-                    $templateId = $fpdi->importPage(2);
-                    $size = $fpdi->getTemplateSize($templateId);
-                    $fpdi->AddPage($size['orientation'], [$size['width'], $size['height']]);
-                    $fpdi->useTemplate($templateId);
-                }
-
-                // 3. Add remaining pages (Page 3 onwards)
-                if ($pageCount >= 3) {
-                    $fpdi->setSourceFile($tempPath);
-                    for ($pageNo = 3; $pageNo <= $pageCount; $pageNo++) {
+                } else {
+                    // Import all original pages
+                    for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
                         $templateId = $fpdi->importPage($pageNo);
                         $size = $fpdi->getTemplateSize($templateId);
                         $fpdi->AddPage($size['orientation'], [$size['width'], $size['height']]);
                         $fpdi->useTemplate($templateId);
                     }
+                }
+
+                // 4. Append all Daily Notes PDF evidence files at the end of the Logbook
+                foreach ($dailyNotesPdfMedia as $media) {
+                    $this->pdfService->mergeMediaItem($fpdi, $media, (string) $proposal->id, 'Daily Note Evidence');
                 }
 
                 $mergedPath = tempnam(sys_get_temp_dir(), 'dn_merged_').'.pdf';
@@ -231,7 +260,7 @@ class DailyNoteExportController extends Controller
                 @unlink($tempPath);
                 @unlink($mergedPath);
             } catch (\Throwable $e) {
-                Log::warning('Failed to merge logbook approval scan: '.$e->getMessage());
+                Log::warning('Failed to merge logbook approval scan or daily note evidence: '.$e->getMessage());
             }
         }
 

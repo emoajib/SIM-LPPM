@@ -46,9 +46,10 @@
             <div>
                 <h4 class="alert-title">Informasi Catatan Harian</h4>
                 <div class="text-secondary">
-                    Gunakan fitur ini untuk mencatat aktivitas harian pengabdian masyarakat Anda. Catatan ini akan
-                    menjadi bukti pelaksanaan kegiatan dan digunakan dalam pemantauan progres pengabdian. Lampirkan
-                    foto atau dokumen sebagai bukti dukung kegiatan.
+                    Gunakan fitur ini untuk mencatat aktivitas harian pengabdian masyarakat Anda sebagai bukti pelaksanaan kegiatan dan pemantauan progres pengabdian.
+                    <div class="mt-1 small">
+                        <strong>Petunjuk Bukti Dukung:</strong> Disarankan mengunggah bukti kegiatan berformat foto (<strong>JPG / PNG</strong>) agar bukti langsung tersaji pada lembar aktivitas. Jika mengunggah berkas <strong>PDF</strong>, berkas akan dilampirkan secara utuh di halaman paling akhir dokumen laporan.
+                    </div>
                 </div>
             </div>
         </div>
@@ -352,13 +353,22 @@
 
                     <div class="mb-3">
                         <label class="form-label">Bukti Dukung (Foto/Dokumen)</label>
+                        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                        <div class="alert alert-info py-2 px-3 mb-2 rounded border-info-subtle" style="background-color: #f0f7ff;">
+                            <div class="d-flex align-items-start gap-2">
+                                <x-lucide-info class="icon text-primary flex-shrink-0 mt-1" style="width: 16px; height: 16px;" />
+                                <div class="text-secondary" style="font-size: 0.8rem; line-height: 1.4;">
+                                    <strong>Disarankan file foto format JPG atau PNG:</strong> Berkas foto akan langsung disematkan & tampil rapi di lembar aktivitas kegiatan. Jika mengunggah file <strong>PDF</strong>, berkas akan terlampir di akhir halaman dokumen laporan.
+                                </div>
+                            </div>
+                        </div>
+
                         <input type="file" class="form-control @error('evidence.*') is-invalid @enderror"
                             wire:model="evidence" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
                         @error('evidence.*')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <small class="text-muted">Bisa upload lebih dari satu file (Max 5MB/file). Format: PDF, DOC,
-                            DOCX, JPG, PNG</small>
+                        <small class="text-muted">Bisa upload lebih dari satu file (Maksimal 5MB/file). Format yang didukung: JPG, JPEG, PNG, PDF, DOC, DOCX.</small>
 
                         <div wire:loading wire:target="evidence" class="mt-2">
                             <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
@@ -392,6 +402,11 @@
                                                         <div class="text-truncate small"
                                                             title="{{ $file->getClientOriginalName() }}">
                                                             {{ $file->getClientOriginalName() }}
+                                                            @if (str_starts_with($file->getMimeType(), 'image/'))
+                                                                <span class="badge bg-green-lt ms-1" style="font-size: 0.65rem;">Foto (Inline)</span>
+                                                            @elseif (str_contains($file->getMimeType(), 'pdf'))
+                                                                <span class="badge bg-azure-lt ms-1" style="font-size: 0.65rem;">PDF (Akhir Halaman)</span>
+                                                            @endif
                                                         </div>
                                                     </div>
                                                     <button type="button"
@@ -439,6 +454,11 @@
                                                         <div class="text-truncate small"
                                                             title="{{ $media->file_name }}">
                                                             {{ $media->file_name }}
+                                                            @if (str_starts_with($media->mime_type, 'image/'))
+                                                                <span class="badge bg-green-lt ms-1" style="font-size: 0.65rem;">Foto (Inline)</span>
+                                                            @elseif (str_contains($media->mime_type, 'pdf'))
+                                                                <span class="badge bg-azure-lt ms-1" style="font-size: 0.65rem;">PDF (Akhir Halaman)</span>
+                                                            @endif
                                                         </div>
                                                     </div>
                                                     <button type="button"
