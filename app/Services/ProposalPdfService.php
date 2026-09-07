@@ -71,8 +71,19 @@ class ProposalPdfService
         $diskName = $media->disk ?: config('media-library.disk_name', 'public');
         $relPath = $media->getPathRelativeToRoot();
         $fullPath = Storage::disk($diskName)->path($relPath);
+        $exists = file_exists($fullPath);
 
-        return file_exists($fullPath) ? $fullPath : null;
+        Log::debug('ProposalPdfService::getLocalPdfPath', [
+            'media_id'   => $media->id,
+            'collection' => $media->collection_name,
+            'file_name'  => $media->file_name,
+            'disk'       => $diskName,
+            'rel_path'   => $relPath,
+            'full_path'  => $fullPath,
+            'exists'     => $exists,
+        ]);
+
+        return $exists ? $fullPath : null;
     }
 
     /**
@@ -845,8 +856,16 @@ class ProposalPdfService
         }
 
         // 2. Add pages from the report's substance file (NASKAH SUBSTANSI LAPORAN AKHIR PDF)
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         /** @var ?Media $substanceFile */
         $substanceFile = $report->getFirstMedia('substance_file');
+        Log::debug('ProposalPdfService::exportReport substance_file check', [
+            'report_id'        => $report->id,
+            'has_substance'    => $substanceFile !== null,
+            'media_id'         => $substanceFile?->id,
+            'media_file'       => $substanceFile?->file_name,
+            'all_report_media' => $report->getMedia()->pluck('collection_name', 'id')->toArray(),
+        ]);
         if ($substanceFile) {
             $this->mergeMediaItem($pdf, $substanceFile, $report->id, 'Report Substance');
         }
