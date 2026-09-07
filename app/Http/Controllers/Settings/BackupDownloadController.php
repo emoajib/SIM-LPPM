@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Process;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class BackupDownloadController extends Controller
 {
@@ -16,7 +16,7 @@ class BackupDownloadController extends Controller
      * Filename diambil dari cache, BUKAN dari URL — mencegah directory traversal.
      * Fallback: jika cache kosong, cari file terbaru langsung di storage.
      */
-    public function downloadDatabase(): StreamedResponse|RedirectResponse
+    public function downloadDatabase(): BinaryFileResponse|RedirectResponse
     {
         abort_unless(Auth::user()?->activeHasRole('admin lppm'), 403);
 
@@ -39,7 +39,7 @@ class BackupDownloadController extends Controller
      * Filename diambil dari cache, BUKAN dari URL — mencegah directory traversal.
      * Fallback: jika cache kosong, cari file terbaru langsung di storage.
      */
-    public function downloadStorage(): StreamedResponse|RedirectResponse
+    public function downloadStorage(): BinaryFileResponse|RedirectResponse
     {
         abort_unless(Auth::user()?->activeHasRole('admin lppm'), 403);
 
@@ -102,7 +102,7 @@ class BackupDownloadController extends Controller
      *
      * Membuat backup baru lalu langsung download.
      */
-    public function downloadDatabaseBackup(): StreamedResponse
+    public function downloadDatabaseBackup(): BinaryFileResponse
     {
         abort_unless(Auth::user()?->activeHasRole('admin lppm'), 403);
 
@@ -146,21 +146,34 @@ class BackupDownloadController extends Controller
             abort(500, 'Gagal membuat file backup database.');
         }
 
-        return response()->streamDownload(
-            function () use ($path) {
-                readfile($path);
-                @unlink($path);
-            },
+        @set_time_limit(0);
+        @ini_set('memory_limit', '512M');
+
+        if (! app()->runningUnitTests()) {
+            while (ob_get_level() > 0) {
+                @ob_end_clean();
+            }
+        }
+
+        return response()->download(
+            $path,
             $filename,
-            ['Content-Type' => 'application/sql']
-        );
+            [
+                'Content-Type' => 'application/sql',
+                'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+                'Pragma' => 'no-cache',
+            ]
+        )->deleteFileAfterSend(true);
     }
 
     /**
-     * Stream file dari folder backup dengan validasi keamanan.
+     * Download file dari folder backup dengan validasi keamanan.
+     * Menggunakan BinaryFileResponse untuk mendukung HTTP Range requests (resume download)
+     * dan streaming bebas buffer memory PHP untuk file besar (>100MB).
      */
-    private function streamFile(string $filename, string $mime): StreamedResponse|RedirectResponse
+    private function streamFile(string $filename, string $mime): BinaryFileResponse|RedirectResponse
     {
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $backupDir = storage_path('app/backup');
         $fullPath = $backupDir.'/'.$filename;
 
@@ -173,13 +186,22 @@ class BackupDownloadController extends Controller
             return redirect()->to(route('settings'))->with('error', 'File backup kosong.');
         }
 
-        return response()->streamDownload(
-            fn () => @readfile($fullPath),
+        @set_time_limit(0);
+        @ini_set('memory_limit', '512M');
+
+        if (! app()->runningUnitTests()) {
+            while (ob_get_level() > 0) {
+                @ob_end_clean();
+            }
+        }
+
+        return response()->download(
+            $fullPath,
             $filename,
             [
                 'Content-Type' => $mime,
-                'Content-Length' => $size,
-                'Accept-Ranges' => 'bytes',
+                'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+                'Pragma' => 'no-cache',
             ]
         );
     }
