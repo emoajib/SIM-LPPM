@@ -65,25 +65,39 @@ class ProposalPdfService
      * Vetted by AI - Manual Review Required by Senior Engineer/Manager
      * IMPORTANT: $media->getPath() may return a RELATIVE path via CustomPathGenerator.
      * Always use getPathRelativeToRoot() + disk->path() to get correct absolute path.
+     *
+     * BACKWARD COMPAT: Files uploaded while ProgressReport had submitted_by=null use
+     * the fallback path format: {collection}/{modelSlug}-{first8ofId}/{mediaId}/{filename}.
+     * We try both paths to support existing files.
      */
     public function getLocalPdfPath(Media $media): ?string
     {
         $diskName = $media->disk ?: config('media-library.disk_name', 'public');
         $relPath = $media->getPathRelativeToRoot();
         $fullPath = Storage::disk($diskName)->path($relPath);
-        $exists = file_exists($fullPath);
 
-        Log::debug('ProposalPdfService::getLocalPdfPath', [
-            'media_id'   => $media->id,
-            'collection' => $media->collection_name,
-            'file_name'  => $media->file_name,
-            'disk'       => $diskName,
-            'rel_path'   => $relPath,
-            'full_path'  => $fullPath,
-            'exists'     => $exists,
-        ]);
+        if (file_exists($fullPath)) {
+            return $fullPath;
+        }
 
-        return $exists ? $fullPath : null;
+        // Fallback: try legacy path format generated when submitter was null at upload time.
+        // Format: {collection}/{modelSlug}-{first8ofId}/{mediaId}/{filename}
+        $modelSlug = Str::slug(class_basename($media->model_type));
+        $modelId8  = is_string($media->model_id) ? substr($media->model_id, 0, 8) : $media->model_id;
+        $legacyRelPath = $media->collection_name.'/'.$modelSlug.'-'.$modelId8.'/'.$media->id.'/'.$media->file_name;
+        $legacyFullPath = Storage::disk($diskName)->path($legacyRelPath);
+
+        if (file_exists($legacyFullPath)) {
+            Log::debug('getLocalPdfPath: using legacy fallback path', [
+                'media_id'    => $media->id,
+                'primary'     => $fullPath,
+                'legacy'      => $legacyFullPath,
+            ]);
+
+            return $legacyFullPath;
+        }
+
+        return null;
     }
 
     /**
@@ -859,13 +873,6 @@ class ProposalPdfService
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         /** @var ?Media $substanceFile */
         $substanceFile = $report->getFirstMedia('substance_file');
-        Log::debug('ProposalPdfService::exportReport substance_file check', [
-            'report_id'        => $report->id,
-            'has_substance'    => $substanceFile !== null,
-            'media_id'         => $substanceFile?->id,
-            'media_file'       => $substanceFile?->file_name,
-            'all_report_media' => $report->getMedia()->pluck('collection_name', 'id')->toArray(),
-        ]);
         if ($substanceFile) {
             $this->mergeMediaItem($pdf, $substanceFile, $report->id, 'Report Substance');
         }
