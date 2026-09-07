@@ -47,6 +47,19 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->renderable(function (Throwable $e, Request $request) {
+            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            if ($e instanceof HttpException && $e->getStatusCode() === 405) {
+                Log::warning('405 Method Not Allowed Triggered', [
+                    'url' => $request->fullUrl(),
+                    'method' => $request->method(),
+                    'user_id' => auth()->id(),
+                    'active_role' => session('active_role'),
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                    'message' => $e->getMessage(),
+                ]);
+            }
+
             if ($e instanceof HttpException && $e->getStatusCode() === 403) {
                 Log::error('403 Forbidden Triggered', [
                     'url' => $request->fullUrl(),

@@ -177,6 +177,7 @@ class BackupData extends Component
         $this->isRunning = false;
     }
 
+    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
     public function backupStorage(): void
     {
         abort_unless(Auth::user()?->activeHasRole('admin lppm'), 403);
@@ -190,6 +191,9 @@ class BackupData extends Component
 
             return;
         }
+
+        set_time_limit(900);
+        ini_set('memory_limit', '1024M');
 
         $this->isRunning = true;
         $this->output = 'Membuat backup file storage (Folder terpilih: '.implode(', ', $this->selectedFolders).")...\n";
@@ -219,20 +223,13 @@ class BackupData extends Component
         if ($zipPath) {
             $this->output .= "Menggunakan perintah native zip: {$zipPath}\n";
 
-            // Hanya zip folder yang dipilih
-            $cmd = [$zipPath, '-r', $path];
+            // Hanya zip folder yang dipilih dengan fast compression (-1) dan quiet (-q)
+            $cmd = [$zipPath, '-q', '-r', '-1', $path];
             foreach ($this->selectedFolders as $folder) {
                 $cmd[] = $folder;
             }
 
-            $result = Process::path($storagePath)->timeout(900)->run($cmd, function ($type, $line) {
-                if (str_contains($line, 'adding:')) {
-                    static $count = 0;
-                    if (++$count % 50 === 0) {
-                        $this->output .= "Memproses file... ({$count} file)\n";
-                    }
-                }
-            });
+            $result = Process::path($storagePath)->timeout(900)->run($cmd);
 
             if ($result->successful() && file_exists($path) && filesize($path) > 0) {
                 chmod($path, 0644);
@@ -344,8 +341,11 @@ class BackupData extends Component
         $paths = ['/usr/bin/zip', '/usr/local/bin/zip', 'zip'];
 
         foreach ($paths as $path) {
+            if (str_starts_with($path, '/') && is_executable($path)) {
+                return $path;
+            }
             $result = Process::run(['which', $path]);
-            if ($result->successful()) {
+            if ($result->successful() && ! empty(trim($result->output()))) {
                 return trim($result->output());
             }
         }
@@ -365,20 +365,22 @@ class BackupData extends Component
         foreach ($paths as $path) {
             if (str_contains($path, '*')) {
                 $matches = glob($path);
-                if (! empty($matches)) {
+                if (! empty($matches) && is_executable($matches[0])) {
                     return $matches[0];
                 }
+            } elseif (str_starts_with($path, '/') && is_executable($path)) {
+                return $path;
             } else {
                 $result = Process::run(['which', $path]);
-                if ($result->successful()) {
+                if ($result->successful() && ! empty(trim($result->output()))) {
                     return trim($result->output());
                 }
             }
         }
 
         $result = Process::run(['which', 'mysqldump']);
-        if ($result->successful()) {
-            return 'mysqldump';
+        if ($result->successful() && ! empty(trim($result->output()))) {
+            return trim($result->output());
         }
 
         return null;

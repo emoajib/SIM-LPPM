@@ -348,9 +348,15 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
-    Route::get('settings', SettingsIndex::class)
+    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    Route::match(['get', 'post'], 'settings', SettingsIndex::class)
         ->middleware(['auth', 'verified'])
         ->name('settings');
+
+    // Fallback for redirected Livewire POST requests to prevent 405 Method Not Allowed
+    Route::get('livewire/update', function () {
+        return redirect()->route('settings')->with('error', 'Sesi telah diperbarui. Silakan coba lagi.');
+    });
 
     // Archive Management
     Route::get('admin/archives', ManageArchives::class)
@@ -384,12 +390,13 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Backup Download Routes (Bypass Livewire WAF issues — safe approach: filename from cache, not URL)
+    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
     Route::middleware(['auth', 'verified', 'role:admin lppm|superadmin'])->prefix('settings')->name('settings.')->group(function () {
-        Route::get('download-backup-db', [BackupDownloadController::class, 'downloadDatabaseBackup'])
+        Route::match(['get', 'post'], 'download-backup-db', [BackupDownloadController::class, 'downloadDatabaseBackup'])
             ->name('download-backup-db');
-        Route::get('download-db', [BackupDownloadController::class, 'downloadDatabase'])
+        Route::match(['get', 'post'], 'download-db', [BackupDownloadController::class, 'downloadDatabase'])
             ->name('download-db');
-        Route::get('download-storage', [BackupDownloadController::class, 'downloadStorage'])
+        Route::match(['get', 'post'], 'download-storage', [BackupDownloadController::class, 'downloadStorage'])
             ->name('download-storage');
     });
 

@@ -70,8 +70,12 @@
                     </span>
                 </button>
 
+                {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
                 <a
                     href="{{ route('settings.download-db') }}"
+                    download
+                    data-navigate-ignore="true"
+                    wire:navigate.ignore
                     class="btn btn-success @if(!$lastDbFile || $isRunning) disabled @endif"
                 >
                     <x-lucide-file-text class="icon me-1" />
@@ -80,6 +84,9 @@
 
                 <a
                     href="{{ route('settings.download-storage') }}"
+                    download
+                    data-navigate-ignore="true"
+                    wire:navigate.ignore
                     class="btn btn-success @if(!$lastStorageFile || $isRunning) disabled @endif"
                 >
                     <x-lucide-file-archive class="icon me-1" />
