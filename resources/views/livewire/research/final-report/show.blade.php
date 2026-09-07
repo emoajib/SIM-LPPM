@@ -11,7 +11,8 @@
             @if ($progressReport && $progressReport->reporting_period === 'final')
                 <a data-navigate-ignore="true"
                     href="{{ route('reports.export-pdf', ['proposal' => $proposal, 'type' => 'final', 'preview' => 1]) }}" target="_blank"
-                    class="btn btn-outline-info shadow-sm">
+                    class="btn btn-outline-info shadow-sm"
+                    title="Pratinjau Laporan Akhir (Pastikan draft telah disimpan agar seluruh lampiran terlampir)">
                     <i class="ti ti-eye me-2"></i>
                     Tinjau PDF
                 </a>

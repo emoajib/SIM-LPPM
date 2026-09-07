@@ -193,13 +193,18 @@ class DailyNoteExportController extends Controller
                 // 2. Add uploaded signed scan page(s) (replacing the generated unsigned Page 2)
                 $scanMedia = $proposal->getFirstMedia('logbook_approval_file');
                 $scanPath = $scanMedia ? $this->pdfService->getLocalPdfPath($scanMedia) : null;
-                if ($scanPath && file_exists($scanPath) && strtolower(pathinfo($scanPath, PATHINFO_EXTENSION)) === 'pdf') {
-                    $scanPageCount = $fpdi->setSourceFile($scanPath);
-                    for ($p = 1; $p <= $scanPageCount; $p++) {
-                        $templateId = $fpdi->importPage($p);
-                        $size = $fpdi->getTemplateSize($templateId);
-                        $fpdi->AddPage($size['orientation'], [$size['width'], $size['height']]);
-                        $fpdi->useTemplate($templateId);
+                if ($scanPath && file_exists($scanPath)) {
+                    $ext = strtolower(pathinfo($scanPath, PATHINFO_EXTENSION));
+                    if ($ext === 'pdf') {
+                        $scanPageCount = $fpdi->setSourceFile($scanPath);
+                        for ($p = 1; $p <= $scanPageCount; $p++) {
+                            $templateId = $fpdi->importPage($p);
+                            $size = $fpdi->getTemplateSize($templateId);
+                            $fpdi->AddPage($size['orientation'], [$size['width'], $size['height']]);
+                            $fpdi->useTemplate($templateId);
+                        }
+                    } elseif (in_array($ext, ['jpg', 'jpeg', 'png'], true)) {
+                        $this->pdfService->mergeMediaItem($fpdi, $scanMedia, (string) $proposal->id, 'Logbook Approval Scan Image');
                     }
                 } elseif ($pageCount >= 2) {
                     $fpdi->setSourceFile($tempPath);

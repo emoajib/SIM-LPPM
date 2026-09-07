@@ -170,6 +170,20 @@
                 </tr>
                 @endif
             @endforeach
+            @php
+                $unassignedProposed = (float) $proposal->budgetItems->whereNull('budget_group_id')->sum('total_price');
+                $unassignedRealized = (float) $proposal->dailyNotes->whereNull('budget_group_id')->sum('amount');
+                $totalProposed += $unassignedProposed;
+                $totalRealized += $unassignedRealized;
+            @endphp
+            @if($unassignedProposed > 0 || $unassignedRealized > 0)
+            <tr>
+                <td class="text-center">-</td>
+                <td>Biaya Operasional / Komponen Tambahan Lainnya</td>
+                <td class="text-right">{{ number_format($unassignedProposed, 0, ',', '.') }}</td>
+                <td class="text-right">{{ number_format($unassignedRealized, 0, ',', '.') }}</td>
+            </tr>
+            @endif
             <tr style="background-color: #f2f2f2; font-weight: bold;">
                 <td colspan="2" class="text-center">TOTAL DANA</td>
                 <td class="text-right">Rp {{ number_format($totalProposed, 0, ',', '.') }}</td>
@@ -178,8 +192,38 @@
         </tbody>
     </table>
 
-    {{-- Pengesahan Keuangan --}}
-    <div style="margin-top: 15px; page-break-inside: avoid;">
+    {{-- ===================== HALAMAN 3: PENGESAHAN LAPORAN KEUANGAN ===================== --}}
+    <div class="page-break"></div>
+    @include('pdf.partials.header')
+
+    <div class="document-title" style="margin-top: 15px; margin-bottom: 25px;">
+        HALAMAN PENGESAHAN LAPORAN KEUANGAN (LPJ)
+    </div>
+
+    <table class="no-border" style="margin-bottom: 20px;">
+        <tr>
+            <td style="width: 25%;">Judul Program</td>
+            <td style="width: 2%;">:</td>
+            <td style="font-weight: bold;">{{ clean_proposal_title($proposal->title) }}</td>
+        </tr>
+        <tr>
+            <td>Nomor Kontrak</td>
+            <td>:</td>
+            <td style="font-weight: bold;">{{ $proposal->contract_number ?? '-' }}</td>
+        </tr>
+        <tr>
+            <td>Ketua Pelaksana</td>
+            <td>:</td>
+            <td>{{ $submitterFullName }} (NIDN: {{ $proposal->submitter->identity?->identity_id ?? '-' }})</td>
+        </tr>
+        <tr>
+            <td>Total Realisasi Biaya</td>
+            <td>:</td>
+            <td style="font-weight: bold;">Rp {{ number_format($totalRealized, 0, ',', '.') }}</td>
+        </tr>
+    </table>
+
+    <div style="margin-top: 30px; page-break-inside: avoid;">
         <table class="no-border" style="width: 100%;">
             <tr>
                 <td width="50%" class="text-center" style="vertical-align: top; border: none;">
@@ -202,8 +246,8 @@
                         <div style="height: 55px;"></div>
                     @endif
                     @php $kepala = \App\Models\User::role('kepala lppm')->first(); @endphp
-                    <strong><u>{{ $kepala->name ?? '.......................' }}</u></strong><br>
-                    NIDN. {{ $kepala->identity?->identity_id ?? '-' }}
+                    <strong><u>{{ $lppmHeadName ?? ($kepala->name ?? '.......................') }}</u></strong><br>
+                    NIDN. {{ $lppmHeadId ?? ($kepala->identity?->identity_id ?? '-') }}
                 </td>
                 <td class="text-center" style="height: 80px; vertical-align: bottom; border: none; padding-bottom: 3px;">
                     @if($qrUrlSubmitter ?? null)
@@ -263,7 +307,7 @@
             @forelse($proposal->dailyNotes->sortBy('activity_date') as $index => $note)
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
-                    <td class="text-center">{{ $note->activity_date->format('d/m/Y') }}</td>
+                    <td class="text-center">{{ $note->activity_date ? $note->activity_date->format('d/m/Y') : '-' }}</td>
                     <td>
                         <div class="font-bold">{{ $note->activity_description }}</div>
                         @if ($note->notes)
@@ -297,7 +341,7 @@
 
     {{-- ===================== HALAMAN LAMPIRAN BUKTI FISIK NOTA / KWITANSI ===================== --}}
     @php
-        $notesWithMedia = $proposal->dailyNotes()->with('media')->get()->filter(fn($n) => $n->media->isNotEmpty());
+        $notesWithMedia = $proposal->dailyNotes->filter(fn($n) => $n->media->isNotEmpty());
     @endphp
 
     @if ($notesWithMedia->isNotEmpty())
@@ -310,7 +354,7 @@
             @foreach ($note->media as $media)
                 <div style="margin-bottom: 18px; border: 1px solid #d0d0d0; padding: 10px; page-break-inside: avoid; background: #fff;">
                     <div style="margin-top: 0; margin-bottom: 8px; border-bottom: 1px solid #e5e5e5; padding-bottom: 5px; font-weight: bold; font-size: 9pt;">
-                        Transaksi: {{ $note->activity_date->format('d F Y') }} &mdash; Nominal: Rp {{ number_format($note->amount ?? 0, 0, ',', '.') }}
+                        Transaksi: {{ $note->activity_date ? $note->activity_date->format('d F Y') : '-' }} &mdash; Nominal: Rp {{ number_format($note->amount ?? 0, 0, ',', '.') }}
                         <div style="font-weight: normal; font-size: 8pt; color: #555; margin-top: 2px;">
                             Uraian: {{ $note->activity_description }} (Kelompok: {{ $note->budgetGroup->name ?? '-' }})
                         </div>

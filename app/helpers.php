@@ -566,6 +566,36 @@ if (! function_exists('embed_attachment_image')) {
             $mime = 'image/svg+xml';
         }
 
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // If the image is large (> 1MB) and GD is available, downscale to max 1200px to avoid DomPDF memory exhaustion
+        if (strlen($content) > 1024 * 1024 && extension_loaded('gd') && ! str_contains($mime, 'svg')) {
+            $img = @imagecreatefromstring($content);
+            if ($img !== false) {
+                $w = imagesx($img);
+                $h = imagesy($img);
+                $maxDim = 1200;
+                if ($w > $maxDim || $h > $maxDim) {
+                    $ratio = min($maxDim / $w, $maxDim / $h);
+                    $newW = (int) round($w * $ratio);
+                    $newH = (int) round($h * $ratio);
+                    $resized = imagecreatetruecolor($newW, $newH);
+                    imagealphablending($resized, false);
+                    imagesavealpha($resized, true);
+                    imagecopyresampled($resized, $img, 0, 0, 0, 0, $newW, $newH, $w, $h);
+                    ob_start();
+                    imagejpeg($resized, null, 80);
+                    $optimizedContent = ob_get_clean();
+                    imagedestroy($resized);
+                    imagedestroy($img);
+                    if ($optimizedContent !== false && strlen($optimizedContent) > 0) {
+                        return 'data:image/jpeg;base64,'.base64_encode($optimizedContent);
+                    }
+                } else {
+                    imagedestroy($img);
+                }
+            }
+        }
+
         return 'data:'.$mime.';base64,'.base64_encode($content);
     }
 }
