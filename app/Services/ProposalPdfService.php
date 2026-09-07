@@ -62,19 +62,15 @@ class ProposalPdfService
      * Returns null if the file cannot be found.
      *
      * For local disks: resolves to the absolute filesystem path.
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * IMPORTANT: $media->getPath() may return a RELATIVE path via CustomPathGenerator.
+     * Always use getPathRelativeToRoot() + disk->path() to get correct absolute path.
      */
     public function getLocalPdfPath(Media $media): ?string
     {
         $diskName = $media->disk ?: config('media-library.disk_name', 'public');
-        $path = $media->getPath();
-        $fullPath = str_starts_with($path, '/') ? $path : Storage::disk($diskName)->path($path);
-
-        if (! file_exists($fullPath)) {
-            $relPath = $media->getPathRelativeToRoot();
-            if ($relPath && Storage::disk($diskName)->exists($relPath)) {
-                $fullPath = Storage::disk($diskName)->path($relPath);
-            }
-        }
+        $relPath = $media->getPathRelativeToRoot();
+        $fullPath = Storage::disk($diskName)->path($relPath);
 
         return file_exists($fullPath) ? $fullPath : null;
     }

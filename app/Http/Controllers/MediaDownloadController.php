@@ -43,19 +43,25 @@ class MediaDownloadController extends Controller
             $diskName = config('media-library.disk_name', 'public');
 
             // 3. Path Traversal & Existence Check for local disks
+            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            // IMPORTANT: $media->getPath() may return a RELATIVE path (via CustomPathGenerator).
+            // realpath() on a relative path resolves from PHP's CWD (not disk root) → always fails → 404.
+            // Fix: use getPathRelativeToRoot() + disk->path() to build the correct absolute path first.
             $disk = Storage::disk($diskName);
-            $path = $media->getPath();
-            if (str_contains($path, '..')) {
+            $relativePath = $media->getPathRelativeToRoot();
+
+            if (str_contains($relativePath, '..')) {
                 abort(403, 'Invalid file path.');
             }
 
-            $realPath = realpath($path);
+            $absolutePath = $disk->path($relativePath);
+            $realPath = realpath($absolutePath);
             if ($realPath === false) {
                 abort(404, 'File fisik tidak ditemukan di server.');
             }
 
-            // Security Barrier: Ensure path is within the disk's root (not just storage_path)
-            $diskRoot = $disk->path('');
+            // Security Barrier: Ensure path is within the disk's root
+            $diskRoot = realpath($disk->path(''));
             if ($diskRoot === false || ! str_starts_with($realPath, $diskRoot)) {
                 abort(403, 'Path traversal detected or illegal file path access.');
             }
