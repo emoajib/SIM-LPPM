@@ -39,7 +39,7 @@ class TitleChangeRequestTest extends TestCase
 
         $this->adminLppm = User::factory()->create();
         $this->adminLppm->assignRole('admin lppm');
-        Identity::factory()->create(['user_id' => $this->adminLppm->id, 'type' => 'admin']);
+        Identity::factory()->create(['user_id' => $this->adminLppm->id, 'type' => 'tendik']);
 
         $research = Research::factory()->create();
 
