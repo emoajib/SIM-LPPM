@@ -168,6 +168,12 @@ class MenuComposer
                 'route' => 'kepala-lppm.report-approval',
                 'roles' => ['kepala lppm'],
             ],
+            [
+                'title' => 'Persetujuan Laporan Keuangan',
+                'icon' => 'wallet',
+                'route' => 'kepala-lppm.financial-approval',
+                'roles' => ['kepala lppm'],
+            ],
             ...($letteringActive ? [[
                 'title' => 'Persetujuan Surat',
                 'icon' => 'mail-check',

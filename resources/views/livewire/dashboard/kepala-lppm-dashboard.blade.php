@@ -453,7 +453,10 @@
                     <div class="card glass-card border-0 shadow-sm overflow-hidden" style="border-left: 4px solid #2fb344 !important;">
                         <div class="card-body py-3">
                             <div class="d-flex align-items-center mb-2">
-                                <div class="subheader text-success fw-bold">Laporan Akhir</div>
+                                <a href="{{ route('kepala-lppm.report-approval') }}" class="subheader text-success fw-bold text-decoration-none d-flex align-items-center" wire:navigate>
+                                    Laporan Akhir
+                                    <x-lucide-arrow-right class="icon icon-sm ms-1" />
+                                </a>
                                 <div class="ms-auto">
                                     <span class="badge bg-success-lt">{{ $processStats['report_progress'] ?? 0 }}%</span>
                                 </div>
@@ -473,7 +476,10 @@
                     <div class="card glass-card border-0 shadow-sm overflow-hidden" style="border-left: 4px solid #6366f1 !important;">
                         <div class="card-body py-3">
                             <div class="d-flex align-items-center mb-2">
-                                <div class="subheader text-indigo fw-bold">Laporan Keuangan (LPJ)</div>
+                                <a href="{{ route('kepala-lppm.financial-approval') }}" class="subheader text-indigo fw-bold text-decoration-none d-flex align-items-center" wire:navigate>
+                                    Laporan Keuangan (LPJ)
+                                    <x-lucide-arrow-right class="icon icon-sm ms-1" />
+                                </a>
                                 <div class="ms-auto">
                                     <span class="badge bg-indigo-lt">{{ $processStats['financial_progress'] ?? 0 }}%</span>
                                 </div>

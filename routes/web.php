@@ -40,6 +40,7 @@ use App\Livewire\Iku\IkuVerification;
 use App\Livewire\Installer\InstallerWizard;
 use App\Livewire\Kaprodi\ProposalValidation;
 use App\Livewire\KepalaLppm\FinalDecision;
+use App\Livewire\KepalaLppm\FinancialApproval;
 use App\Livewire\KepalaLppm\InitialApproval;
 use App\Livewire\KepalaLppm\Monev\MonevRecap;
 use App\Livewire\KepalaLppm\ReportApproval;
@@ -307,6 +308,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('persetujuan-awal', InitialApproval::class)->name('initial-approval');
         Route::get('persetujuan-akhir', FinalDecision::class)->name('final-decision');
         Route::get('report-approval', ReportApproval::class)->name('report-approval');
+        Route::get('persetujuan-keuangan', FinancialApproval::class)->name('financial-approval');
         Route::get('persetujuan-surat', LetterApproval::class)->middleware('letter.active')->name('letter-approval');
         Route::get('monev/recap', MonevRecap::class)->name('monev.recap');
         Route::get('monev/dashboard', MonevDashboard::class)->name('rektor.monev-dashboard');

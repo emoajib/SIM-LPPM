@@ -30,6 +30,7 @@ use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 
+// Vetted by AI - Manual Review Required by Senior Engineer/Manager
 class Show extends Component
 {
     use HasFileUploads;
@@ -573,27 +574,8 @@ class Show extends Component
             abort(403);
         }
 
-        // Validate Budget Usage (Threshold 70% if Daily Notes exist)
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
-        $totalProposedBudget = (float) $this->proposal->budgetItems()->sum('total_price');
-        $totalUsedBudget = (float) $this->proposal->dailyNotes()->sum('amount');
-
-        if ($totalProposedBudget > 0 && $totalUsedBudget > 0) {
-            $percentage = ($totalUsedBudget / $totalProposedBudget) * 100;
-
-            if ($percentage < 70) {
-                $message = sprintf(
-                    'Gagal mengajukan: Realisasi anggaran di Catatan Harian baru %.1f%% (Rp %s dari Rp %s). Minimal 70%% diperlukan untuk mengajukan laporan akhir.',
-                    $percentage,
-                    number_format($totalUsedBudget, 0, ',', '.'),
-                    number_format($totalProposedBudget, 0, ',', '.')
-                );
-                session()->flash('error', $message);
-                $this->toastError($message);
-
-                return;
-            }
-        }
+        // Laporan Keuangan (LPJ) dipisahkan dari Laporan Akhir sehingga dosen tidak diblokir.
 
         // Validate that substance file exists (either in DB or newly uploaded)
         $hasFileInDatabase = $this->progressReport && $this->progressReport->hasMedia('substance_file');

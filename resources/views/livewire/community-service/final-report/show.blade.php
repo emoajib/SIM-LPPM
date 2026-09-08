@@ -1423,17 +1423,15 @@
     <!-- Action Buttons -->
     @if ($canEdit)
         @if ($isFinalReportDraft)
-            <div class="alert alert-warning mb-3" role="alert">
+            <div class="alert alert-info mb-3" role="alert">
                 <div class="d-flex">
                     <div>
-                        <x-lucide-alert-triangle class="icon alert-icon" />
+                        <x-lucide-info class="icon alert-icon" />
                     </div>
                     <div>
-                        <h4 class="alert-title">Persyaratan Pengajuan Laporan</h4>
+                        <h4 class="alert-title">Informasi Pengajuan Laporan Akhir</h4>
                         <div class="text-secondary">
-                            Pastikan total pengeluaran pada menu Catatan Harian (Logbook) telah mencapai 100% dari total Pagu
-                            RAB sebelum mengajukan Laporan Akhir. Sistem akan memblokir pengajuan jika serapan dana belum genap
-                            100%.
+                            Laporan Akhir (Substansi) dan Laporan Keuangan (LPJ) dikelola secara mandiri. Anda dapat langsung mengajukan Laporan Akhir Pengabdian ini untuk ditinjau Dekan dan Kepala LPPM tanpa harus menunggu pengesahan Laporan Keuangan (LPJ).
                         </div>
                     </div>
                 </div>

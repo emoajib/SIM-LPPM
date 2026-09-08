@@ -23,6 +23,7 @@ use Livewire\Livewire;
 use Spatie\Permission\PermissionRegistrar;
 use Tests\TestCase;
 
+// Vetted by AI - Manual Review Required by Senior Engineer/Manager
 class ReportWorkflowTest extends TestCase
 {
     use RefreshDatabase;
@@ -260,7 +261,7 @@ class ReportWorkflowTest extends TestCase
         ]);
     }
 
-    public function test_dosen_cannot_submit_final_report_if_daily_notes_under_70_percent_of_budget()
+    public function test_dosen_can_submit_final_report_even_if_daily_notes_under_70_percent_of_budget()
     {
         $this->actingAs($this->dosen);
 
@@ -295,7 +296,7 @@ class ReportWorkflowTest extends TestCase
         $component->call('submit');
 
         $report = $this->proposal->progressReports()->where('reporting_period', 'final')->first();
-        $this->assertEquals(ReportStatus::DRAFT, $report->status);
+        $this->assertEquals(ReportStatus::SUBMITTED, $report->status);
     }
 
     public function test_dosen_can_submit_final_report_if_daily_notes_reach_70_percent_of_budget()

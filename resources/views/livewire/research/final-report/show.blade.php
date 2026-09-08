@@ -233,8 +233,8 @@
             $hasTeachingMaterial = $progressReport && $progressReport->hasMedia('teaching_material_file');
             $hasLogbook = $proposal->dailyNotes->count() > 0;
 
-            $itemsCompleted = collect([$hasSubstance, $hasBudget, $hasTeam, $hasSchedule, $hasOutputs, $hasTeachingMaterial, $hasLogbook])->filter()->count();
-            $totalChecklistItems = 7;
+            $itemsCompleted = collect([$hasSubstance, $hasBudget, $hasTeam, $hasSchedule, $hasOutputs, $hasTeachingMaterial])->filter()->count();
+            $totalChecklistItems = 6;
             $completionPct = round(($itemsCompleted / $totalChecklistItems) * 100);
         @endphp
 
@@ -384,21 +384,21 @@
                                     @endif
                                 </td>
                             </tr>
-                            <!-- Item 6: Lampiran 6 -->
+                            <!-- Item 6: Catatan Harian / LPJ -->
                             <tr>
                                 <td class="text-center">6</td>
-                                <td><strong>Lampiran 6. Logbook Kegiatan</strong></td>
-                                <td><span class="badge bg-blue-lt">Tabel Catatan Harian</span></td>
+                                <td><strong>Catatan Harian & LPJ Keuangan</strong></td>
+                                <td><span class="badge bg-blue-lt">Menu Mandiri</span></td>
                                 <td class="text-center">
                                     @if($hasLogbook)
                                         <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> {{ $proposal->dailyNotes->count() }} Catatan</span>
                                     @else
-                                        <span class="badge bg-warning"><x-lucide-alert-triangle class="icon icon-inline me-1" /> Belum Terisi</span>
+                                        <span class="badge bg-secondary"><x-lucide-info class="icon icon-inline me-1" /> Dikelola Terpisah</span>
                                     @endif
                                 </td>
-                                <td><small class="text-muted">Catatan aktivitas harian penelitian (tanpa nota)</small></td>
+                                <td><small class="text-muted">Laporan Keuangan (LPJ) dikelola mandiri di Catatan Harian tanpa memblokir laporan ini.</small></td>
                                 <td class="text-center">
-                                    <a href="{{ route('research.daily-note.show', $proposal) }}" target="_blank" class="btn btn-sm btn-outline-info" title="Buka Catatan Harian">
+                                    <a href="{{ route('research.daily-note.show', $proposal) }}" target="_blank" class="btn btn-sm btn-outline-info" title="Buka Catatan Harian & LPJ">
                                         <x-lucide-external-link class="icon" />
                                     </a>
                                 </td>
@@ -1083,17 +1083,15 @@
     <!-- Action Buttons -->
     @if ($canEdit)
         @if ($isFinalReportDraft)
-            <div class="alert alert-warning mb-3" role="alert">
+            <div class="alert alert-info mb-3" role="alert">
                 <div class="d-flex">
                     <div>
-                        <x-lucide-alert-triangle class="icon alert-icon" />
+                        <x-lucide-info class="icon alert-icon" />
                     </div>
                     <div>
-                        <h4 class="alert-title">Persyaratan Pengajuan Laporan</h4>
+                        <h4 class="alert-title">Informasi Pengajuan Laporan Akhir</h4>
                         <div class="text-secondary">
-                            Pastikan total pengeluaran pada menu Catatan Harian (Logbook) telah mencapai 100% dari total Pagu
-                            RAB sebelum mengajukan Laporan Akhir. Sistem akan memblokir pengajuan jika serapan dana belum genap
-                            100%.
+                            Laporan Akhir (Substansi) dan Laporan Keuangan (LPJ) dikelola secara mandiri. Anda dapat langsung mengajukan Laporan Akhir ini untuk ditinjau Dekan dan Kepala LPPM tanpa harus menunggu pengesahan Laporan Keuangan (LPJ).
                         </div>
                     </div>
                 </div>
