@@ -64,6 +64,9 @@ class ProgressReport extends Model implements HasMedia
         'title_change_reviewed_at',
         'title_change_reviewer_id',
         'title_change_review_notes',
+        'rejection_notes',
+        'rejected_by',
+        'rejected_at',
     ];
 
     /**
@@ -78,6 +81,7 @@ class ProgressReport extends Model implements HasMedia
             'submitted_at' => 'datetime',
             'deleted_at' => 'datetime',
             'title_change_reviewed_at' => 'datetime',
+            'rejected_at' => 'datetime',
         ];
     }
 

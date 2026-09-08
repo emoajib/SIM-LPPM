@@ -131,20 +131,71 @@
                         </div>
 
                         <!-- Status Journey -->
-                        <div class="steps steps-blue container-tight">
+                        @php
+                            $isRejected = $progressReport->status === \App\Enums\ReportStatus::REJECTED;
+                        @endphp
+                        <div class="steps {{ $isRejected ? 'steps-red' : 'steps-blue' }} container-tight">
                             <div
                                 class="step-item {{ $progressReport->status !== \App\Enums\ReportStatus::DRAFT ? 'active' : '' }}">
                                 Dosen (Diajukan)</div>
-                            <div
-                                class="step-item {{ !in_array($progressReport->status, [\App\Enums\ReportStatus::DRAFT, \App\Enums\ReportStatus::SUBMITTED]) ? 'active' : '' }}">
-                                Dekan</div>
-                            <div
-                                class="step-item {{ $progressReport->status === \App\Enums\ReportStatus::APPROVED ? 'active' : '' }}">
-                                Kepala LPPM (Selesai)</div>
+                            @if ($isRejected)
+                                <div class="step-item active text-danger">
+                                    <x-lucide-x-circle class="icon icon-sm" /> Ditolak</div>
+                            @else
+                                <div
+                                    class="step-item {{ !in_array($progressReport->status, [\App\Enums\ReportStatus::DRAFT, \App\Enums\ReportStatus::SUBMITTED]) ? 'active' : '' }}">
+                                    Dekan</div>
+                                <div
+                                    class="step-item {{ $progressReport->status === \App\Enums\ReportStatus::APPROVED ? 'active' : '' }}">
+                                    Kepala LPPM (Selesai)</div>
+                            @endif
                         </div>
                     </div>
                 </div>
             @endif
+        @endif
+
+        {{-- Alert Penolakan: Tampil jika laporan ditolak, untuk SEMUA peran --}}
+        @if ($progressReport && $progressReport->status === \App\Enums\ReportStatus::REJECTED)
+            <div class="alert alert-danger mb-3" role="alert">
+                <div class="d-flex">
+                    <div>
+                        <x-lucide-x-circle class="icon alert-icon" />
+                    </div>
+                    <div class="w-100">
+                        <h4 class="alert-title">Laporan Akhir Ditolak</h4>
+                        @if ($progressReport->rejection_notes)
+                            <div class="text-secondary mb-2">
+                                <strong>Catatan dari
+                                    {{ $progressReport->rejected_at ? \App\Models\User::find($progressReport->rejected_by)?->name : 'Penilai' }}:
+                                </strong>
+                            </div>
+                            <blockquote class="blockquote border-start border-danger border-3 ps-3 mb-2">
+                                <p class="mb-0" style="white-space: pre-wrap;">{{ $progressReport->rejection_notes }}</p>
+                            </blockquote>
+                            @if ($progressReport->rejected_at)
+                                <small class="text-muted">
+                                    <x-lucide-clock class="icon icon-sm" />
+                                    Ditolak {{ $progressReport->rejected_at->diffForHumans() }}
+                                    ({{ $progressReport->rejected_at->format('d M Y H:i') }})
+                                </small>
+                            @endif
+                        @else
+                            <p class="text-secondary mb-0">Laporan ini telah ditolak. Silakan hubungi Dekan atau Kepala LPPM untuk informasi lebih lanjut.</p>
+                        @endif
+                        @if (active_role_is('dosen') || active_role_is('ketua'))
+                            <div class="mt-3">
+                                <p class="mb-1 fw-semibold">Langkah selanjutnya:</p>
+                                <ol class="mb-0 ps-3 text-secondary small">
+                                    <li>Perbaiki laporan sesuai catatan di atas.</li>
+                                    <li>Upload ulang dokumen jika diperlukan.</li>
+                                    <li>Klik <strong>"Ajukan Laporan"</strong> untuk mengajukan kembali.</li>
+                                </ol>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
         @endif
 
         <!-- Alert Info Workflow -->

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\ProgressReport;
 use App\Models\Proposal;
 use App\Models\User;
 use App\Notifications\DailySummaryReport;
@@ -9,6 +10,7 @@ use App\Notifications\DekanApprovalDecision;
 use App\Notifications\FinalDecisionMade;
 use App\Notifications\ProposalRevised;
 use App\Notifications\ProposalSubmitted;
+use App\Notifications\ReportRejected;
 use App\Notifications\ReviewCompleted;
 use App\Notifications\ReviewerAssigned;
 use App\Notifications\ReviewOverdue;
@@ -279,5 +281,25 @@ class NotificationService
     {
         $notification = new RoleAssigned($roleName, $roleLabel);
         $this->send($user, $notification);
+    }
+
+    /**
+     * Send Report Rejected notification to all proposal members
+     */
+    public function notifyReportRejected(ProgressReport $report, User $rejectedBy, string $notes): void
+    {
+        $proposal = $report->proposal;
+        if (! $proposal) {
+            return;
+        }
+
+        // Kirim ke ketua + semua anggota tim
+        $recipients = collect([$proposal->submitter])
+            ->merge($proposal->members ?? collect())
+            ->filter()
+            ->unique('id');
+
+        $notification = new ReportRejected($report, $rejectedBy, $notes);
+        $this->send($recipients, $notification);
     }
 }

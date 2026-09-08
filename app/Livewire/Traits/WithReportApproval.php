@@ -69,7 +69,10 @@ trait WithReportApproval
             DB::transaction(function () use ($report, $newStatus) {
                 $report->update([
                     'status' => $newStatus->value,
-                    // Optionally store who approved in a log or a field
+                    // Bersihkan catatan penolakan jika sebelumnya ditolak lalu diajukan ulang & disetujui
+                    'rejection_notes' => null,
+                    'rejected_by' => null,
+                    'rejected_at' => null,
                 ]);
 
                 // Special logic for barcode: Barcode should only appear after APPROVED (Kepala LPPM)
@@ -95,7 +98,11 @@ trait WithReportApproval
     public function reject(): void
     {
         $this->validate([
-            'approvalNotes' => 'required|string|min:5',
+            'approvalNotes' => 'required|string|min:10|max:2000',
+        ], [
+            'approvalNotes.required' => 'Catatan penolakan wajib diisi.',
+            'approvalNotes.min' => 'Catatan minimal 10 karakter agar dosen memahami yang perlu diperbaiki.',
+            'approvalNotes.max' => 'Catatan maksimal 2000 karakter.',
         ]);
 
         $report = $this->progressReport;
@@ -115,16 +122,32 @@ trait WithReportApproval
         }
 
         try {
-            DB::transaction(function () use ($report) {
+            $rejector = Auth::user();
+            $notes = $this->approvalNotes;
+
+            DB::transaction(function () use ($report, $notes, $rejector) {
                 $report->update([
                     'status' => ReportStatus::REJECTED->value,
+                    'rejection_notes' => $notes,
+                    'rejected_by' => $rejector->id,
+                    'rejected_at' => now(),
                 ]);
             });
 
-            $this->toastSuccess('Laporan telah ditolak.');
+            // Kirim notifikasi ke dosen (ketua + anggota tim)
+            try {
+                $this->notificationService()->notifyReportRejected($report, $rejector, $notes);
+            } catch (\Throwable $e) {
+                // Log error notifikasi tapi jangan batalkan penolakan
+                \Log::warning('Gagal kirim notifikasi penolakan laporan: '.$e->getMessage(), [
+                    'report_id' => $report->id,
+                ]);
+            }
+
+            $this->approvalNotes = '';
+            $this->toastSuccess('Laporan telah ditolak. Dosen akan menerima notifikasi.');
             $this->dispatch('report-rejected');
 
-            $activeRole = active_role();
             if ($activeRole === 'dekan') {
                 $this->redirect(route('dekan.reports.index'), navigate: true);
             } elseif ($activeRole === 'kepala lppm') {
