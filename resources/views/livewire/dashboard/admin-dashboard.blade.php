@@ -494,10 +494,18 @@
     <div class="row row-cards mb-4">
         <!-- Review Progress Details -->
         <div class="col-md-4">
-            <div class="card glass-card border-0 shadow-sm overflow-hidden" style="border-left: 4px solid #f59f00 !important;">
+            <div class="card glass-card border-0 shadow-sm overflow-hidden h-100 cursor-pointer" 
+                 style="border-left: 4px solid #f59f00 !important; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease;"
+                 role="button"
+                 wire:click="openProcessModal('review')"
+                 title="Klik untuk melihat rincian data review usulan"
+                 onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 6px 16px rgba(0,0,0,0.1)'"
+                 onmouseout="this.style.transform='none';this.style.boxShadow='none'">
                 <div class="card-body py-3">
                     <div class="d-flex align-items-center mb-2">
-                        <div class="subheader text-warning fw-bold">Progress Review</div>
+                        <div class="subheader text-warning fw-bold d-flex align-items-center">
+                            <i class="ti ti-clipboard-check me-1"></i>Progress Review
+                        </div>
                         <div class="ms-auto">
                             <span class="badge bg-warning-lt">{{ $processStats['review_progress'] }}%</span>
                         </div>
@@ -505,8 +513,9 @@
                     <div class="progress progress-sm shadow-none bg-warning-lt">
                         <div class="progress-bar bg-warning" style="width: {{ $processStats['review_progress'] }}%"></div>
                     </div>
-                    <div class="mt-2 small text-muted">
-                        {{ $processStats['review_completed'] }} dari {{ $processStats['review_total'] }} proposal selesai direview
+                    <div class="mt-2 small text-muted d-flex justify-content-between align-items-center">
+                        <span>{{ $processStats['review_completed'] }} dari {{ $processStats['review_total'] }} proposal selesai</span>
+                        <span class="text-warning fw-semibold"><i class="ti ti-arrow-right"></i></span>
                     </div>
                 </div>
             </div>
@@ -514,10 +523,18 @@
 
         <!-- Monev Progress Details -->
         <div class="col-md-4">
-            <div class="card glass-card border-0 shadow-sm overflow-hidden" style="border-left: 4px solid #00b8d4 !important;">
+            <div class="card glass-card border-0 shadow-sm overflow-hidden h-100 cursor-pointer" 
+                 style="border-left: 4px solid #00b8d4 !important; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease;"
+                 role="button"
+                 wire:click="openProcessModal('monev')"
+                 title="Klik untuk melihat rincian data monev proposal"
+                 onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 6px 16px rgba(0,0,0,0.1)'"
+                 onmouseout="this.style.transform='none';this.style.boxShadow='none'">
                 <div class="card-body py-3">
                     <div class="d-flex align-items-center mb-2">
-                        <div class="subheader text-info fw-bold">Progress Monev</div>
+                        <div class="subheader text-info fw-bold d-flex align-items-center">
+                            <i class="ti ti-chart-dots me-1"></i>Progress Monev
+                        </div>
                         <div class="ms-auto">
                             <span class="badge bg-info-lt">{{ $processStats['monev_progress'] }}%</span>
                         </div>
@@ -525,8 +542,9 @@
                     <div class="progress progress-sm shadow-none bg-info-lt">
                         <div class="progress-bar bg-info" style="width: {{ $processStats['monev_progress'] }}%"></div>
                     </div>
-                    <div class="mt-2 small text-muted">
-                        {{ $processStats['monev_completed'] }} dari {{ $processStats['monev_total'] }} proposal selesai dimonitoring
+                    <div class="mt-2 small text-muted d-flex justify-content-between align-items-center">
+                        <span>{{ $processStats['monev_completed'] }} dari {{ $processStats['monev_total'] }} proposal selesai</span>
+                        <span class="text-info fw-semibold"><i class="ti ti-arrow-right"></i></span>
                     </div>
                 </div>
             </div>
@@ -534,10 +552,18 @@
 
         <!-- IKU Progress Details -->
         <div class="col-md-4">
-            <div class="card glass-card border-0 shadow-sm overflow-hidden" style="border-left: 4px solid #206bc4 !important;">
+            <div class="card glass-card border-0 shadow-sm overflow-hidden h-100 cursor-pointer" 
+                 style="border-left: 4px solid #206bc4 !important; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease;"
+                 role="button"
+                 wire:click="openProcessModal('iku')"
+                 title="Klik untuk melihat rincian capaian luaran (IKU)"
+                 onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 6px 16px rgba(0,0,0,0.1)'"
+                 onmouseout="this.style.transform='none';this.style.boxShadow='none'">
                 <div class="card-body py-3">
                     <div class="d-flex align-items-center mb-2">
-                        <div class="subheader text-primary fw-bold">Progress IKU (Luaran)</div>
+                        <div class="subheader text-primary fw-bold d-flex align-items-center">
+                            <i class="ti ti-award me-1"></i>Progress IKU (Luaran)
+                        </div>
                         <div class="ms-auto">
                             <span class="badge bg-primary-lt">{{ number_format($processStats['output_progress'], 1) }}%</span>
                         </div>
@@ -545,8 +571,9 @@
                     <div class="progress progress-sm shadow-none bg-primary-lt">
                         <div class="progress-bar bg-primary" style="width: {{ $processStats['output_progress'] }}%"></div>
                     </div>
-                    <div class="mt-2 small text-muted">
-                        {{ $processStats['output_achieved'] }} dari {{ $processStats['output_target'] }} target luaran tercapai
+                    <div class="mt-2 small text-muted d-flex justify-content-between align-items-center">
+                        <span>{{ $processStats['output_achieved'] }} dari {{ $processStats['output_target'] }} target tercapai</span>
+                        <span class="text-primary fw-semibold"><i class="ti ti-arrow-right"></i></span>
                     </div>
                 </div>
             </div>

@@ -27,12 +27,31 @@ trait HasProcessDetailsModal
     public function openProcessModal(string $type): void
     {
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
-        $allowed = ['usulan', 'perbaikan_usulan', 'catatan_harian_keuangan', 'laporan_akhir'];
-        if (! in_array($type, $allowed, true)) {
+        $canonicalType = match ($type) {
+            'revision', 'perbaikan_usulan' => 'perbaikan_usulan',
+            'financial', 'catatan_harian_keuangan' => 'catatan_harian_keuangan',
+            'final_report', 'laporan_akhir' => 'laporan_akhir',
+            'review' => 'review',
+            'monev' => 'monev',
+            'iku', 'luaran' => 'iku',
+            default => $type,
+        };
+
+        $allowed = [
+            'usulan',
+            'perbaikan_usulan',
+            'catatan_harian_keuangan',
+            'laporan_akhir',
+            'review',
+            'monev',
+            'iku',
+        ];
+
+        if (! in_array($canonicalType, $allowed, true)) {
             return;
         }
 
-        $this->activeProcessType = $type;
+        $this->activeProcessType = $canonicalType;
         $this->processSearch = '';
         $this->processTypeFilter = 'all';
         $this->processStatusFilter = 'all';
@@ -70,6 +89,9 @@ trait HasProcessDetailsModal
             'perbaikan_usulan' => 'Data Perbaikan Usulan (Revisi)',
             'catatan_harian_keuangan' => 'Data Catatan Harian & Laporan Keuangan (LPJ)',
             'laporan_akhir' => 'Data Laporan Akhir Penelitian & Pengabdian',
+            'review' => 'Data Progress Review Proposal',
+            'monev' => 'Data Progress Monitoring & Evaluasi (Monev)',
+            'iku' => 'Data Capaian Target Luaran (IKU)',
             default => 'Data Proses Usulan',
         };
     }
@@ -84,6 +106,9 @@ trait HasProcessDetailsModal
             'perbaikan_usulan' => "Daftar usulan tahun {$year} yang sedang dalam tahap perbaikan oleh dosen atau menunggu persetujuan perbaikan LPPM.",
             'catatan_harian_keuangan' => "Daftar usulan didanai tahun {$year} beserta rekapitulasi catatan harian belanja dan pengesahan LPJ.",
             'laporan_akhir' => "Daftar usulan didanai tahun {$year} beserta status pelaporan akhir (Draf, Diajukan, Disetujui Dekan/LPPM, Revisi).",
+            'review' => "Daftar usulan tahun {$year} dalam tahapan penilaian reviewer beserta status penugasan dan rekomendasi review.",
+            'monev' => "Daftar usulan didanai tahun {$year} beserta status monitoring kemajuan, reviewer monev, dan penilaian keterlaksanaan.",
+            'iku' => "Daftar usulan didanai tahun {$year} beserta target luaran yang dijanjikan dan status realisasi bukti luaran.",
             default => '',
         };
     }
@@ -96,6 +121,9 @@ trait HasProcessDetailsModal
             'perbaikan_usulan' => 'ti ti-refresh',
             'catatan_harian_keuangan' => 'ti ti-receipt-2',
             'laporan_akhir' => 'ti ti-file-certificate',
+            'review' => 'ti ti-clipboard-check',
+            'monev' => 'ti ti-chart-dots',
+            'iku' => 'ti ti-award',
             default => 'ti ti-list-details',
         };
     }
@@ -108,6 +136,9 @@ trait HasProcessDetailsModal
             'perbaikan_usulan' => 'warning',
             'catatan_harian_keuangan' => 'indigo',
             'laporan_akhir' => 'success',
+            'review' => 'warning',
+            'monev' => 'info',
+            'iku' => 'primary',
             default => 'secondary',
         };
     }
@@ -143,9 +174,19 @@ trait HasProcessDetailsModal
                 ProposalStatus::REVISION_NEEDED->value,
                 ProposalStatus::REVISION_SUBMITTED->value,
             ]),
-            'catatan_harian_keuangan', 'laporan_akhir' => $query->whereIn('status', [
+            'catatan_harian_keuangan', 'laporan_akhir', 'monev', 'iku' => $query->whereIn('status', [
                 ProposalStatus::APPROVED->value,
                 ProposalStatus::COMPLETED->value,
+            ]),
+            'review' => $query->whereIn('status', [
+                ProposalStatus::APPROVED->value,
+                ProposalStatus::WAITING_REVIEWER->value,
+                ProposalStatus::UNDER_REVIEW->value,
+                ProposalStatus::REVIEWED->value,
+                ProposalStatus::REVISION_NEEDED->value,
+                ProposalStatus::REVISION_SUBMITTED->value,
+                ProposalStatus::COMPLETED->value,
+                ProposalStatus::REJECTED->value,
             ]),
             default => null,
         };
@@ -175,10 +216,18 @@ trait HasProcessDetailsModal
             'latestFinalReport',
             'dailyNotes',
             'budgetItems',
+            'reviewers.user.identity',
+            'reviewLogs',
+            'monevReviews.reviewer.identity',
+            'monevs',
+            'outputs',
+            'progressReports.mandatoryOutputs',
+            'progressReports.additionalOutputs',
         ])
             ->withSum('budgetItems', 'total_price')
             ->withSum('dailyNotes', 'amount')
             ->withCount('dailyNotes')
+            ->withCount('outputs')
             ->latest('updated_at');
 
         return $query->get();

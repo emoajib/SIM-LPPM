@@ -60,10 +60,20 @@
                         <table class="table table-vcenter table-hover card-table mb-0">
                             <thead class="bg-surface text-muted" style="position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                                 <tr>
-                                    <th class="ps-4" style="width: 42%;">Judul & Pengusul</th>
+                                    <th class="ps-4" style="width: 40%;">Judul & Pengusul</th>
                                     <th style="width: 20%;">Jenis & Skema</th>
-                                    <th style="width: 18%;">Status Tahapan</th>
-                                    <th style="width: 20%;" class="text-end pe-4">Detail & Aksi</th>
+                                    <th style="width: 22%;">
+                                        @if($activeProcessType === 'review')
+                                            Status & Reviewer
+                                        @elseif($activeProcessType === 'monev')
+                                            Status Monev
+                                        @elseif($activeProcessType === 'iku')
+                                            Target & Capaian IKU
+                                        @else
+                                            Status Tahapan
+                                        @endif
+                                    </th>
+                                    <th style="width: 18%;" class="text-end pe-4">Detail & Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -115,7 +125,103 @@
 
                                         <!-- Status Tahapan Sesuai Konteks Proses -->
                                         <td>
-                                            @if($activeProcessType === 'laporan_akhir')
+                                            @if($activeProcessType === 'review')
+                                                @php
+                                                    $isCompletedReview = in_array($item->status->value, [
+                                                        \App\Enums\ProposalStatus::REVIEWED->value,
+                                                        \App\Enums\ProposalStatus::REVISION_NEEDED->value,
+                                                        \App\Enums\ProposalStatus::REVISION_SUBMITTED->value,
+                                                        \App\Enums\ProposalStatus::COMPLETED->value,
+                                                        \App\Enums\ProposalStatus::REJECTED->value,
+                                                    ]) || ($item->reviewers->isNotEmpty() && $item->reviewers->every(fn($r) => $r->status === \App\Enums\ReviewStatus::COMPLETED));
+                                                @endphp
+                                                @if($isCompletedReview)
+                                                    <span class="badge bg-success text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-check me-1"></i>Selesai Direview
+                                                    </span>
+                                                @elseif($item->status->value === \App\Enums\ProposalStatus::UNDER_REVIEW->value)
+                                                    <span class="badge bg-warning text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-clock me-1"></i>Sedang Direview
+                                                    </span>
+                                                @elseif($item->status->value === \App\Enums\ProposalStatus::WAITING_REVIEWER->value || $item->reviewers->isEmpty())
+                                                    <span class="badge bg-azure text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-user-search me-1"></i>Menunggu Reviewer
+                                                    </span>
+                                                @else
+                                                    <span class="badge bg-{{ $item->status->color() }}-lt fw-bold px-2 py-1">
+                                                        <span class="badge bg-{{ $item->status->color() }} me-1"></span>
+                                                        {{ $item->status->label() }}
+                                                    </span>
+                                                @endif
+
+                                                @if($item->reviewers->isNotEmpty())
+                                                    <div class="small text-muted mt-1 text-truncate" style="max-width: 220px; font-size: 0.75rem;" title="{{ $item->reviewers->pluck('user.name')->filter()->join(', ') }}">
+                                                        <i class="ti ti-user-check me-1 text-primary"></i>
+                                                        {{ $item->reviewers->pluck('user.name')->filter()->join(', ') }}
+                                                    </div>
+                                                @else
+                                                    <div class="small text-muted mt-1" style="font-size: 0.75rem;">
+                                                        <i class="ti ti-user-x me-1"></i>Belum ada reviewer
+                                                    </div>
+                                                @endif
+
+                                            @elseif($activeProcessType === 'monev')
+                                                @php
+                                                    $completedMonevReview = $item->monevReviews->first(fn($m) => $m->reviewed_at || $m->finalized_by_lppm_at);
+                                                    $firstMonevReview = $item->monevReviews->first();
+                                                    $firstMonevLegacy = $item->monevs->first();
+                                                @endphp
+                                                @if($completedMonevReview)
+                                                    <span class="badge bg-success text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-check me-1"></i>Selesai Dimonitoring
+                                                    </span>
+                                                    <div class="small text-muted mt-1" style="font-size: 0.75rem;">
+                                                        Skor: <strong class="text-dark">{{ $completedMonevReview->score }}</strong> • {{ $completedMonevReview->reviewer?->name ?? 'Reviewer' }}
+                                                    </div>
+                                                @elseif($firstMonevReview)
+                                                    <span class="badge bg-warning text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-clock me-1"></i>Proses Monev
+                                                    </span>
+                                                    <div class="small text-muted mt-1 text-truncate" style="max-width: 200px; font-size: 0.75rem;">
+                                                        Reviewer: {{ $firstMonevReview->reviewer?->name ?? '-' }}
+                                                    </div>
+                                                @elseif($firstMonevLegacy)
+                                                    <span class="badge bg-info text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-chart-line me-1"></i>Progress {{ $firstMonevLegacy->progress_percentage }}%
+                                                    </span>
+                                                @else
+                                                    <span class="badge bg-secondary-lt fw-bold px-2 py-1">
+                                                        <i class="ti ti-hourglass me-1"></i>Belum Dimonitoring
+                                                    </span>
+                                                @endif
+
+                                            @elseif($activeProcessType === 'iku')
+                                                @php
+                                                    $targetCount = $item->outputs->count();
+                                                    $mandatoryAchieved = $item->progressReports->flatMap->mandatoryOutputs->count();
+                                                    $additionalAchieved = $item->progressReports->flatMap->additionalOutputs->count();
+                                                    $achievedCount = $mandatoryAchieved + $additionalAchieved;
+                                                @endphp
+                                                @if($targetCount > 0 && $achievedCount >= $targetCount)
+                                                    <span class="badge bg-success text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-award me-1"></i>{{ $achievedCount }}/{{ $targetCount }} Tercapai Penuh
+                                                    </span>
+                                                @elseif($achievedCount > 0)
+                                                    <span class="badge bg-primary text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-check me-1"></i>{{ $achievedCount }}/{{ $targetCount }} Tercapai Sebagian
+                                                    </span>
+                                                @else
+                                                    <span class="badge bg-secondary-lt fw-bold px-2 py-1">
+                                                        <i class="ti ti-hourglass me-1"></i>Belum Ada Bukti
+                                                    </span>
+                                                @endif
+                                                @if($targetCount > 0)
+                                                    <div class="small text-muted mt-1 text-truncate" style="max-width: 220px; font-size: 0.75rem;" title="{{ $item->outputs->pluck('type')->filter()->join(', ') }}">
+                                                        Target: {{ $item->outputs->pluck('type')->filter()->take(2)->join(', ') }}@if($item->outputs->count() > 2)...@endif
+                                                    </div>
+                                                @endif
+
+                                            @elseif($activeProcessType === 'laporan_akhir')
                                                 @if($item->latestFinalReport)
                                                     @php
                                                         $repStatus = $item->latestFinalReport->status;
@@ -183,7 +289,36 @@
 
                                         <!-- Detail & Aksi -->
                                         <td class="text-end pe-4">
-                                            @if($activeProcessType === 'catatan_harian_keuangan')
+                                            @if($activeProcessType === 'review')
+                                                <div class="small text-muted mb-1" style="font-size: 0.75rem;">
+                                                    {{ $item->reviewers->count() }} Reviewer Terdaftar
+                                                </div>
+                                                <a href="{{ $showRoute }}" target="_blank" class="btn btn-outline-warning btn-sm py-0 px-2" style="font-size: 0.75rem;">
+                                                    <i class="ti ti-clipboard-check me-1"></i>Buka Usulan
+                                                </a>
+
+                                            @elseif($activeProcessType === 'monev')
+                                                <div class="small text-muted mb-1" style="font-size: 0.75rem;">
+                                                    Tahun: {{ $item->start_year }}
+                                                </div>
+                                                <a href="{{ $showRoute }}" target="_blank" class="btn btn-outline-info btn-sm py-0 px-2" style="font-size: 0.75rem;">
+                                                    <i class="ti ti-chart-dots me-1"></i>Buka Usulan
+                                                </a>
+
+                                            @elseif($activeProcessType === 'iku')
+                                                @php
+                                                    $mandatoryAchieved = $item->progressReports->flatMap->mandatoryOutputs->count();
+                                                    $additionalAchieved = $item->progressReports->flatMap->additionalOutputs->count();
+                                                    $totalAchieved = $mandatoryAchieved + $additionalAchieved;
+                                                @endphp
+                                                <div class="small text-muted mb-1" style="font-size: 0.75rem;">
+                                                    {{ $totalAchieved }} Bukti Diunggah
+                                                </div>
+                                                <a href="{{ $showRoute }}" target="_blank" class="btn btn-outline-primary btn-sm py-0 px-2" style="font-size: 0.75rem;">
+                                                    <i class="ti ti-award me-1"></i>Buka Usulan
+                                                </a>
+
+                                            @elseif($activeProcessType === 'catatan_harian_keuangan')
                                                 <div class="small fw-bold text-dark">
                                                     Rp {{ number_format((int)($item->daily_notes_sum_amount ?? 0), 0, ',', '.') }}
                                                 </div>
