@@ -62,6 +62,11 @@ echo "📁 Migrasi path file media..."
 php artisan media:migrate-paths --force || echo "⚠️  Migrasi media selesai dengan error (cek log)."
 echo "Media migration done."
 
+# Bersihkan record media yatim ID 97 & 99 (idempotent)
+echo "🧹 Pembersihan media yatim..."
+php artisan media:cleanup-orphans --ids=97,99 --force 2>/dev/null || true
+
+
 # Patch missing Software TKT levels
 echo "Patching Software TKT levels..."
 php artisan patch:software-tkt

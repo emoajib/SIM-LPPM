@@ -8,6 +8,7 @@ use App\Enums\ReportStatus;
 use App\Models\AdditionalOutput;
 use App\Models\MandatoryOutput;
 use App\Models\ProgressReport;
+use App\Services\ImageCompressionService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -442,8 +443,10 @@ trait HasFileUploads
                 $realPath = $file->getRealPath();
             }
 
+            $mediaPath = app(ImageCompressionService::class)->compressIfImage($realPath);
+
             $report
-                ->addMedia($realPath)
+                ->addMedia($mediaPath)
                 ->usingName($file->getClientOriginalName())
                 ->usingFileName($file->hashName())
                 ->withCustomProperties([
@@ -515,8 +518,10 @@ trait HasFileUploads
                             $realPath = $photo->getRealPath();
                         }
 
+                        $mediaPath = app(ImageCompressionService::class)->compressIfImage($realPath);
+
                         $report
-                            ->addMedia($realPath)
+                            ->addMedia($mediaPath)
                             ->usingName($photo->getClientOriginalName())
                             ->usingFileName($photo->hashName())
                             ->withCustomProperties([
@@ -567,8 +572,9 @@ trait HasFileUploads
 
         try {
             $output->clearMediaCollection('journal_article');
+            $mediaPath = app(ImageCompressionService::class)->compressIfImage($file->getRealPath());
             $output
-                ->addMedia($file->getRealPath())
+                ->addMedia($mediaPath)
                 ->usingName($file->getClientOriginalName())
                 ->usingFileName($file->hashName())
                 ->withCustomProperties([
@@ -599,8 +605,9 @@ trait HasFileUploads
 
         try {
             $output->clearMediaCollection('book_document');
+            $mediaPath = app(ImageCompressionService::class)->compressIfImage($file->getRealPath());
             $output
-                ->addMedia($file->getRealPath())
+                ->addMedia($mediaPath)
                 ->usingName($file->getClientOriginalName())
                 ->usingFileName($file->hashName())
                 ->withCustomProperties([
@@ -631,8 +638,9 @@ trait HasFileUploads
 
         try {
             $output->clearMediaCollection('publication_certificate');
+            $mediaPath = app(ImageCompressionService::class)->compressIfImage($file->getRealPath());
             $output
-                ->addMedia($file->getRealPath())
+                ->addMedia($mediaPath)
                 ->usingName($file->getClientOriginalName())
                 ->usingFileName($file->hashName())
                 ->withCustomProperties([

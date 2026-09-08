@@ -8,6 +8,7 @@ use App\Models\BudgetGroup;
 use App\Models\DailyNote;
 use App\Models\ProgressReport;
 use App\Models\Proposal;
+use App\Services\ImageCompressionService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
@@ -141,8 +142,10 @@ class Show extends Component
         }
 
         if ($this->evidence) {
+            $compressionService = app(ImageCompressionService::class);
             foreach ($this->evidence as $file) {
-                $note->addMedia($file->getRealPath())
+                $filePath = $compressionService->compressIfImage($file);
+                $note->addMedia($filePath)
                     ->usingName($file->getClientOriginalName())
                     ->usingFileName($file->getClientOriginalName())
                     ->toMediaCollection('evidence');

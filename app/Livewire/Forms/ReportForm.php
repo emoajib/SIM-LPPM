@@ -10,6 +10,7 @@ use App\Models\MandatoryOutput;
 use App\Models\ProgressReport;
 use App\Models\Proposal;
 use App\Models\ProposalOutput;
+use App\Services\ImageCompressionService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -759,8 +760,9 @@ class ReportForm extends Form
 
         try {
             $report->clearMediaCollection($collectionName);
+            $mediaPath = app(ImageCompressionService::class)->compressIfImage($file->getRealPath());
             $report
-                ->addMedia($file->getRealPath())
+                ->addMedia($mediaPath)
                 ->usingName($file->getClientOriginalName())
                 ->usingFileName($file->hashName())
                 ->withCustomProperties([
@@ -878,8 +880,9 @@ class ReportForm extends Form
                 $file = $this->tempMandatoryFiles[$proposalOutputId];
 
                 $output->clearMediaCollection('journal_article');
+                $mediaPath = app(ImageCompressionService::class)->compressIfImage($file->getRealPath());
                 $output
-                    ->addMedia($file->getRealPath())
+                    ->addMedia($mediaPath)
                     ->usingName($file->getClientOriginalName())
                     ->usingFileName($file->hashName())
                     ->withCustomProperties([
@@ -961,8 +964,9 @@ class ReportForm extends Form
                 $file = $this->tempAdditionalFiles[$proposalOutputId];
 
                 $output->clearMediaCollection('book_document');
+                $mediaPath = app(ImageCompressionService::class)->compressIfImage($file->getRealPath());
                 $output
-                    ->addMedia($file->getRealPath())
+                    ->addMedia($mediaPath)
                     ->usingName($file->getClientOriginalName())
                     ->usingFileName($file->hashName())
                     ->withCustomProperties([
@@ -983,8 +987,9 @@ class ReportForm extends Form
                 $file = $this->tempAdditionalCerts[$proposalOutputId];
 
                 $output->clearMediaCollection('publication_certificate');
+                $mediaPath = app(ImageCompressionService::class)->compressIfImage($file->getRealPath());
                 $output
-                    ->addMedia($file->getRealPath())
+                    ->addMedia($mediaPath)
                     ->usingName($file->getClientOriginalName())
                     ->usingFileName($file->hashName())
                     ->withCustomProperties([
