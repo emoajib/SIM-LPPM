@@ -20,7 +20,6 @@ use App\Models\StudyProgram;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -923,24 +922,6 @@ class AdminDashboard extends Component
         $this->recentCommunityService = $csQuery->latest('updated_at')
             ->get()
             ->values();
-    }
-
-    /**
-     * Sinkronisasi data dari server produksi (Hanya di LOCAL)
-     */
-    public function syncFromProduction(): void
-    {
-        if (config('app.env') !== 'local') {
-            abort(403, 'Fitur ini hanya untuk environment lokal');
-        }
-
-        try {
-            Artisan::call('app:sync-production', ['--force' => true]);
-            $this->loadAnalytics();
-            $this->dispatch('swal', title: 'Berhasil!', text: 'Data dari website berhasil ditarik ke laptop.', icon: 'success');
-        } catch (\Throwable $e) {
-            $this->dispatch('swal', title: 'Gagal!', text: 'Terjadi kesalahan saat sinkronisasi: '.$e->getMessage(), icon: 'error');
-        }
     }
 
     public function render()

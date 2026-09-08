@@ -788,46 +788,6 @@
         </div>
     </div>
 
-    <div class="row row-cards mt-4">
-        <!-- System Maintenance / Backup Section -->
-        <div class="col-12">
-            <div class="card bg-dark text-white border-0 shadow-sm overflow-hidden">
-                <div class="card-body py-4">
-                    <div class="row align-items-center">
-                        <div class="col-auto">
-                            <span class="avatar bg-white-lt text-white shadow-sm avatar-md border-0">
-                                <i class="ti ti-settings fs-1"></i>
-                            </span>
-                        </div>
-                        <div class="col">
-                            <h3 class="card-title fw-bold mb-1">Pemeliharaan Sistem & Backup</h3>
-                            <p class="text-muted-dark mb-0">
-                                @if(config('app.env') === 'local')
-                                    Gunakan tombol ini untuk menarik data terbaru dari website (Produksi) ke laptop Anda.
-                                @else
-                                    Gunakan tombol ini untuk mengunduh cadangan (backup) database terbaru dari server ini.
-                                @endif
-                            </p>
-                        </div>
-                        <div class="col-auto">
-                            @if(config('app.env') === 'local')
-                                <button type="button" class="btn btn-primary d-flex align-items-center gap-2" 
-                                    wire:click="syncFromProduction" 
-                                    wire:loading.attr="disabled">
-                                    <span wire:loading.remove><i class="ti ti-cloud-download fs-2"></i> Sinkronisasi dari Website</span>
-                                    <span wire:loading><span class="spinner-border spinner-border-sm me-2"></span> Memproses...</span>
-                                </button>
-                            @else
-                                <a href="{{ route('settings.download-backup-db') }}" class="btn btn-outline-white d-flex align-items-center gap-2">
-                                    <i class="ti ti-database-export fs-2"></i> Download Backup DB
-                                </a>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
     @include('livewire.dashboard.partials.process-details-modal')
