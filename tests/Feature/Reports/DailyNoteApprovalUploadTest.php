@@ -120,4 +120,49 @@ class DailyNoteApprovalUploadTest extends TestCase
         $csProposal->refresh();
         $this->assertTrue($csProposal->hasMedia('logbook_approval_file'));
     }
+
+    public function test_kepala_lppm_can_verify_logbook_approval_file(): void
+    {
+        // Lecturer uploads file first
+        $this->actingAs($this->lecturer);
+        session(['active_role' => 'dosen']);
+
+        $dummyPdf = UploadedFile::fake()->create('lembar_pengesahan_basah.pdf', 100, 'application/pdf');
+        Livewire::test(ResearchDailyNoteShow::class, ['proposal' => $this->proposal])
+            ->set('logbookApprovalFile', $dummyPdf)
+            ->call('saveLogbookApprovalFile');
+
+        $this->proposal->refresh();
+        $this->assertTrue($this->proposal->hasMedia('logbook_approval_file'));
+
+        // Kepala LPPM verifies
+        $kepala = User::factory()->create();
+        $kepala->assignRole('kepala lppm');
+
+        $this->actingAs($kepala);
+        session(['active_role' => 'kepala lppm']);
+
+        $this->assertNull($this->proposal->logbook_approved_at);
+
+        Livewire::test(ResearchDailyNoteShow::class, ['proposal' => $this->proposal])
+            ->call('verifyLogbookApprovalFile')
+            ->assertHasNoErrors();
+
+        $this->proposal->refresh();
+        $this->assertNotNull($this->proposal->logbook_approved_at);
+    }
+
+    public function test_dosen_cannot_verify_logbook_approval_file(): void
+    {
+        $this->actingAs($this->lecturer);
+        session(['active_role' => 'dosen']);
+
+        $this->assertNull($this->proposal->logbook_approved_at);
+
+        Livewire::test(ResearchDailyNoteShow::class, ['proposal' => $this->proposal])
+            ->call('verifyLogbookApprovalFile');
+
+        $this->proposal->refresh();
+        $this->assertNull($this->proposal->logbook_approved_at);
+    }
 }

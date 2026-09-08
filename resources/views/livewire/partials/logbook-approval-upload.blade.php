@@ -6,12 +6,16 @@
                 <x-lucide-file-signature class="icon me-2" />
                 Lembar Pengesahan Catatan Harian & Keuangan (Tanda Tangan & Cap Basah)
             </h4>
-            @if ($proposal->hasMedia('logbook_approval_file'))
+            @if ($proposal->logbook_approved_at)
                 <span class="badge bg-success">
-                    <x-lucide-check-circle class="icon icon-sm me-1" /> Berkas Terunggah
+                    <x-lucide-check-circle class="icon icon-sm me-1" /> Disahkan LPPM ({{ \Carbon\Carbon::parse($proposal->logbook_approved_at)->format('d/m/Y') }})
+                </span>
+            @elseif ($proposal->hasMedia('logbook_approval_file'))
+                <span class="badge bg-warning text-dark">
+                    <x-lucide-clock class="icon icon-sm me-1" /> Menunggu Verifikasi LPPM
                 </span>
             @else
-                <span class="badge bg-warning text-dark">
+                <span class="badge bg-secondary">
                     <x-lucide-alert-circle class="icon icon-sm me-1" /> Belum Diunggah
                 </span>
             @endif
@@ -48,9 +52,14 @@
                             </div>
                             <div class="btn-group btn-group-sm flex-shrink-0">
                                 <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(10), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-primary">
-                                    <x-lucide-eye class="icon icon-sm" /> Lihat
+                                    <x-lucide-eye class="icon icon-sm me-1" /> Lihat
                                 </a>
-                                @if ($this->canManage($proposal))
+                                @if ($this->canApprove($proposal) && ! $proposal->logbook_approved_at)
+                                    <button type="button" wire:click="verifyLogbookApprovalFile" class="btn btn-sm btn-success" wire:confirm="Apakah Anda sebagai Kepala LPPM memvalidasi dan mengesahkan berkas lembar pengesahan basah ini?">
+                                        <x-lucide-shield-check class="icon icon-sm me-1" /> Sahkan LPJ
+                                    </button>
+                                @endif
+                                @if ($this->canManage($proposal) && ! $proposal->logbook_approved_at)
                                     <button type="button" wire:click="removeLogbookApprovalFile" class="btn btn-sm btn-danger" wire:confirm="Yakin ingin menghapus berkas lembar pengesahan ini?">
                                         <x-lucide-trash-2 class="icon icon-sm" /> Hapus
                                     </button>

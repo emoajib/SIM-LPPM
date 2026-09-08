@@ -305,7 +305,7 @@ class Show extends Component
 
     public function canApprove(Proposal $proposal): bool
     {
-        return Auth::user()->hasRole('kepala lppm');
+        return Auth::user()?->activeHasAnyRole(['kepala lppm', 'admin lppm', 'superadmin']) ?? false;
     }
 
     #[On('approve-logbook')]
@@ -318,7 +318,27 @@ class Show extends Component
         $this->proposal->update(['logbook_approved_at' => now()]);
         $this->clearFinancialPdfCache();
 
-        $message = 'Catatan harian berhasil divalidasi oleh Kepala LPPM.';
+        $message = 'Catatan harian dan laporan keuangan (LPJ) berhasil divalidasi oleh LPPM.';
+        session()->flash('success', $message);
+        $this->toastSuccess($message);
+    }
+
+    public function verifyLogbookApprovalFile(): void
+    {
+        if (! $this->canApprove($this->proposal)) {
+            abort(403);
+        }
+
+        if (! $this->proposal->hasMedia('logbook_approval_file')) {
+            $this->toastError('Berkas scan lembar pengesahan basah belum diunggah.');
+
+            return;
+        }
+
+        $this->proposal->update(['logbook_approved_at' => now()]);
+        $this->clearFinancialPdfCache();
+
+        $message = 'Berkas scan pengesahan basah LPJ berhasil diverifikasi dan disahkan oleh LPPM.';
         session()->flash('success', $message);
         $this->toastSuccess($message);
     }

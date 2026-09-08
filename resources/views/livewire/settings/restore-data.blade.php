@@ -71,6 +71,86 @@
                 </div>
             </div>
 
+            <!-- Server-Side Backup Scanner (>512MB Support) -->
+            <div class="card mb-4 border-0 shadow-sm" style="border-left: 4px solid #206bc4 !important;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h4 class="card-title mb-0 d-flex align-items-center">
+                            <x-lucide-hard-drive class="icon me-2 text-primary" />
+                            File Cadangan di Server (Direct Restore / &gt;512MB)
+                        </h4>
+                        <button type="button" wire:click="scanServerFiles" class="btn btn-sm btn-outline-secondary" wire:loading.attr="disabled">
+                            <span wire:loading.remove wire:target="scanServerFiles">
+                                <x-lucide-refresh-cw class="icon icon-sm me-1" /> Segarkan
+                            </span>
+                            <span wire:loading wire:target="scanServerFiles">
+                                <span class="spinner-border spinner-border-sm me-1"></span> Memindai...
+                            </span>
+                        </button>
+                    </div>
+                    <p class="text-secondary small mb-3">
+                        Pilih file cadangan yang sudah berada di direktori <code>storage/app/backup/</code> server. 
+                        <strong>Bebas limit upload web browser / PHP</strong> &mdash; sangat ideal untuk file besar (&gt;512MB) yang di-upload langsung via File Manager cPanel, FTP, atau rsync.
+                    </p>
+
+                    @if (!empty($serverFiles))
+                        <div class="table-responsive">
+                            <table class="table table-sm table-vcenter card-table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Nama File</th>
+                                        <th>Tipe</th>
+                                        <th>Ukuran</th>
+                                        <th>Waktu</th>
+                                        <th class="w-1 text-end">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($serverFiles as $file)
+                                        <tr class="{{ $selectedServerFile === $file['filename'] ? 'table-primary' : '' }}">
+                                            <td class="font-monospace small">
+                                                {{ $file['filename'] }}
+                                                @if ($selectedServerFile === $file['filename'])
+                                                    <span class="badge bg-primary ms-1">Terpilih</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($file['extension'] === 'sql')
+                                                    <span class="badge bg-purple-lt">Database (.sql)</span>
+                                                @else
+                                                    <span class="badge bg-cyan-lt">Storage (.zip)</span>
+                                                @endif
+                                            </td>
+                                            <td class="small">{{ $file['formatted_size'] }}</td>
+                                            <td class="small text-muted">{{ $file['modified_at'] }}</td>
+                                            <td class="text-end">
+                                                @if ($selectedServerFile === $file['filename'])
+                                                    <button type="button" wire:click="resetUpload" class="btn btn-sm btn-outline-danger" @disabled($isRunning)>
+                                                        Batal
+                                                    </button>
+                                                @else
+                                                    <button type="button" wire:click="selectServerFile('{{ $file['filename'] }}')" class="btn btn-sm btn-primary" wire:loading.attr="disabled" @disabled($isRunning)>
+                                                        <span wire:loading.remove wire:target="selectServerFile('{{ $file['filename'] }}')">Gunakan File</span>
+                                                        <span wire:loading wire:target="selectServerFile('{{ $file['filename'] }}')">
+                                                            <span class="spinner-border spinner-border-sm"></span>
+                                                        </span>
+                                                    </button>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="text-center py-3 text-muted bg-light rounded">
+                            <x-lucide-folder-open class="icon mb-1 text-secondary" style="width: 28px; height: 28px;" />
+                            <div class="small">Belum ada file cadangan (.sql / .zip) di direktori <code>storage/app/backup/</code>.</div>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
             @if ($uploadErrorMessage)
                 <div class="alert alert-danger mb-4">
                     <x-lucide-alert-circle class="icon me-2" />

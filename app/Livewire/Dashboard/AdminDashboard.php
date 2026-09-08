@@ -777,6 +777,12 @@ class AdminDashboard extends Component
             ->distinct()
             ->count('proposal_id');
 
+        // 3b. Financial Report (LPJ) Status
+        $totalFinancial = $activeProposals->count();
+        $completedFinancial = Proposal::whereIn('id', $activeProposalIds)
+            ->whereNotNull('logbook_approved_at')
+            ->count();
+
         // 4. Output Tracking (Luaran)
         // Target: Total outputs promised in funded proposals
         $targetOutputs = ProposalOutput::whereIn('proposal_id', $activeProposalIds)->count();
@@ -809,7 +815,11 @@ class AdminDashboard extends Component
 
             'report_total' => $totalReports,
             'report_submitted' => $submittedReports,
-            'report_progress' => $totalReports > 0 ? ($submittedReports / $totalReports) * 100 : 0,
+            'report_progress' => $totalReports > 0 ? round(($submittedReports / $totalReports) * 100, 1) : 0,
+
+            'financial_total' => $totalFinancial,
+            'financial_completed' => $completedFinancial,
+            'financial_progress' => $totalFinancial > 0 ? round(($completedFinancial / $totalFinancial) * 100, 1) : 0,
 
             'output_target' => $targetOutputs,
             'output_achieved' => $achievedOutputs,

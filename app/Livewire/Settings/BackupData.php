@@ -68,6 +68,17 @@ class BackupData extends Component
             return;
         }
 
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        set_time_limit(1800);
+
+        $freeSpace = @disk_free_space(storage_path('app'));
+        if ($freeSpace !== false && $freeSpace < 100 * 1024 * 1024) {
+            $this->output = '❌ Kapasitas disk tersisa kurang dari 100MB ('.$this->formatSize((int) $freeSpace)."). Backup database dibatalkan demi keamanan server.\n";
+            $this->isRunning = false;
+
+            return;
+        }
+
         $this->isRunning = true;
         $this->output = "Membuat backup database...\n";
 
@@ -130,7 +141,7 @@ class BackupData extends Component
         $cmd[] = '--lock-tables=false';
         $cmd[] = $dbName;
 
-        $result = Process::timeout(600)->run($cmd, function ($type, $line) {
+        $result = Process::timeout(1800)->run($cmd, function ($type, $line) {
             $this->output .= $line."\n";
         });
 
@@ -192,8 +203,17 @@ class BackupData extends Component
             return;
         }
 
-        set_time_limit(900);
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        set_time_limit(3600);
         ini_set('memory_limit', '1024M');
+
+        $freeSpace = @disk_free_space(storage_path('app'));
+        if ($freeSpace !== false && $freeSpace < 500 * 1024 * 1024) {
+            $this->output = '❌ Kapasitas disk tersisa kurang dari 500MB ('.$this->formatSize((int) $freeSpace)."). Backup storage dibatalkan demi keamanan server.\n";
+            $this->isRunning = false;
+
+            return;
+        }
 
         $this->isRunning = true;
         $this->output = 'Membuat backup file storage (Folder terpilih: '.implode(', ', $this->selectedFolders).")...\n";
@@ -229,7 +249,7 @@ class BackupData extends Component
                 $cmd[] = $folder;
             }
 
-            $result = Process::path($storagePath)->timeout(900)->run($cmd);
+            $result = Process::path($storagePath)->timeout(3600)->run($cmd);
 
             if ($result->successful() && file_exists($path) && filesize($path) > 0) {
                 chmod($path, 0644);

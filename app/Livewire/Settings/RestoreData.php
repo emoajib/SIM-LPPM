@@ -47,9 +47,15 @@ class RestoreData extends Component
 
     public ?string $uploadErrorMessage = null;
 
+    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    public array $serverFiles = [];
+
+    public ?string $selectedServerFile = null;
+
     public function mount(): void
     {
         abort_unless(Auth::user()?->activeHasRole('admin lppm'), 403);
+        $this->scanServerFiles();
     }
 
     public function updatedSqlFile(): void
@@ -180,6 +186,7 @@ class RestoreData extends Component
         $this->uploadedZipPath = null;
         $this->availableZipFolders = [];
         $this->selectedZipFolders = [];
+        $this->selectedServerFile = null;
     }
 
     private function logSqlPreview(string $filename): void
@@ -258,6 +265,7 @@ class RestoreData extends Component
         $this->isRunning = false;
         $this->hasPreview = false;
         $this->preview = [];
+        $this->scanServerFiles();
     }
 
     public function resetUpload(): void
@@ -267,10 +275,123 @@ class RestoreData extends Component
         $this->output = '';
         $this->hasPreview = false;
         $this->preview = [];
+        $this->warnings = [];
+        $this->hasWarnings = false;
         $this->uploadedSqlPath = null;
         $this->uploadedZipPath = null;
         $this->availableZipFolders = [];
         $this->selectedZipFolders = [];
+        $this->selectedServerFile = null;
+        $this->uploadErrorMessage = null;
+        $this->scanServerFiles();
+    }
+
+    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    public function scanServerFiles(): void
+    {
+        abort_unless(Auth::user()?->activeHasRole('admin lppm'), 403);
+
+        $backupDir = storage_path('app/backup');
+        if (! is_dir($backupDir)) {
+            $this->serverFiles = [];
+
+            return;
+        }
+
+        $pattern = $backupDir.'/*.*';
+        $allFiles = glob($pattern) ?: [];
+        $fileList = [];
+
+        foreach ($allFiles as $file) {
+            $basename = basename($file);
+            if (! preg_match('/^[A-Za-z0-9_\-\.]+\.(sql|zip)$/i', $basename)) {
+                continue;
+            }
+
+            $size = (int) @filesize($file);
+            $mtime = (int) @filemtime($file);
+            $extension = strtolower((string) pathinfo($file, PATHINFO_EXTENSION));
+
+            $fileList[] = [
+                'filename' => $basename,
+                'extension' => $extension,
+                'size' => $size,
+                'formatted_size' => $this->formatSize($size),
+                'modified_at' => date('d M Y H:i:s', $mtime),
+                'timestamp' => $mtime,
+            ];
+        }
+
+        usort($fileList, fn ($a, $b) => $b['timestamp'] <=> $a['timestamp']);
+
+        $this->serverFiles = $fileList;
+    }
+
+    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    public function selectServerFile(string $filename): void
+    {
+        abort_unless(Auth::user()?->activeHasRole('admin lppm'), 403);
+
+        $basename = basename($filename);
+        if (! preg_match('/^[A-Za-z0-9_\-\.]+\.(sql|zip)$/i', $basename)) {
+            $this->output = "❌ Nama file tidak valid.\n";
+
+            return;
+        }
+
+        $filePath = storage_path('app/backup/'.$basename);
+        if (! file_exists($filePath)) {
+            $this->output = "❌ File tidak ditemukan di server: {$basename}\n";
+            $this->scanServerFiles();
+
+            return;
+        }
+
+        $this->resetStates();
+        $this->selectedServerFile = $basename;
+        $extension = strtolower((string) pathinfo($basename, PATHINFO_EXTENSION));
+
+        if ($extension === 'sql') {
+            $this->uploadedSqlPath = $filePath;
+            $service = app(DatabaseRestoreService::class);
+            try {
+                $preview = $service->preview($this->uploadedSqlPath);
+                $this->preview = collect($preview)->except(['statements', 'blocked'])->toArray();
+                $this->warnings = $preview['warnings'] ?? [];
+                $this->hasWarnings = ! empty($this->warnings);
+                $this->hasPreview = true;
+                $this->logSqlPreview($basename);
+            } catch (\Exception $e) {
+                $this->output = '❌ Error Analysis Database: '.$e->getMessage();
+            }
+        } elseif ($extension === 'zip') {
+            $this->uploadedZipPath = $filePath;
+            $service = app(StorageRestoreService::class);
+            try {
+                $validation = $service->preview($this->uploadedZipPath);
+                $this->hasPreview = true;
+                $this->preview = $validation['validation'];
+                $this->preview['total_entries'] = $validation['total_entries'] ?? 0;
+                $this->preview['total_size'] = $validation['total_size'] ?? 0;
+                $this->availableZipFolders = $validation['folders'] ?? [];
+                $this->selectedZipFolders = $this->availableZipFolders;
+
+                $this->output = "File Server: {$basename}\n";
+                $this->output .= "Entries: {$validation['total_entries']}\n";
+                $this->output .= 'Ukuran: '.$this->formatSize($validation['total_size'])."\n";
+
+                if (! $validation['validation']['valid']) {
+                    $this->output .= "\n⚠️ Masalah terdeteksi:\n";
+                    foreach ($validation['validation']['issues'] as $issue) {
+                        $this->output .= "  ❌ {$issue}\n";
+                    }
+                } else {
+                    $this->output .= "\n✅ File ZIP siap. Silakan pilih folder dan mode di bawah.";
+                }
+            } catch (\Exception $e) {
+                $this->output = '❌ Error Analysis Storage: '.$e->getMessage();
+            }
+        }
     }
 
     public function render(): View

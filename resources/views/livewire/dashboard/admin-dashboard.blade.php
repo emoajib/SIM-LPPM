@@ -432,6 +432,46 @@
                 </div>
             </div>
         </div>
+
+        <!-- Laporan Akhir Details -->
+        <div class="col-md-6 mt-3">
+            <div class="card glass-card border-0 shadow-sm overflow-hidden" style="border-left: 4px solid #2fb344 !important;">
+                <div class="card-body py-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="subheader text-success fw-bold">Laporan Akhir</div>
+                        <div class="ms-auto">
+                            <span class="badge bg-success-lt">{{ $processStats['report_progress'] }}%</span>
+                        </div>
+                    </div>
+                    <div class="progress progress-sm shadow-none bg-success-lt">
+                        <div class="progress-bar bg-success" style="width: {{ $processStats['report_progress'] }}%"></div>
+                    </div>
+                    <div class="mt-2 small text-muted">
+                        {{ $processStats['report_submitted'] }} dari {{ $processStats['report_total'] }} proposal telah mengajukan/menyelesaikan laporan akhir
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Laporan Keuangan (LPJ) Details -->
+        <div class="col-md-6 mt-3">
+            <div class="card glass-card border-0 shadow-sm overflow-hidden" style="border-left: 4px solid #6366f1 !important;">
+                <div class="card-body py-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="subheader text-indigo fw-bold">Laporan Keuangan (LPJ)</div>
+                        <div class="ms-auto">
+                            <span class="badge bg-indigo-lt">{{ $processStats['financial_progress'] }}%</span>
+                        </div>
+                    </div>
+                    <div class="progress progress-sm shadow-none bg-indigo-lt">
+                        <div class="progress-bar bg-indigo" style="width: {{ $processStats['financial_progress'] }}%"></div>
+                    </div>
+                    <div class="mt-2 small text-muted">
+                        {{ $processStats['financial_completed'] }} dari {{ $processStats['financial_total'] }} proposal selesai disahkan LPPM
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="row row-cards mt-4">

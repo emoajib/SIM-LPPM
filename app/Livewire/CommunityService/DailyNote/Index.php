@@ -5,6 +5,7 @@ namespace App\Livewire\CommunityService\DailyNote;
 use App\Enums\ProposalStatus;
 use App\Livewire\Abstracts\ReportIndex;
 
+// Vetted by AI - Manual Review Required by Senior Engineer/Manager
 class Index extends ReportIndex
 {
     protected function getDetailableType(): string
@@ -28,7 +29,11 @@ class Index extends ReportIndex
     {
         return [
             'submitter.identity',
+            'communityServiceScheme',
             'focusArea',
+            'dailyNotes',
+            'budgetItems',
+            'media',
         ];
     }
 }
