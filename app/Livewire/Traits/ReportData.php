@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
+// Vetted by AI - Manual Review Required by Senior Engineer/Manager
 trait ReportData
 {
     protected function buildProposalQuery(string $detailableType, array $statuses): Builder
@@ -23,7 +24,7 @@ trait ReportData
         /** @phpstan-ignore-next-line */
         $roleFilter = property_exists($this, 'roleFilter') ? $this->roleFilter : '';
 
-        if ($roleFilter && ! $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'dekan'])) {
+        if ($roleFilter && ! $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'dekan', 'kaprodi'])) {
             $query = $this->applyRoleFilter($query, $user, $roleFilter);
         }
 

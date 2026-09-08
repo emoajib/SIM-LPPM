@@ -8,12 +8,14 @@ use App\Livewire\Forms\ProposalForm;
 use App\Models\CommunityService;
 use App\Models\Proposal;
 use App\Models\Research;
+use App\Models\StudyProgram;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
+// Vetted by AI - Manual Review Required by Senior Engineer/Manager
 class ProposalService
 {
     public function createProposal(ProposalForm $form, string $type, ?string $submitterId = null): Proposal
@@ -79,6 +81,16 @@ class ProposalService
             $facultyId = $user->identity?->faculty_id;
             $query->whereHas('submitter.identity', function ($q) use ($facultyId) {
                 $q->where('faculty_id', $facultyId);
+            });
+
+            if (isset($filters['role']) && $filters['role'] !== '') {
+                $this->applyRoleFilter($query, (string) $filters['role']);
+            }
+        } elseif ($user->activeHasRole('kaprodi')) {
+            $studyProgramId = StudyProgram::where('kaprodi_user_id', $user->id)->value('id')
+                ?? $user->identity?->study_program_id;
+            $query->whereHas('submitter.identity', function ($q) use ($studyProgramId) {
+                $q->where('study_program_id', $studyProgramId);
             });
 
             if (isset($filters['role']) && $filters['role'] !== '') {
@@ -163,6 +175,12 @@ class ProposalService
             $facultyId = $user->identity?->faculty_id;
             $query->whereHas('submitter.identity', function ($q) use ($facultyId) {
                 $q->where('faculty_id', $facultyId);
+            });
+        } elseif ($user->activeHasRole('kaprodi')) {
+            $studyProgramId = StudyProgram::where('kaprodi_user_id', $user->id)->value('id')
+                ?? $user->identity?->study_program_id;
+            $query->whereHas('submitter.identity', function ($q) use ($studyProgramId) {
+                $q->where('study_program_id', $studyProgramId);
             });
         }
 

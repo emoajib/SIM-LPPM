@@ -6,9 +6,11 @@ namespace App\Livewire\Traits;
 
 use App\Enums\ProposalUserStatus;
 use App\Models\Proposal;
+use App\Models\StudyProgram;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 
+// Vetted by AI - Manual Review Required by Senior Engineer/Manager
 trait ReportAuthorization
 {
     protected function filterByUserAccess(Builder $query): Builder
@@ -24,6 +26,15 @@ trait ReportAuthorization
 
             return $query->whereHas('submitter.identity', function ($q) use ($facultyId) {
                 $q->where('faculty_id', $facultyId);
+            });
+        }
+
+        if ($user->activeHasRole('kaprodi')) {
+            $studyProgramId = StudyProgram::where('kaprodi_user_id', $user->id)->value('id')
+                ?? $user->identity?->study_program_id;
+
+            return $query->whereHas('submitter.identity', function ($q) use ($studyProgramId) {
+                $q->where('study_program_id', $studyProgramId);
             });
         }
 

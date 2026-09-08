@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DocumentSignature;
 use App\Models\Proposal;
 use App\Models\Setting;
+use App\Models\StudyProgram;
 use App\Models\User;
 use App\Services\DocumentSignatureService;
 use App\Services\ProposalPdfService;
@@ -40,9 +41,17 @@ class DailyNoteExportController extends Controller
 
         $isMember = $proposal->teamMembers()->where('users.id', $user->id)->exists();
         $isSubmitter = $proposal->submitter_id === $user->id;
-        $isLppm = $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'superadmin', 'rektor', 'dekan']);
+        $isUniversityExec = $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'superadmin', 'rektor']);
+        $isFacultyDekan = $user->activeHasRole('dekan')
+            && $user->identity?->faculty_id
+            && $user->identity->faculty_id === $proposal->submitter->identity?->faculty_id;
+        $kaprodiProdiId = StudyProgram::where('kaprodi_user_id', $user->id)->value('id')
+            ?? $user->identity?->study_program_id;
+        $isProdiKaprodi = $user->activeHasRole('kaprodi')
+            && $kaprodiProdiId
+            && $kaprodiProdiId === $proposal->submitter->identity?->study_program_id;
 
-        if (! $isSubmitter && ! $isMember && ! $isLppm) {
+        if (! $isSubmitter && ! $isMember && ! $isUniversityExec && ! $isFacultyDekan && ! $isProdiKaprodi) {
             abort(403, 'Anda tidak memiliki akses untuk mengekspor laporan keuangan ini.');
         }
 
@@ -80,9 +89,17 @@ class DailyNoteExportController extends Controller
 
         $isMember = $proposal->teamMembers()->where('users.id', $user->id)->exists();
         $isSubmitter = $proposal->submitter_id === $user->id;
-        $isLppm = $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'superadmin', 'rektor', 'dekan']);
+        $isUniversityExec = $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'superadmin', 'rektor']);
+        $isFacultyDekan = $user->activeHasRole('dekan')
+            && $user->identity?->faculty_id
+            && $user->identity->faculty_id === $proposal->submitter->identity?->faculty_id;
+        $kaprodiProdiId = StudyProgram::where('kaprodi_user_id', $user->id)->value('id')
+            ?? $user->identity?->study_program_id;
+        $isProdiKaprodi = $user->activeHasRole('kaprodi')
+            && $kaprodiProdiId
+            && $kaprodiProdiId === $proposal->submitter->identity?->study_program_id;
 
-        if (! $isSubmitter && ! $isMember && ! $isLppm) {
+        if (! $isSubmitter && ! $isMember && ! $isUniversityExec && ! $isFacultyDekan && ! $isProdiKaprodi) {
             abort(403, 'Anda tidak memiliki akses untuk mengekspor catatan harian ini.');
         }
 

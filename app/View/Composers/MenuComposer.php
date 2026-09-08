@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\View\View;
 
+// Vetted by AI - Manual Review Required by Senior Engineer/Manager
 class MenuComposer
 {
     public function compose(View $view): void
@@ -56,7 +57,7 @@ class MenuComposer
             [
                 'title' => 'Penelitian',
                 'icon' => 'microscope',
-                'roles' => ['dosen', 'kepala lppm', 'admin lppm', 'rektor', 'dekan'],
+                'roles' => ['dosen', 'kepala lppm', 'admin lppm', 'rektor', 'dekan', 'kaprodi'],
                 'children' => [
                     [
                         'title' => 'Usulan',
@@ -83,7 +84,7 @@ class MenuComposer
             [
                 'title' => 'Pengabdian',
                 'icon' => 'heart-handshake',
-                'roles' => ['dosen', 'kepala lppm', 'admin lppm', 'rektor', 'dekan'],
+                'roles' => ['dosen', 'kepala lppm', 'admin lppm', 'rektor', 'dekan', 'kaprodi'],
                 'children' => [
                     [
                         'title' => 'Usulan',

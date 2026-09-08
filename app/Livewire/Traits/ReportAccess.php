@@ -7,6 +7,7 @@ namespace App\Livewire\Traits;
 use App\Enums\ProposalUserStatus;
 use App\Models\ProgressReport;
 use App\Models\Proposal;
+use App\Models\StudyProgram;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 
@@ -14,6 +15,7 @@ use Livewire\Attributes\On;
  * Trait ReportAccess
  *
  * Handles report access control and loading logic
+ * Vetted by AI - Manual Review Required by Senior Engineer/Manager
  */
 trait ReportAccess
 {
@@ -44,6 +46,8 @@ trait ReportAccess
                 } else {
                     $message = 'Maaf, Anda tidak memiliki akses ke fakultas dosen yang bersangkutan.';
                 }
+            } elseif ($user?->activeHasRole('kaprodi')) {
+                $message = 'Maaf, Anda tidak memiliki akses ke program studi dosen yang bersangkutan.';
             }
 
             abort(403, $message);
@@ -61,7 +65,7 @@ trait ReportAccess
         $user = Auth::user();
         // dd($user->getRoleNames());
 
-        if ($user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor'])) {
+        if ($user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'superadmin'])) {
             return true;
         }
 
@@ -69,7 +73,15 @@ trait ReportAccess
             $dekanFacultyId = $user->identity?->faculty_id;
             $submitterFacultyId = $this->proposal->submitter->identity?->faculty_id;
 
-            return $dekanFacultyId && $dekanFacultyId === $submitterFacultyId;
+            return (bool) ($dekanFacultyId && $dekanFacultyId === $submitterFacultyId);
+        }
+
+        if ($user->activeHasRole('kaprodi')) {
+            $kaprodiProdiId = StudyProgram::where('kaprodi_user_id', $user->id)->value('id')
+                ?? $user->identity?->study_program_id;
+            $submitterProdiId = $this->proposal->submitter->identity?->study_program_id;
+
+            return (bool) ($kaprodiProdiId && $kaprodiProdiId === $submitterProdiId);
         }
 
         return $this->proposal->submitter_id === $user->id
