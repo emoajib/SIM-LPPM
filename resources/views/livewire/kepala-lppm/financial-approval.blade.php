@@ -2,6 +2,9 @@
 <x-slot:pageTitle>Persetujuan Laporan Keuangan (LPJ)</x-slot:pageTitle>
 <x-slot:pageSubtitle>
     Tinjau rekapitulasi realisasi anggaran, berkas scan tanda tangan basah, dan sahkan laporan pertanggungjawaban (LPJ) penelitian dan pengabdian.
+    <div class="text-muted small mt-1">
+        <span class="badge bg-blue-lt me-1">Kepala LPPM &amp; Admin LPPM</span> Berwenang memeriksa rekapitulasi realisasi belanja, berkas scan, dan mengesahkan LPJ usulan dosen.
+    </div>
 </x-slot:pageSubtitle>
 
 <div>
@@ -138,7 +141,7 @@
                         @endphp
                         <tr wire:key="prop-{{ $proposal->id }}">
                             <td>
-                                <a href="{{ $dailyNoteRoute }}" class="text-reset fw-bold d-block text-truncate" style="max-width: 380px;" title="{{ $proposal->title }}">
+                                <a href="{{ route('financial-reports.export-pdf', $proposal) }}" target="_blank" class="text-reset fw-bold d-block text-truncate" style="max-width: 380px;" title="Buka PDF LPJ: {{ $proposal->title }}">
                                     {{ $proposal->title }}
                                 </a>
                                 <div class="small text-secondary mt-1">
@@ -213,9 +216,12 @@
                             </td>
                             <td class="text-end text-nowrap">
                                 <div class="btn-list flex-nowrap justify-content-end">
-                                    <a href="{{ $dailyNoteRoute }}" class="btn btn-sm btn-outline-secondary" title="Tinjau Rincian Logbook & Nota">
-                                        <x-lucide-eye class="icon icon-sm me-1" />
-                                        Tinjau
+                                    <a href="{{ route('financial-reports.export-pdf', $proposal) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Tinjau Berkas PDF Laporan Keuangan (LPJ)">
+                                        <x-lucide-file-text class="icon icon-sm me-1" />
+                                        Tinjau PDF
+                                    </a>
+                                    <a href="{{ $dailyNoteRoute }}" target="_blank" class="btn btn-sm btn-ghost-secondary px-2" title="Buka Logbook &amp; Nota di Web">
+                                        <x-lucide-external-link class="icon icon-sm" />
                                     </a>
 
                                     @if ($isApproved)

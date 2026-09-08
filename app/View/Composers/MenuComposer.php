@@ -172,7 +172,7 @@ class MenuComposer
                 'title' => 'Persetujuan Laporan Keuangan',
                 'icon' => 'wallet',
                 'route' => 'kepala-lppm.financial-approval',
-                'roles' => ['kepala lppm'],
+                'roles' => ['kepala lppm', 'admin lppm'],
             ],
             ...($letteringActive ? [[
                 'title' => 'Persetujuan Surat',

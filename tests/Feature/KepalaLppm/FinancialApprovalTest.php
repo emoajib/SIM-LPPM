@@ -125,3 +125,28 @@ test('lecturer can check completeness of final report without logbook requiremen
     // Logbook Harian should NOT be in missing requirements
     expect($missing)->not->toContain('Logbook Harian');
 });
+
+test('admin lppm can mount financial approval component and approve and unapprove lpj', function () {
+    $admin = User::factory()->create();
+    $admin->assignRole('admin lppm');
+
+    $this->actingAs($admin);
+    session(['active_role' => 'admin lppm']);
+
+    Livewire::test(FinancialApproval::class)
+        ->assertOk()
+        ->assertSee('Tinjau PDF', false)
+        ->assertSee(route('financial-reports.export-pdf', $this->proposal), false)
+        ->call('approveLpj', $this->proposal->id)
+        ->assertHasNoErrors();
+
+    $this->proposal->refresh();
+    expect($this->proposal->logbook_approved_at)->not->toBeNull();
+
+    Livewire::test(FinancialApproval::class)
+        ->call('unapproveLpj', $this->proposal->id)
+        ->assertHasNoErrors();
+
+    $this->proposal->refresh();
+    expect($this->proposal->logbook_approved_at)->toBeNull();
+});
