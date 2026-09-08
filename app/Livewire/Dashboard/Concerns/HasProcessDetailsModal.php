@@ -221,8 +221,8 @@ trait HasProcessDetailsModal
             'monevReviews.reviewer.identity',
             'monevs',
             'outputs',
-            'progressReports.mandatoryOutputs',
-            'progressReports.additionalOutputs',
+            'progressReports.mandatoryOutputs.media',
+            'progressReports.additionalOutputs.media',
         ])
             ->withSum('budgetItems', 'total_price')
             ->withSum('dailyNotes', 'amount')

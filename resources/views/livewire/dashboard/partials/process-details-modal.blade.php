@@ -83,14 +83,40 @@
                                         $showRoute = $isResearch 
                                             ? route('research.proposal.show', $item->id) 
                                             : route('community-service.proposal.show', $item->id);
+                                        $finalReportRoute = $isResearch
+                                            ? route('research.final-report.show', $item->id)
+                                            : route('community-service.final-report.show', $item->id);
+                                        $dailyNoteRoute = $isResearch
+                                            ? route('research.daily-note.show', $item->id)
+                                            : route('community-service.daily-note.show', $item->id);
+                                        $revisionRoute = $isResearch
+                                            ? route('research.proposal-revision.show', $item->id)
+                                            : route('community-service.proposal-revision.show', $item->id);
                                         $schemeName = $isResearch 
                                             ? ($item->researchScheme->name ?? 'Tanpa Skema') 
                                             : ($item->communityServiceScheme->name ?? 'Tanpa Skema');
+
+                                        $canOpenFinalReport = ($item->status === \App\Enums\ProposalStatus::COMPLETED) || $item->progressReports->isNotEmpty();
+                                        
+                                        $targetTitleUrl = match($activeProcessType) {
+                                            'iku', 'laporan_akhir' => $canOpenFinalReport ? $finalReportRoute : $showRoute,
+                                            'catatan_harian_keuangan' => $dailyNoteRoute,
+                                            'perbaikan_usulan' => $revisionRoute,
+                                            default => $showRoute,
+                                        };
+
+                                        $targetTitleTooltip = match($activeProcessType) {
+                                            'iku' => 'Buka Laporan Akhir & Bukti Capaian Luaran',
+                                            'laporan_akhir' => 'Buka Laporan Akhir',
+                                            'catatan_harian_keuangan' => 'Buka Catatan Harian (Logbook) & LPJ',
+                                            'perbaikan_usulan' => 'Buka Perbaikan Usulan (Revisi)',
+                                            default => 'Buka Rincian Usulan',
+                                        };
                                     @endphp
                                     <tr wire:key="proc-item-{{ $item->id }}">
                                         <!-- Judul & Pengusul -->
                                         <td class="ps-4">
-                                            <a href="{{ $showRoute }}" target="_blank" class="fw-bold text-dark text-decoration-none lh-sm d-block mb-1 hover-primary" title="{{ $item->title }}">
+                                            <a href="{{ $targetTitleUrl }}" target="_blank" class="fw-bold text-dark text-decoration-none lh-sm d-block mb-1 hover-primary" title="{{ $targetTitleTooltip }}: {{ $item->title }}">
                                                 {{ $item->title }}
                                                 <i class="ti ti-external-link text-muted ms-1 fs-4"></i>
                                             </a>
@@ -198,9 +224,10 @@
                                             @elseif($activeProcessType === 'iku')
                                                 @php
                                                     $targetCount = $item->outputs->count();
-                                                    $mandatoryAchieved = $item->progressReports->flatMap->mandatoryOutputs->count();
-                                                    $additionalAchieved = $item->progressReports->flatMap->additionalOutputs->count();
-                                                    $achievedCount = $mandatoryAchieved + $additionalAchieved;
+                                                    $mandatoryOutputs = $item->progressReports->flatMap->mandatoryOutputs;
+                                                    $additionalOutputs = $item->progressReports->flatMap->additionalOutputs;
+                                                    $allUploadedOutputs = $mandatoryOutputs->concat($additionalOutputs);
+                                                    $achievedCount = $allUploadedOutputs->count();
                                                 @endphp
                                                 @if($targetCount > 0 && $achievedCount >= $targetCount)
                                                     <span class="badge bg-success text-white fw-bold px-2 py-1">
@@ -216,8 +243,52 @@
                                                     </span>
                                                 @endif
                                                 @if($targetCount > 0)
-                                                    <div class="small text-muted mt-1 text-truncate" style="max-width: 220px; font-size: 0.75rem;" title="{{ $item->outputs->pluck('type')->filter()->join(', ') }}">
-                                                        Target: {{ $item->outputs->pluck('type')->filter()->take(2)->join(', ') }}@if($item->outputs->count() > 2)...@endif
+                                                    <div class="small text-muted mt-1 text-truncate" style="max-width: 250px; font-size: 0.75rem;" title="{{ $item->outputs->pluck('type')->filter()->join(', ') }}">
+                                                        <span class="fw-semibold text-dark">Target:</span> {{ $item->outputs->pluck('type')->filter()->take(2)->join(', ') }}@if($item->outputs->count() > 2)...@endif
+                                                    </div>
+                                                @endif
+
+                                                {{-- Bukti Luaran Nyata dari Laporan --}}
+                                                @if($achievedCount > 0)
+                                                    <div class="mt-1 d-flex flex-wrap gap-1 align-items-center">
+                                                        @foreach($allUploadedOutputs->take(3) as $out)
+                                                            @if(!empty($out->video_url))
+                                                                <a href="{{ $out->video_url }}" target="_blank" class="badge bg-red-lt text-red text-decoration-none px-2 py-1" style="font-size: 0.7rem;" title="{{ $out->video_url }}">
+                                                                    <i class="ti ti-brand-youtube me-1"></i>{{ $out->platform ?: 'YouTube' }}
+                                                                </a>
+                                                            @elseif(!empty($out->journal_url) || !empty($out->article_url))
+                                                                <a href="{{ $out->journal_url ?: $out->article_url }}" target="_blank" class="badge bg-blue-lt text-blue text-decoration-none px-2 py-1" style="font-size: 0.7rem;" title="{{ $out->article_title ?: ($out->journal_url ?: $out->article_url) }}">
+                                                                    <i class="ti ti-link me-1"></i>{{ \Illuminate\Support\Str::limit($out->journal_title ?: 'Publikasi', 14) }}
+                                                                </a>
+                                                            @elseif(!empty($out->doi))
+                                                                <a href="https://doi.org/{{ $out->doi }}" target="_blank" class="badge bg-purple-lt text-purple text-decoration-none px-2 py-1" style="font-size: 0.7rem;">
+                                                                    <i class="ti ti-bookmark me-1"></i>DOI
+                                                                </a>
+                                                            @elseif(!empty($out->registration_number))
+                                                                <span class="badge bg-indigo-lt text-indigo px-2 py-1" style="font-size: 0.7rem;" title="No. HKI: {{ $out->registration_number }}">
+                                                                    <i class="ti ti-certificate me-1"></i>HKI
+                                                                </span>
+                                                            @elseif(!empty($out->isbn))
+                                                                <span class="badge bg-teal-lt text-teal px-2 py-1" style="font-size: 0.7rem;" title="ISBN: {{ $out->isbn }}">
+                                                                    <i class="ti ti-book me-1"></i>Buku
+                                                                </span>
+                                                            @elseif(!empty($out->media_url))
+                                                                <a href="{{ $out->media_url }}" target="_blank" class="badge bg-azure-lt text-azure text-decoration-none px-2 py-1" style="font-size: 0.7rem;">
+                                                                    <i class="ti ti-news me-1"></i>Media
+                                                                </a>
+                                                            @elseif(!empty($out->document_file) || $out->media->isNotEmpty())
+                                                                <span class="badge bg-secondary-lt text-dark px-2 py-1" style="font-size: 0.7rem;">
+                                                                    <i class="ti ti-file-text me-1"></i>Berkas
+                                                                </span>
+                                                            @else
+                                                                <span class="badge bg-primary-lt px-2 py-1" style="font-size: 0.7rem;">
+                                                                    <i class="ti ti-file-check me-1"></i>Bukti Dilaporkan
+                                                                </span>
+                                                            @endif
+                                                        @endforeach
+                                                        @if($achievedCount > 3)
+                                                            <span class="badge bg-light text-muted px-1" style="font-size: 0.65rem;">+{{ $achievedCount - 3 }}</span>
+                                                        @endif
                                                     </div>
                                                 @endif
 
@@ -312,11 +383,20 @@
                                                     $totalAchieved = $mandatoryAchieved + $additionalAchieved;
                                                 @endphp
                                                 <div class="small text-muted mb-1" style="font-size: 0.75rem;">
-                                                    {{ $totalAchieved }} Bukti Diunggah
+                                                    {{ $totalAchieved }} Bukti di Laporan
                                                 </div>
-                                                <a href="{{ $showRoute }}" target="_blank" class="btn btn-outline-primary btn-sm py-0 px-2" style="font-size: 0.75rem;">
-                                                    <i class="ti ti-award me-1"></i>Buka Usulan
-                                                </a>
+                                                @if($canOpenFinalReport)
+                                                    <a href="{{ $finalReportRoute }}" target="_blank" class="btn btn-outline-primary btn-sm py-0 px-2" style="font-size: 0.75rem;" title="Buka Laporan Akhir & Bukti Luaran">
+                                                        <i class="ti ti-file-certificate me-1"></i>Buka Laporan
+                                                    </a>
+                                                @else
+                                                    <span class="badge bg-secondary-lt fw-normal py-1 px-2 mb-1" style="font-size: 0.75rem;">Belum Ada Laporan</span>
+                                                @endif
+                                                <div class="mt-1">
+                                                    <a href="{{ $showRoute }}" target="_blank" class="text-muted small text-decoration-none" style="font-size: 0.7rem;" title="Buka Rincian Usulan Asli">
+                                                        <i class="ti ti-eye me-1"></i>Detail Usulan
+                                                    </a>
+                                                </div>
 
                                             @elseif($activeProcessType === 'catatan_harian_keuangan')
                                                 <div class="small fw-bold text-dark">

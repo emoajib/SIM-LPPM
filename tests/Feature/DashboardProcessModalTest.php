@@ -4,9 +4,13 @@
 
 namespace Tests\Feature;
 
+use App\Enums\ProposalStatus;
 use App\Livewire\Dashboard\AdminDashboard;
 use App\Livewire\Dashboard\KepalaLppmDashboard;
+use App\Models\MandatoryOutput;
+use App\Models\ProgressReport;
 use App\Models\Proposal;
+use App\Models\ProposalOutput;
 use App\Models\Research;
 use App\Models\User;
 use Database\Seeders\InstitutionSeeder;
@@ -98,5 +102,55 @@ class DashboardProcessModalTest extends TestCase
         $component->set('processTypeFilter', 'research');
         $filteredRes = $component->get('processModalData');
         $this->assertTrue($filteredRes->contains('id', $proposal->id));
+    }
+
+    public function test_iku_modal_renders_evidence_and_links_to_laporan()
+    {
+        $this->actingAs($this->kepalaLppm);
+        Session::put('active_role', 'kepala lppm');
+
+        $research = Research::factory()->create();
+        $proposal = Proposal::factory()->create([
+            'title' => 'Proposal Riset dengan Bukti Luaran YouTube',
+            'detailable_type' => 'App\Models\Research',
+            'detailable_id' => $research->id,
+            'start_year' => date('Y'),
+            'status' => ProposalStatus::COMPLETED->value,
+            'submitter_id' => $this->kepalaLppm->id,
+        ]);
+
+        $proposalOutput = ProposalOutput::create([
+            'proposal_id' => $proposal->id,
+            'output_year' => 1,
+            'category' => 'Wajib',
+            'group' => 'video',
+            'type' => 'Video Kegiatan (Publikasi Youtube/Medsos)',
+            'target_status' => 'Published',
+        ]);
+
+        $progressReport = ProgressReport::create([
+            'proposal_id' => $proposal->id,
+            'reporting_year' => date('Y'),
+            'reporting_period' => 'final',
+            'status' => 'submitted',
+            'submitted_by' => $this->kepalaLppm->id,
+        ]);
+
+        MandatoryOutput::factory()->create([
+            'progress_report_id' => $progressReport->id,
+            'proposal_output_id' => $proposalOutput->id,
+            'status_type' => 'published',
+            'video_url' => 'https://youtu.be/testvideo123',
+            'platform' => 'YouTube',
+        ]);
+
+        $component = Livewire::test(KepalaLppmDashboard::class);
+        $component->call('openProcessModal', 'iku');
+
+        $component->assertSee('Buka Laporan')
+            ->assertSee('YouTube')
+            ->assertSee('https://youtu.be/testvideo123')
+            ->assertSee('Bukti di Laporan')
+            ->assertSee(route('research.final-report.show', $proposal->id));
     }
 }
