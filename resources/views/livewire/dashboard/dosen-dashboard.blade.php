@@ -378,19 +378,190 @@
         </div>
     @endif
 
+    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+    <!-- Alur Proses Tahapan Penelitian & Pengabdian (Data Riil) -->
+    <div class="row row-cards mb-4">
+        <div class="col-12">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <h3 class="card-title fw-bold text-dark d-flex align-items-center gap-2 mb-0">
+                    <i class="ti ti-git-fork text-primary"></i>
+                    Alur Proses Penelitian & Pengabdian Saya
+                </h3>
+                <span class="badge bg-blue-lt">Klik kartu untuk rincian data usulan</span>
+            </div>
+        </div>
+
+        <!-- 1. Tahap Usulan -->
+        <div class="col-sm-6 col-lg-3">
+            <div class="card glass-card border-0 shadow-sm overflow-hidden h-100 cursor-pointer" 
+                 style="border-top: 4px solid #206bc4 !important; transition: transform 0.15s ease, box-shadow 0.15s ease;"
+                 role="button"
+                 wire:click="openProcessModal('usulan')"
+                 onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 6px 16px rgba(0,0,0,0.1)'"
+                 onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+                <div class="card-body py-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="avatar avatar-sm bg-primary-lt text-primary rounded shadow-none me-2">
+                            <i class="ti ti-file-text fs-2"></i>
+                        </span>
+                        <div>
+                            <div class="subheader text-primary fw-bold mb-0">Usulan</div>
+                            <div class="text-muted small">Tahap Pengajuan</div>
+                        </div>
+                        <div class="ms-auto text-end">
+                            <span class="badge bg-primary-lt fw-bold">{{ $processStats['usulan_approved_progress'] ?? 0 }}% Disetujui</span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-baseline gap-2 mb-2">
+                        <span class="h1 mb-0 fw-bold text-dark">{{ $processStats['usulan_total'] ?? 0 }}</span>
+                        <span class="text-muted small">Total Usulan</span>
+                    </div>
+                    <div class="progress progress-sm shadow-none bg-primary-lt mb-2">
+                        <div class="progress-bar bg-success" style="width: {{ $processStats['usulan_approved_progress'] ?? 0 }}%" title="Disetujui: {{ $processStats['usulan_approved'] ?? 0 }}"></div>
+                        <div class="progress-bar bg-warning" style="width: {{ $processStats['usulan_submitted_progress'] ?? 0 }}%" title="Diajukan: {{ $processStats['usulan_submitted'] ?? 0 }}"></div>
+                        <div class="progress-bar bg-danger" style="width: {{ $processStats['usulan_rejected_progress'] ?? 0 }}%" title="Ditolak: {{ $processStats['usulan_rejected'] ?? 0 }}"></div>
+                    </div>
+                    <div class="d-flex justify-content-between small text-muted">
+                        <span>{{ $processStats['usulan_approved'] ?? 0 }} Disetujui</span>
+                        <span>{{ $processStats['usulan_submitted'] ?? 0 }} Diajukan</span>
+                        <span>{{ $processStats['usulan_draft'] ?? 0 }} Draf</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Tahap Perbaikan Usulan -->
+        <div class="col-sm-6 col-lg-3">
+            <div class="card glass-card border-0 shadow-sm overflow-hidden h-100 cursor-pointer" 
+                 style="border-top: 4px solid #f59f00 !important; transition: transform 0.15s ease, box-shadow 0.15s ease;"
+                 role="button"
+                 wire:click="openProcessModal('revision')"
+                 onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 6px 16px rgba(0,0,0,0.1)'"
+                 onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+                <div class="card-body py-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="avatar avatar-sm bg-warning-lt text-warning rounded shadow-none me-2">
+                            <i class="ti ti-edit fs-2"></i>
+                        </span>
+                        <div>
+                            <div class="subheader text-warning fw-bold mb-0">Perbaikan Usulan</div>
+                            <div class="text-muted small">Revisi & Resubmisi</div>
+                        </div>
+                        <div class="ms-auto text-end">
+                            <span class="badge bg-warning-lt fw-bold">{{ $processStats['revision_progress'] ?? 0 }}% Ditindak</span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-baseline gap-2 mb-2">
+                        <span class="h1 mb-0 fw-bold text-dark">{{ $processStats['revision_total'] ?? 0 }}</span>
+                        <span class="text-muted small">Usulan Revisi</span>
+                    </div>
+                    <div class="progress progress-sm shadow-none bg-warning-lt mb-2">
+                        <div class="progress-bar bg-success" style="width: {{ $processStats['revision_progress'] ?? 0 }}%" title="Selesai Diperbaiki: {{ $processStats['revision_resubmitted'] ?? 0 }}"></div>
+                        <div class="progress-bar bg-warning" style="width: {{ 100 - ($processStats['revision_progress'] ?? 0) }}%" title="Menunggu Revisi: {{ $processStats['revision_waiting'] ?? 0 }}"></div>
+                    </div>
+                    <div class="d-flex justify-content-between small text-muted">
+                        <span class="text-danger fw-bold">{{ $processStats['revision_waiting'] ?? 0 }} Menunggu</span>
+                        <span>{{ $processStats['revision_draft'] ?? 0 }} Draf</span>
+                        <span class="text-success fw-bold">{{ $processStats['revision_resubmitted'] ?? 0 }} Selesai</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Catatan Harian / Laporan Keuangan -->
+        <div class="col-sm-6 col-lg-3">
+            <div class="card glass-card border-0 shadow-sm overflow-hidden h-100 cursor-pointer" 
+                 style="border-top: 4px solid #6366f1 !important; transition: transform 0.15s ease, box-shadow 0.15s ease;"
+                 role="button"
+                 wire:click="openProcessModal('financial')"
+                 onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 6px 16px rgba(0,0,0,0.1)'"
+                 onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+                <div class="card-body py-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="avatar avatar-sm bg-indigo-lt text-indigo rounded shadow-none me-2">
+                            <i class="ti ti-receipt-2 fs-2"></i>
+                        </span>
+                        <div>
+                            <div class="subheader text-indigo fw-bold mb-0">Catatan & Keuangan</div>
+                            <div class="text-muted small">Logbook & LPJ</div>
+                        </div>
+                        <div class="ms-auto text-end">
+                            <span class="badge bg-indigo-lt fw-bold">{{ $processStats['financial_progress'] ?? 0 }}% Sah</span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-baseline gap-2 mb-2">
+                        <span class="h1 mb-0 fw-bold text-dark">{{ $processStats['financial_total'] ?? 0 }}</span>
+                        <span class="text-muted small">Proposal Berjalan</span>
+                    </div>
+                    <div class="progress progress-sm shadow-none bg-indigo-lt mb-2">
+                        <div class="progress-bar bg-success" style="width: {{ $processStats['financial_progress'] ?? 0 }}%" title="Disahkan: {{ $processStats['financial_completed'] ?? 0 }}"></div>
+                        <div class="progress-bar bg-primary" style="width: {{ $processStats['financial_pending_progress'] ?? 0 }}%" title="Menunggu Sah: {{ $processStats['financial_pending'] ?? 0 }}"></div>
+                    </div>
+                    <div class="d-flex justify-content-between small text-muted">
+                        <span>{{ $processStats['financial_with_notes'] ?? 0 }} Ada Catatan</span>
+                        <span class="text-primary fw-bold">{{ $processStats['financial_pending'] ?? 0 }} Menunggu</span>
+                        <span class="text-success fw-bold">{{ $processStats['financial_completed'] ?? 0 }} Sah</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Laporan Akhir -->
+        <div class="col-sm-6 col-lg-3">
+            <div class="card glass-card border-0 shadow-sm overflow-hidden h-100 cursor-pointer" 
+                 style="border-top: 4px solid #2fb344 !important; transition: transform 0.15s ease, box-shadow 0.15s ease;"
+                 role="button"
+                 wire:click="openProcessModal('final_report')"
+                 onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 6px 16px rgba(0,0,0,0.1)'"
+                 onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+                <div class="card-body py-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="avatar avatar-sm bg-success-lt text-success rounded shadow-none me-2">
+                            <i class="ti ti-certificate fs-2"></i>
+                        </span>
+                        <div>
+                            <div class="subheader text-success fw-bold mb-0">Laporan Akhir</div>
+                            <div class="text-muted small">Pelaporan & Validasi</div>
+                        </div>
+                        <div class="ms-auto text-end">
+                            <span class="badge bg-success-lt fw-bold">{{ $processStats['report_active_progress'] ?? $processStats['report_progress'] ?? 0 }}% Berproses</span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-baseline gap-2 mb-2">
+                        <span class="h1 mb-0 fw-bold text-dark">{{ $processStats['report_active_total'] ?? 0 }}<span class="text-muted fs-4">/{{ $processStats['report_total'] ?? 0 }}</span></span>
+                        <span class="text-muted small">Aktif Lapor</span>
+                    </div>
+                    <div class="progress progress-sm shadow-none bg-success-lt mb-2">
+                        <div class="progress-bar bg-success" style="width: {{ $processStats['report_progress'] ?? 0 }}%" title="Diajukan/Disetujui: {{ ($processStats['report_submitted'] ?? 0) + ($processStats['report_approved'] ?? 0) + ($processStats['report_approved_dekan'] ?? 0) }}"></div>
+                        <div class="progress-bar bg-warning" style="width: {{ $processStats['report_draft_progress'] ?? 0 }}%" title="Draf: {{ $processStats['report_draft'] ?? 0 }}"></div>
+                        <div class="progress-bar bg-danger" style="width: {{ $processStats['report_revision_progress'] ?? 0 }}%" title="Revisi: {{ $processStats['report_revision'] ?? 0 }}"></div>
+                    </div>
+                    <div class="d-flex justify-content-between small text-muted">
+                        <span class="text-primary fw-bold">{{ $processStats['report_submitted'] ?? 0 }} Diajukan</span>
+                        <span>{{ $processStats['report_draft'] ?? 0 }} Draf</span>
+                        <span class="text-success fw-bold">{{ $processStats['report_approved'] ?? 0 }} Disetujui</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Tables Section -->
     <div class="row row-cards mt-4">
         <div class="col-lg-6">
             <div class="card border-0 shadow-sm" style="border-radius: 12px;">
-                <div class="card-header bg-transparent border-0 py-3 d-flex align-items-center">
-                    <div class="avatar bg-primary-lt text-primary shadow-sm avatar-sm me-3 border-0">
-                        <i class="ti ti-flask-2"></i>
+                <div class="card-header bg-transparent border-0 py-3 d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar bg-primary-lt text-primary shadow-sm avatar-sm me-3 border-0">
+                            <i class="ti ti-flask-2"></i>
+                        </div>
+                        <h3 class="card-title fw-bold mb-0">Penelitian Terbaru</h3>
+                        <span class="badge bg-primary-lt ms-2">{{ count($recentResearch) }} Data</span>
                     </div>
-                    <h3 class="card-title fw-bold mb-0">Penelitian Terbaru</h3>
                 </div>
-                <div class="table-responsive">
+                <div class="table-responsive" style="max-height: 520px; overflow-y: auto;">
                     <table class="table table-vcenter card-table table-hover table-borderless">
-                        <thead class="bg-transparent text-muted">
+                        <thead class="bg-surface text-muted" style="position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                             <tr>
                                 <th class="ps-4">Judul & Peneliti</th>
                                 <th class="text-center">Status</th>
@@ -401,9 +572,9 @@
                             @forelse($recentResearch as $research)
                                 <tr>
                                     <td class="ps-4">
-                                        <div class="fw-bold text-wrap lh-base" title="{{ $research->title }}">
+                                        <a href="{{ route('research.proposal.show', $research->id) }}" class="text-reset fw-bold text-wrap lh-base text-decoration-none" title="{{ $research->title }}" wire:navigate>
                                             {{ $research->title }}
-                                        </div>
+                                        </a>
                                         <div class="small text-muted d-flex align-items-center mt-1">
                                             <div class="avatar avatar-xs me-2 border-0 shadow-sm bg-primary-lt">
                                                 {{ $research->submitter?->initials() }}
@@ -412,10 +583,43 @@
                                         </div>
                                     </td>
                                     <td class="text-center">
-                                        <span class="badge bg-{{ $research->status->color() }}-lt fw-bold px-2 py-1">
-                                            <span class="badge bg-{{ $research->status->color() }} me-1"></span>
-                                            {{ $research->status->label() }}
-                                        </span>
+                                        @if(in_array($research->status->value, ['completed', 'approved']))
+                                            @if($research->latestFinalReport)
+                                                @php
+                                                    $repStatus = $research->latestFinalReport->status;
+                                                @endphp
+                                                @if($repStatus === \App\Enums\ReportStatus::APPROVED)
+                                                    <span class="badge bg-success text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-check me-1"></i>Laporan Disetujui
+                                                    </span>
+                                                @elseif($repStatus === \App\Enums\ReportStatus::APPROVED_BY_DEKAN)
+                                                    <span class="badge bg-purple text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-clock-check me-1"></i>Disetujui Dekan
+                                                    </span>
+                                                @elseif($repStatus === \App\Enums\ReportStatus::SUBMITTED)
+                                                    <span class="badge bg-primary text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-send me-1"></i>Laporan Diajukan
+                                                    </span>
+                                                @elseif($repStatus === \App\Enums\ReportStatus::REJECTED)
+                                                    <span class="badge bg-danger text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-alert-circle me-1"></i>Revisi Laporan
+                                                    </span>
+                                                @elseif($repStatus === \App\Enums\ReportStatus::DRAFT)
+                                                    <span class="badge bg-warning text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-edit me-1"></i>Draf Laporan
+                                                    </span>
+                                                @endif
+                                            @else
+                                                <span class="badge bg-azure-lt fw-bold px-2 py-1">
+                                                    <span class="badge bg-azure me-1"></span>Pelaksanaan
+                                                </span>
+                                            @endif
+                                        @else
+                                            <span class="badge bg-{{ $research->status->color() }}-lt fw-bold px-2 py-1">
+                                                <span class="badge bg-{{ $research->status->color() }} me-1"></span>
+                                                {{ $research->status->label() }}
+                                            </span>
+                                        @endif
                                     </td>
                                     <td class="text-end pe-4 text-muted small">
                                         {{ $research->updated_at->format('d/m/Y H:i') }}
@@ -434,15 +638,18 @@
 
         <div class="col-lg-6">
             <div class="card border-0 shadow-sm" style="border-radius: 12px;">
-                <div class="card-header bg-transparent border-0 py-3 d-flex align-items-center">
-                    <div class="avatar bg-azure-lt text-azure shadow-sm avatar-sm me-3 border-0">
-                        <i class="ti ti-users-group"></i>
+                <div class="card-header bg-transparent border-0 py-3 d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar bg-azure-lt text-azure shadow-sm avatar-sm me-3 border-0">
+                            <i class="ti ti-users-group"></i>
+                        </div>
+                        <h3 class="card-title fw-bold mb-0">PKM Terbaru</h3>
+                        <span class="badge bg-azure-lt ms-2">{{ count($recentCommunityService) }} Data</span>
                     </div>
-                    <h3 class="card-title fw-bold mb-0">PKM Terbaru</h3>
                 </div>
-                <div class="table-responsive">
+                <div class="table-responsive" style="max-height: 520px; overflow-y: auto;">
                     <table class="table table-vcenter card-table table-hover table-borderless">
-                        <thead class="bg-transparent text-muted">
+                        <thead class="bg-surface text-muted" style="position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                             <tr>
                                 <th class="ps-4">Judul & Pengaju</th>
                                 <th class="text-center">Status</th>
@@ -453,9 +660,9 @@
                             @forelse($recentCommunityService as $communityService)
                                 <tr>
                                     <td class="ps-4">
-                                        <div class="fw-bold text-wrap lh-base" title="{{ $communityService->title }}">
+                                        <a href="{{ route('community-service.proposal.show', $communityService->id) }}" class="text-reset fw-bold text-wrap lh-base text-decoration-none" title="{{ $communityService->title }}" wire:navigate>
                                             {{ $communityService->title }}
-                                        </div>
+                                        </a>
                                         <div class="small text-muted d-flex align-items-center mt-1">
                                             <div class="avatar avatar-xs me-2 border-0 shadow-sm bg-azure-lt">
                                                 {{ $communityService->submitter?->initials() }}
@@ -464,10 +671,43 @@
                                         </div>
                                     </td>
                                     <td class="text-center">
-                                        <span class="badge bg-{{ $communityService->status->color() }}-lt fw-bold px-2 py-1">
-                                            <span class="badge bg-{{ $communityService->status->color() }} me-1"></span>
-                                            {{ $communityService->status->label() }}
-                                        </span>
+                                        @if(in_array($communityService->status->value, ['completed', 'approved']))
+                                            @if($communityService->latestFinalReport)
+                                                @php
+                                                    $repStatus = $communityService->latestFinalReport->status;
+                                                @endphp
+                                                @if($repStatus === \App\Enums\ReportStatus::APPROVED)
+                                                    <span class="badge bg-success text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-check me-1"></i>Laporan Disetujui
+                                                    </span>
+                                                @elseif($repStatus === \App\Enums\ReportStatus::APPROVED_BY_DEKAN)
+                                                    <span class="badge bg-purple text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-clock-check me-1"></i>Disetujui Dekan
+                                                    </span>
+                                                @elseif($repStatus === \App\Enums\ReportStatus::SUBMITTED)
+                                                    <span class="badge bg-primary text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-send me-1"></i>Laporan Diajukan
+                                                    </span>
+                                                @elseif($repStatus === \App\Enums\ReportStatus::REJECTED)
+                                                    <span class="badge bg-danger text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-alert-circle me-1"></i>Revisi Laporan
+                                                    </span>
+                                                @elseif($repStatus === \App\Enums\ReportStatus::DRAFT)
+                                                    <span class="badge bg-warning text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-edit me-1"></i>Draf Laporan
+                                                    </span>
+                                                @endif
+                                            @else
+                                                <span class="badge bg-azure-lt fw-bold px-2 py-1">
+                                                    <span class="badge bg-azure me-1"></span>Pelaksanaan
+                                                </span>
+                                            @endif
+                                        @else
+                                            <span class="badge bg-{{ $communityService->status->color() }}-lt fw-bold px-2 py-1">
+                                                <span class="badge bg-{{ $communityService->status->color() }} me-1"></span>
+                                                {{ $communityService->status->label() }}
+                                            </span>
+                                        @endif
                                     </td>
                                     <td class="text-end pe-4 text-muted small">
                                         {{ $communityService->updated_at->format('d/m/Y H:i') }}
@@ -577,4 +817,7 @@
     @if($showEditMetricsModal)
         <div class="modal-backdrop fade show"></div>
     @endif
+
+    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+    @include('livewire.dashboard.partials.process-details-modal')
 </div>

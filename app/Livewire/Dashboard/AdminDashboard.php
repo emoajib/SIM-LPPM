@@ -4,8 +4,10 @@ namespace App\Livewire\Dashboard;
 
 use App\Enums\ProposalStatus;
 use App\Enums\ReportStatus;
+use App\Livewire\Dashboard\Concerns\HasProcessDetailsModal;
 use App\Models\AdditionalOutput;
 use App\Models\CommunityServiceScheme;
+use App\Models\DailyNote;
 use App\Models\Faculty;
 use App\Models\MandatoryOutput;
 use App\Models\MonevReview;
@@ -26,6 +28,8 @@ use Livewire\Component;
 
 class AdminDashboard extends Component
 {
+    use HasProcessDetailsModal;
+
     public $user;
 
     public $roleName;
@@ -731,6 +735,11 @@ class AdminDashboard extends Component
         $waitingDean = $proposalsThisYear->filter(fn ($p) => ($p->status->value ?? '') === ProposalStatus::SUBMITTED->value)->count();
         $waitingLppm = $proposalsThisYear->filter(fn ($p) => in_array($p->status->value ?? '', [ProposalStatus::APPROVED->value, ProposalStatus::REVISION_SUBMITTED->value]))->count();
 
+        // 1b. Perbaikan Usulan (Revisi) Metrics
+        $revisionNeeded = $proposalsThisYear->filter(fn ($p) => ($p->status->value ?? '') === ProposalStatus::REVISION_NEEDED->value)->count();
+        $revisionSubmitted = $proposalsThisYear->filter(fn ($p) => ($p->status->value ?? '') === ProposalStatus::REVISION_SUBMITTED->value)->count();
+        $revisionTotal = $revisionNeeded + $revisionSubmitted;
+
         // 1. Review Status
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $totalReview = Proposal::whereIn('id', $proposalsThisYearIds)
@@ -817,6 +826,9 @@ class AdminDashboard extends Component
         $completedFinancial = Proposal::whereIn('id', $activeProposalIds)
             ->whereNotNull('logbook_approved_at')
             ->count();
+        $financialWithNotes = DailyNote::whereIn('proposal_id', $activeProposalIds)
+            ->distinct('proposal_id')
+            ->count('proposal_id');
 
         // 4. Output Tracking (Luaran)
         // Target: Total outputs promised in funded proposals
@@ -836,6 +848,15 @@ class AdminDashboard extends Component
         $achievedOutputs = max($achievedViaReport, $achievedViaOutput);
 
         $this->processStats = [
+            'usulan_total' => $proposalsThisYear->count(),
+            'usulan_draft' => $totalDraft,
+            'usulan_submitted' => $waitingDean,
+            'usulan_in_process' => $waitingLppm,
+
+            'revision_total' => $revisionTotal,
+            'revision_needed' => $revisionNeeded,
+            'revision_submitted' => $revisionSubmitted,
+
             'draft_total' => $totalDraft,
             'dean_waiting' => $waitingDean,
             'lppm_waiting' => $waitingLppm,
@@ -862,6 +883,7 @@ class AdminDashboard extends Component
             'report_active_progress' => $activeReportsProgress,
 
             'financial_total' => $totalFinancial,
+            'financial_with_notes' => $financialWithNotes,
             'financial_completed' => $completedFinancial,
             'financial_progress' => $totalFinancial > 0 ? round(($completedFinancial / $totalFinancial) * 100, 1) : 0,
 
@@ -890,7 +912,6 @@ class AdminDashboard extends Component
         $this->applySchemeFilter($researchQuery, 'research');
 
         $this->recentResearch = $researchQuery->latest('updated_at')
-            ->take(10)
             ->get()
             ->values();
 
@@ -900,7 +921,6 @@ class AdminDashboard extends Component
         $this->applySchemeFilter($csQuery, 'community_service');
 
         $this->recentCommunityService = $csQuery->latest('updated_at')
-            ->take(10)
             ->get()
             ->values();
     }

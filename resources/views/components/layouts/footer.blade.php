@@ -22,7 +22,7 @@
                 <ul class="list-inline list-inline-dots mb-0">
                     <li class="list-inline-item">
                         Copyright &copy; {{ date('Y') }}
-                        <a href="/" class="link-secondary">SIM LPPM ITSNU Pekalongan</a>. All rights reserved.
+                        <a href="/" class="link-secondary">LPPM ITSNU Pekalongan</a>. All rights reserved.
                     </li>
                     {{-- <li class="list-inline-item">
                         <a href="#" class="link-secondary" rel="noopener"> v1.4.0 </a>

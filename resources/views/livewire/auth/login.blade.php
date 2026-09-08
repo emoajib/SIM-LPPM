@@ -154,7 +154,7 @@
                 @endif
 
                 <p class="text-center mt-4 text-secondary small">
-                    &copy; {{ date('Y') }} SIM LPPM ITSNU Pekalongan. All rights reserved.
+                    &copy; {{ date('Y') }} LPPM ITSNU Pekalongan. All rights reserved.
                 </p>
             </div>
         </div>

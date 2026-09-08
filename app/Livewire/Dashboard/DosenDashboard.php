@@ -4,9 +4,12 @@ namespace App\Livewire\Dashboard;
 
 use App\Enums\ProposalStatus;
 use App\Enums\ProposalUserStatus;
+use App\Enums\ReportStatus;
 use App\Livewire\Concerns\HasToast;
+use App\Livewire\Dashboard\Concerns\HasProcessDetailsModal;
 use App\Models\AdditionalOutput;
 use App\Models\CommunityServiceScheme;
+use App\Models\DailyNote;
 use App\Models\MandatoryOutput;
 use App\Models\ProgressReport;
 use App\Models\Proposal;
@@ -21,6 +24,7 @@ use Livewire\Component;
 #[Layout('components.layouts.app', ['title' => 'Dashboard Dosen', 'pageTitle' => 'Ruang Peneliti', 'pageSubtitle' => 'Kelola usulan, publikasi, dan kolaborasi riset Anda'])]
 class DosenDashboard extends Component
 {
+    use HasProcessDetailsModal;
     use HasToast;
 
     public $user;
@@ -290,7 +294,7 @@ class DosenDashboard extends Component
     private function loadRecentProposals(string $yearFilter): void
     {
         $recentProposals = Proposal::query()
-            ->with(['submitter.identity', 'researchScheme', 'communityServiceScheme'])
+            ->with(['submitter.identity', 'researchScheme', 'communityServiceScheme', 'latestFinalReport'])
             ->where('start_year', $yearFilter)
             ->where(function ($q) {
                 $q->where('submitter_id', $this->user->id)
@@ -300,31 +304,44 @@ class DosenDashboard extends Component
                     );
             })
             ->latest('updated_at')
-            ->limit(20)
             ->get();
 
         $this->recentResearch = $recentProposals
             ->filter(fn ($p) => str_contains($p->detailable_type, 'Research'))
-            ->take(10)
             ->values();
 
         $this->recentCommunityService = $recentProposals
             ->filter(fn ($p) => str_contains($p->detailable_type, 'CommunityService'))
-            ->take(10)
             ->values();
     }
 
     /**
-     * Load process stats (review progress, monev progress, outputs achieved).
+     * Load process stats (usulan, revisi, monev, laporan akhir, keuangan).
      * Vetted by AI - Manual Review Required by Senior Engineer/Manager
      */
     private function loadProcessStats(string $yearFilter): void
     {
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
-        $proposalsThisYear = Proposal::where('submitter_id', $this->user->id)
+        $proposalsThisYear = Proposal::where(function ($q) {
+            $q->where('submitter_id', $this->user->id)
+                ->orWhereHas('teamMembers', fn ($q2) => $q2
+                    ->where('user_id', $this->user->id)
+                    ->where('status', ProposalUserStatus::ACCEPTED->value)
+                );
+        })
             ->where('start_year', $yearFilter)
             ->get();
         $proposalsThisYearIds = $proposalsThisYear->pluck('id');
+
+        // New Metrics: Draft & Approval Stages (Usulan)
+        $totalDraft = $proposalsThisYear->filter(fn ($p) => ($p->status->value ?? '') === ProposalStatus::DRAFT->value)->count();
+        $waitingDean = $proposalsThisYear->filter(fn ($p) => ($p->status->value ?? '') === ProposalStatus::SUBMITTED->value)->count();
+        $waitingLppm = $proposalsThisYear->filter(fn ($p) => in_array($p->status->value ?? '', [ProposalStatus::APPROVED->value, ProposalStatus::REVISION_SUBMITTED->value]))->count();
+
+        // 1b. Perbaikan Usulan (Revisi) Metrics
+        $revisionNeeded = $proposalsThisYear->filter(fn ($p) => ($p->status->value ?? '') === ProposalStatus::REVISION_NEEDED->value)->count();
+        $revisionSubmitted = $proposalsThisYear->filter(fn ($p) => ($p->status->value ?? '') === ProposalStatus::REVISION_SUBMITTED->value)->count();
+        $revisionTotal = $revisionNeeded + $revisionSubmitted;
 
         // 1. Review Status based on proposal_reviewer table
         $totalReview = DB::table('proposal_reviewer')
@@ -363,7 +380,58 @@ class DosenDashboard extends Component
 
         $completedMonev = max($monevReviewCompleted, $monevReviewAny, $monevLegacy);
 
-        // 3. Output Tracking (Luaran)
+        // 3. Reporting Status (Laporan Akhir)
+        $totalReports = $activeProposals->count();
+        $finalReportsQuery = ProgressReport::whereIn('proposal_id', $activeProposalIds)
+            ->where('reporting_period', 'final');
+
+        $submittedReports = (clone $finalReportsQuery)
+            ->where('status', ReportStatus::SUBMITTED)
+            ->distinct()
+            ->count('proposal_id');
+
+        $approvedDekanReports = (clone $finalReportsQuery)
+            ->where('status', ReportStatus::APPROVED_BY_DEKAN)
+            ->distinct()
+            ->count('proposal_id');
+
+        $approvedReports = (clone $finalReportsQuery)
+            ->where('status', ReportStatus::APPROVED)
+            ->distinct()
+            ->count('proposal_id');
+
+        $draftReports = (clone $finalReportsQuery)
+            ->where('status', ReportStatus::DRAFT)
+            ->distinct()
+            ->count('proposal_id');
+
+        $revisionReports = (clone $finalReportsQuery)
+            ->where('status', ReportStatus::REJECTED)
+            ->distinct()
+            ->count('proposal_id');
+
+        $activeReportsTotal = (clone $finalReportsQuery)
+            ->distinct()
+            ->count('proposal_id');
+
+        $notStartedReports = max(0, $totalReports - $activeReportsTotal);
+        $completedSubmissions = $submittedReports + $approvedDekanReports + $approvedReports;
+
+        $reportProgress = $totalReports > 0 ? round(($completedSubmissions / $totalReports) * 100, 1) : 0;
+        $draftProgress = $totalReports > 0 ? round(($draftReports / $totalReports) * 100, 1) : 0;
+        $revisionProgress = $totalReports > 0 ? round(($revisionReports / $totalReports) * 100, 1) : 0;
+        $activeReportsProgress = $totalReports > 0 ? round(($activeReportsTotal / $totalReports) * 100, 1) : 0;
+
+        // 3b. Financial Report (LPJ) Status
+        $totalFinancial = $activeProposals->count();
+        $completedFinancial = Proposal::whereIn('id', $activeProposalIds)
+            ->whereNotNull('logbook_approved_at')
+            ->count();
+        $financialWithNotes = DailyNote::whereIn('proposal_id', $activeProposalIds)
+            ->distinct('proposal_id')
+            ->count('proposal_id');
+
+        // 4. Output Tracking (Luaran)
         $targetOutputs = ProposalOutput::whereIn('proposal_id', $activeProposalIds)->count();
 
         $progressReportIds = ProgressReport::whereIn('proposal_id', $activeProposalIds)->pluck('id');
@@ -377,6 +445,19 @@ class DosenDashboard extends Component
         $achievedOutputs = max($achievedViaReport, $achievedViaOutput);
 
         $this->processStats = [
+            'usulan_total' => $proposalsThisYear->count(),
+            'usulan_draft' => $totalDraft,
+            'usulan_submitted' => $waitingDean,
+            'usulan_in_process' => $waitingLppm,
+
+            'revision_total' => $revisionTotal,
+            'revision_needed' => $revisionNeeded,
+            'revision_submitted' => $revisionSubmitted,
+
+            'draft_total' => $totalDraft,
+            'dean_waiting' => $waitingDean,
+            'lppm_waiting' => $waitingLppm,
+
             'review_total' => $totalReview,
             'review_completed' => $completedReview,
             'review_progress' => $totalReview > 0 ? ($completedReview / $totalReview) * 100 : 0,
@@ -385,9 +466,29 @@ class DosenDashboard extends Component
             'monev_completed' => $completedMonev,
             'monev_progress' => $totalMonev > 0 ? ($completedMonev / $totalMonev) * 100 : 0,
 
+            'report_total' => $totalReports,
+            'report_submitted' => $submittedReports,
+            'report_approved_dekan' => $approvedDekanReports,
+            'report_approved' => $approvedReports,
+            'report_draft' => $draftReports,
+            'report_revision' => $revisionReports,
+            'report_active_total' => $activeReportsTotal,
+            'report_not_started' => $notStartedReports,
+            'report_progress' => $reportProgress,
+            'report_draft_progress' => $draftProgress,
+            'report_revision_progress' => $revisionProgress,
+            'report_active_progress' => $activeReportsProgress,
+
+            'financial_total' => $totalFinancial,
+            'financial_with_notes' => $financialWithNotes,
+            'financial_completed' => $completedFinancial,
+            'financial_progress' => $totalFinancial > 0 ? round(($completedFinancial / $totalFinancial) * 100, 1) : 0,
+
             'output_target' => $targetOutputs,
             'output_achieved' => $achievedOutputs,
             'output_progress' => $targetOutputs > 0 ? min(100, ($achievedOutputs / $targetOutputs) * 100) : 0,
+
+            'total_proposals' => $proposalsThisYear->count(),
         ];
     }
 

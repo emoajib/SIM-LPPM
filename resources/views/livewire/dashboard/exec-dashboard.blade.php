@@ -404,7 +404,175 @@
         </div>
     </div>
 
-    <!-- Process Monitoring (Progress Styles) -->
+    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+    <!-- Alur Proses Tahapan Penelitian & Pengabdian (Data Riil) -->
+    <div class="row row-cards mb-4">
+        <div class="col-12">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <h3 class="card-title fw-bold text-dark d-flex align-items-center gap-2 mb-0">
+                    <i class="ti ti-git-fork text-primary"></i>
+                    Alur Proses Penelitian & Pengabdian
+                </h3>
+                <span class="badge bg-blue-lt">Klik kartu untuk rincian data usulan</span>
+            </div>
+        </div>
+
+        <!-- 1. Tahap Usulan -->
+        <div class="col-sm-6 col-lg-3">
+            <div class="card glass-card border-0 shadow-sm overflow-hidden h-100 cursor-pointer" 
+                 style="border-top: 4px solid #206bc4 !important; transition: transform 0.15s ease, box-shadow 0.15s ease;"
+                 role="button"
+                 wire:click="openProcessModal('usulan')"
+                 onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 6px 16px rgba(0,0,0,0.1)'"
+                 onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+                <div class="card-body py-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="avatar avatar-sm bg-primary-lt text-primary rounded shadow-none me-2">
+                            <i class="ti ti-file-text fs-2"></i>
+                        </span>
+                        <div>
+                            <div class="subheader text-primary fw-bold mb-0">Usulan</div>
+                            <div class="text-muted small">Tahap Pengajuan</div>
+                        </div>
+                        <div class="ms-auto text-end">
+                            <span class="badge bg-primary-lt fw-bold">{{ $processStats['usulan_approved_progress'] ?? 0 }}% Disetujui</span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-baseline gap-2 mb-2">
+                        <span class="h1 mb-0 fw-bold text-dark">{{ $processStats['usulan_total'] ?? 0 }}</span>
+                        <span class="text-muted small">Total Usulan</span>
+                    </div>
+                    <div class="progress progress-sm shadow-none bg-primary-lt mb-2">
+                        <div class="progress-bar bg-success" style="width: {{ $processStats['usulan_approved_progress'] ?? 0 }}%" title="Disetujui: {{ $processStats['usulan_approved'] ?? 0 }}"></div>
+                        <div class="progress-bar bg-warning" style="width: {{ $processStats['usulan_submitted_progress'] ?? 0 }}%" title="Diajukan: {{ $processStats['usulan_submitted'] ?? 0 }}"></div>
+                        <div class="progress-bar bg-danger" style="width: {{ $processStats['usulan_rejected_progress'] ?? 0 }}%" title="Ditolak: {{ $processStats['usulan_rejected'] ?? 0 }}"></div>
+                    </div>
+                    <div class="d-flex justify-content-between small text-muted">
+                        <span>{{ $processStats['usulan_approved'] ?? 0 }} Disetujui</span>
+                        <span>{{ $processStats['usulan_submitted'] ?? 0 }} Diajukan</span>
+                        <span>{{ $processStats['usulan_draft'] ?? 0 }} Draf</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Tahap Perbaikan Usulan -->
+        <div class="col-sm-6 col-lg-3">
+            <div class="card glass-card border-0 shadow-sm overflow-hidden h-100 cursor-pointer" 
+                 style="border-top: 4px solid #f59f00 !important; transition: transform 0.15s ease, box-shadow 0.15s ease;"
+                 role="button"
+                 wire:click="openProcessModal('revision')"
+                 onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 6px 16px rgba(0,0,0,0.1)'"
+                 onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+                <div class="card-body py-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="avatar avatar-sm bg-warning-lt text-warning rounded shadow-none me-2">
+                            <i class="ti ti-edit fs-2"></i>
+                        </span>
+                        <div>
+                            <div class="subheader text-warning fw-bold mb-0">Perbaikan Usulan</div>
+                            <div class="text-muted small">Revisi & Resubmisi</div>
+                        </div>
+                        <div class="ms-auto text-end">
+                            <span class="badge bg-warning-lt fw-bold">{{ $processStats['revision_progress'] ?? 0 }}% Ditindak</span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-baseline gap-2 mb-2">
+                        <span class="h1 mb-0 fw-bold text-dark">{{ $processStats['revision_total'] ?? 0 }}</span>
+                        <span class="text-muted small">Usulan Revisi</span>
+                    </div>
+                    <div class="progress progress-sm shadow-none bg-warning-lt mb-2">
+                        <div class="progress-bar bg-success" style="width: {{ $processStats['revision_progress'] ?? 0 }}%" title="Selesai Diperbaiki: {{ $processStats['revision_resubmitted'] ?? 0 }}"></div>
+                        <div class="progress-bar bg-warning" style="width: {{ 100 - ($processStats['revision_progress'] ?? 0) }}%" title="Menunggu Revisi: {{ $processStats['revision_waiting'] ?? 0 }}"></div>
+                    </div>
+                    <div class="d-flex justify-content-between small text-muted">
+                        <span class="text-danger fw-bold">{{ $processStats['revision_waiting'] ?? 0 }} Menunggu</span>
+                        <span>{{ $processStats['revision_draft'] ?? 0 }} Draf</span>
+                        <span class="text-success fw-bold">{{ $processStats['revision_resubmitted'] ?? 0 }} Selesai</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Catatan Harian / Laporan Keuangan -->
+        <div class="col-sm-6 col-lg-3">
+            <div class="card glass-card border-0 shadow-sm overflow-hidden h-100 cursor-pointer" 
+                 style="border-top: 4px solid #6366f1 !important; transition: transform 0.15s ease, box-shadow 0.15s ease;"
+                 role="button"
+                 wire:click="openProcessModal('financial')"
+                 onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 6px 16px rgba(0,0,0,0.1)'"
+                 onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+                <div class="card-body py-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="avatar avatar-sm bg-indigo-lt text-indigo rounded shadow-none me-2">
+                            <i class="ti ti-receipt-2 fs-2"></i>
+                        </span>
+                        <div>
+                            <div class="subheader text-indigo fw-bold mb-0">Catatan & Keuangan</div>
+                            <div class="text-muted small">Logbook & LPJ</div>
+                        </div>
+                        <div class="ms-auto text-end">
+                            <span class="badge bg-indigo-lt fw-bold">{{ $processStats['financial_progress'] ?? 0 }}% Sah</span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-baseline gap-2 mb-2">
+                        <span class="h1 mb-0 fw-bold text-dark">{{ $processStats['financial_total'] ?? 0 }}</span>
+                        <span class="text-muted small">Proposal Berjalan</span>
+                    </div>
+                    <div class="progress progress-sm shadow-none bg-indigo-lt mb-2">
+                        <div class="progress-bar bg-success" style="width: {{ $processStats['financial_progress'] ?? 0 }}%" title="Disahkan: {{ $processStats['financial_completed'] ?? 0 }}"></div>
+                        <div class="progress-bar bg-primary" style="width: {{ $processStats['financial_pending_progress'] ?? 0 }}%" title="Menunggu Sah: {{ $processStats['financial_pending'] ?? 0 }}"></div>
+                    </div>
+                    <div class="d-flex justify-content-between small text-muted">
+                        <span>{{ $processStats['financial_with_notes'] ?? 0 }} Ada Catatan</span>
+                        <span class="text-primary fw-bold">{{ $processStats['financial_pending'] ?? 0 }} Menunggu</span>
+                        <span class="text-success fw-bold">{{ $processStats['financial_completed'] ?? 0 }} Sah</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Laporan Akhir -->
+        <div class="col-sm-6 col-lg-3">
+            <div class="card glass-card border-0 shadow-sm overflow-hidden h-100 cursor-pointer" 
+                 style="border-top: 4px solid #2fb344 !important; transition: transform 0.15s ease, box-shadow 0.15s ease;"
+                 role="button"
+                 wire:click="openProcessModal('final_report')"
+                 onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 6px 16px rgba(0,0,0,0.1)'"
+                 onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+                <div class="card-body py-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="avatar avatar-sm bg-success-lt text-success rounded shadow-none me-2">
+                            <i class="ti ti-certificate fs-2"></i>
+                        </span>
+                        <div>
+                            <div class="subheader text-success fw-bold mb-0">Laporan Akhir</div>
+                            <div class="text-muted small">Pelaporan & Validasi</div>
+                        </div>
+                        <div class="ms-auto text-end">
+                            <span class="badge bg-success-lt fw-bold">{{ $processStats['report_active_progress'] ?? $processStats['report_progress'] ?? 0 }}% Berproses</span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-baseline gap-2 mb-2">
+                        <span class="h1 mb-0 fw-bold text-dark">{{ $processStats['report_active_total'] ?? 0 }}<span class="text-muted fs-4">/{{ $processStats['report_total'] ?? 0 }}</span></span>
+                        <span class="text-muted small">Aktif Lapor</span>
+                    </div>
+                    <div class="progress progress-sm shadow-none bg-success-lt mb-2">
+                        <div class="progress-bar bg-success" style="width: {{ $processStats['report_progress'] ?? 0 }}%" title="Diajukan/Disetujui: {{ ($processStats['report_submitted'] ?? 0) + ($processStats['report_approved'] ?? 0) + ($processStats['report_approved_dekan'] ?? 0) }}"></div>
+                        <div class="progress-bar bg-warning" style="width: {{ $processStats['report_draft_progress'] ?? 0 }}%" title="Draf: {{ $processStats['report_draft'] ?? 0 }}"></div>
+                        <div class="progress-bar bg-danger" style="width: {{ $processStats['report_revision_progress'] ?? 0 }}%" title="Revisi: {{ $processStats['report_revision'] ?? 0 }}"></div>
+                    </div>
+                    <div class="d-flex justify-content-between small text-muted">
+                        <span class="text-primary fw-bold">{{ $processStats['report_submitted'] ?? 0 }} Diajukan</span>
+                        <span>{{ $processStats['report_draft'] ?? 0 }} Draf</span>
+                        <span class="text-success fw-bold">{{ $processStats['report_approved'] ?? 0 }} Disetujui</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Evaluasi & Kinerja Luaran -->
     <div class="row row-cards mb-4">
         <!-- Review Progress Details -->
         <div class="col-md-4">
@@ -461,66 +629,6 @@
                     </div>
                     <div class="mt-2 small text-muted">
                         {{ $processStats['output_achieved'] ?? 0 }} dari {{ $processStats['output_target'] ?? 0 }} target luaran tercapai
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Laporan Akhir Details -->
-        <div class="col-md-6 mt-3">
-            <div class="card glass-card border-0 shadow-sm overflow-hidden" style="border-left: 4px solid #2fb344 !important;">
-                <div class="card-body py-3">
-                    <div class="d-flex align-items-center mb-2 flex-wrap gap-1">
-                        <a href="{{ route('kepala-lppm.report-approval') }}" class="subheader text-success fw-bold text-decoration-none d-flex align-items-center me-2" wire:navigate>
-                            Laporan Akhir
-                            <x-lucide-arrow-right class="icon icon-sm ms-1" />
-                        </a>
-                        <div class="ms-auto d-flex align-items-center gap-1 flex-wrap">
-                            <span class="badge bg-success-lt" title="Diajukan ke LPPM / Dekan">{{ $processStats['report_submitted'] ?? 0 }} Diajukan</span>
-                            <span class="badge bg-warning-lt" title="Sedang Disusun / Draf">{{ $processStats['report_draft'] ?? 0 }} Draf</span>
-                            @if(($processStats['report_revision'] ?? 0) > 0)
-                                <span class="badge bg-danger-lt" title="Perlu Revisi">{{ $processStats['report_revision'] }} Revisi</span>
-                            @endif
-                            @if(($processStats['report_approved'] ?? 0) > 0)
-                                <span class="badge bg-teal-lt" title="Disetujui LPPM">{{ $processStats['report_approved'] }} Disetujui</span>
-                            @endif
-                            <span class="badge bg-success text-white ms-1">{{ $processStats['report_active_progress'] ?? $processStats['report_progress'] ?? 0 }}%</span>
-                        </div>
-                    </div>
-                    <div class="progress progress-sm shadow-none bg-secondary-lt">
-                        <div class="progress-bar bg-success" style="width: {{ $processStats['report_progress'] ?? 0 }}%" title="Diajukan/Disetujui: {{ ($processStats['report_submitted'] ?? 0) + ($processStats['report_approved'] ?? 0) + ($processStats['report_approved_dekan'] ?? 0) }}"></div>
-                        <div class="progress-bar bg-warning" style="width: {{ $processStats['report_draft_progress'] ?? 0 }}%" title="Draf: {{ $processStats['report_draft'] ?? 0 }}"></div>
-                        <div class="progress-bar bg-danger" style="width: {{ $processStats['report_revision_progress'] ?? 0 }}%" title="Revisi: {{ $processStats['report_revision'] ?? 0 }}"></div>
-                    </div>
-                    <div class="mt-2 small text-muted d-flex justify-content-between flex-wrap gap-1">
-                        <span>
-                            <strong>{{ $processStats['report_active_total'] ?? 0 }}</strong> dari {{ $processStats['report_total'] ?? 0 }} proposal aktif berproses
-                            ({{ $processStats['report_submitted'] ?? 0 }} diajukan, {{ $processStats['report_draft'] ?? 0 }} draf, {{ $processStats['report_revision'] ?? 0 }} revisi)
-                        </span>
-                        <span>{{ $processStats['report_not_started'] ?? 0 }} belum lapor</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Laporan Keuangan (LPJ) Details -->
-        <div class="col-md-6 mt-3">
-            <div class="card glass-card border-0 shadow-sm overflow-hidden" style="border-left: 4px solid #6366f1 !important;">
-                <div class="card-body py-3">
-                    <div class="d-flex align-items-center mb-2">
-                        <a href="{{ route('kepala-lppm.financial-approval') }}" class="subheader text-indigo fw-bold text-decoration-none d-flex align-items-center" wire:navigate>
-                            Laporan Keuangan
-                            <x-lucide-arrow-right class="icon icon-sm ms-1" />
-                        </a>
-                        <div class="ms-auto">
-                            <span class="badge bg-indigo-lt">{{ $processStats['financial_progress'] ?? 0 }}%</span>
-                        </div>
-                    </div>
-                    <div class="progress progress-sm shadow-none bg-indigo-lt">
-                        <div class="progress-bar bg-indigo" style="width: {{ $processStats['financial_progress'] ?? 0 }}%"></div>
-                    </div>
-                    <div class="mt-2 small text-muted">
-                        {{ $processStats['financial_completed'] ?? 0 }} dari {{ $processStats['financial_total'] ?? 0 }} proposal selesai disahkan LPPM
                     </div>
                 </div>
             </div>
@@ -656,15 +764,18 @@
     <div class="row row-cards">
         <div class="col-lg-6">
             <div class="card border-0 shadow-sm" style="border-radius: 12px;">
-                <div class="card-header bg-transparent border-0 py-3 d-flex align-items-center">
-                    <div class="avatar bg-primary-lt text-primary shadow-sm avatar-sm me-3 border-0">
-                        <i class="ti ti-flask-2"></i>
+                <div class="card-header bg-transparent border-0 py-3 d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar bg-primary-lt text-primary shadow-sm avatar-sm me-3 border-0">
+                            <i class="ti ti-flask-2"></i>
+                        </div>
+                        <h3 class="card-title fw-bold mb-0">Penelitian Terbaru</h3>
+                        <span class="badge bg-primary-lt ms-2">{{ count($recentResearch) }} Data</span>
                     </div>
-                    <h3 class="card-title fw-bold mb-0">Penelitian Terbaru</h3>
                 </div>
-                <div class="table-responsive">
+                <div class="table-responsive" style="max-height: 520px; overflow-y: auto;">
                     <table class="table table-vcenter card-table table-hover table-borderless">
-                        <thead class="bg-transparent text-muted">
+                        <thead class="bg-surface text-muted" style="position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                             <tr>
                                 <th class="ps-4">Judul & Peneliti</th>
                                 <th class="text-center">Status</th>
@@ -741,15 +852,18 @@
 
         <div class="col-lg-6">
             <div class="card border-0 shadow-sm" style="border-radius: 12px;">
-                <div class="card-header bg-transparent border-0 py-3 d-flex align-items-center">
-                    <div class="avatar bg-azure-lt text-azure shadow-sm avatar-sm me-3 border-0">
-                        <i class="ti ti-users-group"></i>
+                <div class="card-header bg-transparent border-0 py-3 d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar bg-azure-lt text-azure shadow-sm avatar-sm me-3 border-0">
+                            <i class="ti ti-users-group"></i>
+                        </div>
+                        <h3 class="card-title fw-bold mb-0">PKM Terbaru</h3>
+                        <span class="badge bg-azure-lt ms-2">{{ count($recentCommunityService) }} Data</span>
                     </div>
-                    <h3 class="card-title fw-bold mb-0">PKM Terbaru</h3>
                 </div>
-                <div class="table-responsive">
+                <div class="table-responsive" style="max-height: 520px; overflow-y: auto;">
                     <table class="table table-vcenter card-table table-hover table-borderless">
-                        <thead class="bg-transparent text-muted">
+                        <thead class="bg-surface text-muted" style="position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                             <tr>
                                 <th class="ps-4">Judul & Pengaju</th>
                                 <th class="text-center">Status</th>
@@ -824,4 +938,7 @@
             </div>
         </div>
     </div>
+
+    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+    @include('livewire.dashboard.partials.process-details-modal')
 </div>
