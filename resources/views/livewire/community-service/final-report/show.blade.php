@@ -183,7 +183,7 @@
                         @else
                             <p class="text-secondary mb-0">Laporan ini telah ditolak. Silakan hubungi Dekan atau Kepala LPPM untuk informasi lebih lanjut.</p>
                         @endif
-                        @if (active_role_is('dosen') || active_role_is('ketua'))
+                        @if (active_role_is('dosen') || $proposal->submitter_id === auth()->id())
                             <div class="mt-3">
                                 <p class="mb-1 fw-semibold">Langkah selanjutnya:</p>
                                 <ol class="mb-0 ps-3 text-secondary small">

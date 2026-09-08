@@ -35,10 +35,10 @@ class MigrateMediaPaths extends Command
         $bar = $this->output->createProgressBar($total);
         $bar->start();
 
-        $moved     = 0;
-        $skipped   = 0;
-        $notFound  = 0;
-        $errors    = 0;
+        $moved = 0;
+        $skipped = 0;
+        $notFound = 0;
+        $errors = 0;
 
         Media::chunk(50, function ($batch) use ($disk, $isDryRun, &$moved, &$skipped, &$notFound, &$errors, $bar) {
             foreach ($batch as $media) {
@@ -50,18 +50,20 @@ class MigrateMediaPaths extends Command
                     // Jika file sudah ada di path baru → skip
                     if ($disk->exists($newRel)) {
                         $skipped++;
+
                         continue;
                     }
 
                     // Cari di path lama: {collection}/{modelslug}-{id8}/{media_id}/{filename}
                     $modelSlug = Str::slug(class_basename($media->model_type));
-                    $modelId8  = is_string($media->model_id) ? substr($media->model_id, 0, 8) : $media->model_id;
-                    $oldRel    = $media->collection_name.'/'.$modelSlug.'-'.$modelId8.'/'.$media->id.'/'.$media->file_name;
+                    $modelId8 = is_string($media->model_id) ? substr($media->model_id, 0, 8) : $media->model_id;
+                    $oldRel = $media->collection_name.'/'.$modelSlug.'-'.$modelId8.'/'.$media->id.'/'.$media->file_name;
 
                     if (! $disk->exists($oldRel)) {
                         $notFound++;
                         $this->newLine();
                         $this->warn("  NOT FOUND | ID:{$media->id} | {$media->collection_name}/{$media->file_name}");
+
                         continue;
                     }
 
@@ -70,6 +72,7 @@ class MigrateMediaPaths extends Command
                         $this->line("  [DRY] MOVE: {$oldRel}");
                         $this->line("          TO: {$newRel}");
                         $moved++;
+
                         continue;
                     }
 
@@ -87,6 +90,7 @@ class MigrateMediaPaths extends Command
                         $errors++;
                         $this->newLine();
                         $this->error("  COPY FAILED | {$oldRel}");
+
                         continue;
                     }
 
@@ -96,6 +100,7 @@ class MigrateMediaPaths extends Command
                         $errors++;
                         $this->newLine();
                         $this->error("  SIZE MISMATCH — rollback | {$oldRel}");
+
                         continue;
                     }
 
@@ -105,7 +110,7 @@ class MigrateMediaPaths extends Command
                     if ($disk->exists($oldConvDir)) {
                         foreach ($disk->files($oldConvDir) as $convFile) {
                             $convFilename = basename($convFile);
-                            $newConvPath  = $newConvDir.$convFilename;
+                            $newConvPath = $newConvDir.$convFilename;
                             if (! $disk->exists($newConvPath)) {
                                 $disk->copy($convFile, $newConvPath);
                             }

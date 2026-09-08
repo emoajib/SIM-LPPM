@@ -136,7 +136,8 @@ trait WithReportApproval
 
             // Kirim notifikasi ke dosen (ketua + anggota tim)
             try {
-                $this->notificationService()->notifyReportRejected($report, $rejector, $notes);
+                $roleTitle = ($activeRole === 'dekan') ? 'Dekan' : 'Kepala LPPM';
+                $this->notificationService()->notifyReportRejected($report, $rejector, $notes, $roleTitle);
             } catch (\Throwable $e) {
                 // Log error notifikasi tapi jangan batalkan penolakan
                 \Log::warning('Gagal kirim notifikasi penolakan laporan: '.$e->getMessage(), [

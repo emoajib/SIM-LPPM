@@ -3,6 +3,8 @@
 namespace App\Support\MediaLibrary;
 
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\MediaLibrary\Support\PathGenerator\PathGenerator;
@@ -31,10 +33,17 @@ class CustomPathGenerator implements PathGenerator
 
         $user = null;
 
-        // Identifikasi User dari Model
+        // Identifikasi User dari Model (mendukung model yang di-soft-delete)
+        if (! $model && $media->model_type && class_exists($media->model_type)) {
+            if (in_array(SoftDeletes::class, class_uses_recursive($media->model_type), true)) {
+                /** @var Model|null $model */
+                $model = $media->model_type::withTrashed()->find($media->model_id);
+            }
+        }
+
         if ($model instanceof User) {
             $user = $model;
-        } elseif (method_exists($model, 'submitter')) {
+        } elseif ($model && method_exists($model, 'submitter')) {
             /** @var User|null $user */
             // property access is intentional: Laravel relationship
             // @phpstan-ignore-next-line
@@ -48,7 +57,7 @@ class CustomPathGenerator implements PathGenerator
                 // @phpstan-ignore-next-line
                 $user = $model->proposal?->submitter;
             }
-        } elseif (method_exists($model, 'user')) {
+        } elseif ($model && method_exists($model, 'user')) {
             /** @var User|null $user */
             // @phpstan-ignore-next-line
             $user = $model->user;

@@ -286,7 +286,7 @@ class NotificationService
     /**
      * Send Report Rejected notification to all proposal members
      */
-    public function notifyReportRejected(ProgressReport $report, User $rejectedBy, string $notes): void
+    public function notifyReportRejected(ProgressReport $report, User $rejectedBy, string $notes, string $roleTitle = 'Dekan'): void
     {
         $proposal = $report->proposal;
         if (! $proposal) {
@@ -299,7 +299,7 @@ class NotificationService
             ->filter()
             ->unique('id');
 
-        $notification = new ReportRejected($report, $rejectedBy, $notes);
+        $notification = new ReportRejected($report, $rejectedBy, $notes, $roleTitle);
         $this->send($recipients, $notification);
     }
 }

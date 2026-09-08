@@ -12,6 +12,7 @@ use BaconQrCode\Writer;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 if (! function_exists('active_role')) {
@@ -554,8 +555,8 @@ if (! function_exists('embed_attachment_image')) {
                 $path = $disk->path($media->getPathRelativeToRoot());
             } else {
                 // Fallback: path lama format {collection}/{modelslug}-{id8}/{media_id}/{filename}
-                $modelSlug = \Illuminate\Support\Str::slug(class_basename($media->model_type));
-                $modelId8  = is_string($media->model_id) ? substr($media->model_id, 0, 8) : $media->model_id;
+                $modelSlug = Str::slug(class_basename($media->model_type));
+                $modelId8 = is_string($media->model_id) ? substr($media->model_id, 0, 8) : $media->model_id;
                 $legacyRel = $media->collection_name.'/'.$modelSlug.'-'.$modelId8.'/'.$media->id.'/'.$media->file_name;
                 if ($disk->exists($legacyRel)) {
                     $path = $disk->path($legacyRel);

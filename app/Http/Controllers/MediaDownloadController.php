@@ -62,22 +62,22 @@ class MediaDownloadController extends Controller
             // File yang diupload sebelum CustomPathGenerator diupdate ke format NIDN masih ada di path lama.
             if ($realPath === false) {
                 $modelSlug = Str::slug(class_basename($media->model_type));
-                $modelId8  = is_string($media->model_id) ? substr($media->model_id, 0, 8) : $media->model_id;
+                $modelId8 = is_string($media->model_id) ? substr($media->model_id, 0, 8) : $media->model_id;
                 $legacyRel = $media->collection_name.'/'.$modelSlug.'-'.$modelId8.'/'.$media->id.'/'.$media->file_name;
                 $legacyAbs = $disk->path($legacyRel);
-                $realPath  = realpath($legacyAbs);
+                $realPath = realpath($legacyAbs);
 
                 if ($realPath !== false) {
                     Log::info('MediaDownload: resolved via legacy path fallback', [
-                        'media_id'  => $media->id,
-                        'legacy'    => $legacyRel,
-                        'user_id'   => Auth::id(),
+                        'media_id' => $media->id,
+                        'legacy' => $legacyRel,
+                        'user_id' => Auth::id(),
                     ]);
                 } else {
                     Log::warning('MediaDownload: file not found at primary or fallback path', [
                         'media_id' => $media->id,
-                        'primary'  => $relativePath,
-                        'legacy'   => $legacyRel,
+                        'primary' => $relativePath,
+                        'legacy' => $legacyRel,
                     ]);
                     abort(404, 'File fisik tidak ditemukan di server.');
                 }

@@ -93,9 +93,9 @@ chmod 644 public/.htaccess
 chmod 644 public/index.php
 chmod 600 .env     # KRITIS: .env hanya boleh dibaca owner
 
-# Harden backup — file tetap readable oleh web server untuk streaming download
-chmod 755 storage/app/backup
-find storage/app/backup -type f -print0 | xargs -0 chmod 644 2>/dev/null || true
+# Harden backup — direktori 700 dan file 600 sesuai Security Checklist (aman, owner tetap simlppmi)
+chmod 700 storage/app/backup
+find storage/app/backup -type f -print0 | xargs -0 chmod 600 2>/dev/null || true
 
 # Test application
 echo "Testing application..."
