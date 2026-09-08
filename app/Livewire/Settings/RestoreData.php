@@ -58,7 +58,7 @@ class RestoreData extends Component
 
         try {
             $this->validate([
-                'sqlFile' => 'file|mimes:sql,text,plain|max:102400',
+                'sqlFile' => 'file|mimes:sql,text,plain|max:524288',
             ]);
         } catch (ValidationException $e) {
             $this->uploadErrorMessage = $e->getMessage();
@@ -98,7 +98,7 @@ class RestoreData extends Component
         try {
             Log::info('RestoreData: Validating ZIP file');
             $this->validate([
-                'zipFile' => 'file|mimes:zip|max:102400',
+                'zipFile' => 'file|mimes:zip|max:524288',
             ]);
         } catch (ValidationException $e) {
             Log::warning('RestoreData: Validation failed', ['errors' => $e->errors()]);
