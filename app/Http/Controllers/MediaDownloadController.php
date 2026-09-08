@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class MediaDownloadController extends Controller
@@ -56,8 +57,30 @@ class MediaDownloadController extends Controller
 
             $absolutePath = $disk->path($relativePath);
             $realPath = realpath($absolutePath);
+
+            // Fallback: coba path lama format {collection}/{modelslug}-{id8}/{media_id}/{filename}
+            // File yang diupload sebelum CustomPathGenerator diupdate ke format NIDN masih ada di path lama.
             if ($realPath === false) {
-                abort(404, 'File fisik tidak ditemukan di server.');
+                $modelSlug = Str::slug(class_basename($media->model_type));
+                $modelId8  = is_string($media->model_id) ? substr($media->model_id, 0, 8) : $media->model_id;
+                $legacyRel = $media->collection_name.'/'.$modelSlug.'-'.$modelId8.'/'.$media->id.'/'.$media->file_name;
+                $legacyAbs = $disk->path($legacyRel);
+                $realPath  = realpath($legacyAbs);
+
+                if ($realPath !== false) {
+                    Log::info('MediaDownload: resolved via legacy path fallback', [
+                        'media_id'  => $media->id,
+                        'legacy'    => $legacyRel,
+                        'user_id'   => Auth::id(),
+                    ]);
+                } else {
+                    Log::warning('MediaDownload: file not found at primary or fallback path', [
+                        'media_id' => $media->id,
+                        'primary'  => $relativePath,
+                        'legacy'   => $legacyRel,
+                    ]);
+                    abort(404, 'File fisik tidak ditemukan di server.');
+                }
             }
 
             // Security Barrier: Ensure path is within the disk's root

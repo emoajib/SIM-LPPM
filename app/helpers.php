@@ -546,9 +546,20 @@ if (! function_exists('embed_attachment_image')) {
             : $media->getPath();
 
         if (! file_exists($path)) {
-            $disk = $media->disk ?: config('media-library.disk_name', 'public');
-            if (Storage::disk($disk)->exists($media->getPathRelativeToRoot())) {
-                $path = Storage::disk($disk)->path($media->getPathRelativeToRoot());
+            $diskName = $media->disk ?: config('media-library.disk_name', 'public');
+            $disk = Storage::disk($diskName);
+
+            // Coba path baru (NIDN format)
+            if ($disk->exists($media->getPathRelativeToRoot())) {
+                $path = $disk->path($media->getPathRelativeToRoot());
+            } else {
+                // Fallback: path lama format {collection}/{modelslug}-{id8}/{media_id}/{filename}
+                $modelSlug = \Illuminate\Support\Str::slug(class_basename($media->model_type));
+                $modelId8  = is_string($media->model_id) ? substr($media->model_id, 0, 8) : $media->model_id;
+                $legacyRel = $media->collection_name.'/'.$modelSlug.'-'.$modelId8.'/'.$media->id.'/'.$media->file_name;
+                if ($disk->exists($legacyRel)) {
+                    $path = $disk->path($legacyRel);
+                }
             }
         }
 
