@@ -169,7 +169,7 @@ class MenuComposer
                 'roles' => ['kepala lppm'],
             ],
             [
-                'title' => 'Persetujuan Laporan Keuangan',
+                'title' => 'Laporan Keuangan',
                 'icon' => 'wallet',
                 'route' => 'kepala-lppm.financial-approval',
                 'roles' => ['kepala lppm', 'admin lppm'],

@@ -67,14 +67,17 @@ test('kepala lppm can approve lpj and unapprove lpj', function () {
 
     $component = Livewire::test(FinancialApproval::class)
         ->call('approveLpj', $this->proposal->id)
-        ->assertHasNoErrors();
+        ->assertHasNoErrors()
+        ->assertSee('Batal Sahkan', false);
 
     $this->proposal->refresh();
     $this->assertNotNull($this->proposal->logbook_approved_at);
 
     // Test unapprove
     $component->call('unapproveLpj', $this->proposal->id)
-        ->assertHasNoErrors();
+        ->assertHasNoErrors()
+        ->assertSee('Sahkan LPJ', false)
+        ->assertDontSee('Batal Sahkan', false);
 
     $this->proposal->refresh();
     $this->assertNull($this->proposal->logbook_approved_at);

@@ -1,5 +1,5 @@
-<x-slot:title>Persetujuan Laporan Keuangan (LPJ)</x-slot:title>
-<x-slot:pageTitle>Persetujuan Laporan Keuangan (LPJ)</x-slot:pageTitle>
+<x-slot:title>Laporan Keuangan</x-slot:title>
+<x-slot:pageTitle>Laporan Keuangan</x-slot:pageTitle>
 <x-slot:pageSubtitle>
     Tinjau rekapitulasi realisasi anggaran, berkas scan tanda tangan basah, dan sahkan laporan pertanggungjawaban (LPJ) penelitian dan pengabdian.
     <div class="text-muted small mt-1">
@@ -30,7 +30,7 @@
             <div class="card border-0 shadow-sm" style="border-left: 4px solid #2fb344 !important;">
                 <div class="card-body py-3">
                     <div class="d-flex align-items-center">
-                        <div class="subheader text-success fw-bold">Disahkan LPPM</div>
+                        <div class="subheader text-success fw-bold">Sudah Disahkan LPPM</div>
                         <div class="ms-auto text-success">
                             <x-lucide-check-circle class="icon" />
                         </div>
@@ -195,7 +195,7 @@
                                 @if ($isApproved)
                                     <span class="badge bg-success-lt d-inline-flex align-items-center gap-1">
                                         <x-lucide-check-circle class="icon icon-sm text-success" />
-                                        Disahkan LPPM
+                                        Sudah Disahkan
                                     </span>
                                     <div class="small text-muted mt-1" style="font-size: 0.72rem;">
                                         {{ \Carbon\Carbon::parse($proposal->logbook_approved_at)->format('d/m/Y H:i') }}
@@ -225,21 +225,26 @@
                                     </a>
 
                                     @if ($isApproved)
-                                        <button type="button" wire:click="unapproveLpj({{ $proposal->id }})" class="btn btn-sm btn-outline-danger"
+                                        <button type="button" wire:click="unapproveLpj('{{ $proposal->id }}')" class="btn btn-sm btn-outline-danger"
                                             wire:confirm="Yakin ingin membatalkan pengesahan LPJ proposal ini? Dosen akan dapat merevisi kembali berkas/catatan."
                                             wire:loading.attr="disabled">
-                                            <x-lucide-rotate-ccw class="icon icon-sm me-1" />
-                                            Batal Sahkan
+                                            <span wire:loading.remove wire:target="unapproveLpj('{{ $proposal->id }}')">
+                                                <x-lucide-rotate-ccw class="icon icon-sm me-1" />
+                                                Batal Sahkan
+                                            </span>
+                                            <span wire:loading wire:target="unapproveLpj('{{ $proposal->id }}')">
+                                                <span class="spinner-border spinner-border-sm"></span>
+                                            </span>
                                         </button>
                                     @else
-                                        <button type="button" wire:click="approveLpj({{ $proposal->id }})" class="btn btn-sm btn-success"
+                                        <button type="button" wire:click="approveLpj('{{ $proposal->id }}')" class="btn btn-sm btn-success"
                                             wire:confirm="Sahkan Laporan Keuangan (LPJ) untuk proposal ini?"
                                             wire:loading.attr="disabled">
-                                            <span wire:loading.remove wire:target="approveLpj({{ $proposal->id }})">
+                                            <span wire:loading.remove wire:target="approveLpj('{{ $proposal->id }}')">
                                                 <x-lucide-check class="icon icon-sm me-1" />
                                                 Sahkan LPJ
                                             </span>
-                                            <span wire:loading wire:target="approveLpj({{ $proposal->id }})">
+                                            <span wire:loading wire:target="approveLpj('{{ $proposal->id }}')">
                                                 <span class="spinner-border spinner-border-sm"></span>
                                             </span>
                                         </button>

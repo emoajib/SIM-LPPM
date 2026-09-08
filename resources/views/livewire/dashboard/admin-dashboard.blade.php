@@ -462,7 +462,7 @@
                 <div class="card-body py-3">
                     <div class="d-flex align-items-center mb-2">
                         <a href="{{ route('kepala-lppm.financial-approval') }}" class="subheader text-indigo fw-bold text-decoration-none d-flex align-items-center" wire:navigate>
-                            Laporan Keuangan (LPJ)
+                            Laporan Keuangan
                             <x-lucide-arrow-right class="icon icon-sm ms-1" />
                         </a>
                         <div class="ms-auto">

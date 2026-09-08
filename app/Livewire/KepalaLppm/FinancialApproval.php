@@ -72,7 +72,10 @@ class FinancialApproval extends Component
         $proposal->update(['logbook_approved_at' => now()]);
         $this->clearFinancialPdfCache((string) $proposal->id);
 
-        $message = 'Laporan Keuangan (LPJ) untuk proposal "'.$proposal->title.'" berhasil disahkan LPPM.';
+        unset($this->proposals);
+        unset($this->stats);
+
+        $message = 'Laporan Keuangan untuk usulan "'.$proposal->title.'" berhasil disahkan.';
         session()->flash('success', $message);
         $this->toastSuccess($message);
     }
@@ -86,7 +89,10 @@ class FinancialApproval extends Component
         $proposal->update(['logbook_approved_at' => null]);
         $this->clearFinancialPdfCache((string) $proposal->id);
 
-        $message = 'Pengesahan LPJ proposal "'.$proposal->title.'" dibatalkan (dikembalikan untuk revisi).';
+        unset($this->proposals);
+        unset($this->stats);
+
+        $message = 'Pengesahan Laporan Keuangan usulan "'.$proposal->title.'" dibatalkan.';
         session()->flash('info', $message);
         $this->toastInfo($message);
     }
