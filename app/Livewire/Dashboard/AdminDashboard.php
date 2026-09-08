@@ -770,12 +770,47 @@ class AdminDashboard extends Component
         // submitted review, any review activity, or legacy monitoring
         $completedMonev = max($monevReviewCompleted, $monevReviewAny, $monevLegacy);
 
-        // 3. Reporting Status (Progress & Final Report)
+        // 3. Reporting Status (Laporan Akhir)
         $totalReports = $activeProposals->count();
-        $submittedReports = ProgressReport::whereIn('proposal_id', $activeProposalIds)
-            ->whereIn('status', [ReportStatus::SUBMITTED, ReportStatus::APPROVED, ReportStatus::APPROVED_BY_DEKAN])
+        $finalReportsQuery = ProgressReport::whereIn('proposal_id', $activeProposalIds)
+            ->where('reporting_period', 'final');
+
+        $submittedReports = (clone $finalReportsQuery)
+            ->where('status', ReportStatus::SUBMITTED)
             ->distinct()
             ->count('proposal_id');
+
+        $approvedDekanReports = (clone $finalReportsQuery)
+            ->where('status', ReportStatus::APPROVED_BY_DEKAN)
+            ->distinct()
+            ->count('proposal_id');
+
+        $approvedReports = (clone $finalReportsQuery)
+            ->where('status', ReportStatus::APPROVED)
+            ->distinct()
+            ->count('proposal_id');
+
+        $draftReports = (clone $finalReportsQuery)
+            ->where('status', ReportStatus::DRAFT)
+            ->distinct()
+            ->count('proposal_id');
+
+        $revisionReports = (clone $finalReportsQuery)
+            ->where('status', ReportStatus::REJECTED)
+            ->distinct()
+            ->count('proposal_id');
+
+        $activeReportsTotal = (clone $finalReportsQuery)
+            ->distinct()
+            ->count('proposal_id');
+
+        $notStartedReports = max(0, $totalReports - $activeReportsTotal);
+        $completedSubmissions = $submittedReports + $approvedDekanReports + $approvedReports;
+
+        $reportProgress = $totalReports > 0 ? round(($completedSubmissions / $totalReports) * 100, 1) : 0;
+        $draftProgress = $totalReports > 0 ? round(($draftReports / $totalReports) * 100, 1) : 0;
+        $revisionProgress = $totalReports > 0 ? round(($revisionReports / $totalReports) * 100, 1) : 0;
+        $activeReportsProgress = $totalReports > 0 ? round(($activeReportsTotal / $totalReports) * 100, 1) : 0;
 
         // 3b. Financial Report (LPJ) Status
         $totalFinancial = $activeProposals->count();
@@ -815,7 +850,16 @@ class AdminDashboard extends Component
 
             'report_total' => $totalReports,
             'report_submitted' => $submittedReports,
-            'report_progress' => $totalReports > 0 ? round(($submittedReports / $totalReports) * 100, 1) : 0,
+            'report_approved_dekan' => $approvedDekanReports,
+            'report_approved' => $approvedReports,
+            'report_draft' => $draftReports,
+            'report_revision' => $revisionReports,
+            'report_active_total' => $activeReportsTotal,
+            'report_not_started' => $notStartedReports,
+            'report_progress' => $reportProgress,
+            'report_draft_progress' => $draftProgress,
+            'report_revision_progress' => $revisionProgress,
+            'report_active_progress' => $activeReportsProgress,
 
             'financial_total' => $totalFinancial,
             'financial_completed' => $completedFinancial,
@@ -835,7 +879,7 @@ class AdminDashboard extends Component
      */
     private function loadRecentProposals(string $yearFilter): void
     {
-        $baseQuery = Proposal::with(['submitter.identity', 'focusArea', 'researchScheme', 'communityServiceScheme'])
+        $baseQuery = Proposal::with(['submitter.identity', 'focusArea', 'researchScheme', 'communityServiceScheme', 'latestFinalReport'])
             ->where('start_year', $yearFilter);
 
         $this->applyCommonFilters($baseQuery);

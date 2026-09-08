@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+
 use Database\Factories\DailyNoteFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -51,6 +54,20 @@ class DailyNote extends Model implements HasMedia
             'progress_percentage' => 'integer',
             'amount' => 'decimal:2',
         ];
+    }
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::saved(function () {
+            Cache::forever('dashboard.cache_version', time());
+        });
+
+        static::deleted(function () {
+            Cache::forever('dashboard.cache_version', time());
+        });
     }
 
     /**

@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use App\Listeners\UserActivityListener;
 use App\Models\Letter;
+use App\Models\ProgressReport;
 use App\Models\Proposal;
 use App\Models\ProposalStatusLog;
+use App\Observers\ProgressReportObserver;
 use App\Observers\ProposalObserver;
 use App\Observers\ProposalStatusLogObserver;
 use App\Policies\LetterPolicy;
@@ -71,6 +73,7 @@ class AppServiceProvider extends ServiceProvider
             View::composer('components.layouts.header', MenuComposer::class);
             Proposal::observe(ProposalObserver::class);
             ProposalStatusLog::observe(ProposalStatusLogObserver::class);
+            ProgressReport::observe(ProgressReportObserver::class);
             Event::subscribe(UserActivityListener::class);
 
             // Register Policies

@@ -470,20 +470,34 @@
         <div class="col-md-6 mt-3">
             <div class="card glass-card border-0 shadow-sm overflow-hidden" style="border-left: 4px solid #2fb344 !important;">
                 <div class="card-body py-3">
-                    <div class="d-flex align-items-center mb-2">
-                        <a href="{{ route('kepala-lppm.report-approval') }}" class="subheader text-success fw-bold text-decoration-none d-flex align-items-center" wire:navigate>
+                    <div class="d-flex align-items-center mb-2 flex-wrap gap-1">
+                        <a href="{{ route('kepala-lppm.report-approval') }}" class="subheader text-success fw-bold text-decoration-none d-flex align-items-center me-2" wire:navigate>
                             Laporan Akhir
                             <x-lucide-arrow-right class="icon icon-sm ms-1" />
                         </a>
-                        <div class="ms-auto">
-                            <span class="badge bg-success-lt">{{ $processStats['report_progress'] ?? 0 }}%</span>
+                        <div class="ms-auto d-flex align-items-center gap-1 flex-wrap">
+                            <span class="badge bg-success-lt" title="Diajukan ke LPPM / Dekan">{{ $processStats['report_submitted'] ?? 0 }} Diajukan</span>
+                            <span class="badge bg-warning-lt" title="Sedang Disusun / Draf">{{ $processStats['report_draft'] ?? 0 }} Draf</span>
+                            @if(($processStats['report_revision'] ?? 0) > 0)
+                                <span class="badge bg-danger-lt" title="Perlu Revisi">{{ $processStats['report_revision'] }} Revisi</span>
+                            @endif
+                            @if(($processStats['report_approved'] ?? 0) > 0)
+                                <span class="badge bg-teal-lt" title="Disetujui LPPM">{{ $processStats['report_approved'] }} Disetujui</span>
+                            @endif
+                            <span class="badge bg-success text-white ms-1">{{ $processStats['report_active_progress'] ?? $processStats['report_progress'] ?? 0 }}%</span>
                         </div>
                     </div>
-                    <div class="progress progress-sm shadow-none bg-success-lt">
-                        <div class="progress-bar bg-success" style="width: {{ $processStats['report_progress'] ?? 0 }}%"></div>
+                    <div class="progress progress-sm shadow-none bg-secondary-lt">
+                        <div class="progress-bar bg-success" style="width: {{ $processStats['report_progress'] ?? 0 }}%" title="Diajukan/Disetujui: {{ ($processStats['report_submitted'] ?? 0) + ($processStats['report_approved'] ?? 0) + ($processStats['report_approved_dekan'] ?? 0) }}"></div>
+                        <div class="progress-bar bg-warning" style="width: {{ $processStats['report_draft_progress'] ?? 0 }}%" title="Draf: {{ $processStats['report_draft'] ?? 0 }}"></div>
+                        <div class="progress-bar bg-danger" style="width: {{ $processStats['report_revision_progress'] ?? 0 }}%" title="Revisi: {{ $processStats['report_revision'] ?? 0 }}"></div>
                     </div>
-                    <div class="mt-2 small text-muted">
-                        {{ $processStats['report_submitted'] ?? 0 }} dari {{ $processStats['report_total'] ?? 0 }} proposal telah mengajukan/menyelesaikan laporan akhir
+                    <div class="mt-2 small text-muted d-flex justify-content-between flex-wrap gap-1">
+                        <span>
+                            <strong>{{ $processStats['report_active_total'] ?? 0 }}</strong> dari {{ $processStats['report_total'] ?? 0 }} proposal aktif berproses
+                            ({{ $processStats['report_submitted'] ?? 0 }} diajukan, {{ $processStats['report_draft'] ?? 0 }} draf, {{ $processStats['report_revision'] ?? 0 }} revisi)
+                        </span>
+                        <span>{{ $processStats['report_not_started'] ?? 0 }} belum lapor</span>
                     </div>
                 </div>
             </div>
@@ -661,9 +675,9 @@
                             @forelse($recentResearch as $research)
                                 <tr>
                                     <td class="ps-4">
-                                        <div class="fw-bold text-wrap lh-base" title="{{ $research->title }}">
+                                        <a href="{{ route('research.proposal.show', $research->id) }}" class="text-reset fw-bold text-wrap lh-base text-decoration-none" title="{{ $research->title }}" wire:navigate>
                                             {{ $research->title }}
-                                        </div>
+                                        </a>
                                         <div class="small text-muted d-flex align-items-center mt-1">
                                             <div class="avatar avatar-xs me-2 border-0 shadow-sm bg-primary-lt">
                                                 {{ $research->submitter?->initials() }}
@@ -672,10 +686,43 @@
                                         </div>
                                     </td>
                                     <td class="text-center">
-                                        <span class="badge bg-{{ $research->status->color() }}-lt fw-bold px-2 py-1">
-                                            <span class="badge bg-{{ $research->status->color() }} me-1"></span>
-                                            {{ $research->status->label() }}
-                                        </span>
+                                        @if(in_array($research->status->value, ['completed', 'approved']))
+                                            @if($research->latestFinalReport)
+                                                @php
+                                                    $repStatus = $research->latestFinalReport->status;
+                                                @endphp
+                                                @if($repStatus === \App\Enums\ReportStatus::APPROVED)
+                                                    <span class="badge bg-success text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-check me-1"></i>Laporan Disetujui
+                                                    </span>
+                                                @elseif($repStatus === \App\Enums\ReportStatus::APPROVED_BY_DEKAN)
+                                                    <span class="badge bg-purple text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-clock-check me-1"></i>Disetujui Dekan
+                                                    </span>
+                                                @elseif($repStatus === \App\Enums\ReportStatus::SUBMITTED)
+                                                    <span class="badge bg-primary text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-send me-1"></i>Laporan Diajukan
+                                                    </span>
+                                                @elseif($repStatus === \App\Enums\ReportStatus::REJECTED)
+                                                    <span class="badge bg-danger text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-alert-circle me-1"></i>Revisi Laporan
+                                                    </span>
+                                                @elseif($repStatus === \App\Enums\ReportStatus::DRAFT)
+                                                    <span class="badge bg-warning text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-edit me-1"></i>Draf Laporan
+                                                    </span>
+                                                @endif
+                                            @else
+                                                <span class="badge bg-azure-lt fw-bold px-2 py-1">
+                                                    <span class="badge bg-azure me-1"></span>Pelaksanaan
+                                                </span>
+                                            @endif
+                                        @else
+                                            <span class="badge bg-{{ $research->status->color() }}-lt fw-bold px-2 py-1">
+                                                <span class="badge bg-{{ $research->status->color() }} me-1"></span>
+                                                {{ $research->status->label() }}
+                                            </span>
+                                        @endif
                                     </td>
                                     <td class="text-end pe-4 text-muted small">
                                         {{ $research->updated_at->format('d/m/Y H:i') }}
@@ -713,9 +760,9 @@
                             @forelse($recentCommunityService as $communityService)
                                 <tr>
                                     <td class="ps-4">
-                                        <div class="fw-bold text-wrap lh-base" title="{{ $communityService->title }}">
+                                        <a href="{{ route('community-service.proposal.show', $communityService->id) }}" class="text-reset fw-bold text-wrap lh-base text-decoration-none" title="{{ $communityService->title }}" wire:navigate>
                                             {{ $communityService->title }}
-                                        </div>
+                                        </a>
                                         <div class="small text-muted d-flex align-items-center mt-1">
                                             <div class="avatar avatar-xs me-2 border-0 shadow-sm bg-azure-lt">
                                                 {{ $communityService->submitter?->initials() }}
@@ -724,10 +771,43 @@
                                         </div>
                                     </td>
                                     <td class="text-center">
-                                        <span class="badge bg-{{ $communityService->status->color() }}-lt fw-bold px-2 py-1">
-                                            <span class="badge bg-{{ $communityService->status->color() }} me-1"></span>
-                                            {{ $communityService->status->label() }}
-                                        </span>
+                                        @if(in_array($communityService->status->value, ['completed', 'approved']))
+                                            @if($communityService->latestFinalReport)
+                                                @php
+                                                    $repStatus = $communityService->latestFinalReport->status;
+                                                @endphp
+                                                @if($repStatus === \App\Enums\ReportStatus::APPROVED)
+                                                    <span class="badge bg-success text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-check me-1"></i>Laporan Disetujui
+                                                    </span>
+                                                @elseif($repStatus === \App\Enums\ReportStatus::APPROVED_BY_DEKAN)
+                                                    <span class="badge bg-purple text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-clock-check me-1"></i>Disetujui Dekan
+                                                    </span>
+                                                @elseif($repStatus === \App\Enums\ReportStatus::SUBMITTED)
+                                                    <span class="badge bg-primary text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-send me-1"></i>Laporan Diajukan
+                                                    </span>
+                                                @elseif($repStatus === \App\Enums\ReportStatus::REJECTED)
+                                                    <span class="badge bg-danger text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-alert-circle me-1"></i>Revisi Laporan
+                                                    </span>
+                                                @elseif($repStatus === \App\Enums\ReportStatus::DRAFT)
+                                                    <span class="badge bg-warning text-white fw-bold px-2 py-1">
+                                                        <i class="ti ti-edit me-1"></i>Draf Laporan
+                                                    </span>
+                                                @endif
+                                            @else
+                                                <span class="badge bg-azure-lt fw-bold px-2 py-1">
+                                                    <span class="badge bg-azure me-1"></span>Pelaksanaan
+                                                </span>
+                                            @endif
+                                        @else
+                                            <span class="badge bg-{{ $communityService->status->color() }}-lt fw-bold px-2 py-1">
+                                                <span class="badge bg-{{ $communityService->status->color() }} me-1"></span>
+                                                {{ $communityService->status->label() }}
+                                            </span>
+                                        @endif
                                     </td>
                                     <td class="text-end pe-4 text-muted small">
                                         {{ $communityService->updated_at->format('d/m/Y H:i') }}

@@ -2,6 +2,8 @@
 
 namespace App\Livewire\KepalaLppm;
 
+// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+
 use App\Enums\ReportStatus;
 use App\Models\CommunityService;
 use App\Models\ProgressReport;
@@ -15,6 +17,7 @@ use Livewire\WithPagination;
 
 /**
  * @property-read LengthAwarePaginator $reports
+ * @property-read array $stats
  */
 class ReportApproval extends Component
 {
@@ -26,10 +29,14 @@ class ReportApproval extends Component
     #[Url]
     public string $typeFilter = 'all';
 
+    #[Url]
+    public string $statusFilter = 'all';
+
     public function resetFilters(): void
     {
         $this->search = '';
         $this->typeFilter = 'all';
+        $this->statusFilter = 'all';
         $this->resetPage();
     }
 
@@ -39,14 +46,45 @@ class ReportApproval extends Component
     }
 
     #[Computed]
+    public function stats(): array
+    {
+        $base = ProgressReport::query()->where('reporting_period', 'final');
+
+        return [
+            'total_submitted' => (clone $base)->whereIn('status', [
+                ReportStatus::SUBMITTED,
+                ReportStatus::APPROVED_BY_DEKAN,
+                ReportStatus::APPROVED,
+                ReportStatus::REJECTED,
+            ])->count(),
+            'ready_lppm' => (clone $base)->where('status', ReportStatus::APPROVED_BY_DEKAN)->count(),
+            'waiting_dekan' => (clone $base)->where('status', ReportStatus::SUBMITTED)->count(),
+            'approved_lppm' => (clone $base)->where('status', ReportStatus::APPROVED)->count(),
+        ];
+    }
+
+    #[Computed]
     public function reports()
     {
-        $user = auth()->user();
         $query = ProgressReport::query()
             ->where('reporting_period', 'final');
 
-        // Only show reports approved by Dekan to Kepala LPPM
-        $query->where('status', ReportStatus::APPROVED_BY_DEKAN);
+        if ($this->statusFilter === 'ready') {
+            $query->where('status', ReportStatus::APPROVED_BY_DEKAN);
+        } elseif ($this->statusFilter === 'waiting_dekan') {
+            $query->where('status', ReportStatus::SUBMITTED);
+        } elseif ($this->statusFilter === 'approved') {
+            $query->where('status', ReportStatus::APPROVED);
+        } elseif ($this->statusFilter === 'revision') {
+            $query->where('status', ReportStatus::REJECTED);
+        } else {
+            $query->whereIn('status', [
+                ReportStatus::APPROVED_BY_DEKAN,
+                ReportStatus::SUBMITTED,
+                ReportStatus::APPROVED,
+                ReportStatus::REJECTED,
+            ]);
+        }
 
         return $query
             ->with(['proposal.submitter.identity.studyProgram', 'proposal.detailable', 'proposal.researchScheme'])
@@ -63,7 +101,12 @@ class ReportApproval extends Component
                     $q->where('detailable_type', $detailableType);
                 });
             })
-            ->orderBy('updated_at', 'asc') // Oldest first
+            ->orderByRaw("CASE 
+                WHEN status = '".ReportStatus::APPROVED_BY_DEKAN->value."' THEN 1 
+                WHEN status = '".ReportStatus::SUBMITTED->value."' THEN 2 
+                WHEN status = '".ReportStatus::REJECTED->value."' THEN 3 
+                ELSE 4 END")
+            ->latest('updated_at')
             ->paginate(15);
     }
 }

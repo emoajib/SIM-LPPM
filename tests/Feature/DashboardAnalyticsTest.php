@@ -108,4 +108,23 @@ class DashboardAnalyticsTest extends TestCase
         $this->assertTrue(is_array($component->get('themesChartData')));
         $this->assertTrue(is_array($component->get('topicsChartData')));
     }
+
+    public function test_kepala_lppm_dashboard_calculates_final_report_process_stats()
+    {
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        $this->actingAs($this->kepalaLppm);
+        Session::put('active_role', 'kepala lppm');
+
+        $component = Livewire::test(KepalaLppmDashboard::class);
+        $component->assertStatus(200);
+
+        $stats = $component->get('processStats');
+        $this->assertArrayHasKey('report_total', $stats);
+        $this->assertArrayHasKey('report_submitted', $stats);
+        $this->assertArrayHasKey('report_draft', $stats);
+        $this->assertArrayHasKey('report_revision', $stats);
+        $this->assertArrayHasKey('report_active_total', $stats);
+        $this->assertArrayHasKey('report_not_started', $stats);
+        $this->assertArrayHasKey('report_progress', $stats);
+    }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+
 use App\Enums\KaprodiStatus;
 use App\Enums\ProposalStatus;
 use App\Enums\ProposalUserStatus;
@@ -67,6 +69,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  * @property-read Collection|ResearchStage[] $researchStages
  * @property-read Collection|ProposalReviewer[] $reviewers
  * @property-read Collection|ProgressReport[] $progressReports
+ * @property-read ProgressReport|null $latestFinalReport
  * @property-read Collection|DailyNote[] $dailyNotes
  * @property-read Collection|ProposalStatusLog[] $statusLogs
  * @property-read Collection|ReviewLog[] $reviewLogs
@@ -400,6 +403,26 @@ class Proposal extends Model implements HasMedia
     public function progressReports(): HasMany
     {
         return $this->hasMany(ProgressReport::class);
+    }
+
+    /**
+     * Get all final reports for the proposal.
+     *
+     * @return HasMany<ProgressReport, $this>
+     */
+    public function finalReports(): HasMany
+    {
+        return $this->hasMany(ProgressReport::class)->where('reporting_period', 'final');
+    }
+
+    /**
+     * Get the latest final report for the proposal.
+     *
+     * @return HasOne<ProgressReport, $this>
+     */
+    public function latestFinalReport(): HasOne
+    {
+        return $this->hasOne(ProgressReport::class)->where('reporting_period', 'final')->latestOfMany();
     }
 
     /**
