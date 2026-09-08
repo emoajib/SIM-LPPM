@@ -55,6 +55,13 @@ php artisan migrate --force
 # Restart queue workers agar tidak pakai kode lama
 php artisan queue:restart 2>/dev/null || true
 
+# Migrasi path file media (idempotent — aman dijalankan setiap deploy)
+# File lama format {modelslug}-{id8} dipindah ke format baru {nidn}-{name}
+# Jika semua file sudah di path baru, perintah ini langsung selesai tanpa error.
+echo "📁 Migrasi path file media..."
+php artisan media:migrate-paths --force || echo "⚠️  Migrasi media selesai dengan error (cek log)."
+echo "Media migration done."
+
 # Patch missing Software TKT levels
 echo "Patching Software TKT levels..."
 php artisan patch:software-tkt
