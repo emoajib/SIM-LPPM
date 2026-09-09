@@ -63,7 +63,7 @@ class Show extends Component
      */
     public function setStep(int $step): void
     {
-        if ($step === 2) {
+        if ($this->canEdit() && $step === 2) {
             $this->validate([
                 'researchSchemeId' => 'required|exists:research_schemes,id',
                 'form.semester' => 'required|in:ganjil,genap',
@@ -77,14 +77,17 @@ class Show extends Component
                 && ! $completedRevs->contains('recommendation', 'revision_needed')
                 && ! $completedRevs->contains('recommendation', 'rejected');
 
-            // Validate substance file (wajib upload baru untuk perbaikan usulan)
+            // Validate substance file (wajib upload baru hanya jika reviewer meminta revisi dan belum ada dokumen revisi)
             $hasNewUploadedFile = $this->substanceFile && $this->substanceFile instanceof TemporaryUploadedFile;
 
             /** @var Research $detailable */
             $detailable = $this->form->proposal->detailable;
             $media = $detailable->getFirstMedia('substance_file');
 
-            $isRevisionUploaded = $hasNewUploadedFile || ($media && $media->getCustomProperty('is_revision') === true);
+            $isRevisionUploaded = $hasNewUploadedFile
+                || ($allApproved && $media)
+                || ($media && $media->getCustomProperty('is_revision') === true)
+                || ($media && $media->hasCustomProperty('replaced_by'));
 
             if (! $isRevisionUploaded) {
                 $message = 'Anda belum mengunggah dokumen PDF Substansi Usulan yang baru. Silakan unggah dokumen perbaikan Anda.';
@@ -278,14 +281,17 @@ class Show extends Component
             && ! $completedReviewers->contains('recommendation', 'revision_needed')
             && ! $completedReviewers->contains('recommendation', 'rejected');
 
-        // Validate substance file: wajib upload file baru untuk semua perbaikan usulan
+        // Validate substance file
         $hasNewUploadedFile = $this->substanceFile instanceof TemporaryUploadedFile;
 
         /** @var Research $detailable */
         $detailable = $this->form->proposal->detailable;
         $media = $detailable->getFirstMedia('substance_file');
 
-        $isRevisionUploaded = $hasNewUploadedFile || ($media && $media->getCustomProperty('is_revision') === true);
+        $isRevisionUploaded = $hasNewUploadedFile
+            || ($allReviewersApproved && $media)
+            || ($media && $media->getCustomProperty('is_revision') === true)
+            || ($media && $media->hasCustomProperty('replaced_by'));
 
         if (! $isRevisionUploaded) {
             $message = 'Anda belum mengunggah dokumen PDF Substansi Usulan yang baru. Silakan unggah dokumen perbaikan Anda.';

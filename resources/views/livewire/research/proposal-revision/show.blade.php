@@ -26,6 +26,23 @@
         $allApproved       = $completedReviewers->isNotEmpty() && !$hasRevisionNeeded && !$hasRejected;
     @endphp
 
+    {{-- Banner Mode Hanya Lihat jika Jadwal Tutup atau Tidak Memiliki Akses Edit --}}
+    @if (!$this->canEdit())
+        <div class="col-md-12 mb-3">
+            <div class="alert alert-important alert-info shadow-sm border-0">
+                <div class="d-flex align-items-center">
+                    <x-lucide-lock class="icon me-2 flex-shrink-0" />
+                    <div>
+                        <h4 class="alert-title mb-0">Mode Hanya Lihat (Read-Only)</h4>
+                        <div class="text-secondary small mt-1">
+                            Masa perbaikan usulan saat ini telah ditutup atau Anda tidak memiliki akses ubah. Dokumen usulan dan rincian RAB tetap dapat ditinjau.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     {{-- Catatan Kepala LPPM --}}
     @if ($latestRevisionLog && $latestRevisionLog->notes)
         <div class="col-md-12 mb-3">
@@ -406,14 +423,25 @@
 
                     <!-- Upload New File (Only for submitter) -->
                     @if ($this->canEdit())
-                        <div class="alert alert-warning mb-3">
-                            <div class="d-flex align-items-start">
-                                <x-lucide-alert-triangle class="icon me-2 text-warning mt-1" />
-                                <div>
-                                    <strong>Perhatian:</strong> Untuk melakukan perbaikan usulan, Anda <strong>wajib</strong> mengunggah kembali Dokumen PDF Substansi Usulan yang telah direvisi (meskipun file lama sudah ada di sistem).
+                        @if ($allApproved)
+                            <div class="alert alert-info mb-3">
+                                <div class="d-flex align-items-start">
+                                    <x-lucide-info class="icon me-2 text-info mt-1" />
+                                    <div>
+                                        <strong>Catatan:</strong> Semua reviewer telah menyetujui usulan Anda. Pengunggahan dokumen PDF baru bersifat <strong>opsional</strong> jika tidak ada perubahan substansi usulan.
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        @else
+                            <div class="alert alert-warning mb-3">
+                                <div class="d-flex align-items-start">
+                                    <x-lucide-alert-triangle class="icon me-2 text-warning mt-1" />
+                                    <div>
+                                        <strong>Perhatian:</strong> Untuk melakukan perbaikan usulan sesuai masukan reviewer, Anda <strong>wajib</strong> mengunggah kembali Dokumen PDF Substansi Usulan yang telah direvisi.
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                         <div class="mb-3">
                             <label class="form-label">
                                 <x-lucide-upload class="me-2 icon" />
