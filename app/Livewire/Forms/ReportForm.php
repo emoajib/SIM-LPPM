@@ -314,7 +314,7 @@ class ReportForm extends Form
         return $data;
     }
 
-    protected function getEmptyAdditionalOutput(): array
+    public function getEmptyAdditionalOutput(): array
     {
         $data = [
             'id' => null,

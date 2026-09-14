@@ -1183,6 +1183,117 @@
                     </div>
                 </div>
             </div>
+        <!-- Perubahan Mitra -->
+        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+        <div class="card mb-3">
+            <div class="card-header">
+                <h3 class="card-title"><x-lucide-users class="icon me-2" />Perubahan Mitra</h3>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Deskripsi Perubahan Mitra</label>
+                    <textarea wire:model="form.partnerChanges" rows="4" class="form-control"
+                        placeholder="Jelaskan perubahan yang terjadi pada mitra..." @disabled(!$canEdit)></textarea>
+                    <small class="form-hint">Opsional: Jelaskan jika ada perubahan pada mitra (penambahan, penggantian, atau perubahan peran)</small>
+                    @error('form.partnerChanges')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label mb-1">Dokumen Bukti Kerjasama Mitra (Opsional jika ada PKS)</label>
+                        <input type="file" wire:model="cooperationProofFile"
+                            class="form-control @error('cooperationProofFile') is-invalid @enderror" accept=".pdf"
+                            @disabled(!$canEdit) />
+                        @error('cooperationProofFile')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <small class="form-hint">Maksimal 10MB, format PDF</small>
+
+                        <div wire:loading wire:target="cooperationProofFile">
+                            <small class="text-muted">
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                                Mengunggah...
+                            </small>
+                        </div>
+
+                        @if ($progressReport && $progressReport->hasMedia('partner_cooperation_proof'))
+                            @php
+                                $media = $progressReport->getFirstMedia('partner_cooperation_proof');
+                            @endphp
+                            <div class="alert alert-success mb-0 mt-2 p-2">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="text-truncate me-2">
+                                        <x-lucide-file-check class="text-success icon me-1" />
+                                        <strong>{{ $media->name }}</strong>
+                                        <small class="text-muted ms-1">({{ $media->human_readable_size }})</small>
+                                    </div>
+                                    <div class="btn-group btn-group-sm flex-shrink-0">
+                                        <a data-navigate-ignore="true"
+                                            href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}"
+                                            target="_blank" class="btn btn-sm btn-primary">
+                                            <x-lucide-eye class="icon" /> Lihat
+                                        </a>
+                                        @if ($canEdit)
+                                            <button type="button" wire:click="removeCooperationProofFile"
+                                                class="btn btn-sm btn-danger" wire:confirm="Yakin ingin menghapus dokumen kerjasama ini?">
+                                                <x-lucide-trash-2 class="icon" /> Hapus
+                                            </button>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label mb-1">Dokumen Bukti Implementasi Mitra (Opsional jika ada IA)</label>
+                        <input type="file" wire:model="implementationProofFile"
+                            class="form-control @error('implementationProofFile') is-invalid @enderror" accept=".pdf"
+                            @disabled(!$canEdit) />
+                        @error('implementationProofFile')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <small class="form-hint">Maksimal 10MB, format PDF</small>
+
+                        <div wire:loading wire:target="implementationProofFile">
+                            <small class="text-muted">
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                                Mengunggah...
+                            </small>
+                        </div>
+
+                        @if ($progressReport && $progressReport->hasMedia('partner_implementation_proof'))
+                            @php
+                                $media = $progressReport->getFirstMedia('partner_implementation_proof');
+                            @endphp
+                            <div class="alert alert-success mb-0 mt-2 p-2">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="text-truncate me-2">
+                                        <x-lucide-file-check class="text-success icon me-1" />
+                                        <strong>{{ $media->name }}</strong>
+                                        <small class="text-muted ms-1">({{ $media->human_readable_size }})</small>
+                                    </div>
+                                    <div class="btn-group btn-group-sm flex-shrink-0">
+                                        <a data-navigate-ignore="true"
+                                            href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}"
+                                            target="_blank" class="btn btn-sm btn-primary">
+                                            <x-lucide-eye class="icon" /> Lihat
+                                        </a>
+                                        @if ($canEdit)
+                                            <button type="button" wire:click="removeImplementationProofFile"
+                                                class="btn btn-sm btn-danger" wire:confirm="Yakin ingin menghapus dokumen implementasi ini?">
+                                                <x-lucide-trash-2 class="icon" /> Hapus
+                                            </button>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
         </div>
 
     <!-- Luaran Wajib -->
@@ -1294,8 +1405,13 @@
 
         <!-- Luaran Tambahan -->
         <div class="card mb-3">
-            <div class="card-header">
-                <h3 class="card-title"><x-lucide-book class="icon me-2" />Luaran Tambahan</h3>
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title mb-0"><x-lucide-book class="icon me-2" />Luaran Tambahan</h3>
+                @if ($canEdit)
+                    <button type="button" wire:click="openAddOutputModal" class="btn btn-sm btn-primary">
+                        <x-lucide-plus class="icon icon-sm me-1" /> Tambah Luaran Tambahan
+                    </button>
+                @endif
             </div>
             <div class="card-body">
                 @php
@@ -1324,6 +1440,9 @@
                                         <td>{{ $index + 1 }}</td>
                                         <td>
                                             <div class="fw-bold">{{ $output->type }}</div>
+                                            @if($output->target_status)
+                                                <small class="text-muted">Target: {{ $output->target_status }}</small>
+                                            @endif
                                         </td>
                                         <td>{{ $output->output_year }}</td>
                                         <td>
@@ -1389,21 +1508,34 @@
                                             @endif
                                         </td>
                                         <td>
-                                            @if ($canEdit)
-                                                <button type="button" wire:click="editAdditionalOutput({{ $output->id }})"
-                                                    class="btn btn-sm btn-animate-icon btn-animate-icon-rotate" data-bs-toggle="modal"
-                                                    data-bs-target="#modalAdditionalOutput" title="Edit Luaran Tambahan"
-                                                    aria-label="Edit Luaran Tambahan">
-                                                    <x-lucide-pencil class="icon" />
-                                                </button>
-                                            @else
-                                                <button type="button" wire:click="editAdditionalOutput({{ $output->id }})"
-                                                    class="btn btn-sm btn-animate-icon btn-animate-icon-rotate" data-bs-toggle="modal"
-                                                    data-bs-target="#modalAdditionalOutput" title="Lihat Luaran Tambahan"
-                                                    aria-label="Lihat Luaran Tambahan">
-                                                    <x-lucide-eye class="icon" />
-                                                </button>
-                                            @endif
+                                            <div class="btn-group btn-group-sm">
+                                                @if ($canEdit)
+                                                    <button type="button" wire:click="editAdditionalOutput({{ $output->id }})"
+                                                        class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                                                        data-bs-target="#modalAdditionalOutput" title="Isi Dokumen / Bukti Luaran"
+                                                        aria-label="Isi Dokumen / Bukti Luaran">
+                                                        <x-lucide-file-text class="icon icon-sm" />
+                                                    </button>
+                                                    <button type="button" wire:click="openEditProposalOutputModal({{ $output->id }})"
+                                                        class="btn btn-sm btn-outline-secondary" title="Edit Rencana Luaran"
+                                                        aria-label="Edit Rencana Luaran">
+                                                        <x-lucide-pencil class="icon icon-sm" />
+                                                    </button>
+                                                    <button type="button" wire:click="deleteProposalOutput({{ $output->id }})"
+                                                        wire:confirm="Yakin ingin menghapus luaran tambahan ini beserta bukti dokumennya?"
+                                                        class="btn btn-sm btn-outline-danger" title="Hapus Luaran Tambahan"
+                                                        aria-label="Hapus Luaran Tambahan">
+                                                        <x-lucide-trash-2 class="icon icon-sm" />
+                                                    </button>
+                                                @else
+                                                    <button type="button" wire:click="editAdditionalOutput({{ $output->id }})"
+                                                        class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                                                        data-bs-target="#modalAdditionalOutput" title="Lihat Luaran Tambahan"
+                                                        aria-label="Lihat Luaran Tambahan">
+                                                        <x-lucide-eye class="icon icon-sm" />
+                                                    </button>
+                                                @endif
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -1414,10 +1546,88 @@
                     <div class="text-muted py-4 text-center">
                         <x-lucide-inbox class="icon icon-lg mb-2" />
                         <p>Tidak ada luaran tambahan yang direncanakan</p>
+                        @if ($canEdit)
+                            <button type="button" wire:click="openAddOutputModal" class="btn btn-outline-primary btn-sm mt-1">
+                                <x-lucide-plus class="icon icon-sm me-1" /> Tambah Luaran Tambahan
+                            </button>
+                        @endif
                     </div>
                 @endif
             </div>
         </div>
+
+        {{-- Modal Tambah / Edit Luaran Tambahan --}}
+        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+        @if ($showOutputModal)
+            <div class="modal modal-blur fade show d-block" tabindex="-1" role="dialog" style="background: rgba(0,0,0,0.5);" aria-modal="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                {{ $editingProposalOutputId ? 'Edit Rencana Luaran Tambahan' : 'Tambah Luaran Tambahan Baru' }}
+                            </h5>
+                            <button type="button" class="btn-close" wire:click="closeOutputModal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label required">Jenis Luaran</label>
+                                <select wire:model="outputType" class="form-select @error('outputType') is-invalid @enderror">
+                                    <option value="">-- Pilih Jenis Luaran --</option>
+                                    @foreach ($this->availableOutputOptions as $groupName => $types)
+                                        <optgroup label="{{ ucfirst($groupName) }}">
+                                            @foreach ($types as $typeOption)
+                                                <option value="{{ $typeOption }}">{{ $typeOption }}</option>
+                                            @endforeach
+                                        </optgroup>
+                                    @endforeach
+                                </select>
+                                @error('outputType')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label required">Tahun Target</label>
+                                    <input type="number" wire:model="outputYear" min="1" max="5" class="form-control @error('outputYear') is-invalid @enderror">
+                                    @error('outputYear')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label required">Target Status</label>
+                                    <select wire:model="outputTargetStatus" class="form-select @error('outputTargetStatus') is-invalid @enderror">
+                                        <option value="Draft">Draft</option>
+                                        <option value="Submitted">Submitted</option>
+                                        <option value="Review">Review</option>
+                                        <option value="Accepted">Accepted</option>
+                                        <option value="Published">Published / Granted</option>
+                                    </select>
+                                    @error('outputTargetStatus')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Keterangan / Rencana (Opsional)</label>
+                                <textarea wire:model="outputDescription" rows="2" class="form-control @error('outputDescription') is-invalid @enderror" placeholder="Keterangan tambahan jika ada..."></textarea>
+                                @error('outputDescription')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" wire:click="closeOutputModal">Batal</button>
+                            <button type="button" class="btn btn-primary" wire:click="saveProposalOutputPlan">
+                                <x-lucide-save class="icon icon-sm me-1" /> Simpan Luaran
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
     @endif
 
     <!-- Action Buttons -->

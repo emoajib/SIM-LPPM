@@ -442,6 +442,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('financial-reports/{proposal}/export-pdf', [DailyNoteExportController::class, 'financialReport'])
         ->name('financial-reports.export-pdf');
 
+    Route::get('financial-reports/{proposal}/approval-template', [DailyNoteExportController::class, 'approvalPageTemplate'])
+        ->name('financial-reports.approval-template');
+
     Route::get('media/{media:uuid}/download', [MediaDownloadController::class, 'download'])
         ->middleware(['auth'])
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager

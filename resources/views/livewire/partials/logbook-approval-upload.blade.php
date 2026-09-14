@@ -28,12 +28,15 @@
             <div class="row g-3 align-items-center">
                 <div class="col-md-5">
                     <label class="form-label font-weight-bold small mb-1">Langkah 1: Unduh Lembar Pengesahan LPJ</label>
-                    <div>
-                        <a data-navigate-ignore="true" href="{{ route('financial-reports.export-pdf', ['proposal' => $proposal, 'download' => 'true']) }}" target="_blank" class="btn btn-outline-success btn-sm w-100">
-                            <x-lucide-download class="icon icon-sm me-1" /> Unduh Dokumen LPJ (Untuk TTD Basah)
+                    <div class="d-flex flex-column gap-2">
+                        <a data-navigate-ignore="true" href="{{ route('financial-reports.approval-template', ['proposal' => $proposal, 'download' => 'true']) }}" target="_blank" class="btn btn-outline-primary btn-sm w-100">
+                            <x-lucide-file-signature class="icon icon-sm me-1" /> Unduh Template Pengesahan Saja (TTD Basah)
+                        </a>
+                        <a data-navigate-ignore="true" href="{{ route('financial-reports.export-pdf', ['proposal' => $proposal, 'download' => 'true']) }}" target="_blank" class="btn btn-outline-secondary btn-sm w-100">
+                            <x-lucide-download class="icon icon-sm me-1" /> Unduh Dokumen LPJ Lengkap
                         </a>
                         <div class="text-secondary small mt-1" style="font-size: 0.75rem;">
-                            Cetak lembar rekapitulasi & pengesahan (Halaman 2), bubuhi tanda tangan dosen & Kepala LPPM + cap basah.
+                            Cetak lembar pengesahan, bubuhi tanda tangan dosen & Kepala LPPM + cap basah, lalu scan PDF untuk diunggah.
                         </div>
                     </div>
                 </div>

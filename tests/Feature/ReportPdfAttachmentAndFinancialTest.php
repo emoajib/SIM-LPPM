@@ -203,4 +203,47 @@ class ReportPdfAttachmentAndFinancialTest extends TestCase
         $pageCount = $fpdi->setSourceFile($pdfPath);
         $this->assertGreaterThan(2, $pageCount, 'Research report should include realization and partner proof pages.');
     }
+
+    /**
+     * Test that financial approval page template can be generated and has 1 page.
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     */
+    public function test_export_financial_approval_template_generates_single_page_pdf()
+    {
+        $research = Research::factory()->create();
+        $proposal = Proposal::factory()->create([
+            'submitter_id' => $this->dosen->id,
+            'detailable_id' => $research->id,
+            'detailable_type' => Research::class,
+            'title' => 'Uji Template Pengesahan Finansial',
+        ]);
+
+        $service = app(ProposalPdfService::class);
+        $pdfPath = $service->exportFinancialApprovalTemplate($proposal);
+
+        $this->assertFileExists($pdfPath);
+        $fpdi = new Fpdi;
+        $pageCount = $fpdi->setSourceFile($pdfPath);
+        $this->assertEquals(1, $pageCount, 'Financial approval template must be exactly 1 page.');
+    }
+
+    /**
+     * Test that submitter can download financial approval template via route.
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     */
+    public function test_dosen_can_download_approval_template_route()
+    {
+        $research = Research::factory()->create();
+        $proposal = Proposal::factory()->create([
+            'submitter_id' => $this->dosen->id,
+            'detailable_id' => $research->id,
+            'detailable_type' => Research::class,
+        ]);
+
+        $response = $this->actingAs($this->dosen)
+            ->get(route('financial-reports.approval-template', ['proposal' => $proposal, 'download' => 'true']));
+
+        $response->assertOk();
+        $response->assertHeader('content-type', 'application/pdf');
+    }
 }

@@ -9,6 +9,7 @@ use App\Livewire\Concerns\HasToast;
 use App\Livewire\Forms\ReportForm;
 use App\Livewire\Traits\HasFileUploads;
 use App\Livewire\Traits\HasReportTemplates;
+use App\Livewire\Traits\ManagesAdditionalOutputs;
 use App\Livewire\Traits\ReportAccess;
 use App\Livewire\Traits\ReportAuthorization;
 use App\Livewire\Traits\WithReportApproval;
@@ -36,6 +37,7 @@ class Show extends Component
     use HasFileUploads;
     use HasReportTemplates;
     use HasToast;
+    use ManagesAdditionalOutputs;
     use ReportAccess;
     use ReportAuthorization;
     use WithFileUploads;

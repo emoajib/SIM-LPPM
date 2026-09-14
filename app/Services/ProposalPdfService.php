@@ -1430,4 +1430,48 @@ class ProposalPdfService
 
         return $cachePath;
     }
+
+    /**
+     * Export Financial Report Approval Page (Lembar Pengesahan LPJ) template for physical/wet signature.
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     */
+    public function exportFinancialApprovalTemplate(Proposal $proposal): string
+    {
+        $cacheDir = storage_path('app/pdf_cache/financial');
+        if (! file_exists($cacheDir)) {
+            mkdir($cacheDir, 0755, true);
+        }
+
+        $proposal->load([
+            'submitter.identity.faculty',
+            'submitter.identity.studyProgram',
+            'submitter.identity.institution',
+            'dailyNotes',
+            'researchScheme',
+            'communityServiceScheme',
+        ]);
+
+        $submitterIdentity = $proposal->submitter->identity;
+        $submitterFullName = format_name($submitterIdentity?->title_prefix, $proposal->submitter->name, $submitterIdentity?->title_suffix);
+        $lppmHeadInfo = $this->resolveLppmHeadInfo($proposal);
+        $pdfConfig = get_pdf_config('letter', 'logbook');
+
+        $pdf = Pdf::loadView('pdf.financial-approval-template', [
+            'proposal' => $proposal,
+            'submitterFullName' => $submitterFullName,
+            'lppmHeadName' => $lppmHeadInfo['name'],
+            'lppmHeadId' => $lppmHeadInfo['id'],
+            'pdfConfig' => $pdfConfig,
+        ])->setPaper(normalize_paper_size($pdfConfig['paper_size'] ?? 'a4'), $pdfConfig['orientation'] ?? 'portrait')
+            ->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => true,
+                'defaultFont' => 'times-roman',
+            ]);
+
+        $cachePath = $cacheDir.'/financial_approval_template_'.$proposal->id.'.pdf';
+        $pdf->save($cachePath);
+
+        return $cachePath;
+    }
 }

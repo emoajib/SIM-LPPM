@@ -80,6 +80,55 @@ class DailyNoteExportController extends Controller
     }
 
     /**
+     * Download the Financial Report Approval Page Template (Lembar Pengesahan LPJ TTD Basah).
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     */
+    public function approvalPageTemplate(Proposal $proposal, Request $request)
+    {
+        /** @var User $user */
+        $user = Auth::user();
+
+        $isMember = $proposal->teamMembers()->where('users.id', $user->id)->exists();
+        $isSubmitter = $proposal->submitter_id === $user->id;
+        $isUniversityExec = $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'superadmin', 'rektor']);
+        $isFacultyDekan = $user->activeHasRole('dekan')
+            && $user->identity?->faculty_id
+            && $user->identity->faculty_id === $proposal->submitter->identity?->faculty_id;
+        $kaprodiProdiId = StudyProgram::where('kaprodi_user_id', $user->id)->value('id')
+            ?? $user->identity?->study_program_id;
+        $isProdiKaprodi = $user->activeHasRole('kaprodi')
+            && $kaprodiProdiId
+            && $kaprodiProdiId === $proposal->submitter->identity?->study_program_id;
+
+        if (! $isSubmitter && ! $isMember && ! $isUniversityExec && ! $isFacultyDekan && ! $isProdiKaprodi) {
+            abort(403, 'Anda tidak memiliki akses untuk mengekspor lembar pengesahan ini.');
+        }
+
+        try {
+            $pdfPath = $this->pdfService->exportFinancialApprovalTemplate($proposal);
+
+            $title = preg_replace('/[^A-Za-z0-9_\-]/', '_', substr($proposal->title, 0, 50));
+            $filename = 'Lembar_Pengesahan_LPJ_'.$title.'.pdf';
+
+            if ($request->query('download') === 'true') {
+                return response()->download($pdfPath, $filename);
+            }
+
+            return response()->file($pdfPath, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="'.$filename.'"',
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Pragma' => 'no-cache',
+                'Expires' => '0',
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Financial Approval Template PDF Export Error: '.$e->getMessage());
+
+            return back()->with('error', 'Gagal mengunduh lembar pengesahan: '.$e->getMessage());
+        }
+    }
+
+    /**
      * Download the daily notes PDF.
      */
     public function download(Proposal $proposal, Request $request)

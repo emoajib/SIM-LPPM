@@ -150,9 +150,11 @@
         </thead>
         <tbody>
             @php
+                // Vetted by AI - Manual Review Required by Senior Engineer/Manager
                 $budgetGroups = \App\Models\BudgetGroup::all();
                 $totalProposed = 0;
                 $totalRealized = 0;
+                $displayNo = 0;
             @endphp
             @foreach($budgetGroups as $index => $group)
                 @php
@@ -162,8 +164,9 @@
                     $totalRealized += $groupRealized;
                 @endphp
                 @if($groupProposed > 0 || $groupRealized > 0)
+                @php $displayNo++; @endphp
                 <tr>
-                    <td class="text-center">{{ $index + 1 }}</td>
+                    <td class="text-center">{{ $displayNo }}</td>
                     <td>{{ $group->name }}</td>
                     <td class="text-right">{{ number_format($groupProposed, 0, ',', '.') }}</td>
                     <td class="text-right">{{ number_format($groupRealized, 0, ',', '.') }}</td>
@@ -177,8 +180,9 @@
                 $totalRealized += $unassignedRealized;
             @endphp
             @if($unassignedProposed > 0 || $unassignedRealized > 0)
+            @php $displayNo++; @endphp
             <tr>
-                <td class="text-center">-</td>
+                <td class="text-center">{{ $displayNo }}</td>
                 <td>Biaya Operasional / Komponen Tambahan Lainnya</td>
                 <td class="text-right">{{ number_format($unassignedProposed, 0, ',', '.') }}</td>
                 <td class="text-right">{{ number_format($unassignedRealized, 0, ',', '.') }}</td>

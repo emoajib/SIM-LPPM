@@ -954,8 +954,13 @@
 
         <!-- Luaran Tambahan -->
         <div class="card mb-3">
-            <div class="card-header">
-                <h3 class="card-title"><x-lucide-book class="icon me-2" />Luaran Tambahan</h3>
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title mb-0"><x-lucide-book class="icon me-2" />Luaran Tambahan</h3>
+                @if ($canEdit)
+                    <button type="button" wire:click="openAddOutputModal" class="btn btn-sm btn-primary">
+                        <x-lucide-plus class="icon icon-sm me-1" /> Tambah Luaran Tambahan
+                    </button>
+                @endif
             </div>
             <div class="card-body">
                 @php
@@ -984,6 +989,9 @@
                                         <td>{{ $index + 1 }}</td>
                                         <td>
                                             <div class="fw-bold">{{ $output->type }}</div>
+                                            @if($output->target_status)
+                                                <small class="text-muted">Target: {{ $output->target_status }}</small>
+                                            @endif
                                         </td>
                                         <td>{{ $output->output_year }}</td>
                                         <td>
@@ -1049,21 +1057,34 @@
                                             @endif
                                         </td>
                                         <td>
-                                            @if ($canEdit)
-                                                <button type="button" wire:click="editAdditionalOutput({{ $output->id }})"
-                                                    class="btn btn-sm btn-animate-icon btn-animate-icon-rotate" data-bs-toggle="modal"
-                                                    data-bs-target="#modalAdditionalOutput" title="Edit Luaran Tambahan"
-                                                    aria-label="Edit Luaran Tambahan">
-                                                    <x-lucide-pencil class="icon" />
-                                                </button>
-                                            @else
-                                                <button type="button" wire:click="editAdditionalOutput({{ $output->id }})"
-                                                    class="btn btn-sm btn-animate-icon btn-animate-icon-rotate" data-bs-toggle="modal"
-                                                    data-bs-target="#modalAdditionalOutput" title="Lihat Luaran Tambahan"
-                                                    aria-label="Lihat Luaran Tambahan">
-                                                    <x-lucide-eye class="icon" />
-                                                </button>
-                                            @endif
+                                            <div class="btn-group btn-group-sm">
+                                                @if ($canEdit)
+                                                    <button type="button" wire:click="editAdditionalOutput({{ $output->id }})"
+                                                        class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                                                        data-bs-target="#modalAdditionalOutput" title="Isi Dokumen / Bukti Luaran"
+                                                        aria-label="Isi Dokumen / Bukti Luaran">
+                                                        <x-lucide-file-text class="icon icon-sm" />
+                                                    </button>
+                                                    <button type="button" wire:click="openEditProposalOutputModal({{ $output->id }})"
+                                                        class="btn btn-sm btn-outline-secondary" title="Edit Rencana Luaran"
+                                                        aria-label="Edit Rencana Luaran">
+                                                        <x-lucide-pencil class="icon icon-sm" />
+                                                    </button>
+                                                    <button type="button" wire:click="deleteProposalOutput({{ $output->id }})"
+                                                        wire:confirm="Yakin ingin menghapus luaran tambahan ini beserta bukti dokumennya?"
+                                                        class="btn btn-sm btn-outline-danger" title="Hapus Luaran Tambahan"
+                                                        aria-label="Hapus Luaran Tambahan">
+                                                        <x-lucide-trash-2 class="icon icon-sm" />
+                                                    </button>
+                                                @else
+                                                    <button type="button" wire:click="editAdditionalOutput({{ $output->id }})"
+                                                        class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                                                        data-bs-target="#modalAdditionalOutput" title="Lihat Luaran Tambahan"
+                                                        aria-label="Lihat Luaran Tambahan">
+                                                        <x-lucide-eye class="icon icon-sm" />
+                                                    </button>
+                                                @endif
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -1074,10 +1095,88 @@
                     <div class="text-muted py-4 text-center">
                         <x-lucide-inbox class="icon icon-lg mb-2" />
                         <p>Tidak ada luaran tambahan yang direncanakan</p>
+                        @if ($canEdit)
+                            <button type="button" wire:click="openAddOutputModal" class="btn btn-outline-primary btn-sm mt-1">
+                                <x-lucide-plus class="icon icon-sm me-1" /> Tambah Luaran Tambahan
+                            </button>
+                        @endif
                     </div>
                 @endif
             </div>
         </div>
+
+        {{-- Modal Tambah / Edit Luaran Tambahan --}}
+        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+        @if ($showOutputModal)
+            <div class="modal modal-blur fade show d-block" tabindex="-1" role="dialog" style="background: rgba(0,0,0,0.5);" aria-modal="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                {{ $editingProposalOutputId ? 'Edit Rencana Luaran Tambahan' : 'Tambah Luaran Tambahan Baru' }}
+                            </h5>
+                            <button type="button" class="btn-close" wire:click="closeOutputModal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label required">Jenis Luaran</label>
+                                <select wire:model="outputType" class="form-select @error('outputType') is-invalid @enderror">
+                                    <option value="">-- Pilih Jenis Luaran --</option>
+                                    @foreach ($this->availableOutputOptions as $groupName => $types)
+                                        <optgroup label="{{ ucfirst($groupName) }}">
+                                            @foreach ($types as $typeOption)
+                                                <option value="{{ $typeOption }}">{{ $typeOption }}</option>
+                                            @endforeach
+                                        </optgroup>
+                                    @endforeach
+                                </select>
+                                @error('outputType')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label required">Tahun Target</label>
+                                    <input type="number" wire:model="outputYear" min="1" max="5" class="form-control @error('outputYear') is-invalid @enderror">
+                                    @error('outputYear')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label required">Target Status</label>
+                                    <select wire:model="outputTargetStatus" class="form-select @error('outputTargetStatus') is-invalid @enderror">
+                                        <option value="Draft">Draft</option>
+                                        <option value="Submitted">Submitted</option>
+                                        <option value="Review">Review</option>
+                                        <option value="Accepted">Accepted</option>
+                                        <option value="Published">Published / Granted</option>
+                                    </select>
+                                    @error('outputTargetStatus')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Keterangan / Rencana (Opsional)</label>
+                                <textarea wire:model="outputDescription" rows="2" class="form-control @error('outputDescription') is-invalid @enderror" placeholder="Keterangan tambahan jika ada..."></textarea>
+                                @error('outputDescription')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" wire:click="closeOutputModal">Batal</button>
+                            <button type="button" class="btn btn-primary" wire:click="saveProposalOutputPlan">
+                                <x-lucide-save class="icon icon-sm me-1" /> Simpan Luaran
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
     @endif
 
     <!-- Action Buttons -->
