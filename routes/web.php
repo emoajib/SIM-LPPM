@@ -304,14 +304,21 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Kepala LPPM Routes
-    Route::middleware(['role:kepala lppm|rektor'])->prefix('kepala-lppm')->name('kepala-lppm.')->group(function () {
-        Route::get('persetujuan-awal', InitialApproval::class)->name('initial-approval');
-        Route::get('persetujuan-akhir', FinalDecision::class)->name('final-decision');
-        Route::get('report-approval', ReportApproval::class)->name('report-approval');
-        Route::get('persetujuan-keuangan', FinancialApproval::class)->name('financial-approval');
-        Route::get('persetujuan-surat', LetterApproval::class)->middleware('letter.active')->name('letter-approval');
-        Route::get('monev/recap', MonevRecap::class)->name('monev.recap');
-        Route::get('monev/dashboard', MonevDashboard::class)->name('rektor.monev-dashboard');
+    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    Route::prefix('kepala-lppm')->name('kepala-lppm.')->group(function () {
+        Route::middleware(['role:kepala lppm|rektor'])->group(function () {
+            Route::get('persetujuan-awal', InitialApproval::class)->name('initial-approval');
+            Route::get('persetujuan-akhir', FinalDecision::class)->name('final-decision');
+            Route::get('report-approval', ReportApproval::class)->name('report-approval');
+            Route::get('persetujuan-surat', LetterApproval::class)->middleware('letter.active')->name('letter-approval');
+            Route::get('monev/recap', MonevRecap::class)->name('monev.recap');
+            Route::get('monev/dashboard', MonevDashboard::class)->name('rektor.monev-dashboard');
+        });
+
+        // Persetujuan Keuangan (LPJ): Bisa diakses dan disahkan oleh Kepala LPPM maupun Admin LPPM
+        Route::get('persetujuan-keuangan', FinancialApproval::class)
+            ->middleware(['role:kepala lppm|admin lppm|rektor|superadmin'])
+            ->name('financial-approval');
     });
 
     // Admin LPPM Routes

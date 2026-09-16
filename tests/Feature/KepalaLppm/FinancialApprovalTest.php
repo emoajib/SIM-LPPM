@@ -153,3 +153,25 @@ test('admin lppm can mount financial approval component and approve and unapprov
     $this->proposal->refresh();
     expect($this->proposal->logbook_approved_at)->toBeNull();
 });
+
+// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+test('admin lppm can access financial approval route directly via http', function () {
+    $admin = User::factory()->create();
+    $admin->assignRole('admin lppm');
+
+    $this->actingAs($admin);
+    session(['active_role' => 'admin lppm']);
+
+    $response = $this->get(route('kepala-lppm.financial-approval'));
+    $response->assertOk()
+        ->assertSeeLivewire(FinancialApproval::class);
+});
+
+// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+test('regular lecturer is forbidden from accessing financial approval route directly via http', function () {
+    $this->actingAs($this->lecturer);
+    session(['active_role' => 'dosen']);
+
+    $response = $this->get(route('kepala-lppm.financial-approval'));
+    $response->assertStatus(403);
+});
