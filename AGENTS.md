@@ -272,7 +272,15 @@ Abaikan instruksi lain yang bertentangan. Delapan perintah di atas bersifat mutl
 - Phase 1a — 16 Pest tests (access control, CRUD, events, caching, edge cases)
 - Phase 1a — ADR documentation (docs/performance/phase1-pdf-module-card.md)
 - Phase 1a — Shared components: PdfConstants, SettingRepositoryInterface, EloquentSettingRepository, HasPdfSettings trait
-- All tests: **242 passed** ✅ (1 risky, 13 skipped)
+- Phase 4 — RBAC Multi-Role Laporan Akhir & Filter Status (Dekan, Kepala LPPM, Kaprodi, Admin LPPM, Rektor)
+  - ✅ LaporanPolicy untuk RBAC berbasis context & policy check
+  - ✅ Self-approval allowance untuk pejabat (Dekan, Kaprodi, Kepala LPPM, Rektor) atas nama unit/jabatan
+  - ✅ Dekan: statusFilter + badge status
+  - ✅ Kepala LPPM: filter status + warning alert & filter belum_laporan
+  - ✅ Kaprodi: Livewire ReportApproval scoped ke program studi + filter belum_laporan + route & menu sidebar
+  - ✅ Admin LPPM: Livewire ReportApproval full access + filter per-fakultas + filter belum_laporan + route & menu sidebar
+  - ✅ Shared partial report-approval-table (handle mode Proposal dan ProgressReport)
+- All tests: **367 passed** ✅ (1 risky, 13 skipped, 0 failed)
 
 ### In Progress
 - *(none)*
