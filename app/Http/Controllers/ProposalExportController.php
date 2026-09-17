@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DocumentSignature;
 use App\Models\ProgressReport;
 use App\Models\Proposal;
+use App\Models\StudyProgram;
 use App\Models\User;
 use App\Services\DocumentSignatureService;
 use App\Services\ProposalPdfService;
@@ -23,21 +24,60 @@ class ProposalExportController extends Controller
     ) {}
 
     /**
+     * Authorize user to access proposal export / preview.
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     */
+    protected function authorizeAccess(User $user, Proposal $proposal): void
+    {
+        // 1. Author / Team Member
+        if ($proposal->submitter_id === $user->id) {
+            return;
+        }
+
+        if ($proposal->teamMembers()->where('users.id', $user->id)->exists()) {
+            return;
+        }
+
+        // 2. University-level executives & LPPM Admin
+        if ($user->activeHasAnyRole(['admin lppm', 'admin lppm saintek', 'admin lppm dekabita', 'kepala lppm', 'superadmin', 'rektor'])) {
+            return;
+        }
+
+        // 3. Faculty Dekan (Scoped to submitter faculty)
+        if ($user->activeHasRole('dekan')) {
+            $dekanFacultyId = $user->identity?->faculty_id;
+            $submitterFacultyId = $proposal->submitter->identity?->faculty_id;
+            if ($dekanFacultyId && $dekanFacultyId === $submitterFacultyId) {
+                return;
+            }
+        }
+
+        // 4. Study Program Kaprodi (Scoped to submitter study program)
+        if ($user->activeHasRole('kaprodi')) {
+            $kaprodiProdiId = StudyProgram::where('kaprodi_user_id', $user->id)->value('id')
+                ?? $user->identity?->study_program_id;
+            $submitterProdiId = $proposal->submitter->identity?->study_program_id;
+            if ($kaprodiProdiId && $kaprodiProdiId === $submitterProdiId) {
+                return;
+            }
+        }
+
+        // 5. Assigned Reviewer
+        if ($proposal->reviewers()->where('user_id', $user->id)->exists()) {
+            return;
+        }
+
+        abort(403, 'Anda tidak memiliki akses untuk mengekspor dokumen ini.');
+    }
+
+    /**
      * Download the combined proposal PDF.
      */
     public function download(Request $request, Proposal $proposal)
     {
         /** @var User $user */
         $user = Auth::user();
-
-        $isMember = $proposal->teamMembers()->where('users.id', $user->id)->exists();
-        $isSubmitter = $proposal->submitter_id === $user->id;
-        $isLppm = $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'superadmin', 'rektor', 'dekan']);
-        $isAssignedReviewer = $proposal->reviewers()->where('user_id', $user->id)->exists();
-
-        if (! $isSubmitter && ! $isMember && ! $isLppm && ! $isAssignedReviewer) {
-            abort(403, 'Anda tidak memiliki akses untuk mengekspor proposal ini.');
-        }
+        $this->authorizeAccess($user, $proposal);
 
         try {
             $pdfPath = $this->pdfService->export($proposal, $request->has('preview'));
@@ -61,15 +101,7 @@ class ProposalExportController extends Controller
     {
         /** @var User $user */
         $user = Auth::user();
-
-        $isMember = $proposal->teamMembers()->where('users.id', $user->id)->exists();
-        $isSubmitter = $proposal->submitter_id === $user->id;
-        $isLppm = $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'superadmin', 'rektor', 'dekan']);
-        $isAssignedReviewer = $proposal->reviewers()->where('user_id', $user->id)->exists();
-
-        if (! $isSubmitter && ! $isMember && ! $isLppm && ! $isAssignedReviewer) {
-            abort(403, 'Anda tidak memiliki akses untuk melihat proposal ini.');
-        }
+        $this->authorizeAccess($user, $proposal);
 
         try {
             $pdfPath = $this->pdfService->export($proposal, true);
@@ -96,15 +128,7 @@ class ProposalExportController extends Controller
     {
         /** @var User $user */
         $user = Auth::user();
-
-        $isMember = $proposal->teamMembers()->where('users.id', $user->id)->exists();
-        $isSubmitter = $proposal->submitter_id === $user->id;
-        $isLppm = $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'superadmin', 'rektor', 'dekan']);
-        $isAssignedReviewer = $proposal->reviewers()->where('user_id', $user->id)->exists();
-
-        if (! $isSubmitter && ! $isMember && ! $isLppm && ! $isAssignedReviewer) {
-            abort(403, 'Anda tidak memiliki akses untuk mengekspor laporan ini.');
-        }
+        $this->authorizeAccess($user, $proposal);
 
         $type = $request->query('type', 'final');
 

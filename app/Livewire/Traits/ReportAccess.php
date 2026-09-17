@@ -9,6 +9,7 @@ use App\Models\ProgressReport;
 use App\Models\Proposal;
 use App\Models\StudyProgram;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 
 /**
@@ -23,6 +24,7 @@ trait ReportAccess
 
     public ?ProgressReport $progressReport = null;
 
+    #[Locked]
     public bool $canEdit = false;
 
     #[On('report-saved')]
@@ -53,7 +55,7 @@ trait ReportAccess
             abort(403, $message);
         }
 
-        $this->canEdit = $this->canEditReport($this->proposal);
+        $this->canEdit = $this->canEditReport($this->proposal, $this->progressReport);
     }
 
     /**

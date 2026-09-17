@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Livewire\Traits;
 
 use App\Enums\ProposalUserStatus;
+use App\Enums\ReportStatus;
+use App\Models\ProgressReport;
 use App\Models\Proposal;
 use App\Models\StudyProgram;
 use Illuminate\Database\Eloquent\Builder;
@@ -47,19 +49,41 @@ trait ReportAuthorization
         });
     }
 
-    protected function canEditReport(Proposal $proposal): bool
+    /**
+     * Determine if current user can edit the report.
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     *
+     * Rules:
+     * 1. Only submitter or accepted team member can edit report content.
+     * 2. Admin LPPM and others cannot edit lecturer's report content (Zero Trust).
+     * 3. Editing is locked once submitted/approved; only allowed when no report, draft, or rejected (revision needed).
+     */
+    protected function canEditReport(Proposal $proposal, ?ProgressReport $progressReport = null): bool
     {
         $user = Auth::user();
 
-        if ($user->activeHasAnyRole(['admin lppm', 'superadmin'])) {
-            return true;
+        if (! $user) {
+            return false;
         }
 
-        // Allow submitter or accepted team member to edit
-        return $proposal->submitter_id === $user->id
+        // Submitter or accepted team member only
+        $isAuthor = $proposal->submitter_id === $user->id
             || $proposal->teamMembers()
                 ->where('user_id', $user->id)
                 ->where('status', ProposalUserStatus::ACCEPTED->value)
                 ->exists();
+
+        if (! $isAuthor) {
+            return false;
+        }
+
+        // If no report exists yet, author can create/edit draft
+        if (! $progressReport) {
+            return true;
+        }
+
+        // Once submitted or approved, report is locked from direct editing.
+        // Only draft or rejected (needs revision) can be edited.
+        return in_array($progressReport->status, [ReportStatus::DRAFT, ReportStatus::REJECTED]);
     }
 }

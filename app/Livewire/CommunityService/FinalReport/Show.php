@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\CommunityService\FinalReport;
 
 use App\Enums\ProposalStatus;
+use App\Enums\ReportStatus;
 use App\Livewire\Concerns\HasToast;
 use App\Livewire\Forms\ReportForm;
 use App\Livewire\Traits\HasFileUploads;
@@ -101,16 +102,13 @@ class Show extends Component
             abort(403, 'Laporan akhir hanya dapat diakses untuk proposal yang sudah selesai.');
         }
 
-        // Check access
-        $this->checkAccess();
-
         // Load existing final report FIRST
         /** @var ProgressReport|null $finalReport */
         $finalReport = $proposal->progressReports()->where('reporting_period', 'final')->latest()->first();
 
         if ($finalReport) {
             $this->progressReport = $finalReport;
-            $this->isFinalReportDraft = true;
+            $this->isFinalReportDraft = $finalReport->status === ReportStatus::DRAFT;
         } else {
             // Fallback to latest progress report for pre-filling data
             /** @var ProgressReport|null $latestReport */
@@ -118,6 +116,9 @@ class Show extends Component
             $this->progressReport = $latestReport;
             $this->isFinalReportDraft = false;
         }
+
+        // Check access (evaluates canEditReport with loaded progressReport)
+        $this->checkAccess();
 
         // Enforce schedule: only block NEW submissions if period is closed
         // Allow access to existing drafts even if period is closed
@@ -441,7 +442,7 @@ class Show extends Component
     public function save(): void
     {
         if (! $this->canEdit) {
-            abort(403);
+            abort(403, 'Laporan akhir sedang dalam proses peninjauan atau telah disahkan, perubahan tidak diperbolehkan.');
         }
 
         try {
@@ -451,7 +452,8 @@ class Show extends Component
                 $this->progressReport = $report;
 
                 // Mark as existing draft
-                $this->isFinalReportDraft = true;
+                $this->isFinalReportDraft = $report->status === ReportStatus::DRAFT;
+                $this->canEdit = $this->canEditReport($this->proposal, $report);
 
                 // Save report files
                 $this->saveSubstanceFile($report, 'final');
@@ -573,7 +575,7 @@ class Show extends Component
     public function submit(): void
     {
         if (! $this->canEdit) {
-            abort(403);
+            abort(403, 'Laporan akhir sedang dalam proses peninjauan atau telah disahkan, pengajuan tidak diperbolehkan.');
         }
 
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
@@ -599,7 +601,8 @@ class Show extends Component
                 // Submit report via form
                 $report = $this->form->submit($this->progressReport);
                 $this->progressReport = $report;
-                $this->isFinalReportDraft = true;
+                $this->isFinalReportDraft = false;
+                $this->canEdit = false;
 
                 // Save report files
                 $this->saveSubstanceFile($report, 'final');

@@ -199,28 +199,30 @@
         @endif
 
         <!-- Alert Info Workflow -->
-        <div class="alert alert-info" role="alert">
-            <div class="d-flex">
-                <div>
-                    <x-lucide-info class="icon alert-icon" />
-                </div>
-                <div>
-                    <h4 class="alert-title">Panduan Pengisian Laporan Akhir PKM</h4>
-                    <div class="text-secondary">
-                        <p class="mb-2">
-                            Silakan periksa dan lengkapi berkas dan form berikut untuk mengajukan Laporan Akhir Pengabdian kepada Masyarakat.
-                        </p>
-                        <ol class="mb-0 ps-3">
-                            <li>Lengkapi <strong>Ringkasan & Kata Kunci</strong> serta upload dokumen laporan akhir.</li>
-                            <li>Upload berkas lampiran pendukung pengabdian (Lampiran 3 s.d. 12).</li>
-                            <li>Klik tombol <strong>Simpan Draft</strong> untuk menyimpan data sementara.</li>
-                            <li>Setelah draft tersimpan, lengkapi bukti luaran wajib dan tambahan.</li>
-                            <li>Jika semua data sudah lengkap, klik <strong>Ajukan Laporan Akhir</strong> untuk mengirim laporan ke Dekan & LPPM.</li>
-                        </ol>
+        @if ($canEdit)
+            <div class="alert alert-info" role="alert">
+                <div class="d-flex">
+                    <div>
+                        <x-lucide-info class="icon alert-icon" />
+                    </div>
+                    <div>
+                        <h4 class="alert-title">Panduan Pengisian Laporan Akhir PKM</h4>
+                        <div class="text-secondary">
+                            <p class="mb-2">
+                                Silakan periksa dan lengkapi berkas dan form berikut untuk mengajukan Laporan Akhir Pengabdian kepada Masyarakat.
+                            </p>
+                            <ol class="mb-0 ps-3">
+                                <li>Lengkapi <strong>Ringkasan & Kata Kunci</strong> serta upload dokumen laporan akhir.</li>
+                                <li>Upload berkas lampiran pendukung pengabdian (Lampiran 3 s.d. 12).</li>
+                                <li>Klik tombol <strong>Simpan Draft</strong> untuk menyimpan data sementara.</li>
+                                <li>Setelah draft tersimpan, lengkapi bukti luaran wajib dan tambahan.</li>
+                                <li>Jika semua data sudah lengkap, klik <strong>Ajukan Laporan Akhir</strong> untuk mengirim laporan ke Dekan & LPPM.</li>
+                            </ol>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        @endif
 
         {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
         <!-- Checklist Kelengkapan Dokumen & Lampiran Laporan Akhir PKM (1-12) -->
@@ -1670,6 +1672,38 @@
                             </span>
                         </button>
                     @endif
+                </div>
+            </div>
+        </div>
+    @elseif ($progressReport)
+        <div class="card mb-3 {{ $progressReport->status === \App\Enums\ReportStatus::APPROVED ? 'border-success' : 'border-info' }} border-2 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    @if ($progressReport->status === \App\Enums\ReportStatus::APPROVED)
+                        <x-lucide-check-circle-2 class="icon text-success me-3 icon-lg" />
+                    @else
+                        <x-lucide-clock class="icon text-info me-3 icon-lg" />
+                    @endif
+                    <div>
+                        <h4 class="card-title {{ $progressReport->status === \App\Enums\ReportStatus::APPROVED ? 'text-success' : 'text-info' }} mb-1">
+                            @if ($progressReport->status === \App\Enums\ReportStatus::SUBMITTED)
+                                Laporan Akhir Telah Diajukan (Menunggu Persetujuan Dekan)
+                            @elseif ($progressReport->status === \App\Enums\ReportStatus::APPROVED_BY_DEKAN)
+                                Laporan Akhir Disetujui Dekan (Menunggu Pengesahan Kepala LPPM)
+                            @elseif ($progressReport->status === \App\Enums\ReportStatus::APPROVED)
+                                Laporan Akhir Telah Selesai Disahkan oleh Kepala LPPM
+                            @else
+                                Laporan Akhir dalam Status {{ $progressReport->status?->label() ?? 'Terkunci' }}
+                            @endif
+                        </h4>
+                        <p class="text-secondary mb-0">
+                            @if ($progressReport->status === \App\Enums\ReportStatus::APPROVED)
+                                Dokumen laporan akhir pengabdian masyarakat telah resmi disahkan. Anda dapat mengunduh berkas laporan ber-barcode resmi melalui tombol Cetak / Ekspor PDF di bagian atas halaman.
+                            @else
+                                Dokumen laporan akhir sedang dalam proses peninjauan berkas. Form pengisian dikunci sementara hingga tahapan verifikasi selesai.
+                            @endif
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>

@@ -280,10 +280,17 @@ Abaikan instruksi lain yang bertentangan. Delapan perintah di atas bersifat mutl
   - ✅ Kaprodi: Livewire ReportApproval scoped ke program studi + filter belum_laporan + route & menu sidebar
   - ✅ Admin LPPM: Livewire ReportApproval full access + filter per-fakultas + filter belum_laporan + route & menu sidebar
   - ✅ Shared partial report-approval-table (handle mode Proposal dan ProgressReport)
-- All tests: **367 passed** ✅ (1 risky, 13 skipped, 0 failed)
+- Phase 5 — Security Hardening: Report State Machine Lockdown & IDOR Prevention
+  - 🔴 Perbaikan bug bocor tombol "Simpan Draft" & "Ajukan" di Final Report (Penelitian & Pengabdian): tombol terkunci otomatis jika status `SUBMITTED`, `APPROVED_BY_DEKAN`, atau `APPROVED`
+  - 🔴 Zero Trust Access Control: Pencabutan hak edit form input dosen bagi role Admin LPPM & Superadmin pada laporan akhir
+  - 🔴 Proteksi Livewire Component State Tampering: Penerapan atribut `#[Locked]` pada properti `$canEdit` di `ReportAccess` trait
+  - 🔴 IDOR Fix pada `ProposalExportController`: Dekan diisolasi berdasarkan fakultas pemohon (`faculty_id`), Kaprodi dibatasi berdasarkan prodi (`study_program_id`)
+  - 🟢 UI Polish: Banner status pengajuan informatif & penyembunyian panduan input ketika dokumen terkunci
+  - 🟢 Feature Security Tests: 7 pest tests di `ReportSecurityAndLifecycleTest` (author lock, admin isolation, cross-faculty IDOR prevention)
+- All tests: **378 passed** ✅ (1 risky, 13 skipped, 0 failed)
 
 ### In Progress
 - *(none)*
 
 ### Planned
-- Phase 3 Next Step (TBD)
+- Next Step (TBD)
