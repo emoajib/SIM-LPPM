@@ -121,27 +121,51 @@
                             display: true,
                             position: 'bottom',
                             labels: {
-                                // WCAG AA: kontras teks minimal 4.5:1 — #333 di atas putih = ~12.6:1 ✓
-                                color: '#333333',
+                                // WCAG AAA: kontras teks maksimal #0f172a di atas putih
+                                color: '#0f172a',
                                 font: {
                                     family: 'Inter, sans-serif',
-                                    // Minimal 14px desktop sesuai aksesibilitas WCAG
-                                    size: 14,
-                                    weight: '500'
+                                    size: 13,
+                                    weight: '600'
                                 },
-                                padding: 16,
+                                padding: 14,
                                 boxWidth: 12,
                                 boxHeight: 12,
                                 usePointStyle: true
                             }
                         },
+                        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+                        // Direct Data Labels: Angka tampil langsung di atas chart tanpa perlu hover
+                        datalabels: {
+                            display: function(context) {
+                                const val = context.dataset.data ? context.dataset.data[context.dataIndex] : 0;
+                                return typeof val === 'number' && val > 0;
+                            },
+                            color: '{{ $type === "doughnut" ? "#ffffff" : "#0f172a" }}',
+                            anchor: '{{ $type === "doughnut" ? "center" : "end" }}',
+                            align: '{{ $type === "doughnut" ? "center" : "top" }}',
+                            offset: {{ $type === "doughnut" ? 0 : 4 }},
+                            font: {
+                                family: 'Inter, sans-serif',
+                                size: {{ $type === "doughnut" ? 12 : 11 }},
+                                weight: 'bold'
+                            },
+                            padding: { top: 2, bottom: 2, left: 5, right: 5 },
+                            borderRadius: 4,
+                            backgroundColor: '{{ $type === "doughnut" ? "rgba(15, 23, 42, 0.6)" : "rgba(255, 255, 255, 0.92)" }}',
+                            borderColor: '{{ $type === "doughnut" ? "rgba(255, 255, 255, 0.3)" : "rgba(226, 232, 240, 0.8)" }}',
+                            borderWidth: 1,
+                            formatter: function(value) {
+                                return typeof value === 'number' ? value.toLocaleString('id-ID') : value;
+                            }
+                        },
                         tooltip: {
                             enabled: true,
-                            backgroundColor: 'rgba(30, 41, 59, 0.95)',
+                            backgroundColor: 'rgba(15, 23, 42, 0.95)',
                             padding: 12,
                             cornerRadius: 8,
                             titleFont: { family: 'Inter, sans-serif', size: 13, weight: 'bold' },
-                            bodyFont: { family: 'Inter, sans-serif', size: 13 },
+                            bodyFont: { family: 'Inter, sans-serif', size: 12 },
                             displayColors: true,
                             callbacks: {
                                 // Format angka ribuan: 1.234 (locale Indonesia)
@@ -161,13 +185,13 @@
                                 display: false
                             },
                             ticks: {
-                                // Minimal 13px, WCAG AA kontras #555 = 7.6:1 ✓
-                                color: '#555555',
+                                // Kontras tinggi Slate-800 (#1e293b) & font jelas
+                                color: '#1e293b',
                                 font: {
                                     family: 'Inter, sans-serif',
-                                    size: 13
+                                    size: 12,
+                                    weight: '600'
                                 },
-                                // Rotasi label untuk mencegah overlap pada banyak kategori
                                 maxRotation: 45,
                                 minRotation: 0,
                                 autoSkip: true,
@@ -176,14 +200,16 @@
                         },
                         y: {
                             display: {{ $type !== 'doughnut' ? 'true' : 'false' }},
+                            grace: '15%', // Memberi ruang vertikal 15% agar angka datalabel tidak terpotong canvas
                             grid: {
-                                color: 'rgba(0, 0, 0, 0.05)'
+                                color: 'rgba(0, 0, 0, 0.07)'
                             },
                             ticks: {
-                                color: '#555555',
+                                color: '#1e293b',
                                 font: {
                                     family: 'Inter, sans-serif',
-                                    size: 13
+                                    size: 12,
+                                    weight: '600'
                                 },
                                 beginAtZero: true,
                                 // Format angka ribuan pada sumbu Y
@@ -193,9 +219,7 @@
                             }
                         }
                     }
-                },
-                // Removed customDatalabels plugin as requested to keep chart clean.
-                // Numbers will only show on hover via tooltips.
+                }
             });
         }
      }"
@@ -253,8 +277,13 @@
     </div>
 
     {{-- 3. CHART UI --}}
-    <div class="card-header bg-transparent border-0 py-3">
+    <div class="card-header bg-transparent border-0 py-3 d-flex align-items-center justify-content-between">
         <h3 class="card-title fw-bold text-dark mb-0">{{ $title }}</h3>
+        <template x-if="a11yData && a11yData.length > 0">
+            <span class="badge bg-primary-lt fw-bold px-2 py-1" 
+                  x-text="'Total: ' + a11yData.reduce((acc, curr) => acc + curr.values.reduce((vAcc, v) => vAcc + (Number(v.value) || 0), 0), 0).toLocaleString('id-ID')">
+            </span>
+        </template>
     </div>
     
     <div class="card-body d-flex flex-column p-3" style="position: relative; flex-grow: 1;">

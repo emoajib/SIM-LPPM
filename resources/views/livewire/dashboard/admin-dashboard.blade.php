@@ -286,70 +286,124 @@
                                  if (!canvasEl) return;
                                  const ctx = canvasEl.getContext('2d');
                                  if (!ctx) return;
-                                 if (canvasEl.chartInstance) {
-                                     canvasEl.chartInstance.data.labels = data.labels;
-                                     canvasEl.chartInstance.data.datasets = data.datasets.map(function(ds) {
-                                         return { 
-                                             label: ds.label, 
-                                             data: ds.data, 
-                                             borderColor: ds.borderColor, 
-                                             backgroundColor: ds.backgroundColor, 
-                                             fill: true, 
-                                             tension: 0.4, 
-                                             pointRadius: 5, 
-                                             pointHoverRadius: 9, 
-                                             pointHoverBorderWidth: 3, 
-                                             pointHoverBorderColor: '#ffffff' 
-                                         };
-                                     });
-                                     canvasEl.chartInstance.update(isReinit ? 'none' : 'default');
-                                     return;
-                                 }
-                                 canvasEl.chartInstance = new Chart(ctx, {
-                                     type: 'line',
-                                     data: {
-                                         labels: data.labels,
-                                         datasets: data.datasets.map(function(ds) {
-                                             return { 
-                                                 label: ds.label, 
-                                                 data: ds.data, 
-                                                 borderColor: ds.borderColor, 
-                                                 backgroundColor: ds.backgroundColor, 
-                                                 fill: true, 
-                                                 tension: 0.4, 
-                                                 pointRadius: 5, 
-                                                 pointHoverRadius: 9, 
-                                                 pointHoverBorderWidth: 3, 
-                                                 pointHoverBorderColor: '#ffffff' 
-                                             };
-                                         }),
-                                     },
-                                     options: {
-                                         responsive: true, 
-                                         maintainAspectRatio: false,
-                                         animation: { duration: isReinit ? 0 : 800 },
-                                         hover: { mode: 'index', intersect: false },
-                                         plugins: {
-                                             legend: { display: true, position: 'bottom' },
-                                             tooltip: {
-                                                 enabled: true,
-                                                 backgroundColor: 'rgba(30,41,59,0.95)',
-                                                 padding: 12, 
-                                                 cornerRadius: 8,
-                                                 titleFont: { weight: 'bold', size: 13 },
-                                                 bodyFont: { size: 12 },
-                                                 callbacks: {
-                                                     title: function(items) { return 'Tahun ' + items[0].label; },
-                                                     label: function(item) { return item.dataset.label + ': ' + item.formattedValue + ' proposal'; }
-                                                 }
-                                             }
-                                         },
-                                         scales: {
-                                             x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 10 } } },
-                                             y: { grid: { color: 'rgba(229,231,235,0.5)' }, ticks: { color: '#9ca3af', font: { size: 10 }, stepSize: 1 } },
-                                         },
-                                     },
-                                 });
+                                  if (canvasEl.chartInstance) {
+                                      canvasEl.chartInstance.data.labels = data.labels;
+                                      canvasEl.chartInstance.data.datasets = data.datasets.map(function(ds) {
+                                          return { 
+                                              label: ds.label, 
+                                              data: ds.data, 
+                                              borderColor: ds.borderColor, 
+                                              backgroundColor: ds.backgroundColor, 
+                                              fill: true, 
+                                              tension: 0.4, 
+                                              pointRadius: 6, 
+                                              pointHoverRadius: 9, 
+                                              pointBackgroundColor: '#ffffff',
+                                              pointBorderWidth: 3, 
+                                              pointBorderColor: ds.borderColor 
+                                          };
+                                      });
+                                      canvasEl.chartInstance.update(isReinit ? 'none' : 'default');
+                                      return;
+                                  }
+                                  canvasEl.chartInstance = new Chart(ctx, {
+                                      type: 'line',
+                                      data: {
+                                          labels: data.labels,
+                                          datasets: data.datasets.map(function(ds) {
+                                              return { 
+                                                  label: ds.label, 
+                                                  data: ds.data, 
+                                                  borderColor: ds.borderColor, 
+                                                  backgroundColor: ds.backgroundColor, 
+                                                  fill: true, 
+                                                  tension: 0.4, 
+                                                  pointRadius: 6, 
+                                                  pointHoverRadius: 9, 
+                                                  pointBackgroundColor: '#ffffff',
+                                                  pointBorderWidth: 3, 
+                                                  pointBorderColor: ds.borderColor 
+                                              };
+                                          }),
+                                      },
+                                      options: {
+                                          responsive: true, 
+                                          maintainAspectRatio: false,
+                                          animation: { duration: isReinit ? 0 : 800 },
+                                          hover: { mode: 'index', intersect: false },
+                                          plugins: {
+                                              legend: { 
+                                                  display: true, 
+                                                  position: 'bottom',
+                                                  labels: {
+                                                      color: '#0f172a',
+                                                      font: { family: 'Inter, sans-serif', size: 12, weight: '600' },
+                                                      padding: 16,
+                                                      usePointStyle: true
+                                                  }
+                                              },
+                                              // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+                                              // Angka tampil langsung di atas titik tren tanpa perlu hover
+                                              datalabels: {
+                                                  display: true,
+                                                  align: 'top',
+                                                  anchor: 'end',
+                                                  offset: 6,
+                                                  color: '#0f172a',
+                                                  backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                                  borderColor: function(context) {
+                                                      return context.dataset.borderColor || '#cbd5e1';
+                                                  },
+                                                  borderWidth: 1.5,
+                                                  borderRadius: 6,
+                                                  padding: { top: 2, bottom: 2, left: 6, right: 6 },
+                                                  font: {
+                                                      family: 'Inter, sans-serif',
+                                                      size: 11,
+                                                      weight: 'bold'
+                                                  },
+                                                  formatter: function(value) {
+                                                      return value !== null && value !== undefined && value > 0 
+                                                          ? value.toLocaleString('id-ID') 
+                                                          : (value === 0 ? '0' : '');
+                                                  }
+                                              },
+                                              tooltip: {
+                                                  enabled: true,
+                                                  backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                                                  padding: 12, 
+                                                  cornerRadius: 8,
+                                                  titleFont: { family: 'Inter, sans-serif', weight: 'bold', size: 13 },
+                                                  bodyFont: { family: 'Inter, sans-serif', size: 12 },
+                                                  callbacks: {
+                                                      title: function(items) { return 'Tahun ' + items[0].label; },
+                                                      label: function(item) { return item.dataset.label + ': ' + item.formattedValue + ' proposal'; }
+                                                  }
+                                              }
+                                          },
+                                          scales: {
+                                              x: { 
+                                                  grid: { display: false }, 
+                                                  ticks: { 
+                                                      color: '#1e293b', 
+                                                      font: { family: 'Inter, sans-serif', size: 12, weight: '600' } 
+                                                  } 
+                                              },
+                                              y: { 
+                                                  grace: '15%',
+                                                  grid: { color: 'rgba(0, 0, 0, 0.06)' }, 
+                                                  ticks: { 
+                                                      color: '#1e293b', 
+                                                      font: { family: 'Inter, sans-serif', size: 12, weight: '600' }, 
+                                                      stepSize: 1,
+                                                      callback: function(value) {
+                                                          return Number.isInteger(value) ? value.toLocaleString('id-ID') : value;
+                                                      }
+                                                  } 
+                                              },
+                                          },
+                                      },
+                                  });
                              },
                              destroy() {
                                  if (this.chart) {
