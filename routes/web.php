@@ -23,6 +23,7 @@ use App\Livewire\AdminLppm\ExportSinta;
 use App\Livewire\AdminLppm\ManualBook\Form as ManualBookForm;
 use App\Livewire\AdminLppm\ManualBook\Index as ManualBookIndex;
 use App\Livewire\AdminLppm\Monev\MonevIndex;
+use App\Livewire\AdminLppm\ReportApproval as AdminLppmReportApproval;
 use App\Livewire\AdminLppm\ReviewerAssignment;
 use App\Livewire\AdminLppm\ReviewerWorkload;
 use App\Livewire\AdminLppm\ReviewMonitoring;
@@ -39,6 +40,7 @@ use App\Livewire\Iku\IkuDashboard;
 use App\Livewire\Iku\IkuVerification;
 use App\Livewire\Installer\InstallerWizard;
 use App\Livewire\Kaprodi\ProposalValidation;
+use App\Livewire\Kaprodi\ReportApproval as KaprodiReportApproval;
 use App\Livewire\KepalaLppm\FinalDecision;
 use App\Livewire\KepalaLppm\FinancialApproval;
 use App\Livewire\KepalaLppm\InitialApproval;
@@ -243,6 +245,7 @@ Route::middleware(['auth'])->group(function () {
     // Kaprodi Routes
     Route::middleware(['permission:module_persetujuan_kaprodi'])->prefix('kaprodi')->name('kaprodi.')->group(function () {
         Route::get('proposals', ProposalValidation::class)->name('proposals.index');
+        Route::get('report-approval', KaprodiReportApproval::class)->name('report-approval');
     });
 
     // Review Routes
@@ -338,6 +341,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('monev', MonevIndex::class)
             ->middleware('permission:module_monev')
             ->name('monev.index');
+        // Monitoring Laporan Akhir (Admin LPPM)
+        Route::get('report-approval', AdminLppmReportApproval::class)
+            ->middleware(['role:admin lppm|superadmin'])
+            ->name('report-approval');
+
         // route for global audit log access outside settings tab
         Route::get('audit-log', AuditLog::class)
             ->name('audit-log');

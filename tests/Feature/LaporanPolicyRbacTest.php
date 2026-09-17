@@ -24,7 +24,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
  * - Reviewer TIDAK BISA review laporan miliknya sendiri (conflict of interest)
  * - Reviewer BISA review laporan orang lain
  */
-
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
@@ -36,8 +35,8 @@ beforeEach(function () {
     $this->dosen = User::factory()->create();
     $this->dosen->assignRole('dosen');
     Identity::factory()->create([
-        'user_id'    => $this->dosen->id,
-        'type'       => 'dosen',
+        'user_id' => $this->dosen->id,
+        'type' => 'dosen',
         'faculty_id' => $this->faculty->id,
     ]);
 
@@ -46,8 +45,8 @@ beforeEach(function () {
     $this->dekan->assignRole('dosen');
     $this->dekan->assignRole('dekan');
     Identity::factory()->create([
-        'user_id'    => $this->dekan->id,
-        'type'       => 'dosen',
+        'user_id' => $this->dekan->id,
+        'type' => 'dosen',
         'faculty_id' => $this->faculty->id,
     ]);
 
@@ -56,7 +55,7 @@ beforeEach(function () {
     $this->reviewer->assignRole('reviewer');
     Identity::factory()->create([
         'user_id' => $this->reviewer->id,
-        'type'    => 'dosen',
+        'type' => 'dosen',
     ]);
 
     // Kepala LPPM
@@ -66,35 +65,35 @@ beforeEach(function () {
     // Proposal + Laporan akhir milik dosen biasa
     $research = Research::factory()->create();
     $this->proposal = Proposal::factory()->create([
-        'submitter_id'    => $this->dosen->id,
+        'submitter_id' => $this->dosen->id,
         'detailable_type' => 'App\Models\Research',
-        'detailable_id'   => $research->id,
-        'status'          => ProposalStatus::COMPLETED,
+        'detailable_id' => $research->id,
+        'status' => ProposalStatus::COMPLETED,
     ]);
 
     $this->laporan = ProgressReport::create([
-        'proposal_id'      => $this->proposal->id,
+        'proposal_id' => $this->proposal->id,
         'reporting_period' => 'final',
-        'reporting_year'   => 2026,
-        'status'           => ReportStatus::SUBMITTED,
-        'summary_update'   => 'Ringkasan laporan akhir.',
+        'reporting_year' => 2026,
+        'status' => ReportStatus::SUBMITTED,
+        'summary_update' => 'Ringkasan laporan akhir.',
     ]);
 
     // Proposal + Laporan akhir milik dekan sendiri
     $research2 = Research::factory()->create();
     $this->proposalDekan = Proposal::factory()->create([
-        'submitter_id'    => $this->dekan->id,
+        'submitter_id' => $this->dekan->id,
         'detailable_type' => 'App\Models\Research',
-        'detailable_id'   => $research2->id,
-        'status'          => ProposalStatus::COMPLETED,
+        'detailable_id' => $research2->id,
+        'status' => ProposalStatus::COMPLETED,
     ]);
 
     $this->laporanDekan = ProgressReport::create([
-        'proposal_id'      => $this->proposalDekan->id,
+        'proposal_id' => $this->proposalDekan->id,
         'reporting_period' => 'final',
-        'reporting_year'   => 2026,
-        'status'           => ReportStatus::SUBMITTED,
-        'summary_update'   => 'Ringkasan laporan dekan.',
+        'reporting_year' => 2026,
+        'status' => ReportStatus::SUBMITTED,
+        'summary_update' => 'Ringkasan laporan dekan.',
     ]);
 
     $this->policy = new LaporanPolicy;
@@ -116,10 +115,10 @@ test('dosen biasa tidak bisa approve laporan sendiri', function () {
 
     // Buat laporan milik dosen sendiri
     $ownLaporan = ProgressReport::create([
-        'proposal_id'      => $this->proposal->id,
+        'proposal_id' => $this->proposal->id,
         'reporting_period' => 'final',
-        'reporting_year'   => 2025,
-        'status'           => ReportStatus::SUBMITTED,
+        'reporting_year' => 2025,
+        'status' => ReportStatus::SUBMITTED,
     ]);
 
     $result = $this->policy->approve($this->dosen, $ownLaporan);
@@ -171,16 +170,16 @@ test('reviewer tidak bisa review laporan sendiri — conflict of interest', func
     // Buat laporan milik reviewer sendiri
     $researchOwn = Research::factory()->create();
     $proposalOwn = Proposal::factory()->create([
-        'submitter_id'    => $this->reviewer->id,
+        'submitter_id' => $this->reviewer->id,
         'detailable_type' => 'App\Models\Research',
-        'detailable_id'   => $researchOwn->id,
-        'status'          => ProposalStatus::COMPLETED,
+        'detailable_id' => $researchOwn->id,
+        'status' => ProposalStatus::COMPLETED,
     ]);
     $laporanOwn = ProgressReport::create([
-        'proposal_id'      => $proposalOwn->id,
+        'proposal_id' => $proposalOwn->id,
         'reporting_period' => 'final',
-        'reporting_year'   => 2026,
-        'status'           => ReportStatus::SUBMITTED,
+        'reporting_year' => 2026,
+        'status' => ReportStatus::SUBMITTED,
     ]);
 
     $result = $this->policy->review($this->reviewer, $laporanOwn);

@@ -114,6 +114,14 @@ class MenuComposer
                 'route' => 'kaprodi.proposals.index',
                 'roles' => ['kaprodi'],
             ]] : []),
+            // Kaprodi - Monitoring Laporan Akhir
+            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            [
+                'title' => 'Monitoring Laporan',
+                'icon' => 'report-analytics',
+                'route' => 'kaprodi.report-approval',
+                'roles' => ['kaprodi'],
+            ],
             // Kaprodi - Conditional Roadmap
             ...($roadmapActive ? [[
                 'title' => 'Kelola Peta Jalan',
@@ -225,6 +233,14 @@ class MenuComposer
                 'title' => 'Monev',
                 'icon' => 'chart-infographic',
                 'route' => 'admin-lppm.monev.index',
+                'roles' => ['admin lppm'],
+            ],
+            // Admin LPPM - Monitoring Laporan Akhir
+            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            [
+                'title' => 'Monitoring Laporan',
+                'icon' => 'report-analytics',
+                'route' => 'admin-lppm.report-approval',
                 'roles' => ['admin lppm'],
             ],
             // Reviewer menu
