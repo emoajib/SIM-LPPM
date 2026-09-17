@@ -297,11 +297,16 @@ class ReportExportController extends Controller
             if (active_role_is('dekan')) {
                 $faculty = (string) ($user->identity->faculty_id ?? $faculty);
             }
+            $reportStatus = $request->query('report_status');
             $isPreview = $request->boolean('preview');
 
             $proposals = Proposal::query()
                 ->where('detailable_type', 'App\Models\Research')
                 ->where('start_year', $period)
+                ->where(function ($q) {
+                    $q->where('status', ProposalStatus::COMPLETED)
+                        ->orWhereHas('progressReports');
+                })
                 ->when($semester && $semester !== 'all', fn ($q) => $q->where('semester', $semester))
                 ->when($search, function ($q) use ($search) {
                     $q->where(function ($sub) use ($search) {
@@ -313,7 +318,14 @@ class ReportExportController extends Controller
                 ->when($faculty && $faculty !== 'all', function ($q) use ($faculty) {
                     $q->whereHas('submitter.identity', fn ($i) => $i->where('faculty_id', $faculty));
                 })
-                ->with(['submitter.identity.faculty', 'submitter.identity.studyProgram', 'researchScheme', 'budgetItems'])
+                ->when($reportStatus && $reportStatus !== 'all', function ($q) use ($reportStatus) {
+                    if ($reportStatus === 'belum_laporan') {
+                        $q->whereDoesntHave('progressReports', fn ($rq) => $rq->where('reporting_period', 'final'));
+                    } else {
+                        $q->whereHas('progressReports', fn ($rq) => $rq->where('reporting_period', 'final')->where('status', $reportStatus));
+                    }
+                })
+                ->with(['submitter.identity.faculty', 'submitter.identity.studyProgram', 'researchScheme', 'budgetItems', 'latestFinalReport', 'progressReports' => fn ($q) => $q->where('reporting_period', 'final')->latest()])
                 ->latest()
                 ->get();
 
@@ -368,6 +380,7 @@ class ReportExportController extends Controller
                 : $pdf->output();
 
             if (! Storage::disk('local')->exists($cachePath)) {
+                $pdfBinary = $pdf->output();
                 Storage::disk('local')->put($cachePath, $pdfBinary);
             }
 
@@ -376,7 +389,6 @@ class ReportExportController extends Controller
 
             return $this->pdfDownloadResponse($pdfBinary, $filename);
         } catch (\Throwable $e) {
-
             Log::error('Research PDF Export Error: '.$e->getMessage());
 
             return back()->with('error', 'Gagal mengunduh PDF: '.$e->getMessage());
@@ -385,7 +397,6 @@ class ReportExportController extends Controller
 
     public function researchExcel(Request $request)
     {
-
         try {
             $user = Auth::user();
             $period = $request->query('period', date('Y'));
@@ -393,13 +404,14 @@ class ReportExportController extends Controller
             $search = $request->query('search');
             $scheme = $request->query('scheme');
             $faculty = $request->query('faculty');
+            $reportStatus = $request->query('report_status');
 
             if (active_role_is('dekan')) {
                 $faculty = (string) ($user->identity->faculty_id ?? $faculty);
             }
 
             $download = Excel::download(
-                new ResearchReportExport($period, $search, $scheme, $faculty, $semester),
+                new ResearchReportExport($period, $search, $scheme, $faculty, $semester, $reportStatus),
                 'laporan-penelitian-'.$period.'-'.now()->format('YmdHis').'.xlsx'
             );
 
@@ -427,11 +439,16 @@ class ReportExportController extends Controller
             if (active_role_is('dekan')) {
                 $faculty = (string) ($user->identity->faculty_id ?? $faculty);
             }
+            $reportStatus = $request->query('report_status');
             $isPreview = $request->boolean('preview');
 
             $proposals = Proposal::query()
                 ->where('detailable_type', 'App\Models\CommunityService')
                 ->where('start_year', $period)
+                ->where(function ($q) {
+                    $q->where('status', ProposalStatus::COMPLETED)
+                        ->orWhereHas('progressReports');
+                })
                 ->when($semester && $semester !== 'all', fn ($q) => $q->where('semester', $semester))
                 ->when($search, function ($q) use ($search) {
                     $q->where(function ($sub) use ($search) {
@@ -443,7 +460,14 @@ class ReportExportController extends Controller
                 ->when($faculty && $faculty !== 'all', function ($q) use ($faculty) {
                     $q->whereHas('submitter.identity', fn ($i) => $i->where('faculty_id', $faculty));
                 })
-                ->with(['submitter.identity.faculty', 'submitter.identity.studyProgram', 'communityServiceScheme', 'budgetItems'])
+                ->when($reportStatus && $reportStatus !== 'all', function ($q) use ($reportStatus) {
+                    if ($reportStatus === 'belum_laporan') {
+                        $q->whereDoesntHave('progressReports', fn ($rq) => $rq->where('reporting_period', 'final'));
+                    } else {
+                        $q->whereHas('progressReports', fn ($rq) => $rq->where('reporting_period', 'final')->where('status', $reportStatus));
+                    }
+                })
+                ->with(['submitter.identity.faculty', 'submitter.identity.studyProgram', 'communityServiceScheme', 'budgetItems', 'latestFinalReport', 'progressReports' => fn ($q) => $q->where('reporting_period', 'final')->latest()])
                 ->latest()
                 ->get();
 
@@ -498,6 +522,7 @@ class ReportExportController extends Controller
                 : $pdf->output();
 
             if (! Storage::disk('local')->exists($cachePath)) {
+                $pdfBinary = $pdf->output();
                 Storage::disk('local')->put($cachePath, $pdfBinary);
             }
 
@@ -506,7 +531,6 @@ class ReportExportController extends Controller
 
             return $this->pdfDownloadResponse($pdfBinary, $filename);
         } catch (\Throwable $e) {
-
             Log::error('PKM PDF Export Error: '.$e->getMessage());
 
             return back()->with('error', 'Gagal mengunduh PDF: '.$e->getMessage());
@@ -515,7 +539,6 @@ class ReportExportController extends Controller
 
     public function pkmExcel(Request $request)
     {
-
         try {
             $user = Auth::user();
             $period = $request->query('period', date('Y'));
@@ -523,13 +546,14 @@ class ReportExportController extends Controller
             $search = $request->query('search');
             $scheme = $request->query('scheme');
             $faculty = $request->query('faculty');
+            $reportStatus = $request->query('report_status');
 
             if (active_role_is('dekan')) {
                 $faculty = (string) ($user->identity->faculty_id ?? $faculty);
             }
 
             $download = Excel::download(
-                new CommunityServiceReportExport($period, $search, $scheme, $faculty, $semester),
+                new CommunityServiceReportExport($period, $search, $scheme, $faculty, $semester, $reportStatus),
                 'laporan-pkm-'.$period.'-'.now()->format('YmdHis').'.xlsx'
             );
 

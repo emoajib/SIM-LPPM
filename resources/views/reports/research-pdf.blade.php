@@ -145,7 +145,7 @@
                 <th style="width: 16%;">Ketua Peneliti</th>
                 <th style="width: 16%;">Fakultas / Prodi</th>
                 <th style="width: 13%;">Skema</th>
-                <th style="width: 11%;">Status</th>
+                <th style="width: 14%;">Status Laporan</th>
                 <th style="width: 10%;">Dana (Rp)</th>
             </tr>
         </thead>
@@ -155,7 +155,8 @@
                     $dana = ($proposal->sbk_value && $proposal->sbk_value > 0)
                         ? $proposal->sbk_value
                         : ($proposal->budgetItems->sum('total_price') ?? 0);
-                    $isCompleted = in_array($proposal->status?->value, ['approved', 'completed']);
+                    $finalReport = $proposal->latestFinalReport ?? $proposal->progressReports->first();
+                    $isReportApproved = $finalReport && $finalReport->status === \App\Enums\ReportStatus::APPROVED;
                 @endphp
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
@@ -169,8 +170,12 @@
                         <div class="text-muted">{{ $proposal->submitter?->identity?->studyProgram?->name ?? '-' }}</div>
                     </td>
                     <td class="text-center">{{ $proposal->researchScheme?->name ?? '-' }}</td>
-                    <td class="text-center {{ $isCompleted ? 'status-ok' : 'status-def' }}">
-                        {{ $proposal->status?->label() ?? '-' }}
+                    <td class="text-center {{ $isReportApproved ? 'status-ok' : 'status-def' }}">
+                        @if($finalReport)
+                            {{ $finalReport->status->label() }}
+                        @else
+                            <span style="color: #b45309; font-style: italic;">Belum Laporan</span>
+                        @endif
                     </td>
                     <td class="text-right fw-bold">
                         {{ number_format($dana, 0, ',', '.') }}

@@ -1,7 +1,7 @@
 <x-slot:pageActions>
     <div class="btn-list">
         @php
-            $exportParams = ['period' => $period, 'semester' => $selectedSemester, 'search' => $search, 'scheme' => $selectedScheme, 'faculty' => $selectedFaculty];
+            $exportParams = ['period' => $period, 'semester' => $selectedSemester, 'search' => $search, 'scheme' => $selectedScheme, 'faculty' => $selectedFaculty, 'report_status' => $selectedReportStatus];
         @endphp
         <a href="{{ route('reports.pkm.pdf', array_merge($exportParams, ['preview' => 1])) }}"
             class="btn btn-outline-info shadow-sm" target="_blank" title="Tinjau PDF">

@@ -3,7 +3,7 @@
     <div class="card mb-3 shadow-sm border-0 glass-card">
         <div class="card-body p-3">
             <div class="row g-2 align-items-center">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="input-icon">
                         <span class="input-icon-addon">
                             <i class="ti ti-search text-primary"></i>
@@ -32,16 +32,27 @@
                     </select>
                 </div>
                 <div class="col-md-2">
+                    <select wire:model.live="selectedReportStatus" class="form-select">
+                        <option value="all">Semua Status Laporan</option>
+                        <option value="belum_laporan">⚠ Belum Laporan</option>
+                        <option value="draft">Draft Laporan</option>
+                        <option value="submitted">Diajukan</option>
+                        <option value="approved_by_dekan">Disetujui Dekan</option>
+                        <option value="approved">Disetujui LPPM (Selesai)</option>
+                        <option value="rejected">Ditolak</option>
+                    </select>
+                </div>
+                <div class="col-md-1">
                     <select wire:model.live="selectedSemester" class="form-select">
-                        <option value="all">Semua Semester</option>
+                        <option value="all">Semester</option>
                         <option value="ganjil">Ganjil</option>
                         <option value="genap">Genap</option>
                     </select>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-1">
                     <select wire:model.live="period" class="form-select">
                         @foreach($periods as $p)
-                            <option value="{{ $p }}">Periode {{ $p }}</option>
+                            <option value="{{ $p }}">{{ $p }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -86,7 +97,8 @@
                             'period' => $period,
                             'semester' => $selectedSemester,
                             'scheme' => $selectedScheme,
-                            'faculty' => $selectedFaculty
+                            'faculty' => $selectedFaculty,
+                            'report_status' => $selectedReportStatus,
                         ];
                     @endphp
 
@@ -325,7 +337,7 @@
                                 <th class="w-1">No</th>
                                 <th>{{ __('Judul & Ketua') }}</th>
                                 <th>{{ __('Fakultas / Prodi') }}</th>
-                                <th>{{ __('Skema & Status') }}</th>
+                                <th>{{ __('Skema & Status Laporan') }}</th>
                                 <th>{{ __('Anggaran (Rp)') }}</th>
                                 <th class="w-1 text-center">{{ __('Aksi') }}</th>
                             </tr>
@@ -345,7 +357,7 @@
                                             <div class="flex-fill">
                                                 <div class="font-weight-medium text-wrap" style="max-width: 400px;"
                                                     title="{{ $proposal->title }}">
-                                                    <a href="{{ route($config['detailRoute'], $proposal) }}"
+                                                    <a href="{{ route($config['finalReportRoute'], $proposal) }}"
                                                         class="text-reset" wire:navigate.hover>
                                                         {{ $proposal->title }}
                                                     </a>
@@ -369,9 +381,23 @@
                                         <div class="text-muted small mb-1">
                                             {{ $proposal->{$config['schemeRelation']}->name ?? '-' }}
                                         </div>
-                                        <x-tabler.badge :color="$proposal->status->color()">
-                                            {{ $proposal->status->label() }}
-                                        </x-tabler.badge>
+                                        @php
+                                            $finalReport = $proposal->latestFinalReport ?? $proposal->progressReports->where('reporting_period', 'final')->first();
+                                        @endphp
+                                        @if ($finalReport)
+                                            <x-tabler.badge :color="$finalReport->status->color()">
+                                                {{ $finalReport->status->label() }}
+                                            </x-tabler.badge>
+                                            @if ($finalReport->submitted_at)
+                                                <div class="text-muted small mt-1">
+                                                    Diajukan: {{ $finalReport->submitted_at->format('d/m/Y') }}
+                                                </div>
+                                            @endif
+                                        @else
+                                            <span class="badge bg-warning-lt">
+                                                <i class="ti ti-alert-triangle me-1"></i> Belum Laporan
+                                            </span>
+                                        @endif
                                     </td>
                                     <td class="text-end">
                                         <div class="fw-bold">
@@ -384,11 +410,18 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <a href="{{ route($config['detailRoute'], $proposal) }}"
-                                            class="btn btn-sm btn-icon btn-outline-info" title="Lihat Detail Detail"
-                                            wire:navigate.hover>
-                                            <x-lucide-eye class="icon" />
-                                        </a>
+                                        <div class="btn-list flex-nowrap justify-content-center">
+                                            <a href="{{ route($config['finalReportRoute'], $proposal) }}"
+                                                class="btn btn-sm btn-primary" title="Lihat Dokumen Laporan Akhir"
+                                                wire:navigate.hover>
+                                                <i class="ti ti-file-text me-1"></i> {{ __('Laporan') }}
+                                            </a>
+                                            <a href="{{ route($config['detailRoute'], $proposal) }}"
+                                                class="btn btn-sm btn-icon btn-outline-secondary" title="Lihat Usulan Proposal"
+                                                wire:navigate.hover>
+                                                <i class="ti ti-file-search"></i>
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                             @empty

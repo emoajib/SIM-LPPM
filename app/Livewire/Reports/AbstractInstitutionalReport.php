@@ -3,6 +3,7 @@
 namespace App\Livewire\Reports;
 
 use App\Enums\ProposalStatus;
+use App\Enums\ReportStatus;
 use App\Livewire\Concerns\HasToast;
 use App\Livewire\Traits\WithInstitutionalApproval;
 use App\Models\AdditionalOutput;
@@ -16,6 +17,7 @@ use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+// Vetted by AI - Manual Review Required by Senior Engineer/Manager
 abstract class AbstractInstitutionalReport extends Component
 {
     use HasToast, WithInstitutionalApproval, WithPagination;
@@ -29,6 +31,8 @@ abstract class AbstractInstitutionalReport extends Component
     public string $selectedFaculty = 'all';
 
     public string $selectedSemester = 'all';
+
+    public string $selectedReportStatus = 'all';
 
     abstract protected function displayName(): string;
 
@@ -58,6 +62,11 @@ abstract class AbstractInstitutionalReport extends Component
         $this->resetPage();
     }
 
+    public function updatedSelectedReportStatus(): void
+    {
+        $this->resetPage();
+    }
+
     public function updatedSelectedFaculty(): void
     {
         if (active_role() === 'dekan' || auth()->user()->activeHasRole('dekan')) {
@@ -76,6 +85,7 @@ abstract class AbstractInstitutionalReport extends Component
         $this->search = '';
         $this->selectedScheme = 'all';
         $this->selectedSemester = 'all';
+        $this->selectedReportStatus = 'all';
 
         if (active_role() === 'dekan' || auth()->user()->activeHasRole('dekan')) {
             $this->selectedFaculty = (string) (auth()->user()->identity->faculty_id ?? 'all');
@@ -90,6 +100,7 @@ abstract class AbstractInstitutionalReport extends Component
     public function mount()
     {
         $this->period = request()->query('period', (string) date('Y'));
+        $this->selectedReportStatus = request()->query('report_status', 'all');
 
         if (active_role() === 'dekan' || auth()->user()->activeHasRole('dekan')) {
             $this->selectedFaculty = (string) (auth()->user()->identity->faculty_id ?? 'all');
@@ -101,6 +112,7 @@ abstract class AbstractInstitutionalReport extends Component
             $this->search = $report->metadata['search'] ?? '';
             $this->selectedScheme = $report->metadata['scheme'] ?? 'all';
             $this->selectedSemester = $report->metadata['semester'] ?? 'all';
+            $this->selectedReportStatus = $report->metadata['report_status'] ?? 'all';
 
             // Only override faculty if not dekan
             if (active_role() !== 'dekan' && ! auth()->user()->activeHasRole('dekan')) {
@@ -111,6 +123,7 @@ abstract class AbstractInstitutionalReport extends Component
             $this->search = request()->query('search', '');
             $this->selectedScheme = request()->query('scheme', 'all');
             $this->selectedSemester = request()->query('semester', 'all');
+            $this->selectedReportStatus = request()->query('report_status', 'all');
 
             // Only override faculty if not dekan
             if (active_role() !== 'dekan' && ! auth()->user()->activeHasRole('dekan')) {
@@ -137,6 +150,7 @@ abstract class AbstractInstitutionalReport extends Component
             'search' => $this->search,
             'scheme' => $this->selectedScheme,
             'faculty' => $this->selectedFaculty,
+            'report_status' => $this->selectedReportStatus,
         ];
 
         $this->dispatch('download-file', url: route($this->pdfRoute(), $params));
@@ -151,6 +165,7 @@ abstract class AbstractInstitutionalReport extends Component
             'search' => $this->search,
             'scheme' => $this->selectedScheme,
             'faculty' => $this->selectedFaculty,
+            'report_status' => $this->selectedReportStatus,
             'preview' => true,
         ];
 
@@ -166,6 +181,7 @@ abstract class AbstractInstitutionalReport extends Component
             'search' => $this->search,
             'scheme' => $this->selectedScheme,
             'faculty' => $this->selectedFaculty,
+            'report_status' => $this->selectedReportStatus,
         ];
 
         $this->dispatch('download-file', url: route($this->excelRoute(), $params));
@@ -198,10 +214,21 @@ abstract class AbstractInstitutionalReport extends Component
         return Proposal::query()
             ->where('detailable_type', $this->detailableType())
             ->where('start_year', $this->period)
+            ->where(function ($q) {
+                $q->where('status', ProposalStatus::COMPLETED)
+                    ->orWhereHas('progressReports');
+            })
             ->when($this->selectedSemester !== 'all', fn ($q) => $q->where('semester', $this->selectedSemester))
             ->when($this->selectedScheme !== 'all', fn ($q) => $q->where($this->schemeColumn(), $this->selectedScheme))
             ->when($this->selectedFaculty !== 'all', function ($q) {
                 $q->whereHas('submitter.identity', fn ($iq) => $iq->where('faculty_id', $this->selectedFaculty));
+            })
+            ->when($this->selectedReportStatus !== 'all', function ($q) {
+                if ($this->selectedReportStatus === 'belum_laporan') {
+                    $q->whereDoesntHave('progressReports', fn ($rq) => $rq->where('reporting_period', 'final'));
+                } else {
+                    $q->whereHas('progressReports', fn ($rq) => $rq->where('reporting_period', 'final')->where('status', $this->selectedReportStatus));
+                }
             })
             ->when($this->search, function ($q) {
                 $q->where(function ($sq) {
@@ -209,7 +236,14 @@ abstract class AbstractInstitutionalReport extends Component
                         ->orWhereHas('submitter', fn ($uq) => $uq->where('name', 'like', "%{$this->search}%"));
                 });
             })
-            ->with(['submitter.identity.faculty', 'submitter.identity.studyProgram', $this->schemeRelation(), 'budgetItems'])
+            ->with([
+                'submitter.identity.faculty',
+                'submitter.identity.studyProgram',
+                $this->schemeRelation(),
+                'budgetItems',
+                'latestFinalReport',
+                'progressReports' => fn ($q) => $q->where('reporting_period', 'final')->latest(),
+            ])
             ->latest();
     }
 
@@ -227,6 +261,11 @@ abstract class AbstractInstitutionalReport extends Component
     protected function availablePeriods(): array
     {
         return Proposal::query()
+            ->where('detailable_type', $this->detailableType())
+            ->where(function ($q) {
+                $q->where('status', ProposalStatus::COMPLETED)
+                    ->orWhereHas('progressReports');
+            })
             ->distinct()
             ->whereNotNull('start_year')
             ->orderBy('start_year', 'desc')
@@ -242,41 +281,35 @@ abstract class AbstractInstitutionalReport extends Component
     {
         $query = $this->getBaseQuery();
 
-        $totalApproved = (clone $query)
-            ->whereIn('status', [
-                ProposalStatus::APPROVED->value,
-                ProposalStatus::COMPLETED->value,
-            ])
-            ->count();
+        $totalFunded = (clone $query)->count();
 
-        $totalBudget = (clone $query)
-            ->whereIn('status', [
-                ProposalStatus::APPROVED->value,
-                ProposalStatus::COMPLETED->value,
-            ])
-            ->get()
+        $totalBudget = (clone $query)->get()
             ->sum(fn ($p) => ($p->sbk_value && $p->sbk_value > 0) ? (float) $p->sbk_value : $p->budgetItems->sum('total_price'));
 
-        $reportsCount = (clone $query)
-            ->whereHas('progressReports')
+        $reportsApprovedCount = (clone $query)
+            ->whereHas('progressReports', fn ($rq) => $rq->where('reporting_period', 'final')->where('status', ReportStatus::APPROVED->value))
+            ->count();
+
+        $reportsSubmittedCount = (clone $query)
+            ->whereHas('progressReports', fn ($rq) => $rq->where('reporting_period', 'final'))
             ->count();
 
         return [
             [
-                'label' => __('Proposal Disetujui'),
-                'value' => $totalApproved,
+                'label' => $this->reportType() === 'pkm' ? __('PKM Didanai') : __('Penelitian Didanai'),
+                'value' => $totalFunded,
                 'icon' => 'check',
                 'variant' => 'bg-green-lt text-green',
             ],
             [
-                'label' => __('Anggaran'),
+                'label' => __('Total Anggaran'),
                 'value' => 'Rp '.number_format($totalBudget, 0, ',', '.'),
                 'icon' => 'currency-dollar',
                 'variant' => 'bg-blue-lt text-blue',
             ],
             [
-                'label' => __('Laporan'),
-                'value' => $reportsCount,
+                'label' => __('Laporan Masuk (Selesai)'),
+                'value' => "{$reportsSubmittedCount} ({$reportsApprovedCount} Selesai)",
                 'icon' => 'file-text',
                 'variant' => 'bg-yellow-lt text-yellow',
             ],
@@ -339,6 +372,10 @@ abstract class AbstractInstitutionalReport extends Component
         return Proposal::query()
             ->where('detailable_type', $this->detailableType())
             ->where('start_year', $this->period)
+            ->where(function ($q) {
+                $q->where('status', ProposalStatus::COMPLETED)
+                    ->orWhereHas('progressReports');
+            })
             ->when($this->selectedSemester !== 'all', fn ($q) => $q->where('semester', $this->selectedSemester))
             ->when($this->selectedFaculty !== 'all', function ($q) {
                 $q->whereHas('submitter.identity', fn ($iq) => $iq->where('faculty_id', $this->selectedFaculty));
@@ -393,6 +430,10 @@ abstract class AbstractInstitutionalReport extends Component
         return Proposal::query()
             ->where('detailable_type', $this->detailableType())
             ->where('start_year', $this->period)
+            ->where(function ($q) {
+                $q->where('status', ProposalStatus::COMPLETED)
+                    ->orWhereHas('progressReports');
+            })
             ->when($this->selectedSemester !== 'all', fn ($q) => $q->where('semester', $this->selectedSemester))
             ->when($this->selectedScheme !== 'all', fn ($q) => $q->where($this->schemeColumn(), $this->selectedScheme))
             ->when($this->search, function ($q) {
@@ -430,12 +471,13 @@ abstract class AbstractInstitutionalReport extends Component
             'fokusTitle' => $isPkm ? __('Bidang Fokus PKM') : __('Bidang Fokus Utama'),
             'produktivitasTitle' => $isPkm ? __('Produktivitas Fakultas (PKM)') : __('Produktivitas Fakultas'),
             'analitikTitle' => $isPkm ? __('Analitik Luaran PKM') : __('Analitik Luaran Penelitian'),
-            'daftarTitle' => $isPkm ? __('Daftar Seluruh PKM') : __('Daftar Seluruh Penelitian'),
+            'daftarTitle' => $isPkm ? __('Daftar Seluruh Laporan PKM') : __('Daftar Seluruh Laporan Penelitian'),
             'unitLabel' => $this->displayName(),
-            'emptyListText' => $isPkm ? __('Belum ada data PKM untuk periode ini.') : __('Belum ada data penelitian untuk periode ini.'),
+            'emptyListText' => $isPkm ? __('Belum ada data laporan PKM untuk periode ini.') : __('Belum ada data laporan penelitian untuk periode ini.'),
             'pdfRoute' => $this->pdfRoute(),
             'excelRoute' => $this->excelRoute(),
             'detailRoute' => $this->detailRoute(),
+            'finalReportRoute' => $isPkm ? 'community-service.final-report.show' : 'research.final-report.show',
             'schemeRelation' => $this->schemeRelation(),
         ];
     }

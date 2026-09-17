@@ -38,8 +38,8 @@
                 style="font-weight: bold; border: 2px solid #000000; background-color: #e2e8f0; text-align: center; width: 80px;">
                 Semester</th>
             <th
-                style="font-weight: bold; border: 2px solid #000000; background-color: #e2e8f0; text-align: center; width: 100px;">
-                Status</th>
+                style="font-weight: bold; border: 2px solid #000000; background-color: #e2e8f0; text-align: center; width: 140px;">
+                Status Laporan</th>
             <th
                 style="font-weight: bold; border: 2px solid #000000; background-color: #e2e8f0; text-align: center; width: 150px;">
                 Dana Disetujui (Rp)</th>
@@ -47,6 +47,9 @@
     </thead>
     <tbody>
         @foreach($proposals as $index => $proposal)
+            @php
+                $finalReport = $proposal->latestFinalReport ?? $proposal->progressReports->first();
+            @endphp
             <tr>
                 <td style="border: 1px solid #000000; text-align: center; vertical-align: top;">{{ $index + 1 }}</td>
                 <td style="border: 1px solid #000000; font-weight: bold; vertical-align: top;">{{ $proposal->title }}</td>
@@ -63,7 +66,7 @@
                 <td style="border: 1px solid #000000; text-align: center; vertical-align: top; text-transform: capitalize;">
                     {{ $proposal->semester ?? '-' }}</td>
                 <td style="border: 1px solid #000000; text-align: center; vertical-align: top;">
-                    {{ $proposal->status?->label() ?? '-' }}</td>
+                    {{ $finalReport ? $finalReport->status->label() : 'Belum Laporan' }}</td>
                 <td style="border: 1px solid #000000; text-align: right; vertical-align: top;">
                     {{ ($proposal->sbk_value && $proposal->sbk_value > 0) ? $proposal->sbk_value : ($proposal->budgetItems->sum('total_price') ?? 0) }}
                 </td>

@@ -7,6 +7,7 @@ namespace App\Livewire\Traits;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
 
+// Vetted by AI - Manual Review Required by Senior Engineer/Manager
 trait ReportFilters
 {
     #[Url]
@@ -18,9 +19,15 @@ trait ReportFilters
     #[Url]
     public string $roleFilter = 'ketua';
 
+    #[Url]
+    public string $statusFilter = 'all';
+
+    #[Url]
+    public string $schemeFilter = 'all';
+
     #[On('resetFilters')]
     public function resetFilters(): void
     {
-        $this->reset(['search', 'selectedYear', 'roleFilter']);
+        $this->reset(['search', 'selectedYear', 'roleFilter', 'statusFilter', 'schemeFilter']);
     }
 }
