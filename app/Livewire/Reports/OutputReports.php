@@ -12,6 +12,7 @@ use App\Models\MandatoryOutput;
 use App\Models\Proposal;
 use App\Models\ResearchScheme;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
@@ -363,5 +364,96 @@ class OutputReports extends Component
         ];
 
         return $categories[$category] ?? ucfirst($category);
+    }
+
+    // =========================================================================
+    // Verifikasi Luaran — hanya Admin LPPM
+    // Admin LPPM memvalidasi apakah luaran yang dilaporkan dosen sudah sesuai.
+    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // =========================================================================
+
+    /**
+     * Verifikasi Luaran Wajib sebagai "sesuai" oleh Admin LPPM.
+     */
+    public function verifyMandatoryOutput(string $id): void
+    {
+        // Hanya Admin LPPM yang bisa verifikasi
+        if (! Auth::user()?->activeHasAnyRole(['admin lppm', 'superadmin'])) {
+            $this->toastError('Anda tidak memiliki kewenangan untuk memverifikasi luaran.');
+
+            return;
+        }
+
+        $output = MandatoryOutput::findOrFail($id);
+        $output->update([
+            'is_verified' => true,
+            'verified_at' => now(),
+            'verified_by' => Auth::id(),
+        ]);
+
+        $this->toastSuccess('Luaran wajib telah diverifikasi.');
+    }
+
+    /**
+     * Batalkan verifikasi Luaran Wajib oleh Admin LPPM.
+     */
+    public function unverifyMandatoryOutput(string $id): void
+    {
+        if (! Auth::user()?->activeHasAnyRole(['admin lppm', 'superadmin'])) {
+            $this->toastError('Anda tidak memiliki kewenangan untuk membatalkan verifikasi luaran.');
+
+            return;
+        }
+
+        $output = MandatoryOutput::findOrFail($id);
+        $output->update([
+            'is_verified' => false,
+            'verified_at' => null,
+            'verified_by' => null,
+        ]);
+
+        $this->toastSuccess('Verifikasi luaran wajib telah dibatalkan.');
+    }
+
+    /**
+     * Verifikasi Luaran Tambahan sebagai "sesuai" oleh Admin LPPM.
+     */
+    public function verifyAdditionalOutput(string $id): void
+    {
+        if (! Auth::user()?->activeHasAnyRole(['admin lppm', 'superadmin'])) {
+            $this->toastError('Anda tidak memiliki kewenangan untuk memverifikasi luaran.');
+
+            return;
+        }
+
+        $output = AdditionalOutput::findOrFail($id);
+        $output->update([
+            'is_verified' => true,
+            'verified_at' => now(),
+            'verified_by' => Auth::id(),
+        ]);
+
+        $this->toastSuccess('Luaran tambahan telah diverifikasi.');
+    }
+
+    /**
+     * Batalkan verifikasi Luaran Tambahan oleh Admin LPPM.
+     */
+    public function unverifyAdditionalOutput(string $id): void
+    {
+        if (! Auth::user()?->activeHasAnyRole(['admin lppm', 'superadmin'])) {
+            $this->toastError('Anda tidak memiliki kewenangan untuk membatalkan verifikasi luaran.');
+
+            return;
+        }
+
+        $output = AdditionalOutput::findOrFail($id);
+        $output->update([
+            'is_verified' => false,
+            'verified_at' => null,
+            'verified_by' => null,
+        ]);
+
+        $this->toastSuccess('Verifikasi luaran tambahan telah dibatalkan.');
     }
 }

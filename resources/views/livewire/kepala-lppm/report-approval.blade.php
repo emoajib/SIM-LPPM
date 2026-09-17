@@ -80,6 +80,22 @@
         </div>
     </div>
 
+    <!-- Stat Row 2: Belum Laporan -->
+    <div class="row row-cards mb-3">
+        <div class="col-12">
+            <div class="alert alert-warning d-flex align-items-center gap-2 shadow-sm border-0 mb-0" role="alert">
+                <i class="ti ti-alert-triangle fs-3 text-warning"></i>
+                <div>
+                    <strong>{{ $this->stats['belum_laporan'] }} proposal</strong>
+                    sudah disetujui/selesai namun <strong>belum mengajukan laporan akhir</strong>.
+                    <button class="btn btn-sm btn-warning ms-2" wire:click="$set('statusFilter', 'belum_laporan')">
+                        Lihat Daftar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Filter Section -->
     <div class="mb-3 row">
         <div class="col-12">
@@ -94,6 +110,7 @@
                         <div class="col-md-3">
                             <select class="form-select" wire:model.live="statusFilter">
                                 <option value="all">Semua Status Pelaporan</option>
+                                <option value="belum_laporan">⚠ Belum Laporan</option>
                                 <option value="ready">Siap Disahkan LPPM (Disetujui Dekan)</option>
                                 <option value="waiting_dekan">Menunggu Persetujuan Dekan</option>
                                 <option value="approved">Sudah Disahkan LPPM</option>

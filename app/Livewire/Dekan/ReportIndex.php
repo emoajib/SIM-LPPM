@@ -29,10 +29,14 @@ class ReportIndex extends Component
     #[Url]
     public string $typeFilter = 'all';
 
+    #[Url]
+    public string $statusFilter = 'all';
+
     public function resetFilters(): void
     {
         $this->search = '';
         $this->typeFilter = 'all';
+        $this->statusFilter = 'all';
         $this->resetPage();
     }
 
@@ -52,9 +56,10 @@ class ReportIndex extends Component
     {
         $facultyId = $this->dekanFacultyId;
 
+        // Query semua laporan akhir dari fakultas dekan (tidak hanya SUBMITTED)
+        // agar dekan dapat melihat riwayat approval (disetujui, ditolak, dll.)
         $query = ProgressReport::query()
-            ->where('reporting_period', 'final')
-            ->where('status', ReportStatus::SUBMITTED);
+            ->where('reporting_period', 'final');
 
         if (! $facultyId) {
             $query->whereRaw('1 = 0');
@@ -62,6 +67,19 @@ class ReportIndex extends Component
             $query->whereHas('proposal.submitter.identity', function ($q) use ($facultyId) {
                 $q->where('faculty_id', $facultyId);
             });
+        }
+
+        // Filter status: default tampilkan SUBMITTED saja (butuh action dari dekan)
+        if ($this->statusFilter !== 'all') {
+            $query->where('status', $this->statusFilter);
+        } else {
+            // Default: tampilkan laporan yang perlu action atau sudah diproses Dekan
+            $query->whereIn('status', [
+                ReportStatus::SUBMITTED->value,
+                ReportStatus::APPROVED_BY_DEKAN->value,
+                ReportStatus::APPROVED->value,
+                ReportStatus::REJECTED->value,
+            ]);
         }
 
         return $query

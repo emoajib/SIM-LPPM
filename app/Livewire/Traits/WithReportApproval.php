@@ -23,6 +23,15 @@ trait WithReportApproval
             return;
         }
 
+        // Verifikasi wewenang berbasis LaporanPolicy (activeHasRole-based)
+        // Pejabat (Dekan, Kaprodi, Kepala LPPM, Rektor) boleh approve laporan sendiri
+        // karena approval adalah wewenang jabatan, bukan personal.
+        if (! auth()->user()->can('approve', $report)) {
+            $this->toastError('Anda tidak memiliki wewenang untuk menyetujui laporan ini.');
+
+            return;
+        }
+
         $activeRole = active_role();
         $newStatus = null;
 
@@ -33,7 +42,7 @@ trait WithReportApproval
                 return;
             }
 
-            // Faculty check
+            // Faculty check: Dekan hanya bisa approve laporan dari fakultasnya
             $dekanFacultyId = Auth::user()?->identity?->faculty_id;
             $submitterFacultyId = $report->proposal->submitter->identity?->faculty_id;
             if (! $dekanFacultyId || $dekanFacultyId !== $submitterFacultyId) {
@@ -42,12 +51,8 @@ trait WithReportApproval
                 return;
             }
 
-            // Self-approval check
-            if ($report->proposal->submitter_id === Auth::id()) {
-                $this->toastError('Anda tidak dapat menyetujui laporan Anda sendiri.');
-
-                return;
-            }
+            // Catatan: self-approval diizinkan — Dekan boleh approve laporan dirinya sendiri
+            // karena approval dilakukan atas nama jabatan Dekan, bukan kapasitas personal.
 
             $newStatus = ReportStatus::APPROVED_BY_DEKAN;
         } elseif ($activeRole === 'kepala lppm') {
@@ -107,6 +112,13 @@ trait WithReportApproval
 
         $report = $this->progressReport;
         if (! $report) {
+            return;
+        }
+
+        // Verifikasi wewenang berbasis LaporanPolicy
+        if (! auth()->user()->can('approve', $report)) {
+            $this->toastError('Anda tidak memiliki wewenang untuk menolak laporan ini.');
+
             return;
         }
 

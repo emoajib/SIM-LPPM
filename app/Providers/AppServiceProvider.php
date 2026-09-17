@@ -10,6 +10,7 @@ use App\Models\ProposalStatusLog;
 use App\Observers\ProgressReportObserver;
 use App\Observers\ProposalObserver;
 use App\Observers\ProposalStatusLogObserver;
+use App\Policies\LaporanPolicy;
 use App\Policies\LetterPolicy;
 use App\Policies\MediaPolicy;
 use App\Policies\ProposalPolicy;
@@ -78,6 +79,7 @@ class AppServiceProvider extends ServiceProvider
 
             // Register Policies
             Gate::policy(Proposal::class, ProposalPolicy::class);
+            Gate::policy(ProgressReport::class, LaporanPolicy::class);
             Gate::policy(Media::class, MediaPolicy::class);
             Gate::policy(Letter::class, LetterPolicy::class);
 

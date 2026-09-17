@@ -6,6 +6,7 @@ namespace App\Livewire\KepalaLppm;
 
 use App\Enums\ReportStatus;
 use App\Models\CommunityService;
+use App\Models\Proposal;
 use App\Models\ProgressReport;
 use App\Models\Research;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -60,12 +61,36 @@ class ReportApproval extends Component
             'ready_lppm' => (clone $base)->where('status', ReportStatus::APPROVED_BY_DEKAN)->count(),
             'waiting_dekan' => (clone $base)->where('status', ReportStatus::SUBMITTED)->count(),
             'approved_lppm' => (clone $base)->where('status', ReportStatus::APPROVED)->count(),
+            // Proposal COMPLETED yang belum punya laporan akhir sama sekali
+            'belum_laporan' => Proposal::query()
+                ->whereIn('status', ['approved', 'completed'])
+                ->whereDoesntHave('progressReports', fn ($q) => $q->where('reporting_period', 'final'))
+                ->count(),
         ];
     }
 
     #[Computed]
     public function reports()
     {
+        // Filter 'belum_laporan': tampilkan Proposal yang sudah disetujui/selesai
+        // tapi belum punya ProgressReport final sama sekali (status real, bukan enum tambahan)
+        if ($this->statusFilter === 'belum_laporan') {
+            $proposalQuery = Proposal::query()
+                ->whereIn('status', ['approved', 'completed'])
+                ->whereDoesntHave('progressReports', fn ($q) => $q->where('reporting_period', 'final'))
+                ->with(['submitter.identity.studyProgram', 'detailable', 'researchScheme'])
+                ->when($this->search, fn ($q) => $q->where('title', 'like', "%{$this->search}%"))
+                ->when($this->typeFilter !== 'all', function ($q) {
+                    $detailableType = $this->typeFilter === 'research' ? Research::class : CommunityService::class;
+                    $q->where('detailable_type', $detailableType);
+                })
+                ->latest();
+
+            // Return wrapped in a paginator-compatible structure
+            // We return proposals directly for this special filter
+            return $proposalQuery->paginate(15);
+        }
+
         $query = ProgressReport::query()
             ->where('reporting_period', 'final');
 

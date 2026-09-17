@@ -12,16 +12,26 @@
             <div class="card">
                 <div class="card-body">
                     <div class="row g-3">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <input type="text" class="form-control" placeholder="Cari berdasarkan judul proposal..."
                                 wire:model.live.debounce.300ms="search" />
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <select class="form-select" wire:model.live="typeFilter">
                                 <option value="all">Semua Jenis</option>
                                 <option value="research">Penelitian</option>
                                 <option value="community_service">Pengabdian</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <select class="form-select" wire:model.live="statusFilter">
+                                <option value="all">Semua Status</option>
+                                <option value="submitted">Diajukan</option>
+                                <option value="approved_by_dekan">Disetujui Dekan</option>
+                                <option value="approved">Disetujui LPPM</option>
+                                <option value="rejected">Ditolak</option>
                             </select>
                         </div>
 
@@ -47,6 +57,7 @@
                         <th>Jenis</th>
                         <th>Pengusul</th>
                         <th>Tgl Diajukan</th>
+                        <th>Status</th>
                         <th class="w-1">Aksi</th>
                     </tr>
                 </thead>
@@ -81,6 +92,20 @@
                             </td>
                             <td>
                                 @php
+                                    $statusColor = match($report->status?->value) {
+                                        'submitted'        => 'info',
+                                        'approved_by_dekan'=> 'primary',
+                                        'approved'         => 'success',
+                                        'rejected'         => 'danger',
+                                        default            => 'secondary',
+                                    };
+                                @endphp
+                                <x-tabler.badge :color="$statusColor" variant="light">
+                                    {{ $report->status?->label() ?? '—' }}
+                                </x-tabler.badge>
+                            </td>
+                            <td>
+                                @php
                                     $showRoute = $report->proposal->detailable_type === 'App\Models\Research'
                                         ? route('research.final-report.show', $report->proposal)
                                         : route('community-service.final-report.show', $report->proposal);
@@ -93,11 +118,11 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="py-8 text-center">
+                            <td colspan="6" class="py-8 text-center">
                                 <div class="mb-3">
                                     <x-lucide-inbox class="text-secondary icon icon-lg" />
                                 </div>
-                                <p class="text-secondary">Tidak ada laporan akhir yang menunggu persetujuan.</p>
+                                <p class="text-secondary">Tidak ada laporan akhir yang ditemukan.</p>
                             </td>
                         </tr>
                     @endforelse

@@ -60,6 +60,16 @@ class RoleSeeder extends Seeder
             'module_export_sinta' => ['admin lppm'],
             'module_pengaturan' => ['admin lppm'],
             'module_manual_book' => ['admin lppm', 'superadmin'],
+
+            // === Fine-grained RBAC permissions untuk laporan akhir ===
+            // Pejabat (Dekan, Kaprodi, Kepala LPPM, Rektor) BOLEH approve laporan sendiri
+            // karena approval adalah wewenang jabatan, bukan personal.
+            // Yang dilarang: Reviewer mereview laporan miliknya sendiri (conflict of interest).
+            'approve laporan akhir' => ['admin lppm', 'dekan', 'kaprodi', 'kepala lppm', 'rektor', 'superadmin'],
+            'review laporan' => ['admin lppm', 'reviewer', 'superadmin'],
+            'submit laporan akhir' => ['admin lppm', 'dekan', 'dosen', 'kaprodi', 'kepala lppm', 'rektor', 'superadmin'],
+            'upload dokumen luaran' => ['admin lppm', 'dekan', 'dosen', 'kaprodi', 'kepala lppm', 'rektor', 'superadmin'],
+            'verify luaran' => ['admin lppm', 'superadmin'],
         ];
 
         foreach ($mappings as $permissionName => $roleNames) {

@@ -121,10 +121,18 @@
                             display: true,
                             position: 'bottom',
                             labels: {
-                                color: 'var(--tblr-body-color, #333)',
+                                // WCAG AA: kontras teks minimal 4.5:1 — #333 di atas putih = ~12.6:1 ✓
+                                color: '#333333',
                                 font: {
-                                    family: 'Inter, sans-serif'
-                                }
+                                    family: 'Inter, sans-serif',
+                                    // Minimal 14px desktop sesuai aksesibilitas WCAG
+                                    size: 14,
+                                    weight: '500'
+                                },
+                                padding: 16,
+                                boxWidth: 12,
+                                boxHeight: 12,
+                                usePointStyle: true
                             }
                         },
                         tooltip: {
@@ -133,11 +141,15 @@
                             padding: 12,
                             cornerRadius: 8,
                             titleFont: { family: 'Inter, sans-serif', size: 13, weight: 'bold' },
-                            bodyFont: { family: 'Inter, sans-serif', size: 12 },
+                            bodyFont: { family: 'Inter, sans-serif', size: 13 },
                             displayColors: true,
                             callbacks: {
-                                label: function(item) { 
-                                    return item.dataset.label + ': ' + item.formattedValue; 
+                                // Format angka ribuan: 1.234 (locale Indonesia)
+                                label: function(item) {
+                                    const val = typeof item.raw === 'number'
+                                        ? item.raw.toLocaleString('id-ID')
+                                        : item.formattedValue;
+                                    return (item.dataset.label ? item.dataset.label + ': ' : '') + val;
                                 }
                             }
                         }
@@ -149,7 +161,17 @@
                                 display: false
                             },
                             ticks: {
-                                color: 'var(--tblr-muted-color, #777)'
+                                // Minimal 13px, WCAG AA kontras #555 = 7.6:1 ✓
+                                color: '#555555',
+                                font: {
+                                    family: 'Inter, sans-serif',
+                                    size: 13
+                                },
+                                // Rotasi label untuk mencegah overlap pada banyak kategori
+                                maxRotation: 45,
+                                minRotation: 0,
+                                autoSkip: true,
+                                maxTicksLimit: 12
                             }
                         },
                         y: {
@@ -158,8 +180,16 @@
                                 color: 'rgba(0, 0, 0, 0.05)'
                             },
                             ticks: {
-                                color: 'var(--tblr-muted-color, #777)',
-                                beginAtZero: true
+                                color: '#555555',
+                                font: {
+                                    family: 'Inter, sans-serif',
+                                    size: 13
+                                },
+                                beginAtZero: true,
+                                // Format angka ribuan pada sumbu Y
+                                callback: function(value) {
+                                    return Number.isInteger(value) ? value.toLocaleString('id-ID') : value;
+                                }
                             }
                         }
                     }
