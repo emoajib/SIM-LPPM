@@ -102,17 +102,10 @@ chmod 600 .env     # KRITIS: .env hanya boleh dibaca owner
 chmod 700 storage/app/backup
 find storage/app/backup -type f -print0 | xargs -0 chmod 600 2>/dev/null || true
 
-# Test application
+# Test application (single line to prevent cPanel ea_php_cli.pm stat newline warning)
 echo "Testing application..."
-php artisan tinker --execute="
-\$p = App\Models\Proposal::first();
-if (\$p) {
-    echo '✓ Proposal found: ' . \$p->title . PHP_EOL;
-    echo '✓ Status: ' . \$p->status->label() . PHP_EOL;
-} else {
-    echo '✗ No proposals found' . PHP_EOL;
-}
-"
+php artisan tinker --execute="\$p = App\Models\Proposal::first(); if (\$p) { echo '✓ Proposal found: ' . \$p->title . PHP_EOL; echo '✓ Status: ' . \$p->status->label() . PHP_EOL; } else { echo '✗ No proposals found' . PHP_EOL; }"
+
 
 # Clear rate limiters (biar user yg kena lockout bisa login lagi)
 php artisan rate-limiter:clear --force

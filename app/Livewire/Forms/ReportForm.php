@@ -747,6 +747,29 @@ class ReportForm extends Form
     }
 
     /**
+     * Resolve a valid local path from an uploaded file.
+     * Returns null if the file does not exist on disk or cannot be read.
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     */
+    protected function getValidUploadPath(mixed $file): ?string
+    {
+        if (! $file || ! ($file instanceof TemporaryUploadedFile || $file instanceof UploadedFile)) {
+            return null;
+        }
+
+        try {
+            $realPath = $file->getRealPath();
+            if ($realPath && file_exists($realPath) && is_readable($realPath)) {
+                return $realPath;
+            }
+        } catch (\Throwable $e) {
+            \Log::warning('Failed reading uploaded file real path: '.$e->getMessage());
+        }
+
+        return null;
+    }
+
+    /**
      * Save a single file to media collection
      */
     protected function saveFileToCollection(
@@ -754,13 +777,14 @@ class ReportForm extends Form
         $file,
         string $collectionName
     ): void {
-        if (! $file || ! $file instanceof TemporaryUploadedFile) {
+        $realPath = $this->getValidUploadPath($file);
+        if (! $realPath) {
             return;
         }
 
         try {
             $report->clearMediaCollection($collectionName);
-            $mediaPath = app(ImageCompressionService::class)->compressIfImage($file->getRealPath());
+            $mediaPath = app(ImageCompressionService::class)->compressIfImage($realPath);
             $report
                 ->addMedia($mediaPath)
                 ->usingName($file->getClientOriginalName())
@@ -873,26 +897,26 @@ class ReportForm extends Form
             }
 
             // Save file if uploaded
-            if (
-                isset($this->tempMandatoryFiles[$proposalOutputId]) &&
-                $this->tempMandatoryFiles[$proposalOutputId] instanceof UploadedFile
-            ) {
+            if (isset($this->tempMandatoryFiles[$proposalOutputId])) {
                 $file = $this->tempMandatoryFiles[$proposalOutputId];
+                $realPath = $this->getValidUploadPath($file);
 
-                $output->clearMediaCollection('journal_article');
-                $mediaPath = app(ImageCompressionService::class)->compressIfImage($file->getRealPath());
-                $output
-                    ->addMedia($mediaPath)
-                    ->usingName($file->getClientOriginalName())
-                    ->usingFileName($file->hashName())
-                    ->withCustomProperties([
-                        'uploaded_by' => Auth::id(),
-                        'proposal_id' => $this->proposal->id,
-                        'report_type' => $this->type,
-                    ])
-                    ->toMediaCollection('journal_article');
+                if ($realPath) {
+                    $output->clearMediaCollection('journal_article');
+                    $mediaPath = app(ImageCompressionService::class)->compressIfImage($realPath);
+                    $output
+                        ->addMedia($mediaPath)
+                        ->usingName($file->getClientOriginalName())
+                        ->usingFileName($file->hashName())
+                        ->withCustomProperties([
+                            'uploaded_by' => Auth::id(),
+                            'proposal_id' => $this->proposal->id,
+                            'report_type' => $this->type,
+                        ])
+                        ->toMediaCollection('journal_article');
 
-                unset($this->tempMandatoryFiles[$proposalOutputId]);
+                    unset($this->tempMandatoryFiles[$proposalOutputId]);
+                }
             }
         });
     }
@@ -957,49 +981,49 @@ class ReportForm extends Form
             }
 
             // Save document file if uploaded
-            if (
-                isset($this->tempAdditionalFiles[$proposalOutputId]) &&
-                $this->tempAdditionalFiles[$proposalOutputId] instanceof UploadedFile
-            ) {
+            if (isset($this->tempAdditionalFiles[$proposalOutputId])) {
                 $file = $this->tempAdditionalFiles[$proposalOutputId];
+                $realPath = $this->getValidUploadPath($file);
 
-                $output->clearMediaCollection('book_document');
-                $mediaPath = app(ImageCompressionService::class)->compressIfImage($file->getRealPath());
-                $output
-                    ->addMedia($mediaPath)
-                    ->usingName($file->getClientOriginalName())
-                    ->usingFileName($file->hashName())
-                    ->withCustomProperties([
-                        'uploaded_by' => Auth::id(),
-                        'proposal_id' => $this->proposal->id,
-                        'report_type' => $this->type,
-                    ])
-                    ->toMediaCollection('book_document');
+                if ($realPath) {
+                    $output->clearMediaCollection('book_document');
+                    $mediaPath = app(ImageCompressionService::class)->compressIfImage($realPath);
+                    $output
+                        ->addMedia($mediaPath)
+                        ->usingName($file->getClientOriginalName())
+                        ->usingFileName($file->hashName())
+                        ->withCustomProperties([
+                            'uploaded_by' => Auth::id(),
+                            'proposal_id' => $this->proposal->id,
+                            'report_type' => $this->type,
+                        ])
+                        ->toMediaCollection('book_document');
 
-                unset($this->tempAdditionalFiles[$proposalOutputId]);
+                    unset($this->tempAdditionalFiles[$proposalOutputId]);
+                }
             }
 
             // Save certificate file if uploaded
-            if (
-                isset($this->tempAdditionalCerts[$proposalOutputId]) &&
-                $this->tempAdditionalCerts[$proposalOutputId] instanceof UploadedFile
-            ) {
+            if (isset($this->tempAdditionalCerts[$proposalOutputId])) {
                 $file = $this->tempAdditionalCerts[$proposalOutputId];
+                $realPath = $this->getValidUploadPath($file);
 
-                $output->clearMediaCollection('publication_certificate');
-                $mediaPath = app(ImageCompressionService::class)->compressIfImage($file->getRealPath());
-                $output
-                    ->addMedia($mediaPath)
-                    ->usingName($file->getClientOriginalName())
-                    ->usingFileName($file->hashName())
-                    ->withCustomProperties([
-                        'uploaded_by' => Auth::id(),
-                        'proposal_id' => $this->proposal->id,
-                        'report_type' => $this->type,
-                    ])
-                    ->toMediaCollection('publication_certificate');
+                if ($realPath) {
+                    $output->clearMediaCollection('publication_certificate');
+                    $mediaPath = app(ImageCompressionService::class)->compressIfImage($realPath);
+                    $output
+                        ->addMedia($mediaPath)
+                        ->usingName($file->getClientOriginalName())
+                        ->usingFileName($file->hashName())
+                        ->withCustomProperties([
+                            'uploaded_by' => Auth::id(),
+                            'proposal_id' => $this->proposal->id,
+                            'report_type' => $this->type,
+                        ])
+                        ->toMediaCollection('publication_certificate');
 
-                unset($this->tempAdditionalCerts[$proposalOutputId]);
+                    unset($this->tempAdditionalCerts[$proposalOutputId]);
+                }
             }
         });
     }

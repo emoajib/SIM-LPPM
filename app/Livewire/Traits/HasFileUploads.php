@@ -267,18 +267,42 @@ trait HasFileUploads
     }
 
     /**
+     * Resolve a valid local path from an uploaded file.
+     * Returns null if the file does not exist on disk or cannot be read.
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     */
+    protected function getValidUploadPath(mixed $file): ?string
+    {
+        if (! $file || ! ($file instanceof TemporaryUploadedFile || $file instanceof UploadedFile)) {
+            return null;
+        }
+
+        try {
+            $realPath = $file->getRealPath();
+            if ($realPath && file_exists($realPath) && is_readable($realPath)) {
+                return $realPath;
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Failed reading uploaded file real path: '.$e->getMessage());
+        }
+
+        return null;
+    }
+
+    /**
      * Save substance file to media collection
      */
     protected function saveSubstanceFile(ProgressReport $report, string $reportType = 'progress'): void
     {
-        if (! $this->substanceFile || ! ($this->substanceFile instanceof TemporaryUploadedFile || $this->substanceFile instanceof UploadedFile)) {
+        $realPath = $this->getValidUploadPath($this->substanceFile);
+        if (! $realPath) {
             return;
         }
 
         try {
             $report->clearMediaCollection('substance_file');
             $report
-                ->addMedia($this->substanceFile->getRealPath())
+                ->addMedia($realPath)
                 ->usingName($this->substanceFile->getClientOriginalName())
                 ->usingFileName($this->substanceFile->hashName())
                 ->withCustomProperties([
@@ -297,14 +321,15 @@ trait HasFileUploads
      */
     protected function saveRealizationFile(ProgressReport $report, string $reportType = 'final'): void
     {
-        if (! $this->realizationFile || ! ($this->realizationFile instanceof TemporaryUploadedFile || $this->realizationFile instanceof UploadedFile)) {
+        $realPath = $this->getValidUploadPath($this->realizationFile);
+        if (! $realPath) {
             return;
         }
 
         try {
             $report->clearMediaCollection('realization_file');
             $report
-                ->addMedia($this->realizationFile->getRealPath())
+                ->addMedia($realPath)
                 ->usingName($this->realizationFile->getClientOriginalName())
                 ->usingFileName($this->realizationFile->hashName())
                 ->withCustomProperties([
@@ -323,14 +348,15 @@ trait HasFileUploads
      */
     protected function savePresentationFile(ProgressReport $report, string $reportType = 'final'): void
     {
-        if (! $this->presentationFile || ! ($this->presentationFile instanceof TemporaryUploadedFile || $this->presentationFile instanceof UploadedFile)) {
+        $realPath = $this->getValidUploadPath($this->presentationFile);
+        if (! $realPath) {
             return;
         }
 
         try {
             $report->clearMediaCollection('presentation_file');
             $report
-                ->addMedia($this->presentationFile->getRealPath())
+                ->addMedia($realPath)
                 ->usingName($this->presentationFile->getClientOriginalName())
                 ->usingFileName($this->presentationFile->hashName())
                 ->withCustomProperties([
@@ -349,14 +375,15 @@ trait HasFileUploads
      */
     protected function saveSignatureFile(ProgressReport $report, string $reportType = 'final'): void
     {
-        if (! $this->signatureFile || ! ($this->signatureFile instanceof TemporaryUploadedFile || $this->signatureFile instanceof UploadedFile)) {
+        $realPath = $this->getValidUploadPath($this->signatureFile);
+        if (! $realPath) {
             return;
         }
 
         try {
             $report->clearMediaCollection('signature_page');
             $report
-                ->addMedia($this->signatureFile->getRealPath())
+                ->addMedia($realPath)
                 ->usingName($this->signatureFile->getClientOriginalName())
                 ->usingFileName($this->signatureFile->hashName())
                 ->withCustomProperties([
@@ -375,14 +402,15 @@ trait HasFileUploads
      */
     protected function saveCooperationProofFile(ProgressReport $report): void
     {
-        if (! $this->cooperationProofFile || ! ($this->cooperationProofFile instanceof TemporaryUploadedFile || $this->cooperationProofFile instanceof UploadedFile)) {
+        $realPath = $this->getValidUploadPath($this->cooperationProofFile);
+        if (! $realPath) {
             return;
         }
 
         try {
             $report->clearMediaCollection('partner_cooperation_proof');
             $report
-                ->addMedia($this->cooperationProofFile->getRealPath())
+                ->addMedia($realPath)
                 ->usingName($this->cooperationProofFile->getClientOriginalName())
                 ->usingFileName($this->cooperationProofFile->hashName())
                 ->withCustomProperties([
@@ -401,14 +429,15 @@ trait HasFileUploads
      */
     protected function saveImplementationProofFile(ProgressReport $report): void
     {
-        if (! $this->implementationProofFile || ! ($this->implementationProofFile instanceof TemporaryUploadedFile || $this->implementationProofFile instanceof UploadedFile)) {
+        $realPath = $this->getValidUploadPath($this->implementationProofFile);
+        if (! $realPath) {
             return;
         }
 
         try {
             $report->clearMediaCollection('partner_implementation_proof');
             $report
-                ->addMedia($this->implementationProofFile->getRealPath())
+                ->addMedia($realPath)
                 ->usingName($this->implementationProofFile->getClientOriginalName())
                 ->usingFileName($this->implementationProofFile->hashName())
                 ->withCustomProperties([
@@ -425,24 +454,13 @@ trait HasFileUploads
     // Vetted by AI - Manual Review Required by Senior Engineer/Manager
     protected function saveSingleAttachment(ProgressReport $report, mixed $file, string $collectionName): void
     {
-        if (! $file || ! ($file instanceof TemporaryUploadedFile || $file instanceof UploadedFile)) {
+        $realPath = $this->getValidUploadPath($file);
+        if (! $realPath) {
             return;
         }
 
         try {
             $report->clearMediaCollection($collectionName);
-
-            // Resolve path: if Livewire temp file has been cleaned up, store permanently first
-            if ($file instanceof TemporaryUploadedFile) {
-                $realPath = $file->getRealPath();
-                if (! file_exists($realPath)) {
-                    $storedPath = $file->store('attachments', 'public');
-                    $realPath = storage_path('app/public/'.$storedPath);
-                }
-            } else {
-                $realPath = $file->getRealPath();
-            }
-
             $mediaPath = app(ImageCompressionService::class)->compressIfImage($realPath);
 
             $report
@@ -505,34 +523,26 @@ trait HasFileUploads
         // Multiple photo uploads
         if (! empty($this->activityPhotosFiles)) {
             foreach ($this->activityPhotosFiles as $photo) {
-                if ($photo instanceof TemporaryUploadedFile || $photo instanceof UploadedFile) {
-                    try {
-                        // Resolve path: if Livewire temp file has been cleaned up, store permanently first
-                        if ($photo instanceof TemporaryUploadedFile) {
-                            $realPath = $photo->getRealPath();
-                            if (! file_exists($realPath)) {
-                                $storedPath = $photo->store('attachments', 'public');
-                                $realPath = storage_path('app/public/'.$storedPath);
-                            }
-                        } else {
-                            $realPath = $photo->getRealPath();
-                        }
+                $realPath = $this->getValidUploadPath($photo);
+                if (! $realPath) {
+                    continue;
+                }
 
-                        $mediaPath = app(ImageCompressionService::class)->compressIfImage($realPath);
+                try {
+                    $mediaPath = app(ImageCompressionService::class)->compressIfImage($realPath);
 
-                        $report
-                            ->addMedia($mediaPath)
-                            ->usingName($photo->getClientOriginalName())
-                            ->usingFileName($photo->hashName())
-                            ->withCustomProperties([
-                                'uploaded_by' => Auth::id(),
-                                'proposal_id' => $report->proposal_id,
-                                'report_type' => 'final',
-                            ])
-                            ->toMediaCollection('activity_photos_pkm');
-                    } catch (\Exception $e) {
-                        Log::error('Upload activity_photos_pkm failed: '.$e->getMessage());
-                    }
+                    $report
+                        ->addMedia($mediaPath)
+                        ->usingName($photo->getClientOriginalName())
+                        ->usingFileName($photo->hashName())
+                        ->withCustomProperties([
+                            'uploaded_by' => Auth::id(),
+                            'proposal_id' => $report->proposal_id,
+                            'report_type' => 'final',
+                        ])
+                        ->toMediaCollection('activity_photos_pkm');
+                } catch (\Exception $e) {
+                    Log::error('Upload activity_photos_pkm failed: '.$e->getMessage());
                 }
             }
         }
@@ -565,14 +575,14 @@ trait HasFileUploads
         }
 
         $file = $this->tempMandatoryFiles[$proposalOutputId];
-
-        if (! $file instanceof TemporaryUploadedFile) {
+        $realPath = $this->getValidUploadPath($file);
+        if (! $realPath) {
             return;
         }
 
         try {
             $output->clearMediaCollection('journal_article');
-            $mediaPath = app(ImageCompressionService::class)->compressIfImage($file->getRealPath());
+            $mediaPath = app(ImageCompressionService::class)->compressIfImage($realPath);
             $output
                 ->addMedia($mediaPath)
                 ->usingName($file->getClientOriginalName())
@@ -598,14 +608,14 @@ trait HasFileUploads
         }
 
         $file = $this->tempAdditionalFiles[$proposalOutputId];
-
-        if (! $file instanceof TemporaryUploadedFile) {
+        $realPath = $this->getValidUploadPath($file);
+        if (! $realPath) {
             return;
         }
 
         try {
             $output->clearMediaCollection('book_document');
-            $mediaPath = app(ImageCompressionService::class)->compressIfImage($file->getRealPath());
+            $mediaPath = app(ImageCompressionService::class)->compressIfImage($realPath);
             $output
                 ->addMedia($mediaPath)
                 ->usingName($file->getClientOriginalName())
@@ -631,14 +641,14 @@ trait HasFileUploads
         }
 
         $file = $this->tempAdditionalCerts[$proposalOutputId];
-
-        if (! $file instanceof TemporaryUploadedFile) {
+        $realPath = $this->getValidUploadPath($file);
+        if (! $realPath) {
             return;
         }
 
         try {
             $output->clearMediaCollection('publication_certificate');
-            $mediaPath = app(ImageCompressionService::class)->compressIfImage($file->getRealPath());
+            $mediaPath = app(ImageCompressionService::class)->compressIfImage($realPath);
             $output
                 ->addMedia($mediaPath)
                 ->usingName($file->getClientOriginalName())

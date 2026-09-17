@@ -152,7 +152,9 @@ return [
             'wma',
             'pdf',
         ],
-        'max_upload_time' => 5, // Max duration (in minutes) before an upload is invalidated...
+        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Increased from 5 to 60 minutes to prevent uploads from expiring while users fill long forms
+        'max_upload_time' => (int) env('LIVEWIRE_MAX_UPLOAD_TIME', 60), // Max duration (in minutes) before an upload is invalidated...
         'cleanup' => true, // Should cleanup temporary uploads older than 24 hrs...
     ],
 
