@@ -48,7 +48,8 @@ enum ReportStatus: string
             self::SUBMITTED => in_array($newStatus, [self::APPROVED_BY_DEKAN, self::REJECTED]),
             self::APPROVED_BY_DEKAN => in_array($newStatus, [self::APPROVED, self::REJECTED]),
             self::APPROVED => false,
-            self::REJECTED => false,
+            // Allow REJECTED → SUBMITTED so lecturer can re-submit after revision
+            self::REJECTED => in_array($newStatus, [self::SUBMITTED]),
         };
     }
 

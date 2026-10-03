@@ -1184,19 +1184,35 @@
     <!-- Action Buttons -->
     @if ($canEdit)
         @if ($isFinalReportDraft)
-            <div class="alert alert-info mb-3" role="alert">
-                <div class="d-flex">
-                    <div>
-                        <x-lucide-info class="icon alert-icon" />
-                    </div>
-                    <div>
-                        <h4 class="alert-title">Informasi Pengajuan Laporan Akhir</h4>
-                        <div class="text-secondary">
-                            Laporan Akhir (Substansi) dan Laporan Keuangan (LPJ) dikelola secara mandiri. Anda dapat langsung mengajukan Laporan Akhir ini untuk ditinjau Dekan dan Kepala LPPM tanpa harus menunggu pengesahan Laporan Keuangan (LPJ).
+            @if ($progressReport && $progressReport->status === \App\Enums\ReportStatus::REJECTED)
+                <div class="alert alert-warning mb-3" role="alert">
+                    <div class="d-flex">
+                        <div>
+                            <x-lucide-refresh-cw class="icon alert-icon" />
+                        </div>
+                        <div>
+                            <h4 class="alert-title">Laporan Siap Diajukan Ulang</h4>
+                            <div class="text-secondary">
+                                Perbaikan telah disimpan. Klik <strong>"Ajukan Laporan Akhir"</strong> untuk mengirim kembali laporan ke Dekan setelah Anda melakukan perbaikan sesuai catatan penolakan di atas.
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            @else
+                <div class="alert alert-info mb-3" role="alert">
+                    <div class="d-flex">
+                        <div>
+                            <x-lucide-info class="icon alert-icon" />
+                        </div>
+                        <div>
+                            <h4 class="alert-title">Informasi Pengajuan Laporan Akhir</h4>
+                            <div class="text-secondary">
+                                Laporan Akhir (Substansi) dan Laporan Keuangan (LPJ) dikelola secara mandiri. Anda dapat langsung mengajukan Laporan Akhir ini untuk ditinjau Dekan dan Kepala LPPM tanpa harus menunggu pengesahan Laporan Keuangan (LPJ).
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
         @endif
         <div class="card">
             <div class="card-body">
@@ -1213,7 +1229,12 @@
                     @if ($isFinalReportDraft)
                         <button type="button" wire:click="submit" class="btn btn-success" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="submit">
-                                <x-lucide-send class="icon" /> Ajukan Laporan Akhir
+                                <x-lucide-send class="icon" />
+                                @if ($progressReport && $progressReport->status === \App\Enums\ReportStatus::REJECTED)
+                                    Ajukan Ulang Laporan Akhir
+                                @else
+                                    Ajukan Laporan Akhir
+                                @endif
                             </span>
                             <span wire:loading wire:target="submit">
                                 <span class="spinner-border spinner-border-sm me-2"></span>

@@ -172,8 +172,26 @@ class ReportSecurityAndLifecycleTest extends TestCase
         Livewire::actingAs($this->dosen1)
             ->test(ResearchFinalReportShow::class, ['proposal' => $this->proposal])
             ->assertSet('canEdit', true)
+            // Bug fix: isFinalReportDraft must be true for REJECTED so "Ajukan" button renders
+            ->assertSet('isFinalReportDraft', true)
             ->assertSee('Simpan Draft')
+            // Bug fix: "Ajukan Ulang Laporan Akhir" must be visible after dean revision
+            ->assertSee('Ajukan Ulang Laporan Akhir')
             ->assertSee('Laporan Akhir Ditolak');
+    }
+
+    public function test_rejected_status_can_transition_to_submitted(): void
+    {
+        // Bug fix: ReportStatus::REJECTED must allow transition to SUBMITTED
+        // so that lecturers can re-submit after dean/kepala LPPM revision.
+        $this->assertTrue(
+            ReportStatus::REJECTED->canTransitionTo(ReportStatus::SUBMITTED),
+            'REJECTED → SUBMITTED must be allowed so lecturers can re-submit after revision'
+        );
+
+        // Approved states must still be immutable
+        $this->assertFalse(ReportStatus::APPROVED->canTransitionTo(ReportStatus::SUBMITTED));
+        $this->assertFalse(ReportStatus::REJECTED->canTransitionTo(ReportStatus::APPROVED));
     }
 
     public function test_admin_lppm_cannot_edit_lecturer_report(): void

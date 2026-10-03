@@ -108,7 +108,12 @@ class Show extends Component
 
         if ($finalReport) {
             $this->progressReport = $finalReport;
-            $this->isFinalReportDraft = $finalReport->status === ReportStatus::DRAFT;
+            // isFinalReportDraft controls visibility of the "Ajukan" button.
+            // Must be true for DRAFT (new) and REJECTED (needs re-submission after revision).
+            $this->isFinalReportDraft = in_array($finalReport->status, [
+                ReportStatus::DRAFT,
+                ReportStatus::REJECTED,
+            ]);
         } else {
             // Fallback to latest progress report for pre-filling data
             /** @var ProgressReport|null $latestReport */
@@ -452,7 +457,11 @@ class Show extends Component
                 $this->progressReport = $report;
 
                 // Mark as existing draft
-                $this->isFinalReportDraft = $report->status === ReportStatus::DRAFT;
+                // isFinalReportDraft must stay true for DRAFT and REJECTED statuses
+                $this->isFinalReportDraft = in_array($report->status, [
+                    ReportStatus::DRAFT,
+                    ReportStatus::REJECTED,
+                ]);
                 $this->canEdit = $this->canEditReport($this->proposal, $report);
 
                 // Save report files

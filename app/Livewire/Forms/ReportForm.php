@@ -518,6 +518,11 @@ class ReportForm extends Form
             'status' => 'submitted',
             'submitted_by' => Auth::id(),
             'submitted_at' => now(),
+            // Clear rejection metadata so reviewer doesn't see stale rejection notes
+            // after lecturer re-submits an improved report (REJECTED → SUBMITTED).
+            'rejection_notes' => null,
+            'rejected_by' => null,
+            'rejected_at' => null,
         ]);
 
         return $report;
