@@ -15,6 +15,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\Locked;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\Form;
 
@@ -30,6 +31,7 @@ class ReportForm extends Form
 
     public int $reportingYear = 0;
 
+    #[Locked]
     public string $reportingPeriod = 'semester_1';
 
     public array $mandatoryOutputs = [];
@@ -64,6 +66,7 @@ class ReportForm extends Form
     public string $partnerChanges = '';
 
     // Report configuration
+    #[Locked]
     public ?string $type = 'progress'; // 'progress' or 'final'
 
     protected array $fileValidationRules = [

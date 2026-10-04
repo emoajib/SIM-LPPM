@@ -102,11 +102,12 @@ enum ProposalStatus: string
     }
 
     /**
-     * Cek apakah status ini menunjukkan proposal sudah selesai
+     * Cek apakah status ini menunjukkan proposal sudah selesai (tidak bisa diedit/direvisi lagi)
+     * REJECTED tidak final karena bisa direvisi dan diajukan ulang via REVISION_NEEDED
      */
     public function isFinal(): bool
     {
-        return in_array($this, [self::COMPLETED, self::REJECTED]);
+        return $this === self::COMPLETED;
     }
 
     /**

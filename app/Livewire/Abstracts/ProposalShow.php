@@ -178,11 +178,6 @@ abstract class ProposalShow extends Component
             return false;
         }
 
-        // Admin LPPM is always allowed to assist editing
-        if ($user->activeHasAnyRole(['admin lppm', 'admin lppm saintek', 'admin lppm dekabita', 'superadmin'])) {
-            return true;
-        }
-
         // Dosen: enforce submission schedule window
         return $this->isScheduleOpen();
     }

@@ -11,6 +11,7 @@ use App\Services\LecturerEligibilityService;
 use App\Services\NotificationService;
 use App\Traits\HandlesProposalStateTransitions;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class SubmitProposalAction
 {
@@ -24,144 +25,152 @@ class SubmitProposalAction
      * Submit a proposal.
      * For new submissions (DRAFT/NEED_ASSIGNMENT): full validation, status → SUBMITTED.
      * For revision resubmit (REVISION_NEEDED): lightweight validation, status → REVISION_SUBMITTED.
+     * Uses pessimistic locking (lockForUpdate) + optimistic locking (version) to prevent race conditions.
      */
     public function execute(Proposal $proposal): array
     {
-        $user = Auth::user();
-        if (! $user || ($proposal->submitter_id !== $user->getAuthIdentifier())) {
-            return [
-                'success' => false,
-                'message' => 'Anda tidak memiliki akses untuk mengajukan proposal ini.',
-            ];
-        }
+        return DB::transaction(function () use ($proposal) {
+            // Pessimistic lock: acquire row lock to prevent concurrent modifications
+            $lockedProposal = Proposal::where('id', $proposal->id)
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        $allowedStatuses = [
-            ProposalStatus::DRAFT,
-            ProposalStatus::NEED_ASSIGNMENT,
-            ProposalStatus::REVISION_NEEDED,
-        ];
-
-        if (! in_array($proposal->status, $allowedStatuses)) {
-            return [
-                'success' => false,
-                'message' => 'Proposal tidak dapat diajukan dari status saat ini.',
-            ];
-        }
-
-        $isRevision = $proposal->status === ProposalStatus::REVISION_NEEDED;
-
-        // Full validation for new submissions only
-        if (! $isRevision) {
-            if (! $proposal->allTeamMembersAccepted()) {
-                $pendingMembers = $proposal->getPendingTeamMembers();
-
+            $user = Auth::user();
+            if (! $user || ($lockedProposal->submitter_id !== $user->getAuthIdentifier())) {
                 return [
                     'success' => false,
-                    'message' => sprintf(
-                        'Tidak dapat mengirim proposal. %d anggota masih belum menerima undangan.',
-                        $pendingMembers->count()
-                    ),
+                    'message' => 'Anda tidak memiliki akses untuk mengajukan proposal ini.',
                 ];
             }
 
-            if (Setting::get('feature_kaprodi_validation', false)) {
-                $kaprodiAction = app(KaprodiApprovalAction::class);
-                $kaprodiCheck = $kaprodiAction->canSubmit($proposal);
+            $allowedStatuses = [
+                ProposalStatus::DRAFT,
+                ProposalStatus::NEED_ASSIGNMENT,
+                ProposalStatus::REVISION_NEEDED,
+            ];
 
-                if (! $kaprodiCheck['can_submit']) {
+            if (! in_array($lockedProposal->status, $allowedStatuses)) {
+                return [
+                    'success' => false,
+                    'message' => 'Proposal tidak dapat diajukan dari status saat ini.',
+                ];
+            }
+
+            $isRevision = $lockedProposal->status === ProposalStatus::REVISION_NEEDED;
+
+            // Full validation for new submissions only (re-validated AFTER lock)
+            if (! $isRevision) {
+                if (! $lockedProposal->allTeamMembersAccepted()) {
+                    $pendingMembers = $lockedProposal->getPendingTeamMembers();
+
                     return [
                         'success' => false,
-                        'message' => $kaprodiCheck['reason'],
+                        'message' => sprintf(
+                            'Tidak dapat mengirim proposal. %d anggota masih belum menerima undangan.',
+                            $pendingMembers->count()
+                        ),
+                    ];
+                }
+
+                if (Setting::get('feature_kaprodi_validation', false)) {
+                    $kaprodiAction = app(KaprodiApprovalAction::class);
+                    $kaprodiCheck = $kaprodiAction->canSubmit($lockedProposal);
+
+                    if (! $kaprodiCheck['can_submit']) {
+                        return [
+                            'success' => false,
+                            'message' => $kaprodiCheck['reason'],
+                        ];
+                    }
+                }
+
+                if ($lockedProposal->submitter->activeHasRole('dosen')) {
+                    $eligibilityService = app(LecturerEligibilityService::class);
+                    $eligibility = $eligibilityService->checkEligibility($lockedProposal->submitter);
+
+                    if (! $eligibility['eligible']) {
+                        return [
+                            'success' => false,
+                            'message' => 'Anda tidak memenuhi syarat untuk mengajukan proposal baru. '.implode(', ', $eligibility['reasons']),
+                        ];
+                    }
+                }
+
+                if (Setting::get('feature_community_partner_required', true)
+                    && $lockedProposal->detailable_type === 'App\Models\CommunityService'
+                    && $lockedProposal->partners()->count() === 0) {
+                    return [
+                        'success' => false,
+                        'message' => 'Proposal Pengabdian Masyarakat wajib memiliki minimal 1 mitra.',
+                    ];
+                }
+
+                if ($lockedProposal->detailable_type === 'App\Models\Research' && ! $lockedProposal->research_scheme_id) {
+                    return [
+                        'success' => false,
+                        'message' => 'Skema Penelitian wajib dipilih sebelum mengajukan proposal.',
+                    ];
+                }
+
+                if ($lockedProposal->detailable_type === 'App\Models\CommunityService' && ! $lockedProposal->community_service_scheme_id) {
+                    return [
+                        'success' => false,
+                        'message' => 'Skema Pengabdian Masyarakat wajib dipilih sebelum mengajukan proposal.',
                     ];
                 }
             }
 
-            if ($proposal->submitter->activeHasRole('dosen')) {
-                $eligibilityService = app(LecturerEligibilityService::class);
-                $eligibility = $eligibilityService->checkEligibility($proposal->submitter);
+            if ($lockedProposal->budgetItems()->count() === 0) {
+                return [
+                    'success' => false,
+                    'message' => 'RAB (Rencana Anggaran Biaya) wajib diisi sebelum mengajukan proposal.',
+                ];
+            }
 
-                if (! $eligibility['eligible']) {
-                    return [
-                        'success' => false,
-                        'message' => 'Anda tidak memenuhi syarat untuk mengajukan proposal baru. '.implode(', ', $eligibility['reasons']),
-                    ];
+            // Validate substance file exists (proposal document) on detailable
+            $detailable = $lockedProposal->detailable;
+            if (! $detailable || ! method_exists($detailable, 'hasMedia') || ! $detailable->hasMedia('substance_file')) {
+                return [
+                    'success' => false,
+                    'message' => 'File substansi proposal wajib diunggah sebelum mengajukan.',
+                ];
+            }
+
+            try {
+                $newStatus = $isRevision ? ProposalStatus::REVISION_SUBMITTED : ProposalStatus::SUBMITTED;
+                $expectedStatus = $lockedProposal->status;
+
+                $result = $this->transitionProposal(
+                    $lockedProposal,
+                    $expectedStatus,
+                    $newStatus,
+                    function ($updatedProposal) use ($isRevision) {
+                        $snapshot = $isRevision ? $updatedProposal->qualification_snapshot
+                            : app(LecturerEligibilityService::class)->generateSnapshot($updatedProposal->submitter, $updatedProposal);
+
+                        $updatedProposal->update([
+                            'qualification_snapshot' => $snapshot,
+                        ]);
+                    }
+                );
+
+                if (! $result['success']) {
+                    return $result;
                 }
-            }
 
-            if (Setting::get('feature_community_partner_required', true)
-                && $proposal->detailable_type === 'App\Models\CommunityService'
-                && $proposal->partners()->count() === 0) {
+                $this->sendNotifications($lockedProposal, $isRevision);
+
+                return [
+                    'success' => true,
+                    'message' => $isRevision ? 'Revisi proposal berhasil diajukan.' : 'Proposal berhasil diajukan.',
+                ];
+            } catch (\Exception $e) {
                 return [
                     'success' => false,
-                    'message' => 'Proposal Pengabdian Masyarakat wajib memiliki minimal 1 mitra.',
+                    'message' => 'Gagal mengajukan proposal: '.$e->getMessage(),
                 ];
             }
-
-            if ($proposal->detailable_type === 'App\Models\Research' && ! $proposal->research_scheme_id) {
-                return [
-                    'success' => false,
-                    'message' => 'Skema Penelitian wajib dipilih sebelum mengajukan proposal.',
-                ];
-            }
-
-            if ($proposal->detailable_type === 'App\Models\CommunityService' && ! $proposal->community_service_scheme_id) {
-                return [
-                    'success' => false,
-                    'message' => 'Skema Pengabdian Masyarakat wajib dipilih sebelum mengajukan proposal.',
-                ];
-            }
-        }
-
-        if ($proposal->budgetItems()->count() === 0) {
-            return [
-                'success' => false,
-                'message' => 'RAB (Rencana Anggaran Biaya) wajib diisi sebelum mengajukan proposal.',
-            ];
-        }
-
-        // Validate substance file exists (proposal document) on detailable
-        $detailable = $proposal->detailable;
-        if (! $detailable || ! method_exists($detailable, 'hasMedia') || ! $detailable->hasMedia('substance_file')) {
-            return [
-                'success' => false,
-                'message' => 'File substansi proposal wajib diunggah sebelum mengajukan.',
-            ];
-        }
-
-        try {
-            $newStatus = $isRevision ? ProposalStatus::REVISION_SUBMITTED : ProposalStatus::SUBMITTED;
-            $expectedStatus = $proposal->status;
-
-            $result = $this->transitionProposal(
-                $proposal,
-                $expectedStatus,
-                $newStatus,
-                function ($updatedProposal) use ($isRevision) {
-                    $snapshot = $isRevision ? $updatedProposal->qualification_snapshot
-                        : app(LecturerEligibilityService::class)->generateSnapshot($updatedProposal->submitter, $updatedProposal);
-
-                    $updatedProposal->update([
-                        'qualification_snapshot' => $snapshot,
-                    ]);
-                }
-            );
-
-            if (! $result['success']) {
-                return $result;
-            }
-
-            $this->sendNotifications($proposal, $isRevision);
-
-            return [
-                'success' => true,
-                'message' => $isRevision ? 'Revisi proposal berhasil diajukan.' : 'Proposal berhasil diajukan.',
-            ];
-        } catch (\Exception $e) {
-            return [
-                'success' => false,
-                'message' => 'Gagal mengajukan proposal: '.$e->getMessage(),
-            ];
-        }
+        });
     }
 
     /**
