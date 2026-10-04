@@ -155,8 +155,8 @@ class ProposalWorkflowTest extends TestCase
         // 3. Submission Phase (Dosen)
         $this->actingAs($this->dosen);
         $this->addBudgetItem($proposal);
-        $fakeFile = UploadedFile::fake()->create('substance.pdf', 100, 'application/pdf');
-        $proposal->detailable->addMedia($fakeFile)->toMediaCollection('substance');
+        $fakeFile = UploadedFile::fake()->createWithContent('substance.pdf', '%PDF-1.4 test content');
+        $proposal->detailable->addMedia($fakeFile)->toMediaCollection('substance_file');
         $result = $submitAction->execute($proposal->fresh());
         $this->assertTrue($result['success']);
         $this->assertEquals(ProposalStatus::SUBMITTED, $proposal->fresh()->status);
@@ -221,8 +221,8 @@ class ProposalWorkflowTest extends TestCase
         $result = $completeAction->execute($assignment, 'Brilliant work.', 'approved');
         $this->assertTrue($result['success']);
 
-        // Check if proposal status moved to REVIEWED
-        $this->assertEquals(ProposalStatus::REVISION_NEEDED, $proposal->fresh()->status);
+        // Check if proposal status moved to APPROVED (all reviewers approved)
+        $this->assertEquals(ProposalStatus::APPROVED, $proposal->fresh()->status);
 
         // 7. LPPM Final Decision
         $this->actingAs($kepalaLppm);
@@ -373,7 +373,7 @@ class ProposalWorkflowTest extends TestCase
 
         $result = $completeAction->execute($assignment, 'Forced by LPPM.', 'approved');
         $this->assertTrue($result['success']);
-        $this->assertEquals(ProposalStatus::REVISION_NEEDED, $proposal->fresh()->status);
+        $this->assertEquals(ProposalStatus::APPROVED, $proposal->fresh()->status);
     }
 
     public function test_community_service_workflow()
@@ -392,8 +392,8 @@ class ProposalWorkflowTest extends TestCase
         ]);
 
         $proposal->teamMembers()->attach($this->dosen->id, ['role' => 'ketua', 'status' => 'accepted']);
-        $fakeFile = UploadedFile::fake()->create('substance.pdf', 100, 'application/pdf');
-        $proposal->detailable->addMedia($fakeFile)->toMediaCollection('substance');
+        $fakeFile = UploadedFile::fake()->createWithContent('substance.pdf', '%PDF-1.4 test content');
+        $proposal->detailable->addMedia($fakeFile)->toMediaCollection('substance_file');
 
         // Add a partner so submission passes partner validation
         $proposal->partners()->attach(Partner::factory()->create()->id);
@@ -422,7 +422,7 @@ class ProposalWorkflowTest extends TestCase
         // Dekan rejects it
         $result = $dekanAction->execute($proposal, 'rejected', 'Need more data.');
         $this->assertTrue($result['success']);
-        $this->assertEquals(ProposalStatus::NEED_ASSIGNMENT, $proposal->fresh()->status);
+        $this->assertEquals(ProposalStatus::REJECTED, $proposal->fresh()->status);
     }
 
     public function test_request_re_review_workflow()
@@ -488,6 +488,11 @@ class ProposalWorkflowTest extends TestCase
         // NOTE: allTeamMembersAccepted() returns true when there are 0 team members
         // So submission actually succeeds without any team members
         $this->addBudgetItem($proposal);
+
+        // Add substance file
+        $fakeFile = UploadedFile::fake()->createWithContent('substance.pdf', '%PDF-1.4 test content');
+        $proposal->detailable->addMedia($fakeFile)->toMediaCollection('substance_file');
+
         $this->actingAs($this->dosen);
         $result = app(SubmitProposalAction::class)->execute($proposal);
 
@@ -506,14 +511,14 @@ class ProposalWorkflowTest extends TestCase
         ]);
         $proposal->teamMembers()->attach($this->dosen->id, ['role' => 'ketua', 'status' => 'accepted']);
 
-        // Substance file check is usually done in the action
+        // Substance file check is now done in the action
         $this->addBudgetItem($proposal);
         $this->actingAs($this->dosen);
         $result = app(SubmitProposalAction::class)->execute($proposal);
 
-        // NOTE: SubmitProposalAction does not check for substance file
-        // This test is outdated
-        $this->assertTrue($result['success']);
+        // Submission should fail without substance file
+        $this->assertFalse($result['success']);
+        $this->assertStringContainsString('File substansi proposal wajib diunggah', $result['message']);
     }
 
     public function test_cannot_submit_by_non_submitter()
@@ -546,8 +551,8 @@ class ProposalWorkflowTest extends TestCase
             'status' => ProposalStatus::NEED_ASSIGNMENT,
         ]);
         $proposal->teamMembers()->attach($this->dosen->id, ['role' => 'ketua', 'status' => 'accepted']);
-        $fakeFile = UploadedFile::fake()->create('substance.pdf', 100, 'application/pdf');
-        $proposal->detailable->addMedia($fakeFile)->toMediaCollection('substance');
+        $fakeFile = UploadedFile::fake()->createWithContent('substance.pdf', '%PDF-1.4 test content');
+        $proposal->detailable->addMedia($fakeFile)->toMediaCollection('substance_file');
 
         $this->addBudgetItem($proposal);
 
@@ -568,8 +573,8 @@ class ProposalWorkflowTest extends TestCase
             'status' => ProposalStatus::REVISION_NEEDED,
         ]);
         $proposal->teamMembers()->attach($this->dosen->id, ['role' => 'ketua', 'status' => 'accepted']);
-        $fakeFile = UploadedFile::fake()->create('substance.pdf', 100, 'application/pdf');
-        $proposal->detailable->addMedia($fakeFile)->toMediaCollection('substance');
+        $fakeFile = UploadedFile::fake()->createWithContent('substance.pdf', '%PDF-1.4 test content');
+        $proposal->detailable->addMedia($fakeFile)->toMediaCollection('substance_file');
 
         $this->addBudgetItem($proposal);
 
@@ -590,8 +595,8 @@ class ProposalWorkflowTest extends TestCase
             'status' => ProposalStatus::DRAFT,
         ]);
         $proposal->teamMembers()->attach($this->dosen->id, ['role' => 'ketua', 'status' => 'accepted']);
-        $fakeFile = UploadedFile::fake()->create('substance.pdf', 100, 'application/pdf');
-        $proposal->detailable->addMedia($fakeFile)->toMediaCollection('substance');
+        $fakeFile = UploadedFile::fake()->createWithContent('substance.pdf', '%PDF-1.4 test content');
+        $proposal->detailable->addMedia($fakeFile)->toMediaCollection('substance_file');
 
         $this->addBudgetItem($proposal);
 

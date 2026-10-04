@@ -4,11 +4,13 @@ namespace App\Livewire\Traits;
 
 use App\Enums\ReportStatus;
 use App\Services\NotificationService;
+use App\Traits\HandlesReportStateTransitions;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 trait WithReportApproval
 {
+    use HandlesReportStateTransitions;
+
     public string $approvalNotes = '';
 
     protected function notificationService(): NotificationService
@@ -33,10 +35,12 @@ trait WithReportApproval
         }
 
         $activeRole = active_role();
+        $expectedStatus = null;
         $newStatus = null;
 
         if ($activeRole === 'dekan') {
-            if ($report->status !== ReportStatus::SUBMITTED) {
+            $expectedStatus = ReportStatus::SUBMITTED;
+            if ($report->status !== $expectedStatus) {
                 $this->toastError('Laporan harus berstatus Diajukan sebelum disetujui Dekan.');
 
                 return;
@@ -56,7 +60,8 @@ trait WithReportApproval
 
             $newStatus = ReportStatus::APPROVED_BY_DEKAN;
         } elseif ($activeRole === 'kepala lppm') {
-            if ($report->status !== ReportStatus::APPROVED_BY_DEKAN) {
+            $expectedStatus = ReportStatus::APPROVED_BY_DEKAN;
+            if ($report->status !== $expectedStatus) {
                 $this->toastError('Laporan harus disetujui Dekan terlebih dahulu sebelum disetujui Kepala LPPM.');
 
                 return;
@@ -64,25 +69,33 @@ trait WithReportApproval
             $newStatus = ReportStatus::APPROVED;
         }
 
-        if (! $newStatus) {
+        if (! $newStatus || ! $expectedStatus) {
             $this->toastError('Anda tidak memiliki wewenang untuk menyetujui laporan ini.');
 
             return;
         }
 
         try {
-            DB::transaction(function () use ($report, $newStatus) {
-                $report->update([
-                    'status' => $newStatus->value,
+            $approved = $this->transitionReport(
+                $report,
+                $expectedStatus,
+                $newStatus,
+                function ($updatedReport) {
                     // Bersihkan catatan penolakan jika sebelumnya ditolak lalu diajukan ulang & disetujui
-                    'rejection_notes' => null,
-                    'rejected_by' => null,
-                    'rejected_at' => null,
-                ]);
+                    $updatedReport->update([
+                        'rejection_notes' => null,
+                        'rejected_by' => null,
+                        'rejected_at' => null,
+                    ]);
 
-                // Special logic for barcode: Barcode should only appear after APPROVED (Kepala LPPM)
-                // This is handled in the PDF service.
-            });
+                    // Special logic for barcode: Barcode should only appear after APPROVED (Kepala LPPM)
+                    // This is handled in the PDF service.
+                }
+            );
+
+            if (! $approved) {
+                return;
+            }
 
             $this->toastSuccess('Laporan berhasil disetujui.');
             $this->dispatch('report-approved');
@@ -123,7 +136,10 @@ trait WithReportApproval
         }
 
         $activeRole = active_role();
+        $expectedStatus = null;
+
         if ($activeRole === 'dekan') {
+            $expectedStatus = ReportStatus::SUBMITTED;
             $dekanFacultyId = Auth::user()?->identity?->faculty_id;
             $submitterFacultyId = $report->proposal->submitter->identity?->faculty_id;
             if (! $dekanFacultyId || $dekanFacultyId !== $submitterFacultyId) {
@@ -131,20 +147,40 @@ trait WithReportApproval
 
                 return;
             }
+        } elseif ($activeRole === 'kepala lppm') {
+            $expectedStatus = ReportStatus::APPROVED_BY_DEKAN;
+        } else {
+            $this->toastError('Anda tidak memiliki wewenang untuk menolak laporan ini.');
+
+            return;
+        }
+
+        if ($report->status !== $expectedStatus) {
+            $this->toastError('Status laporan tidak sesuai untuk ditolak.');
+
+            return;
         }
 
         try {
             $rejector = Auth::user();
             $notes = $this->approvalNotes;
 
-            DB::transaction(function () use ($report, $notes, $rejector) {
-                $report->update([
-                    'status' => ReportStatus::REJECTED->value,
-                    'rejection_notes' => $notes,
-                    'rejected_by' => $rejector->id,
-                    'rejected_at' => now(),
-                ]);
-            });
+            $rejected = $this->transitionReport(
+                $report,
+                $expectedStatus,
+                ReportStatus::REJECTED,
+                function ($updatedReport) use ($rejector, $notes) {
+                    $updatedReport->update([
+                        'rejection_notes' => $notes,
+                        'rejected_by' => $rejector->id,
+                        'rejected_at' => now(),
+                    ]);
+                }
+            );
+
+            if (! $rejected) {
+                return;
+            }
 
             // Kirim notifikasi ke dosen (ketua + anggota tim)
             try {

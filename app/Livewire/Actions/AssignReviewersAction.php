@@ -84,12 +84,30 @@ class AssignReviewersAction
             $deadline = Carbon::now()->addDays($daysToReview);
 
             DB::transaction(function () use ($proposal, $reviewerId, $reviewer, $daysToReview, $deadline): void {
+                // Lock the proposal row to prevent race conditions on reviewer assignment
+                $lockedProposal = Proposal::where('id', $proposal->id)->lockForUpdate()->firstOrFail();
+
+                // Re-validate status after lock (could have changed)
+                $allowedStatuses = [
+                    ProposalStatus::WAITING_REVIEWER,
+                    ProposalStatus::UNDER_REVIEW,
+                ];
+                if (! in_array($lockedProposal->status, $allowedStatuses)) {
+                    throw new \Exception('Proposal tidak lagi dalam status yang memungkinkan penugasan reviewer.');
+                }
+
+                // Re-validate max limit after lock
+                $requiredCount = (int) Setting::get('reviewer_count_required', 1);
+                if ($lockedProposal->reviewers()->count() >= $requiredCount) {
+                    throw new \Exception("Jumlah reviewer sudah mencapai batas maksimal ({$requiredCount} reviewer).");
+                }
+
                 // Get current round (for new assignments, start at round 1)
-                $currentRound = $proposal->reviewers()->max('round') ?? 1;
+                $currentRound = $lockedProposal->reviewers()->max('round') ?? 1;
 
                 // Assign reviewer with new timestamp fields
                 ProposalReviewer::create([
-                    'proposal_id' => $proposal->id,
+                    'proposal_id' => $lockedProposal->id,
                     'user_id' => $reviewerId,
                     'status' => ReviewStatus::PENDING,
                     'round' => $currentRound,
@@ -98,7 +116,7 @@ class AssignReviewersAction
                 ]);
 
                 // Log activity
-                $proposal->activities()->create([
+                $lockedProposal->activities()->create([
                     'user_id' => auth()->id(),
                     'activity_type' => 'updated',
                     'description' => 'Penugasan reviewer baru: '.$reviewer->name,
@@ -111,12 +129,12 @@ class AssignReviewersAction
                 ]);
 
                 // Send notifications
-                $this->sendNotifications($proposal, $reviewer, $daysToReview);
+                $this->sendNotifications($lockedProposal, $reviewer, $daysToReview);
 
                 // Update proposal status to UNDER_REVIEW if first reviewer assigned
                 // (transition from WAITING_REVIEWER to UNDER_REVIEW)
-                if ($proposal->status === ProposalStatus::WAITING_REVIEWER) {
-                    $proposal->update(['status' => ProposalStatus::UNDER_REVIEW]);
+                if ($lockedProposal->status === ProposalStatus::WAITING_REVIEWER) {
+                    $lockedProposal->update(['status' => ProposalStatus::UNDER_REVIEW]);
                 }
             });
 

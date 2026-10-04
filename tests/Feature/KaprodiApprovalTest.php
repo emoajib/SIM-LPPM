@@ -15,6 +15,7 @@ use App\Models\StudyProgram;
 use App\Models\User;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 
 uses(RefreshDatabase::class);
 
@@ -457,6 +458,10 @@ it('allows submission when kaprodi validation feature is disabled', function () 
         'unit_price' => 1000000,
         'total_price' => 1000000,
     ]);
+
+    // Add substance file
+    $fakeFile = UploadedFile::fake()->createWithContent('substance.pdf', '%PDF-1.4 test content');
+    $proposal->detailable->addMedia($fakeFile)->toMediaCollection('substance_file');
 
     $submitAction = app(SubmitProposalAction::class);
     $this->actingAs($dosen);

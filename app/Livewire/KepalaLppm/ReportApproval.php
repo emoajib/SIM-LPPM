@@ -51,16 +51,27 @@ class ReportApproval extends Component
     {
         $base = ProgressReport::query()->where('reporting_period', 'final');
 
+        /** @var object{total: int, submitted: int, approved_by_dekan: int, approved: int, rejected: int}|null $aggregated */
+        $aggregated = (clone $base)
+            ->selectRaw('
+                COUNT(*) as total,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as submitted,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as approved_by_dekan,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as approved,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as rejected
+            ', [
+                ReportStatus::SUBMITTED->value,
+                ReportStatus::APPROVED_BY_DEKAN->value,
+                ReportStatus::APPROVED->value,
+                ReportStatus::REJECTED->value,
+            ])
+            ->first();
+
         return [
-            'total_submitted' => (clone $base)->whereIn('status', [
-                ReportStatus::SUBMITTED,
-                ReportStatus::APPROVED_BY_DEKAN,
-                ReportStatus::APPROVED,
-                ReportStatus::REJECTED,
-            ])->count(),
-            'ready_lppm' => (clone $base)->where('status', ReportStatus::APPROVED_BY_DEKAN)->count(),
-            'waiting_dekan' => (clone $base)->where('status', ReportStatus::SUBMITTED)->count(),
-            'approved_lppm' => (clone $base)->where('status', ReportStatus::APPROVED)->count(),
+            'total_submitted' => $aggregated->total ?? 0,
+            'ready_lppm' => $aggregated->approved_by_dekan ?? 0,
+            'waiting_dekan' => $aggregated->submitted ?? 0,
+            'approved_lppm' => $aggregated->approved ?? 0,
             // Proposal COMPLETED yang belum punya laporan akhir sama sekali
             'belum_laporan' => Proposal::query()
                 ->whereIn('status', ['approved', 'completed'])

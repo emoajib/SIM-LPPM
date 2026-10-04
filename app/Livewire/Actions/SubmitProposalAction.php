@@ -9,11 +9,13 @@ use App\Models\Setting;
 use App\Models\User;
 use App\Services\LecturerEligibilityService;
 use App\Services\NotificationService;
+use App\Traits\HandlesProposalStateTransitions;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class SubmitProposalAction
 {
+    use HandlesProposalStateTransitions;
+
     public function __construct(
         protected NotificationService $notificationService
     ) {}
@@ -117,18 +119,36 @@ class SubmitProposalAction
             ];
         }
 
+        // Validate substance file exists (proposal document) on detailable
+        $detailable = $proposal->detailable;
+        if (! $detailable || ! method_exists($detailable, 'hasMedia') || ! $detailable->hasMedia('substance_file')) {
+            return [
+                'success' => false,
+                'message' => 'File substansi proposal wajib diunggah sebelum mengajukan.',
+            ];
+        }
+
         try {
             $newStatus = $isRevision ? ProposalStatus::REVISION_SUBMITTED : ProposalStatus::SUBMITTED;
+            $expectedStatus = $proposal->status;
 
-            DB::transaction(function () use ($proposal, $newStatus, $isRevision) {
-                $snapshot = $isRevision ? $proposal->qualification_snapshot
-                    : app(LecturerEligibilityService::class)->generateSnapshot($proposal->submitter, $proposal);
+            $result = $this->transitionProposal(
+                $proposal,
+                $expectedStatus,
+                $newStatus,
+                function ($updatedProposal) use ($isRevision) {
+                    $snapshot = $isRevision ? $updatedProposal->qualification_snapshot
+                        : app(LecturerEligibilityService::class)->generateSnapshot($updatedProposal->submitter, $updatedProposal);
 
-                $proposal->update([
-                    'status' => $newStatus->value,
-                    'qualification_snapshot' => $snapshot,
-                ]);
-            });
+                    $updatedProposal->update([
+                        'qualification_snapshot' => $snapshot,
+                    ]);
+                }
+            );
+
+            if (! $result['success']) {
+                return $result;
+            }
 
             $this->sendNotifications($proposal, $isRevision);
 

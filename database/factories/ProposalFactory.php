@@ -54,6 +54,7 @@ class ProposalFactory extends Factory
             'start_year' => (int) date('Y'),
             'summary' => fake()->paragraphs(3, true),
             'status' => fake()->randomElement(ProposalStatus::values()),
+            'version' => 1,
         ];
     }
 

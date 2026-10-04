@@ -77,9 +77,10 @@ class CompleteReviewAction
             $this->sendNotifications($proposal, $review->user, $review);
 
             if ($proposal->allReviewsCompleted()) {
-                $proposal->update(['status' => ProposalStatus::REVISION_NEEDED]);
+                $finalStatus = $this->calculateFinalStatus($proposal);
+                $proposal->update(['status' => $finalStatus]);
 
-                // Send notification that revision is needed
+                // Send notification that all reviews are completed
                 $this->sendAllReviewsCompletedNotification($proposal);
             }
 
@@ -161,5 +162,40 @@ class CompleteReviewAction
             true, // All reviews complete
             $recipients
         );
+    }
+
+    /**
+     * Calculate final proposal status based on all reviewer recommendations.
+     *
+     * Logic:
+     * - All APPROVED → APPROVED
+     * - Any REJECTED → REJECTED
+     * - Mixed/has REVISION_NEEDED → REVISION_NEEDED
+     */
+    protected function calculateFinalStatus($proposal): ProposalStatus
+    {
+        $recommendations = $proposal->reviewers()
+            ->whereNotNull('recommendation')
+            ->pluck('recommendation')
+            ->map(fn ($r) => ProposalStatus::tryFrom($r))
+            ->filter()
+            ->values();
+
+        if ($recommendations->isEmpty()) {
+            return ProposalStatus::REVISION_NEEDED;
+        }
+
+        // Any REJECTED → REJECTED
+        if ($recommendations->contains(ProposalStatus::REJECTED)) {
+            return ProposalStatus::REJECTED;
+        }
+
+        // All APPROVED → APPROVED
+        if ($recommendations->every(fn ($r) => $r === ProposalStatus::APPROVED)) {
+            return ProposalStatus::APPROVED;
+        }
+
+        // Mixed/has REVISION_NEEDED → REVISION_NEEDED
+        return ProposalStatus::REVISION_NEEDED;
     }
 }

@@ -64,9 +64,11 @@ class DekanApprovalAction
         }
 
         try {
-            $newStatus = $decision === 'approved'
-                ? ProposalStatus::APPROVED
-                : ProposalStatus::NEED_ASSIGNMENT;
+            $newStatus = match ($decision) {
+                'approved' => ProposalStatus::APPROVED,
+                'rejected' => ProposalStatus::REJECTED,
+                default => ProposalStatus::NEED_ASSIGNMENT,
+            };
 
             // Validate transition
             if (! $proposal->status->canTransitionTo($newStatus)) {
@@ -94,9 +96,11 @@ class DekanApprovalAction
                 $this->sendNotifications($proposal, $decision, $dekan ?? Auth::user());
             });
 
-            $message = $decision === 'approved'
-                ? 'Proposal berhasil disetujui dan diteruskan ke Kepala LPPM.'
-                : 'Proposal dikembalikan ke pengusul untuk memperbaiki persetujuan anggota.';
+            $message = match ($decision) {
+                'approved' => 'Proposal berhasil disetujui dan diteruskan ke Kepala LPPM.',
+                'rejected' => 'Proposal ditolak oleh Dekan.',
+                default => 'Proposal dikembalikan ke pengusul untuk memperbaiki persetujuan anggota.',
+            };
 
             return [
                 'success' => true,
@@ -129,6 +133,10 @@ class DekanApprovalAction
             // Notify: Submitter, Kepala LPPM, Team Members
             $recipients->push($proposal->submitter);
             $recipients->push(User::role('kepala lppm')->first());
+            $recipients = $recipients->merge($proposal->teamMembers);
+        } elseif ($decision === 'rejected') {
+            // Notify: Submitter, Team Members
+            $recipients->push($proposal->submitter);
             $recipients = $recipients->merge($proposal->teamMembers);
         } else {
             // Notify: Submitter, Team Members (for approval)

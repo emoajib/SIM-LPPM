@@ -380,39 +380,35 @@ class DosenDashboard extends Component
 
         $completedMonev = max($monevReviewCompleted, $monevReviewAny, $monevLegacy);
 
-        // 3. Reporting Status (Laporan Akhir)
+        // 3. Reporting Status (Laporan Akhir) - CONSOLIDATED QUERY
         $totalReports = $activeProposals->count();
-        $finalReportsQuery = ProgressReport::whereIn('proposal_id', $activeProposalIds)
-            ->where('reporting_period', 'final');
 
-        $submittedReports = (clone $finalReportsQuery)
-            ->where('status', ReportStatus::SUBMITTED)
-            ->distinct()
-            ->count('proposal_id');
+        /** @var object{active_total: int, submitted: int, approved_dekan: int, approved: int, draft: int, rejected: int}|null $reportStats */
+        $reportStats = ProgressReport::query()
+            ->whereIn('proposal_id', $activeProposalIds)
+            ->where('reporting_period', 'final')
+            ->selectRaw('
+                COUNT(DISTINCT proposal_id) as active_total,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as submitted,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as approved_dekan,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as approved,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as draft,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as rejected
+            ', [
+                ReportStatus::SUBMITTED->value,
+                ReportStatus::APPROVED_BY_DEKAN->value,
+                ReportStatus::APPROVED->value,
+                ReportStatus::DRAFT->value,
+                ReportStatus::REJECTED->value,
+            ])
+            ->first();
 
-        $approvedDekanReports = (clone $finalReportsQuery)
-            ->where('status', ReportStatus::APPROVED_BY_DEKAN)
-            ->distinct()
-            ->count('proposal_id');
-
-        $approvedReports = (clone $finalReportsQuery)
-            ->where('status', ReportStatus::APPROVED)
-            ->distinct()
-            ->count('proposal_id');
-
-        $draftReports = (clone $finalReportsQuery)
-            ->where('status', ReportStatus::DRAFT)
-            ->distinct()
-            ->count('proposal_id');
-
-        $revisionReports = (clone $finalReportsQuery)
-            ->where('status', ReportStatus::REJECTED)
-            ->distinct()
-            ->count('proposal_id');
-
-        $activeReportsTotal = (clone $finalReportsQuery)
-            ->distinct()
-            ->count('proposal_id');
+        $activeReportsTotal = $reportStats->active_total ?? 0;
+        $submittedReports = $reportStats->submitted ?? 0;
+        $approvedDekanReports = $reportStats->approved_dekan ?? 0;
+        $approvedReports = $reportStats->approved ?? 0;
+        $draftReports = $reportStats->draft ?? 0;
+        $revisionReports = $reportStats->rejected ?? 0;
 
         $notStartedReports = max(0, $totalReports - $activeReportsTotal);
         $completedSubmissions = $submittedReports + $approvedDekanReports + $approvedReports;

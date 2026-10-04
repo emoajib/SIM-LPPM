@@ -20,8 +20,10 @@ use Livewire\Attributes\On;
  */
 trait ReportAccess
 {
+    #[Locked]
     public Proposal $proposal;
 
+    #[Locked]
     public ?ProgressReport $progressReport = null;
 
     #[Locked]
