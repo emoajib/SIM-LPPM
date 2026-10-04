@@ -52,6 +52,7 @@ return [
         'research_scheme_id', 'focus_area_id', 'theme_id', 'topic_id', 'national_priority_id',
         'cluster_level1_id', 'cluster_level2_id', 'cluster_level3_id', 'sbk_value',
         'duration_in_years', 'start_year', 'semester', 'summary', 'asta_cita', 'status',
+        'version',
         'logbook_signed_at', 'student_members', 'created_at', 'updated_at', 'deleted_at',
         'community_service_scheme_id', 'qualification_snapshot', 'logbook_approved_at',
         'study_program_roadmap_id', 'bima_proposal_id', 'contract_number', 'contract_date',
