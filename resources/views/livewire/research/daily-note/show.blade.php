@@ -20,6 +20,10 @@
         <span class="badge bg-success">
             <x-lucide-check-circle class="me-1 icon icon-inline" /> Telah Disetujui LPPM
         </span>
+    @elseif ($proposal->logbook_rejection_notes)
+        <span class="badge bg-warning">
+            <x-lucide-rotate-ccw class="me-1 icon icon-inline" /> Dikembalikan LPPM
+        </span>
     @elseif ($this->logbookApprovalMode !== 'upload' && $this->canApprove($proposal) && $proposal->logbook_signed_at)
         <button type="button" class="btn-success btn" x-data @click="if(confirm('Apakah Anda sebagai Kepala LPPM memvalidasi kebenaran catatan harian dan laporan keuangan ini?')) { Livewire.dispatch('approve-logbook') }">
             <x-lucide-shield-check class="me-2 icon" />
@@ -37,6 +41,23 @@
 
 <div>
     <x-tabler.alert />
+
+    @if ($proposal->logbook_rejection_notes)
+        <div class="alert alert-warning" role="alert">
+            <div class="d-flex">
+                <div>
+                    <x-lucide-rotate-ccw class="icon alert-icon" />
+                </div>
+                <div class="w-100">
+                    <h4 class="alert-title">LPJ Dikembalikan untuk Diperbaiki</h4>
+                    <blockquote class="blockquote border-start border-warning border-3 ps-3 mb-2">
+                        <p class="mb-0" style="white-space: pre-wrap;">{{ $proposal->logbook_rejection_notes }}</p>
+                    </blockquote>
+                    <small class="text-muted">Perbaiki catatan/berkas LPJ sesuai catatan di atas. Pemberitahuan ini hilang setelah LPJ disahkan ulang.</small>
+                </div>
+            </div>
+        </div>
+    @endif
 
     <div class="alert alert-info" role="alert">
         <div class="d-flex">

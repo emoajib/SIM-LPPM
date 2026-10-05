@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Notifications\DailySummaryReport;
 use App\Notifications\DekanApprovalDecision;
 use App\Notifications\FinalDecisionMade;
+use App\Notifications\LpjReturned;
 use App\Notifications\ProposalRevised;
 use App\Notifications\ProposalSubmitted;
 use App\Notifications\ReportRejected;
@@ -300,6 +301,21 @@ class NotificationService
             ->unique('id');
 
         $notification = new ReportRejected($report, $rejectedBy, $notes, $roleTitle);
+        $this->send($recipients, $notification);
+    }
+
+    /**
+     * Send LPJ Returned notification to all proposal members
+     */
+    public function notifyLpjReturned(Proposal $proposal, User $returnedBy, string $notes, string $roleTitle = 'Kepala LPPM'): void
+    {
+        // Kirim ke ketua + semua anggota tim
+        $recipients = collect([$proposal->submitter])
+            ->merge($proposal->teamMembers ?? collect())
+            ->filter()
+            ->unique('id');
+
+        $notification = new LpjReturned($proposal, $returnedBy, $notes, $roleTitle);
         $this->send($recipients, $notification);
     }
 }

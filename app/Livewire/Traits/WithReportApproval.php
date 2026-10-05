@@ -3,6 +3,7 @@
 namespace App\Livewire\Traits;
 
 use App\Enums\ReportStatus;
+use App\Models\MandatoryOutput;
 use App\Services\NotificationService;
 use App\Traits\HandlesReportStateTransitions;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +17,35 @@ trait WithReportApproval
     protected function notificationService(): NotificationService
     {
         return app(NotificationService::class);
+    }
+
+    /**
+     * Jenis luaran wajib proposal yang belum memiliki data luaran
+     * pada laporan ini. Kosong = semua luaran wajib sudah terisi.
+     *
+     * @return array<int, string>
+     */
+    protected function missingReportOutputs($report): array
+    {
+        $wajibOutputs = $report->proposal->outputs->where('category', 'Wajib');
+
+        if ($wajibOutputs->isEmpty()) {
+            return [];
+        }
+
+        $filledIds = MandatoryOutput::where('progress_report_id', $report->id)
+            ->whereNotNull('status_type')
+            ->pluck('proposal_output_id')
+            ->all();
+
+        $missing = [];
+        foreach ($wajibOutputs as $output) {
+            if (! in_array($output->id, $filledIds)) {
+                $missing[] = $output->type ?? "Luaran #{$output->id}";
+            }
+        }
+
+        return $missing;
     }
 
     public function approve(): void
@@ -66,6 +96,16 @@ trait WithReportApproval
 
                 return;
             }
+
+            // Jangan sahkan laporan yang luaran wajibnya belum dilengkapi.
+            // Tolak (kembalikan) agar dosen melengkapi terlebih dahulu.
+            $missingOutputs = $this->missingReportOutputs($report);
+            if (! empty($missingOutputs)) {
+                $this->toastError('Laporan belum bisa disahkan. Luaran wajib belum dilengkapi: '.implode(', ', $missingOutputs).'. Kembalikan ke dosen bila perlu.');
+
+                return;
+            }
+
             $newStatus = ReportStatus::APPROVED;
         }
 
@@ -136,10 +176,11 @@ trait WithReportApproval
         }
 
         $activeRole = active_role();
-        $expectedStatus = null;
+        $expectedStatuses = [];
 
         if ($activeRole === 'dekan') {
-            $expectedStatus = ReportStatus::SUBMITTED;
+            // Dekan boleh menolak dari Diajukan, atau mengoreksi persetujuannya sendiri.
+            $expectedStatuses = [ReportStatus::SUBMITTED, ReportStatus::APPROVED_BY_DEKAN];
             $dekanFacultyId = Auth::user()?->identity?->faculty_id;
             $submitterFacultyId = $report->proposal->submitter->identity?->faculty_id;
             if (! $dekanFacultyId || $dekanFacultyId !== $submitterFacultyId) {
@@ -148,14 +189,16 @@ trait WithReportApproval
                 return;
             }
         } elseif ($activeRole === 'kepala lppm') {
-            $expectedStatus = ReportStatus::APPROVED_BY_DEKAN;
+            // Kepala LPPM boleh menolak dari Disetujui Dekan, atau mengembalikan
+            // laporan yang sudah Disetujui LPPM agar dosen melengkapi kekurangan.
+            $expectedStatuses = [ReportStatus::APPROVED_BY_DEKAN, ReportStatus::APPROVED];
         } else {
             $this->toastError('Anda tidak memiliki wewenang untuk menolak laporan ini.');
 
             return;
         }
 
-        if ($report->status !== $expectedStatus) {
+        if (! in_array($report->status, $expectedStatuses, true)) {
             $this->toastError('Status laporan tidak sesuai untuk ditolak.');
 
             return;
@@ -164,10 +207,11 @@ trait WithReportApproval
         try {
             $rejector = Auth::user();
             $notes = $this->approvalNotes;
+            $wasApproved = in_array($report->status, [ReportStatus::APPROVED_BY_DEKAN, ReportStatus::APPROVED], true);
 
             $rejected = $this->transitionReport(
                 $report,
-                $expectedStatus,
+                $report->status,
                 ReportStatus::REJECTED,
                 function ($updatedReport) use ($rejector, $notes) {
                     $updatedReport->update([
@@ -194,15 +238,15 @@ trait WithReportApproval
             }
 
             $this->approvalNotes = '';
-            $this->toastSuccess('Laporan telah ditolak. Dosen akan menerima notifikasi.');
+            $this->toastSuccess($wasApproved ? 'Laporan dikembalikan ke dosen untuk dilengkapi. Dosen akan menerima notifikasi.' : 'Laporan telah ditolak. Dosen akan menerima notifikasi.');
             $this->dispatch('report-rejected');
 
+            // Hanya 'dekan' atau 'kepala lppm' yang sampai di sini
+            // (peran lain sudah return lebih awal).
             if ($activeRole === 'dekan') {
                 $this->redirect(route('dekan.reports.index'), navigate: true);
-            } elseif ($activeRole === 'kepala lppm') {
-                $this->redirect(route('kepala-lppm.report-approval'), navigate: true);
             } else {
-                $this->redirect(route('dashboard'), navigate: true);
+                $this->redirect(route('kepala-lppm.report-approval'), navigate: true);
             }
         } catch (\Exception $e) {
             $this->toastError('Gagal menolak laporan: '.$e->getMessage());

@@ -4,6 +4,7 @@ use App\Enums\ProposalStatus;
 use App\Livewire\KepalaLppm\FinancialApproval;
 use App\Livewire\Research\FinalReport\Show as ResearchFinalReportShow;
 use App\Models\CommunityService;
+use App\Models\DailyNote;
 use App\Models\Identity;
 use App\Models\Proposal;
 use App\Models\Research;
@@ -62,6 +63,14 @@ test('kepala lppm can mount financial approval component and view proposals', fu
 test('kepala lppm can approve lpj and unapprove lpj', function () {
     $this->actingAs($this->kepala);
     session(['active_role' => 'kepala lppm']);
+
+    // LPJ berpenghuni: ada catatan harian agar lolos guard pengesahan
+    DailyNote::factory()->create([
+        'proposal_id' => $this->proposal->id,
+        'amount' => 1000000,
+        'activity_date' => now(),
+        'activity_description' => 'Belanja ATK penelitian',
+    ]);
 
     $this->assertNull($this->proposal->logbook_approved_at);
 
@@ -135,6 +144,14 @@ test('admin lppm can mount financial approval component and approve and unapprov
 
     $this->actingAs($admin);
     session(['active_role' => 'admin lppm']);
+
+    // LPJ berpenghuni: ada catatan harian agar lolos guard pengesahan
+    DailyNote::factory()->create([
+        'proposal_id' => $this->proposal->id,
+        'amount' => 1000000,
+        'activity_date' => now(),
+        'activity_description' => 'Belanja ATK penelitian',
+    ]);
 
     Livewire::test(FinancialApproval::class)
         ->assertOk()

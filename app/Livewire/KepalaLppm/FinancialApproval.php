@@ -7,6 +7,7 @@ namespace App\Livewire\KepalaLppm;
 use App\Enums\ProposalStatus;
 use App\Livewire\Concerns\HasToast;
 use App\Models\Proposal;
+use App\Services\NotificationService;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -34,6 +35,10 @@ class FinancialApproval extends Component
 
     #[Url]
     public string $statusFilter = 'all';
+
+    public ?string $returningProposalId = null;
+
+    public string $returnNotes = '';
 
     public function mount(): void
     {
@@ -69,7 +74,20 @@ class FinancialApproval extends Component
         abort_unless(Auth::user()?->activeHasAnyRole(['kepala lppm', 'admin lppm', 'superadmin']), 403);
 
         $proposal = Proposal::findOrFail($proposalId);
-        $proposal->update(['logbook_approved_at' => now()]);
+
+        // Jangan sahkan LPJ yang belum ada isinya sama sekali.
+        if (! $proposal->hasMedia('logbook_approval_file') && ! $proposal->dailyNotes()->exists()) {
+            $this->toastError('LPJ belum bisa disahkan: belum ada berkas scan maupun catatan harian. Kembalikan ke dosen bila perlu dilengkapi.');
+
+            return;
+        }
+
+        $proposal->update([
+            'logbook_approved_at' => now(),
+            'logbook_rejection_notes' => null,
+            'logbook_rejected_by' => null,
+            'logbook_rejected_at' => null,
+        ]);
         $this->clearFinancialPdfCache((string) $proposal->id);
 
         unset($this->proposals);
@@ -105,6 +123,80 @@ class FinancialApproval extends Component
                 @unlink($file);
             }
         }
+    }
+
+    public function openReturnModal(string $proposalId): void
+    {
+        abort_unless(Auth::user()?->activeHasAnyRole(['kepala lppm', 'admin lppm', 'superadmin']), 403);
+
+        $this->returningProposalId = $proposalId;
+        $this->returnNotes = '';
+    }
+
+    public function closeReturnModal(): void
+    {
+        $this->returningProposalId = null;
+        $this->returnNotes = '';
+    }
+
+    /**
+     * Kembalikan LPJ ke dosen beserta catatan perbaikan.
+     * Dapat dilakukan Kepala LPPM maupun Admin LPPM.
+     */
+    public function returnToDosen(): void
+    {
+        abort_unless(Auth::user()?->activeHasAnyRole(['kepala lppm', 'admin lppm', 'superadmin']), 403);
+
+        $this->validate([
+            'returnNotes' => 'required|string|min:10|max:2000',
+        ], [
+            'returnNotes.required' => 'Catatan pengembalian wajib diisi agar dosen tahu yang perlu diperbaiki.',
+            'returnNotes.min' => 'Catatan minimal 10 karakter agar dosen memahami yang perlu diperbaiki.',
+            'returnNotes.max' => 'Catatan maksimal 2000 karakter.',
+        ]);
+
+        if (! $this->returningProposalId) {
+            return;
+        }
+
+        $proposal = Proposal::findOrFail($this->returningProposalId);
+        $returner = Auth::user();
+        $notes = $this->returnNotes;
+
+        $proposal->update([
+            'logbook_approved_at' => null,
+            'logbook_rejection_notes' => $notes,
+            'logbook_rejected_by' => $returner->id,
+            'logbook_rejected_at' => now(),
+        ]);
+        $this->clearFinancialPdfCache((string) $proposal->id);
+
+        // Beri tahu ketua + anggota tim agar catatan terbaca dosen.
+        try {
+            $roleTitle = match (active_role()) {
+                'admin lppm' => 'Admin LPPM',
+                default => 'Kepala LPPM',
+            };
+            app(NotificationService::class)->notifyLpjReturned(
+                $proposal->loadMissing(['submitter', 'teamMembers']),
+                $returner,
+                $notes,
+                $roleTitle
+            );
+        } catch (\Throwable $e) {
+            \Log::warning('Gagal kirim notifikasi pengembalian LPJ: '.$e->getMessage(), [
+                'proposal_id' => $proposal->id,
+            ]);
+        }
+
+        $this->closeReturnModal();
+        unset($this->proposals);
+        unset($this->stats);
+
+        $message = 'LPJ dikembalikan ke dosen beserta catatan perbaikan. Dosen akan menerima notifikasi.';
+        session()->flash('success', $message);
+        $this->toastSuccess($message);
+        $this->dispatch('close-modal', modalId: 'modalReturnLpj');
     }
 
     #[Computed]

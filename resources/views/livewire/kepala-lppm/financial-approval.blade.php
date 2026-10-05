@@ -200,6 +200,14 @@
                                     <div class="small text-muted mt-1" style="font-size: 0.72rem;">
                                         {{ \Carbon\Carbon::parse($proposal->logbook_approved_at)->format('d/m/Y H:i') }}
                                     </div>
+                                @elseif ($proposal->logbook_rejection_notes)
+                                    <span class="badge bg-orange-lt d-inline-flex align-items-center gap-1">
+                                        <x-lucide-rotate-ccw class="icon icon-sm text-orange" />
+                                        Dikembalikan
+                                    </span>
+                                    <div class="small text-muted mt-1" style="font-size: 0.72rem;" title="{{ $proposal->logbook_rejection_notes }}">
+                                        Perlu perbaikan dosen
+                                    </div>
                                 @elseif ($scanMedia)
                                     <span class="badge bg-warning-lt d-inline-flex align-items-center gap-1">
                                         <x-lucide-clock class="icon icon-sm text-warning" />
@@ -248,6 +256,13 @@
                                                 <span class="spinner-border spinner-border-sm"></span>
                                             </span>
                                         </button>
+                                        @if ($scanMedia || $proposal->dailyNotes->count() > 0)
+                                            <button type="button" wire:click="openReturnModal('{{ $proposal->id }}')" class="btn btn-sm btn-outline-warning"
+                                                data-bs-toggle="modal" data-bs-target="#modalReturnLpj" title="Kembalikan LPJ ke dosen beserta catatan perbaikan">
+                                                <x-lucide-rotate-ccw class="icon icon-sm me-1" />
+                                                Kembalikan
+                                            </button>
+                                        @endif
                                     @endif
                                 </div>
                             </td>
@@ -272,4 +287,30 @@
             </div>
         @endif
     </div>
+
+    <!-- Modal: Kembalikan LPJ ke Dosen -->
+    <x-tabler.modal id="modalReturnLpj" title="Kembalikan LPJ ke Dosen" size="md" wire:ignore.self>
+        <x-slot:body>
+            <p class="text-secondary small">Tuliskan bagian LPJ yang belum sesuai agar dosen dapat memperbaikinya. Catatan akan tampil di halaman logbook dosen dan terkirim sebagai notifikasi.</p>
+            <label class="form-label required" for="returnNotes">Catatan Perbaikan (min. 10 karakter)</label>
+            <textarea wire:model="returnNotes" id="returnNotes" class="form-control @error('returnNotes') is-invalid @enderror" rows="5"
+                placeholder="Contoh: Total realisasi bulan 3 tidak cocok dengan nota terlampir. Mohon periksa kembali nominal..."></textarea>
+            @error('returnNotes')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </x-slot:body>
+        <x-slot:footer>
+            <button type="button" class="btn btn-ghost-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="button" class="btn btn-warning" wire:click="returnToDosen" wire:loading.attr="disabled">
+                <span wire:loading.remove wire:target="returnToDosen">
+                    <x-lucide-rotate-ccw class="icon me-1" />
+                    Kembalikan ke Dosen
+                </span>
+                <span wire:loading wire:target="returnToDosen">
+                    <span class="spinner-border spinner-border-sm me-1"></span>
+                    Memproses...
+                </span>
+            </button>
+        </x-slot:footer>
+    </x-tabler.modal>
 </div>

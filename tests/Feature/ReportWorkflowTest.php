@@ -71,6 +71,19 @@ class ReportWorkflowTest extends TestCase
         Identity::factory()->create(['user_id' => $this->dekan->id, 'faculty_id' => $faculty->id]);
     }
 
+    /**
+     * Isi luaran wajib pada form lalu ajukan laporan.
+     * Wajib dilakukan karena submit() diblokir bila luaran wajib masih kosong.
+     */
+    protected function submitWithFilledOutputs($component)
+    {
+        $outputId = $this->proposal->outputs()->where('category', 'Wajib')->first()->id;
+
+        return $component
+            ->set("form.mandatoryOutputs.{$outputId}.status_type", 'published')
+            ->call('submit');
+    }
+
     public function test_dosen_can_create_and_submit_final_report()
     {
         $this->actingAs($this->dosen);
@@ -98,7 +111,7 @@ class ReportWorkflowTest extends TestCase
         $this->assertEquals(ReportStatus::DRAFT, $report->status);
 
         // Submit
-        $component->call('submit');
+        $component = $this->submitWithFilledOutputs($component);
         $component->assertHasNoErrors();
         $this->assertEquals(ReportStatus::SUBMITTED, $report->fresh()->status);
     }
@@ -128,7 +141,7 @@ class ReportWorkflowTest extends TestCase
         $this->assertEquals(ReportStatus::DRAFT, $report->status);
 
         // Submit without presentation file (presentation should only be required for Community Service/PKM)
-        $component->call('submit');
+        $component = $this->submitWithFilledOutputs($component);
         $component->assertHasNoErrors();
         $this->assertEquals(ReportStatus::SUBMITTED, $report->fresh()->status);
     }
@@ -156,7 +169,7 @@ class ReportWorkflowTest extends TestCase
         $this->assertEquals(ReportStatus::DRAFT, $report->status);
 
         // Submit without realization file (realization file is optional)
-        $component->call('submit');
+        $component = $this->submitWithFilledOutputs($component);
         $component->assertHasNoErrors();
         $this->assertEquals(ReportStatus::SUBMITTED, $report->fresh()->status);
     }
@@ -293,7 +306,7 @@ class ReportWorkflowTest extends TestCase
             ->set('realizationFile', $realizationFile)
             ->call('save');
 
-        $component->call('submit');
+        $component = $this->submitWithFilledOutputs($component);
 
         $report = $this->proposal->progressReports()->where('reporting_period', 'final')->first();
         $this->assertEquals(ReportStatus::SUBMITTED, $report->status);
@@ -331,7 +344,7 @@ class ReportWorkflowTest extends TestCase
             ->set('realizationFile', $realizationFile)
             ->call('save');
 
-        $component->call('submit');
+        $component = $this->submitWithFilledOutputs($component);
 
         $report = $this->proposal->progressReports()->where('reporting_period', 'final')->first();
         $this->assertEquals(ReportStatus::SUBMITTED, $report->status);

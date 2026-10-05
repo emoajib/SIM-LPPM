@@ -102,6 +102,10 @@
                                     <span class="badge bg-success-lt text-success fw-bold d-inline-flex align-items-center">
                                         <x-lucide-check-circle class="icon icon-sm me-1" /> Disetujui LPPM
                                     </span>
+                                @elseif ($proposal->logbook_rejection_notes)
+                                    <span class="badge bg-orange-lt text-orange fw-bold d-inline-flex align-items-center" title="{{ $proposal->logbook_rejection_notes }}">
+                                        <x-lucide-rotate-ccw class="icon icon-sm me-1" /> Dikembalikan LPPM
+                                    </span>
                                 @elseif ($hasScannedFile)
                                     <span class="badge bg-warning-lt text-warning fw-bold d-inline-flex align-items-center" title="Dosen telah mengunggah scan pengesahan basah">
                                         <x-lucide-file-text class="icon icon-sm me-1" /> Menunggu Validasi (Berkas Scan)

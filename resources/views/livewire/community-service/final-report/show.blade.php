@@ -153,6 +153,36 @@
                     </div>
                 </div>
             @endif
+
+            {{-- Kembalikan ke dosen: Kepala LPPM (dari Disahkan) atau Dekan (koreksi persetujuannya sendiri). --}}
+            @php
+                $isApprovedFinal = $progressReport->status === \App\Enums\ReportStatus::APPROVED;
+                $canReturnReport = ($isActiveKepalaLppm && $isApprovedFinal) || ($isActiveDekan && $isApprovedByDekan);
+            @endphp
+            @if ($canReturnReport)
+                <div class="card mb-3 border-2 border-dashed border-warning">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <h3 class="card-title text-warning mb-1">
+                                    <x-lucide-rotate-ccw class="icon me-2" />
+                                    Laporan Sudah Disahkan
+                                </h3>
+                                <p class="text-secondary mb-0">
+                                    Jika ditemukan kekurangan (misalnya luaran wajib belum lengkap), kembalikan ke dosen untuk dilengkapi.
+                                </p>
+                            </div>
+                            <div class="btn-list">
+                                <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal"
+                                    data-bs-target="#modalReject">
+                                    <x-lucide-rotate-ccw class="icon me-1" />
+                                    Kembalikan ke Dosen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
         @endif
 
         {{-- Alert Penolakan: Tampil jika laporan ditolak, untuk SEMUA peran --}}
@@ -1299,7 +1329,8 @@
         </div>
 
     <!-- Luaran Wajib -->
-    @if ($isFinalReportDraft)
+    {{-- Tampil saat draft (bisa dilengkapi) maupun setelah disahkan (read-only) agar luaran tetap terpantau. --}}
+    @if ($isFinalReportDraft || ($progressReport && $progressReport->status === \App\Enums\ReportStatus::APPROVED))
         <div class="card mb-3">
             <div class="card-header">
                 <h3 class="card-title"><x-lucide-book-open class="icon me-2" />Luaran Wajib</h3>

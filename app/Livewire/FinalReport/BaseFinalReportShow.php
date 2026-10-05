@@ -592,6 +592,17 @@ abstract class BaseFinalReportShow extends Component
         // Realization file and presentation file are optional for final report submission
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
 
+        // Luaran wajib harus dilengkapi sebelum laporan akhir dapat diajukan.
+        // Mencegah laporan disetujui dalam keadaan luaran kosong (deadlock eligibility).
+        $missingOutputs = $this->missingMandatoryOutputs();
+        if (! empty($missingOutputs)) {
+            $message = 'Gagal mengajukan: luaran wajib berikut belum diisi — '.implode(', ', $missingOutputs).'. Lengkapi pada bagian Luaran Wajib terlebih dahulu.';
+            $this->addError('mandatoryOutputs', $message);
+            $this->toastError($message);
+
+            return;
+        }
+
         // Determine expected current status for optimistic locking
         $expectedStatus = $this->progressReport->status ?? ReportStatus::DRAFT;
         $allowedFrom = [ReportStatus::DRAFT, ReportStatus::REJECTED];
@@ -641,6 +652,31 @@ abstract class BaseFinalReportShow extends Component
             session()->flash('error', $message);
             $this->toastError($message);
         }
+    }
+
+    /**
+     * Daftar jenis luaran wajib proposal yang belum dilengkapi datanya
+     * pada form laporan akhir. Kosong = semua luaran wajib sudah terisi.
+     *
+     * @return array<int, string>
+     */
+    protected function missingMandatoryOutputs(): array
+    {
+        $wajibOutputs = $this->proposal->outputs->where('category', 'Wajib');
+
+        if ($wajibOutputs->isEmpty()) {
+            return [];
+        }
+
+        $missing = [];
+        foreach ($wajibOutputs as $output) {
+            $data = $this->form->mandatoryOutputs[$output->id] ?? [];
+            if (empty($data['status_type']) && empty($data['journal_title'])) {
+                $missing[] = $output->type ?? "Luaran #{$output->id}";
+            }
+        }
+
+        return $missing;
     }
 
     /**
