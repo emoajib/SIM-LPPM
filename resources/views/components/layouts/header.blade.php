@@ -157,12 +157,7 @@
                 <div class="nav-item dropdown">
                     <a href="#" class="d-flex p-0 px-2 nav-link lh-1" data-bs-toggle="dropdown"
                         aria-label="Open user menu">
-                        <span class="avatar avatar-sm"
-                            style="background-image: url({{ auth()->user()->profile_picture }})">
-                            @if (!auth()->user()->getFirstMedia('avatar') && !auth()->user()->identity?->profile_picture)
-                                {{ auth()->user()->initials() }}
-                            @endif
-                        </span>
+                        <x-user-avatar :user="auth()->user()" size="avatar-sm" />
                         <div class="d-xl-block ps-2 d-none">
                             <div>{{ Auth::user()->name }}</div>
                             <div class="mt-1 text-secondary small">{{ Auth::user()->email }}</div>

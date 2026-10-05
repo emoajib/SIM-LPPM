@@ -51,8 +51,7 @@
                         <tr wire:key="reviewer-{{ $reviewer->id }}">
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <span class="me-2 avatar avatar-sm"
-                                        style="background-image: url({{ $reviewer->profile_picture }})"></span>
+                                    <x-user-avatar :user="$reviewer" size="avatar-sm" class="me-2" />
                                     <div>
                                         <div class="fw-bold">{{ $reviewer->name }}</div>
                                         <div class="text-secondary small">{{ $reviewer->email }}</div>

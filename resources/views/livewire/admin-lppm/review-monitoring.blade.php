@@ -104,10 +104,8 @@
                                 @else
                                     <div class="mb-2 avatar-list-stacked avatar-list">
                                         @foreach ($proposal->reviewers as $reviewer)
-                                            <span class="rounded avatar avatar-xs"
-                                                title="{{ $reviewer->user?->name }}: {{ $reviewer->status->label() }}"
-                                                style="background-image: url({{ $reviewer->user?->profile_picture }})">
-                                            </span>
+                                            <x-user-avatar :user="$reviewer->user" size="avatar-xs" class="rounded"
+                                                title="{{ $reviewer->user?->name }}: {{ $reviewer->status->label() }}" />
                                         @endforeach
                                     </div>
                                     <div class="small mb-1">

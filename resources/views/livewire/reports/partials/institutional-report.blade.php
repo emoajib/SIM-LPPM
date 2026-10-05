@@ -348,12 +348,7 @@
                                     <td>{{ ($proposals->currentPage() - 1) * $proposals->perPage() + $index + 1 }}</td>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <span class="avatar avatar-sm avatar-rounded me-2"
-                                                style="background-image: url({{ $proposal->submitter->profile_picture ?: '' }})">
-                                                @if(!$proposal->submitter->profile_picture)
-                                                    {{ strtoupper(mb_substr($proposal->submitter->name, 0, 1)) }}
-                                                @endif
-                                            </span>
+                                            <x-user-avatar :user="$proposal->submitter" size="avatar-sm" class="avatar-rounded me-2" />
                                             <div class="flex-fill">
                                                 <div class="font-weight-medium text-wrap" style="max-width: 400px;"
                                                     title="{{ $proposal->title }}">

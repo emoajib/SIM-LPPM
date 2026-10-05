@@ -101,8 +101,7 @@
                             <td>{{ $report->year }}</td>
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <span class="avatar avatar-xs me-2"
-                                        style="background-image: url({{ $report->submitter?->profile_picture }})"></span>
+                                    <x-user-avatar :user="$report->submitter" size="avatar-xs" class="me-2" />
                                     <div class="small">{{ $report->submitter?->name ?? '-' }}</div>
                                 </div>
                             </td>

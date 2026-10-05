@@ -246,7 +246,7 @@
                                 <td class="ps-4">
                                     <div class="fw-bold text-wrap lh-base">{{ $proposal->title }}</div>
                                     <div class="small text-muted mt-1 d-flex align-items-center">
-                                        <span class="avatar avatar-xs me-2 border-0" style="background-image: url({{ $proposal->submitter->profile_picture }})"></span>
+                                        <x-user-avatar :user="$proposal->submitter" size="avatar-xs" class="me-2 border-0" />
                                         {{ $proposal->submitter->name }} ({{ $proposal->submitter->identity->faculty->name ?? '-' }})
                                     </div>
                                 </td>

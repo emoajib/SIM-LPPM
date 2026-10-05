@@ -224,11 +224,13 @@ class User extends Authenticatable implements HasMedia
     public function profilePicture(): Attribute
     {
         return new Attribute(
-            get: function ($value) {
+            get: function () {
                 $mediaUrl = $this->getFirstMediaUrl('avatar');
 
-                return $mediaUrl ?: ($this->identity->profile_picture
-                    ?? 'https://www.gravatar.com/avatar/'.md5(strtolower(trim($this->email))).'?s=128&d=identicon');
+                // NOTE: no remote Gravatar fallback — www.gravatar.com routinely
+                // times out from Indonesian networks (console ERR_TIMED_OUT) and
+                // leaks email hashes. Views render local initials instead.
+                return $mediaUrl ?: $this->identity?->profile_picture;
             },
         );
     }
