@@ -189,18 +189,18 @@ class ProposalForm extends Form
 
         // Load common proposal fields
         $this->title = $proposal->title ?? '';
-        $this->research_scheme_id = $proposal->research_scheme_id;
-        $this->community_service_scheme_id = $proposal->community_service_scheme_id;
-        $this->focus_area_id = $proposal->focus_area_id ?? '';
-        $this->theme_id = $proposal->theme_id ?? '';
-        $this->topic_id = $proposal->topic_id ?? '';
+        $this->research_scheme_id = $proposal->research_scheme_id !== null ? (string) $proposal->research_scheme_id : null;
+        $this->community_service_scheme_id = $proposal->community_service_scheme_id !== null ? (string) $proposal->community_service_scheme_id : null;
+        $this->focus_area_id = $proposal->focus_area_id !== null ? (string) $proposal->focus_area_id : '';
+        $this->theme_id = $proposal->theme_id !== null ? (string) $proposal->theme_id : '';
+        $this->topic_id = $proposal->topic_id !== null ? (string) $proposal->topic_id : '';
         $this->study_program_roadmap_id = $proposal->study_program_roadmap_id ? (string) $proposal->study_program_roadmap_id : null;
 
         $this->keywords = $proposal->keywords ? $proposal->keywords->pluck('name')->toArray() : [];
-        $this->national_priority_id = $proposal->national_priority_id ?? '';
-        $this->cluster_level1_id = $proposal->cluster_level1_id ?? '';
-        $this->cluster_level2_id = $proposal->cluster_level2_id ?? '';
-        $this->cluster_level3_id = $proposal->cluster_level3_id ?? '';
+        $this->national_priority_id = $proposal->national_priority_id !== null ? (string) $proposal->national_priority_id : '';
+        $this->cluster_level1_id = $proposal->cluster_level1_id !== null ? (string) $proposal->cluster_level1_id : '';
+        $this->cluster_level2_id = $proposal->cluster_level2_id !== null ? (string) $proposal->cluster_level2_id : '';
+        $this->cluster_level3_id = $proposal->cluster_level3_id !== null ? (string) $proposal->cluster_level3_id : '';
         $this->sbk_value = (string) $proposal->sbk_value;
         $this->duration_in_years = (string) $proposal->duration_in_years;
         $this->start_year = (string) ($proposal->start_year ?? date('Y'));
@@ -421,19 +421,19 @@ class ProposalForm extends Form
             'submitter_id' => $submitterId,
             'detailable_id' => $research->id,
             'detailable_type' => Research::class,
-            'research_scheme_id' => $this->research_scheme_id,
-            'focus_area_id' => $this->focus_area_id,
-            'theme_id' => $this->theme_id,
-            'topic_id' => $this->topic_id,
+            'research_scheme_id' => $this->research_scheme_id ?: null,
+            'focus_area_id' => $this->focus_area_id ?: null,
+            'theme_id' => $this->theme_id ?: null,
+            'topic_id' => $this->topic_id ?: null,
             'national_priority_id' => $this->national_priority_id ?: null,
             'study_program_roadmap_id' => $this->study_program_roadmap_id ?: null,
-            'cluster_level1_id' => $this->cluster_level1_id,
+            'cluster_level1_id' => $this->cluster_level1_id ?: null,
             'cluster_level2_id' => $this->cluster_level2_id ?: null,
             'cluster_level3_id' => $this->cluster_level3_id ?: null,
             'sbk_value' => ! empty($this->sbk_value) ? $this->sbk_value : null,
-            'duration_in_years' => (int) $this->duration_in_years,
-            'start_year' => (int) $this->start_year,
-            'semester' => $this->semester,
+            'duration_in_years' => $this->duration_in_years !== '' ? (int) $this->duration_in_years : 1,
+            'start_year' => $this->start_year !== '' ? (int) $this->start_year : null,
+            'semester' => $this->semester ?: null,
             'summary' => $this->summary,
             'asta_cita' => $this->asta_cita ?: null,
             'status' => 'draft',
@@ -478,8 +478,8 @@ class ProposalForm extends Form
             'partner_id' => $this->partner_id ?: null,
             'partner_issue_summary' => $this->partner_issue_summary ?: null,
             'solution_offered' => $this->solution_offered ?: null,
-            'background' => $this->background,
-            'methodology' => $this->methodology,
+            'background' => $this->background ?: null,
+            'methodology' => $this->methodology ?: null,
         ]);
 
         // Upload substance file using Media Library
@@ -520,19 +520,19 @@ class ProposalForm extends Form
             'submitter_id' => $submitterId,
             'detailable_id' => $communityService->id,
             'detailable_type' => CommunityService::class,
-            'community_service_scheme_id' => $this->community_service_scheme_id,
-            'focus_area_id' => $this->focus_area_id,
-            'theme_id' => $this->theme_id,
-            'topic_id' => $this->topic_id,
+            'community_service_scheme_id' => $this->community_service_scheme_id ?: null,
+            'focus_area_id' => $this->focus_area_id ?: null,
+            'theme_id' => $this->theme_id ?: null,
+            'topic_id' => $this->topic_id ?: null,
             'national_priority_id' => $this->national_priority_id ?: null,
             'study_program_roadmap_id' => $this->study_program_roadmap_id ?: null,
-            'cluster_level1_id' => $this->cluster_level1_id,
+            'cluster_level1_id' => $this->cluster_level1_id ?: null,
             'cluster_level2_id' => $this->cluster_level2_id ?: null,
             'cluster_level3_id' => $this->cluster_level3_id ?: null,
             'sbk_value' => ! empty($this->sbk_value) ? $this->sbk_value : null,
-            'duration_in_years' => (int) $this->duration_in_years,
-            'start_year' => (int) $this->start_year,
-            'semester' => $this->semester,
+            'duration_in_years' => $this->duration_in_years !== '' ? (int) $this->duration_in_years : 1,
+            'start_year' => $this->start_year !== '' ? (int) $this->start_year : null,
+            'semester' => $this->semester ?: null,
             'summary' => $this->summary,
             'asta_cita' => $this->asta_cita ?: null,
             'status' => 'draft',
@@ -570,9 +570,9 @@ class ProposalForm extends Form
                         $detailable->update([
                             'macro_research_group_id' => $this->macro_research_group_id ?: null,
                             'tkt_type' => $this->tkt_type ?: null,
-                            'background' => $this->background,
+                            'background' => $this->background ?: null,
                             'state_of_the_art' => $this->state_of_the_art ?: null,
-                            'methodology' => $this->methodology,
+                            'methodology' => $this->methodology ?: null,
                             'roadmap_data' => $this->roadmap_data ?: null,
                         ]);
 
@@ -631,8 +631,8 @@ class ProposalForm extends Form
                             'partner_id' => $this->partner_id ?: null,
                             'partner_issue_summary' => $this->partner_issue_summary ?: null,
                             'solution_offered' => $this->solution_offered ?: null,
-                            'background' => $this->background,
-                            'methodology' => $this->methodology,
+                            'background' => $this->background ?: null,
+                            'methodology' => $this->methodology ?: null,
                         ]);
 
                         // Update substance file ONLY if a new file is uploaded
@@ -675,18 +675,18 @@ class ProposalForm extends Form
                     'title' => $this->title,
                     'research_scheme_id' => $this->research_scheme_id ?: null,
                     'community_service_scheme_id' => $this->community_service_scheme_id ?: null,
-                    'focus_area_id' => $this->focus_area_id,
-                    'theme_id' => $this->theme_id,
-                    'topic_id' => $this->topic_id,
+                    'focus_area_id' => $this->focus_area_id ?: null,
+                    'theme_id' => $this->theme_id ?: null,
+                    'topic_id' => $this->topic_id ?: null,
                     'national_priority_id' => $this->national_priority_id ?: null,
                     'study_program_roadmap_id' => $this->study_program_roadmap_id ?: null,
-                    'cluster_level1_id' => $this->cluster_level1_id,
+                    'cluster_level1_id' => $this->cluster_level1_id ?: null,
                     'cluster_level2_id' => $this->cluster_level2_id ?: null,
                     'cluster_level3_id' => $this->cluster_level3_id ?: null,
                     'sbk_value' => ! empty($this->sbk_value) ? $this->sbk_value : null,
-                    'duration_in_years' => (int) $this->duration_in_years,
-                    'start_year' => (int) $this->start_year,
-                    'semester' => $this->semester,
+                    'duration_in_years' => $this->duration_in_years !== '' ? (int) $this->duration_in_years : 1,
+                    'start_year' => $this->start_year !== '' ? (int) $this->start_year : null,
+                    'semester' => $this->semester ?: null,
                     'summary' => $this->summary,
                     'asta_cita' => $this->asta_cita ?: null,
                 ]);
@@ -701,8 +701,11 @@ class ProposalForm extends Form
                 }
 
                 // Update budget items (delete old, create new)
-                $this->proposal->budgetItems()->delete();
-                $this->attachBudgetItems($this->proposal);
+                // Preserve existing items if new items are empty (prevents data loss on draft save)
+                if (! empty($this->budget_items)) {
+                    $this->proposal->budgetItems()->delete();
+                    $this->attachBudgetItems($this->proposal);
+                }
 
                 // Update schedule items (delete old, create new)
                 if (! empty($this->schedule_items)) {
