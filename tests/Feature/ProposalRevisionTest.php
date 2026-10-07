@@ -54,7 +54,7 @@ class ProposalRevisionTest extends TestCase
 
         $this->scheme = ResearchScheme::firstOrCreate(
             ['name' => 'Skema Dasar'],
-            ['strata' => 'binaan', 'duration_in_years' => 1]
+            ['strata' => 'Reguler', 'duration_in_years' => 1]
         );
 
         $this->macroGroup = MacroResearchGroup::firstOrCreate(

@@ -428,7 +428,20 @@ class Proposal extends Model implements HasMedia
      */
     public function latestFinalReport(): HasOne
     {
-        return $this->hasOne(ProgressReport::class)->where('reporting_period', 'final')->latestOfMany();
+        // latestOfMany() memakai MAX(id) sebagai tie-breaker yang gagal
+        // pada UUID PK di PostgreSQL (function max(uuid) does not exist).
+        // Pola yang sama dengan latestKaprodiApproval(): subquery korelasi.
+        return $this->hasOne(ProgressReport::class)
+            ->where('reporting_period', 'final')
+            ->whereRaw('progress_reports.id = (
+                SELECT sub.id
+                FROM progress_reports AS sub
+                WHERE sub.proposal_id = progress_reports.proposal_id
+                AND sub.reporting_period = \'final\'
+                AND sub.deleted_at IS NULL
+                ORDER BY sub.created_at DESC
+                LIMIT 1
+            )');
     }
 
     /**
