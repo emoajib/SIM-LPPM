@@ -817,28 +817,27 @@
                     @endif
                 </div>
 
-                {{-- File Poster/Presentasi (Opsional) --}}
-                {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                {{-- File RPS (Wajib) --}}
                 <div class="mb-3">
-                    <label class="form-label mb-0">File Poster/Presentasi (PDF) <span class="badge bg-secondary-lt ms-1">Opsional</span></label>
-                    <input type="file" wire:model="presentationFile"
-                        class="form-control @error('presentationFile') is-invalid @enderror" accept=".pdf"
+                    <label class="form-label mb-0 required">File RPS (PDF)</label>
+                    <input type="file" wire:model="rpsFile"
+                        class="form-control @error('rpsFile') is-invalid @enderror" accept=".pdf"
                         @disabled(!$canEdit) />
-                    @error('presentationFile')
+                    @error('rpsFile')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                    <small class="form-hint">Maksimal 10MB, format PDF (Opsional jika ada poster/presentasi kegiatan PKM)</small>
+                    <small class="form-hint">Maksimal 10MB, format PDF (Wajib: Rencana Pembelajaran Semester kegiatan PKM)</small>
 
-                    <div wire:loading wire:target="presentationFile">
+                    <div wire:loading wire:target="rpsFile">
                         <small class="text-muted">
                             <span class="spinner-border spinner-border-sm me-2"></span>
                             Uploading...
                         </small>
                     </div>
 
-                    @if ($progressReport && $progressReport->hasMedia('presentation_file'))
+                    @if ($progressReport && ($progressReport->hasMedia('rps_file') || $progressReport->hasMedia('presentation_file')))
                         @php
-                            $media = $progressReport->getFirstMedia('presentation_file');
+                            $media = $progressReport->getFirstMedia('rps_file') ?? $progressReport->getFirstMedia('presentation_file');
                         @endphp
                         <div class="alert alert-success mb-0 mt-2">
                             <div class="d-flex align-items-center justify-content-between">
@@ -854,7 +853,7 @@
                                         <x-lucide-eye class="icon" /> Lihat
                                     </a>
                                     @if ($canEdit)
-                                        <button type="button" wire:click="removePresentationFile"
+                                        <button type="button" wire:click="removeRpsFile"
                                             class="btn btn-sm btn-danger" wire:confirm="Yakin ingin menghapus file ini?">
                                             <x-lucide-trash-2 class="icon" /> Hapus
                                         </button>
@@ -1483,49 +1482,7 @@
                                             @endif
                                         </td>
                                         <td>
-                                            @if ($rowAdditionalOutput)
-                                                <div class="d-flex gap-2">
-                                                    @if ($rowAdditionalOutput->hasMedia('book_document'))
-                                                        @php
-                                                            $media = $rowAdditionalOutput->getFirstMedia(
-                                                                'book_document',
-                                                            );
-                                                        @endphp
-                                                        <a data-navigate-ignore="true"
-                                                            href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                                                            target="_blank" class="btn btn-sm btn-success">
-                                                            <x-lucide-book class="icon icon-sm" />
-                                                            Buku
-                                                        </a>
-                                                    @endif
-
-                                                    @if ($rowAdditionalOutput->hasMedia('publication_certificate'))
-                                                        @php
-                                                            $media = $rowAdditionalOutput->getFirstMedia(
-                                                                'publication_certificate',
-                                                            );
-                                                        @endphp
-                                                        <a data-navigate-ignore="true"
-                                                            href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                                                            target="_blank" class="btn btn-sm btn-info">
-                                                            <x-lucide-award class="icon icon-sm" />
-                                                            Sertifikat
-                                                        </a>
-                                                    @endif
-                                                </div>
-
-                                                @if (!$rowAdditionalOutput->hasMedia('book_document') && !$rowAdditionalOutput->hasMedia('publication_certificate'))
-                                                    <span class="text-muted">
-                                                        <x-lucide-file-x class="icon icon-sm" />
-                                                        Belum Upload
-                                                    </span>
-                                                @endif
-                                            @else
-                                                <span class="text-muted">
-                                                    <x-lucide-file-x class="icon icon-sm" />
-                                                    Belum Upload
-                                                </span>
-                                            @endif
+                                            @include('livewire.partials.additional-output-document', ['rowAdditionalOutput' => $rowAdditionalOutput, 'output' => $output])
                                         </td>
                                         <td>
                                             <div class="btn-group btn-group-sm">

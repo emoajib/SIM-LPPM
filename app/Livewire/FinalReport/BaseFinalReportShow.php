@@ -88,7 +88,7 @@ abstract class BaseFinalReportShow extends Component
     public $teachingMaterialFile;
 
     // PKM-specific
-    public $presentationFile;
+    public $rpsFile;
 
     public $partnerAgreementFile;
 
@@ -505,6 +505,7 @@ abstract class BaseFinalReportShow extends Component
                 // Save report files (common)
                 $this->saveSubstanceFile($report, 'final');
                 $this->saveRealizationFile($report, 'final');
+                $this->saveRpsFile($report, 'final');
                 $this->saveSignatureFile($report, 'final');
                 $this->saveCooperationProofFile($report);
                 $this->saveImplementationProofFile($report);
@@ -566,6 +567,17 @@ abstract class BaseFinalReportShow extends Component
     }
 
     /**
+     * Type-specific submit requirements. Kosong = boleh diajukan.
+     * Di-override oleh laporan PKM (RPS wajib).
+     *
+     * @return array<int, string>
+     */
+    protected function submitBlockers(): array
+    {
+        return [];
+    }
+
+    /**
      * Submit the report
      */
     public function submit(): void
@@ -589,7 +601,8 @@ abstract class BaseFinalReportShow extends Component
             return;
         }
 
-        // Realization file and presentation file are optional for final report submission
+        // Realization file is optional for final report submission.
+        // RPS wajib khusus PKM — dicek via submitBlockers() di bawah.
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
 
         // Luaran wajib harus dilengkapi sebelum laporan akhir dapat diajukan.
@@ -599,6 +612,14 @@ abstract class BaseFinalReportShow extends Component
             $message = 'Gagal mengajukan: luaran wajib berikut belum diisi — '.implode(', ', $missingOutputs).'. Lengkapi pada bagian Luaran Wajib terlebih dahulu.';
             $this->addError('mandatoryOutputs', $message);
             $this->toastError($message);
+
+            return;
+        }
+
+        // Type-specific submit requirements (mis. RPS wajib untuk PKM).
+        $blockers = $this->submitBlockers();
+        if (! empty($blockers)) {
+            $this->toastError(implode(' ', $blockers));
 
             return;
         }
@@ -621,6 +642,7 @@ abstract class BaseFinalReportShow extends Component
                     // Save report files (common)
                     $this->saveSubstanceFile($report, 'final');
                     $this->saveRealizationFile($report, 'final');
+                    $this->saveRpsFile($report, 'final');
                     $this->saveSignatureFile($report, 'final');
                     $this->saveCooperationProofFile($report);
                     $this->saveImplementationProofFile($report);

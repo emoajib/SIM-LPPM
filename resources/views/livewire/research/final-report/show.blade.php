@@ -1032,49 +1032,7 @@
                                             @endif
                                         </td>
                                         <td>
-                                            @if ($rowAdditionalOutput)
-                                                <div class="d-flex gap-2">
-                                                    @if ($rowAdditionalOutput->hasMedia('book_document'))
-                                                        @php
-                                                            $media = $rowAdditionalOutput->getFirstMedia(
-                                                                'book_document',
-                                                            );
-                                                        @endphp
-                                                        <a data-navigate-ignore="true"
-                                                            href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                                                            target="_blank" class="btn btn-sm btn-success">
-                                                            <x-lucide-book class="icon icon-sm" />
-                                                            Buku
-                                                        </a>
-                                                    @endif
-
-                                                    @if ($rowAdditionalOutput->hasMedia('publication_certificate'))
-                                                        @php
-                                                            $media = $rowAdditionalOutput->getFirstMedia(
-                                                                'publication_certificate',
-                                                            );
-                                                        @endphp
-                                                        <a data-navigate-ignore="true"
-                                                            href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                                                            target="_blank" class="btn btn-sm btn-info">
-                                                            <x-lucide-award class="icon icon-sm" />
-                                                            Sertifikat
-                                                        </a>
-                                                    @endif
-                                                </div>
-
-                                                @if (!$rowAdditionalOutput->hasMedia('book_document') && !$rowAdditionalOutput->hasMedia('publication_certificate'))
-                                                    <span class="text-muted">
-                                                        <x-lucide-file-x class="icon icon-sm" />
-                                                        Belum Upload
-                                                    </span>
-                                                @endif
-                                            @else
-                                                <span class="text-muted">
-                                                    <x-lucide-file-x class="icon icon-sm" />
-                                                    Belum Upload
-                                                </span>
-                                            @endif
+                                            @include('livewire.partials.additional-output-document', ['rowAdditionalOutput' => $rowAdditionalOutput, 'output' => $output])
                                         </td>
                                         <td>
                                             <div class="btn-group btn-group-sm">

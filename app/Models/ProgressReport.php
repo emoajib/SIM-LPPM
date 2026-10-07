@@ -190,6 +190,13 @@ class ProgressReport extends Model implements HasMedia
             ->singleFile()
             ->acceptsMimeTypes(['application/pdf', 'application/vnd.openxmlformats-officedocument.presentationml.presentation']);
 
+        // File RPS kegiatan PKM (Final Report only, pengganti poster/presentasi).
+        // Koleksi lama 'presentation_file' dipertahankan sebagai fallback baca
+        // agar file yang sudah ter-upload tetap tampil.
+        $this->addMediaCollection('rps_file')
+            ->singleFile()
+            ->acceptsMimeTypes(['application/pdf']);
+
         // Halaman pengesahan tanda tangan fisik (Optional Final Report)
         $this->addMediaCollection('signature_page')
             ->singleFile()

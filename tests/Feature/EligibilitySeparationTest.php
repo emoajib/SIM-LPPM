@@ -196,3 +196,83 @@ test('dosen tidak bisa submit laporan akhir video tanpa url', function () {
 
     expect($report->fresh()->status)->toBe(ReportStatus::DRAFT);
 });
+
+test('laporan akhir pkm tidak bisa diajukan tanpa file rps', function () {
+    $this->actingAs($this->dosen);
+
+    $detail = CommunityService::factory()->create();
+    $proposal = Proposal::factory()->create([
+        'submitter_id' => $this->dosen->id,
+        'detailable_type' => CommunityService::class,
+        'detailable_id' => $detail->id,
+        'status' => ProposalStatus::COMPLETED,
+    ]);
+    $report = ProgressReport::factory()->create([
+        'proposal_id' => $proposal->id,
+        'reporting_period' => 'final',
+        'reporting_year' => (int) date('Y'),
+        'status' => ReportStatus::DRAFT,
+    ]);
+    $report->addMedia(UploadedFile::fake()->createWithContent('laporan.pdf', "%PDF-1.4\n% Test.\n%%EOF"))->toMediaCollection('substance_file');
+
+    Livewire\Livewire::test(App\Livewire\CommunityService\FinalReport\Show::class, ['proposal' => $proposal])
+        ->call('submit')
+        ->assertHasErrors(['rpsFile']);
+
+    expect($report->fresh()->status)->toBe(ReportStatus::DRAFT);
+});
+
+test('file rps tersimpan dan laporan pkm bisa diajukan', function () {
+    $this->actingAs($this->dosen);
+
+    $detail = CommunityService::factory()->create();
+    $proposal = Proposal::factory()->create([
+        'submitter_id' => $this->dosen->id,
+        'detailable_type' => CommunityService::class,
+        'detailable_id' => $detail->id,
+        'status' => ProposalStatus::COMPLETED,
+    ]);
+
+    $component = Livewire\Livewire::test(App\Livewire\CommunityService\FinalReport\Show::class, ['proposal' => $proposal])
+        ->set('form.summaryUpdate', 'Ringkasan akhir PKM dengan RPS')
+        ->set('form.keywordsInput', 'pkm; rps; test')
+        ->set('substanceFile', UploadedFile::fake()->createWithContent('laporan.pdf', "%PDF-1.4\n% Test.\n%%EOF"))
+        ->set('rpsFile', UploadedFile::fake()->createWithContent('rps.pdf', "%PDF-1.4\n% Test.\n%%EOF"))
+        ->call('save');
+
+    $component->assertHasNoErrors();
+
+    $report = $proposal->progressReports()->where('reporting_period', 'final')->first();
+    expect($report)->not->toBeNull()
+        ->and($report->hasMedia('rps_file'))->toBeTrue();
+
+    $component->call('submit')->assertHasNoErrors();
+
+    expect($report->fresh()->status)->toBe(ReportStatus::SUBMITTED);
+});
+
+test('file poster lama tetap dibaca sebagai rps', function () {
+    $this->actingAs($this->dosen);
+
+    $detail = CommunityService::factory()->create();
+    $proposal = Proposal::factory()->create([
+        'submitter_id' => $this->dosen->id,
+        'detailable_type' => CommunityService::class,
+        'detailable_id' => $detail->id,
+        'status' => ProposalStatus::COMPLETED,
+    ]);
+    $report = ProgressReport::factory()->create([
+        'proposal_id' => $proposal->id,
+        'reporting_period' => 'final',
+        'reporting_year' => (int) date('Y'),
+        'status' => ReportStatus::DRAFT,
+    ]);
+    $report->addMedia(UploadedFile::fake()->createWithContent('laporan.pdf', "%PDF-1.4\n% Test.\n%%EOF"))->toMediaCollection('substance_file');
+    $report->addMedia(UploadedFile::fake()->createWithContent('poster.pdf', "%PDF-1.4\n% Test.\n%%EOF"))->toMediaCollection('presentation_file');
+
+    Livewire\Livewire::test(App\Livewire\CommunityService\FinalReport\Show::class, ['proposal' => $proposal])
+        ->call('submit')
+        ->assertHasNoErrors();
+
+    expect($report->fresh()->status)->toBe(ReportStatus::SUBMITTED);
+});

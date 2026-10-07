@@ -24,7 +24,7 @@ trait HasFileUploads
     // Final Report additional files
     public $realizationFile;
 
-    public $presentationFile;
+    public $rpsFile;
 
     public $signatureFile;
 
@@ -86,12 +86,12 @@ trait HasFileUploads
     }
 
     /**
-     * Validate presentation file upload
+     * Validate RPS file upload (pengganti poster/presentasi, PDF 10MB)
      */
-    public function validatePresentationFile(): void
+    public function validateRpsFile(): void
     {
         $this->validate([
-            'presentationFile' => 'nullable|file|mimes:pdf,ppt,pptx|max:51200',
+            'rpsFile' => 'nullable|file|mimes:pdf|max:10240',
         ]);
     }
 
@@ -344,29 +344,29 @@ trait HasFileUploads
     }
 
     /**
-     * Save presentation file to media collection
+     * Save RPS file to media collection
      */
-    protected function savePresentationFile(ProgressReport $report, string $reportType = 'final'): void
+    protected function saveRpsFile(ProgressReport $report, string $reportType = 'final'): void
     {
-        $realPath = $this->getValidUploadPath($this->presentationFile);
+        $realPath = $this->getValidUploadPath($this->rpsFile);
         if (! $realPath) {
             return;
         }
 
         try {
-            $report->clearMediaCollection('presentation_file');
+            $report->clearMediaCollection('rps_file');
             $report
                 ->addMedia($realPath)
-                ->usingName($this->presentationFile->getClientOriginalName())
-                ->usingFileName($this->presentationFile->hashName())
+                ->usingName($this->rpsFile->getClientOriginalName())
+                ->usingFileName($this->rpsFile->hashName())
                 ->withCustomProperties([
                     'uploaded_by' => Auth::id(),
                     'proposal_id' => $report->proposal_id,
                     'report_type' => $reportType,
                 ])
-                ->toMediaCollection('presentation_file');
+                ->toMediaCollection('rps_file');
         } catch (\Exception $e) {
-            Log::error('Upload report presentation file failed: '.$e->getMessage());
+            Log::error('Upload report RPS file failed: '.$e->getMessage());
         }
     }
 
@@ -681,11 +681,11 @@ trait HasFileUploads
     }
 
     /**
-     * Clear presentation file
+     * Clear RPS file
      */
-    public function clearPresentationFile(): void
+    public function clearRpsFile(): void
     {
-        $this->reset('presentationFile');
+        $this->reset('rpsFile');
     }
 
     /**
@@ -720,7 +720,7 @@ trait HasFileUploads
         $this->reset([
             'substanceFile',
             'realizationFile',
-            'presentationFile',
+            'rpsFile',
             'signatureFile',
             'cooperationProofFile',
             'implementationProofFile',

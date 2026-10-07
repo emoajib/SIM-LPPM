@@ -322,10 +322,13 @@
                                                 <strong>Ringkasan:</strong> {{ Str::limit($finalDoc->summary_update, 150) }}
                                             </div>
                                             <div class="row g-2">
-                                                @if($finalDoc->hasMedia('presentation_file'))
+                                                @if($finalDoc->hasMedia('rps_file') || $finalDoc->hasMedia('presentation_file'))
+                                                    @php
+                                                        $rpsMedia = $finalDoc->getFirstMedia('rps_file') ?? $finalDoc->getFirstMedia('presentation_file');
+                                                    @endphp
                                                     <div class="col-auto">
-                                                        <a href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $finalDoc->getFirstMedia('presentation_file')]) }}" 
-                                                           class="badge bg-indigo-lt p-1" target="_blank">📄 PPT</a>
+                                                        <a href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $rpsMedia]) }}" 
+                                                           class="badge bg-indigo-lt p-1" target="_blank">📄 RPS</a>
                                                     </div>
                                                 @endif
                                                 @if($finalDoc->hasMedia('realization_file'))

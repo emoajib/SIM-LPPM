@@ -987,10 +987,22 @@ class ProposalPdfService
             if ($partAtt = $report->getFirstMedia('participant_attendance_list')) {
                 $this->mergeMediaItem($pdf, $partAtt, $report->id, 'Participant Attendance');
             }
-            // Lampiran 11: Materi Kegiatan PKM (or Presentation File)
-            $trainMat = $report->getFirstMedia('training_material_pkm') ?: $report->getFirstMedia('presentation_file');
+            // Lampiran 11: Materi Kegiatan PKM
+            $trainMat = $report->getFirstMedia('training_material_pkm');
             if ($trainMat) {
                 $this->mergeMediaItem($pdf, $trainMat, $report->id, 'Training Material PKM');
+            }
+            // Lampiran RPS (koleksi baru; fallback ke file poster/presentasi lama
+            // bila belum di-merge sebagai materi di atas agar tidak ganda).
+            $rpsMedia = $report->getFirstMedia('rps_file');
+            if (! $rpsMedia) {
+                $legacy = $report->getFirstMedia('presentation_file');
+                if ($legacy && (! $trainMat || (int) $trainMat->getKey() !== (int) $legacy->getKey())) {
+                    $rpsMedia = $legacy;
+                }
+            }
+            if ($rpsMedia) {
+                $this->mergeMediaItem($pdf, $rpsMedia, $report->id, 'RPS PKM');
             }
             // Lampiran 12: Foto Kegiatan PKM
             foreach ($report->getMedia('activity_photos_pkm') as $photoMedia) {

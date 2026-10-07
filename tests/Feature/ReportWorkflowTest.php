@@ -92,7 +92,7 @@ class ReportWorkflowTest extends TestCase
 
         $file = UploadedFile::fake()->create('laporan.pdf', 100);
         $realizationFile = UploadedFile::fake()->create('realization.pdf', 100);
-        $presentationFile = UploadedFile::fake()->create('presentation.pdf', 100);
+        $rpsFile = UploadedFile::fake()->create('rps.pdf', 100);
 
         $component = Livewire::test(Show::class, [
             'proposal' => $this->proposal,
@@ -101,7 +101,7 @@ class ReportWorkflowTest extends TestCase
             ->set('form.keywordsInput', 'final; report; research')
             ->set('substanceFile', $file)
             ->set('realizationFile', $realizationFile)
-            ->set('presentationFile', $presentationFile)
+            ->set('rpsFile', $rpsFile)
             ->call('save');
 
         $component->assertHasNoErrors();
@@ -118,7 +118,7 @@ class ReportWorkflowTest extends TestCase
         $this->assertEquals(ReportStatus::SUBMITTED, $report->fresh()->status);
     }
 
-    public function test_dosen_can_submit_final_report_without_presentation_file()
+    public function test_dosen_can_submit_final_report_without_rps_file()
     {
         $this->actingAs($this->dosen);
 
@@ -142,7 +142,7 @@ class ReportWorkflowTest extends TestCase
         $this->assertNotNull($report);
         $this->assertEquals(ReportStatus::DRAFT, $report->status);
 
-        // Submit without presentation file (presentation should only be required for Community Service/PKM)
+        // Submit without RPS file (RPS is only required for Community Service/PKM)
         $component = $this->submitWithFilledOutputs($component);
         $component->assertHasNoErrors();
         $this->assertEquals(ReportStatus::SUBMITTED, $report->fresh()->status);

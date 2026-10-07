@@ -13,7 +13,7 @@ use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 class Show extends BaseFinalReportShow
 {
     // PKM-specific file upload properties
-    public $presentationFile;
+    public $rpsFile;
 
     public $partnerAgreementFile;
 
@@ -120,7 +120,34 @@ class Show extends BaseFinalReportShow
             $missing[] = 'Lampiran 12: Foto Kegiatan PKM';
         }
 
+        // File RPS (wajib; file lama poster/presentasi tetap dihitung via fallback).
+        $hasRps = $this->rpsFile instanceof TemporaryUploadedFile
+            || $this->rpsFile instanceof UploadedFile
+            || ($this->progressReport && ($this->progressReport->hasMedia('rps_file') || $this->progressReport->hasMedia('presentation_file')));
+        if (! $hasRps) {
+            $missing[] = 'File RPS (PDF)';
+        }
+
         return $missing;
+    }
+
+    /**
+     * Penyebab laporan akhir PKM tidak boleh diajukan. Kosong = boleh diajukan.
+     */
+    protected function submitBlockers(): array
+    {
+        $hasRps = $this->rpsFile instanceof TemporaryUploadedFile
+            || $this->rpsFile instanceof UploadedFile
+            || ($this->progressReport && ($this->progressReport->hasMedia('rps_file') || $this->progressReport->hasMedia('presentation_file')));
+
+        if (! $hasRps) {
+            $message = 'Gagal mengajukan: Anda wajib mengunggah File RPS (PDF) laporan akhir.';
+            $this->addError('rpsFile', $message);
+
+            return [$message];
+        }
+
+        return [];
     }
 
     /**
@@ -151,14 +178,14 @@ class Show extends BaseFinalReportShow
     // PKM-specific file upload handlers
     // ============================================================
 
-    public function updatedPresentationFile(): void
+    public function updatedRpsFile(): void
     {
         if (! $this->canEdit) {
-            $this->presentationFile = null;
+            $this->rpsFile = null;
 
             return;
         }
-        $this->validatePresentationFile();
+        $this->validateRpsFile();
     }
 
     public function updatedPartnerAgreementFile(): void
@@ -265,14 +292,16 @@ class Show extends BaseFinalReportShow
     // PKM-specific file removal handlers
     // ============================================================
 
-    public function removePresentationFile(): void
+    public function removeRpsFile(): void
     {
         if (! $this->canEdit) {
             abort(403);
         }
         if ($this->progressReport) {
+            $this->progressReport->clearMediaCollection('rps_file');
+            // Bersihkan juga koleksi lama agar tidak ada file ganda.
             $this->progressReport->clearMediaCollection('presentation_file');
-            $this->toastSuccess('File presentasi berhasil dihapus.');
+            $this->toastSuccess('File RPS berhasil dihapus.');
         }
     }
 

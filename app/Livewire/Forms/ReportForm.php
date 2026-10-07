@@ -53,7 +53,7 @@ class ReportForm extends Form
 
     public $realizationFile;
 
-    public $presentationFile;
+    public $rpsFile;
 
     public $signatureFile;
 
@@ -72,7 +72,7 @@ class ReportForm extends Form
     protected array $fileValidationRules = [
         'substanceFile' => 'nullable|file|mimes:pdf,application/pdf|max:10240',
         'realizationFile' => 'nullable|file|mimes:pdf,docx|max:10240',
-        'presentationFile' => 'nullable|file|mimes:pdf,ppt,pptx|max:51200',
+        'rpsFile' => 'nullable|file|mimes:pdf|max:10240',
         'signatureFile' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
         'cooperationProofFile' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
         'implementationProofFile' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
@@ -804,7 +804,7 @@ class ReportForm extends Form
             'tempAdditionalCerts',
             'substanceFile',
             'realizationFile',
-            'presentationFile',
+            'rpsFile',
         ]);
 
         $this->progressReport = null;
@@ -825,9 +825,9 @@ class ReportForm extends Form
             $this->saveFileToCollection($report, $this->realizationFile, 'realization_file');
         }
 
-        // Save presentation file (final reports only)
-        if ($this->presentationFile instanceof UploadedFile && $this->presentationFile->isValid()) {
-            $this->saveFileToCollection($report, $this->presentationFile, 'presentation_file');
+        // Save RPS file (final reports only, PDF 10MB)
+        if ($this->rpsFile instanceof UploadedFile && $this->rpsFile->isValid()) {
+            $this->saveFileToCollection($report, $this->rpsFile, 'rps_file');
         }
 
         // Save signature file (if physical mode selected)
