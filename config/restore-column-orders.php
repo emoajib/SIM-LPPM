@@ -54,11 +54,10 @@ return [
         'duration_in_years', 'start_year', 'semester', 'summary', 'asta_cita', 'status',
         'version',
         'logbook_signed_at', 'student_members', 'created_at', 'updated_at', 'deleted_at',
-        'community_service_scheme_id', 'qualification_snapshot', 'logbook_approved_at',
+        'community_service_scheme_id', 'qualification_snapshot', 'approved_budget_snapshot', 'logbook_approved_at',
         'study_program_roadmap_id', 'bima_proposal_id', 'contract_number', 'contract_date',
         'is_roadmap_validated_by_kaprodi', 'kaprodi_validation_notes', 'kaprodi_validated_at', 'kaprodi_id',
         'logbook_rejection_notes', 'logbook_rejected_by', 'logbook_rejected_at',
-        'approved_budget_snapshot',
     ],
     'review_criterias' => [
         'id', 'type', 'criteria', 'description', 'weight', 'order', 'is_active', 'created_at', 'updated_at',
