@@ -817,16 +817,16 @@
                     @endif
                 </div>
 
-                {{-- File RPS (Wajib) --}}
+                {{-- File RPS (Opsional) --}}
                 <div class="mb-3">
-                    <label class="form-label mb-0 required">File RPS (PDF)</label>
+                    <label class="form-label mb-0">File RPS (PDF) <span class="badge bg-secondary-lt ms-1">Opsional</span></label>
                     <input type="file" wire:model="rpsFile"
                         class="form-control @error('rpsFile') is-invalid @enderror" accept=".pdf"
                         @disabled(!$canEdit) />
                     @error('rpsFile')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                    <small class="form-hint">Maksimal 10MB, format PDF (Wajib: Rencana Pembelajaran Semester kegiatan PKM)</small>
+                    <small class="form-hint">Maksimal 10MB, format PDF (Opsional: Rencana Pembelajaran Semester kegiatan PKM)</small>
 
                     <div wire:loading wire:target="rpsFile">
                         <small class="text-muted">

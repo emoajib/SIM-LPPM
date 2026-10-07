@@ -578,6 +578,43 @@ abstract class BaseFinalReportShow extends Component
     }
 
     /**
+     * Luaran tambahan bertipe video yang direncanakan tetapi belum ada URL-nya.
+     * Kosong = semua video tambahan sudah ber-URL.
+     *
+     * @return array<int, string>
+     */
+    protected function missingAdditionalVideoOutputs(): array
+    {
+        $missing = [];
+        $tambahans = $this->proposal->outputs->where('category', 'Tambahan');
+
+        foreach ($tambahans as $output) {
+            $typeGroup = strtolower(($output->type ?? '').' '.($output->group ?? ''));
+            if (! str_contains($typeGroup, 'video')) {
+                continue;
+            }
+
+            $data = $this->form->additionalOutputs[$output->id] ?? [];
+            if (is_array($data) && ! empty($data['video_url'])) {
+                continue;
+            }
+
+            if ($this->progressReport) {
+                $record = AdditionalOutput::where('progress_report_id', $this->progressReport->id)
+                    ->where('proposal_output_id', $output->id)
+                    ->first();
+                if ($record && ! empty($record->video_url)) {
+                    continue;
+                }
+            }
+
+            $missing[] = $output->type ?? "Luaran tambahan #{$output->id}";
+        }
+
+        return $missing;
+    }
+
+    /**
      * Submit the report
      */
     public function submit(): void
@@ -601,8 +638,7 @@ abstract class BaseFinalReportShow extends Component
             return;
         }
 
-        // Realization file is optional for final report submission.
-        // RPS wajib khusus PKM — dicek via submitBlockers() di bawah.
+        // Realization file and RPS file are optional for final report submission.
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
 
         // Luaran wajib harus dilengkapi sebelum laporan akhir dapat diajukan.
@@ -620,6 +656,16 @@ abstract class BaseFinalReportShow extends Component
         $blockers = $this->submitBlockers();
         if (! empty($blockers)) {
             $this->toastError(implode(' ', $blockers));
+
+            return;
+        }
+
+        // Luaran tambahan video yang direncanakan wajib ada URL-nya.
+        $missingVideoLinks = $this->missingAdditionalVideoOutputs();
+        if (! empty($missingVideoLinks)) {
+            $message = 'Gagal mengajukan: URL video berikut belum diisi — '.implode(', ', $missingVideoLinks).'. Lengkapi pada bagian Luaran Tambahan terlebih dahulu.';
+            $this->addError('additionalOutputs', $message);
+            $this->toastError($message);
 
             return;
         }

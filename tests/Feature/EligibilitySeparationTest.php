@@ -197,7 +197,7 @@ test('dosen tidak bisa submit laporan akhir video tanpa url', function () {
     expect($report->fresh()->status)->toBe(ReportStatus::DRAFT);
 });
 
-test('laporan akhir pkm tidak bisa diajukan tanpa file rps', function () {
+test('laporan akhir pkm bisa diajukan tanpa file rps (opsional)', function () {
     $this->actingAs($this->dosen);
 
     $detail = CommunityService::factory()->create();
@@ -217,9 +217,9 @@ test('laporan akhir pkm tidak bisa diajukan tanpa file rps', function () {
 
     Livewire\Livewire::test(App\Livewire\CommunityService\FinalReport\Show::class, ['proposal' => $proposal])
         ->call('submit')
-        ->assertHasErrors(['rpsFile']);
+        ->assertHasNoErrors();
 
-    expect($report->fresh()->status)->toBe(ReportStatus::DRAFT);
+    expect($report->fresh()->status)->toBe(ReportStatus::SUBMITTED);
 });
 
 test('file rps tersimpan dan laporan pkm bisa diajukan', function () {
@@ -271,6 +271,44 @@ test('file poster lama tetap dibaca sebagai rps', function () {
     $report->addMedia(UploadedFile::fake()->createWithContent('poster.pdf', "%PDF-1.4\n% Test.\n%%EOF"))->toMediaCollection('presentation_file');
 
     Livewire\Livewire::test(App\Livewire\CommunityService\FinalReport\Show::class, ['proposal' => $proposal])
+        ->call('submit')
+        ->assertHasNoErrors();
+
+    expect($report->fresh()->status)->toBe(ReportStatus::SUBMITTED);
+});
+
+test('luaran tambahan video tanpa url memblokir submit laporan akhir', function () {
+    $this->actingAs($this->dosen);
+
+    $research = Research::factory()->create();
+    $proposal = Proposal::factory()->create([
+        'submitter_id' => $this->dosen->id,
+        'detailable_type' => Research::class,
+        'detailable_id' => $research->id,
+        'status' => ProposalStatus::COMPLETED,
+    ]);
+    $videoTambahan = ProposalOutput::factory()->create([
+        'proposal_id' => $proposal->id,
+        'category' => 'Tambahan',
+        'group' => 'Video',
+        'type' => 'Video Kegiatan (Publikasi Youtube/Medsos)',
+    ]);
+    $report = ProgressReport::factory()->create([
+        'proposal_id' => $proposal->id,
+        'reporting_period' => 'final',
+        'reporting_year' => (int) date('Y'),
+        'status' => ReportStatus::DRAFT,
+    ]);
+    $report->addMedia(UploadedFile::fake()->createWithContent('laporan.pdf', "%PDF-1.4\n% Test.\n%%EOF"))->toMediaCollection('substance_file');
+
+    $component = Livewire\Livewire::test(Show::class, ['proposal' => $proposal])
+        ->call('submit')
+        ->assertHasErrors(['additionalOutputs']);
+
+    expect($report->fresh()->status)->toBe(ReportStatus::DRAFT);
+
+    $component
+        ->set("form.additionalOutputs.{$videoTambahan->id}.video_url", 'https://youtu.be/contoh123')
         ->call('submit')
         ->assertHasNoErrors();
 
