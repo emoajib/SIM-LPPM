@@ -39,6 +39,9 @@ class BudgetItem extends Model
         'volume',
         'unit_price',
         'total_price',
+        'is_active',
+        'version',
+        'budget_amendment_id',
     ];
 
     /**
@@ -51,6 +54,7 @@ class BudgetItem extends Model
         return [
             'unit_price' => 'decimal:2',
             'total_price' => 'decimal:2',
+            'is_active' => 'boolean',
         ];
     }
 

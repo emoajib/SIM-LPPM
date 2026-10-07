@@ -112,6 +112,9 @@
                             <th class="text-uppercase font-weight-bold text-end" style="font-size: 0.75rem;">Terpakai (T)</th>
                             <th class="text-uppercase font-weight-bold text-end" style="font-size: 0.75rem;">Sisa Saldo (S)</th>
                             <th class="text-uppercase font-weight-bold w-25 pe-3" style="font-size: 0.75rem;">Progres Pemakaian (%)</th>
+                            @if ($this->canManage($proposal) && ! $proposal->logbook_approved_at)
+                                <th class="text-uppercase font-weight-bold text-end pe-3" style="font-size: 0.75rem;">Aksi</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -150,6 +153,15 @@
                                         <span class="small text-muted fw-bold" style="min-width: 35px; text-align: right;">{{ $percentage }}%</span>
                                     </div>
                                 </td>
+                                @if ($this->canManage($proposal) && ! $proposal->logbook_approved_at)
+                                    <td class="text-end pe-3">
+                                        <button type="button" wire:click="prefillFromBudgetGroup({{ $group->id }})"
+                                            class="btn btn-sm btn-outline-primary" title="Buat catatan dari sisa kelompok ini"
+                                            @disabled($groupSisa <= 0)>
+                                            <x-lucide-copy class="icon icon-sm me-1" /> Salin
+                                        </button>
+                                    </td>
+                                @endif
                             </tr>
                         @endforeach
                     </tbody>
@@ -320,6 +332,11 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                                 <small class="text-muted">Pilih jika aktivitas ini menggunakan anggaran RAB</small>
+                                @if (! is_null($this->remainingForSelectedGroup))
+                                    <small class="d-block mt-1 {{ $this->remainingForSelectedGroup < 0 ? 'text-danger' : 'text-success' }}">
+                                        Sisa kategori ini: Rp {{ number_format($this->remainingForSelectedGroup, 0, ',', '.') }}
+                                    </small>
+                                @endif
                             </div>
                         </div>
                         <div class="col-md-5">

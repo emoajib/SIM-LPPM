@@ -29,30 +29,35 @@ class BudgetGroupSeeder extends Seeder
                 'name' => 'Upah dan Jasa (Honor)',
                 'description' => 'Honorarium peneliti, asisten, operator, tenaga ahli, dan jasa pihak ketiga',
                 'percentage' => 10.00, // Maksimal 10% dari total anggaran
+                'percentage_type' => 'max',
             ],
             [
                 'code' => 'TEKNOLOGI',
                 'name' => 'Teknologi dan Inovasi',
                 'description' => 'Bahan habis pakai, bahan penelitian, alat laboratorium, peralatan pendukung, dan pengembangan teknologi',
                 'percentage' => 50.00, // Minimal 50% dari total anggaran (dialokasikan sebagai baseline)
+                'percentage_type' => 'min',
             ],
             [
                 'code' => 'PELATIHAN',
                 'name' => 'Biaya Pelatihan',
                 'description' => 'Pelatihan, workshop, penyuluhan, atau capacity building dalam rangka program penelitian/pengabdian',
                 'percentage' => 20.00, // Maksimal 20%
+                'percentage_type' => 'max',
             ],
             [
                 'code' => 'PERJALANAN',
                 'name' => 'Biaya Perjalanan',
                 'description' => 'Transportasi, akomodasi, dan konsumsi untuk pelaksanaan kegiatan di lokasi penelitian/pengabdian dan koordinasi dengan mitra',
                 'percentage' => 15.00, // Maksimal 15%
+                'percentage_type' => 'max',
             ],
             [
                 'code' => 'LAINNYA',
                 'name' => 'Biaya Lainnya',
                 'description' => 'Publikasi hasil, seminar, pelaporan, dokumentasi, dan kebutuhan administrasi penunjang lainnya',
                 'percentage' => 5.00, // Maksimal 5%
+                'percentage_type' => 'max',
             ],
         ];
 

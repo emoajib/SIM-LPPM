@@ -11,6 +11,7 @@ use App\Models\Proposal;
 use App\Models\StudyProgram;
 use App\Services\ImageCompressionService;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -103,9 +104,75 @@ class Show extends Component
             abort(403);
         }
 
+        if (! $this->ensureLogbookEditable()) {
+            return;
+        }
+
         $this->reset(['activity_description', 'progress_percentage', 'notes', 'evidence', 'editingId', 'budget_group_id', 'amount']);
         $this->activity_date = date('Y-m-d');
         $this->dispatch('open-modal', modalId: 'daily-note-modal');
+    }
+
+    /**
+     * Isi modal dari sisa anggaran suatu kelompok RAB.
+     * Dosen tinggal menyesuaikan nominal + melengkapi aktivitas/bukti.
+     */
+    public function prefillFromBudgetGroup(int $budgetGroupId): void
+    {
+        if (! $this->canManage($this->proposal)) {
+            abort(403);
+        }
+
+        if (! $this->ensureLogbookEditable()) {
+            return;
+        }
+
+        $this->reset(['activity_description', 'progress_percentage', 'notes', 'evidence', 'editingId']);
+        $this->activity_date = date('Y-m-d');
+        $this->budget_group_id = $budgetGroupId;
+        $this->amount = max(0, $this->remainingForGroup($budgetGroupId));
+        $this->dispatch('open-modal', modalId: 'daily-note-modal');
+    }
+
+    /**
+     * Logbook yang sudah disahkan tidak boleh diubah diam-diam.
+     * Minta pembatalan pengesahan via Persetujuan Keuangan terlebih dahulu.
+     */
+    protected function ensureLogbookEditable(): bool
+    {
+        if ($this->proposal->logbook_approved_at) {
+            $message = 'LPJ sudah disahkan LPPM dan terkunci. Minta pembatalan pengesahan via Persetujuan Keuangan bila perlu mengubah.';
+            session()->flash('error', $message);
+            $this->toastError($message);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function remainingForGroup(int $budgetGroupId, ?string $excludeNoteId = null): float
+    {
+        $allocated = (float) $this->proposal->activeBudgetItems()
+            ->where('budget_group_id', $budgetGroupId)
+            ->sum('total_price');
+
+        $usedQuery = $this->proposal->dailyNotes()->where('budget_group_id', $budgetGroupId);
+        if ($excludeNoteId) {
+            $usedQuery->where('id', '!=', $excludeNoteId);
+        }
+
+        return $allocated - (float) $usedQuery->sum('amount');
+    }
+
+    #[Computed]
+    public function remainingForSelectedGroup(): ?float
+    {
+        if (! $this->budget_group_id) {
+            return null;
+        }
+
+        return $this->remainingForGroup((int) $this->budget_group_id, $this->editingId);
     }
 
     public function save(): void
@@ -114,25 +181,16 @@ class Show extends Component
             abort(403);
         }
 
+        if (! $this->ensureLogbookEditable()) {
+            return;
+        }
+
         $this->validate();
 
         // Check budget constraint if group and amount is selected
         $amount = (float) $this->amount;
         if ($this->budget_group_id && $amount > 0) {
-            $allocatedBudget = (float) $this->proposal->budgetItems()
-                ->where('budget_group_id', $this->budget_group_id)
-                ->sum('total_price');
-
-            $usedBudgetQuery = $this->proposal->dailyNotes()
-                ->where('budget_group_id', $this->budget_group_id);
-
-            // Exclude current note if editing
-            if ($this->editingId) {
-                $usedBudgetQuery->where('id', '!=', $this->editingId);
-            }
-
-            $usedBudget = (float) $usedBudgetQuery->sum('amount');
-            $remainingConstraint = $allocatedBudget - $usedBudget;
+            $remainingConstraint = $this->remainingForGroup((int) $this->budget_group_id, $this->editingId);
 
             if ($amount > $remainingConstraint) {
                 $this->addError('amount', 'Nominal pengeluaran (Rp '.number_format($amount, 0, ',', '.').') melebihi sisa anggaran (Rp '.number_format($remainingConstraint, 0, ',', '.').') untuk kategori ini.');
@@ -184,6 +242,10 @@ class Show extends Component
             abort(403);
         }
 
+        if (! $this->ensureLogbookEditable()) {
+            return;
+        }
+
         $note = DailyNote::findOrFail($id);
 
         if ($note->proposal_id !== $this->proposal->id) {
@@ -207,6 +269,10 @@ class Show extends Component
             abort(403);
         }
 
+        if (! $this->ensureLogbookEditable()) {
+            return;
+        }
+
         $note = DailyNote::findOrFail($id);
         if ($note->proposal_id !== $this->proposal->id) {
             abort(403);
@@ -221,6 +287,10 @@ class Show extends Component
     {
         if (! $this->canManage($this->proposal)) {
             abort(403);
+        }
+
+        if (! $this->ensureLogbookEditable()) {
+            return;
         }
 
         $media = Media::findOrFail($mediaId);
@@ -257,13 +327,13 @@ class Show extends Component
     {
         return view('livewire.community-service.daily-note.show', [
             'notes_list' => $this->proposal->dailyNotes()->with(['media.model', 'budgetGroup'])->latest('activity_date')->get(),
-            'budget_groups' => BudgetGroup::whereIn('id', $this->proposal->budgetItems()->pluck('budget_group_id'))->get(),
-            'budget_summaries' => $this->proposal->budgetItems()
+            'budget_groups' => BudgetGroup::whereIn('id', $this->proposal->activeBudgetItems()->pluck('budget_group_id'))->get(),
+            'budget_summaries' => $this->proposal->activeBudgetItems()
                 ->selectRaw('budget_group_id, sum(total_price) as total_budget')
                 ->groupBy('budget_group_id')
                 ->get()
                 ->keyBy('budget_group_id'),
-            'total_proposed_budget' => $this->proposal->budgetItems()->sum('total_price'),
+            'total_proposed_budget' => $this->proposal->activeBudgetItems()->sum('total_price'),
         ]);
     }
 

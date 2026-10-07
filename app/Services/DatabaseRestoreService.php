@@ -87,6 +87,15 @@ class DatabaseRestoreService
             'id', 'code', 'name', 'description', 'percentage', 'proposal_type',
             'percentage_type', 'is_active', 'created_at', 'updated_at',
         ],
+        'budget_amendments' => [
+            'id', 'proposal_id', 'version', 'status', 'reason', 'decision_notes',
+            'requested_by', 'decided_by', 'decided_at', 'created_at', 'updated_at',
+        ],
+        'budget_amendment_items' => [
+            'id', 'budget_amendment_id', 'budget_group_id', 'budget_component_id',
+            'year', 'group', 'component', 'item_description', 'volume', 'unit_price',
+            'total_price', 'created_at', 'updated_at',
+        ],
         'iku_output_types' => [
             'id', 'name', 'group', 'is_active', 'created_at', 'updated_at',
         ],
@@ -353,7 +362,8 @@ class DatabaseRestoreService
         $columns = [
             'id', 'proposal_id', 'budget_group_id', 'budget_component_id',
             'group', 'component', 'item_description', 'volume', 'unit_price',
-            'total_price', 'created_at', 'updated_at',
+            'total_price', 'is_active', 'version', 'budget_amendment_id',
+            'created_at', 'updated_at',
         ];
 
         // In Postgres (already guarded above), use double quotes for identifiers

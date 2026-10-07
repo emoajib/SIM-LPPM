@@ -4,6 +4,7 @@ namespace App\Models;
 
 // Vetted by AI - Manual Review Required by Senior Engineer/Manager
 
+use App\Enums\BudgetAmendmentStatus;
 use App\Enums\KaprodiStatus;
 use App\Enums\ProposalStatus;
 use App\Enums\ProposalUserStatus;
@@ -358,6 +359,44 @@ class Proposal extends Model implements HasMedia
     public function budgetItems(): HasMany
     {
         return $this->hasMany(BudgetItem::class);
+    }
+
+    /**
+     * Versi aktif RAB (is_active). Satu-satunya sumber angka anggaran
+     * yang disetujui — dipakai dashboard, PDF, ekspor, dan guard logbook.
+     *
+     * @return HasMany<BudgetItem, $this>
+     */
+    public function activeBudgetItems(): HasMany
+    {
+        return $this->hasMany(BudgetItem::class)->where('is_active', true);
+    }
+
+    /**
+     * Total RAB aktif yang disetujui. sbk_value menang bila terisi.
+     */
+    public function getApprovedBudgetTotalAttribute(): float
+    {
+        if ((float) ($this->sbk_value ?? 0) > 0) {
+            return (float) $this->sbk_value;
+        }
+
+        return (float) $this->activeBudgetItems()->sum('total_price');
+    }
+
+    /**
+     * @return HasMany<BudgetAmendment, $this>
+     */
+    public function budgetAmendments(): HasMany
+    {
+        return $this->hasMany(BudgetAmendment::class)->orderBy('version', 'desc');
+    }
+
+    public function hasPendingBudgetAmendment(): bool
+    {
+        return $this->budgetAmendments()
+            ->where('status', BudgetAmendmentStatus::PENDING->value)
+            ->exists();
     }
 
     /**
