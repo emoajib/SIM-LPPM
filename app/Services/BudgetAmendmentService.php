@@ -191,7 +191,10 @@ class BudgetAmendmentService
     public function approve(BudgetAmendment $amendment, User $decider, ?string $notes = null): void
     {
         DB::transaction(function () use ($amendment, $decider, $notes) {
-            $locked = BudgetAmendment::where('id', $amendment->id)->lockForUpdate()->firstOrFail();
+            $locked = BudgetAmendment::where('id', $amendment->id)
+                ->lockForUpdate()
+                ->with('items')
+                ->firstOrFail();
 
             if ($locked->status !== BudgetAmendmentStatus::PENDING) {
                 throw ValidationException::withMessages(['amendment' => ['Amandemen sudah diputus sebelumnya.']]);
