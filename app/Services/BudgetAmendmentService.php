@@ -218,7 +218,7 @@ class BudgetAmendmentService
                     'group' => $item->group,
                     'component' => $item->component,
                     'item_description' => $item->item_description,
-                    'volume' => $item->volume,
+                    'volume' => (int) $item->volume,
                     'unit_price' => $item->unit_price,
                     'total_price' => $item->total_price,
                     'is_active' => true,
