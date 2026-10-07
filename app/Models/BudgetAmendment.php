@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\BudgetAmendmentStatus;
+use Database\Factories\BudgetAmendmentFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class BudgetAmendment extends Model
 {
-    /** @use HasFactory<Database\Factories\BudgetAmendmentFactory> */
+    /** @use HasFactory<BudgetAmendmentFactory> */
     use HasFactory, HasUuids;
 
     protected $fillable = [
