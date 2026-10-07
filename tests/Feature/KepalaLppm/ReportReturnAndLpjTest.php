@@ -91,6 +91,8 @@ test('dosen can submit final report when mandatory outputs are filled', function
 
     Livewire::test(ResearchFinalReportShow::class, ['proposal' => $this->proposal])
         ->set("form.mandatoryOutputs.{$this->wajibOutput->id}.status_type", 'published')
+        ->set("form.mandatoryOutputs.{$this->wajibOutput->id}.journal_title", 'Jurnal Uji Coba')
+        ->set("form.mandatoryOutputs.{$this->wajibOutput->id}.article_title", 'Artikel Uji Coba')
         ->call('submit')
         ->assertHasNoErrors();
 
@@ -128,6 +130,8 @@ test('kepala lppm can approve final report when mandatory outputs are filled', f
         'progress_report_id' => $report->id,
         'proposal_output_id' => $this->wajibOutput->id,
         'status_type' => 'published',
+        'journal_title' => 'Jurnal Uji Coba',
+        'article_title' => 'Artikel Uji Coba',
     ]);
 
     Livewire::test(ResearchFinalReportShow::class, ['proposal' => $this->proposal])

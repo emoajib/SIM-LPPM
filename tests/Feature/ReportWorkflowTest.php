@@ -81,6 +81,8 @@ class ReportWorkflowTest extends TestCase
 
         return $component
             ->set("form.mandatoryOutputs.{$outputId}.status_type", 'published')
+            ->set("form.mandatoryOutputs.{$outputId}.journal_title", 'Jurnal Uji Coba')
+            ->set("form.mandatoryOutputs.{$outputId}.article_title", 'Artikel Uji Coba')
             ->call('submit');
     }
 

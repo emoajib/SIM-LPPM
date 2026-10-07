@@ -5,6 +5,7 @@ namespace App\Livewire\Actions;
 use App\Actions\Kaprodi\KaprodiApprovalAction;
 use App\Enums\ProposalStatus;
 use App\Models\Proposal;
+use App\Models\Research;
 use App\Models\Setting;
 use App\Models\User;
 use App\Services\LecturerEligibilityService;
@@ -58,6 +59,18 @@ class SubmitProposalAction
 
             $isRevision = $lockedProposal->status === ProposalStatus::REVISION_NEEDED;
 
+            // Revisi bukan usulan baru: bebas cek eligibilitas historis,
+            // tapi jendela revisi tetap ditegakkan di sisi server.
+            if ($isRevision) {
+                $revisionType = $lockedProposal->detailable_type === Research::class ? 'research' : 'community_service';
+                if (! app(LecturerEligibilityService::class)->isRevisionOpen($revisionType)) {
+                    return [
+                        'success' => false,
+                        'message' => 'Masa perbaikan usulan telah ditutup.',
+                    ];
+                }
+            }
+
             // Full validation for new submissions only (re-validated AFTER lock)
             if (! $isRevision) {
                 if (! $lockedProposal->allTeamMembersAccepted()) {
@@ -86,7 +99,8 @@ class SubmitProposalAction
 
                 if ($lockedProposal->submitter->activeHasRole('dosen')) {
                     $eligibilityService = app(LecturerEligibilityService::class);
-                    $eligibility = $eligibilityService->checkEligibility($lockedProposal->submitter);
+                    $proposalType = $lockedProposal->detailable_type === Research::class ? 'research' : 'pkm';
+                    $eligibility = $eligibilityService->checkEligibility($lockedProposal->submitter, $proposalType);
 
                     if (! $eligibility['eligible']) {
                         return [

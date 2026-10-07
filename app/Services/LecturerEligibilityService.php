@@ -4,14 +4,17 @@ namespace App\Services;
 
 use App\Actions\Proposal\IdentityEligibilityAction;
 use App\Enums\ProposalStatus;
+use App\Enums\ReportStatus;
+use App\Models\CommunityService;
 use App\Models\CommunityServiceScheme;
+use App\Models\MandatoryOutput;
 use App\Models\ProgressReport;
 use App\Models\Proposal;
+use App\Models\Research;
 use App\Models\ResearchScheme;
 use App\Models\Setting;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Service to check if a lecturer is eligible to submit a new proposal.
@@ -67,14 +70,39 @@ class LecturerEligibilityService
     }
 
     /**
+     * Normalisasi kosakata tipe proposal dari berbagai subsistem.
+     * Menerima 'research', 'pkm', 'community-service', 'community_service', atau null.
+     * Mengembalikan 'research', 'pkm', atau null (semua tipe).
+     */
+    public static function normalizeType(?string $type): ?string
+    {
+        if ($type === null) {
+            return null;
+        }
+
+        $normalized = strtolower(str_replace(['-', ' '], '_', trim($type)));
+
+        if ($normalized === 'research' || $normalized === 'penelitian') {
+            return 'research';
+        }
+
+        if (in_array($normalized, ['pkm', 'community_service', 'pengabdian', 'communityservice'], true)) {
+            return 'pkm';
+        }
+
+        return null;
+    }
+
+    /**
      * Check if a lecturer is eligible to submit a new proposal as Chairperson.
      *
-     * @param  string|null  $type  'research', 'pkm', or null for all
+     * @param  string|null  $type  'research', 'pkm' ('community-service'/'community_service' diterima), or null for all
      * @return array ['eligible' => bool, 'reasons' => array, 'period' => array]
      */
     public function checkEligibility(User $user, ?string $type = null): array
     {
-        $now = Carbon::now();
+        $type = self::normalizeType($type);
+        $now = Carbon::now(self::SCHEDULE_TIMEZONE);
         $currentYear = $now->year;
         $currentMonth = $now->month;
 
@@ -101,34 +129,54 @@ class LecturerEligibilityService
             $reasons[] = 'Sistem saat ini ditutup untuk pengajuanusulan baru (bukan periode pendaftaran).';
         }
 
-        // --- 2. Historical Obligation Checks (always checked, affect all types) ---
-        $prevProposals = Proposal::with('outputs')->where('submitter_id', $user->id)
-            ->whereIn('status', [ProposalStatus::APPROVED, ProposalStatus::COMPLETED])
-            ->where(function ($query) use ($prevYear, $prevSemester) {
+        // --- 2. Historical Obligation Checks (type-filtered: hutang Research hanya blokir research) ---
+        $detailableType = $type === 'research'
+            ? Research::class
+            : ($type === 'pkm' ? CommunityService::class : null);
+
+        $prevProposalsQuery = Proposal::with('outputs')->where('submitter_id', $user->id)
+            ->whereIn('status', [ProposalStatus::APPROVED, ProposalStatus::COMPLETED]);
+
+        if ($detailableType !== null) {
+            $prevProposalsQuery->where('detailable_type', $detailableType);
+        }
+
+        $prevProposals = $prevProposalsQuery->where(function ($query) use ($prevYear, $prevSemester) {
+            // Deklaratif diutamakan; created_at hanya fallback untuk baris legacy
+            // yang start_year/semester-nya masih NULL.
+            $query->where(function ($q) use ($prevYear, $prevSemester) {
+                $q->where('start_year', $prevYear)->where('semester', $prevSemester);
+            })->orWhere(function ($q) use ($prevYear, $prevSemester) {
+                $q->where(function ($sq) {
+                    $sq->whereNull('start_year')->orWhereNull('semester');
+                });
                 if ($prevSemester === 'ganjil') {
-                    $query->where(function ($q) use ($prevYear) {
-                        $q->where(function ($sq) use ($prevYear) {
+                    $q->where(function ($gq) use ($prevYear) {
+                        $gq->where(function ($sq) use ($prevYear) {
                             $sq->whereYear('created_at', $prevYear)->whereMonth('created_at', '>=', 9);
                         })->orWhere(function ($sq) use ($prevYear) {
                             $sq->whereYear('created_at', $prevYear + 1)->whereMonth('created_at', '<=', 2);
                         });
                     });
                 } else {
-                    $query->whereYear('created_at', $prevYear)->whereMonth('created_at', '>=', 3)->whereMonth('created_at', '<=', 8);
+                    $q->whereYear('created_at', $prevYear)->whereMonth('created_at', '>=', 3)->whereMonth('created_at', '<=', 8);
                 }
-            })
+            });
+        })
             ->get();
 
         foreach ($prevProposals as $proposal) {
-            $hasFinalReport = ProgressReport::where('proposal_id', $proposal->id)->where('reporting_period', 'final')->whereIn('status', ['approved', 'completed'])->exists();
+            $hasFinalReport = ProgressReport::where('proposal_id', $proposal->id)->where('reporting_period', 'final')->where('status', ReportStatus::APPROVED->value)->exists();
             if (! $hasFinalReport) {
                 $reasons[] = "Proposal '{$proposal->title}' belum memiliki Laporan Akhir yang disetujui.";
             }
 
             $targets = $proposal->outputs->where('category', 'Wajib');
             foreach ($targets as $target) {
-                $isSubmitted = DB::table('mandatory_outputs')->join('progress_reports', 'mandatory_outputs.progress_report_id', '=', 'progress_reports.id')->where('progress_reports.proposal_id', $proposal->id)->where('mandatory_outputs.proposal_output_id', $target->id)->exists();
-                if (! $isSubmitted) {
+                $record = MandatoryOutput::whereHas('progressReport', fn ($q) => $q->where('proposal_id', $proposal->id))
+                    ->where('proposal_output_id', $target->id)
+                    ->first();
+                if (! $record || ! self::mandatoryOutputHasEvidence($record)) {
                     $reasons[] = "Proposal '{$proposal->title}' belum memenuhi luaran wajib: {$target->type}.";
                 }
             }
@@ -222,16 +270,13 @@ class LecturerEligibilityService
             ? $proposal->researchScheme
             : $proposal->communityServiceScheme;
 
-        $activeStatuses = [
-            ProposalStatus::DRAFT->value,
-            ProposalStatus::SUBMITTED->value,
-            ProposalStatus::NEED_ASSIGNMENT->value,
-            ProposalStatus::APPROVED->value,
-            ProposalStatus::WAITING_REVIEWER->value,
-            ProposalStatus::UNDER_REVIEW->value,
-            ProposalStatus::REVIEWED->value,
-            ProposalStatus::REVISION_NEEDED->value,
-        ];
+        $activeStatuses = ProposalStatus::activeQuotaStatuses();
+        $isResearch = $proposal->detailable_type === Research::class;
+
+        $activeHeadCountForType = Proposal::where('submitter_id', $user->id)
+            ->whereIn('status', $activeStatuses)
+            ->where('detailable_type', $isResearch ? Research::class : CommunityService::class)
+            ->count();
 
         $activeHeadCount = Proposal::where('submitter_id', $user->id)
             ->whereIn('status', $activeStatuses)
@@ -242,12 +287,43 @@ class LecturerEligibilityService
             'sinta_score_v3_overall' => $identity?->sinta_score_v3_overall,
             'scopus_h_index' => $identity?->scopus_h_index,
             'active_head_proposals_count' => $activeHeadCount,
+            'active_head_count_for_type' => $activeHeadCountForType,
+            'count_scope' => $isResearch ? 'research' : 'community_service',
+            'counted_statuses' => $activeStatuses,
             'scheme_type' => $proposal->detailable_type === 'App\Models\Research' ? 'research' : 'community_service',
             'scheme_id' => $scheme?->getKey(),
             'scheme_name' => $scheme?->name,
             'scheme_rules' => $scheme?->eligibility_rules,
             'submitted_at' => now()->toIso8601String(),
         ];
+    }
+
+    /**
+     * Baris luaran wajib dianggap memenuhi hanya bila ada bukti isi:
+     * file media atau salah satu kolom bukti terisi. Baris kosong
+     * (mis. hanya status tanpa URL/judul) TIDAK dihitung memenuhi.
+     */
+    public static function mandatoryOutputHasEvidence(MandatoryOutput $record): bool
+    {
+        foreach (['journal_article', 'book_document', 'publication_certificate', 'output_file'] as $collection) {
+            if ($record->hasMedia($collection)) {
+                return true;
+            }
+        }
+
+        foreach ([
+            'journal_title', 'article_title', 'book_title', 'video_url',
+            'media_url', 'media_name', 'hki_type', 'product_name',
+            'doi', 'isbn', 'issn', 'eissn', 'journal_url', 'article_url',
+            'registration_number', 'inventors', 'publisher', 'platform',
+            'publication_date', 'description',
+        ] as $field) {
+            if (! empty($record->{$field})) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -294,6 +370,7 @@ class LecturerEligibilityService
      */
     public function isRevisionOpen(string $type): bool
     {
+        $type = self::normalizeType($type) ?? 'pkm';
         $startKey = $type === 'research' ? 'research_revision_start_date' : 'community_service_revision_start_date';
         $endKey = $type === 'research' ? 'research_revision_end_date' : 'community_service_revision_end_date';
 
@@ -308,8 +385,9 @@ class LecturerEligibilityService
      */
     public function isFinalReportOpen(string $type): bool
     {
-        $startKey = $type === 'research' ? 'research_final_report_start_date' : 'community_service_final_report_start_date';
-        $endKey = $type === 'research' ? 'research_final_report_end_date' : 'community_service_final_report_end_date';
+        $normalized = self::normalizeType($type) ?? 'pkm';
+        $startKey = $normalized === 'research' ? 'research_final_report_start_date' : 'community_service_final_report_start_date';
+        $endKey = $normalized === 'research' ? 'research_final_report_end_date' : 'community_service_final_report_end_date';
 
         $start = Setting::where('key', $startKey)->value('value');
         $end = Setting::where('key', $endKey)->value('value');

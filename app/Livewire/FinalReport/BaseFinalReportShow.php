@@ -671,7 +671,26 @@ abstract class BaseFinalReportShow extends Component
         $missing = [];
         foreach ($wajibOutputs as $output) {
             $data = $this->form->mandatoryOutputs[$output->id] ?? [];
-            if (empty($data['status_type']) && empty($data['journal_title'])) {
+            $complete = is_array($data)
+                && ReportForm::mandatoryDataIsComplete($data, $output->type ?? null, $output->group ?? null);
+
+            // Fallback: baris yang sudah tersimpan dengan bukti tetap dihitung lengkap
+            // (mis. link video yang sudah disimpan sebelumnya).
+            if (! $complete && $this->progressReport) {
+                $record = MandatoryOutput::where('progress_report_id', $this->progressReport->id)
+                    ->where('proposal_output_id', $output->id)
+                    ->first();
+                if ($record) {
+                    $complete = ReportForm::mandatoryDataIsComplete(
+                        array_merge($record->getAttributes(), is_array($data) ? $data : []),
+                        $output->type ?? null,
+                        $output->group ?? null
+                    ) || LecturerEligibilityService::mandatoryOutputHasEvidence($record)
+                        && ! empty($record->status_type);
+                }
+            }
+
+            if (! $complete) {
                 $missing[] = $output->type ?? "Luaran #{$output->id}";
             }
         }
@@ -882,6 +901,7 @@ abstract class BaseFinalReportShow extends Component
 
         try {
             $this->form->progressReport = $this->progressReport;
+            $this->form->validateAdditionalOutput($proposalOutputId);
             $this->form->saveAdditionalOutputWithFile($proposalOutputId);
             $this->toastSuccess('Data luaran tambahan berhasil disimpan.');
             $this->dispatch('close-modal', modalId: 'modalAdditionalOutput');

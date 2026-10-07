@@ -106,11 +106,12 @@ abstract class ProposalCreate extends Component
 
                 $this->form->setProposal($proposalToLoad);
             } else {
-                // Check eligibility for new proposals
+                // Check eligibility for new proposals (type-aware: hutang research
+                // tidak memblokir usulan pengabdian dan sebaliknya).
                 if ($user instanceof User && $user->activeHasRole('dosen')) {
                     // First check general eligibility
                     $eligibilityService = app(LecturerEligibilityService::class);
-                    $eligibility = $eligibilityService->checkEligibility($user);
+                    $eligibility = $eligibilityService->checkEligibility($user, LecturerEligibilityService::normalizeType($this->getProposalType()));
                     if (! $eligibility['eligible']) {
                         session()->flash('error', 'Anda tidak memenuhi syarat untuk membuat proposal baru. '.implode(', ', $eligibility['reasons']));
                         $this->redirect(route($this->getIndexRoute()));

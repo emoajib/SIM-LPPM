@@ -1372,9 +1372,11 @@
                                         </td>
                                         <td>
                                             @php
-                                                $hasData =
-                                                    isset($form->mandatoryOutputs[$output->id]['status_type']) &&
-                                                    !empty($form->mandatoryOutputs[$output->id]['status_type']);
+                                                $hasData = \App\Livewire\Forms\ReportForm::mandatoryDataIsComplete(
+                                                    $form->mandatoryOutputs[$output->id] ?? [],
+                                                    $output->type ?? null,
+                                                    $output->group ?? null,
+                                                );
                                             @endphp
                                             @if ($hasData)
                                                 <x-tabler.badge color="success">
@@ -1388,22 +1390,7 @@
                                             @endif
                                         </td>
                                         <td>
-                                            @if ($rowMandatoryOutput && $rowMandatoryOutput->hasMedia('journal_article'))
-                                                @php
-                                                    $media = $rowMandatoryOutput->getFirstMedia('journal_article');
-                                                @endphp
-                                                <a data-navigate-ignore="true"
-                                                    href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                                                    target="_blank" class="btn btn-sm btn-success">
-                                                    <x-lucide-file-check class="icon icon-sm" />
-                                                    Lihat Dokumen
-                                                </a>
-                                            @else
-                                                <span class="text-muted">
-                                                    <x-lucide-file-x class="icon icon-sm" />
-                                                    Belum Upload
-                                                </span>
-                                            @endif
+                                            @include('livewire.partials.mandatory-output-document', ['rowMandatoryOutput' => $rowMandatoryOutput, 'output' => $output])
                                         </td>
                                         <td>
                                             @if ($canEdit)
@@ -2045,8 +2032,7 @@
                             </small>
                         </div>
                         @if ($mandatoryOutput = $this->mandatoryOutput())
-                            @if ($media = $mandatoryOutput->getFirstMedia('journal_article'))
-                                <div class="bg-body-tertiary mt-2 rounded border p-2">
+                            @if ($media = $mandatoryOutput->getFirstMedia('journal_article'))                                <div class="bg-body-tertiary mt-2 rounded border p-2">
                                     <div class="d-flex align-items-center">
                                         <x-lucide-file-text class="text-primary icon me-2" />
                                         <div class="flex-fill">
@@ -2059,6 +2045,23 @@
                                             href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
                                             target="_blank" class="btn btn-sm btn-primary">
                                             <x-lucide-download class="icon" /> Download
+                                        </a>
+                                    </div>
+                                </div>
+                            @endif
+                            @php
+                                $savedLink = $mandatoryOutput->video_url ?? $mandatoryOutput->media_url ?? $mandatoryOutput->article_url ?? $mandatoryOutput->journal_url;
+                            @endphp
+                            @if (! empty($savedLink))
+                                <div class="bg-body-tertiary mt-2 rounded border p-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <x-lucide-external-link class="text-primary icon me-2" />
+                                        <div class="flex-fill">
+                                            <small class="text-muted">Link tersimpan:</small><br>
+                                            <strong class="text-truncate d-inline-block" style="max-width: 260px;" title="{{ $savedLink }}">{{ \Illuminate\Support\Str::limit($savedLink, 50) }}</strong>
+                                        </div>
+                                        <a href="{{ $savedLink }}" target="_blank" rel="noopener" class="btn btn-sm btn-primary">
+                                            Buka Link
                                         </a>
                                     </div>
                                 </div>

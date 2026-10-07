@@ -120,6 +120,7 @@ class Proposal extends Model implements HasMedia
         'sbk_value',
         'duration_in_years',
         'start_year',
+        'semester',
         'summary',
         'asta_cita',
         'status',

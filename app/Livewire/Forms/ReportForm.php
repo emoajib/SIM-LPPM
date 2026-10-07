@@ -381,6 +381,67 @@ class ReportForm extends Form
         $this->validate($this->rules());
     }
 
+    /**
+     * Data luaran dianggap berisi bukti bila ada kolom isi selain status saja.
+     * Mencegah baris kosong (mis. hanya status tanpa URL/judul) tersimpan di DB.
+     */
+    public static function mandatoryDataHasEvidence(array $data): bool
+    {
+        foreach ([
+            'journal_title', 'article_title', 'book_title', 'video_url',
+            'media_url', 'media_name', 'hki_type', 'product_name',
+            'doi', 'isbn', 'issn', 'eissn', 'journal_url', 'article_url',
+            'registration_number', 'inventors', 'publisher', 'publisher_name',
+            'platform', 'publication_date', 'description', 'book_url',
+        ] as $field) {
+            if (! empty($data[$field])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Luaran wajib dianggap lengkap bila status terisi DAN bukti sesuai tipenya ada.
+     * Tipe link (video/media) tidak butuh file dokumen.
+     */
+    public static function mandatoryDataIsComplete(array $data, ?string $type = null, ?string $group = null): bool
+    {
+        if (empty($data['status_type']) && empty($data['status'])) {
+            return false;
+        }
+
+        $type = strtolower($type ?? '');
+        $group = strtolower($group ?? '');
+
+        if (str_contains($type, 'jurnal') || str_contains($group, 'jurnal') || str_contains($type, 'prosiding') || str_contains($group, 'prosiding')) {
+            return ! empty($data['journal_title']) && ! empty($data['article_title']);
+        }
+
+        if (str_contains($type, 'buku') || str_contains($group, 'buku') || str_contains($type, 'modul') || str_contains($type, 'pedoman')) {
+            return ! empty($data['book_title']);
+        }
+
+        if (str_contains($type, 'hki') || str_contains($type, 'paten') || str_contains($type, 'hak cipta') || str_contains($group, 'hki')) {
+            return ! empty($data['hki_type']);
+        }
+
+        if (str_contains($type, 'video') || str_contains($group, 'video')) {
+            return ! empty($data['video_url']);
+        }
+
+        if (str_contains($type, 'media') || str_contains($group, 'media')) {
+            return ! empty($data['media_url']);
+        }
+
+        if (str_contains($type, 'produk') || str_contains($type, 'jasa') || str_contains($type, 'sistem') || str_contains($type, 'ttg') || str_contains($type, 'purwarupa') || str_contains($type, 'prototipe') || str_contains($type, 'model') || str_contains($group, 'produk')) {
+            return ! empty($data['product_name']);
+        }
+
+        return true;
+    }
+
     public function validateMandatoryOutput(int $outputId): void
     {
         $output = ProposalOutput::find($outputId);
@@ -455,6 +516,12 @@ class ReportForm extends Form
         } elseif (str_contains($type, 'media') || str_contains($group, 'media')) {
             $rules["additionalOutputs.{$outputId}.media_name"] = 'required|string|max:255';
             $rules["additionalOutputs.{$outputId}.media_url"] = 'required|url';
+        } elseif (str_contains($type, 'video') || str_contains($group, 'video')) {
+            $rules["additionalOutputs.{$outputId}.video_url"] = 'required|url';
+            $rules["additionalOutputs.{$outputId}.platform"] = 'nullable|string|max:50';
+        } elseif (str_contains($type, 'produk') || str_contains($type, 'jasa') || str_contains($type, 'sistem') || str_contains($type, 'ttg') || str_contains($type, 'purwarupa') || str_contains($type, 'prototipe') || str_contains($type, 'model') || str_contains($group, 'produk')) {
+            $rules["additionalOutputs.{$outputId}.product_name"] = 'required|string|max:255';
+            $rules["additionalOutputs.{$outputId}.description"] = 'nullable|string';
         }
 
         $this->validate($rules);
@@ -559,7 +626,17 @@ class ReportForm extends Form
                 continue;
             }
 
-            if (empty($data['status_type']) && empty($data['journal_title'])) {
+            if (! is_array($data)) {
+                continue;
+            }
+
+            $exists = MandatoryOutput::where('progress_report_id', $this->progressReport->id)
+                ->where('proposal_output_id', $proposalOutputId)
+                ->exists();
+
+            // Jangan buat baris kosong baru (mis. hanya status tanpa URL/judul);
+            // baris yang sudah ada tetap di-update agar penghapusan isi tersimpan.
+            if (! $exists && ! self::mandatoryDataHasEvidence($data)) {
                 continue;
             }
 
@@ -617,7 +694,15 @@ class ReportForm extends Form
                 continue;
             }
 
-            if (empty($data['status']) && empty($data['book_title'])) {
+            if (! is_array($data)) {
+                continue;
+            }
+
+            $exists = AdditionalOutput::where('progress_report_id', $this->progressReport->id)
+                ->where('proposal_output_id', $proposalOutputId)
+                ->exists();
+
+            if (! $exists && ! self::mandatoryDataHasEvidence($data)) {
                 continue;
             }
 

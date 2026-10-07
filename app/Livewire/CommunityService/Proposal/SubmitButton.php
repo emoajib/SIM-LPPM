@@ -95,7 +95,7 @@ class SubmitButton extends Component
 
         $user = Auth::user();
         if ($user && $user->activeHasRole('dosen')) {
-            return $eligibilityService->checkEligibility($user);
+            return $eligibilityService->checkEligibility($user, 'pkm');
         }
 
         return ['eligible' => true, 'reasons' => []];

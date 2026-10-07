@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\ProposalStatus;
 use App\Models\CommunityServiceScheme;
 use App\Models\Identity;
 use App\Models\Proposal;
@@ -54,17 +55,7 @@ class EligibilityService
         }
 
         // Count current active proposals (including drafts) of the SPECIFIC type
-        $activeStatuses = [
-            'draft',
-            'submitted',
-            'need_assignment',
-            'approved',
-            'waiting_reviewer',
-            'under_review',
-            'reviewed',
-            'revision_needed',
-            'revision_submitted',
-        ];
+        $activeStatuses = ProposalStatus::activeQuotaStatuses();
 
         $headQuery = Proposal::where('submitter_id', $user->id)
             ->whereIn('status', $activeStatuses);

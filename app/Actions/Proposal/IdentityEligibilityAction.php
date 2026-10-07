@@ -69,17 +69,7 @@ class IdentityEligibilityAction
         }
 
         // 4. Quota Check (Active proposals)
-        $activeStatuses = [
-            ProposalStatus::DRAFT->value,
-            ProposalStatus::SUBMITTED->value,
-            ProposalStatus::NEED_ASSIGNMENT->value,
-            ProposalStatus::APPROVED->value,
-            ProposalStatus::WAITING_REVIEWER->value,
-            ProposalStatus::UNDER_REVIEW->value,
-            ProposalStatus::REVIEWED->value,
-            ProposalStatus::REVISION_NEEDED->value,
-            ProposalStatus::REVISION_SUBMITTED->value,
-        ];
+        $activeStatuses = ProposalStatus::activeQuotaStatuses();
 
         if ($role === 'leader' && isset($rules['max_proposals_as_head'])) {
             $headCount = $this->countActiveLeaderProposals($user, $scheme, $activeStatuses);

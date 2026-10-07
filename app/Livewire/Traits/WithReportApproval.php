@@ -4,6 +4,7 @@ namespace App\Livewire\Traits;
 
 use App\Enums\ReportStatus;
 use App\Models\MandatoryOutput;
+use App\Services\LecturerEligibilityService;
 use App\Services\NotificationService;
 use App\Traits\HandlesReportStateTransitions;
 use Illuminate\Support\Facades\Auth;
@@ -33,9 +34,13 @@ trait WithReportApproval
             return [];
         }
 
+        // Baris tanpa bukti isi (mis. hanya status tanpa URL/judul, termasuk
+        // luaran video yang baru diisi statusnya) TIDAK dihitung terpenuhi.
         $filledIds = MandatoryOutput::where('progress_report_id', $report->id)
             ->whereNotNull('status_type')
-            ->pluck('proposal_output_id')
+            ->get()
+            ->filter(fn ($record) => LecturerEligibilityService::mandatoryOutputHasEvidence($record))
+            ->map(fn ($record) => $record->proposal_output_id)
             ->all();
 
         $missing = [];

@@ -60,7 +60,7 @@
                 <x-lucide-info class="icon" />
                 Info Eligibilitas
             </button>
-            <x-lecturer-eligibility-modal />
+            <x-lecturer-eligibility-modal type="research" />
         @endif
     </div>
 </x-slot:pageActions>

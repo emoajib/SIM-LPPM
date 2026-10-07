@@ -102,6 +102,27 @@ enum ProposalStatus: string
     }
 
     /**
+     * Status yang dihitung sebagai proposal aktif untuk kuota ketua/anggota.
+     * Single source of truth — dipakai enforcement kuota dan snapshot kualifikasi.
+     *
+     * @return array<int, string>
+     */
+    public static function activeQuotaStatuses(): array
+    {
+        return [
+            self::DRAFT->value,
+            self::SUBMITTED->value,
+            self::NEED_ASSIGNMENT->value,
+            self::APPROVED->value,
+            self::WAITING_REVIEWER->value,
+            self::UNDER_REVIEW->value,
+            self::REVIEWED->value,
+            self::REVISION_NEEDED->value,
+            self::REVISION_SUBMITTED->value,
+        ];
+    }
+
+    /**
      * Cek apakah status ini menunjukkan proposal sudah selesai (tidak bisa diedit/direvisi lagi)
      * REJECTED tidak final karena bisa direvisi dan diajukan ulang via REVISION_NEEDED
      */

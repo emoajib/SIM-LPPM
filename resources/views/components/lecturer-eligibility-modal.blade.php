@@ -1,14 +1,69 @@
 @props(['type' => null])
 @php
     $user = auth()->user();
-    $eligibility = ['eligible' => true, 'reasons' => [], 'schedule' => []];
+    $eligResearch = ['eligible' => true, 'reasons' => [], 'member_reasons' => [], 'period' => [], 'schedule' => []];
+    $eligPkm = ['eligible' => true, 'reasons' => [], 'member_reasons' => [], 'period' => [], 'schedule' => []];
+    $eligibility = $eligResearch;
+    $eligTabs = [];
+    $activeTab = 'research';
     $userSintaScore = null;
     $userFunctionalPosition = null;
     $allResearchSchemeRequirements = [];
     $allPkmSchemeRequirements = [];
 
     if ($user && $user->activeHasRole('dosen')) {
-        $eligibility = app(\App\Services\LecturerEligibilityService::class)->checkEligibility($user);
+        $eligSvc = app(\App\Services\LecturerEligibilityService::class);
+        $eligResearch = $eligSvc->checkEligibility($user, 'research');
+        $eligPkm = $eligSvc->checkEligibility($user, 'pkm');
+
+        // Tab aktif default mengikuti halaman pemanggil.
+        $activeTab = $type === 'pkm' ? 'pkm' : 'research';
+        // $eligibility dipertahankan untuk kompatibilitas bagian jadwal/skema di bawah.
+        $eligibility = $activeTab === 'pkm' ? $eligPkm : $eligResearch;
+
+        $eligTabs = [];
+        foreach (['research' => $eligResearch, 'pkm' => $eligPkm] as $tabKey => $tabElig) {
+            $tabFlags = [
+                'historical' => false,
+                'quota' => false,
+                'sinta' => false,
+                'functional' => false,
+            ];
+            foreach ($tabElig['reasons'] as $reason) {
+                if (str_contains($reason, 'Laporan Akhir') || str_contains($reason, 'luaran wajib')) $tabFlags['historical'] = true;
+                if (str_contains($reason, 'batas maksimal')) $tabFlags['quota'] = true;
+                if (str_contains($reason, 'SINTA')) $tabFlags['sinta'] = true;
+                if (str_contains($reason, 'Jabatan fungsional')) $tabFlags['functional'] = true;
+            }
+
+            $tabSubtitle = '';
+            $tabTindakan = '';
+            if ($tabFlags['historical']) {
+                $tabSubtitle = 'Sistem mendeteksi kewajiban yang belum terpenuhi dari periode sebelumnya'
+                    . ' (' . ucfirst($tabElig['period']['checked_semester'] ?? '') . ' ' . ($tabElig['period']['checked_year'] ?? '') . '):';
+                $tabTindakan = 'Penuhi laporan akhir dan komponen luaran wajib sebelum mengajukan proposal baru.';
+            } elseif ($tabFlags['quota']) {
+                $tabSubtitle = 'Anda telah mencapai batas maksimal pengajuan proposal sebagai Ketua:';
+                $tabTindakan = 'Tunggu hingga periode berikutnya atau hubungi Admin LPPM untuk informasi lebih lanjut.';
+            } elseif ($tabFlags['sinta']) {
+                $tabSubtitle = 'Skor SINTA Anda belum memenuhi syarat minimal skema:';
+                $tabTindakan = 'Tingkatkan skor SINTA Anda melalui publikasi ilmiah, lalu hubungi Admin LPPM.';
+            } elseif ($tabFlags['functional']) {
+                $tabSubtitle = 'Jabatan fungsional Anda belum memenuhi ketentuan skema:';
+                $tabTindakan = 'Ajukan kenaikan jabatan fungsional melalui prosedur yang berlaku.';
+            } elseif (! $tabElig['eligible']) {
+                $tabSubtitle = 'Terdapat kendala yang menghalangi pengajuan proposal:';
+                $tabTindakan = 'Hubungi Admin LPPM untuk informasi lebih lanjut.';
+            }
+
+            $eligTabs[$tabKey] = [
+                'eligibility' => $tabElig,
+                'label' => $tabKey === 'research' ? 'Penelitian' : 'Pengabdian',
+                'alertTitle' => $tabElig['eligible'] ? 'Status Kelayakan: Memenuhi Syarat' : 'Status Kelayakan: Tidak Memenuhi Syarat',
+                'subtitle' => $tabSubtitle,
+                'tindakan' => $tabTindakan,
+            ];
+        }
 
         $identity = $user->identity;
         $userSintaScore = $identity?->sinta_score_v3_overall ?? 0;
@@ -52,38 +107,13 @@
     $hasNoResearchSchemes = $researchOpen && empty($researchSchemes);
     $hasNoPkmSchemes = $pkmOpen && empty($pkmSchemes);
 
-    // Categorize reasons
-    $hasHistoricalObligations = false;
-    $hasQuotaIssue = false;
-    $hasSintaIssue = false;
-    $hasFunctionalPositionIssue = false;
-    $eligAlertTitle = $eligibility['eligible'] ? 'Status Kelayakan: Memenuhi Syarat' : 'Status Kelayakan: Tidak Memenuhi Syarat';
-    $eligSubtitle = '';
-    $eligTindakan = '';
-
-    foreach ($eligibility['reasons'] as $reason) {
-        if (str_contains($reason, 'Laporan Akhir') || str_contains($reason, 'luaran wajib')) $hasHistoricalObligations = true;
-        if (str_contains($reason, 'batas maksimal')) $hasQuotaIssue = true;
-        if (str_contains($reason, 'SINTA')) $hasSintaIssue = true;
-        if (str_contains($reason, 'Jabatan fungsional')) $hasFunctionalPositionIssue = true;
-    }
-
-    if ($hasHistoricalObligations) {
-        $eligSubtitle = 'Sistem mendeteksi kewajiban yang belum terpenuhi dari periode sebelumnya'
-            . ' (' . ucfirst($eligibility['period']['checked_semester']) . ' ' . $eligibility['period']['checked_year'] . '):';
-        $eligTindakan = 'Penuhi laporan akhir dan komponen luaran wajib sebelum mengajukan proposal baru.';
-    } elseif ($hasQuotaIssue) {
-        $eligSubtitle = 'Anda telah mencapai batas maksimal pengajuan proposal sebagai Ketua:';
-        $eligTindakan = 'Tunggu hingga periode berikutnya atau hubungi Admin LPPM untuk informasi lebih lanjut.';
-    } elseif ($hasSintaIssue) {
-        $eligSubtitle = 'Skor SINTA Anda belum memenuhi syarat minimal skema:';
-        $eligTindakan = 'Tingkatkan skor SINTA Anda melalui publikasi ilmiah, lalu hubungi Admin LPPM.';
-    } elseif ($hasFunctionalPositionIssue) {
-        $eligSubtitle = 'Jabatan fungsional Anda belum memenuhi ketentuan skema:';
-        $eligTindakan = 'Ajukan kenaikan jabatan fungsional melalui prosedur yang berlaku.';
-    } elseif (! $eligibility['eligible']) {
-        $eligSubtitle = 'Terdapat kendala yang menghalangi pengajuan proposal:';
-        $eligTindakan = 'Hubungi Admin LPPM untuk informasi lebih lanjut.';
+    // Fallback bila user bukan dosen (tidak ada pemisahan tipe).
+    if (empty($eligTabs)) {
+        $eligTabs = [
+            'research' => ['eligibility' => $eligResearch, 'label' => 'Penelitian', 'alertTitle' => 'Status Kelayakan: Memenuhi Syarat', 'subtitle' => '', 'tindakan' => ''],
+            'pkm' => ['eligibility' => $eligPkm, 'label' => 'Pengabdian', 'alertTitle' => 'Status Kelayakan: Memenuhi Syarat', 'subtitle' => '', 'tindakan' => ''],
+        ];
+        $activeTab = 'research';
     }
 @endphp
 
@@ -99,31 +129,50 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body bg-light">
-                    <!-- Status Kelayakan -->
-                    <div class="accordion mb-3" id="accordion-eligibility">
-                        <div class="accordion-item {{ $eligibility['eligible'] ? 'border-success' : 'border-danger' }} shadow-sm rounded">
-                            <h2 class="accordion-header" id="heading-eligibility">
-                                <button class="accordion-button {{ $eligibility['eligible'] ? 'text-success' : 'text-danger' }} fw-bold" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#collapse-eligibility" aria-expanded="true">
-                                    <i class="ti ti-{{ $eligibility['eligible'] ? 'circle-check' : 'alert-triangle' }} me-2"></i>
-                                    {{ $eligAlertTitle }}
+                    <!-- Status Kelayakan per tipe -->
+                    <ul class="nav nav-tabs mb-3" role="tablist">
+                        @foreach ($eligTabs as $tabKey => $tab)
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link {{ $activeTab === $tabKey ? 'active' : '' }} fw-bold"
+                                    data-bs-toggle="tab" data-bs-target="#elig-tab-{{ $tabKey }}"
+                                    type="button" role="tab">
+                                    {{ $tab['label'] }}
+                                    <span class="badge {{ $tab['eligibility']['eligible'] ? 'bg-success' : 'bg-danger' }} text-white ms-1">
+                                        {{ $tab['eligibility']['eligible'] ? 'Layak' : 'Tidak' }}
+                                    </span>
+                                </button>
+                            </li>
+                        @endforeach
+                    </ul>
+                    <div class="tab-content">
+                        @foreach ($eligTabs as $tabKey => $tab)
+                            @php
+                                $tabElig = $tab['eligibility'];
+                            @endphp
+                            <div class="tab-pane fade {{ $activeTab === $tabKey ? 'show active' : '' }}" id="elig-tab-{{ $tabKey }}" role="tabpanel">
+                    <div class="accordion mb-3" id="accordion-eligibility-{{ $tabKey }}">
+                        <div class="accordion-item {{ $tabElig['eligible'] ? 'border-success' : 'border-danger' }} shadow-sm rounded">
+                            <h2 class="accordion-header" id="heading-eligibility-{{ $tabKey }}">
+                                <button class="accordion-button {{ $tabElig['eligible'] ? 'text-success' : 'text-danger' }} fw-bold" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#collapse-eligibility-{{ $tabKey }}" aria-expanded="true">
+                                    <i class="ti ti-{{ $tabElig['eligible'] ? 'circle-check' : 'alert-triangle' }} me-2"></i>
+                                    {{ $tab['alertTitle'] }}
                                 </button>
                             </h2>
-                            <div id="collapse-eligibility" class="accordion-collapse collapse show">
+                            <div id="collapse-eligibility-{{ $tabKey }}" class="accordion-collapse collapse show">
                                 <div class="accordion-body bg-white py-3">
-                                    @if (! $eligibility['eligible'])
-                                        @if ($eligSubtitle)
-                                            <div class="text-secondary small mb-1">{{ $eligSubtitle }}</div>
+                                    @if (! $tabElig['eligible'])
+                                        @if ($tab['subtitle'])
+                                            <div class="text-secondary small mb-1">{{ $tab['subtitle'] }}</div>
                                         @endif
                                         <ul class="mb-1 ps-3 small text-secondary" style="list-style-type: disc;">
-                                            @foreach ($eligibility['reasons'] as $reason)
-                                                <li wire:key="modal-reason-{{ $loop->index }}">{{ $reason }}</li>
+                                            @foreach ($tabElig['reasons'] as $reason)
+                                                <li wire:key="modal-reason-{{ $tabKey }}-{{ $loop->index }}">{{ $reason }}</li>
                                             @endforeach
                                         </ul>
-                                        @if ($eligTindakan)
+                                        @if ($tab['tindakan'])
                                             <div class="small text-secondary">
-                                                <strong>Tindakan:</strong> {{ $eligTindakan }}
-                                            </div>
+                                                <strong>Tindakan:</strong> {{ $tab['tindakan'] }}</div>
                                         @endif
                                     @else
                                         <p class="mb-0 text-secondary">
@@ -131,12 +180,12 @@
                                             Anda memenuhi syarat untuk mengajukan proposal baru.
                                         </p>
                                     @endif
-                                    @if (! empty($eligibility['member_reasons']))
+                                    @if (! empty($tabElig['member_reasons']))
                                         <div class="border-top pt-2 mt-2 small text-secondary">
                                             <strong>Status Anggota:</strong>
                                             <ul class="mb-0 ps-3 mt-1" style="list-style-type: disc;">
-                                                @foreach ($eligibility['member_reasons'] as $reason)
-                                                    <li wire:key="modal-member-reason-{{ $loop->index }}">{{ $reason }}</li>
+                                                @foreach ($tabElig['member_reasons'] as $reason)
+                                                    <li wire:key="modal-member-reason-{{ $tabKey }}-{{ $loop->index }}">{{ $reason }}</li>
                                                 @endforeach
                                             </ul>
                                         </div>
@@ -144,6 +193,9 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                            </div>
+                        @endforeach
                     </div>
 
                     <!-- Status Jadwal Pengajuan -->
