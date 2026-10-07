@@ -170,6 +170,8 @@
         </div>
     @endif
 
+    <livewire:budget-amendment.manager :proposalId="$proposal->id" />
+
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">Riwayat Aktivitas Pengabdian</h3>

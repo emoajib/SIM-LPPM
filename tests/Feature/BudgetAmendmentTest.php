@@ -1,20 +1,32 @@
 <?php
 
 // Regresi amandemen RAB: titik kebenaran angka.
-uses(RefreshDatabase::class);
 
+use App\Enums\BudgetAmendmentStatus;
 use App\Enums\ProposalStatus;
 use App\Livewire\Research\DailyNote\Show;
+use App\Models\BudgetAmendment;
+use App\Models\BudgetAmendmentItem;
+use App\Models\BudgetCap;
 use App\Models\BudgetGroup;
 use App\Models\BudgetItem;
 use App\Models\DailyNote;
 use App\Models\Proposal;
 use App\Models\Research;
 use App\Models\User;
+use App\Notifications\BudgetAmendmentSubmitted;
+use App\Services\BudgetAmendmentService;
+use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
 
 uses(RefreshDatabase::class);
+
+beforeEach(function () {
+    $this->seed(RoleSeeder::class);
+});
 
 test('approved budget total hanya menghitung item aktif', function () {
     $dosen = User::factory()->create();
@@ -87,4 +99,168 @@ test('logbook terkunci setelah lpj disahkan', function () {
         ->call('save');
 
     expect(DailyNote::where('proposal_id', $proposal->id)->count())->toBe(0);
+});
+
+test('pengajuan amandemen membuat versi pending dan notifikasi', function () {
+    $dosen = User::factory()->create();
+    $kepala = User::factory()->create();
+    $kepala->assignRole('kepala lppm');
+    $this->actingAs($dosen);
+    Notification::fake();
+    BudgetCap::create([
+        'year' => (int) date('Y'),
+        'semester' => 'ganjil',
+        'research_budget_cap' => 1000000000,
+        'community_service_budget_cap' => 1000000000,
+        'enforce_percentage' => false,
+    ]);
+    $research = Research::factory()->create();
+    $proposal = Proposal::factory()->create([
+        'submitter_id' => $dosen->id,
+        'detailable_type' => Research::class,
+        'detailable_id' => $research->id,
+        'status' => ProposalStatus::COMPLETED,
+        'start_year' => (int) date('Y'),
+        'semester' => 'ganjil',
+    ]);
+    $group = BudgetGroup::factory()->create();
+    BudgetItem::factory()->create([
+        'proposal_id' => $proposal->id,
+        'budget_group_id' => $group->id,
+        'total_price' => 1000000,
+        'is_active' => true,
+        'version' => 1,
+    ]);
+
+    $svc = app(BudgetAmendmentService::class);
+    $amendment = $svc->request($proposal, $dosen, [
+        [
+            'budget_group_id' => $group->id,
+            'item_description' => 'Item revisi',
+            'volume' => 2,
+            'unit_price' => 600000,
+        ],
+    ], 'Harga bahan naik di lapangan');
+
+    expect($amendment->status)->toBe(BudgetAmendmentStatus::PENDING)
+        ->and($amendment->version)->toBe(2)
+        ->and($amendment->items)->toHaveCount(1)
+        ->and($proposal->fresh()->hasPendingBudgetAmendment())->toBeTrue();
+
+    Notification::assertSentTo(
+        User::role('kepala lppm')->get(),
+        BudgetAmendmentSubmitted::class
+    );
+});
+
+test('pengajuan kedua diblokir selama ada pending', function () {
+    $dosen = User::factory()->create();
+    $this->actingAs($dosen);
+    $research = Research::factory()->create();
+    $proposal = Proposal::factory()->create([
+        'submitter_id' => $dosen->id,
+        'detailable_type' => Research::class,
+        'detailable_id' => $research->id,
+        'status' => ProposalStatus::COMPLETED,
+        'sbk_value' => 0,
+    ]);
+    $group = BudgetGroup::factory()->create();
+    BudgetAmendment::factory()->create([
+        'proposal_id' => $proposal->id,
+        'version' => 2,
+        'status' => BudgetAmendmentStatus::PENDING,
+    ]);
+
+    $svc = app(BudgetAmendmentService::class);
+
+    expect(fn () => $svc->request($proposal, $dosen, [
+        ['budget_group_id' => $group->id, 'item_description' => 'X', 'volume' => 1, 'unit_price' => 1000],
+    ], 'Alasan yang cukup panjang'))
+        ->toThrow(ValidationException::class);
+});
+
+test('persetujuan menerapkan versi baru secara atomik', function () {
+    $dosen = User::factory()->create();
+    $kepala = User::factory()->create();
+    $kepala->assignRole('kepala lppm');
+    $this->actingAs($kepala);
+    $research = Research::factory()->create();
+    $proposal = Proposal::factory()->create([
+        'submitter_id' => $dosen->id,
+        'detailable_type' => Research::class,
+        'detailable_id' => $research->id,
+        'status' => ProposalStatus::COMPLETED,
+        'sbk_value' => 0,
+    ]);
+    $group = BudgetGroup::factory()->create();
+    BudgetItem::factory()->create([
+        'proposal_id' => $proposal->id,
+        'budget_group_id' => $group->id,
+        'total_price' => 1000000,
+        'is_active' => true,
+        'version' => 1,
+    ]);
+    $amendment = BudgetAmendment::factory()->create([
+        'proposal_id' => $proposal->id,
+        'version' => 2,
+        'status' => BudgetAmendmentStatus::PENDING,
+    ]);
+    BudgetAmendmentItem::factory()->create([
+        'budget_amendment_id' => $amendment->id,
+        'budget_group_id' => $group->id,
+        'volume' => 3,
+        'unit_price' => 500000,
+        'total_price' => 1500000,
+    ]);
+
+    app(BudgetAmendmentService::class)->approve($amendment, $kepala, 'Setuju');
+
+    expect($amendment->fresh()->status)->toBe(BudgetAmendmentStatus::APPROVED)
+        ->and($proposal->fresh()->approved_budget_total)->toEqual(1500000.0)
+        ->and($proposal->budgetItems()->where('is_active', true)->count())->toBe(1)
+        ->and($proposal->budgetItems()->where('is_active', false)->count())->toBe(1);
+});
+
+test('persetujuan ditolak bila realisasi melebihi alokasi baru', function () {
+    $dosen = User::factory()->create();
+    $kepala = User::factory()->create();
+    $kepala->assignRole('kepala lppm');
+    $this->actingAs($kepala);
+    $research = Research::factory()->create();
+    $proposal = Proposal::factory()->create([
+        'submitter_id' => $dosen->id,
+        'detailable_type' => Research::class,
+        'detailable_id' => $research->id,
+        'status' => ProposalStatus::COMPLETED,
+        'sbk_value' => 0,
+    ]);
+    $group = BudgetGroup::factory()->create();
+    BudgetItem::factory()->create([
+        'proposal_id' => $proposal->id,
+        'budget_group_id' => $group->id,
+        'total_price' => 1000000,
+        'is_active' => true,
+        'version' => 1,
+    ]);
+    DailyNote::factory()->create([
+        'proposal_id' => $proposal->id,
+        'budget_group_id' => $group->id,
+        'amount' => 900000,
+    ]);
+    $amendment = BudgetAmendment::factory()->create([
+        'proposal_id' => $proposal->id,
+        'version' => 2,
+        'status' => BudgetAmendmentStatus::PENDING,
+    ]);
+    BudgetAmendmentItem::factory()->create([
+        'budget_amendment_id' => $amendment->id,
+        'budget_group_id' => $group->id,
+        'total_price' => 500000,
+    ]);
+
+    expect(fn () => app(BudgetAmendmentService::class)->approve($amendment, $kepala))
+        ->toThrow(ValidationException::class);
+
+    expect($amendment->fresh()->status)->toBe(BudgetAmendmentStatus::PENDING)
+        ->and($proposal->fresh()->approved_budget_total)->toEqual(1000000.0);
 });

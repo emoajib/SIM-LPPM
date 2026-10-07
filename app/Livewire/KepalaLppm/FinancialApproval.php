@@ -82,6 +82,13 @@ class FinancialApproval extends Component
             return;
         }
 
+        // Jangan sahkan LPJ yang RAB-nya sedang dalam amandemen pending.
+        if ($proposal->hasPendingBudgetAmendment()) {
+            $this->toastError('LPJ belum bisa disahkan: ada amandemen RAB yang menunggu persetujuan. Putuskan amandemen terlebih dahulu.');
+
+            return;
+        }
+
         $proposal->update([
             'logbook_approved_at' => now(),
             'logbook_rejection_notes' => null,

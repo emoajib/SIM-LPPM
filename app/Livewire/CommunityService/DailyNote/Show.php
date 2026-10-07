@@ -385,6 +385,12 @@ class Show extends Component
             abort(403);
         }
 
+        if ($this->proposal->hasPendingBudgetAmendment()) {
+            $this->toastError('LPJ belum bisa disahkan: ada amandemen RAB yang menunggu persetujuan.');
+
+            return;
+        }
+
         $this->proposal->update(['logbook_approved_at' => now()]);
         $this->clearFinancialPdfCache();
 
@@ -401,6 +407,12 @@ class Show extends Component
 
         if (! $this->proposal->hasMedia('logbook_approval_file')) {
             $this->toastError('Berkas scan lembar pengesahan basah belum diunggah.');
+
+            return;
+        }
+
+        if ($this->proposal->hasPendingBudgetAmendment()) {
+            $this->toastError('LPJ belum bisa disahkan: ada amandemen RAB yang menunggu persetujuan.');
 
             return;
         }

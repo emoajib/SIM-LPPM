@@ -2,9 +2,12 @@
 
 namespace App\Services;
 
+use App\Models\BudgetAmendment;
 use App\Models\ProgressReport;
 use App\Models\Proposal;
 use App\Models\User;
+use App\Notifications\BudgetAmendmentDecided;
+use App\Notifications\BudgetAmendmentSubmitted;
 use App\Notifications\DailySummaryReport;
 use App\Notifications\DekanApprovalDecision;
 use App\Notifications\FinalDecisionMade;
@@ -316,6 +319,37 @@ class NotificationService
             ->unique('id');
 
         $notification = new LpjReturned($proposal, $returnedBy, $notes, $roleTitle);
+        $this->send($recipients, $notification);
+    }
+
+    /**
+     * Send Budget Amendment Submitted notification to Kepala + Admin LPPM
+     */
+    public function notifyBudgetAmendmentSubmitted(BudgetAmendment $amendment, User $requestedBy): void
+    {
+        $recipients = $this->getUsersByRole(['kepala lppm', 'admin lppm']);
+
+        $notification = new BudgetAmendmentSubmitted($amendment, $requestedBy);
+        $this->send($recipients, $notification);
+    }
+
+    /**
+     * Send Budget Amendment Decided notification to all proposal members
+     */
+    public function notifyBudgetAmendmentDecided(BudgetAmendment $amendment, User $decidedBy, bool $approved): void
+    {
+        /** @var Proposal $proposal */
+        $proposal = $amendment->proposal;
+
+        /** @var User $submitter */
+        $submitter = $proposal->submitter;
+
+        $recipients = collect([$submitter])
+            ->merge($proposal->teamMembers ?? collect())
+            ->filter()
+            ->unique('id');
+
+        $notification = new BudgetAmendmentDecided($amendment, $decidedBy, $approved);
         $this->send($recipients, $notification);
     }
 }

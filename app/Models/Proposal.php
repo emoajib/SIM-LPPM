@@ -141,6 +141,7 @@ class Proposal extends Model implements HasMedia
         'kaprodi_validated_at',
         'kaprodi_id',
         'qualification_snapshot',
+        'approved_budget_snapshot',
     ];
 
     /**
@@ -162,6 +163,7 @@ class Proposal extends Model implements HasMedia
             'logbook_rejected_at' => 'datetime',
             'student_members' => 'array',
             'qualification_snapshot' => 'array',
+            'approved_budget_snapshot' => 'array',
             'is_roadmap_validated_by_kaprodi' => 'boolean',
             'kaprodi_validated_at' => 'datetime',
         ];

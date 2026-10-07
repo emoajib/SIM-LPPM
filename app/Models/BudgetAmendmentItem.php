@@ -8,6 +8,22 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property string $id
+ * @property string $budget_amendment_id
+ * @property int|null $budget_group_id
+ * @property int|null $budget_component_id
+ * @property int|null $year
+ * @property string|null $group
+ * @property string|null $component
+ * @property string|null $item_description
+ * @property float|null $volume
+ * @property float|null $unit_price
+ * @property float|null $total_price
+ * @property-read BudgetAmendment $amendment
+ * @property-read BudgetGroup|null $budgetGroup
+ * @property-read BudgetComponent|null $budgetComponent
+ */
 class BudgetAmendmentItem extends Model
 {
     /** @use HasFactory<BudgetAmendmentItemFactory> */
