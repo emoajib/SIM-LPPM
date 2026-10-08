@@ -12,7 +12,7 @@
             $proposal->submitter->identity?->title_suffix ?? ''
         );
         $isResearch = $proposal->detailable_type === 'App\Models\Research';
-        $totalRAB = $proposal->budgetItems->sum('total_price');
+        $totalRAB = $proposal->activeBudgetItems->sum('total_price');
     @endphp
 </head>
 <body>

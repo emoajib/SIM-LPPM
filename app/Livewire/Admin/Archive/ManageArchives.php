@@ -104,7 +104,7 @@ class ManageArchives extends Component
         $this->editId = $p->id;
         $this->editTitle = $p->title;
         $this->editYear = $p->start_year;
-        $this->editDana = $p->sbk_value > 0 ? (int) $p->sbk_value : (int) $p->budgetItems()->sum('total_price');
+        $this->editDana = (int) $p->approved_budget_total;
         $this->editSummary = $p->summary;
 
         $this->isEdit = true;

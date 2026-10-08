@@ -167,7 +167,7 @@
                         @php
                             $isResearch = $proposal->detailable_type === 'App\Models\Research';
                             $schemeName = $isResearch ? ($proposal->researchScheme?->name ?? 'Penelitian') : ($proposal->communityServiceScheme?->name ?? 'Pengabdian');
-                            $totalBudget = $proposal->budgetItems->sum('total_price');
+                            $totalBudget = $proposal->activeBudgetItems->sum('total_price');
                         @endphp
                         <tr wire:key="prop-row-{{ $proposal->id }}">
                             <td class="text-center">

@@ -130,10 +130,7 @@
 
     @php
         $totalDana = $proposals->reduce(function($carry, $p) {
-            $dana = ($p->sbk_value && $p->sbk_value > 0)
-                ? $p->sbk_value
-                : ($p->budgetItems->sum('total_price') ?? 0);
-            return $carry + $dana;
+            return $carry + $p->approved_budget_total;
         }, 0);
     @endphp
 
@@ -152,9 +149,7 @@
         <tbody>
             @forelse($proposals as $index => $proposal)
                 @php
-                    $dana = ($proposal->sbk_value && $proposal->sbk_value > 0)
-                        ? $proposal->sbk_value
-                        : ($proposal->budgetItems->sum('total_price') ?? 0);
+                    $dana = $proposal->approved_budget_total;
                     $finalReport = $proposal->latestFinalReport ?? $proposal->progressReports->first();
                     $isReportApproved = $finalReport && $finalReport->status === \App\Enums\ReportStatus::APPROVED;
                 @endphp

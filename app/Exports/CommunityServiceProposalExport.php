@@ -131,7 +131,7 @@ class CommunityServiceProposalExport implements FromQuery, WithHeadings, WithMap
             $proposal->focusArea->name ?? '',
             $proposal->communityServiceScheme->name ?? '',
             $proposal->status->label(),
-            $proposal->budgetItems->sum('total_price'),
+            $proposal->activeBudgetItems->sum('total_price'),
             $submitterIdentity->sinta_id ?? '',
             $submitterIdentity->institution_name ?? '',
             '',

@@ -74,9 +74,7 @@ class ArchiveDataExport implements FromQuery, ShouldAutoSize, WithHeadings, With
             $type = str_contains($proposal->detailable_type, 'Research') ? 'Penelitian' : 'Pengabdian';
         }
 
-        $dana = $proposal->sbk_value > 0
-            ? $proposal->sbk_value
-            : $proposal->budgetItems->sum('total_price');
+        $dana = $proposal->approved_budget_total;
 
         return [
             $no++,

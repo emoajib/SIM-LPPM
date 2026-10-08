@@ -786,7 +786,7 @@
                                         <th class="text-end">
                                             <span class="text-primary">
                                                 Rp
-                                                {{ number_format($proposal->budgetItems->sum('total_price'), 0, ',', '.') }}
+                                                {{ number_format($proposal->activeBudgetItems->sum('total_price'), 0, ',', '.') }}
                                             </span>
                                         </th>
                                     </tr>
@@ -813,7 +813,7 @@
                                 <div class="mb-3">
                                     <label class="form-label">Total Anggaran</label>
                                     <p class="text-primary text-reset h4">
-                                        Rp {{ number_format($proposal->budgetItems->sum('total_price'), 0, ',', '.') }}
+                                        Rp {{ number_format($proposal->activeBudgetItems->sum('total_price'), 0, ',', '.') }}
                                     </p>
                                 </div>
                             </div>

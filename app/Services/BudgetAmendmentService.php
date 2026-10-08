@@ -166,17 +166,16 @@ class BudgetAmendmentService
             'total' => $item['total_price'],
         ], $items);
 
+        $oldMapped = $proposal->activeBudgetItems()->get()->map(fn ($item) => [
+            'budget_group_id' => $item->budget_group_id,
+            'total' => $item->total_price,
+        ])->toArray();
+
         $schemeId = $isResearch ? (int) ($proposal->research_scheme_id ?? 0) : (int) ($proposal->community_service_scheme_id ?? 0);
 
-        $this->validationService->validateBudgetCap(
-            $mapped,
-            $type,
-            (int) ($proposal->start_year ?: date('Y')),
-            $proposal->semester ?: 'ganjil',
-            $schemeId ?: null
-        );
-
-        $this->validationService->validateBudgetGroupPercentages(
+        // Amandemen memakai toleransi terhadap versi aktif (lihat BudgetValidationService).
+        $this->validationService->validateAmendmentDelta(
+            $oldMapped,
             $mapped,
             $type,
             (int) ($proposal->start_year ?: date('Y')),
@@ -321,6 +320,38 @@ class BudgetAmendmentService
                 $violations
             )]);
         }
+    }
+
+    /**
+     * Bekukan angka RAB aktif ke snapshot proposal.
+     * Dipanggil setiap kali LPJ disahkan agar angka LPJ historis tak berubah.
+     *
+     * @return array{version: int, total: float, groups: array<int, float>, unassigned: float, taken_at: string}
+     */
+    public function snapshotApprovedBudget(Proposal $proposal): array
+    {
+        $groups = $proposal->activeBudgetItems()
+            ->selectRaw('budget_group_id, sum(total_price) as total')
+            ->groupBy('budget_group_id')
+            ->pluck('total', 'budget_group_id');
+
+        $groupTotals = [];
+        foreach ($groups as $groupId => $total) {
+            $key = ($groupId === null || $groupId === '') ? 0 : (int) $groupId;
+            $groupTotals[$key] = (float) $total;
+        }
+
+        $snapshot = [
+            'version' => (int) ($proposal->activeBudgetItems()->max('version') ?? 1),
+            'total' => (float) $proposal->activeBudgetItems()->sum('total_price'),
+            'groups' => $groupTotals,
+            'unassigned' => (float) ($groupTotals[0] ?? 0),
+            'taken_at' => now()->toIso8601String(),
+        ];
+
+        $proposal->update(['approved_budget_snapshot' => $snapshot]);
+
+        return $snapshot;
     }
 
     /**

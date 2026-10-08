@@ -548,8 +548,8 @@
             </div>
 
             <div class="row g-3 mb-4">
-                @foreach(['proposals' => ['Proposal', 'file-text', 'blue'], 'reports' => ['Laporan', 'bar-chart-2', 'green'], 'reviewer' => ['Reviewer', 'users', 'orange']] as $type => [$label, $icon, $color])
-                <div class="col-md-4">
+                @foreach(['proposals' => ['Proposal', 'file-text', 'blue'], 'reports' => ['Laporan', 'bar-chart-2', 'green'], 'reviewer' => ['Reviewer', 'users', 'orange'], 'financial' => ['Keuangan (LPJ)', 'coins', 'teal']] as $type => [$label, $icon, $color])
+                <div class="col-md-6 col-lg-3">
                     <div class="card border-0 shadow-sm h-100">
                         <div class="card-body">
                             <div class="d-flex align-items-center mb-3">

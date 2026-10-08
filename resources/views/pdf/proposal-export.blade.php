@@ -22,7 +22,7 @@
         $institutionName = $submitterIdentity?->institution?->name ?? 'ITSNU Pekalongan';
         $lecturerSig = $proposal->signatures->first(fn($s) => $s->signed_role === 'lecturer' && strtolower($s->action) === 'submitted');
         $statusValue = $proposal->status->value;
-        $totalRAB = $proposal->budgetItems->sum('total_price');
+        $totalRAB = $proposal->activeBudgetItems->sum('total_price');
     @endphp
 </head>
 <body>

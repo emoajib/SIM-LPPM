@@ -127,7 +127,7 @@
                 <tbody>
                     @forelse ($this->proposals as $proposal)
                         @php
-                            $totalBudget = (float) $proposal->budgetItems->sum('total_price');
+                            $totalBudget = (float) $proposal->activeBudgetItems->sum('total_price');
                             $usedBudget = (float) $proposal->dailyNotes->sum('amount');
                             $budgetPct = $totalBudget > 0 ? round(($usedBudget / $totalBudget) * 100, 1) : 0;
                             $isApproved = $proposal->logbook_approved_at !== null;

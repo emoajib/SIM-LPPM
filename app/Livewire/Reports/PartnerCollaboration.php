@@ -95,10 +95,7 @@ class PartnerCollaboration extends Component
             ->with(['budgetItems'])
             ->get();
 
-        $activeBudget = $activeProposals->sum(fn (Proposal $p) => ($p->sbk_value && $p->sbk_value > 0)
-            ? (float) $p->sbk_value
-            : $p->budgetItems->sum('total_price')
-        );
+        $activeBudget = $activeProposals->sum(fn (Proposal $p) => $p->approved_budget_total);
 
         return [
             ['label' => 'Total Mitra Terdaftar', 'value' => $total, 'icon' => 'handshake', 'variant' => 'bg-blue-lt text-blue'],
@@ -161,9 +158,7 @@ class PartnerCollaboration extends Component
 
             $partner->total_budget = $proposals->sum(function ($p) {
                 /** @var Proposal $p */
-                return ($p->sbk_value && $p->sbk_value > 0)
-                    ? (float) $p->sbk_value
-                    : $p->budgetItems->sum('total_price');
+                return $p->approved_budget_total;
             });
         });
 

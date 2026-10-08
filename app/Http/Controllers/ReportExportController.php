@@ -755,9 +755,7 @@ class ReportExportController extends Controller
 
                 $partner->total_budget = $proposals->sum(function ($p) {
                     /** @var Proposal $p */
-                    return ($p->sbk_value && $p->sbk_value > 0)
-                        ? (float) $p->sbk_value
-                        : $p->budgetItems->sum('total_price');
+                    return $p->approved_budget_total;
                 });
             });
 

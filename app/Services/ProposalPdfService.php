@@ -1275,8 +1275,8 @@ class ProposalPdfService
             'submitter.identity.studyProgram',
             'submitter.identity.institution',
             'teamMembers.identity',
-            'budgetItems.budgetGroup',
-            'budgetItems.budgetComponent',
+            'activeBudgetItems.budgetGroup',
+            'activeBudgetItems.budgetComponent',
             'dailyNotes.budgetGroup',
             'dailyNotes.media',
             'researchScheme',
@@ -1313,10 +1313,16 @@ class ProposalPdfService
         $lppmHeadInfo = $this->resolveLppmHeadInfo($proposal);
         $pdfConfig = get_pdf_config('letter', 'logbook');
 
+        // Angka RAB beku saat LPJ disahkan; sebelum disahkan pakai versi aktif live.
+        $budgetSnapshot = ($proposal->logbook_approved_at && is_array($proposal->approved_budget_snapshot))
+            ? $proposal->approved_budget_snapshot
+            : null;
+
         $pdf = Pdf::loadView('pdf.financial-report', [
             'proposal' => $proposal,
             'isSigned' => $proposal->logbook_signed_at !== null,
             'isApproved' => $proposal->logbook_approved_at !== null,
+            'budgetSnapshot' => $budgetSnapshot,
             'logbookApprovalMode' => $logbookApprovalMode,
             'qrUrlSubmitter' => $qrUrlSubmitter,
             'qrUrlLppm' => $qrUrlLppm,
@@ -1336,7 +1342,8 @@ class ProposalPdfService
                 'defaultFont' => 'times-roman',
             ]);
 
-        $cachePath = $cacheDir.'/financial_'.$proposal->id.($isPreview ? '_preview' : '').'.pdf';
+        $snapshotVersion = isset($budgetSnapshot['version']) ? '_v'.((int) $budgetSnapshot['version']) : '';
+        $cachePath = $cacheDir.'/financial_'.$proposal->id.$snapshotVersion.($isPreview ? '_preview' : '').'.pdf';
         if ($isPreview && file_exists($cachePath)) {
             @unlink($cachePath);
         }

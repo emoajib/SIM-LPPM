@@ -68,7 +68,7 @@
                 <td style="border: 1px solid #000000; text-align: center; vertical-align: top;">
                     {{ $finalReport ? $finalReport->status->label() : 'Belum Laporan' }}</td>
                 <td style="border: 1px solid #000000; text-align: right; vertical-align: top;">
-                    {{ ($proposal->sbk_value && $proposal->sbk_value > 0) ? $proposal->sbk_value : ($proposal->budgetItems->sum('total_price') ?? 0) }}
+                    {{ $proposal->approved_budget_total }}
                 </td>
             </tr>
         @endforeach

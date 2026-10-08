@@ -403,7 +403,7 @@
                                                     Rp {{ number_format((int)($item->daily_notes_sum_amount ?? 0), 0, ',', '.') }}
                                                 </div>
                                                 <div class="text-muted small" style="font-size: 0.75rem;">
-                                                    Pagu: Rp {{ number_format((int)($item->budget_items_sum_total_price ?? 0), 0, ',', '.') }} ({{ $item->daily_notes_count }} nota)
+                                                    Pagu: Rp {{ number_format((int)($item->active_budget_items_sum_total_price ?? 0), 0, ',', '.') }} ({{ $item->daily_notes_count }} nota)
                                                 </div>
                                                 <div class="mt-1">
                                                     @php

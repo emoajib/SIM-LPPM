@@ -96,10 +96,8 @@ class SintaResearchExport implements FromCollection, ShouldAutoSize, WithHeading
         $ketua = $proposal->submitter;
         $identity = $ketua->identity;
 
-        // Budget: sbk_value or sum of budget_items
-        $dana = ($proposal->sbk_value ?? 0) > 0
-            ? $proposal->sbk_value
-            : $proposal->budgetItems->sum('total_price');
+        // Budget: sbk_value or sum of active budget_items
+        $dana = $proposal->approved_budget_total;
 
         // TKT level from detailable
         $tkt = $proposal->detailable->tkt_type ?? '-';

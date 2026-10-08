@@ -15,7 +15,7 @@
         $facultyName = $proposal->submitter->identity?->faculty?->name ?? '.......................';
         $prodiName = $proposal->submitter->identity?->studyProgram?->name ?? '.......................';
         $periodLabel = $report->reporting_period === 'final' ? 'AKHIR' : 'KEMAJUAN';
-        $totalRAB = $proposal->budgetItems->sum('total_price');
+        $totalRAB = $proposal->activeBudgetItems->sum('total_price');
     @endphp
 </head>
 <body>

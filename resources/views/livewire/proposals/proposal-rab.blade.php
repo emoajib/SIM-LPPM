@@ -39,7 +39,7 @@
                                 <div class="px-3 py-2 card-body">
                                     <div class="text-muted small">Total Keseluruhan</div>
                                     <div class="fw-bold">Rp
-                                        {{ number_format($proposal->budgetItems->sum('total_price'), 0, ',', '.') }}
+                                        {{ number_format($proposal->activeBudgetItems->sum('total_price'), 0, ',', '.') }}
                                     </div>
                                 </div>
                             </div>
@@ -91,7 +91,7 @@
                         <tr>
                             <th colspan="{{ $duration > 1 ? 7 : 6 }}" class="text-end">Total Anggaran:</th>
                             <th class="text-end">Rp
-                                {{ number_format($proposal->budgetItems->sum('total_price'), 0, ',', '.') }}
+                                {{ number_format($proposal->activeBudgetItems->sum('total_price'), 0, ',', '.') }}
                             </th>
                         </tr>
                     </tfoot>

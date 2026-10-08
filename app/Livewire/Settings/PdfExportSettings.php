@@ -298,7 +298,8 @@ class PdfExportSettings extends Component
             'proposals' => ['pdf_cache/proposals'],
             'reports' => ['pdf_cache/reports'],
             'reviewer' => ['pdf_cache/reviewer_reports'],
-            'all' => ['pdf_cache/proposals', 'pdf_cache/reports', 'pdf_cache/reviewer_reports'],
+            'financial' => ['pdf_cache/financial'],
+            'all' => ['pdf_cache/proposals', 'pdf_cache/reports', 'pdf_cache/reviewer_reports', 'pdf_cache/financial'],
         ];
 
         $dirs = $dirMap[$type] ?? $dirMap['all'];
@@ -320,6 +321,7 @@ class PdfExportSettings extends Component
             'proposals' => 'Proposal',
             'reports' => 'Laporan',
             'reviewer' => 'Reviewer',
+            'financial' => 'Keuangan (LPJ)',
             default => 'Semua',
         };
 
@@ -337,6 +339,7 @@ class PdfExportSettings extends Component
             'proposals' => storage_path('app/pdf_cache/proposals'),
             'reports' => storage_path('app/pdf_cache/reports'),
             'reviewer' => storage_path('app/pdf_cache/reviewer_reports'),
+            'financial' => storage_path('app/pdf_cache/financial'),
         ];
 
         $stats = [];

@@ -264,3 +264,107 @@ test('persetujuan ditolak bila realisasi melebihi alokasi baru', function () {
     expect($amendment->fresh()->status)->toBe(BudgetAmendmentStatus::PENDING)
         ->and($proposal->fresh()->approved_budget_total)->toEqual(1000000.0);
 });
+
+test('snapshot dibekukan saat lpj disahkan dan tak berubah oleh amandemen baru', function () {
+    $dosen = User::factory()->create();
+    $kepala = User::factory()->create();
+    $kepala->assignRole('kepala lppm');
+    $research = Research::factory()->create();
+    $proposal = Proposal::factory()->create([
+        'submitter_id' => $dosen->id,
+        'detailable_type' => Research::class,
+        'detailable_id' => $research->id,
+        'status' => ProposalStatus::COMPLETED,
+        'sbk_value' => 0,
+    ]);
+    $group = BudgetGroup::factory()->create();
+    BudgetItem::factory()->create([
+        'proposal_id' => $proposal->id,
+        'budget_group_id' => $group->id,
+        'total_price' => 1000000,
+        'is_active' => true,
+        'version' => 1,
+    ]);
+
+    $svc = app(BudgetAmendmentService::class);
+    $snapshot = $svc->snapshotApprovedBudget($proposal->fresh());
+
+    expect($snapshot['version'])->toBe(1)
+        ->and($snapshot['total'])->toEqual(1000000.0)
+        ->and($proposal->fresh()->approved_budget_snapshot['total'])->toEqual(1000000.0);
+
+    $amendment = BudgetAmendment::factory()->create([
+        'proposal_id' => $proposal->id,
+        'version' => 2,
+        'status' => BudgetAmendmentStatus::PENDING,
+    ]);
+    BudgetAmendmentItem::factory()->create([
+        'budget_amendment_id' => $amendment->id,
+        'budget_group_id' => $group->id,
+        'volume' => 2,
+        'unit_price' => 750000,
+        'total_price' => 1500000,
+    ]);
+    $svc->approve($amendment, $kepala);
+
+    expect($proposal->fresh()->approved_budget_total)->toEqual(1500000.0)
+        ->and($proposal->fresh()->approved_budget_snapshot['version'])->toBe(1)
+        ->and($proposal->fresh()->approved_budget_snapshot['total'])->toEqual(1000000.0);
+});
+
+test('toleransi membolehkan total sedikit di atas pagu', function () {
+    $dosen = User::factory()->create();
+    BudgetCap::create([
+        'year' => (int) date('Y'),
+        'semester' => 'ganjil',
+        'research_budget_cap' => 1000000,
+        'community_service_budget_cap' => 1000000,
+        'enforce_percentage' => true,
+    ]);
+
+    $makeProposal = function () use ($dosen) {
+        $research = Research::factory()->create();
+
+        return Proposal::factory()->create([
+            'submitter_id' => $dosen->id,
+            'detailable_type' => Research::class,
+            'detailable_id' => $research->id,
+            'status' => ProposalStatus::COMPLETED,
+            'sbk_value' => 0,
+            'start_year' => (int) date('Y'),
+            'semester' => 'ganjil',
+        ]);
+    };
+
+    $svc = app(BudgetAmendmentService::class);
+    $group = BudgetGroup::factory()->create(['percentage' => null]);
+
+    $proposalOk = $makeProposal();
+    BudgetItem::factory()->create([
+        'proposal_id' => $proposalOk->id,
+        'budget_group_id' => $group->id,
+        'total_price' => 900000,
+        'is_active' => true,
+        'version' => 1,
+    ]);
+
+    $amendment = $svc->request($proposalOk, $dosen, [
+        ['budget_group_id' => $group->id, 'item_description' => 'Naik sedikit', 'volume' => 1, 'unit_price' => 1050000],
+    ], 'Penyesuaian harga di lapangan yang wajar');
+
+    expect($amendment->status)->toBe(BudgetAmendmentStatus::PENDING);
+
+    $proposalOver = $makeProposal();
+    BudgetItem::factory()->create([
+        'proposal_id' => $proposalOver->id,
+        'budget_group_id' => $group->id,
+        'total_price' => 900000,
+        'is_active' => true,
+        'version' => 1,
+    ]);
+
+    expect(fn () => $svc->request($proposalOver, $dosen, [
+        ['budget_group_id' => $group->id, 'item_description' => 'Naik kebangetan', 'volume' => 1, 'unit_price' => 1200000],
+    ], 'Alasan yang cukup panjang untuk lolos validasi'))
+        ->toThrow(ValidationException::class);
+});

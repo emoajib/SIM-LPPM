@@ -224,7 +224,7 @@ trait HasProcessDetailsModal
             'progressReports.mandatoryOutputs.media',
             'progressReports.additionalOutputs.media',
         ])
-            ->withSum('budgetItems', 'total_price')
+            ->withSum('activeBudgetItems', 'total_price')
             ->withSum('dailyNotes', 'amount')
             ->withCount('dailyNotes')
             ->withCount('outputs')

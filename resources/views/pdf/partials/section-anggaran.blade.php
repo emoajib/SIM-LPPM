@@ -1,7 +1,7 @@
 <div class="section-title">{{ $sectionNum }}. ANGGARAN</div>
 <p class="mb-0" style="font-size: 8pt;">Rencana Anggaran Biaya {{ $proposal->detailable_type === 'App\Models\Research' ? 'Penelitian' : 'Pengabdian' }} mengacu pada PMK dan buku Panduan Penelitian dan Pengabdian kepada Masyarakat yang berlaku.</p>
 @php
-    $totalRAB = $proposal->budgetItems->sum('total_price');
+    $totalRAB = $proposal->activeBudgetItems->sum('total_price');
     $budgetGroups = $proposal->budgetItems->groupBy(function ($item) {
         return $item->budgetGroup->name ?? ($item->group ?? 'Lainnya');
     });

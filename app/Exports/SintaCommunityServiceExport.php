@@ -96,9 +96,7 @@ class SintaCommunityServiceExport implements FromCollection, ShouldAutoSize, Wit
         $ketua = $proposal->submitter;
         $identity = $ketua->identity;
 
-        $dana = ($proposal->sbk_value ?? 0) > 0
-            ? $proposal->sbk_value
-            : $proposal->budgetItems->sum('total_price');
+        $dana = $proposal->approved_budget_total;
 
         // Exclude ketua from members list
         $members = $proposal->teamMembers

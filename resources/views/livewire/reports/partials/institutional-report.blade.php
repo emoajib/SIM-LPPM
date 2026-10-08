@@ -397,9 +397,7 @@
                                     <td class="text-end">
                                         <div class="fw-bold">
                                             @php
-                                                $dana = ($proposal->sbk_value && $proposal->sbk_value > 0)
-                                                    ? $proposal->sbk_value
-                                                    : ($proposal->budgetItems->sum('total_price') ?? 0);
+                                                $dana = $proposal->approved_budget_total;
                                             @endphp
                                             {{ number_format($dana, 0, ',', '.') }}
                                         </div>

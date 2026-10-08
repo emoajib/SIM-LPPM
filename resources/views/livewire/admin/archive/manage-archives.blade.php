@@ -94,9 +94,7 @@
                                     </td>
                                     <td class="text-center fw-bold text-success">
                                         @php
-                                            $dana = $archive->sbk_value > 0
-                                                ? $archive->sbk_value
-                                                : $archive->budgetItems->sum('total_price');
+                                            $dana = $archive->approved_budget_total;
                                         @endphp
                                         {{ number_format($dana, 0, ',', '.') }}
                                     </td>

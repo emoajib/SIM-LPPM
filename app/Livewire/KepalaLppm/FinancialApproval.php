@@ -7,6 +7,7 @@ namespace App\Livewire\KepalaLppm;
 use App\Enums\ProposalStatus;
 use App\Livewire\Concerns\HasToast;
 use App\Models\Proposal;
+use App\Services\BudgetAmendmentService;
 use App\Services\NotificationService;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -95,6 +96,7 @@ class FinancialApproval extends Component
             'logbook_rejected_by' => null,
             'logbook_rejected_at' => null,
         ]);
+        app(BudgetAmendmentService::class)->snapshotApprovedBudget($proposal->fresh());
         $this->clearFinancialPdfCache((string) $proposal->id);
 
         unset($this->proposals);

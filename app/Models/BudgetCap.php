@@ -28,6 +28,7 @@ class BudgetCap extends Model
         'community_service_budget_cap',
         'scheme_caps',
         'enforce_percentage',
+        'amendment_tolerance_percent',
     ];
 
     /**
@@ -44,6 +45,7 @@ class BudgetCap extends Model
             'community_service_budget_cap' => 'decimal:2',
             'scheme_caps' => 'array',
             'enforce_percentage' => 'boolean',
+            'amendment_tolerance_percent' => 'decimal:2',
         ];
     }
 

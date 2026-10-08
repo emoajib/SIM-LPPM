@@ -9,6 +9,7 @@ use App\Models\DailyNote;
 use App\Models\ProgressReport;
 use App\Models\Proposal;
 use App\Models\StudyProgram;
+use App\Services\BudgetAmendmentService;
 use App\Services\ImageCompressionService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
@@ -392,6 +393,7 @@ class Show extends Component
         }
 
         $this->proposal->update(['logbook_approved_at' => now()]);
+        app(BudgetAmendmentService::class)->snapshotApprovedBudget($this->proposal->fresh());
         $this->clearFinancialPdfCache();
 
         $message = 'Catatan harian dan laporan keuangan (LPJ) berhasil divalidasi oleh LPPM.';
@@ -418,6 +420,7 @@ class Show extends Component
         }
 
         $this->proposal->update(['logbook_approved_at' => now()]);
+        app(BudgetAmendmentService::class)->snapshotApprovedBudget($this->proposal->fresh());
         $this->clearFinancialPdfCache();
 
         $message = 'Berkas scan pengesahan basah LPJ berhasil diverifikasi dan disahkan oleh LPPM.';

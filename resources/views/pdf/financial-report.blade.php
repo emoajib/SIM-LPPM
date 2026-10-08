@@ -17,7 +17,11 @@
         );
     }
     $academicYear = $proposal->start_year . '/' . ($proposal->start_year + 1);
-    $totalProposedBudget = (float) $proposal->budgetItems->sum('total_price');
+    // Angka RAB beku saat LPJ disahkan (snapshot); sebelum disahkan pakai versi aktif live.
+    $budgetSnapshot = isset($budgetSnapshot) && is_array($budgetSnapshot) ? $budgetSnapshot : null;
+    $totalProposedBudget = $budgetSnapshot !== null
+        ? (float) ($budgetSnapshot['total'] ?? 0)
+        : (float) $proposal->activeBudgetItems->sum('total_price');
     $totalUsedBudget = (float) $proposal->dailyNotes->sum('amount');
     $pdfConfig ??= get_pdf_config('letter', 'logbook');
     $lineHeight = $pdfConfig['line_height'] ?? 1.5;
@@ -139,6 +143,9 @@
     </table>
 
     <div class="section-title">A. REKAPITULASI PENGGUNAAN DANA</div>
+    @if($budgetSnapshot !== null && isset($budgetSnapshot['version']))
+    <p style="font-size: 8pt;">Angka RAB sesuai amandemen ke-{{ $budgetSnapshot['version'] }} yang disahkan pada {{ isset($budgetSnapshot['taken_at']) ? \Carbon\Carbon::parse($budgetSnapshot['taken_at'])->format('d/m/Y H:i') : '-' }}.</p>
+    @endif
     <table>
         <thead>
             <tr>
@@ -158,7 +165,9 @@
             @endphp
             @foreach($budgetGroups as $index => $group)
                 @php
-                    $groupProposed = (float) $proposal->budgetItems->where('budget_group_id', $group->id)->sum('total_price');
+                    $groupProposed = $budgetSnapshot !== null
+                        ? (float) ($budgetSnapshot['groups'][$group->id] ?? 0)
+                        : (float) $proposal->activeBudgetItems->where('budget_group_id', $group->id)->sum('total_price');
                     $groupRealized = (float) $proposal->dailyNotes->where('budget_group_id', $group->id)->sum('amount');
                     $totalProposed += $groupProposed;
                     $totalRealized += $groupRealized;
@@ -174,7 +183,9 @@
                 @endif
             @endforeach
             @php
-                $unassignedProposed = (float) $proposal->budgetItems->whereNull('budget_group_id')->sum('total_price');
+                $unassignedProposed = $budgetSnapshot !== null
+                    ? (float) ($budgetSnapshot['unassigned'] ?? 0)
+                    : (float) $proposal->activeBudgetItems->whereNull('budget_group_id')->sum('total_price');
                 $unassignedRealized = (float) $proposal->dailyNotes->whereNull('budget_group_id')->sum('amount');
                 $totalProposed += $unassignedProposed;
                 $totalRealized += $unassignedRealized;

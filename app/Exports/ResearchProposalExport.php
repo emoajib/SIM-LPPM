@@ -135,7 +135,7 @@ class ResearchProposalExport implements FromQuery, WithHeadings, WithMapping
             $proposal->focusArea->name ?? '',
             $proposal->researchScheme->name ?? '',
             $proposal->status->label(),
-            $proposal->budgetItems->sum('total_price'),
+            $proposal->activeBudgetItems->sum('total_price'),
             $submitterIdentity->sinta_id ?? '',
             $submitterIdentity->institution_name ?? '',
             $research->final_tkt_target ?? '',

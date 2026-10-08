@@ -664,7 +664,7 @@ class AdminDashboard extends Component
             ->whereNotIn('status', [ProposalStatus::DRAFT->value, ProposalStatus::REJECTED->value])
             ->tap(fn ($q) => $this->applyCommonFilters($q))
             ->with(['researchScheme', 'communityServiceScheme'])
-            ->withSum('budgetItems', 'total_price')
+            ->withSum('activeBudgetItems', 'total_price')
             ->get();
 
         $researchBudget = 0;
@@ -673,7 +673,7 @@ class AdminDashboard extends Component
         $pkmBudgetByScheme = [];
 
         foreach ($proposalsWithBudget as $p) {
-            $budget = (int) $p->getAttribute('budget_items_sum_total_price');
+            $budget = (int) $p->getAttribute('active_budget_items_sum_total_price');
             if ($p->detailable_type === 'App\Models\Research') {
                 $researchBudget += $budget;
                 if ($budget > 0) {

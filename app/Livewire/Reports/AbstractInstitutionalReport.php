@@ -284,7 +284,7 @@ abstract class AbstractInstitutionalReport extends Component
         $totalFunded = (clone $query)->count();
 
         $totalBudget = (clone $query)->get()
-            ->sum(fn ($p) => ($p->sbk_value && $p->sbk_value > 0) ? (float) $p->sbk_value : $p->budgetItems->sum('total_price'));
+            ->sum(fn ($p) => $p->approved_budget_total);
 
         $reportsApprovedCount = (clone $query)
             ->whereHas('progressReports', fn ($rq) => $rq->where('reporting_period', 'final')->where('status', ReportStatus::APPROVED->value))
@@ -395,8 +395,7 @@ abstract class AbstractInstitutionalReport extends Component
                 return [
                     'name' => $first->{$this->schemeRelation()}->name ?? __('Tanpa Skema'),
                     'count' => $proposals->count(),
-                    'budget' => $proposals->sum(fn ($p) => ($p->sbk_value && $p->sbk_value > 0) ? (float) $p->sbk_value :
-                        $p->budgetItems->sum('total_price')),
+                    'budget' => $proposals->sum(fn ($p) => $p->approved_budget_total),
                 ];
             })
             ->sortByDesc('count');
