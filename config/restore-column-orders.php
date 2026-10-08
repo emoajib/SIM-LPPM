@@ -68,7 +68,7 @@ return [
     ],
     'budget_caps' => [
         'id', 'year', 'semester', 'research_budget_cap', 'community_service_budget_cap',
-        'scheme_caps', 'enforce_percentage', 'created_at', 'updated_at',
+        'scheme_caps', 'enforce_percentage', 'amendment_tolerance_percent', 'created_at', 'updated_at',
     ],
     'budget_groups' => [
         'id', 'code', 'name', 'description', 'percentage', 'proposal_type',
