@@ -263,11 +263,17 @@ class ProposalForm extends Form
                 return $member->pivot->getAttribute('role') !== 'ketua';
             })
             ->map(function ($member) {
+                $pivotRole = $member->pivot->getAttribute('role');
+                // Normalize role: only 'ketua'/'anggota' are valid for proposal_user (CHECK constraint).
+                // Legacy data may contain 'dosen', 'tendik', etc. — treat as 'anggota'.
+                $normalizedRole = in_array($pivotRole, ['ketua', 'anggota']) ? $pivotRole : 'anggota';
+
                 return [
                     'name' => $member->name,
                     'nidn' => $member->identity?->identity_id,
                     'tugas' => $member->pivot->getAttribute('tasks'),
-                    'role' => $member->pivot->getAttribute('role'),
+                    'role' => $normalizedRole,
+                    'identity_type' => $member->identity->type ?? 'dosen',
                     'status' => $member->pivot->getAttribute('status') ?? 'pending',
                 ];
             })
@@ -918,7 +924,10 @@ class ProposalForm extends Form
                 }
 
                 // Check if member is a student
-                if (isset($member['role']) && $member['role'] === 'mahasiswa') {
+                $isStudent = ($member['role'] ?? '') === 'mahasiswa'
+                    || ($member['identity_type'] ?? '') === 'mahasiswa';
+
+                if ($isStudent) {
                     $studentMembers[] = [
                         'name' => $member['name'],
                         'identifier' => $member['nidn'], // Using nidn field as identifier (NIM)
@@ -948,12 +957,12 @@ class ProposalForm extends Form
 
                         $user->identity()->create([
                             'identity_id' => $member['nidn'],
-                            'type' => $member['role'] ?? 'dosen',
+                            'type' => $member['identity_type'] ?? 'dosen',
                             'institution_id' => $institutionId,
                         ]);
                     }
 
-                    $roleName = $member['role'] ?? 'dosen';
+                    $roleName = $member['identity_type'] ?? 'dosen';
                     // Only assign if the role actually exists in the system
                     $roleExists = Role::where('name', $roleName)->exists();
 
@@ -967,6 +976,11 @@ class ProposalForm extends Form
                 if ($identity) {
                     $userId = $identity->user_id;
 
+                    // Never overwrite the ketua with an anggota role
+                    if ($userId === $submitterId) {
+                        continue;
+                    }
+
                     // Preserve status if already exists, otherwise default to pending
                     $status = ! empty($member['is_manual']) ? ProposalUserStatus::ACCEPTED->value : 'pending';
                     if (isset($existingMembers[$userId])) {
@@ -974,9 +988,14 @@ class ProposalForm extends Form
                         $status = $existingMembers[$userId]->pivot->status ?? 'pending';
                     }
 
+                    // Normalize role: proposal_user CHECK constraint only allows 'ketua'/'anggota'.
+                    // member['role'] may contain 'dosen', 'tendik', etc. from identity_type — always use 'anggota'.
+                    $memberRole = $member['role'] ?? 'anggota';
+                    $validRole = in_array(strtolower($memberRole), ['ketua', 'anggota']) ? strtolower($memberRole) : 'anggota';
+
                     $syncData[$userId] = [
                         'tasks' => $member['tugas'] ?? '',
-                        'role' => $member['role'] ?? 'anggota',
+                        'role' => $validRole,
                         'status' => $status,
                     ];
 

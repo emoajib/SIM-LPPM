@@ -71,7 +71,7 @@ class EligibilityService
         $memberQuery = DB::table('proposal_user')
             ->join('proposals', 'proposal_user.proposal_id', '=', 'proposals.id')
             ->where('proposal_user.user_id', $user->id)
-            ->where('proposal_user.role', '!=', 'Ketua')
+            ->where('proposal_user.role', '=', 'anggota')
             ->whereIn('proposals.status', $activeStatuses);
 
         if ($type === 'research') {

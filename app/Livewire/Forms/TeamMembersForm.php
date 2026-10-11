@@ -154,7 +154,10 @@ class TeamMembersForm extends Component
                 'nidn' => $this->member_nidn,
                 'tugas' => $this->member_tugas,
                 'status' => ProposalUserStatus::ACCEPTED->value, // Manual entry is implicitly accepted
-                'role' => $this->member_type,
+                // Bug fix: role di proposal_user hanya boleh 'ketua' atau 'anggota' (CHECK constraint).
+                // identity_type ('dosen'/'mahasiswa') disimpan terpisah untuk identitas dan klasifikasi student_members.
+                'role' => 'anggota',
+                'identity_type' => $this->member_type,
                 'email' => $this->member_email,
                 'institution' => $this->member_institution,
                 'study_program' => $this->member_study_program,
@@ -167,7 +170,10 @@ class TeamMembersForm extends Component
                 'tugas' => $this->member_tugas,
                 'status' => 'pending',
                 'sinta_id' => $this->foundMember['sinta_id'] ?? null,
-                'role' => $this->foundMember['identity_type'] ?? 'dosen',
+                // Bug fix: role di proposal_user hanya boleh 'ketua' atau 'anggota' (CHECK constraint).
+                // identity_type ('dosen', 'tendik', dst.) disimpan terpisah untuk tampilan.
+                'role' => 'anggota',
+                'identity_type' => $this->foundMember['identity_type'] ?? 'dosen',
                 'study_program' => $this->foundMember['study_program'] ?? '',
                 'institution' => $this->foundMember['institution'] ?? '',
             ];

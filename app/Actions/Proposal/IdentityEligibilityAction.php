@@ -199,7 +199,7 @@ class IdentityEligibilityAction
         $query = Proposal::with(['researchScheme', 'communityServiceScheme'])
             ->join('proposal_user', 'proposals.id', '=', 'proposal_user.proposal_id')
             ->where('proposal_user.user_id', $user->id)
-            ->where('proposal_user.role', '!=', 'Ketua')
+            ->where('proposal_user.role', '=', 'anggota')
             ->whereIn('proposals.status', $activeStatuses)
             ->select('proposals.*');
 

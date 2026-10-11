@@ -65,6 +65,7 @@ class Show extends Component
         $participated = Proposal::select('proposals.*', 'proposal_user.role as user_role')
             ->join('proposal_user', 'proposals.id', '=', 'proposal_user.proposal_id')
             ->where('proposal_user.user_id', $this->userId)
+            ->where('proposal_user.role', 'anggota')
             ->where('detailable_type', 'App\Models\Research');
 
         return $submitted->unionAll($participated)
@@ -83,10 +84,11 @@ class Show extends Component
         $participated = Proposal::select('proposals.*', 'proposal_user.role as user_role')
             ->join('proposal_user', 'proposals.id', '=', 'proposal_user.proposal_id')
             ->where('proposal_user.user_id', $this->userId)
+            ->where('proposal_user.role', 'anggota')
             ->where('detailable_type', 'App\Models\CommunityService');
 
         return $submitted->unionAll($participated)
-            ->with(['researchScheme', 'statusLogs'])
+            ->with(['communityServiceScheme', 'statusLogs'])
             ->orderBy('created_at', 'desc')
             ->paginate(5, ['*'], 'pkmPage');
     }
