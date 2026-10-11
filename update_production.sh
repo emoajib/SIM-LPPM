@@ -34,8 +34,8 @@ tar czf "$BACKUP_DIR/backup-$(date +%Y%m%d-%H%M%S).tar.gz" \
   --exclude="./storage/debugbar/*" . || { echo "❌ Backup gagal! Periksa disk space."; exit 1; }
 chmod 600 "$BACKUP_DIR"/backup-*.tar.gz 2>/dev/null || true
 
-# Retensi backup otomatis — simpan 5 terbaru, hapus yang lama agar disk tidak penuh
-KEEP_BACKUPS=5
+# Retensi backup otomatis — simpan 3 terbaru, hapus yang lama agar disk tidak penuh
+KEEP_BACKUPS=3
 BACKUP_COUNT=$(ls -1 "$BACKUP_DIR"/backup-*.tar.gz 2>/dev/null | wc -l || true)
 if [ "$BACKUP_COUNT" -gt "$KEEP_BACKUPS" ]; then
   echo "🧹 Retensi backup: menyimpan $KEEP_BACKUPS terbaru, menghapus $((BACKUP_COUNT - KEEP_BACKUPS)) lama..."
