@@ -117,7 +117,7 @@ class ProposalTeamMemberRoleCheckTest extends TestCase
         $scheme = ResearchScheme::create([
             'name' => 'Penelitian Dosen Pemula',
             'code' => 'PDP',
-            'strata' => 'dasar',
+            'strata' => 'Reguler',
             'description' => 'Skema PDP',
         ]);
         $cluster = ScienceCluster::create(['name' => 'Ilmu Komputer', 'level' => 1]);
@@ -221,7 +221,7 @@ class ProposalTeamMemberRoleCheckTest extends TestCase
         $scheme = ResearchScheme::create([
             'name' => 'Penelitian Fundamental',
             'code' => 'PF',
-            'strata' => 'dasar',
+            'strata' => 'Reguler',
         ]);
         $research = Research::create([]);
         $proposal = Proposal::create([
