@@ -2,6 +2,7 @@
 
 use App\Exports\UsersTemplateExport;
 use App\Http\Controllers\AdminLppm\ManualBookUploadController;
+use App\Http\Controllers\Auth\MathCaptchaController;
 use App\Http\Controllers\DailyNoteExportController;
 use App\Http\Controllers\DocumentSignatureVerificationController;
 use App\Http\Controllers\HealthCheckController;
@@ -93,6 +94,19 @@ Route::get('install', InstallerWizard::class)
 // Route removed: /dev/migrate was a security risk - use CLI instead
 
 Route::get('/health-check', HealthCheckController::class)->name('health.check');
+
+// Math CAPTCHA assets (fallback when Turnstile keys are not configured).
+// Deliberately public: the login page needs them before authentication, and
+// the challenge id is a random 32-character token bound to the session.
+Route::get('captcha/math/{id}/image', [MathCaptchaController::class, 'image'])
+    ->where('id', '[A-Za-z0-9]{32}')
+    ->middleware('throttle:'.(int) config('captcha.throttle.image', 120).',1')
+    ->name('captcha.image');
+
+Route::get('captcha/math/{id}/audio', [MathCaptchaController::class, 'audio'])
+    ->where('id', '[A-Za-z0-9]{32}')
+    ->middleware('throttle:'.(int) config('captcha.throttle.audio', 5).',1')
+    ->name('captcha.audio');
 
 Route::redirect('/', 'dashboard', 302);
 

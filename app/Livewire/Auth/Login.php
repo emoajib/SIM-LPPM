@@ -5,7 +5,10 @@ namespace App\Livewire\Auth;
 use App\Models\Identity;
 use App\Models\Setting;
 use App\Models\User;
+use App\Rules\MathCaptchaAnswer;
 use App\Rules\Turnstile;
+use App\Services\Security\CaptchaAudioService;
+use App\Services\Security\MathCaptchaService;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -15,6 +18,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Features;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Spatie\Permission\Exceptions\RoleDoesNotExist;
@@ -28,9 +32,12 @@ class Login extends Component
     #[Validate('required|string')]
     public string $password = '';
 
-    public int $n1 = 0;
+    #[Locked]
+    public string $captchaId = '';
 
-    public int $n2 = 0;
+    public int $captchaVersion = 0;
+
+    public bool $audioEnabled = false;
 
     public string $math_answer = '';
 
@@ -44,16 +51,36 @@ class Login extends Component
 
     public function mount(): void
     {
-        $this->generateMathQuestion();
+        $this->audioEnabled = ! config('turnstile.site_key')
+            && app(CaptchaAudioService::class)->available();
+
+        if (! config('turnstile.site_key')) {
+            $this->captchaId = app(MathCaptchaService::class)->issue(session()->getId())['id'];
+        }
+
         $this->loginTitle = Cache::remember('settings.login_title', 3600, function () {
             return Setting::where('key', 'login_title')->value('value') ?? 'Login to your account';
         });
     }
 
-    public function generateMathQuestion(): void
+    public function refreshCaptcha(): void
     {
-        $this->n1 = rand(1, 9);
-        $this->n2 = rand(1, 9);
+        $service = app(MathCaptchaService::class);
+
+        if ($this->captchaId !== '') {
+            $service->forget($this->captchaId);
+        }
+
+        $this->resetValidation('math_answer');
+        $this->math_answer = '';
+        $this->captcha = '';
+        $this->captchaVersion++;
+
+        if (! config('turnstile.site_key')) {
+            $this->captchaId = $service->issue(session()->getId())['id'];
+        }
+
+        $this->dispatch('resetTurnstile');
     }
 
     /**
@@ -70,30 +97,22 @@ class Login extends Component
             if (config('turnstile.site_key')) {
                 $rules['captcha'] = ['required', new Turnstile];
             } else {
-                $rules['math_answer'] = [
-                    'required',
-                    function ($attribute, $value, $fail) {
-                        if ((int) $value !== ($this->n1 + $this->n2)) {
-                            $fail('Jawaban keamanan salah.');
-                        }
-                    },
-                ];
+                $rules['math_answer'] = ['required', new MathCaptchaAnswer($this->captchaId)];
             }
         }
 
         try {
             $this->validate($rules);
         } catch (ValidationException $e) {
-            // Reset CAPTCHA and math answer on validation failure to allow retry
-            $this->captcha = '';
-            $this->math_answer = '';
-            $this->generateMathQuestion();
-            $this->dispatch('resetTurnstile');
+            // Rotate the challenge so the failed expression cannot be retried.
+            $this->refreshCaptcha();
             throw $e;
         }
 
         // Manual Honey Pot Check
         if (! empty($this->username_honeypot)) {
+            $this->refreshCaptcha();
+
             throw ValidationException::withMessages([
                 'general' => 'Terjadi kesalahan validasi.',
             ]);
@@ -113,6 +132,7 @@ class Login extends Component
         }
 
         if (! Auth::attempt($credentials, $this->remember)) {
+            $this->refreshCaptcha();
             RateLimiter::hit($this->throttleKey());
             $attemptsLeft = max(0, 5 - RateLimiter::attempts($this->throttleKey()));
             throw ValidationException::withMessages([
@@ -184,6 +204,8 @@ class Login extends Component
         event(new Lockout(request()));
 
         $seconds = RateLimiter::availableIn($this->throttleKey());
+
+        $this->refreshCaptcha();
 
         throw ValidationException::withMessages([
             'email' => __('auth.throttle', [

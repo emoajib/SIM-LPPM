@@ -26,9 +26,10 @@
                             <span>Log Keamanan</span>
                         </button>
                     </div>
-                    @if(active_has_role('admin lppm'))
+                    @if(active_has_role('admin lppm') || active_has_role('superadmin'))
                         <h4 class="mt-4 subheader">Pengaturan Sistem</h4>
                         <div class="list-group list-group-transparent">
+                            @if(active_has_role('admin lppm'))
                             <button wire:click="setActiveTab('appearance')"
                                 class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'appearance' ? 'active' : '' }}">
                                 <x-lucide-palette class="icon" />
@@ -70,6 +71,12 @@
                                   <x-lucide-cloud-upload class="icon" />
                                   <span>Pulihkan Data</span>
                               </button>
+                            @endif
+                             <button wire:click="setActiveTab('captcha')"
+                                 class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'captcha' ? 'active' : '' }}">
+                                 <x-lucide-shield-check class="icon" />
+                                 <span>Keamanan CAPTCHA</span>
+                             </button>
                          </div>
                      @endif
                 </div>
@@ -122,6 +129,12 @@
                              <p class="mb-4 card-subtitle">Aktifkan atau nonaktifkan fitur sistem yang belum diwajibkan secara institusional.</p>
                              <livewire:settings.feature-flags />
                          </div>
+                      @elseif ($activeTab === 'captcha')
+                          <div>
+                              <h2 class="mb-4">Keamanan CAPTCHA</h2>
+                              <p class="mb-4 card-subtitle">Kelola soal audio dan jenis suara untuk verifikasi keamanan halaman login.</p>
+                              <livewire:settings.captcha-settings />
+                          </div>
                       @elseif ($activeTab === 'sync')
                           <div>
                               <h2 class="mb-4">Sinkronisasi Data</h2>

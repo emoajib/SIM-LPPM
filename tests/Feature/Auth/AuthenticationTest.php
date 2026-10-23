@@ -15,14 +15,10 @@ test('users can authenticate using the login screen', function () {
     $user = User::factory()->withoutTwoFactor()->create();
 
     $component = Livewire::test(Login::class);
-    $n1 = $component->get('n1');
-    $n2 = $component->get('n2');
-    $mathAnswer = (string) ($n1 + $n2);
 
     $response = $component
         ->set('email', $user->email)
         ->set('password', 'password')
-        ->set('math_answer', $mathAnswer)
         ->call('login');
 
     $response
@@ -36,14 +32,10 @@ test('users can not authenticate with invalid password', function () {
     $user = User::factory()->create();
 
     $component = Livewire::test(Login::class);
-    $n1 = $component->get('n1');
-    $n2 = $component->get('n2');
-    $mathAnswer = (string) ($n1 + $n2);
 
     $response = $component
         ->set('email', $user->email)
         ->set('password', 'wrong-password')
-        ->set('math_answer', $mathAnswer)
         ->call('login');
 
     $response->assertHasErrors('email');

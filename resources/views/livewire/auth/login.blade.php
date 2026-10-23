@@ -33,7 +33,7 @@
                                     </span>
                                     <input type="text" wire:model="email"
                                         class="form-control border-0 ps-0 @error('email') is-invalid @enderror"
-                                        placeholder="Email / NIDN / NIK / NIM" autocomplete="username" autofocus />
+                                        placeholder="NUPTK / Email / NIDN / NIM" autocomplete="username" autofocus />
                                 </div>
                                 @error('email')
                                     <div class="invalid-feedback d-block mt-2 small">
@@ -106,9 +106,28 @@
                                 </script>
                             @else
                                 <div class="mb-4 bg-light p-3 rounded-3 border-dashed border-2">
-                                    <label class="form-label fw-bold text-dark mb-2">Verifikasi Keamanan</label>
-                                    <p class="small text-muted mb-2">Berapa hasil dari <strong>{{ $n1 }} + {{ $n2 }}</strong>?</p>
-                                    <input type="number" wire:model="math_answer"
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <label class="form-label fw-bold text-dark mb-0" for="math_answer">Verifikasi Keamanan</label>
+                                        <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none"
+                                            wire:click="refreshCaptcha" wire:loading.attr="disabled">
+                                            Ganti soal
+                                        </button>
+                                    </div>
+
+                                    <p class="small text-muted mb-2">Ketik hasil dari gambar di bawah ini.</p>
+
+                                    <div class="text-center mb-2">
+                                        <img src="{{ route('captcha.image', ['id' => $captchaId, 'v' => $captchaVersion]) }}"
+                                            alt="Soal verifikasi keamanan. Gunakan pemutar audio jika gambar tidak terbaca."
+                                            class="img-fluid rounded-2 border bg-white"
+                                            style="max-width: 200px; height: auto;"
+                                            width="200" height="70"
+                                            x-data="{ retried: false }"
+                                            x-on:error="if (! retried) { retried = true; $wire.refreshCaptcha(); }" />
+                                    </div>
+
+                                    <input type="text" inputmode="numeric" pattern="[0-9]*" wire:model="math_answer"
+                                        id="math_answer"
                                         class="form-control rounded-2 @error('math_answer') is-invalid @enderror"
                                         placeholder="Isi jawaban" autocomplete="off" />
                                     @error('math_answer')
@@ -116,6 +135,23 @@
                                             {{ $message }}
                                         </div>
                                     @enderror
+
+                                    @if($audioEnabled)
+                                        <div class="mt-2">
+                                            <div class="small text-muted mb-1">Soal audio (aksesibilitas)</div>
+                                            <audio controls preload="none" class="w-100"
+                                                wire:key="captcha-audio-{{ $captchaId }}-{{ $captchaVersion }}"
+                                                aria-label="Soal verifikasi keamanan dalam bentuk audio">
+                                                <source
+                                                    src="{{ route('captcha.audio', ['id' => $captchaId, 'v' => $captchaVersion]) }}"
+                                                    type="audio/wav">
+                                                Browser Anda tidak mendukung pemutaran audio.
+                                                <a href="{{ route('captcha.audio', ['id' => $captchaId, 'v' => $captchaVersion]) }}">
+                                                    Unduh soal audio
+                                                </a>
+                                            </audio>
+                                        </div>
+                                    @endif
                                 </div>
                             @endif
 
