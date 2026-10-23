@@ -7,6 +7,7 @@ use App\Livewire\Traits\WithInstitutionalApproval;
 use App\Models\MonevReview;
 use App\Models\Proposal;
 use App\Models\User;
+use App\Support\AcademicPeriod;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
@@ -32,30 +33,27 @@ class MonevRecap extends Component
         if (! $user || ! $user->hasRole(['kepala lppm', 'rektor'])) {
             abort(403);
         }
-        $this->academicYear = $this->academicYear ?: date('Y');
+        $this->academicYear = $this->academicYear ?: AcademicPeriod::current();
     }
 
     public function reportToRektor()
     {
         $reviews = MonevReview::query()
-            ->where('academic_year', $this->academicYear)
-            ->when($this->semester !== 'all', function ($query) {
-                $query->where('semester', $this->semester);
-            })
+            ->forAcademicPeriod($this->academicYear, $this->semester)
             ->whereNotNull('reviewed_at')
             ->whereNotNull('finalized_by_lppm_at')
             ->whereNotNull('approved_by_kepala_at')
             ->whereNull('reported_to_rektor_at')
             ->get();
 
-        if ($reviews->isEmpty() && ! $this->getInstitutionalReport('monev', (int) $this->academicYear)) {
+        if ($reviews->isEmpty() && ! $this->getInstitutionalReport('monev', $this->institutionalYear())) {
             $this->toastWarning('Tidak ada data baru untuk dilaporkan.');
 
             return;
         }
 
         // Call standard trait method
-        $this->submitInstitutionalReport('monev', (int) $this->academicYear, [
+        $this->submitInstitutionalReport('monev', $this->institutionalYear(), [
             'count' => $reviews->count(),
             'semester' => $this->semester,
         ]);
@@ -82,10 +80,7 @@ class MonevRecap extends Component
     public function approveAll()
     {
         $count = MonevReview::query()
-            ->where('academic_year', $this->academicYear)
-            ->when($this->semester !== 'all', function ($query) {
-                $query->where('semester', $this->semester);
-            })
+            ->forAcademicPeriod($this->academicYear, $this->semester)
             ->whereNotNull('finalized_by_lppm_at')
             ->whereNull('approved_by_kepala_at')
             ->count();
@@ -97,10 +92,7 @@ class MonevRecap extends Component
         }
 
         MonevReview::query()
-            ->where('academic_year', $this->academicYear)
-            ->when($this->semester !== 'all', function ($query) {
-                $query->where('semester', $this->semester);
-            })
+            ->forAcademicPeriod($this->academicYear, $this->semester)
             ->whereNotNull('finalized_by_lppm_at')
             ->whereNull('approved_by_kepala_at')
             ->update([
@@ -112,9 +104,19 @@ class MonevRecap extends Component
     }
 
     #[Computed]
+    public function institutionalYear(): int
+    {
+        return AcademicPeriod::startYear($this->academicYear) ?? (int) date('Y');
+    }
+
     public function academicYears()
     {
-        return Proposal::distinct()->pluck('start_year')->filter()->sortDesc();
+        $periods = Proposal::query()
+            ->whereNotNull('start_year')
+            ->distinct()
+            ->get(['start_year', 'semester']);
+
+        return AcademicPeriod::optionsFromPeriods($periods);
     }
 
     #[Computed]
@@ -123,10 +125,7 @@ class MonevRecap extends Component
         return MonevReview::query()
             ->with(['proposal.submitter', 'reviewer'])
             ->when($this->academicYear, function ($query) {
-                $query->where('academic_year', $this->academicYear);
-            })
-            ->when($this->semester !== 'all', function ($query) {
-                $query->where('semester', $this->semester);
+                $query->forAcademicPeriod($this->academicYear, $this->semester);
             })
             ->when($this->search, function ($query) {
                 $query->whereHas('proposal', function ($q) {
@@ -144,7 +143,7 @@ class MonevRecap extends Component
     public function render()
     {
         return view('livewire.kepala-lppm.monev.monev-recap', [
-            'institutionalReport' => $this->getInstitutionalReport('monev', (int) $this->academicYear),
+            'institutionalReport' => $this->getInstitutionalReport('monev', $this->institutionalYear()),
         ]);
     }
 }

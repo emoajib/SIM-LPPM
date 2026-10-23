@@ -3,8 +3,8 @@
 namespace App\Livewire\Dashboard;
 
 use App\Models\Proposal;
+use App\Support\AcademicPeriod;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class DefaultDashboard extends Component
@@ -28,7 +28,7 @@ class DefaultDashboard extends Component
         $this->user = Auth::user();
         $this->roleName = active_role();
         $this->availableYears = $this->getAvailableYears();
-        $this->selectedYear = $this->availableYears[0] ?? date('Y');
+        $this->selectedYear = $this->availableYears[0] ?? AcademicPeriod::current();
 
         $this->loadAnalytics();
     }
@@ -40,17 +40,14 @@ class DefaultDashboard extends Component
 
     private function getAvailableYears(): array
     {
-        $years = Proposal::select(DB::raw(sql_year().' as year'))
+        $periods = Proposal::query()
+            ->whereNotNull('start_year')
             ->distinct()
-            ->orderBy('year', 'desc')
-            ->pluck('year')
-            ->toArray();
+            ->get(['start_year', 'semester']);
 
-        if (empty($years)) {
-            $years = [date('Y')];
-        }
+        $options = AcademicPeriod::optionsFromPeriods($periods);
 
-        return $years;
+        return $options !== [] ? $options : [AcademicPeriod::current()];
     }
 
     public function loadAnalytics()
@@ -58,11 +55,13 @@ class DefaultDashboard extends Component
         $yearFilter = $this->selectedYear;
 
         // Statistik Penelitian
-        $totalResearch = Proposal::where('start_year', $yearFilter)
+        $totalResearch = Proposal::query()
+            ->forAcademicYear((string) $yearFilter)
             ->where('detailable_type', 'App\Models\Research')->count();
 
         // Statistik PKM
-        $totalCommunityService = Proposal::where('start_year', $yearFilter)
+        $totalCommunityService = Proposal::query()
+            ->forAcademicYear((string) $yearFilter)
             ->where('detailable_type', 'App\Models\CommunityService')->count();
 
         $this->stats = [
@@ -72,7 +71,7 @@ class DefaultDashboard extends Component
 
         // Data penelitian terbaru
         $this->recentResearch = Proposal::with(['submitter'])
-            ->where('start_year', $yearFilter)
+            ->forAcademicYear((string) $yearFilter)
             ->where('detailable_type', 'App\Models\Research')
             ->latest('updated_at')
             ->limit(5)
@@ -80,7 +79,7 @@ class DefaultDashboard extends Component
 
         // Data PKM terbaru
         $this->recentCommunityService = Proposal::with(['submitter'])
-            ->where('start_year', $yearFilter)
+            ->forAcademicYear((string) $yearFilter)
             ->where('detailable_type', 'App\Models\CommunityService')
             ->latest('updated_at')
             ->limit(5)

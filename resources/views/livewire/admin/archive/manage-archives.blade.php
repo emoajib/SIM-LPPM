@@ -43,9 +43,9 @@
                                         class="ti ti-filter me-1"></i>{{ __('Tahun') }}:</div>
                                 <select class="form-select shadow-none border-0 bg-white" wire:model.live="yearFilter">
                                     <option value="">{{ __('Semua Tahun') }}</option>
-                                    @for($y = date('Y'); $y >= 2010; $y--)
+                                    @foreach($availableYears as $y)
                                         <option value="{{ $y }}">{{ $y }}</option>
-                                    @endfor
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -81,7 +81,10 @@
                                             {{ $archive->submitter->identity?->identity_id ?? '-' }}</div>
                                     </td>
                                     <td class="text-center">
-                                        <span class="badge bg-indigo-lt p-2">{{ $archive->start_year }}</span>
+                                        <span class="badge bg-indigo-lt p-2">{{ $archive->academic_year }}</span>
+                                        @if($archive->is_archive_only)
+                                            <div class="mt-1"><span class="badge bg-secondary-lt">Arsip Historis</span></div>
+                                        @endif
                                     </td>
                                     <td class="text-center">
                                         @if(str_contains($archive->detailable_type, 'Research'))
@@ -224,13 +227,21 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label fw-bold">{{ __('Tahun Pelaksanaan') }}</label>
+                                    <label class="form-label fw-bold">{{ __('Tahun Akademik') }}</label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="ti ti-calendar"></i></span>
-                                        <input type="number" class="form-control" wire:model="editYear" min="2000"
-                                            max="{{ date('Y') }}">
+                                        <input type="text" class="form-control" wire:model="editTahunAkademik"
+                                            placeholder="2025/2026">
                                     </div>
-                                    @error('editYear') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+                                    @error('editTahunAkademik') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">{{ __('Semester') }}</label>
+                                    <select class="form-select" wire:model="editSemester">
+                                        <option value="ganjil">Ganjil</option>
+                                        <option value="genap">Genap</option>
+                                    </select>
+                                    @error('editSemester') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label fw-bold">{{ __('Dana Disetujui (Rp)') }}</label>

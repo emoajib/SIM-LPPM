@@ -11,6 +11,7 @@ use App\Models\Faculty;
 use App\Models\MandatoryOutput;
 use App\Models\Proposal;
 use App\Models\ResearchScheme;
+use App\Support\AcademicPeriod;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -39,14 +40,14 @@ class OutputReports extends Component
 
     public function mount(): void
     {
-        $this->period = request()->query('period', (string) date('Y'));
+        $this->period = request()->query('period', AcademicPeriod::current());
 
         if (active_role() === 'dekan' || auth()->user()->activeHasRole('dekan')) {
             $this->selectedFaculty = (string) (auth()->user()->identity->faculty_id ?? 'all');
         }
 
         // Load metadata from existing report if available
-        $report = $this->getInstitutionalReport('output', (int) $this->period);
+        $report = $this->getInstitutionalReport('output', $this->institutionalYear());
         if ($report && $report->metadata) {
             $this->search = $report->metadata['search'] ?? '';
             $this->selectedScheme = $report->metadata['scheme'] ?? 'all';
@@ -103,7 +104,7 @@ class OutputReports extends Component
             $this->selectedFaculty = 'all';
         }
 
-        $this->period = (string) date('Y');
+        $this->period = AcademicPeriod::current();
         $this->resetPage();
     }
 
@@ -185,7 +186,7 @@ class OutputReports extends Component
                 'progressReports.additionalOutputs.proposalOutput',
             ])
             ->where('detailable_type', $detailableType)
-            ->where('start_year', $this->period)
+            ->forAcademicYear($this->period)
             ->where(function (Builder $query) {
                 $query->whereHas('progressReports.mandatoryOutputs')
                     ->orWhereHas('progressReports.additionalOutputs');
@@ -237,7 +238,7 @@ class OutputReports extends Component
                 ? ResearchScheme::orderBy('name')->get()
                 : CommunityServiceScheme::orderBy('name')->get(),
             'allFaculties' => Faculty::orderBy('name')->get(),
-            'institutionalReport' => $this->getInstitutionalReport('output', (int) $this->period),
+            'institutionalReport' => $this->getInstitutionalReport('output', $this->institutionalYear()),
         ]);
     }
 
@@ -246,13 +247,19 @@ class OutputReports extends Component
      */
     protected function availablePeriods(): array
     {
-        return Proposal::query()
+        $periods = Proposal::query()
             ->distinct()
             ->whereNotNull('start_year')
-            ->orderBy('start_year', 'desc')
-            ->pluck('start_year')
-            ->map(fn ($year) => (string) $year)
-            ->toArray() ?: [(string) date('Y')];
+            ->get(['start_year', 'semester']);
+
+        $options = AcademicPeriod::optionsFromPeriods($periods);
+
+        return $options !== [] ? $options : [AcademicPeriod::current()];
+    }
+
+    protected function institutionalYear(): int
+    {
+        return AcademicPeriod::startYear($this->period) ?? (int) date('Y');
     }
 
     /**
@@ -284,7 +291,7 @@ class OutputReports extends Component
 
         $totalProposals = Proposal::query()
             ->where('detailable_type', $detailableType)
-            ->where('start_year', $this->period)
+            ->forAcademicYear($this->period)
             ->whereIn('status', [
                 ProposalStatus::APPROVED->value,
                 ProposalStatus::COMPLETED->value,

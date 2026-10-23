@@ -9,7 +9,7 @@
             <th>Ruang Lingkup</th>
             <th>Bidang Fokus</th>
             <th>Lama Kegiatan</th>
-            <th>Tahun Pertama Usulan</th>
+            <th>Tahun Akademik</th>
         </tr>
     </thead>
     <tbody>
@@ -24,7 +24,7 @@
             </td>
             <td class="text-center">{{ $proposal->focusArea->name ?? '-' }}</td>
             <td class="text-center">{{ $proposal->duration_in_years }}</td>
-            <td class="text-center">{{ $proposal->start_year }}</td>
+            <td class="text-center">{{ $proposal->academic_year ?? $proposal->start_year }}</td>
         </tr>
     </tbody>
 </table>

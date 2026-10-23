@@ -48,7 +48,7 @@
             <h5 class="mb-2">2.2.1 Luaran Wajib</h5>
             @php
                 $requiredOutputs = $proposal->outputs->where('category', 'Wajib');
-                $startYear = (int) ($proposal->start_year ?? date('Y'));
+                $startYear = \App\Models\Proposal::parseAcademicYear($proposal->academic_year) ?? (int) ($proposal->start_year ?? date('Y'));
                 $duration = (int) ($proposal->duration_in_years ?? 1);
             @endphp
             @if ($requiredOutputs->isEmpty())

@@ -14,11 +14,11 @@ use Maatwebsite\Excel\Concerns\WithMapping;
  */
 class CommunityServiceProposalExport implements FromQuery, WithHeadings, WithMapping
 {
-    protected int $year;
+    protected string $year;
 
     protected ?string $scheme = null;
 
-    public function __construct(int $year, ?string $scheme = null)
+    public function __construct(string $year, ?string $scheme = null)
     {
         $this->year = $year;
         $this->scheme = $scheme;
@@ -30,7 +30,7 @@ class CommunityServiceProposalExport implements FromQuery, WithHeadings, WithMap
     public function query(): Builder
     {
         return Proposal::where('detailable_type', CommunityService::class)
-            ->where('start_year', $this->year)
+            ->forAcademicYear($this->year)
             ->when($this->scheme && $this->scheme !== 'all', fn ($q) => $q->where('community_service_scheme_id', $this->scheme))
             ->with([
                 'submitter',

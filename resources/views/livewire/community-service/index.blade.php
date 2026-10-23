@@ -175,7 +175,7 @@
                                 {{ $proposal->focusArea?->name }}
                             </td>
                             <td>
-                                {{ $proposal->start_year }}
+                                {{ $proposal->academic_year ?? $proposal->start_year }}
                             </td>
                             <td>
                                 <div class="btn-list flex-nowrap">

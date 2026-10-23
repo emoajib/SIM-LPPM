@@ -1,9 +1,10 @@
 <!-- Section: RAB (Rencana Anggaran Biaya) -->
 @php
-    $startYear = (int) ($form->start_year ?: date('Y'));
+    $startYear = \App\Models\Proposal::parseAcademicYear($form->academic_year) ?? (int) ($form->start_year ?: date('Y'));
     $duration = (int) ($form->duration_in_years ?: 1);
     $currentYear = (int) ($form->start_year ?: date('Y'));
     $currentSemester = $form->semester ?: 'ganjil';
+    $budgetCapLabel = \App\Models\BudgetCap::academicYearLabel($currentYear, $currentSemester);
     $schemeId = $form->research_scheme_id ?: $form->community_service_scheme_id;
     $budgetCap = \App\Models\BudgetCap::getCapForPeriod($currentYear, $currentSemester, 'research', $schemeId ? (int) $schemeId : null);
     
@@ -99,7 +100,7 @@
                     </ul>
                     @if ($budgetCap)
                         <div class="border-top mt-2 pt-2">
-                            <strong>Batas Maksimal Anggaran Penelitian {{ $currentYear }}:</strong>
+                            <strong>Batas Maksimal Anggaran Penelitian Tahun Akademik {{ $budgetCapLabel }}:</strong>
                             <x-tabler.badge color="danger">
                                 Rp {{ number_format($budgetCap, 0, ',', '.') }}
                             </x-tabler.badge>
@@ -113,7 +114,7 @@
                                 </div>
                                 <div>
                                     @php $semesterLabel = ucfirst($currentSemester); @endphp
-                                    Batas anggaran tahun {{ $currentYear }} (Semester {{ $semesterLabel }}) belum ditetapkan Admin LPPM. Persentase ditampilkan terhadap total RAB sementara.
+                                    Batas anggaran tahun akademik {{ $budgetCapLabel }} (Semester {{ $semesterLabel }}) belum ditetapkan Admin LPPM. Persentase ditampilkan terhadap total RAB sementara.
                                 </div>
                             </div>
                         </div>
@@ -135,7 +136,7 @@
                                 <div class="d-flex align-items-center">
                                     <span class="bg-primary text-white stamp me-3">{{ $y }}</span>
                                     <div>
-                                        <div class="text-muted small">Tahun {{ $y }} ({{ $startYear + $y - 1 }})</div>
+                                        <div class="text-muted small">Tahun ke-{{ $y }} (TA {{ $startYear + $y - 1 }}/{{ $startYear + $y }})</div>
                                         <div class="h4 mb-0">Rp {{ number_format($yearTotal, 0, ',', '.') }}</div>
                                     </div>
                                 </div>
@@ -228,7 +229,7 @@
                                     <select wire:model="form.budget_items.{{ $index }}.year"
                                         class="form-select-sm form-select">
                                         @for ($y = 1; $y <= $duration; $y++)
-                                            <option value="{{ $y }}">{{ $y }} ({{ $startYear + $y - 1 }})</option>
+                                            <option value="{{ $y }}">{{ $y }} (TA {{ $startYear + $y - 1 }}/{{ $startYear + $y }})</option>
                                         @endfor
                                     </select>
                                 </td>

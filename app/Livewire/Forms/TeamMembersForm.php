@@ -123,7 +123,7 @@ class TeamMembersForm extends Component
 
         if ($this->isManual) {
             $validationRules['member_name'] = 'required|string|max:255';
-            $validationRules['member_email'] = 'required|email|max:255';
+            $validationRules['member_email'] = 'nullable|email|max:255';
             $validationRules['member_type'] = 'required|in:dosen,mahasiswa';
             $validationRules['member_institution'] = 'required|string|max:255';
             $validationRules['member_study_program'] = 'required|string|max:255';
@@ -249,7 +249,6 @@ class TeamMembersForm extends Component
     {
         $this->isManual = ! $this->isManual;
         if ($this->isManual) {
-            $this->member_type = 'mahasiswa';
             $this->memberFound = true; // Bypass check
         } else {
             $this->member_type = 'dosen';

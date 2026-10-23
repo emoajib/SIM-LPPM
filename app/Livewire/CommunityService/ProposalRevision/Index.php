@@ -7,6 +7,7 @@ namespace App\Livewire\CommunityService\ProposalRevision;
 use App\Enums\ProposalStatus;
 use App\Models\CommunityService;
 use App\Models\Proposal;
+use App\Support\AcademicPeriod;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
@@ -86,7 +87,7 @@ class Index extends Component
 
         // Year filter
         if (! empty($this->selectedYear)) {
-            $query->whereYear('created_at', $this->selectedYear);
+            $query->forAcademicYear($this->selectedYear);
         }
 
         return $query->latest()->get();
@@ -116,9 +117,12 @@ class Index extends Component
             });
         }
 
-        return $query->selectRaw('DISTINCT '.sql_year().' as year')
-            ->orderByDesc('year')
-            ->pluck('year');
+        return AcademicPeriod::optionsFromPeriods(
+            $query->select('start_year', 'semester')
+                ->distinct()
+                ->get()
+                ->filter(fn ($period) => $period->start_year !== null)
+        );
     }
 
     public function render()

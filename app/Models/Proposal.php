@@ -9,6 +9,7 @@ use App\Enums\KaprodiStatus;
 use App\Enums\ProposalStatus;
 use App\Enums\ProposalUserStatus;
 use App\Enums\ReviewStatus;
+use App\Support\AcademicPeriod;
 use Database\Factories\ProposalFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -43,6 +44,10 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  * @property float|null $sbk_value
  * @property int|null $duration_in_years
  * @property int|null $start_year
+ * @property string|null $semester
+ * @property-read string|null $academic_year
+ * @property-read int|null $academic_year_start
+ * @property-read string|null $semester_period_label
  * @property string|null $summary
  * @property string|null $asta_cita
  * @property ProposalStatus $status
@@ -77,6 +82,11 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  * @property-read Collection|ProposalActivity[] $activities
  * @property-read Collection|DocumentSignature[] $signatures
  * @property-read User $user
+ *
+ * @method static Builder<static> forAcademicYear(string $academicYear)
+ * @method static Builder<static> withArchived()
+ * @method static Builder<static> onlyArchived()
+ * @method static Builder<static> forAcademicPeriod(?string $academicYear, ?string $semester = null)
  */
 class Proposal extends Model implements HasMedia
 {
@@ -122,6 +132,10 @@ class Proposal extends Model implements HasMedia
         'duration_in_years',
         'start_year',
         'semester',
+        'is_archive_only',
+        'import_batch_id',
+        'imported_at',
+        'archive_fingerprint',
         'summary',
         'asta_cita',
         'status',
@@ -166,7 +180,35 @@ class Proposal extends Model implements HasMedia
             'approved_budget_snapshot' => 'array',
             'is_roadmap_validated_by_kaprodi' => 'boolean',
             'kaprodi_validated_at' => 'datetime',
+            'is_archive_only' => 'boolean',
+            'imported_at' => 'datetime',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope('archive_only', function (Builder $query) {
+            $query->where($query->getModel()->getTable().'.is_archive_only', false);
+        });
+    }
+
+    /**
+     * @param  Builder<Proposal>  $query
+     * @return Builder<Proposal>
+     */
+    public function scopeWithArchived($query): Builder
+    {
+        return $query->withoutGlobalScope('archive_only');
+    }
+
+    /**
+     * @param  Builder<Proposal>  $query
+     * @return Builder<Proposal>
+     */
+    public function scopeOnlyArchived($query): Builder
+    {
+        return $query->withoutGlobalScope('archive_only')
+            ->where($this->getTable().'.is_archive_only', true);
     }
 
     /**
@@ -697,6 +739,108 @@ class Proposal extends Model implements HasMedia
             in_array($semester, ['ganjil', 'genap'], true),
             fn ($q) => $q->where('semester', $semester)
         );
+    }
+
+    /**
+     * Tahun awal akademik. `start_year` menyimpan tahun kalender saat
+     * semester dimulai, sehingga semester genap memakai tahun akademik
+     * satu tahun sebelumnya (contoh: Mar 2027 = 2026/2027).
+     */
+    public function getAcademicYearStartAttribute(): ?int
+    {
+        if ($this->start_year === null) {
+            return null;
+        }
+
+        $startYear = (int) $this->start_year;
+
+        return $this->semester === 'genap' ? $startYear - 1 : $startYear;
+    }
+
+    /**
+     * Tahun akademik dalam format "2026/2027".
+     */
+    public function getAcademicYearAttribute(): ?string
+    {
+        $academicStart = $this->academic_year_start;
+
+        return $academicStart === null ? null : sprintf('%d/%d', $academicStart, $academicStart + 1);
+    }
+
+    /**
+     * Label rentang tanggal semester untuk ditampilkan ke pengguna.
+     */
+    public function getSemesterPeriodLabelAttribute(): ?string
+    {
+        $academicStart = $this->academic_year_start;
+
+        if ($academicStart === null) {
+            return null;
+        }
+
+        return $this->semester === 'genap'
+            ? sprintf('1 Mar - 31 Agt %d', $academicStart + 1)
+            : sprintf('1 Sep %d - 28/29 Feb %d', $academicStart, $academicStart + 1);
+    }
+
+    /**
+     * Scope untuk tahun akademik, memperhitungkan semester ganjil/genap.
+     *
+     * @param  Builder<Proposal>  $query
+     * @return Builder<Proposal>
+     */
+    public function scopeForAcademicYear($query, string $academicYear): Builder
+    {
+        self::applyAcademicYearFilter($query, $academicYear);
+
+        return $query;
+    }
+
+    /**
+     * Terapkan filter tahun akademik pada builder yang belum tentu bertipe Proposal.
+     */
+    public static function applyAcademicYearFilter(Builder $query, string $academicYear): void
+    {
+        $academicStart = self::parseAcademicYear($academicYear);
+
+        if ($academicStart === null) {
+            return;
+        }
+
+        $query->where(function (Builder $q) use ($academicStart) {
+            $q->where(function (Builder $ganjil) use ($academicStart) {
+                $ganjil->where(function ($g) {
+                    $g->where('semester', 'ganjil')->orWhereNull('semester');
+                })->where('start_year', $academicStart);
+            })->orWhere(function (Builder $genap) use ($academicStart) {
+                $genap->where('semester', 'genap')->where('start_year', $academicStart + 1);
+            });
+        });
+    }
+
+    /**
+     * Parse "2026/2027" menjadi 2026. Mengembalikan null jika format tidak valid.
+     */
+    public static function parseAcademicYear(?string $academicYear): ?int
+    {
+        return AcademicPeriod::startYear($academicYear);
+    }
+
+    /**
+     * Scope tahun akademik + semester sekaligus.
+     *
+     * @param  Builder<Proposal>  $query
+     * @return Builder<Proposal>
+     */
+    public function scopeForAcademicPeriod($query, ?string $academicYear, ?string $semester = null): Builder
+    {
+        $query = $query->forAcademicYear((string) $academicYear);
+
+        if (in_array($semester, [AcademicPeriod::GANJIL, AcademicPeriod::GENAP], true)) {
+            $query->where('semester', $semester);
+        }
+
+        return $query;
     }
 
     /**

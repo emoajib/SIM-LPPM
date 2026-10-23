@@ -13,6 +13,7 @@ use App\Models\ReviewCriteria;
 use App\Models\Setting;
 use App\Models\User;
 use App\Notifications\MonevReportReminderNotification;
+use App\Support\AcademicPeriod;
 use Carbon\Carbon;
 use Database\Seeders\ReviewCriteriaSeeder;
 use Illuminate\Database\Schema\Blueprint;
@@ -74,7 +75,7 @@ class MonevIndex extends Component
             abort(403);
         }
 
-        $this->academicYear = $this->academicYear ?: date('Y');
+        $this->academicYear = $this->academicYear ?: AcademicPeriod::current();
 
         // Self-Healing Database: Ensure columns exist to avoid 500 errors
         try {
@@ -177,8 +178,8 @@ class MonevIndex extends Component
 
     public function sendReminderToKepala()
     {
-        $pendingCount = MonevReview::where('academic_year', $this->academicYear)
-            ->when($this->semester !== 'all', fn ($q) => $q->where('semester', $this->semester))
+        $pendingCount = MonevReview::query()
+            ->forAcademicPeriod($this->academicYear, $this->semester)
             ->whereNotNull('approved_by_kepala_at')
             ->whereNull('reported_to_rektor_at')
             ->count();
@@ -201,8 +202,8 @@ class MonevIndex extends Component
     #[Computed]
     public function pendingRektorCount()
     {
-        return MonevReview::where('academic_year', $this->academicYear)
-            ->when($this->semester !== 'all', fn ($q) => $q->where('semester', $this->semester))
+        return MonevReview::query()
+            ->forAcademicPeriod($this->academicYear, $this->semester)
             ->whereNotNull('approved_by_kepala_at')
             ->whereNull('reported_to_rektor_at')
             ->count();
@@ -213,8 +214,7 @@ class MonevIndex extends Component
         $this->selectedProposal = Proposal::with([
             'monevs',
             'monevReviews' => function ($q) {
-                $q->where('academic_year', $this->academicYear)
-                    ->when($this->semester !== 'all', fn ($sq) => $sq->where('semester', $this->semester));
+                $q->forAcademicPeriod($this->academicYear, $this->semester);
             },
             'monevReviews.reviewer',
             'progressReports' => fn ($q) => $q->where('reporting_period', 'final'),
@@ -227,13 +227,10 @@ class MonevIndex extends Component
         if ($this->selectedProposal) {
             $this->selectedProposal->load([
                 'monevs' => function ($q) {
-                    $q->where('academic_year', $this->academicYear)
-                        ->when($this->semester !== 'all', fn ($sq) => $sq->where('semester', $this->semester))
-                        ->latest();
+                    $q->forAcademicPeriod($this->academicYear, $this->semester)->latest();
                 },
                 'monevReviews' => function ($q) {
-                    $q->where('academic_year', $this->academicYear)
-                        ->when($this->semester !== 'all', fn ($sq) => $sq->where('semester', $this->semester));
+                    $q->forAcademicPeriod($this->academicYear, $this->semester);
                 },
                 'monevReviews.reviewer',
                 'progressReports' => fn ($q) => $q->where('reporting_period', 'final'),
@@ -292,7 +289,7 @@ class MonevIndex extends Component
         $monev->notes = $this->notes;
 
         // Ensure period is saved (fallback to current filter or proposal data)
-        $monev->academic_year = $this->academicYear ?: $this->selectedProposal->start_year;
+        $monev->academic_year = $this->selectedProposal->start_year;
         $monev->semester = ($this->semester !== 'all') ? $this->semester : ($this->selectedProposal->semester ?: 'ganjil');
 
         $monev->save();
@@ -379,7 +376,14 @@ class MonevIndex extends Component
     #[Computed]
     public function academicYears()
     {
-        return Proposal::distinct()->pluck('start_year')->filter()->sortDesc();
+        $periods = Proposal::query()
+            ->whereNotNull('start_year')
+            ->distinct()
+            ->get(['start_year', 'semester']);
+
+        $options = AcademicPeriod::optionsFromPeriods($periods);
+
+        return $options !== [] ? $options : [AcademicPeriod::current()];
     }
 
     #[Computed]
@@ -393,13 +397,11 @@ class MonevIndex extends Component
                 'monevs' => function ($q) {
                     // Only filter by year/semester if columns exist to prevent 500 errors during transition
                     $q->when(Schema::hasColumn('proposal_monevs', 'academic_year'), function ($sq) {
-                        $sq->where('academic_year', $this->academicYear)
-                            ->when($this->semester !== 'all', fn ($ssq) => $ssq->where('semester', $this->semester));
+                        $sq->forAcademicPeriod($this->academicYear, $this->semester);
                     })->latest();
                 },
                 'monevReviews' => function ($q) {
-                    $q->where('academic_year', $this->academicYear)
-                        ->when($this->semester !== 'all', fn ($sq) => $sq->where('semester', $this->semester));
+                    $q->forAcademicPeriod($this->academicYear, $this->semester);
                 },
                 'monevReviews.reviewer',
                 'progressReports' => fn ($q) => $q->where('reporting_period', 'final'),
@@ -411,7 +413,7 @@ class MonevIndex extends Component
                     });
             })
             ->when($this->academicYear, function ($query) {
-                $query->where('start_year', $this->academicYear);
+                $query->forAcademicYear($this->academicYear);
             })
             ->when($this->semester !== 'all', function ($query) {
                 $query->where('semester', $this->semester);

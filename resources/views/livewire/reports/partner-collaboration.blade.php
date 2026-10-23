@@ -87,7 +87,7 @@
                         </div>
                         <p class="text-secondary mb-0 small">
                             @if(!$institutionalReport || $institutionalReport->status === \App\Enums\InstitutionalReportStatus::DRAFT)
-                                Rekapitulasi kerjasama mitra periode {{ $periodFilter ?: date('Y') }} belum diajukan ke Rektor.
+                                Rekapitulasi kerjasama mitra periode {{ $this->institutionalYear() }} belum diajukan ke Rektor.
                             @elseif($institutionalReport->status === \App\Enums\InstitutionalReportStatus::SUBMITTED)
                                 Menunggu persetujuan dan tanda tangan digital Rektor.
                             @elseif($institutionalReport->status === \App\Enums\InstitutionalReportStatus::APPROVED)
@@ -106,7 +106,7 @@
 
                         @if(active_role_is('kepala lppm') && (!$institutionalReport || in_array($institutionalReport->status, [\App\Enums\InstitutionalReportStatus::DRAFT, \App\Enums\InstitutionalReportStatus::REJECTED])))
                             <button class="btn btn-primary shadow-sm"
-                                wire:click="submitInstitutionalReport('partner', {{ $periodFilter ?: date('Y') }}, {{ json_encode(['search' => $search, 'typeFilter' => $typeFilter, 'periodFilter' => $periodFilter]) }})"
+                                wire:click="submitInstitutionalReport('partner', {{ $this->institutionalYear() }}, {{ json_encode(['search' => $search, 'typeFilter' => $typeFilter, 'periodFilter' => $periodFilter]) }})"
                                 wire:loading.attr="disabled">
                                 <i class="ti ti-send me-2"></i>
                                 Ajukan ke Rektor
@@ -120,7 +120,7 @@
                                 Minta Perbaikan
                             </button>
                             <button class="btn btn-success shadow-sm"
-                                wire:click="approveInstitutionalReport('partner', {{ $periodFilter ?: date('Y') }})"
+                                wire:click="approveInstitutionalReport('partner', {{ $this->institutionalYear() }})"
                                 wire:loading.attr="disabled">
                                 <i class="ti ti-circle-check me-2"></i>
                                 Setujui &amp; Tanda Tangani
@@ -401,7 +401,7 @@
                                         </a>
                                         <div class="d-flex align-items-center gap-2 mt-1">
                                             <span class="badge {{ $typeColor }}">{{ $typeLabel }}</span>
-                                            <span class="text-muted small">{{ $proposal->start_year }}</span>
+                                            <span class="text-muted small">TA {{ $proposal->academic_year ?? $proposal->start_year }}</span>
                                             <span class="text-muted small">{{ $proposal->submitter?->name }}</span>
 
                                             {{-- Tombol Surat Kesediaan Spesifik Proposal --}}
@@ -476,7 +476,7 @@
                         <button type="button" class="btn btn-link link-secondary me-auto"
                             data-bs-dismiss="modal">Batal</button>
                         <button type="button" class="btn btn-danger shadow-sm"
-                            wire:click="rejectInstitutionalReport('partner', '{{ $periodFilter ?: date('Y') }}')">
+                            wire:click="rejectInstitutionalReport('partner', '{{ $this->institutionalYear() }}')">
                             Simpan &amp; Tolak
                         </button>
                     </div>

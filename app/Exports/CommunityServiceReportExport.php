@@ -31,7 +31,7 @@ class CommunityServiceReportExport implements FromView, ShouldAutoSize, WithColu
                 $q->where('status', ProposalStatus::COMPLETED)
                     ->orWhereHas('progressReports');
             })
-            ->when($this->period, fn ($q) => $q->where('start_year', $this->period))
+            ->when($this->period, fn ($q) => $q->forAcademicYear($this->period))
             ->when($this->semester && $this->semester !== 'all', fn ($q) => $q->where('semester', $this->semester))
             ->when($this->search, function ($q) {
                 $q->where(function ($sub) {

@@ -24,13 +24,13 @@ class GetPartnerReportQuery
             ->when($type, fn ($q) => $q->where('type', $type))
             ->with(['media'])
             ->withCount([
-                'proposals' => fn ($q) => $q->when($period, fn ($q2) => $q2->where('start_year', $period)),
-                'proposals as approved_count' => fn ($q) => $q->whereIn('status', [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value])
-                    ->when($period, fn ($q2) => $q2->where('start_year', $period)),
+                'proposals' => fn ($q) => $q->withArchived()->when($period, fn ($q2) => $q2->forAcademicYear($period)),
+                'proposals as approved_count' => fn ($q) => $q->withArchived()->whereIn('status', [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value])
+                    ->when($period, fn ($q2) => $q2->forAcademicYear($period)),
             ])
             ->withSum(
-                ['proposals as total_budget' => fn ($q) => $q->whereIn('status', [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value])
-                    ->when($period, fn ($q2) => $q2->where('start_year', $period)),
+                ['proposals as total_budget' => fn ($q) => $q->withArchived()->whereIn('status', [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value])
+                    ->when($period, fn ($q2) => $q2->forAcademicYear($period)),
                 ],
                 'sbk_value'
             )

@@ -103,7 +103,7 @@
                                                 'summary' => 'Ringkasan',
                                                 'student_members' => 'Anggota Mahasiswa',
                                                 'duration_in_years' => 'Durasi (Tahun)',
-                                                'start_year' => 'Tahun Mulai',
+                                                'start_year' => 'Tahun Mulai (Kalender)',
                                                 'sbk_value' => 'Nilai SBK',
                                                 'focus_area_id' => 'Bidang Fokus',
                                                 'theme_id' => 'Tema',

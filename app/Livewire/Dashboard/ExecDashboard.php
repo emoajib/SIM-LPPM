@@ -19,6 +19,7 @@ use App\Models\ProposalMonev;
 use App\Models\ProposalOutput;
 use App\Models\ResearchScheme;
 use App\Models\StudyProgram;
+use App\Support\AcademicPeriod;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -107,7 +108,7 @@ class ExecDashboard extends Component
         $this->user = Auth::user();
         $this->roleName = active_role();
         $this->availableYears = $this->getAvailableYears();
-        $this->selectedYear = $this->availableYears[0] ?? (int) date('Y');
+        $this->selectedYear = $this->availableYears[0] ?? AcademicPeriod::current();
         $this->availableStatuses = ProposalStatus::filterOptions();
         $this->availableFaculties = $this->getFaculties();
 
@@ -182,7 +183,7 @@ class ExecDashboard extends Component
 
     private function getAvailableYears(): array
     {
-        $query = Proposal::select('start_year as year')
+        $query = Proposal::query()
             ->whereNotNull('start_year');
 
         if ($this->isDekanRestricted()) {
@@ -190,28 +191,23 @@ class ExecDashboard extends Component
             if ($facultyId) {
                 $query->whereHas('submitter.identity', fn ($q) => $q->where('faculty_id', $facultyId));
             } else {
-                return [(int) date('Y')];
+                return [AcademicPeriod::current()];
             }
         } elseif ($this->isKaprodiRestricted()) {
             $studyProgram = StudyProgram::where('kaprodi_user_id', $this->user->id)->first();
             if ($studyProgram) {
                 $query->whereHas('submitter.identity', fn ($q) => $q->where('study_program_id', $studyProgram->id));
             } else {
-                return [(int) date('Y')];
+                return [AcademicPeriod::current()];
             }
         }
 
-        $years = $query->distinct()
-            ->orderBy('year', 'desc')
-            ->pluck('year')
-            ->map(fn ($y) => (int) $y)
-            ->toArray();
+        $periods = $query->distinct()
+            ->get(['start_year', 'semester']);
 
-        if (empty($years)) {
-            $years = [(int) date('Y')];
-        }
+        $options = AcademicPeriod::optionsFromPeriods($periods);
 
-        return $years;
+        return $options !== [] ? $options : [AcademicPeriod::current()];
     }
 
     private function getFaculties(): array
@@ -406,7 +402,7 @@ class ExecDashboard extends Component
      * Load chart data for focus areas and faculties.
      * Vetted by AI - Manual Review Required by Senior Engineer/Manager
      */
-    private function loadChartData(int $yearFilter): void
+    private function loadChartData(string|int $yearFilter): void
     {
         // Fetch filtered proposals eager loading relations
         $proposals = Proposal::query()
@@ -701,9 +697,12 @@ class ExecDashboard extends Component
         ];
     }
 
+    /**
+     * @param  Builder<Proposal>  $query
+     */
     private function applyCommonFilters(Builder $query): Builder
     {
-        $query->where('start_year', $this->selectedYear);
+        $query->forAcademicYear((string) $this->selectedYear);
 
         if ($this->selectedStatus !== 'all') {
             $query->where('status', $this->selectedStatus);
@@ -757,7 +756,7 @@ class ExecDashboard extends Component
         return $query;
     }
 
-    private function loadStats(int $yearFilter): void
+    private function loadStats(string|int $yearFilter): void
     {
         $statsRaw = Proposal::query()
             ->tap(fn ($q) => $this->applyCommonFilters($q))
@@ -855,7 +854,7 @@ class ExecDashboard extends Component
         ];
     }
 
-    private function loadRecentProposals(int $yearFilter): void
+    private function loadRecentProposals(string|int $yearFilter): void
     {
         $baseQuery = Proposal::with(['submitter', 'researchScheme', 'communityServiceScheme', 'latestFinalReport']);
 
@@ -955,7 +954,8 @@ class ExecDashboard extends Component
     {
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         // Baseline: Retrieve all proposals for the selected start_year
-        $proposalsThisYear = Proposal::where('start_year', $yearFilter)
+        $proposalsThisYear = Proposal::query()
+            ->forAcademicYear($yearFilter)
             ->tap(fn ($q) => $this->applyCommonFilters($q))
             ->get();
         $proposalsThisYearIds = $proposalsThisYear->pluck('id');

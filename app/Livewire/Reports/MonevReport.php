@@ -5,6 +5,7 @@ namespace App\Livewire\Reports;
 use App\Models\CommunityService;
 use App\Models\MonevReview;
 use App\Models\Research;
+use App\Support\AcademicPeriod;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -28,7 +29,7 @@ class MonevReport extends Component
 
     public function mount(): void
     {
-        $this->period = (string) date('Y');
+        $this->period = AcademicPeriod::current();
     }
 
     public function updatedSearch(): void
@@ -59,7 +60,7 @@ class MonevReport extends Component
     public function resetFilters(): void
     {
         $this->search = '';
-        $this->period = (string) date('Y');
+        $this->period = AcademicPeriod::current();
         $this->selectedSemester = 'all';
         $this->selectedType = 'all';
         $this->selectedStatus = 'all';
@@ -91,13 +92,16 @@ class MonevReport extends Component
     #[Computed]
     public function availablePeriods(): array
     {
-        return MonevReview::query()
+        $years = MonevReview::query()
             ->distinct()
             ->whereNotNull('academic_year')
-            ->orderBy('academic_year', 'desc')
             ->pluck('academic_year')
-            ->map(fn ($y) => (string) $y)
-            ->toArray() ?: [(string) date('Y')];
+            ->filter()
+            ->toArray();
+
+        $options = AcademicPeriod::optionsFromStartYears($years);
+
+        return $options !== [] ? $options : [AcademicPeriod::current()];
     }
 
     protected function baseQuery()
@@ -107,8 +111,7 @@ class MonevReport extends Component
 
         return MonevReview::query()
             ->when($facultyId, fn ($q) => $q->whereHas('proposal.submitter.identity', fn ($i) => $i->where('faculty_id', $facultyId)))
-            ->when($this->period, fn ($q) => $q->where('academic_year', $this->period))
-            ->when($this->selectedSemester !== 'all', fn ($q) => $q->where('semester', $this->selectedSemester))
+            ->when($this->period, fn ($q) => $q->forAcademicPeriod($this->period, $this->selectedSemester))
             ->when($this->selectedType !== 'all', function ($q) {
                 $type = $this->selectedType === 'research'
                     ? Research::class

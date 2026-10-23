@@ -5,6 +5,7 @@ namespace App\Livewire\Dashboard;
 use App\Enums\ReviewStatus;
 use App\Models\Proposal;
 use App\Models\ProposalReviewer;
+use App\Support\AcademicPeriod;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -45,7 +46,7 @@ class ReviewerDashboard extends Component
         $this->user = Auth::user();
         $this->roleName = active_role();
         $this->availableYears = $this->getAvailableYears();
-        $this->selectedYear = $this->availableYears[0] ?? date('Y');
+        $this->selectedYear = $this->availableYears[0] ?? AcademicPeriod::current();
 
         $this->loadAnalytics();
     }
@@ -57,22 +58,17 @@ class ReviewerDashboard extends Component
 
     private function getAvailableYears(): array
     {
-        $years = ProposalReviewer::query()
+        $periods = ProposalReviewer::query()
             ->where('user_id', $this->user->id)
             ->whereHas('proposal', fn ($q) => $q->whereNotNull('start_year'))
             ->join('proposals', 'proposal_reviewer.proposal_id', '=', 'proposals.id')
-            ->select('proposals.start_year as year')
+            ->select('proposals.start_year', 'proposals.semester')
             ->distinct()
-            ->orderBy('year', 'desc')
-            ->pluck('year')
-            ->map(fn ($y) => (string) $y)
-            ->toArray();
+            ->get();
 
-        if (empty($years)) {
-            $years = [date('Y')];
-        }
+        $options = AcademicPeriod::optionsFromPeriods($periods);
 
-        return $years;
+        return $options !== [] ? $options : [AcademicPeriod::current()];
     }
 
     public function loadAnalytics(): void
@@ -128,7 +124,7 @@ class ReviewerDashboard extends Component
     {
         $statsRaw = ProposalReviewer::query()
             ->where('user_id', $this->user->id)
-            ->whereHas('proposal', fn ($q) => $q->where('start_year', $yearFilter))
+            ->whereHas('proposal', fn ($q) => Proposal::applyAcademicYearFilter($q, $yearFilter))
             ->join('proposals', 'proposal_reviewer.proposal_id', '=', 'proposals.id')
             ->select([
                 'proposal_reviewer.status',
@@ -171,7 +167,7 @@ class ReviewerDashboard extends Component
     {
         $allReviewerStats = ProposalReviewer::with('proposal')
             ->where('user_id', $this->user->id)
-            ->whereHas('proposal', fn ($query) => $query->where('start_year', $yearFilter))
+            ->whereHas('proposal', fn ($query) => Proposal::applyAcademicYearFilter($query, $yearFilter))
             ->get();
 
         $this->researchReviewerStats = $allReviewerStats->filter(
@@ -191,7 +187,7 @@ class ReviewerDashboard extends Component
     {
         $urgentReviews = ProposalReviewer::with(['proposal.submitter', 'proposal.detailable', 'proposal.researchScheme', 'proposal.communityServiceScheme'])
             ->where('user_id', $this->user->id)
-            ->whereHas('proposal', fn ($q) => $q->where('start_year', $yearFilter))
+            ->whereHas('proposal', fn ($q) => Proposal::applyAcademicYearFilter($q, $yearFilter))
             ->where(function ($query) {
                 $query->where(function ($q) {
                     // Overdue: past deadline, not completed
@@ -241,7 +237,7 @@ class ReviewerDashboard extends Component
                 $query->where('user_id', $this->user->id)
                     ->whereIn('status', $pendingStatuses);
             })
-            ->where('start_year', $yearFilter)
+            ->forAcademicYear($yearFilter)
             ->latest()
             ->limit(20)
             ->get();

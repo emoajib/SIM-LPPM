@@ -5,6 +5,8 @@ namespace App\Livewire\Admin\Archive;
 use App\Enums\ProposalStatus;
 use App\Imports\HistoricalProposalImport;
 use App\Models\Proposal;
+use App\Support\AcademicPeriod;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -21,6 +23,8 @@ class ManageArchives extends Component
 
     public $yearFilter = '';
 
+    public array $availableYears = [];
+
     public $importFile;
 
     public $showImportModal = false;
@@ -32,13 +36,22 @@ class ManageArchives extends Component
 
     public $editTitle;
 
-    public $editYear;
+    public $editTahunAkademik;
+
+    public $editSemester;
 
     public $editDana;
 
     public $editSummary;
 
     public $showEditModal = false;
+
+    public function mount(): void
+    {
+        $this->availableYears = AcademicPeriod::optionsFromPeriods(
+            Proposal::withArchived()->distinct()->whereNotNull('start_year')->get(['start_year', 'semester'])
+        );
+    }
 
     // Reset halaman saat filter berubah (hindari halaman kosong)
     public function updatedSearch(): void
@@ -54,6 +67,7 @@ class ManageArchives extends Component
     public function render()
     {
         $proposals = Proposal::query()
+            ->withArchived()
             // QA FIX: eager load identity untuk cegah N+1 di blade ($archive->submitter->identity->nidn)
             ->with(['submitter.identity', 'budgetItems'])
             ->where('status', ProposalStatus::COMPLETED)
@@ -61,7 +75,7 @@ class ManageArchives extends Component
                 $q->where('title', 'like', '%'.$this->search.'%')
                     ->orWhereHas('submitter', fn ($u) => $u->where('name', 'like', '%'.$this->search.'%'));
             })
-            ->when($this->yearFilter, fn ($q) => $q->where('start_year', $this->yearFilter))
+            ->when($this->yearFilter, fn ($q) => $q->forAcademicYear($this->yearFilter))
             ->orderByDesc('start_year')
             ->paginate(10);
 
@@ -77,7 +91,7 @@ class ManageArchives extends Component
         ]);
 
         try {
-            $importer = new HistoricalProposalImport;
+            $importer = new HistoricalProposalImport((string) Str::uuid());
             Excel::import($importer, $this->importFile);
 
             $msg = "✅ Berhasil mengimport {$importer->imported} baris data arsip.";
@@ -103,7 +117,8 @@ class ManageArchives extends Component
         $p = Proposal::where('status', ProposalStatus::COMPLETED)->findOrFail($id);
         $this->editId = $p->id;
         $this->editTitle = $p->title;
-        $this->editYear = $p->start_year;
+        $this->editTahunAkademik = $p->academic_year ?? AcademicPeriod::label((int) $p->start_year);
+        $this->editSemester = $p->semester ?: AcademicPeriod::GANJIL;
         $this->editDana = (int) $p->approved_budget_total;
         $this->editSummary = $p->summary;
 
@@ -115,16 +130,25 @@ class ManageArchives extends Component
     {
         $this->validate([
             'editTitle' => 'required|string|max:255',
-            'editYear' => 'required|integer|min:2000|max:'.date('Y'),
+            'editTahunAkademik' => ['required', 'string', 'regex:/^\d{4}\/\d{4}$/'],
+            'editSemester' => 'required|in:ganjil,genap',
             'editDana' => 'required|numeric|min:0',
             'editSummary' => 'nullable|string|max:5000',
         ]);
 
         // Zero Trust: pastikan ID yang diedit masih COMPLETED (cegah manipulasi ID)
         $p = Proposal::where('status', ProposalStatus::COMPLETED)->findOrFail($this->editId);
+        $startYear = AcademicPeriod::startYear($this->editTahunAkademik);
+        if ($startYear === null) {
+            $this->addError('editTahunAkademik', 'Format tahun akademik harus YYYY/YYYY.');
+
+            return;
+        }
+
         $p->update([
             'title' => $this->editTitle,
-            'start_year' => $this->editYear,
+            'start_year' => $this->editSemester === AcademicPeriod::GENAP ? $startYear + 1 : $startYear,
+            'semester' => $this->editSemester,
             'summary' => $this->editSummary,
             'sbk_value' => $this->editDana,
         ]);

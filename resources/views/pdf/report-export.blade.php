@@ -53,7 +53,7 @@
 
     <div style="text-align: center; margin-bottom: 15px; font-size: 9pt;">
         ID Proposal: {{ $proposal->id }} | Periode: {{ strtoupper($report->reporting_period) }}<br>
-        Rencana Pelaksanaan {{ $proposal->detailable_type === 'App\Models\Research' ? 'Penelitian' : 'Pengabdian' }} : tahun {{ $proposal->start_year }} s.d. tahun {{ $proposal->start_year + $proposal->duration_in_years - 1 }}
+        Rencana Pelaksanaan {{ $proposal->detailable_type === 'App\Models\Research' ? 'Penelitian' : 'Pengabdian' }} : tahun akademik {{ $proposal->academic_year ?? $proposal->start_year }}
     </div>
 
     @php $sectionNum = 1; @endphp

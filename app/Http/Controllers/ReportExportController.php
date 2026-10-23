@@ -28,6 +28,7 @@ use App\Models\ReviewCriteria;
 use App\Models\ReviewLog;
 use App\Models\User;
 use App\Services\DocumentSignatureService;
+use App\Support\AcademicPeriod;
 use App\Traits\HasIkuCalculations;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Builder;
@@ -205,7 +206,9 @@ class ReportExportController extends Controller
     {
 
         try {
-            $period = $request->query('period', date('Y'));
+            $period = (string) $request->query('period', AcademicPeriod::current());
+            $periodStartYear = AcademicPeriod::startYear($period) ?? (int) date('Y');
+            $periodSlug = str_replace('/', '-', $period);
             $ikuMetrics = $this->getIkuMetrics($period);
 
             $institution = Institution::first();
@@ -213,7 +216,7 @@ class ReportExportController extends Controller
             $lppmHead = User::role('kepala lppm')->with('identity')->first();
 
             $institutionalReport = InstitutionalReport::where('type', 'iku')
-                ->where('year', $period)
+                ->where('year', $periodStartYear)
                 ->first();
 
             $isPreview = $request->boolean('preview');
@@ -230,7 +233,7 @@ class ReportExportController extends Controller
                 'pdfConfig' => $pdfConfig,
             ])->setPaper(normalize_paper_size($pdfConfig['paper_size'] ?? 'a4'), $pdfConfig['orientation'] ?? 'portrait');
 
-            $filename = ($isPreview ? 'PREVIEW-' : '').'laporan-rekap-iku-'.$period.'-'.now()->format('YmdHis').'.pdf';
+            $filename = ($isPreview ? 'PREVIEW-' : '').'laporan-rekap-iku-'.$periodSlug.'-'.now()->format('YmdHis').'.pdf';
 
             if ($isPreview) {
                 return $this->pdfInlineResponse($pdf->output(), $filename);
@@ -266,11 +269,12 @@ class ReportExportController extends Controller
     {
 
         try {
-            $period = $request->query('period', date('Y'));
+            $period = (string) $request->query('period', AcademicPeriod::current());
+            $periodSlug = str_replace('/', '-', $period);
 
             $download = Excel::download(
                 new IkuReportExport($period),
-                'laporan-rekap-iku-'.$period.'-'.now()->format('YmdHis').'.xlsx'
+                'laporan-rekap-iku-'.$periodSlug.'-'.now()->format('YmdHis').'.xlsx'
             );
 
             return $download;
@@ -288,7 +292,9 @@ class ReportExportController extends Controller
 
         try {
             $user = Auth::user();
-            $period = $request->query('period', date('Y'));
+            $period = (string) $request->query('period', AcademicPeriod::current());
+            $periodStartYear = AcademicPeriod::startYear($period) ?? (int) date('Y');
+            $periodSlug = str_replace('/', '-', $period);
             $semester = $request->query('semester');
             $search = $request->query('search');
             $scheme = $request->query('scheme');
@@ -301,8 +307,9 @@ class ReportExportController extends Controller
             $isPreview = $request->boolean('preview');
 
             $proposals = Proposal::query()
+                ->withArchived()
                 ->where('detailable_type', 'App\Models\Research')
-                ->where('start_year', $period)
+                ->forAcademicYear($period)
                 ->where(function ($q) {
                     $q->where('status', ProposalStatus::COMPLETED)
                         ->orWhereHas('progressReports');
@@ -330,7 +337,7 @@ class ReportExportController extends Controller
                 ->get();
 
             $institutionalReport = InstitutionalReport::where('type', 'research')
-                ->where('year', $period)
+                ->where('year', $periodStartYear)
                 ->first();
 
             $institution = Institution::first();
@@ -351,7 +358,7 @@ class ReportExportController extends Controller
                 'pdfConfig' => $pdfConfig,
             ])->setPaper(normalize_paper_size($pdfConfig['paper_size'] ?? 'a4'), $pdfConfig['orientation'] ?? 'landscape');
 
-            $filename = ($isPreview ? 'PREVIEW-' : '').'laporan-penelitian-'.$period.'-'.now()->format('YmdHis').'.pdf';
+            $filename = ($isPreview ? 'PREVIEW-' : '').'laporan-penelitian-'.$periodSlug.'-'.now()->format('YmdHis').'.pdf';
 
             if ($isPreview) {
                 return $this->pdfInlineResponse($pdf->output(), $filename);
@@ -399,7 +406,8 @@ class ReportExportController extends Controller
     {
         try {
             $user = Auth::user();
-            $period = $request->query('period', date('Y'));
+            $period = (string) $request->query('period', AcademicPeriod::current());
+            $periodSlug = str_replace('/', '-', $period);
             $semester = $request->query('semester');
             $search = $request->query('search');
             $scheme = $request->query('scheme');
@@ -412,7 +420,7 @@ class ReportExportController extends Controller
 
             $download = Excel::download(
                 new ResearchReportExport($period, $search, $scheme, $faculty, $semester, $reportStatus),
-                'laporan-penelitian-'.$period.'-'.now()->format('YmdHis').'.xlsx'
+                'laporan-penelitian-'.$periodSlug.'-'.now()->format('YmdHis').'.xlsx'
             );
 
             return $download;
@@ -430,7 +438,9 @@ class ReportExportController extends Controller
 
         try {
             $user = Auth::user();
-            $period = $request->query('period', date('Y'));
+            $period = (string) $request->query('period', AcademicPeriod::current());
+            $periodStartYear = AcademicPeriod::startYear($period) ?? (int) date('Y');
+            $periodSlug = str_replace('/', '-', $period);
             $semester = $request->query('semester');
             $search = $request->query('search');
             $scheme = $request->query('scheme');
@@ -443,8 +453,9 @@ class ReportExportController extends Controller
             $isPreview = $request->boolean('preview');
 
             $proposals = Proposal::query()
+                ->withArchived()
                 ->where('detailable_type', 'App\Models\CommunityService')
-                ->where('start_year', $period)
+                ->forAcademicYear($period)
                 ->where(function ($q) {
                     $q->where('status', ProposalStatus::COMPLETED)
                         ->orWhereHas('progressReports');
@@ -472,7 +483,7 @@ class ReportExportController extends Controller
                 ->get();
 
             $institutionalReport = InstitutionalReport::where('type', 'pkm')
-                ->where('year', $period)
+                ->where('year', $periodStartYear)
                 ->first();
 
             $institution = Institution::first();
@@ -493,7 +504,7 @@ class ReportExportController extends Controller
                 'pdfConfig' => $pdfConfig,
             ])->setPaper(normalize_paper_size($pdfConfig['paper_size'] ?? 'a4'), $pdfConfig['orientation'] ?? 'landscape');
 
-            $filename = ($isPreview ? 'PREVIEW-' : '').'laporan-pkm-'.$period.'-'.now()->format('YmdHis').'.pdf';
+            $filename = ($isPreview ? 'PREVIEW-' : '').'laporan-pkm-'.$periodSlug.'-'.now()->format('YmdHis').'.pdf';
 
             if ($isPreview) {
                 return $this->pdfInlineResponse($pdf->output(), $filename);
@@ -541,7 +552,8 @@ class ReportExportController extends Controller
     {
         try {
             $user = Auth::user();
-            $period = $request->query('period', date('Y'));
+            $period = (string) $request->query('period', AcademicPeriod::current());
+            $periodSlug = str_replace('/', '-', $period);
             $semester = $request->query('semester');
             $search = $request->query('search');
             $scheme = $request->query('scheme');
@@ -554,7 +566,7 @@ class ReportExportController extends Controller
 
             $download = Excel::download(
                 new CommunityServiceReportExport($period, $search, $scheme, $faculty, $semester, $reportStatus),
-                'laporan-pkm-'.$period.'-'.now()->format('YmdHis').'.xlsx'
+                'laporan-pkm-'.$periodSlug.'-'.now()->format('YmdHis').'.xlsx'
             );
 
             return $download;
@@ -575,7 +587,8 @@ class ReportExportController extends Controller
             $activeTab = $request->query('activeTab', 'research');
             $search = $request->query('search', '');
             $outputType = $request->query('outputType', 'all');
-            $period = $request->query('period', date('Y'));
+            $period = (string) $request->query('period', AcademicPeriod::current());
+            $periodStartYear = AcademicPeriod::startYear($period) ?? (int) date('Y');
             $semester = $request->query('semester');
             $scheme = $request->query('scheme');
             $faculty = $request->query('faculty');
@@ -588,7 +601,7 @@ class ReportExportController extends Controller
             $proposals = $this->getOutputProposalsQuery($activeTab, $search, $outputType, $period, $scheme, $faculty, $semester)->get();
 
             $institutionalReport = InstitutionalReport::where('type', 'output')
-                ->where('year', $period)
+                ->where('year', $periodStartYear)
                 ->first();
 
             $institution = Institution::first();
@@ -664,7 +677,7 @@ class ReportExportController extends Controller
             $activeTab = $request->query('activeTab', 'research');
             $search = $request->query('search', '');
             $outputType = $request->query('outputType', 'all');
-            $period = $request->query('period', date('Y'));
+            $period = (string) $request->query('period', AcademicPeriod::current());
             $semester = $request->query('semester');
             $scheme = $request->query('scheme');
             $faculty = $request->query('faculty');
@@ -692,9 +705,10 @@ class ReportExportController extends Controller
         $detailableType = $activeTab === 'research' ? 'App\\Models\\Research' : 'App\\Models\\CommunityService';
 
         $query = Proposal::query()
+            ->withArchived()
             ->with(['submitter.identity.faculty', 'submitter.identity.studyProgram', 'progressReports.mandatoryOutputs.proposalOutput', 'progressReports.additionalOutputs.proposalOutput'])
             ->where('detailable_type', $detailableType)
-            ->when($period, fn ($q) => $q->where('start_year', $period))
+            ->when($period, fn ($q) => $q->forAcademicYear($period))
             ->when($semester && $semester !== 'all', fn ($q) => $q->where('semester', $semester))
             ->where(function (Builder $query) {
                 $query->whereHas('progressReports.mandatoryOutputs')
@@ -740,15 +754,18 @@ class ReportExportController extends Controller
             $facultyId = $user->activeHasRole('dekan') ? $user->identity?->faculty_id : null;
             $search = $request->query('search', '');
             $typeFilter = $request->query('typeFilter', '');
-            $periodFilter = $request->query('periodFilter', '');
+            $periodFilter = (string) $request->query('periodFilter', AcademicPeriod::current());
+            $periodStartYear = AcademicPeriod::startYear($periodFilter) ?? (int) date('Y');
 
             $partners = $action->handle($search, $typeFilter, $periodFilter, $facultyId !== null ? (string) $facultyId : null)->get();
 
             // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             $partners->each(function (Partner $partner) use ($facultyId, $periodFilter) {
-                $proposals = $partner->proposals()
+                $proposals = Proposal::query()
+                    ->withArchived()
+                    ->whereHas('partners', fn ($p) => $p->whereKey($partner->id))
                     ->whereIn('status', [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value])
-                    ->when($periodFilter, fn ($q) => $q->where('start_year', $periodFilter))
+                    ->when($periodFilter, fn ($q) => $q->forAcademicYear($periodFilter))
                     ->when($facultyId, fn ($q) => $q->whereHas('submitter.identity', fn ($i) => $i->where('faculty_id', $facultyId)))
                     ->with(['budgetItems'])
                     ->get();
@@ -760,7 +777,7 @@ class ReportExportController extends Controller
             });
 
             $institutionalReport = InstitutionalReport::where('type', 'partner')
-                ->where('year', $periodFilter ?: date('Y'))
+                ->where('year', $periodStartYear)
                 ->first();
 
             $institution = Institution::first();
@@ -830,7 +847,7 @@ class ReportExportController extends Controller
             $facultyId = $user->activeHasRole('dekan') ? $user->identity?->faculty_id : null;
             $search = $request->query('search', '');
             $typeFilter = $request->query('typeFilter', '');
-            $periodFilter = $request->query('periodFilter', '');
+            $periodFilter = (string) $request->query('periodFilter', AcademicPeriod::current());
 
             $download = Excel::download(
                 new PartnerCollaborationExport($search, $typeFilter, $periodFilter, $facultyId !== null ? (string) $facultyId : null),
@@ -891,12 +908,13 @@ class ReportExportController extends Controller
     {
 
         try {
-            $period = $request->query('period', date('Y'));
+            $period = (string) $request->query('period', AcademicPeriod::current());
+            $periodSlug = str_replace('/', '-', $period);
             $scheme = $request->query('scheme');
-            $filename = "research-proposals-{$period}.xlsx";
+            $filename = "research-proposals-{$periodSlug}.xlsx";
 
             $download = Excel::download(
-                new ResearchProposalExport((int) $period, $scheme),
+                new ResearchProposalExport($period, $scheme),
                 $filename
             );
 
@@ -912,12 +930,13 @@ class ReportExportController extends Controller
     public function dashboardCommunityServiceExport(Request $request)
     {
         try {
-            $period = $request->query('period', date('Y'));
+            $period = (string) $request->query('period', AcademicPeriod::current());
+            $periodSlug = str_replace('/', '-', $period);
             $scheme = $request->query('scheme');
-            $filename = "community-service-proposals-{$period}.xlsx";
+            $filename = "community-service-proposals-{$periodSlug}.xlsx";
 
             $download = Excel::download(
-                new CommunityServiceProposalExport((int) $period, $scheme),
+                new CommunityServiceProposalExport($period, $scheme),
                 $filename
             );
 
@@ -1209,21 +1228,20 @@ class ReportExportController extends Controller
     public function monevPdf(Request $request)
     {
         try {
-            $period = $request->query('academic_year', date('Y'));
+            $period = $request->query('academic_year', AcademicPeriod::current());
             $semester = $request->query('semester', 'all');
             $isPreview = $request->boolean('preview');
+            $periodStartYear = AcademicPeriod::startYear($period) ?? (int) date('Y');
+            $periodSlug = str_replace('/', '-', $period);
 
             $reviews = MonevReview::query()
                 ->with(['proposal.submitter.identity', 'reviewer.identity'])
-                ->where('academic_year', $period)
-                ->when($semester !== 'all', function ($query) use ($semester) {
-                    $query->where('semester', $semester);
-                })
+                ->forAcademicPeriod($period, $semester)
                 ->latest()
                 ->get();
 
             $institutionalReport = InstitutionalReport::where('type', 'monev')
-                ->where('year', $period)
+                ->where('year', $periodStartYear)
                 ->when($semester !== 'all', function ($q) use ($semester) {
                     $q->where('metadata->semester', $semester);
                 })
@@ -1247,7 +1265,7 @@ class ReportExportController extends Controller
                 'pdfConfig' => $pdfConfig,
             ])->setPaper(normalize_paper_size($pdfConfig['paper_size'] ?? 'a4'), $pdfConfig['orientation'] ?? 'portrait');
 
-            $filename = ($isPreview ? 'PREVIEW-' : '').'laporan-rekap-monev-'.$period.'-'.now()->format('YmdHis').'.pdf';
+            $filename = ($isPreview ? 'PREVIEW-' : '').'laporan-rekap-monev-'.$periodSlug.'-'.now()->format('YmdHis').'.pdf';
 
             if ($isPreview) {
                 return $this->pdfInlineResponse($pdf->output(), $filename);
@@ -1290,11 +1308,13 @@ class ReportExportController extends Controller
     {
         @ini_set('memory_limit', '512M');
         try {
-            $period = $request->query('period', date('Y'));
+            $period = (string) $request->query('period', AcademicPeriod::current());
+            $periodStartYear = AcademicPeriod::startYear($period) ?? (int) date('Y');
+            $periodSlug = str_replace('/', '-', $period);
             $semester = $request->query('semester');
             $search = $request->query('search');
             $type = $request->query('type', 'all');
-            $year = (int) $period;
+            $year = $period;
             $isPreview = $request->boolean('preview');
 
             // Query proposals
@@ -1308,7 +1328,7 @@ class ReportExportController extends Controller
                     ProposalStatus::APPROVED,
                     ProposalStatus::COMPLETED,
                 ])
-                ->when($year, fn ($q) => $q->whereYear('created_at', $year))
+                ->when($year, fn ($q) => $q->forAcademicYear($year))
                 ->when($semester && $semester !== 'all', fn ($q) => $q->where('semester', $semester))
                 ->when($search, function ($q) use ($search) {
                     $q->where(function ($sub) use ($search) {
@@ -1369,7 +1389,7 @@ class ReportExportController extends Controller
                     'reviews as total_assigned' => function ($query) use ($year, $semester) {
                         if ($year) {
                             $query->whereHas('proposal', function ($pq) use ($year, $semester) {
-                                $pq->whereYear('created_at', $year);
+                                Proposal::applyAcademicYearFilter($pq, $year);
                                 if ($semester && $semester !== 'all') {
                                     $pq->where('semester', $semester);
                                 }
@@ -1386,14 +1406,14 @@ class ReportExportController extends Controller
 
             $totalReviews = ProposalReviewer::query()
                 ->whereHas('proposal', function ($q) use ($year, $semester) {
-                    $q->when($year, fn ($sub) => $sub->whereYear('created_at', $year))
+                    $q->when($year, fn ($sub) => Proposal::applyAcademicYearFilter($sub, $year))
                         ->when($semester && $semester !== 'all', fn ($sub) => $sub->where('semester', $semester));
                 })
                 ->count();
 
             $completedReviews = ProposalReviewer::query()
                 ->whereHas('proposal', function ($q) use ($year, $semester) {
-                    $q->when($year, fn ($sub) => $sub->whereYear('created_at', $year))
+                    $q->when($year, fn ($sub) => Proposal::applyAcademicYearFilter($sub, $year))
                         ->when($semester && $semester !== 'all', fn ($sub) => $sub->where('semester', $semester));
                 })
                 ->where('status', 'completed')
@@ -1410,7 +1430,7 @@ class ReportExportController extends Controller
                         ProposalStatus::REVISION_SUBMITTED,
                         ProposalStatus::APPROVED,
                         ProposalStatus::COMPLETED,
-                    ])->when($year, fn ($sub) => $sub->whereYear('created_at', $year))
+                    ])->when($year, fn ($sub) => Proposal::applyAcademicYearFilter($sub, $year))
                         ->when($semester && $semester !== 'all', fn ($sub) => $sub->where('semester', $semester));
                 })
                 ->whereNotNull('completed_at')
@@ -1428,7 +1448,7 @@ class ReportExportController extends Controller
             $lppmHead = User::role('kepala lppm')->with('identity')->first();
 
             $institutionalReport = InstitutionalReport::where('type', 'reviewer')
-                ->where('year', $period)
+                ->where('year', $periodStartYear)
                 ->first();
 
             $pdfConfig = get_pdf_config('report_compact', 'reviewer');
@@ -1557,7 +1577,7 @@ class ReportExportController extends Controller
                 @unlink($tempFile);
             }
 
-            $filename = ($isPreview ? 'PREVIEW-' : '').'laporan-reviewer-'.$period.'-'.now()->format('YmdHis').'.pdf';
+            $filename = ($isPreview ? 'PREVIEW-' : '').'laporan-reviewer-'.$periodSlug.'-'.now()->format('YmdHis').'.pdf';
 
             if ($isPreview) {
                 return $this->pdfInlineResponse($pdf->output(), $filename);
@@ -1603,14 +1623,15 @@ class ReportExportController extends Controller
     public function reviewerExcel(Request $request)
     {
         try {
-            $period = $request->query('period', date('Y'));
+            $period = (string) $request->query('period', AcademicPeriod::current());
+            $periodSlug = str_replace('/', '-', $period);
             $semester = $request->query('semester');
             $search = $request->query('search');
             $type = $request->query('type', 'all');
 
             return Excel::download(
                 new ReviewerReportExport($period, $type, $search, $semester),
-                'laporan-reviewer-'.$period.'-'.now()->format('YmdHis').'.xlsx'
+                'laporan-reviewer-'.$periodSlug.'-'.now()->format('YmdHis').'.xlsx'
             );
         } catch (\Throwable $e) {
             Log::error('Reviewer Excel Export Error: '.$e->getMessage());

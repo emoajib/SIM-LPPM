@@ -14,6 +14,7 @@ use App\Models\ProposalReviewer;
 use App\Models\Research;
 use App\Models\ReviewLog;
 use App\Models\User;
+use App\Support\AcademicPeriod;
 use Illuminate\Contracts\View\View;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -54,7 +55,7 @@ class ReviewerReport extends Component
             abort(403, 'Anda tidak memiliki hak akses untuk halaman ini.');
         }
 
-        $this->yearFilter = (string) date('Y');
+        $this->yearFilter = AcademicPeriod::current();
         $this->semesterFilter = request()->query('semester', 'all');
     }
 
@@ -88,7 +89,7 @@ class ReviewerReport extends Component
         $this->search = '';
         $this->typeFilter = 'all';
         $this->semesterFilter = 'all';
-        $this->yearFilter = (string) date('Y');
+        $this->yearFilter = AcademicPeriod::current();
         $this->resetPage();
     }
 
@@ -147,8 +148,7 @@ class ReviewerReport extends Component
                 $q->where('detailable_type', $detailableType);
             })
             ->when($this->yearFilter, function ($q) {
-                $year = (int) $this->yearFilter;
-                $q->whereYear('created_at', $year);
+                $q->forAcademicYear($this->yearFilter);
             })
             ->when($this->semesterFilter !== 'all', function ($q) {
                 $q->where('semester', $this->semesterFilter);
@@ -203,7 +203,7 @@ class ReviewerReport extends Component
                 'reviews as total_assigned' => function ($query) {
                     if ($this->yearFilter) {
                         $query->whereHas('proposal', function ($pq) {
-                            $pq->whereYear('created_at', (int) $this->yearFilter);
+                            Proposal::applyAcademicYearFilter($pq, $this->yearFilter);
                             if ($this->semesterFilter !== 'all') {
                                 $pq->where('semester', $this->semesterFilter);
                             }
@@ -214,7 +214,7 @@ class ReviewerReport extends Component
                     $query->where('status', 'pending');
                     if ($this->yearFilter) {
                         $query->whereHas('proposal', function ($pq) {
-                            $pq->whereYear('created_at', (int) $this->yearFilter);
+                            Proposal::applyAcademicYearFilter($pq, $this->yearFilter);
                             if ($this->semesterFilter !== 'all') {
                                 $pq->where('semester', $this->semesterFilter);
                             }
@@ -225,7 +225,7 @@ class ReviewerReport extends Component
                     $query->where('status', 'completed');
                     if ($this->yearFilter) {
                         $query->whereHas('proposal', function ($pq) {
-                            $pq->whereYear('created_at', (int) $this->yearFilter);
+                            Proposal::applyAcademicYearFilter($pq, $this->yearFilter);
                             if ($this->semesterFilter !== 'all') {
                                 $pq->where('semester', $this->semesterFilter);
                             }
@@ -240,7 +240,7 @@ class ReviewerReport extends Component
     #[Computed]
     public function summaryStats(): array
     {
-        $year = (int) $this->yearFilter;
+        $year = $this->yearFilter;
 
         $totalProposals = Proposal::query()
             ->whereIn('status', [
@@ -252,7 +252,7 @@ class ReviewerReport extends Component
                 ProposalStatus::APPROVED,
                 ProposalStatus::COMPLETED,
             ])
-            ->when($year, fn ($q) => $q->whereYear('created_at', $year))
+            ->when($year, fn ($q) => $q->forAcademicYear($year))
             ->when($this->semesterFilter !== 'all', fn ($q) => $q->where('semester', $this->semesterFilter))
             ->count();
 
@@ -266,7 +266,7 @@ class ReviewerReport extends Component
                 ProposalStatus::APPROVED,
                 ProposalStatus::COMPLETED,
             ])
-            ->when($year, fn ($q) => $q->whereYear('created_at', $year))
+            ->when($year, fn ($q) => $q->forAcademicYear($year))
             ->when($this->semesterFilter !== 'all', fn ($q) => $q->where('semester', $this->semesterFilter))
             ->has('reviewers')
             ->count();
@@ -276,14 +276,14 @@ class ReviewerReport extends Component
         // Calculate review progress
         $totalReviews = ProposalReviewer::query()
             ->whereHas('proposal', function ($q) use ($year) {
-                $q->when($year, fn ($sub) => $sub->whereYear('created_at', $year))
+                $q->when($year, fn ($sub) => Proposal::applyAcademicYearFilter($sub, $year))
                     ->when($this->semesterFilter !== 'all', fn ($sub) => $sub->where('semester', $this->semesterFilter));
             })
             ->count();
 
         $completedReviews = ProposalReviewer::query()
             ->whereHas('proposal', function ($q) use ($year) {
-                $q->when($year, fn ($sub) => $sub->whereYear('created_at', $year))
+                $q->when($year, fn ($sub) => Proposal::applyAcademicYearFilter($sub, $year))
                     ->when($this->semesterFilter !== 'all', fn ($sub) => $sub->where('semester', $this->semesterFilter));
             })
             ->where('status', 'completed')
@@ -301,7 +301,7 @@ class ReviewerReport extends Component
                     ProposalStatus::REVISION_SUBMITTED,
                     ProposalStatus::APPROVED,
                     ProposalStatus::COMPLETED,
-                ])->when($year, fn ($sub) => $sub->whereYear('created_at', $year))
+                ])->when($year, fn ($sub) => Proposal::applyAcademicYearFilter($sub, $year))
                     ->when($this->semesterFilter !== 'all', fn ($sub) => $sub->where('semester', $this->semesterFilter));
             })
             ->whereNotNull('completed_at')
@@ -319,26 +319,30 @@ class ReviewerReport extends Component
     #[Computed]
     public function availableYears(): array
     {
-        $years = Proposal::query()
-            ->selectRaw(sql_year().' as year')
+        $periods = Proposal::query()
+            ->whereNotNull('start_year')
             ->distinct()
-            ->orderBy('year', 'desc')
-            ->pluck('year')
-            ->map(fn ($y) => (string) $y)
-            ->toArray();
+            ->get(['start_year', 'semester']);
 
-        return array_filter($years) ?: [(string) date('Y')];
+        $options = AcademicPeriod::optionsFromPeriods($periods);
+
+        return $options !== [] ? $options : [AcademicPeriod::current()];
+    }
+
+    private function institutionalYear(): int
+    {
+        return AcademicPeriod::startYear($this->yearFilter) ?? (int) date('Y');
     }
 
     #[Computed]
     public function institutionalReport(): ?InstitutionalReport
     {
-        return $this->getInstitutionalReport('reviewer', (int) $this->yearFilter);
+        return $this->getInstitutionalReport('reviewer', $this->institutionalYear());
     }
 
     public function submitToRektor(): void
     {
-        $this->submitInstitutionalReport('reviewer', (int) $this->yearFilter, [
+        $this->submitInstitutionalReport('reviewer', $this->institutionalYear(), [
             'search' => $this->search,
             'type' => $this->typeFilter,
             'semester' => $this->semesterFilter,
@@ -348,12 +352,12 @@ class ReviewerReport extends Component
 
     public function approveReport(): void
     {
-        $this->approveInstitutionalReport('reviewer', (int) $this->yearFilter);
+        $this->approveInstitutionalReport('reviewer', $this->institutionalYear());
     }
 
     public function rejectReport(): void
     {
-        $this->rejectInstitutionalReport('reviewer', (int) $this->yearFilter);
+        $this->rejectInstitutionalReport('reviewer', $this->institutionalYear());
     }
 
     public function resetReport(): void

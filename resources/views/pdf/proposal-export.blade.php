@@ -16,7 +16,7 @@
             $submitterIdentity?->title_suffix ?? ''
         );
         $submitterNidn = $submitterIdentity?->identity_id ?? '-';
-        $academicYear = $proposal->start_year . '/' . ((int) $proposal->start_year + 1);
+        $academicYear = $proposal->academic_year ?? ($proposal->start_year . '/' . ((int) $proposal->start_year + 1));
         $facultyName = $submitterIdentity?->faculty?->name ?? '.......................';
         $prodiName = $submitterIdentity?->studyProgram?->name ?? '.......................';
         $institutionName = $submitterIdentity?->institution?->name ?? 'ITSNU Pekalongan';
@@ -29,7 +29,7 @@
     @if(\App\Models\Setting::get(\App\Constants\PdfConstants::PROPOSAL_SHOW_COVER, true))
         @include('pdf.partials.cover', [
             'coverTitle' => 'PROPOSAL '.($proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN').' INTERNAL',
-            'coverYear' => $proposal->start_year,
+            'coverYear' => $proposal->academic_year ?? $proposal->start_year,
             'proposal' => $proposal,
             'submitterFullName' => $submitterFullName,
             'submitterNidn' => $submitterNidn,
@@ -60,12 +60,12 @@
     </div>
 
     <div class="proposal-type-box">
-        PROPOSAL {{ $proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN' }} {{ $proposal->start_year }}
+        PROPOSAL {{ $proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN' }} {{ $proposal->academic_year ?? $proposal->start_year }}
     </div>
 
     <div class="proposal-id">
         ID Proposal: {{ $proposal->id }}<br>
-        Rencana Pelaksanaan {{ $proposal->detailable_type === 'App\Models\Research' ? 'Penelitian' : 'Pengabdian' }} : tahun {{ $proposal->start_year }} s.d. tahun {{ (int) $proposal->start_year + (int) $proposal->duration_in_years - 1 }}
+        Rencana Pelaksanaan {{ $proposal->detailable_type === 'App\Models\Research' ? 'Penelitian' : 'Pengabdian' }} : tahun akademik {{ $proposal->academic_year ?? $proposal->start_year }}
     </div>
 
     @php $sectionNum = 1; @endphp

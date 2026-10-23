@@ -320,7 +320,7 @@
                         <thead>
                             <tr>
                                 <th>Judul</th>
-                                <th>Tahun</th>
+                                <th>Tahun Akademik</th>
                                 <th>Peran</th>
                                 <th>Status</th>
                             </tr>
@@ -337,7 +337,7 @@
                                         </div>
                                         <div class="text-secondary small">{{ $research->researchScheme?->name }}</div>
                                     </td>
-                                    <td>{{ $research->start_year }}</td>
+                                    <td>{{ $research->academic_year ?? $research->start_year }}</td>
                                     <td>
                                         @php
                                             $roleName = str($research->user_role)->title();
@@ -377,7 +377,7 @@
                         <thead>
                             <tr>
                                 <th>Judul</th>
-                                <th>Tahun</th>
+                                <th>Tahun Akademik</th>
                                 <th>Peran</th>
                                 <th>Status</th>
                             </tr>
@@ -394,7 +394,7 @@
                                         </div>
                                         <div class="text-secondary small">{{ $pkm->researchScheme?->name }}</div>
                                     </td>
-                                    <td>{{ $pkm->start_year }}</td>
+                                    <td>{{ $pkm->academic_year ?? $pkm->start_year }}</td>
                                     <td>
                                         @php
                                             $roleName = str($pkm->user_role)->title();

@@ -11,6 +11,7 @@ use App\Models\Faculty;
 use App\Models\MandatoryOutput;
 use App\Models\Proposal;
 use App\Models\ResearchScheme;
+use App\Support\AcademicPeriod;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
 use Livewire\Attributes\On;
@@ -93,13 +94,13 @@ abstract class AbstractInstitutionalReport extends Component
             $this->selectedFaculty = 'all';
         }
 
-        $this->period = (string) date('Y');
+        $this->period = AcademicPeriod::current();
         $this->resetPage();
     }
 
     public function mount()
     {
-        $this->period = request()->query('period', (string) date('Y'));
+        $this->period = request()->query('period', AcademicPeriod::current());
         $this->selectedReportStatus = request()->query('report_status', 'all');
 
         if (active_role() === 'dekan' || auth()->user()->activeHasRole('dekan')) {
@@ -107,7 +108,7 @@ abstract class AbstractInstitutionalReport extends Component
         }
 
         // Load metadata from existing report if available
-        $report = $this->getInstitutionalReport($this->reportType(), (int) $this->period);
+        $report = $this->getInstitutionalReport($this->reportType(), $this->institutionalYear());
         if ($report && $report->metadata) {
             $this->search = $report->metadata['search'] ?? '';
             $this->selectedScheme = $report->metadata['scheme'] ?? 'all';
@@ -202,7 +203,7 @@ abstract class AbstractInstitutionalReport extends Component
             'proposals' => $this->proposals(),
             'allSchemes' => ResearchScheme::orderBy('name')->get(),
             'allFaculties' => Faculty::orderBy('name')->get(),
-            'institutionalReport' => $this->getInstitutionalReport($this->reportType(), (int) $this->period),
+            'institutionalReport' => $this->getInstitutionalReport($this->reportType(), $this->institutionalYear()),
         ]));
     }
 
@@ -212,8 +213,9 @@ abstract class AbstractInstitutionalReport extends Component
     protected function getBaseQuery()
     {
         return Proposal::query()
+            ->withArchived()
             ->where('detailable_type', $this->detailableType())
-            ->where('start_year', $this->period)
+            ->forAcademicYear($this->period)
             ->where(function ($q) {
                 $q->where('status', ProposalStatus::COMPLETED)
                     ->orWhereHas('progressReports');
@@ -260,7 +262,8 @@ abstract class AbstractInstitutionalReport extends Component
      */
     protected function availablePeriods(): array
     {
-        return Proposal::query()
+        $periods = Proposal::query()
+            ->withArchived()
             ->where('detailable_type', $this->detailableType())
             ->where(function ($q) {
                 $q->where('status', ProposalStatus::COMPLETED)
@@ -268,10 +271,16 @@ abstract class AbstractInstitutionalReport extends Component
             })
             ->distinct()
             ->whereNotNull('start_year')
-            ->orderBy('start_year', 'desc')
-            ->pluck('start_year')
-            ->map(fn ($year) => (string) $year)
-            ->toArray() ?: [(string) date('Y')];
+            ->get(['start_year', 'semester']);
+
+        $options = AcademicPeriod::optionsFromPeriods($periods);
+
+        return $options !== [] ? $options : [AcademicPeriod::current()];
+    }
+
+    protected function institutionalYear(): int
+    {
+        return AcademicPeriod::startYear($this->period) ?? (int) date('Y');
     }
 
     /**
@@ -370,8 +379,9 @@ abstract class AbstractInstitutionalReport extends Component
     protected function byScheme(): Collection
     {
         return Proposal::query()
+            ->withArchived()
             ->where('detailable_type', $this->detailableType())
-            ->where('start_year', $this->period)
+            ->forAcademicYear($this->period)
             ->where(function ($q) {
                 $q->where('status', ProposalStatus::COMPLETED)
                     ->orWhereHas('progressReports');
@@ -427,8 +437,9 @@ abstract class AbstractInstitutionalReport extends Component
     protected function byFaculty(): Collection
     {
         return Proposal::query()
+            ->withArchived()
             ->where('detailable_type', $this->detailableType())
-            ->where('start_year', $this->period)
+            ->forAcademicYear($this->period)
             ->where(function ($q) {
                 $q->where('status', ProposalStatus::COMPLETED)
                     ->orWhereHas('progressReports');

@@ -8,6 +8,7 @@ use App\Livewire\Concerns\HasToast;
 use App\Livewire\Traits\WithInstitutionalApproval;
 use App\Models\Partner;
 use App\Models\Proposal;
+use App\Support\AcademicPeriod;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -31,6 +32,11 @@ class PartnerCollaboration extends Component
     public string $periodFilter = '';
 
     public ?string $selectedPartnerId = null;
+
+    public function mount(): void
+    {
+        $this->periodFilter = $this->periodFilter ?: AcademicPeriod::current();
+    }
 
     public function updatedSearch(): void
     {
@@ -61,13 +67,14 @@ class PartnerCollaboration extends Component
     #[Computed]
     public function periods(): array
     {
-        return Proposal::query()
+        $periods = Proposal::query()
             ->distinct()
             ->whereNotNull('start_year')
-            ->orderBy('start_year', 'desc')
-            ->pluck('start_year')
-            ->map(fn ($y) => (string) $y)
-            ->toArray() ?: [(string) date('Y')];
+            ->get(['start_year', 'semester']);
+
+        $options = AcademicPeriod::optionsFromPeriods($periods);
+
+        return $options !== [] ? $options : [AcademicPeriod::current()];
     }
 
     #[Computed]
@@ -83,15 +90,16 @@ class PartnerCollaboration extends Component
         $withMou = (clone $basePartner)->whereHas('media', fn ($q) => $q->where('collection_name', 'mou_pks'))->count();
         $withProposal = (clone $basePartner)->whereHas(
             'proposals',
-            fn ($q) => $q->when($this->periodFilter, fn ($q2) => $q2->where('start_year', $this->periodFilter))
+            fn ($q) => $q->when($this->periodFilter, fn ($q2) => Proposal::applyAcademicYearFilter($q2, $this->periodFilter))
         )->count();
 
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $activeProposals = Proposal::query()
+            ->withArchived()
             ->whereHas('partners')
             ->whereIn('status', [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value])
             ->when($facultyId, fn ($q) => $q->whereHas('submitter.identity', fn ($i) => $i->where('faculty_id', $facultyId)))
-            ->when($this->periodFilter, fn ($q) => $q->where('start_year', $this->periodFilter))
+            ->when($this->periodFilter, fn ($q) => $q->forAcademicYear($this->periodFilter))
             ->with(['budgetItems'])
             ->get();
 
@@ -139,6 +147,11 @@ class PartnerCollaboration extends Component
         $this->dispatch('download-file', url: $url);
     }
 
+    public function institutionalYear(): int
+    {
+        return AcademicPeriod::startYear($this->periodFilter) ?? (int) date('Y');
+    }
+
     public function render(GetPartnerReportQuery $action): View
     {
         $user = auth()->user();
@@ -149,9 +162,11 @@ class PartnerCollaboration extends Component
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         // Hitung total dana secara dinamis dengan fallback ke RAB
         $partners->getCollection()->each(function (Partner $partner) use ($facultyId) {
-            $proposals = $partner->proposals()
+            $proposals = Proposal::query()
+                ->withArchived()
+                ->whereHas('partners', fn ($p) => $p->whereKey($partner->id))
                 ->whereIn('status', [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value])
-                ->when($this->periodFilter, fn ($q) => $q->where('start_year', $this->periodFilter))
+                ->when($this->periodFilter, fn ($q) => $q->forAcademicYear($this->periodFilter))
                 ->when($facultyId, fn ($q) => $q->whereHas('submitter.identity', fn ($i) => $i->where('faculty_id', $facultyId)))
                 ->with(['budgetItems'])
                 ->get();
@@ -165,9 +180,10 @@ class PartnerCollaboration extends Component
         $detailProposals = null;
         if ($this->selectedPartnerId) {
             $detailProposals = Proposal::query()
+                ->withArchived()
                 ->whereHas('partners', fn ($q) => $q->where('partners.id', $this->selectedPartnerId))
                 ->when($facultyId, fn ($q) => $q->whereHas('submitter.identity', fn ($i) => $i->where('faculty_id', $facultyId)))
-                ->when($this->periodFilter, fn ($q) => $q->where('start_year', $this->periodFilter))
+                ->when($this->periodFilter, fn ($q) => $q->forAcademicYear($this->periodFilter))
                 ->with(['submitter.identity', 'detailable'])
                 ->latest()
                 ->get();
@@ -176,7 +192,7 @@ class PartnerCollaboration extends Component
         return view('livewire.reports.partner-collaboration', [
             'partners' => $partners,
             'detailProposals' => $detailProposals,
-            'institutionalReport' => $this->getInstitutionalReport('partner', (int) ($this->periodFilter ?: date('Y'))),
+            'institutionalReport' => $this->getInstitutionalReport('partner', $this->institutionalYear()),
         ]);
     }
 }

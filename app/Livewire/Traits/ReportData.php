@@ -7,6 +7,7 @@ namespace App\Livewire\Traits;
 use App\Enums\ProposalUserStatus;
 use App\Enums\ReportStatus;
 use App\Models\Proposal;
+use App\Support\AcademicPeriod;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -69,7 +70,25 @@ trait ReportData
             return $query;
         }
 
-        return $query->whereYear('created_at', $year);
+        $start = AcademicPeriod::startYear($year);
+
+        if ($start === null) {
+            if (! ctype_digit($year)) {
+                return $query;
+            }
+
+            return $query->whereRaw('COALESCE(start_year, '.sql_year().') = ?', [(int) $year]);
+        }
+
+        Proposal::applyAcademicYearFilter($query, $year);
+
+        /** @phpstan-ignore-next-line */
+        $semester = property_exists($this, 'selectedSemester') ? $this->selectedSemester : null;
+        if (in_array($semester, [AcademicPeriod::GANJIL, AcademicPeriod::GENAP], true)) {
+            $query->where('semester', $semester);
+        }
+
+        return $query;
     }
 
     protected function applySchemeFilter(Builder $query, string $detailableType, string $schemeId): Builder
@@ -148,8 +167,11 @@ trait ReportData
     {
         $query = $this->buildProposalQuery($detailableType, $statuses);
 
-        return $query->selectRaw('DISTINCT '.sql_year().' as year')
-            ->orderByDesc('year')
-            ->pluck('year');
+        $periods = $query->select('start_year', 'semester')
+            ->distinct()
+            ->get()
+            ->filter(fn ($period) => $period->start_year !== null);
+
+        return collect(AcademicPeriod::optionsFromPeriods($periods));
     }
 }

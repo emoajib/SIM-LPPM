@@ -58,15 +58,7 @@ class BudgetCap extends Model
      */
     public static function getCapForPeriod(int $year, ?string $semester = null, string $type = 'research', ?int $schemeId = null): ?float
     {
-        $query = self::where('year', $year);
-
-        // Defensive check: only filter by semester if the column exists in the database
-        // This prevents 500 errors during the transition period when migrations are pending
-        if ($semester && Schema::hasColumn('budget_caps', 'semester')) {
-            $query->where('semester', $semester);
-        }
-
-        $budgetCap = $query->first();
+        $budgetCap = self::findForPeriod($year, $semester);
 
         if (! $budgetCap) {
             return null;
@@ -81,5 +73,53 @@ class BudgetCap extends Model
         return $type === 'research'
             ? ($budgetCap->research_budget_cap !== null ? (float) $budgetCap->research_budget_cap : null)
             : ($budgetCap->community_service_budget_cap !== null ? (float) $budgetCap->community_service_budget_cap : null);
+    }
+
+    /**
+     * Tahun awal akademik dari tahun kalender semester.
+     * Semester genap (Mar) memakai tahun akademik sebelumnya.
+     */
+    public static function resolveAcademicYear(int $semesterStartYear, ?string $semester): int
+    {
+        return $semester === 'genap' ? $semesterStartYear - 1 : $semesterStartYear;
+    }
+
+    /**
+     * Label tahun akademik, contoh "2026/2027".
+     */
+    public static function academicYearLabel(int $semesterStartYear, ?string $semester): string
+    {
+        $academicStart = self::resolveAcademicYear($semesterStartYear, $semester);
+
+        return sprintf('%d/%d', $academicStart, $academicStart + 1);
+    }
+
+    /**
+     * Cari konfigurasi pagu untuk periode. Prioritas tahun awal akademik,
+     * dengan fallback ke tahun kalender semester agar data lama tetap terbaca.
+     */
+    public static function findForPeriod(int $semesterStartYear, ?string $semester = null): ?self
+    {
+        $academicStart = self::resolveAcademicYear($semesterStartYear, $semester);
+
+        $budgetCap = self::queryForYear($academicStart, $semester);
+
+        if ($budgetCap === null && $academicStart !== $semesterStartYear) {
+            $budgetCap = self::queryForYear($semesterStartYear, $semester);
+        }
+
+        return $budgetCap;
+    }
+
+    private static function queryForYear(int $year, ?string $semester): ?self
+    {
+        $query = self::where('year', $year);
+
+        // Defensive check: hanya filter semester jika kolomnya ada (migrasi tertunda).
+        if ($semester && Schema::hasColumn('budget_caps', 'semester')) {
+            $query->where('semester', $semester);
+        }
+
+        return $query->first();
     }
 }

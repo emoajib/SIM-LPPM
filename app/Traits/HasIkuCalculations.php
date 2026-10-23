@@ -84,7 +84,7 @@ trait HasIkuCalculations
         $totalMhs = (int) Setting::where('key', 'total_mahasiswa_pt')->value('value') ?: 1000;
 
         // Mock data logic for now, using proposal involvements if any
-        $involvedMhs = Proposal::where('start_year', $period)->sum('student_count');
+        $involvedMhs = Proposal::query()->forAcademicYear($period)->count();
 
         $percentage = $totalMhs > 0 ? ($involvedMhs / $totalMhs) * 100 : 0;
 
@@ -129,7 +129,7 @@ trait HasIkuCalculations
     protected function calculateIku05(string $period, MasterIku $iku): array
     {
         $totalDosen = Identity::where('type', 'dosen')->count();
-        $proposalsWithPartners = Proposal::where('start_year', $period)
+        $proposalsWithPartners = Proposal::query()->forAcademicYear($period)
             ->whereHas('partners')
             ->count();
 
@@ -150,8 +150,8 @@ trait HasIkuCalculations
      */
     protected function calculateIku06(string $period, MasterIku $iku): array
     {
-        $mandatoryQuery = MandatoryOutput::whereHas('progressReport.proposal', fn ($q) => $q->where('start_year', $period));
-        $additionalQuery = AdditionalOutput::whereHas('progressReport.proposal', fn ($q) => $q->where('start_year', $period));
+        $mandatoryQuery = MandatoryOutput::whereHas('progressReport.proposal', fn ($q) => Proposal::applyAcademicYearFilter($q, $period));
+        $additionalQuery = AdditionalOutput::whereHas('progressReport.proposal', fn ($q) => Proposal::applyAcademicYearFilter($q, $period));
 
         $totalOutputs = $mandatoryQuery->count() + $additionalQuery->count();
         $currentWeight = 0;
@@ -200,8 +200,8 @@ trait HasIkuCalculations
      */
     protected function calculateIku07(string $period, MasterIku $iku): array
     {
-        $totalProposals = Proposal::where('start_year', $period)->count();
-        $sdgProposals = Proposal::where('start_year', $period)->has('sdgs')->count();
+        $totalProposals = Proposal::query()->forAcademicYear($period)->count();
+        $sdgProposals = Proposal::query()->forAcademicYear($period)->has('sdgs')->count();
 
         $percentage = $totalProposals > 0 ? ($sdgProposals / $totalProposals) * 100 : 0;
 
@@ -306,7 +306,7 @@ trait HasIkuCalculations
 
     protected function getIku5Details(string $period, string $search = ''): array
     {
-        return Proposal::where('start_year', $period)
+        return Proposal::query()->forAcademicYear($period)
             ->with(['partners', 'submitter'])
             ->whereHas('partners')
             ->when($search, function ($q) use ($search) {
@@ -327,9 +327,9 @@ trait HasIkuCalculations
 
     protected function getIku6Details(string $period, string $search = ''): array
     {
-        $mandatory = MandatoryOutput::whereHas('progressReport.proposal', fn ($q) => $q->where('start_year', $period))
+        $mandatory = MandatoryOutput::whereHas('progressReport.proposal', fn ($q) => Proposal::applyAcademicYearFilter($q, $period))
             ->where('is_verified', true)->with('progressReport.proposal')->get();
-        $additional = AdditionalOutput::whereHas('progressReport.proposal', fn ($q) => $q->where('start_year', $period))
+        $additional = AdditionalOutput::whereHas('progressReport.proposal', fn ($q) => Proposal::applyAcademicYearFilter($q, $period))
             ->where('is_verified', true)->with('progressReport.proposal')->get();
 
         return $mandatory->concat($additional)->map(fn ($o) => [
@@ -343,7 +343,7 @@ trait HasIkuCalculations
 
     protected function getIku7Details(string $period, string $search = ''): array
     {
-        return Proposal::where('start_year', $period)->has('sdgs')->with(['sdgs', 'submitter'])->get()
+        return Proposal::query()->forAcademicYear($period)->has('sdgs')->with(['sdgs', 'submitter'])->get()
             ->map(fn ($p) => [
                 'title' => $p->title,
                 'submitter' => $p->submitter->name,

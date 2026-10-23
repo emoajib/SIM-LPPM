@@ -26,9 +26,8 @@
                         <tr>
                             <td><strong>Periode Pelaksanaan</strong></td>
                             <td>
-                                @if ($form->start_year && $form->duration_in_years)
-                                    {{ $form->start_year }} - {{ (int) $form->start_year + (int) $form->duration_in_years - 1 }}
-                                    ({{ $form->duration_in_years }} Tahun)
+                                @if ($form->academic_year && $form->duration_in_years)
+                                    {{ $form->academic_year }} ({{ $form->duration_in_years }} Tahun)
                                 @else
                                     {{ $form->duration_in_years }} Tahun
                                 @endif
@@ -194,7 +193,7 @@
                         $budgetItems = collect($form->budget_items);
                         $budgetByYear = $budgetItems->groupBy('year');
                         $duration = (int) ($form->duration_in_years ?? 1);
-                        $startYear = (int) ($form->start_year ?? date('Y'));
+                        $startYear = \App\Models\Proposal::parseAcademicYear($form->academic_year) ?? (int) date('Y');
                     @endphp
 
                     {{-- Year Summary Cards for Multi-Year Proposals --}}
@@ -208,7 +207,7 @@
                                 <div class="col-auto">
                                     <div class="card card-sm">
                                         <div class="card-body py-2 px-3">
-                                            <div class="text-muted small">Tahun {{ $y }} ({{ $actualYear }})</div>
+                                            <div class="text-muted small">Tahun ke-{{ $y }} ({{ $actualYear }}/{{ $actualYear + 1 }})</div>
                                             <div class="fw-bold">Rp {{ number_format($yearTotal, 0, ',', '.') }}</div>
                                         </div>
                                     </div>

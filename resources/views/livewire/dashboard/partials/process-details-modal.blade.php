@@ -370,7 +370,7 @@
 
                                             @elseif($activeProcessType === 'monev')
                                                 <div class="small text-muted mb-1" style="font-size: 0.75rem;">
-                                                    Tahun: {{ $item->start_year }}
+                                                    Tahun Akademik: {{ $item->academic_year ?? $item->start_year }}
                                                 </div>
                                                 <a href="{{ $showRoute }}" target="_blank" class="btn btn-outline-info btn-sm py-0 px-2" style="font-size: 0.75rem;">
                                                     <i class="ti ti-chart-dots me-1"></i>Buka Usulan

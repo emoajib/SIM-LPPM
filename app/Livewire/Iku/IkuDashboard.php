@@ -3,6 +3,7 @@
 namespace App\Livewire\Iku;
 
 use App\Models\Proposal;
+use App\Support\AcademicPeriod;
 use App\Traits\HasIkuCalculations;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -34,7 +35,7 @@ class IkuDashboard extends Component
 
     public function mount()
     {
-        $this->period = (string) request()->query('period', date('Y'));
+        $this->period = (string) request()->query('period', AcademicPeriod::current());
     }
 
     /**
@@ -43,13 +44,14 @@ class IkuDashboard extends Component
     #[Computed]
     public function periods(): array
     {
-        return Proposal::query()
+        $periods = Proposal::query()
             ->distinct()
             ->whereNotNull('start_year')
-            ->orderBy('start_year', 'desc')
-            ->pluck('start_year')
-            ->map(fn ($y) => (string) $y)
-            ->toArray() ?: [(string) date('Y')];
+            ->get(['start_year', 'semester']);
+
+        $options = AcademicPeriod::optionsFromPeriods($periods);
+
+        return $options !== [] ? $options : [AcademicPeriod::current()];
     }
 
     /**

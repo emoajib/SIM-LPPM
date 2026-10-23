@@ -205,8 +205,8 @@
                                     <x-tabler.badge variant="outline" class="text-muted small">
                                         {{ $proposal->communityServiceScheme?->name ?? 'Tanpa Skema' }}
                                     </x-tabler.badge>
-                                    @if($proposal->start_year)
-                                        <span class="badge bg-secondary-lt small">Tahun {{ $proposal->start_year }}</span>
+                                    @if($proposal->academic_year ?? $proposal->start_year)
+                                        <span class="badge bg-secondary-lt small">TA {{ $proposal->academic_year ?? $proposal->start_year }}</span>
                                     @endif
                                 </div>
                             </td>

@@ -39,10 +39,8 @@
                 <div class="col-md-6">
                     <label class="form-label"><x-lucide-calendar class="me-2 icon" />Periode Pelaksanaan</label>
                     <p class="text-reset">
-                        @if ($proposal->start_year && $proposal->duration_in_years)
-                            {{ $proposal->start_year }} -
-                            {{ (int) $proposal->start_year + (int) $proposal->duration_in_years - 1 }}
-                            ({{ $proposal->duration_in_years }} Tahun)
+                        @if ($proposal->academic_year && $proposal->duration_in_years)
+                            {{ $proposal->academic_year }} ({{ $proposal->duration_in_years }} Tahun)
                         @else
                             {{ $proposal->duration_in_years ?? '—' }} Tahun
                         @endif

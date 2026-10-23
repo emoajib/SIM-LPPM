@@ -10,6 +10,7 @@ use App\Models\CommunityService;
 use App\Models\Proposal;
 use App\Models\Research;
 use App\Models\User;
+use App\Support\AcademicPeriod;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -27,7 +28,7 @@ class ReviewerReportExport implements FromView, ShouldAutoSize, WithStyles
 
     public function view(): View
     {
-        $year = (int) $this->period;
+        $year = $this->period ?: AcademicPeriod::current();
 
         // 1. Fetch Proposals (for assignment and scoring rekap)
         $proposalsQuery = Proposal::query()
@@ -40,7 +41,7 @@ class ReviewerReportExport implements FromView, ShouldAutoSize, WithStyles
                 ProposalStatus::APPROVED,
                 ProposalStatus::COMPLETED,
             ])
-            ->when($year, fn ($q) => $q->whereYear('created_at', $year))
+            ->when($year, fn ($q) => $q->forAcademicYear($year))
             ->when($this->semester && $this->semester !== 'all', fn ($q) => $q->where('semester', $this->semester))
             ->when($this->search, function ($q) {
                 $search = (string) $this->search;
@@ -102,7 +103,7 @@ class ReviewerReportExport implements FromView, ShouldAutoSize, WithStyles
                 'reviews as total_assigned' => function ($query) use ($year) {
                     if ($year) {
                         $query->whereHas('proposal', function ($pq) use ($year) {
-                            $pq->whereYear('created_at', $year);
+                            $pq->forAcademicYear($year);
                             if ($this->semester && $this->semester !== 'all') {
                                 $pq->where('semester', $this->semester);
                             }
@@ -113,7 +114,7 @@ class ReviewerReportExport implements FromView, ShouldAutoSize, WithStyles
                     $query->where('status', ReviewStatus::PENDING->value);
                     if ($year) {
                         $query->whereHas('proposal', function ($pq) use ($year) {
-                            $pq->whereYear('created_at', $year);
+                            $pq->forAcademicYear($year);
                             if ($this->semester && $this->semester !== 'all') {
                                 $pq->where('semester', $this->semester);
                             }
@@ -124,7 +125,7 @@ class ReviewerReportExport implements FromView, ShouldAutoSize, WithStyles
                     $query->where('status', 'completed');
                     if ($year) {
                         $query->whereHas('proposal', function ($pq) use ($year) {
-                            $pq->whereYear('created_at', $year);
+                            $pq->forAcademicYear($year);
                             if ($this->semester && $this->semester !== 'all') {
                                 $pq->where('semester', $this->semester);
                             }

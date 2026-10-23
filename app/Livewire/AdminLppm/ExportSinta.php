@@ -4,6 +4,7 @@ namespace App\Livewire\AdminLppm;
 
 use App\Enums\ProposalStatus;
 use App\Models\Proposal;
+use App\Support\AcademicPeriod;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -22,7 +23,7 @@ class ExportSinta extends Component
 
     public function mount(): void
     {
-        $this->selectedYear = (string) date('Y');
+        $this->selectedYear = AcademicPeriod::current();
         $this->availableYears = $this->getYears();
         $this->loadSummary();
     }
@@ -34,30 +35,32 @@ class ExportSinta extends Component
 
     private function getYears(): array
     {
-        $years = Proposal::query()
+        $periods = Proposal::query()
+            ->withArchived()
             ->distinct()
             ->whereNotNull('start_year')
             ->whereIn('status', [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value])
-            ->orderBy('start_year', 'desc')
-            ->pluck('start_year')
-            ->map(fn ($y) => (string) $y)
-            ->toArray();
+            ->get(['start_year', 'semester']);
 
-        return empty($years) ? [(string) date('Y')] : $years;
+        $options = AcademicPeriod::optionsFromPeriods($periods);
+
+        return $options !== [] ? $options : [AcademicPeriod::current()];
     }
 
     private function loadSummary(): void
     {
         $researchCount = Proposal::query()
+            ->withArchived()
             ->where('detailable_type', 'App\Models\Research')
             ->whereIn('status', [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value])
-            ->when($this->selectedYear, fn ($q) => $q->where('start_year', $this->selectedYear))
+            ->when($this->selectedYear, fn ($q) => $q->forAcademicYear($this->selectedYear))
             ->count();
 
         $pkmCount = Proposal::query()
+            ->withArchived()
             ->where('detailable_type', 'App\Models\CommunityService')
             ->whereIn('status', [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value])
-            ->when($this->selectedYear, fn ($q) => $q->where('start_year', $this->selectedYear))
+            ->when($this->selectedYear, fn ($q) => $q->forAcademicYear($this->selectedYear))
             ->count();
 
         $this->summary = [

@@ -4,6 +4,8 @@ namespace App\Livewire\Reports;
 
 use App\Livewire\Concerns\HasToast;
 use App\Livewire\Traits\WithInstitutionalApproval;
+use App\Models\Proposal;
+use App\Support\AcademicPeriod;
 use App\Traits\HasIkuCalculations;
 use Illuminate\View\View;
 use Livewire\Attributes\Layout;
@@ -28,10 +30,10 @@ class IkuReport extends Component
 
     public function mount()
     {
-        $this->period = request()->query('period', (string) date('Y'));
+        $this->period = request()->query('period', AcademicPeriod::current());
 
         // Load metadata from existing report if available
-        $report = $this->getInstitutionalReport('iku', (int) $this->period);
+        $report = $this->getInstitutionalReport('iku', $this->institutionalYear());
         if ($report && $report->metadata) {
             $this->search = $report->metadata['search'] ?? '';
             $this->selectedIku = $report->metadata['selectedIku'] ?? null;
@@ -40,6 +42,11 @@ class IkuReport extends Component
             $this->search = request()->query('search', '');
             $this->selectedIku = request()->query('selectedIku', null);
         }
+    }
+
+    public function institutionalYear(): int
+    {
+        return AcademicPeriod::startYear($this->period) ?? (int) date('Y');
     }
 
     public function setPeriod(string $period): void
@@ -51,7 +58,7 @@ class IkuReport extends Component
     public function resetFilters(): void
     {
         $this->search = '';
-        $this->period = (string) date('Y');
+        $this->period = AcademicPeriod::current();
         $this->selectedIku = null;
     }
 
@@ -79,14 +86,18 @@ class IkuReport extends Component
         $ikuMetrics = $this->getIkuMetrics($this->period);
         $ikuDetails = $this->selectedIku ? $this->getIkuDetails($this->selectedIku, $this->period, $this->search) : [];
 
-        $periods = range(date('Y'), 2024);
-        $periods = array_map('strval', $periods);
+        $periods = AcademicPeriod::optionsFromPeriods(
+            Proposal::query()->distinct()->whereNotNull('start_year')->get(['start_year', 'semester'])
+        );
+        if (! in_array($this->period, $periods, true)) {
+            array_unshift($periods, $this->period);
+        }
 
         return view('livewire.reports.iku-report', [
             'ikuMetrics' => $ikuMetrics,
             'ikuDetails' => $ikuDetails,
             'periods' => $periods,
-            'institutionalReport' => $this->getInstitutionalReport('iku', (int) $this->period),
+            'institutionalReport' => $this->getInstitutionalReport('iku', $this->institutionalYear()),
             'period' => $this->period,
         ]);
     }

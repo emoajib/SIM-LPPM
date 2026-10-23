@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Support\AcademicPeriod;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -74,6 +76,27 @@ class MonevReview extends Model implements HasMedia
     public function proposal(): BelongsTo
     {
         return $this->belongsTo(Proposal::class);
+    }
+
+    /**
+     * Filter by academic period (stored as the semester's start year).
+     *
+     * @param  Builder<MonevReview>  $query
+     * @return Builder<MonevReview>
+     */
+    public function scopeForAcademicPeriod(Builder $query, ?string $academicYear, ?string $semester = null): Builder
+    {
+        $start = AcademicPeriod::startYear($academicYear);
+
+        if ($start !== null) {
+            $query->whereIn('academic_year', [$start, $start + 1]);
+        }
+
+        if (in_array($semester, [AcademicPeriod::GANJIL, AcademicPeriod::GENAP], true)) {
+            $query->where('semester', $semester);
+        }
+
+        return $query;
     }
 
     /**

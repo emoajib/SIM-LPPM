@@ -100,7 +100,7 @@
 
                         @if(active_role_is('kepala lppm') && (!$institutionalReport || in_array($institutionalReport->status, [\App\Enums\InstitutionalReportStatus::DRAFT, \App\Enums\InstitutionalReportStatus::REJECTED])))
                             <button class="btn btn-primary shadow-sm"
-                                wire:click="submitInstitutionalReport('iku', {{ $period }}, {{ json_encode($currentFilters) }})"
+                                wire:click="submitInstitutionalReport('iku', {{ $this->institutionalYear() }}, {{ json_encode($currentFilters) }})"
                                 wire:loading.attr="disabled">
                                 <i class="ti ti-send me-2"></i>
                                 Ajukan ke Rektor
@@ -113,7 +113,7 @@
                                 <i class="ti ti-x me-2"></i>
                                 Minta Perbaikan
                             </button>
-                            <button class="btn btn-success shadow-sm" wire:click="approveInstitutionalReport('iku', {{ $period }})"
+                            <button class="btn btn-success shadow-sm" wire:click="approveInstitutionalReport('iku', {{ $this->institutionalYear() }})"
                                 wire:loading.attr="disabled">
                                 <i class="ti ti-circle-check me-2"></i>
                                 Setujui & Tanda Tangani
@@ -375,7 +375,7 @@
                         <button type="button" class="btn btn-link link-secondary me-auto"
                             data-bs-dismiss="modal">Batal</button>
                         <button type="button" class="btn btn-danger shadow-sm"
-                            wire:click="rejectInstitutionalReport('iku', '{{ $period }}')">
+                            wire:click="rejectInstitutionalReport('iku', '{{ $this->institutionalYear() }}')">
                             Simpan & Tolak
                         </button>
                     </div>

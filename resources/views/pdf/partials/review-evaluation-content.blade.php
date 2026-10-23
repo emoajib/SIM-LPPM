@@ -2,7 +2,7 @@
 
 <div class="main-title">
     LEMBAR PENILAIAN PROPOSAL {{ $type === 'research' ? 'PENELITIAN' : 'PENGABDIAN MASYARAKAT' }}<br>
-    TAHUN ANGGARAN {{ $proposal->start_year ?? date('Y') }}
+    TAHUN AKADEMIK {{ $proposal->academic_year ?? ($proposal->start_year ?? date('Y')) }}
 </div>
 
 <table class="info-table no-border">

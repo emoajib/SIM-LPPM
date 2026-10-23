@@ -17,6 +17,9 @@ trait ReportFilters
     public string $selectedYear = '';
 
     #[Url]
+    public string $selectedSemester = 'all';
+
+    #[Url]
     public string $roleFilter = 'ketua';
 
     #[Url]
@@ -28,6 +31,6 @@ trait ReportFilters
     #[On('resetFilters')]
     public function resetFilters(): void
     {
-        $this->reset(['search', 'selectedYear', 'roleFilter', 'statusFilter', 'schemeFilter']);
+        $this->reset(['search', 'selectedYear', 'selectedSemester', 'roleFilter', 'statusFilter', 'schemeFilter']);
     }
 }

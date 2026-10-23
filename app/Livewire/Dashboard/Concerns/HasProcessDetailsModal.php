@@ -152,7 +152,7 @@ trait HasProcessDetailsModal
         }
 
         $year = $this->selectedYear ?? date('Y');
-        $query = Proposal::query()->where('start_year', $year);
+        $query = Proposal::query()->forAcademicYear((string) $year);
 
         // Scope by role
         if (method_exists($this, 'applyCommonFilters')) {

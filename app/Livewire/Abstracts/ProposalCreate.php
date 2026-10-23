@@ -130,7 +130,7 @@ abstract class ProposalCreate extends Component
                 }
 
                 // Initial values for new proposals
-                $this->form->start_year = date('Y');
+                $this->form->setDefaultAcademicPeriod();
 
                 // Add initial empty budget row
                 if (empty($this->form->budget_items)) {
@@ -252,6 +252,7 @@ abstract class ProposalCreate extends Component
             'form.cluster_level3_id' => 'Rumpun Ilmu Level 3',
             'form.sbk_value' => 'Nilai SBK',
             'form.duration_in_years' => 'Lama Kegiatan',
+            'form.academic_year' => 'Tahun Akademik',
             'form.start_year' => 'Tahun Usulan',
             'form.summary' => 'Ringkasan',
             'form.asta_cita' => 'Asta Cita',
@@ -657,6 +658,15 @@ abstract class ProposalCreate extends Component
                 'form.cluster_level3_id' => 'nullable|exists:science_clusters,id',
                 'form.sbk_value' => 'nullable|numeric|min:0',
                 'form.duration_in_years' => 'required|integer|min:1|max:10',
+                'form.academic_year' => [
+                    'required',
+                    'string',
+                    function ($attribute, $value, $fail) {
+                        if (Proposal::parseAcademicYear(is_string($value) ? $value : null) === null) {
+                            $fail('Format tahun akademik harus seperti 2026/2027.');
+                        }
+                    },
+                ],
                 'form.start_year' => 'required|integer|min:2020|max:2050',
                 'form.summary' => 'required|string|min:100',
                 'form.asta_cita' => 'nullable|string',

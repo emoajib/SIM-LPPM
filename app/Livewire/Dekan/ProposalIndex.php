@@ -6,6 +6,7 @@ use App\Enums\ProposalStatus;
 use App\Models\CommunityService;
 use App\Models\Proposal;
 use App\Models\Research;
+use App\Support\AcademicPeriod;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -98,7 +99,7 @@ class ProposalIndex extends Component
                 $query->where('detailable_type', $detailableType);
             })
             ->when($this->yearFilter, function ($query) {
-                $query->whereYear('created_at', $this->yearFilter);
+                $query->forAcademicYear($this->yearFilter);
             })
             ->orderBy('created_at', 'desc')
             ->paginate(15);
@@ -143,12 +144,12 @@ class ProposalIndex extends Component
             });
         }
 
-        return $query
-            ->selectRaw(sql_year().' as year')
-            ->distinct()
-            ->orderBy('year', 'desc')
-            ->pluck('year')
-            ->toArray();
+        return AcademicPeriod::optionsFromPeriods(
+            $query->select('start_year', 'semester')
+                ->distinct()
+                ->get()
+                ->filter(fn ($period) => $period->start_year !== null)
+        );
     }
 
     /**

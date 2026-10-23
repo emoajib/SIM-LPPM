@@ -318,7 +318,7 @@
                 <div class="card-body">
                     <div class="row g-3">
                         <!-- Search Input -->
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <input type="text" class="form-control"
                                 placeholder="Cari berdasarkan judul atau ringkasan..."
                                 wire:model.live.debounce.300ms="search" />
@@ -344,6 +344,16 @@
                                 @endphp
                                 @foreach ($statusOptions as $value => $label)
                                     <option value="{{ $value }}">{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Year Filter -->
+                        <div class="col-md-2">
+                            <select class="form-select" wire:model.live="yearFilter">
+                                <option value="">Semua Tahun</option>
+                                @foreach ($this->availableYears as $year)
+                                    <option value="{{ $year }}">{{ $year }}</option>
                                 @endforeach
                             </select>
                         </div>

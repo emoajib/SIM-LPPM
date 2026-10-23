@@ -37,13 +37,14 @@ class ArchiveDataExport implements FromQuery, ShouldAutoSize, WithHeadings, With
     public function query(): Builder
     {
         return Proposal::query()
+            ->withArchived()
             ->with(['submitter.identity', 'budgetItems', 'detailable'])
             ->where('status', ProposalStatus::COMPLETED)
             ->when($this->search, function (Builder $q) {
                 $q->where('title', 'like', '%'.$this->search.'%')
                     ->orWhereHas('submitter', fn ($u) => $u->where('name', 'like', '%'.$this->search.'%'));
             })
-            ->when($this->yearFilter, fn (Builder $q) => $q->where('start_year', $this->yearFilter))
+            ->when($this->yearFilter, fn (Builder $q) => $q->forAcademicYear($this->yearFilter))
             ->orderByDesc('start_year');
     }
 
@@ -51,7 +52,7 @@ class ArchiveDataExport implements FromQuery, ShouldAutoSize, WithHeadings, With
     {
         return [
             'No',
-            'Tahun Pelaksanaan',
+            'Tahun Akademik',
             'Jenis Kegiatan',
             'Judul Kegiatan',
             'Ketua Pengusul',
@@ -78,7 +79,7 @@ class ArchiveDataExport implements FromQuery, ShouldAutoSize, WithHeadings, With
 
         return [
             $no++,
-            $proposal->start_year,
+            $proposal->academic_year,
             $type,
             $proposal->title,
             $proposal->submitter->name ?? '-',

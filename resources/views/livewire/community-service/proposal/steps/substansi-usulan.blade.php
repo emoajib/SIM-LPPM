@@ -104,7 +104,7 @@
                 <table class="table table-bordered">
                     @php
                         $duration = (int) ($form->duration_in_years ?? 1);
-                        $startYear = (int) ($form->start_year ?? date('Y'));
+                        $startYear = \App\Models\Proposal::parseAcademicYear($form->academic_year) ?? (int) ($form->start_year ?? date('Y'));
                     @endphp
                     <thead>
                         <tr>

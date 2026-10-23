@@ -30,9 +30,10 @@ class SintaResearchExport implements FromCollection, ShouldAutoSize, WithHeading
     public function collection()
     {
         return Proposal::query()
+            ->withArchived()
             ->where('detailable_type', 'App\Models\Research')
             ->whereIn('status', [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value])
-            ->when($this->year, fn ($q) => $q->where('start_year', $this->year))
+            ->when($this->year, fn ($q) => $q->forAcademicYear($this->year))
             ->with([
                 'submitter.identity',
                 'teamMembers.identity',

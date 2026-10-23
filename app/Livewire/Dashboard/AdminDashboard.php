@@ -18,6 +18,7 @@ use App\Models\ProposalOutput;
 use App\Models\ResearchScheme;
 use App\Models\StudyProgram;
 use App\Models\User;
+use App\Support\AcademicPeriod;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -103,10 +104,11 @@ class AdminDashboard extends Component
     {
         $this->user = Auth::user();
         $this->roleName = active_role();
-        $this->selectedYear = date('Y');
+        $this->selectedYear = AcademicPeriod::current();
         $this->availableYears = $this->getAvailableYears();
         $this->availableStatuses = ProposalStatus::filterOptions();
         $this->availableFaculties = $this->getFaculties();
+        $this->availableProdis = $this->getProdiByFaculty();
         $this->availableResearchSchemes = $this->getResearchSchemes();
         $this->availableCommunityServiceSchemes = $this->getCommunityServiceSchemes();
 
@@ -195,20 +197,14 @@ class AdminDashboard extends Component
 
     private function getAvailableYears(): array
     {
-        // Use start_year (tahun pelaksanaan) as filter basis, not created_at
-        $years = Proposal::query()
+        $periods = Proposal::query()
             ->distinct()
             ->whereNotNull('start_year')
-            ->orderBy('start_year', 'desc')
-            ->pluck('start_year')
-            ->map(fn ($y) => (string) $y)
-            ->toArray();
+            ->get(['start_year', 'semester']);
 
-        if (empty($years)) {
-            $years = [(string) date('Y')];
-        }
+        $options = AcademicPeriod::optionsFromPeriods($periods);
 
-        return $years;
+        return $options !== [] ? $options : [AcademicPeriod::current()];
     }
 
     private function getFaculties(): array
@@ -251,9 +247,12 @@ class AdminDashboard extends Component
             ->toArray();
     }
 
+    /**
+     * @param  Builder<Proposal>  $query
+     */
     private function applyCommonFilters(Builder $query): Builder
     {
-        $query->where('start_year', $this->selectedYear);
+        $query->forAcademicYear((string) $this->selectedYear);
 
         if ($this->selectedStatus !== 'all') {
             $query->where('status', $this->selectedStatus);
@@ -616,7 +615,7 @@ class AdminDashboard extends Component
     {
         // Filter by start_year (tahun pelaksanaan kegiatan), bukan created_at
         $statsRaw = Proposal::query()
-            ->where('start_year', $yearFilter)
+            ->forAcademicYear($yearFilter)
             ->tap(fn ($q) => $this->applyCommonFilters($q))
             ->select([
                 'detailable_type',
@@ -724,7 +723,8 @@ class AdminDashboard extends Component
     private function loadProcessStats(string $yearFilter): void
     {
         // Baseline: Retrieve all proposals for the selected start_year
-        $proposalsThisYear = Proposal::where('start_year', $yearFilter)
+        $proposalsThisYear = Proposal::query()
+            ->forAcademicYear($yearFilter)
             ->tap(fn ($q) => $this->applyCommonFilters($q))
             ->get();
         $proposalsThisYearIds = $proposalsThisYear->pluck('id');
@@ -901,7 +901,7 @@ class AdminDashboard extends Component
     private function loadRecentProposals(string $yearFilter): void
     {
         $baseQuery = Proposal::with(['submitter.identity', 'focusArea', 'researchScheme', 'communityServiceScheme', 'latestFinalReport'])
-            ->where('start_year', $yearFilter);
+            ->forAcademicYear($yearFilter);
 
         $this->applyCommonFilters($baseQuery);
 

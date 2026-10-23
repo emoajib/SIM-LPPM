@@ -196,7 +196,7 @@
                     <tr>
                         <th width="5%">No</th>
                         <th width="45%">Nama Kegiatan / Tahapan</th>
-                        <th width="25%">Tahun Pelaksanaan</th>
+                        <th width="25%">Tahun Ke-</th>
                         <th width="25%">Durasi (Bulan)</th>
                     </tr>
                 </thead>

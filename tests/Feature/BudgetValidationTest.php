@@ -42,7 +42,7 @@ class BudgetValidationTest extends TestCase
         ];
 
         $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage('Total anggaran melebihi batas maksimal untuk Penelitian tahun '.$year.' (Ganjil)');
+        $this->expectExceptionMessage('Total anggaran melebihi batas maksimal untuk Penelitian tahun akademik '.$year.'/'.($year + 1).' (Ganjil)');
 
         $this->budgetService->validateBudgetCap($budgetItems, 'research', $year);
     }
@@ -115,7 +115,7 @@ class BudgetValidationTest extends TestCase
 
         // Assert
         $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage("Batas anggaran untuk Penelitian tahun {$year} (Ganjil) belum diatur");
+        $this->expectExceptionMessage("Batas anggaran untuk Penelitian tahun akademik {$year}/".($year + 1).' (Ganjil) belum diatur');
 
         $this->budgetService->validateBudgetGroupPercentages($budgetItems, 'research', $year);
     }

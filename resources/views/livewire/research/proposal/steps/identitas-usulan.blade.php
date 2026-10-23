@@ -52,11 +52,15 @@
 
             <div class="col-md-3">
                 <div class="">
-                    <label class="form-label" for="start_year">Tahun Mulai <span class="text-danger">*</span></label>
-                    <input id="start_year" type="number"
-                        class="form-control @error('form.start_year') is-invalid @enderror"
-                        wire:model.live="form.start_year" min="2020" max="2050" placeholder="{{ date('Y') }}" required>
-                    @error('form.start_year')
+                    <label class="form-label" for="academic_year">Tahun Akademik <span class="text-danger">*</span></label>
+                    <select id="academic_year" class="form-select @error('form.academic_year') is-invalid @enderror"
+                        wire:model.live="form.academic_year" required>
+                        <option value="">-- Pilih Tahun Akademik --</option>
+                        @foreach ($form->academicYearOptions() as $academicYearOption)
+                            <option value="{{ $academicYearOption }}">{{ $academicYearOption }}</option>
+                        @endforeach
+                    </select>
+                    @error('form.academic_year')
                         <div class="d-block invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
@@ -71,7 +75,7 @@
                         <option value="genap">Genap</option>
                     </select>
                     <small class="text-muted d-block mt-1">
-                        Ganjil: 1 Sep - 28/29 Feb | Genap: 1 Mar - 31 Agt
+                        {{ $form->academicPeriodHint() }}
                     </small>
                     @error('form.semester')
                         <div class="d-block invalid-feedback">{{ $message }}</div>
@@ -89,10 +93,9 @@
                     @error('form.duration_in_years')
                         <div class="d-block invalid-feedback">{{ $message }}</div>
                     @enderror
-                    @if ($form->start_year && $form->duration_in_years)
+                    @if ($form->academic_year && $form->duration_in_years)
                         <small class="text-muted">
-                            Periode: {{ $form->start_year }} -
-                            {{ (int) $form->start_year + (int) $form->duration_in_years - 1 }}
+                            Periode: {{ $form->academic_year }} ({{ $form->duration_in_years }} tahun)
                         </small>
                     @endif
                 </div>

@@ -27,14 +27,15 @@ class ArchiveTemplateExport implements FromArray, WithColumnWidths, WithHeadings
             'judul',             // C: Judul kegiatan (WAJIB)
             'skema',             // D: "Penelitian" atau "Pengabdian" (WAJIB)
             'nama_skema',        // E: Nama skema spesifik (opsional)
-            'tahun',             // F: Tahun pelaksanaan (WAJIB)
-            'lama_kegiatan',     // G: Durasi tahun (default: 1)
-            'dana',              // H: Nilai dana/SBK Rupiah
+            'tahun_akademik',    // F: Tahun akademik YYYY/YYYY (WAJIB)
+            'semester',          // G: ganjil | genap (WAJIB)
+            'lama_kegiatan',     // H: Durasi tahun (default: 1)
+            'dana',              // I: Nilai dana/SBK Rupiah
             // ── Anggota Tim ───────────────────────────────────────────────────
-            'nidn_anggota',      // I: NIDN anggota dosen, pisah koma
-            'anggota_mahasiswa', // J: Nama|NIM, pisah koma untuk multi mahasiswa
+            'nidn_anggota',      // J: NIDN anggota dosen, pisah koma
+            'anggota_mahasiswa', // K: Nama|NIM, pisah koma untuk multi mahasiswa
             // ── Konten ────────────────────────────────────────────────────────
-            'ringkasan',         // K: Abstrak/ringkasan kegiatan
+            'ringkasan',         // L: Abstrak/ringkasan kegiatan
         ];
     }
 
@@ -48,7 +49,8 @@ class ArchiveTemplateExport implements FromArray, WithColumnWidths, WithHeadings
                 'Pengembangan Model Pembelajaran Berbasis AI untuk Meningkatkan Kompetensi Mahasiswa',
                 'Penelitian',
                 'Hibah Dosen Muda',
-                '2023',
+                '2025/2026',
+                'ganjil',
                 '1',
                 '7500000',
                 '9876543210,1122334455',             // 2 dosen anggota (NIDN pisah koma)
@@ -62,7 +64,8 @@ class ArchiveTemplateExport implements FromArray, WithColumnWidths, WithHeadings
                 'Pelatihan Digital Marketing untuk UMKM Desa Binaan ITSNU',
                 'Pengabdian',
                 'PKM Berbasis Masyarakat',
-                '2023',
+                '2025/2026',
+                'genap',
                 '1',
                 '5000000',
                 '0123456789',   // 1 dosen anggota
@@ -76,7 +79,8 @@ class ArchiveTemplateExport implements FromArray, WithColumnWidths, WithHeadings
                 'Riset Ketahanan Pangan Berbasis Kearifan Lokal',
                 'Penelitian',
                 'Hibah Unggulan Institusi',
-                '2022',
+                '2024/2025',
+                'ganjil',
                 '2',
                 '15000000',
                 '',              // kosong = tidak ada dosen anggota
@@ -89,7 +93,7 @@ class ArchiveTemplateExport implements FromArray, WithColumnWidths, WithHeadings
     public function styles(Worksheet $sheet): array
     {
         // Style header row (biru tua)
-        $sheet->getStyle('A1:K1')->applyFromArray([
+        $sheet->getStyle('A1:L1')->applyFromArray([
             'font' => [
                 'bold' => true,
                 'color' => ['argb' => 'FFFFFFFF'],
@@ -103,7 +107,7 @@ class ArchiveTemplateExport implements FromArray, WithColumnWidths, WithHeadings
         // Beri warna berbeda untuk kelompok kolom
         // Ketua tim: kolom A-B (biru tua sudah)
         // Anggota: kolom I-J (warna biru muda)
-        $sheet->getStyle('I1:J1')->applyFromArray([
+        $sheet->getStyle('J1:K1')->applyFromArray([
             'fill' => [
                 'fillType' => Fill::FILL_SOLID,
                 'color' => ['argb' => 'FF2E86C1'],
@@ -117,8 +121,10 @@ class ArchiveTemplateExport implements FromArray, WithColumnWidths, WithHeadings
         $lastRow = count($this->array()) + 2;
         $notes = [
             '⚠ PETUNJUK PENGISIAN TEMPLATE:',
-            '- Kolom WAJIB: nidn (atau nama_dosen), judul, skema, tahun',
-            "- Kolom 'skema' HARUS berisi: Penelitian, Pengabdian, PKM, atau Abmas",
+            '- Kolom WAJIB: nidn (atau nama_dosen), judul, skema, tahun_akademik, semester',
+            "- Kolom 'tahun_akademik' WAJIB berformat YYYY/YYYY (mis. 2025/2026). Kolom 'tahun' lama tidak diterima.
+            - Kolom 'semester' WAJIB berisi 'ganjil' atau 'genap'.
+            - Kolom 'skema' HARUS berisi: Penelitian, Pengabdian, PKM, atau Abmas",
             "- Kolom 'nidn_anggota': NIDN dosen anggota pisahkan dengan koma. Contoh: 0101010101,0202020202",
             "- Kolom 'anggota_mahasiswa': format NAMA|NIM, pisahkan dengan koma. Contoh: Budi Santoso|220102001,Siti|220102002",
             "- Kolom 'lama_kegiatan' diisi angka tahun (1, 2, atau 3). Kosongkan jika 1 tahun.",
@@ -129,7 +135,7 @@ class ArchiveTemplateExport implements FromArray, WithColumnWidths, WithHeadings
         foreach ($notes as $i => $note) {
             $r = $lastRow + $i;
             $sheet->setCellValue("A{$r}", $note);
-            $sheet->mergeCells("A{$r}:K{$r}");
+            $sheet->mergeCells("A{$r}:L{$r}");
             $isTitle = $i === 0;
             $sheet->getStyle("A{$r}")->applyFromArray([
                 'font' => [
@@ -152,12 +158,13 @@ class ArchiveTemplateExport implements FromArray, WithColumnWidths, WithHeadings
             'C' => 60,  // judul
             'D' => 14,  // skema
             'E' => 25,  // nama_skema
-            'F' => 10,  // tahun
-            'G' => 14,  // lama_kegiatan
-            'H' => 15,  // dana
-            'I' => 35,  // nidn_anggota (bisa banyak NIDN)
-            'J' => 45,  // anggota_mahasiswa
-            'K' => 55,  // ringkasan
+            'F' => 16,  // tahun_akademik
+            'G' => 12,  // semester
+            'H' => 14,  // lama_kegiatan
+            'I' => 15,  // dana
+            'J' => 35,  // nidn_anggota (bisa banyak NIDN)
+            'K' => 45,  // anggota_mahasiswa
+            'L' => 55,  // ringkasan
         ];
     }
 }

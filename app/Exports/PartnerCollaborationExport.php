@@ -31,9 +31,11 @@ class PartnerCollaborationExport implements FromView, ShouldAutoSize, WithColumn
 
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $partners->each(function (Partner $partner) {
-            $proposals = $partner->proposals()
+            $proposals = Proposal::query()
+                ->withArchived()
+                ->whereHas('partners', fn ($p) => $p->whereKey($partner->id))
                 ->whereIn('status', [ProposalStatus::APPROVED->value, ProposalStatus::COMPLETED->value])
-                ->when($this->periodFilter, fn ($q) => $q->where('start_year', $this->periodFilter))
+                ->when($this->periodFilter, fn ($q) => $q->forAcademicYear($this->periodFilter))
                 ->when($this->facultyId, fn ($q) => $q->whereHas('submitter.identity', fn ($i) => $i->where('faculty_id', $this->facultyId)))
                 ->with(['budgetItems'])
                 ->get();

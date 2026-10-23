@@ -93,7 +93,7 @@
                             class="text-danger">*</span></label>
                     <button type="button" class="btn btn-ghost-primary btn-sm" wire:click="toggleManual">
                         <x-lucide-user-plus class="icon me-1" />
-                        {{ $isManual ? 'Kembali ke Cari' : 'Input Manual (Mahasiswa/Eksternal)' }}
+                        {{ $isManual ? 'Kembali ke Cari' : 'Input Manual (Dosen/Eksternal/Mahasiswa)' }}
                     </button>
                 </div>
 
@@ -112,16 +112,17 @@
                 @else
                     <div class="row g-2">
                         <div class="col-md-6">
-                            <label class="form-label small">NIM / ID <span class="text-danger">*</span></label>
+                            <label class="form-label small">NIDN / NIP / NIM <span class="text-danger">*</span></label>
                             <input type="text" class="form-control @error('member_nidn') is-invalid @enderror"
-                                wire:model="member_nidn" placeholder="NIM atau ID">
+                                wire:model="member_nidn" placeholder="NIM untuk mahasiswa, NIDN/NIP untuk dosen">
+                            <small class="text-muted">Gunakan NIM untuk mahasiswa, NIDN/NIP untuk dosen/eksternal.</small>
                             @error('member_nidn') <small class="text-danger">{{ $message }}</small> @enderror
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small">Tipe Peneliti <span class="text-danger">*</span></label>
                             <select class="form-select @error('member_type') is-invalid @enderror" wire:model="member_type">
+                                <option value="dosen">Anggota Eksternal</option>
                                 <option value="mahasiswa">Mahasiswa</option>
-                                <option value="dosen">Dosen Eksternal</option>
                             </select>
                             @error('member_type') <small class="text-danger">{{ $message }}</small> @enderror
                         </div>
@@ -132,9 +133,10 @@
                             @error('member_name') <small class="text-danger">{{ $message }}</small> @enderror
                         </div>
                         <div class="col-12 mt-2">
-                            <label class="form-label small">Email <span class="text-danger">*</span></label>
+                            <label class="form-label small">Email (opsional)</label>
                             <input type="email" class="form-control @error('member_email') is-invalid @enderror"
-                                wire:model="member_email" placeholder="Alamat email aktif">
+                                wire:model="member_email" placeholder="Alamat email aktif (boleh dikosongkan)">
+                            <small class="text-muted">Jika kosong, sistem membuat email internal agar anggota tetap tersimpan.</small>
                             @error('member_email') <small class="text-danger">{{ $message }}</small> @enderror
                         </div>
                         <div class="col-md-6 mt-2">

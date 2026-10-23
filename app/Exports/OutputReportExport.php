@@ -29,7 +29,7 @@ class OutputReportExport implements FromView, ShouldAutoSize, WithStyles
         $query = Proposal::query()
             ->with(['submitter.identity.faculty', 'submitter.identity.studyProgram', 'progressReports.mandatoryOutputs.proposalOutput', 'progressReports.additionalOutputs.proposalOutput'])
             ->where('detailable_type', $detailableType)
-            ->when($this->period, fn ($q) => $q->where('start_year', $this->period))
+            ->when($this->period, fn ($q) => $q->forAcademicYear($this->period))
             ->when($this->semester && $this->semester !== 'all', fn ($q) => $q->where('semester', $this->semester))
             ->where(function (Builder $query) {
                 $query->whereHas('progressReports.mandatoryOutputs')

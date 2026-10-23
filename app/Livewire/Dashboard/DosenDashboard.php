@@ -16,6 +16,7 @@ use App\Models\Proposal;
 use App\Models\ProposalOutput;
 use App\Models\ResearchScheme;
 use App\Services\SintaService;
+use App\Support\AcademicPeriod;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
@@ -66,7 +67,7 @@ class DosenDashboard extends Component
         $this->user = Auth::user()->load('identity');
         $this->roleName = active_role();
         $this->availableYears = $this->getAvailableYears();
-        $this->selectedYear = $this->availableYears[0] ?? date('Y');
+        $this->selectedYear = $this->availableYears[0] ?? AcademicPeriod::current();
 
         $this->loadAnalytics();
     }
@@ -78,7 +79,7 @@ class DosenDashboard extends Component
 
     private function getAvailableYears(): array
     {
-        $years = Proposal::query()
+        $periods = Proposal::query()
             ->where(function ($q) {
                 $q->where('submitter_id', $this->user->id)
                     ->orWhereHas('teamMembers', fn ($q2) => $q2
@@ -88,16 +89,11 @@ class DosenDashboard extends Component
             })
             ->whereNotNull('start_year')
             ->distinct()
-            ->orderBy('start_year', 'desc')
-            ->pluck('start_year')
-            ->map(fn ($y) => (string) $y)
-            ->toArray();
+            ->get(['start_year', 'semester']);
 
-        if (empty($years)) {
-            $years = [(string) date('Y')];
-        }
+        $options = AcademicPeriod::optionsFromPeriods($periods);
 
-        return $years;
+        return $options !== [] ? $options : [AcademicPeriod::current()];
     }
 
     public function loadAnalytics(): void
@@ -224,7 +220,7 @@ class DosenDashboard extends Component
     {
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         $statsRaw = Proposal::query()
-            ->where('start_year', $yearFilter)
+            ->forAcademicYear($yearFilter)
             ->where(function ($q) {
                 $q->where('submitter_id', $this->user->id)
                     ->orWhereHas('teamMembers', fn ($q2) => $q2->where('user_id', $this->user->id)
@@ -267,7 +263,7 @@ class DosenDashboard extends Component
             ->where('proposal_user.user_id', $this->user->id)
             ->where('proposal_user.role', '!=', 'ketua') // Hanya hitung jika sebagai Anggota
             ->where('proposal_user.status', ProposalUserStatus::ACCEPTED->value) // Hanya hitung yang sudah dikonfirmasi
-            ->where('proposals.start_year', $yearFilter)
+            ->whereIn('proposals.start_year', AcademicPeriod::startYears($yearFilter))
             ->select([
                 'proposals.detailable_type',
                 DB::raw('COUNT(*) as count'),
@@ -295,7 +291,7 @@ class DosenDashboard extends Component
     {
         $recentProposals = Proposal::query()
             ->with(['submitter.identity', 'researchScheme', 'communityServiceScheme', 'latestFinalReport'])
-            ->where('start_year', $yearFilter)
+            ->forAcademicYear($yearFilter)
             ->where(function ($q) {
                 $q->where('submitter_id', $this->user->id)
                     ->orWhereHas('teamMembers', fn ($q2) => $q2
@@ -329,7 +325,7 @@ class DosenDashboard extends Component
                     ->where('status', ProposalUserStatus::ACCEPTED->value)
                 );
         })
-            ->where('start_year', $yearFilter)
+            ->whereIn('proposals.start_year', AcademicPeriod::startYears($yearFilter))
             ->get();
         $proposalsThisYearIds = $proposalsThisYear->pluck('id');
 

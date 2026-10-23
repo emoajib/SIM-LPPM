@@ -17,6 +17,7 @@ use App\Models\ProposalMonev;
 use App\Models\ProposalOutput;
 use App\Models\ResearchScheme;
 use App\Models\StudyProgram;
+use App\Support\AcademicPeriod;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -102,10 +103,11 @@ class KepalaLppmDashboard extends Component
     {
         $this->user = Auth::user();
         $this->roleName = active_role();
-        $this->selectedYear = date('Y');
+        $this->selectedYear = AcademicPeriod::current();
         $this->availableYears = $this->getAvailableYears();
         $this->availableStatuses = ProposalStatus::filterOptions();
         $this->availableFaculties = $this->getFaculties();
+        $this->availableProdis = $this->getProdiByFaculty();
         $this->availableResearchSchemes = $this->getResearchSchemes();
         $this->availableCommunityServiceSchemes = $this->getCommunityServiceSchemes();
 
@@ -194,19 +196,14 @@ class KepalaLppmDashboard extends Component
 
     private function getAvailableYears(): array
     {
-        $years = Proposal::select('start_year as year')
+        $periods = Proposal::query()
             ->whereNotNull('start_year')
             ->distinct()
-            ->orderBy('year', 'desc')
-            ->pluck('year')
-            ->map(fn ($y) => (string) $y)
-            ->toArray();
+            ->get(['start_year', 'semester']);
 
-        if (empty($years)) {
-            $years = [(string) date('Y')];
-        }
+        $options = AcademicPeriod::optionsFromPeriods($periods);
 
-        return $years;
+        return $options !== [] ? $options : [AcademicPeriod::current()];
     }
 
     private function getFaculties(): array
@@ -249,9 +246,12 @@ class KepalaLppmDashboard extends Component
             ->toArray();
     }
 
+    /**
+     * @param  Builder<Proposal>  $query
+     */
     private function applyCommonFilters(Builder $query): Builder
     {
-        $query->where('start_year', $this->selectedYear);
+        $query->forAcademicYear((string) $this->selectedYear);
 
         if ($this->selectedStatus !== 'all') {
             $query->where('status', $this->selectedStatus);
@@ -613,7 +613,7 @@ class KepalaLppmDashboard extends Component
     private function loadStats(string $yearFilter): void
     {
         $statsRaw = Proposal::query()
-            ->where('start_year', $yearFilter)
+            ->forAcademicYear($yearFilter)
             ->tap(fn ($q) => $this->applyCommonFilters($q))
             ->select([
                 'detailable_type',
@@ -698,13 +698,13 @@ class KepalaLppmDashboard extends Component
             'final_report_pending' => ProgressReport::query()
                 ->where('reporting_period', 'final')
                 ->where('status', ReportStatus::APPROVED_BY_DEKAN)
-                ->whereYear('created_at', $yearFilter)
+                ->whereHas('proposal', fn ($q) => Proposal::applyAcademicYearFilter($q, $yearFilter))
                 ->count(),
             'total_outputs' => MandatoryOutput::whereHas('progressReport', function ($q) use ($yearFilter) {
-                $q->whereYear('created_at', $yearFilter);
+                $q->whereHas('proposal', fn ($pq) => Proposal::applyAcademicYearFilter($pq, $yearFilter));
             })->count() +
                 AdditionalOutput::whereHas('progressReport', function ($q) use ($yearFilter) {
-                    $q->whereYear('created_at', $yearFilter);
+                    $q->whereHas('proposal', fn ($pq) => Proposal::applyAcademicYearFilter($pq, $yearFilter));
                 })->count(),
             'research_budget' => $researchBudget,
             'pkm_budget' => $pkmBudget,
@@ -721,7 +721,7 @@ class KepalaLppmDashboard extends Component
     private function loadRecentProposals(string $yearFilter): void
     {
         $baseQuery = Proposal::with(['submitter', 'focusArea', 'researchScheme', 'communityServiceScheme', 'latestFinalReport'])
-            ->where('start_year', $yearFilter);
+            ->forAcademicYear($yearFilter);
 
         $this->applyCommonFilters($baseQuery);
 
@@ -748,7 +748,8 @@ class KepalaLppmDashboard extends Component
     {
         // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         // Baseline: Retrieve all proposals for the selected start_year
-        $proposalsThisYear = Proposal::where('start_year', $yearFilter)
+        $proposalsThisYear = Proposal::query()
+            ->forAcademicYear($yearFilter)
             ->tap(fn ($q) => $this->applyCommonFilters($q))
             ->get();
         $proposalsThisYearIds = $proposalsThisYear->pluck('id');

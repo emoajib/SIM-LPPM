@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\BudgetCap;
 use App\Models\BudgetGroup;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
 
 class BudgetValidationService
@@ -25,9 +24,7 @@ class BudgetValidationService
         $currentYear ??= (int) date('Y');
         $semester ??= 'ganjil';
 
-        $budgetCapModel = BudgetCap::where('year', $currentYear)
-            ->when($semester && Schema::hasColumn('budget_caps', 'semester'), fn ($q) => $q->where('semester', $semester))
-            ->first();
+        $budgetCapModel = BudgetCap::findForPeriod($currentYear, $semester);
 
         if ($budgetCapModel && ! $budgetCapModel->enforce_percentage) {
             return;
@@ -39,9 +36,9 @@ class BudgetValidationService
             throw ValidationException::withMessages([
                 'budget_items' => [
                     sprintf(
-                        'Batas anggaran untuk %s tahun %s (%s) belum diatur. Silakan hubungi Admin LPPM.',
+                        'Batas anggaran untuk %s tahun akademik %s (%s) belum diatur. Silakan hubungi Admin LPPM.',
                         $proposalType === 'research' ? 'Penelitian' : 'Pengabdian Masyarakat',
-                        $currentYear,
+                        BudgetCap::academicYearLabel($currentYear, $semester),
                         ucfirst($semester)
                     ),
                 ],
@@ -123,9 +120,9 @@ class BudgetValidationService
             throw ValidationException::withMessages([
                 'budget_items' => [
                     sprintf(
-                        'Total anggaran melebihi batas maksimal untuk %s tahun %s (%s). Batas: Rp %s, Total saat ini: Rp %s',
+                        'Total anggaran melebihi batas maksimal untuk %s tahun akademik %s (%s). Batas: Rp %s, Total saat ini: Rp %s',
                         $typeLabel,
-                        $currentYear,
+                        BudgetCap::academicYearLabel($currentYear, $semester),
                         ucfirst($semester),
                         number_format($budgetCap, 0, ',', '.'),
                         number_format($totalBudget, 0, ',', '.')
@@ -162,9 +159,7 @@ class BudgetValidationService
         $currentYear ??= (int) date('Y');
         $semester ??= 'ganjil';
 
-        $budgetCapModel = BudgetCap::where('year', $currentYear)
-            ->when($semester && Schema::hasColumn('budget_caps', 'semester'), fn ($q) => $q->where('semester', $semester))
-            ->first();
+        $budgetCapModel = BudgetCap::findForPeriod($currentYear, $semester);
 
         $budgetCap = BudgetCap::getCapForPeriod($currentYear, $semester, $proposalType, $schemeId);
 
@@ -183,10 +178,10 @@ class BudgetValidationService
             throw ValidationException::withMessages([
                 'budget_items' => [
                     sprintf(
-                        'Total amandemen melebihi pagu + toleransi %s%% untuk %s tahun %s (%s). Batas: Rp %s, total usulan: Rp %s',
+                        'Total amandemen melebihi pagu + toleransi %s%% untuk %s tahun akademik %s (%s). Batas: Rp %s, total usulan: Rp %s',
                         number_format($tolerance * 100, 2),
                         $typeLabel,
-                        $currentYear,
+                        BudgetCap::academicYearLabel($currentYear, $semester),
                         ucfirst($semester),
                         number_format($budgetCap * (1 + $tolerance), 0, ',', '.'),
                         number_format($newTotal, 0, ',', '.')

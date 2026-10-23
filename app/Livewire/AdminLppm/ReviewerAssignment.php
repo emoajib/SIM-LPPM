@@ -14,6 +14,7 @@ use App\Models\Research;
 use App\Models\ResearchScheme;
 use App\Models\StudyProgram;
 use App\Models\User;
+use App\Support\AcademicPeriod;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
@@ -144,10 +145,7 @@ class ReviewerAssignment extends Component
                 }
             })
             ->when($this->yearFilter, function ($query) {
-                $year = (int) $this->yearFilter;
-                if ($year > 2000 && $year < 2100) {
-                    $query->whereYear('created_at', $year);
-                }
+                $query->forAcademicYear($this->yearFilter);
             })
             ->when($this->assignmentFilter === 'assigned', function ($query) {
                 $query->has('reviewers');
@@ -224,14 +222,12 @@ class ReviewerAssignment extends Component
     {
         $statuses = [ProposalStatus::WAITING_REVIEWER, ProposalStatus::UNDER_REVIEW];
 
-        $years = Proposal::whereIn('status', $statuses)
-            ->selectRaw(sql_year().' as year')
+        $periods = Proposal::whereIn('status', $statuses)
+            ->whereNotNull('start_year')
             ->distinct()
-            ->orderBy('year', 'desc')
-            ->pluck('year')
-            ->toArray();
+            ->get(['start_year', 'semester']);
 
-        return $years;
+        return AcademicPeriod::optionsFromPeriods($periods);
     }
 
     #[Computed]

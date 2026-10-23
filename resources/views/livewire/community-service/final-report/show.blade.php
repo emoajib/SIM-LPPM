@@ -676,6 +676,14 @@
                 </div>
 
                 <div class="mb-3">
+                    <label class="form-label">Tahun Akademik / Semester</label>
+                    <input type="text" class="form-control"
+                        value="{{ $proposal->academic_year ?? $proposal->start_year }} - {{ ucfirst($proposal->semester ?? '-') }}"
+                        disabled />
+                    <small class="form-hint">Mengikuti data proposal dan tidak dapat diubah di laporan.</small>
+                </div>
+
+                <div class="mb-3">
                     <label class="form-label required">Tahun Pelaporan</label>
                     <input type="number" wire:model="form.reportingYear" class="form-control" min="2020" max="2030"
                         @disabled(!$canEdit) />

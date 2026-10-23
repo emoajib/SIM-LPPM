@@ -4,6 +4,7 @@ namespace App\Livewire\Review;
 
 use App\Enums\ReviewStatus;
 use App\Models\Proposal;
+use App\Support\AcademicPeriod;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
@@ -61,7 +62,7 @@ class CommunityService extends Component
         }
 
         if (! empty($this->selectedYear)) {
-            $query->whereYear('created_at', $this->selectedYear);
+            $query->forAcademicYear($this->selectedYear);
         }
 
         if ($this->statusFilter !== 'all') {
@@ -77,13 +78,16 @@ class CommunityService extends Component
     #[Computed]
     public function availableYears()
     {
-        return Proposal::where('detailable_type', 'App\Models\CommunityService')
+        $periods = Proposal::where('detailable_type', 'App\Models\CommunityService')
             ->whereHas('reviewers', function ($query) {
                 $query->where('user_id', Auth::id());
             })
-            ->selectRaw('DISTINCT '.sql_year().' as year')
-            ->orderByDesc('year')
-            ->pluck('year');
+            ->select('start_year', 'semester')
+            ->distinct()
+            ->get()
+            ->filter(fn ($period) => $period->start_year !== null);
+
+        return AcademicPeriod::optionsFromPeriods($periods);
     }
 
     #[Computed]

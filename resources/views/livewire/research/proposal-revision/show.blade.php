@@ -273,19 +273,19 @@
 
                     <div class="mb-3 row">
                         <div class="col-md-3">
-                            <label class="form-label {{ $this->canEdit() ? 'required' : '' }}"><x-lucide-calendar class="me-2 icon" />Tahun Pelaksanaan</label>
+                            <label class="form-label {{ $this->canEdit() ? 'required' : '' }}"><x-lucide-calendar class="me-2 icon" />Tahun Akademik</label>
                             @if ($this->canEdit())
-                                <select wire:model="form.start_year" class="form-select form-select-sm @error('form.start_year') is-invalid @enderror">
-                                    <option value="">Pilih Tahun</option>
-                                    @for ($year = date('Y') - 2; $year <= date('Y') + 2; $year++)
-                                        <option value="{{ $year }}">{{ $year }}</option>
-                                    @endfor
+                                <select wire:model="form.academic_year" class="form-select form-select-sm @error('form.academic_year') is-invalid @enderror">
+                                    <option value="">Pilih Tahun Akademik</option>
+                                    @foreach ($form->academicYearOptions() as $academicYearOption)
+                                        <option value="{{ $academicYearOption }}">{{ $academicYearOption }}</option>
+                                    @endforeach
                                 </select>
-                                @error('form.start_year')
+                                @error('form.academic_year')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             @else
-                                <p class="text-reset">{{ $proposal->start_year ?? '—' }}</p>
+                                <p class="text-reset">{{ $proposal->academic_year ?? '—' }}</p>
                             @endif
                         </div>
                         <div class="col-md-3">

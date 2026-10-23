@@ -9,7 +9,7 @@
             </div>
         @else
             @php
-                $startYear = (int) ($proposal->start_year ?? date('Y'));
+                $startYear = \App\Models\Proposal::parseAcademicYear($proposal->academic_year) ?? (int) ($proposal->start_year ?? date('Y'));
                 $duration = (int) ($proposal->duration_in_years ?? 1);
                 $budgetByYear = $proposal->budgetItems->groupBy('year');
             @endphp
@@ -26,8 +26,8 @@
                             <div class="col-auto">
                                 <div class="card card-sm">
                                     <div class="px-3 py-2 card-body">
-                                        <div class="text-muted small">Tahun {{ $y }}
-                                            ({{ $actualYear }})</div>
+                                        <div class="text-muted small">Tahun ke-{{ $y }}
+                                            (TA {{ $actualYear }}/{{ $actualYear + 1 }})</div>
                                         <div class="fw-bold">Rp {{ number_format($yearTotal, 0, ',', '.') }}
                                         </div>
                                     </div>

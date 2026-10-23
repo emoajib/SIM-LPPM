@@ -46,7 +46,8 @@ class ArchiveImportTest extends TestCase
                     collect([
                         'judul' => 'Arsip Penelitian 2024',
                         'skema' => 'Penelitian',
-                        'tahun' => 2024,
+                        'tahun_akademik' => '2024/2025',
+                        'semester' => 'ganjil',
                         'nidn' => '',
                         'nama_dosen' => 'Dr. Ketua',
                         'ringkasan' => 'Data historis',
@@ -77,6 +78,9 @@ class ArchiveImportTest extends TestCase
         $this->assertDatabaseHas('proposals', [
             'title' => 'Arsip Penelitian 2024',
             'status' => 'completed',
+            'start_year' => 2024,
+            'semester' => 'ganjil',
+            'is_archive_only' => true,
         ]);
     }
 
@@ -92,7 +96,8 @@ class ArchiveImportTest extends TestCase
                     collect([
                         // Hilangkan 'judul' untuk memicu failure
                         'skema' => 'Penelitian',
-                        'tahun' => 2024,
+                        'tahun_akademik' => '2024/2025',
+                        'semester' => 'ganjil',
                         'nidn' => '99999',
                         'nama_dosen' => 'Tidak Ada',
                     ]),

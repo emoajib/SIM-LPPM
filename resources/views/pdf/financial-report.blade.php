@@ -16,7 +16,7 @@
             $submitterIdentity?->title_suffix ?? ''
         );
     }
-    $academicYear = $proposal->start_year . '/' . ($proposal->start_year + 1);
+    $academicYear = $proposal->academic_year ?? ($proposal->start_year . '/' . ((int) $proposal->start_year + 1));
     // Angka RAB beku saat LPJ disahkan (snapshot); sebelum disahkan pakai versi aktif live.
     $budgetSnapshot = isset($budgetSnapshot) && is_array($budgetSnapshot) ? $budgetSnapshot : null;
     $totalProposedBudget = $budgetSnapshot !== null
@@ -89,7 +89,7 @@
 <body>
     {{-- Institutional Footer --}}
     <div class="footer-institutional">
-        LPPM ITSNU Pekalongan - Laporan Pertanggungjawaban Keuangan (LPJ) - Tahun {{ $proposal->start_year }}<br>
+        LPPM ITSNU Pekalongan - Laporan Pertanggungjawaban Keuangan (LPJ) - Tahun Akademik {{ $academicYear }}<br>
         <span class="page-number">Halaman </span>
     </div>
 
@@ -97,7 +97,7 @@
     <div class="page-break">
         @include('pdf.partials.cover', [
             'coverTitle' => 'LAPORAN KEUANGAN (LPJ) ' . ($proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN KEPADA MASYARAKAT') . ' INTERNAL',
-            'coverYear' => $proposal->start_year,
+            'coverYear' => $proposal->academic_year ?? $proposal->start_year,
             'proposal' => $proposal,
             'submitterFullName' => $submitterFullName,
             'submitterNidn' => $proposal->submitter->identity?->identity_id ?? '-',
@@ -136,9 +136,9 @@
             <td>{{ $proposal->researchScheme->name ?? ($proposal->communityServiceScheme->name ?? '-') }}</td>
         </tr>
         <tr>
-            <td>Tahun Anggaran</td>
+            <td>Tahun Akademik</td>
             <td>:</td>
-            <td>{{ $proposal->start_year }}</td>
+            <td>{{ $proposal->academic_year ?? $proposal->start_year }}</td>
         </tr>
     </table>
 
@@ -300,9 +300,9 @@
             <td>{{ $submitterFullName }} (NIDN: {{ $proposal->submitter->identity?->identity_id ?? '-' }})</td>
         </tr>
         <tr>
-            <td>Tahun Pelaksanaan</td>
+            <td>Tahun Akademik</td>
             <td>:</td>
-            <td>{{ $proposal->start_year }}</td>
+            <td>{{ $proposal->academic_year ?? $proposal->start_year }}</td>
         </tr>
     </table>
 

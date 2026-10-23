@@ -80,7 +80,7 @@
                     </a>
 
                     @if(active_role_is('kepala lppm') && (!$institutionalReport || in_array($institutionalReport->status, [\App\Enums\InstitutionalReportStatus::DRAFT, \App\Enums\InstitutionalReportStatus::REJECTED])))
-                        <button class="btn btn-primary shadow-sm" wire:click="submitInstitutionalReport('output', {{ $period }}, {{ json_encode($currentFilters) }})"
+                        <button class="btn btn-primary shadow-sm" wire:click="submitInstitutionalReport('output', {{ $this->institutionalYear() }}, {{ json_encode($currentFilters) }})"
                             wire:loading.attr="disabled">
                             <i class="ti ti-send me-2"></i>
                             Ajukan ke Rektor
@@ -93,7 +93,7 @@
                             <i class="ti ti-x me-2"></i>
                             Minta Perbaikan
                         </button>
-                        <button class="btn btn-success shadow-sm" wire:click="approveInstitutionalReport('output', {{ $period }})"
+                        <button class="btn btn-success shadow-sm" wire:click="approveInstitutionalReport('output', {{ $this->institutionalYear() }})"
                             wire:loading.attr="disabled">
                             <i class="ti ti-circle-check me-2"></i>
                             Setujui & Tanda Tangani
@@ -124,7 +124,7 @@
                             <button type="button" class="btn btn-link link-secondary me-auto"
                                 data-bs-dismiss="modal">Batal</button>
                             <button type="button" class="btn btn-danger shadow-sm"
-                                wire:click="rejectInstitutionalReport('output', '{{ $period }}')">
+                                wire:click="rejectInstitutionalReport('output', '{{ $this->institutionalYear() }}')">
                                 Simpan & Tolak
                             </button>
                         </div>
@@ -273,7 +273,7 @@
                                         <span>{{ $proposal->user?->name ?? '-' }}</span>
                                         <span class="mx-2 text-muted">|</span>
                                         <x-lucide-calendar class="icon icon-inline me-1" />
-                                        <span>Tahun {{ $proposal->start_year }}</span>
+                                        <span>Tahun Akademik {{ $proposal->academic_year ?? $proposal->start_year }}</span>
                                     </div>
                                 </div>
                                 <div class="ms-3">

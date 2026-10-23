@@ -126,7 +126,7 @@
                     <tbody>
                         @foreach ($form->outputs as $index => $output)
                             @php
-                                $startYear = (int) ($form->start_year ?: date('Y'));
+                                $startYear = \App\Models\Proposal::parseAcademicYear($form->academic_year) ?? (int) ($form->start_year ?: date('Y'));
                                 $duration = (int) ($form->duration_in_years ?: 1);
                                 $currentGroup = $form->outputs[$index]['group'] ?? '';
                             @endphp

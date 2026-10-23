@@ -168,7 +168,7 @@ class DailyNoteExportController extends Controller
         $facultyName = $submitterIdentity?->faculty->name ?? '.......................';
         $prodiName = $submitterIdentity?->studyProgram->name ?? '.......................';
         $institutionName = $submitterIdentity?->institution->name ?? 'ITSNU Pekalongan';
-        $academicYear = $proposal->start_year.'/'.($proposal->start_year + 1);
+        $academicYear = $proposal->academic_year ?? ($proposal->start_year.'/'.($proposal->start_year + 1));
 
         $logbookApprovalMode = Setting::where('key', 'logbook_approval_mode')->value('value') ?? 'digital';
         $pdfConfig = get_pdf_config('letter', 'logbook');

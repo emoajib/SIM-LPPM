@@ -21,7 +21,7 @@ class MonevRecapExport implements FromView, ShouldAutoSize, WithStyles
     {
         $query = Proposal::query()
             ->where('status', ProposalStatus::COMPLETED)
-            ->where('start_year', $this->academicYear)
+            ->forAcademicYear($this->academicYear)
             ->with([
                 'submitter.identity.faculty',
                 'submitter.identity.studyProgram',

@@ -61,7 +61,7 @@
             </div>
         @else
             @php
-                $startYear = (int) ($proposal->start_year ?? date('Y'));
+                $startYear = \App\Models\Proposal::parseAcademicYear($proposal->academic_year) ?? (int) ($proposal->start_year ?? date('Y'));
                 $duration = (int) ($proposal->duration_in_years ?? 1);
             @endphp
             <div class="card-body">
@@ -111,7 +111,7 @@
             </div>
         @else
             @php
-                $startYear = (int) ($proposal->start_year ?? date('Y'));
+                $startYear = \App\Models\Proposal::parseAcademicYear($proposal->academic_year) ?? (int) ($proposal->start_year ?? date('Y'));
                 $duration = (int) ($proposal->duration_in_years ?? 1);
             @endphp
             <div class="card-body">

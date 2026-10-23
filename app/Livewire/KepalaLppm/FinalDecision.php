@@ -10,6 +10,7 @@ use App\Models\Proposal;
 use App\Models\Research;
 use App\Models\ResearchScheme;
 use App\Models\StudyProgram;
+use App\Support\AcademicPeriod;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
@@ -93,7 +94,7 @@ class FinalDecision extends Component
                 }
             })
             ->when($this->yearFilter, function ($query) {
-                $query->whereYear('created_at', $this->yearFilter);
+                $query->forAcademicYear($this->yearFilter);
             })
             ->when($this->facultyFilter, function ($query) {
                 $query->whereHas('submitter.identity', function ($q) {
@@ -141,14 +142,12 @@ class FinalDecision extends Component
     #[Computed]
     public function availableYears(): array
     {
-        $years = Proposal::where('status', ProposalStatus::REVISION_SUBMITTED)
-            ->selectRaw(sql_year().' as year')
+        $periods = Proposal::where('status', ProposalStatus::REVISION_SUBMITTED)
+            ->whereNotNull('start_year')
             ->distinct()
-            ->orderBy('year', 'desc')
-            ->pluck('year')
-            ->toArray();
+            ->get(['start_year', 'semester']);
 
-        return $years;
+        return AcademicPeriod::optionsFromPeriods($periods);
     }
 
     #[Computed]

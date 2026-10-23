@@ -46,7 +46,7 @@
                     @endif
                     <select class="form-select form-select-sm w-auto" wire:model.live="academicYear">
                         @foreach($this->academicYears as $year)
-                            <option value="{{ $year }}">{{ $year }} / {{ $year + 1 }}</option>
+                            <option value="{{ $year }}">{{ $year }}</option>
                         @endforeach
                     </select>
                     <select class="form-select form-select-sm w-auto" wire:model.live="semester">

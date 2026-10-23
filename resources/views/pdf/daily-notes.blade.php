@@ -103,14 +103,14 @@
 <body>
     {{-- Institutional Footer for all pages --}}
     <div class="footer-institutional">
-        Lppm ITSNU Pekalongan - Tahun Akademik {{ $academicYear ?? date('Y') }}<br>
+        Lppm ITSNU Pekalongan - Tahun Akademik {{ $proposal->academic_year ?? ($academicYear ?? date('Y')) }}<br>
         <span class="page-number">Halaman </span>
     </div>
 
     <div class="page-break">
         @include('pdf.partials.cover', [
             'coverTitle' => 'CATATAN HARIAN<br>' . ($proposal->detailable_type === 'App\Models\Research' ? 'PENELITIAN' : 'PENGABDIAN') . ' INTERNAL',
-            'coverYear' => $proposal->start_year,
+            'coverYear' => $proposal->academic_year ?? $proposal->start_year,
             'proposal' => $proposal,
             'submitterFullName' => $submitterFullName,
             'submitterNidn' => $submitterNidn,
@@ -149,9 +149,9 @@
             <td>{{ $proposal->researchScheme->name ?? ($proposal->communityServiceScheme->name ?? '-') }}</td>
         </tr>
         <tr>
-            <td class="info-label">Tahun Pelaksanaan</td>
+            <td class="info-label">Tahun Akademik</td>
             <td class="info-colon">:</td>
-            <td>{{ $proposal->start_year }}</td>
+            <td>{{ $proposal->academic_year ?? $proposal->start_year }}</td>
         </tr>
     </table>
 

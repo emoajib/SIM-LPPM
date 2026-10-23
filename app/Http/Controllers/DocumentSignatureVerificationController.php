@@ -76,7 +76,7 @@ class DocumentSignatureVerificationController extends Controller
                 'contract_number' => $doc->contract_number ?? '-',
                 'submitter_name' => format_name($doc->submitter->identity?->title_prefix, $doc->submitter->name, $doc->submitter->identity?->title_suffix),
                 'scheme' => $scheme,
-                'year' => $doc->start_year,
+                'year' => $doc->academic_year ?? $doc->start_year,
             ];
         }
 
@@ -93,7 +93,7 @@ class DocumentSignatureVerificationController extends Controller
                 'contract_number' => $proposal->contract_number ?? '-',
                 'submitter_name' => format_name($proposal->submitter->identity?->title_prefix, $proposal->submitter->name, $proposal->submitter->identity?->title_suffix),
                 'scheme' => $scheme,
-                'year' => $proposal->start_year,
+                'year' => $proposal->academic_year ?? $proposal->start_year,
             ];
         }
 

@@ -93,7 +93,7 @@
                                     <i class="ti ti-x me-2"></i>
                                     Minta Perbaikan
                                 </button>
-                                <button class="btn btn-success shadow-sm" wire:click="approveInstitutionalReport('monev', {{ $academicYear }})"
+                                <button class="btn btn-success shadow-sm" wire:click="approveInstitutionalReport('monev', {{ $this->institutionalYear() }})"
                                     wire:loading.attr="disabled">
                                     <i class="ti ti-circle-check me-2"></i>
                                     Setujui & Tanda Tangani
@@ -240,7 +240,7 @@
                         <button type="button" class="btn btn-link link-secondary me-auto"
                             data-bs-dismiss="modal">Batal</button>
                         <button type="button" class="btn btn-danger shadow-sm"
-                            wire:click="rejectInstitutionalReport('monev', '{{ $academicYear }}')">
+                            wire:click="rejectInstitutionalReport('monev', '{{ $this->institutionalYear() }}')">
                             Simpan & Tolak
                         </button>
                     </div>

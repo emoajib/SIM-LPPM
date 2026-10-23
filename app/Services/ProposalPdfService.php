@@ -14,12 +14,12 @@ use App\Models\ProposalStatusLog;
 use App\Models\Research;
 use App\Models\Setting;
 use App\Models\User;
+use App\Support\MediaLibrary\MediaPathResolver;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use setasign\Fpdi\Fpdi;
@@ -28,6 +28,8 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class ProposalPdfService
 {
+    private const REPORT_CACHE_VERSION = 2;
+
     public function __construct(
         protected DocumentSignatureService $signatureService
     ) {}
@@ -66,38 +68,26 @@ class ProposalPdfService
      * IMPORTANT: $media->getPath() may return a RELATIVE path via CustomPathGenerator.
      * Always use getPathRelativeToRoot() + disk->path() to get correct absolute path.
      *
-     * BACKWARD COMPAT: Files uploaded while ProgressReport had submitted_by=null use
-     * the fallback path format: {collection}/{modelSlug}-{first8ofId}/{mediaId}/{filename}.
-     * We try both paths to support existing files.
+     * BACKWARD COMPAT: the path generator derives folders from mutable identity
+     * data (NIDN + name), so files uploaded before a name/NIDN change may live
+     * under a different folder. MediaPathResolver also locates those relocated
+     * files by their stable media ID and file name.
      */
     public function getLocalPdfPath(Media $media): ?string
     {
-        $diskName = $media->disk ?: config('media-library.disk_name', 'public');
-        $relPath = $media->getPathRelativeToRoot();
-        $fullPath = Storage::disk($diskName)->path($relPath);
+        $path = MediaPathResolver::resolve($media);
 
-        if (file_exists($fullPath)) {
-            return $fullPath;
-        }
-
-        // Fallback: try legacy path format generated when submitter was null at upload time.
-        // Format: {collection}/{modelSlug}-{first8ofId}/{mediaId}/{filename}
-        $modelSlug = Str::slug(class_basename($media->model_type));
-        $modelId8 = is_string($media->model_id) ? substr($media->model_id, 0, 8) : $media->model_id;
-        $legacyRelPath = $media->collection_name.'/'.$modelSlug.'-'.$modelId8.'/'.$media->id.'/'.$media->file_name;
-        $legacyFullPath = Storage::disk($diskName)->path($legacyRelPath);
-
-        if (file_exists($legacyFullPath)) {
-            Log::debug('getLocalPdfPath: using legacy fallback path', [
+        if ($path === null) {
+            Log::warning('getLocalPdfPath: media file not found', [
                 'media_id' => $media->id,
-                'primary' => $fullPath,
-                'legacy' => $legacyFullPath,
+                'collection' => $media->collection_name,
+                'model_type' => $media->model_type,
+                'model_id' => $media->model_id,
+                'file_name' => $media->file_name,
             ]);
-
-            return $legacyFullPath;
         }
 
-        return null;
+        return $path;
     }
 
     /**
@@ -707,9 +697,10 @@ class ProposalPdfService
         }
 
         $cacheFileName = sprintf(
-            '%sreport_%s_%s_t%s.pdf',
+            '%sreport_%s_v%d_%s_t%s.pdf',
             $isPreview ? 'preview_' : '',
             $report->id,
+            self::REPORT_CACHE_VERSION,
             $latestTimestamp,
             $this->pdfTemplateVersion('pdf.report-export')
         );
@@ -1290,7 +1281,7 @@ class ProposalPdfService
         $facultyName = $submitterIdentity?->faculty->name ?? '.......................';
         $prodiName = $submitterIdentity?->studyProgram->name ?? '.......................';
         $institutionName = $submitterIdentity?->institution->name ?? 'ITSNU Pekalongan';
-        $academicYear = $proposal->start_year.'/'.($proposal->start_year + 1);
+        $academicYear = $proposal->academic_year ?? ($proposal->start_year.'/'.($proposal->start_year + 1));
 
         $logbookApprovalMode = Setting::where('key', 'logbook_approval_mode')->value('value') ?? 'digital';
 

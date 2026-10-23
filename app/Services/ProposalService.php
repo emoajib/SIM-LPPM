@@ -9,6 +9,7 @@ use App\Models\CommunityService;
 use App\Models\Proposal;
 use App\Models\Research;
 use App\Models\StudyProgram;
+use App\Support\AcademicPeriod;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -128,15 +129,21 @@ class ProposalService
         }
 
         if (isset($filters['year']) && $filters['year'] !== '') {
-            $year = (int) $filters['year'];
-            if ($year > 2000 && $year < 2100) {
-                $query->where(function ($q) use ($year) {
-                    $q->where('start_year', $year)
-                        ->orWhere(function ($sq) use ($year) {
-                            $sq->whereNull('start_year')
-                                ->whereYear('created_at', $year);
-                        });
-                });
+            $yearFilter = (string) $filters['year'];
+
+            if (AcademicPeriod::startYear($yearFilter) !== null) {
+                $query->forAcademicYear($yearFilter);
+            } else {
+                $year = (int) $yearFilter;
+                if ($year > 2000 && $year < 2100) {
+                    $query->where(function ($q) use ($year) {
+                        $q->where('start_year', $year)
+                            ->orWhere(function ($sq) use ($year) {
+                                $sq->whereNull('start_year')
+                                    ->whereYear('created_at', $year);
+                            });
+                    });
+                }
             }
         }
 
@@ -202,11 +209,31 @@ class ProposalService
 
     public function getAvailableYears(string $type): array
     {
-        return $this->getBaseProposalQuery($type)
-            ->selectRaw('DISTINCT COALESCE(start_year, '.sql_year().') as year')
-            ->orderByDesc('year')
-            ->pluck('year')
-            ->toArray();
+        $detailableType = match ($type) {
+            'community-service' => CommunityService::class,
+            default => Research::class,
+        };
+
+        $periods = Proposal::query()
+            ->where('detailable_type', $detailableType)
+            ->whereNotNull('start_year')
+            ->distinct()
+            ->get(['start_year', 'semester']);
+
+        $labels = [];
+
+        foreach ($periods as $period) {
+            $academicStart = $period->semester === AcademicPeriod::GENAP
+                ? (int) $period->start_year - 1
+                : (int) $period->start_year;
+
+            $labels[AcademicPeriod::label($academicStart)] = true;
+        }
+
+        $years = array_keys($labels);
+        rsort($years);
+
+        return $years;
     }
 
     public function validateProposalBeforeSubmit(Proposal $proposal, bool $strictTeamValidation = true): void

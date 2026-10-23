@@ -68,6 +68,15 @@ class Show extends Component
             $this->validate([
                 'communityServiceSchemeId' => 'required|exists:community_service_schemes,id',
                 'form.semester' => 'required|in:ganjil,genap',
+                'form.academic_year' => [
+                    'required',
+                    'string',
+                    function ($attribute, $value, $fail) {
+                        if (Proposal::parseAcademicYear(is_string($value) ? $value : null) === null) {
+                            $fail('Format tahun akademik harus seperti 2026/2027.');
+                        }
+                    },
+                ],
                 'form.start_year' => 'required|integer|min:2020|max:2030',
                 'partnerId' => 'required|exists:partners,id',
                 'partnerIssueSummary' => 'required|string|min:50',
@@ -259,6 +268,15 @@ class Show extends Component
         $this->validate([
             'communityServiceSchemeId' => 'required|exists:community_service_schemes,id',
             'form.semester' => 'required|in:ganjil,genap',
+            'form.academic_year' => [
+                'required',
+                'string',
+                function ($attribute, $value, $fail) {
+                    if (Proposal::parseAcademicYear(is_string($value) ? $value : null) === null) {
+                        $fail('Format tahun akademik harus seperti 2026/2027.');
+                    }
+                },
+            ],
             'form.start_year' => 'required|integer|min:2020|max:2030',
             'form.budget_items' => ['required', 'array', 'min:1'],
             'form.budget_items.*.year' => 'required|integer|min:1|max:10',

@@ -9,8 +9,10 @@ use App\Models\Proposal;
 use App\Models\Research;
 use App\Models\ResearchScheme;
 use App\Models\User;
+use App\Support\AcademicPeriod;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -22,6 +24,11 @@ class HistoricalProposalImport implements SkipsEmptyRows, ToCollection, WithHead
 
     /** @var int Total baris berhasil diimport */
     public int $imported = 0;
+
+    public function __construct(public ?string $importBatchId = null)
+    {
+        $this->importBatchId ??= (string) Str::uuid();
+    }
 
     public function collection(Collection $rows): void
     {
@@ -39,8 +46,17 @@ class HistoricalProposalImport implements SkipsEmptyRows, ToCollection, WithHead
 
                 continue;
             }
-            if (empty($row['tahun'])) {
-                $this->failures[] = "Baris {$rowNum}: Kolom 'tahun' kosong, dilewati.";
+            $tahunAkademik = trim((string) ($row['tahun_akademik'] ?? ''));
+            $startYear = AcademicPeriod::startYear($tahunAkademik);
+            if ($startYear === null) {
+                $this->failures[] = "Baris {$rowNum}: Kolom 'tahun_akademik' wajib berformat YYYY/YYYY (mis. 2025/2026). Data lama dengan kolom 'tahun' ditolak.";
+
+                continue;
+            }
+
+            $semester = strtolower(trim((string) ($row['semester'] ?? '')));
+            if (! in_array($semester, [AcademicPeriod::GANJIL, AcademicPeriod::GENAP], true)) {
+                $this->failures[] = "Baris {$rowNum}: Kolom 'semester' wajib 'ganjil' atau 'genap'.";
 
                 continue;
             }
@@ -81,7 +97,19 @@ class HistoricalProposalImport implements SkipsEmptyRows, ToCollection, WithHead
 
             // ── Wrap semua dalam satu transaction ────────────────────────────
             try {
-                DB::transaction(function () use ($row, $ketua, $dosenAnggota, $studentMembers, $researchSchemeId, $dana, $durasi) {
+                $nidn = trim((string) ($row['nidn'] ?? ''));
+                $fingerprint = hash('sha256', implode('|', [
+                    $nidn !== '' ? $nidn : mb_strtolower(trim($ketua->name)),
+                    mb_strtolower(preg_replace('/\s+/', ' ', trim((string) $row['judul']))),
+                    $tahunAkademik,
+                    $semester,
+                ]));
+
+                DB::transaction(function () use ($row, $ketua, $dosenAnggota, $studentMembers, $researchSchemeId, $dana, $durasi, $semester, $startYear, $fingerprint) {
+                    if (Proposal::withArchived()->where('archive_fingerprint', $fingerprint)->exists()) {
+                        throw new \RuntimeException('Duplikat arsip (NIDN + judul + tahun akademik + semester) — dilewati.');
+                    }
+
                     // 1. Buat detail record (Research / CommunityService)
                     $type = strtolower(trim((string) $row['skema']));
                     $isAbmas = str_contains($type, 'abmas')
@@ -105,13 +133,17 @@ class HistoricalProposalImport implements SkipsEmptyRows, ToCollection, WithHead
                         'detailable_type' => get_class($detail),
                         'detailable_id' => $detail->id,
                         'research_scheme_id' => $researchSchemeId,
-                        'start_year' => (int) $row['tahun'],
+                        'start_year' => $semester === AcademicPeriod::GENAP ? $startYear + 1 : $startYear,
+                        'semester' => $semester,
                         'duration_in_years' => $durasi,
                         'status' => ProposalStatus::COMPLETED,
                         'sbk_value' => $dana,
                         'summary' => trim((string) ($row['ringkasan'] ?? 'Imported from Excel')),
-                        // Anggota mahasiswa disimpan sebagai JSON
                         'student_members' => ! empty($studentMembers) ? $studentMembers : null,
+                        'is_archive_only' => true,
+                        'import_batch_id' => $this->importBatchId,
+                        'imported_at' => now(),
+                        'archive_fingerprint' => $fingerprint,
                     ]);
 
                     // 3. Tambah Ketua ke proposal_user (role: ketua, status: accepted)
@@ -152,7 +184,7 @@ class HistoricalProposalImport implements SkipsEmptyRows, ToCollection, WithHead
     private function findUser(string $nidn, string $nama): ?User
     {
         if (! empty($nidn)) {
-            $user = User::whereHas('identity', fn ($q) => $q->where('nidn', $nidn))->first();
+            $user = User::whereHas('identity', fn ($q) => $q->where('identity_id', $nidn))->first();
             if ($user) {
                 return $user;
             }
@@ -183,7 +215,7 @@ class HistoricalProposalImport implements SkipsEmptyRows, ToCollection, WithHead
         $nidnList = array_filter(array_map('trim', explode(',', $raw)));
 
         foreach ($nidnList as $nidn) {
-            $user = User::whereHas('identity', fn ($q) => $q->where('nidn', $nidn))->first();
+            $user = User::whereHas('identity', fn ($q) => $q->where('identity_id', $nidn))->first();
             if ($user) {
                 $found[] = $user;
             }

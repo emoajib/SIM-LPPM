@@ -4,6 +4,7 @@ namespace App\Livewire\Rektor;
 
 use App\Models\MonevReview;
 use App\Models\Proposal;
+use App\Support\AcademicPeriod;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
@@ -22,17 +23,14 @@ class MonevDashboard extends Component
         if (! Auth::user()->hasAnyRole(['rektor', 'kepala lppm'])) {
             abort(403);
         }
-        $this->academicYear = $this->academicYear ?: date('Y');
+        $this->academicYear = $this->academicYear ?: AcademicPeriod::current();
     }
 
     #[Computed]
     public function stats()
     {
         $baseQuery = MonevReview::query()
-            ->where('academic_year', $this->academicYear)
-            ->when($this->semester !== 'all', function ($query) {
-                $query->where('semester', $this->semester);
-            })
+            ->forAcademicPeriod($this->academicYear, $this->semester)
             ->whereNotNull('reported_to_rektor_at');
 
         return [
@@ -46,7 +44,12 @@ class MonevDashboard extends Component
     #[Computed]
     public function academicYears()
     {
-        return Proposal::distinct()->pluck('start_year')->filter()->sortDesc();
+        $periods = Proposal::query()
+            ->whereNotNull('start_year')
+            ->distinct()
+            ->get(['start_year', 'semester']);
+
+        return AcademicPeriod::optionsFromPeriods($periods);
     }
 
     #[Computed]
@@ -54,10 +57,7 @@ class MonevDashboard extends Component
     {
         return MonevReview::query()
             ->with(['proposal.submitter', 'reviewer'])
-            ->where('academic_year', $this->academicYear)
-            ->when($this->semester !== 'all', function ($query) {
-                $query->where('semester', $this->semester);
-            })
+            ->forAcademicPeriod($this->academicYear, $this->semester)
             ->whereNotNull('reported_to_rektor_at')
             ->latest('reported_to_rektor_at')
             ->take(10)

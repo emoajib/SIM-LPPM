@@ -15,6 +15,7 @@ use App\Models\Keyword;
 use App\Models\Proposal;
 use App\Models\Research;
 use App\Models\ResearchScheme;
+use App\Models\StudyProgram;
 use App\Models\TktLevel;
 use App\Models\User;
 use App\Services\BudgetValidationService;
@@ -75,7 +76,9 @@ class ProposalForm extends Form
     public string $duration_in_years = '1';
 
     #[Validate('required|integer|min:2020|max:2050')]
-    public string $start_year = '2026';
+    public string $start_year = '';
+
+    public string $academic_year = '';
 
     #[Validate('required|string|in:ganjil,genap')]
     public string $semester = 'ganjil';
@@ -352,6 +355,109 @@ class ProposalForm extends Form
 
         // Load partners
         $this->partner_ids = $proposal->partners->pluck('id')->toArray();
+
+        $this->academic_year = $proposal->academic_year
+            ?? $this->buildAcademicYearLabel((int) $this->start_year, $this->semester);
+    }
+
+    /**
+     * Set default academic period based on today's date.
+     * Sep–Feb = Ganjil, Mar–Aug = Genap.
+     */
+    public function setDefaultAcademicPeriod(): void
+    {
+        $month = (int) date('n');
+        $year = (int) date('Y');
+
+        if ($month >= 9) {
+            $this->setAcademicPeriod($year, 'ganjil');
+        } elseif ($month <= 2) {
+            $this->setAcademicPeriod($year - 1, 'ganjil');
+        } else {
+            $this->setAcademicPeriod($year - 1, 'genap');
+        }
+    }
+
+    /**
+     * Set academic period from its start year and sync the stored start_year.
+     */
+    public function setAcademicPeriod(int $academicStartYear, string $semester = 'ganjil'): void
+    {
+        $this->semester = in_array($semester, ['ganjil', 'genap'], true) ? $semester : 'ganjil';
+        $this->academic_year = sprintf('%d/%d', $academicStartYear, $academicStartYear + 1);
+        $this->start_year = (string) ($this->semester === 'genap' ? $academicStartYear + 1 : $academicStartYear);
+    }
+
+    public function updatedAcademicYear(): void
+    {
+        $this->syncStartYearFromAcademicYear();
+    }
+
+    public function updatedStartYear(): void
+    {
+        $startYear = (int) $this->start_year;
+
+        if ($startYear < 2000) {
+            return;
+        }
+
+        $this->academic_year = $this->buildAcademicYearLabel($startYear, $this->semester);
+    }
+
+    public function updatedSemester(): void
+    {
+        $this->syncStartYearFromAcademicYear();
+    }
+
+    /**
+     * Convert UI academic year back to the stored semester-start calendar year.
+     */
+    public function syncStartYearFromAcademicYear(): void
+    {
+        $academicStart = Proposal::parseAcademicYear($this->academic_year);
+
+        if ($academicStart === null) {
+            return;
+        }
+
+        $this->start_year = (string) ($this->semester === 'genap' ? $academicStart + 1 : $academicStart);
+    }
+
+    private function buildAcademicYearLabel(int $semesterStartYear, string $semester): string
+    {
+        $academicStart = $semester === 'genap' ? $semesterStartYear - 1 : $semesterStartYear;
+
+        return sprintf('%d/%d', $academicStart, $academicStart + 1);
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public function academicYearOptions(): array
+    {
+        $selected = Proposal::parseAcademicYear($this->academic_year);
+        $baseStart = $selected ?? (int) date('Y');
+        $options = [];
+
+        for ($offset = -2; $offset <= 5; $offset++) {
+            $start = $baseStart + $offset;
+            $options[] = sprintf('%d/%d', $start, $start + 1);
+        }
+
+        return array_values(array_unique($options));
+    }
+
+    public function academicPeriodHint(): string
+    {
+        $academicStart = Proposal::parseAcademicYear($this->academic_year);
+
+        if ($academicStart === null) {
+            return 'Pilih tahun akademik, lalu semester.';
+        }
+
+        return $this->semester === 'genap'
+            ? sprintf('1 Mar - 31 Agt %d', $academicStart + 1)
+            : sprintf('1 Sep %d - 28/29 Feb %d', $academicStart, $academicStart + 1);
     }
 
     /**
@@ -778,6 +884,15 @@ class ProposalForm extends Form
             'cluster_level3_id' => 'nullable|exists:science_clusters,id',
             'sbk_value' => 'nullable|numeric|min:0',
             'duration_in_years' => 'required|integer|min:1|max:10',
+            'academic_year' => [
+                'required',
+                'string',
+                function ($attribute, $value, $fail) {
+                    if (Proposal::parseAcademicYear(is_string($value) ? $value : null) === null) {
+                        $fail('Format tahun akademik harus seperti 2026/2027.');
+                    }
+                },
+            ],
             'start_year' => 'required|integer|min:2020|max:2050',
             'semester' => 'required|string|in:ganjil,genap',
             'summary' => 'required|string|min:100',
@@ -935,6 +1050,7 @@ class ProposalForm extends Form
                         'tasks' => $member['tugas'] ?? '',
                         'study_program' => $member['study_program'] ?? '-',
                         'institution' => $member['institution'] ?? 'ITSNU Pekalongan',
+                        'email' => $member['email'] ?? '',
                     ];
 
                     continue;
@@ -944,8 +1060,21 @@ class ProposalForm extends Form
 
                 // If not found and it's a manual entry, create a shadow user
                 if (! $identity && ! empty($member['is_manual'])) {
+                    $email = trim((string) ($member['email'] ?? ''));
+
+                    if ($email === '') {
+                        $identifier = preg_replace('/[^a-zA-Z0-9._-]/', '-', (string) ($member['nidn'] ?? ''));
+                        $identifier = trim((string) $identifier, '-');
+
+                        if ($identifier === '') {
+                            $identifier = Str::lower(Str::random(10));
+                        }
+
+                        $email = sprintf('external-%s@no-email.local', $identifier);
+                    }
+
                     $user = User::firstOrCreate(
-                        ['email' => $member['email']],
+                        ['email' => $email],
                         [
                             'name' => $member['name'],
                             'password' => bcrypt(Str::random(16)),
@@ -954,12 +1083,20 @@ class ProposalForm extends Form
 
                     if (! $user->identity) {
                         $institutionId = Institution::where('name', 'like', '%'.($member['institution'] ?? '').'%')->first()?->id;
+                        $studyProgramId = null;
+
+                        if (! empty($member['study_program']) && $member['study_program'] !== 'Lainnya') {
+                            $studyProgramId = StudyProgram::where('name', $member['study_program'])->value('id');
+                        }
 
                         $user->identity()->create([
                             'identity_id' => $member['nidn'],
                             'type' => $member['identity_type'] ?? 'dosen',
                             'institution_id' => $institutionId,
+                            'study_program_id' => $studyProgramId,
                         ]);
+
+                        $user->unsetRelation('identity');
                     }
 
                     $roleName = $member['identity_type'] ?? 'dosen';
@@ -1190,9 +1327,9 @@ class ProposalForm extends Form
             throw ValidationException::withMessages([
                 'budget_items' => [
                     sprintf(
-                        'Total anggaran melebihi batas maksimal untuk %s tahun %s (%s). Batas: Rp %s, Total saat ini: Rp %s',
+                        'Total anggaran melebihi batas maksimal untuk %s tahun akademik %s (%s). Batas: Rp %s, Total saat ini: Rp %s',
                         $typeLabel,
-                        $currentYear,
+                        BudgetCap::academicYearLabel($currentYear, $currentSemester),
                         $semesterLabel,
                         number_format($budgetCap, 0, ',', '.'),
                         number_format($totalBudget, 0, ',', '.')

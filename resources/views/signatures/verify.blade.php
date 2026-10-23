@@ -315,7 +315,7 @@
                 @endif
                 @if(!empty($docInfo['year']))
                 <div class="data-row">
-                    <div class="data-key">Tahun Pelaksanaan</div>
+                    <div class="data-key">Tahun Akademik</div>
                     <div class="data-val">{{ $docInfo['year'] }}</div>
                 </div>
                 @endif
