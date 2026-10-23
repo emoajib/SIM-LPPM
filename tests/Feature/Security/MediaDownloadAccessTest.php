@@ -89,6 +89,20 @@ class MediaDownloadAccessTest extends TestCase
     }
 
     /** @test */
+    public function test_ketua_can_download_file_relocated_after_identity_change()
+    {
+        $oldRelativePath = 'substance_file/0058120320025-hasan-mashuri/'.$this->media->id.'/'.$this->media->file_name;
+        Storage::disk('public')->move($this->media->getPathRelativeToRoot(), $oldRelativePath);
+
+        $this->assertFalse(Storage::disk('public')->exists($this->media->getPathRelativeToRoot()));
+        $this->assertTrue(Storage::disk('public')->exists($oldRelativePath));
+
+        $this->actingAs($this->ketua)
+            ->get(route('media.download', ['media' => $this->media->uuid]))
+            ->assertStatus(200);
+    }
+
+    /** @test */
     public function test_anggota_can_download_proposal_file()
     {
         $this->actingAs($this->anggota)

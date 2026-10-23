@@ -13,6 +13,7 @@ use App\Models\Proposal;
 use App\Models\Research;
 use App\Models\User;
 use App\Services\ProposalPdfService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Database\Seeders\InstitutionSeeder;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -225,6 +226,109 @@ class ReportPdfAttachmentAndFinancialTest extends TestCase
         $fpdi = new Fpdi;
         $pageCount = $fpdi->setSourceFile($pdfPath);
         $this->assertEquals(1, $pageCount, 'Financial approval template must be exactly 1 page.');
+    }
+
+    /**
+     * Test that media files are found after the identity-based folder changes.
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     */
+    public function test_get_local_pdf_path_resolves_relocated_identity_folder()
+    {
+        Storage::fake('public');
+
+        $pkm = CommunityService::factory()->create();
+        $proposal = Proposal::factory()->create([
+            'submitter_id' => $this->dosen->id,
+            'detailable_id' => $pkm->id,
+            'detailable_type' => CommunityService::class,
+        ]);
+
+        $report = ProgressReport::create([
+            'proposal_id' => $proposal->id,
+            'reporting_period' => 'final',
+            'reporting_year' => date('Y'),
+            'status' => ReportStatus::APPROVED->value,
+            'summary_update' => 'Uji relokasi folder media.',
+        ]);
+
+        $dummyPdfPath = tempnam(sys_get_temp_dir(), 'test_relocated_').'.pdf';
+        file_put_contents(
+            $dummyPdfPath,
+            Pdf::loadHTML('<h1>Relocated Attachment</h1>')->output()
+        );
+
+        $media = $report->addMedia(new UploadedFile($dummyPdfPath, 'relocated.pdf', 'application/pdf', null, true))
+            ->toMediaCollection('official_report_pkm');
+
+        $oldRelativePath = 'official_report_pkm/0058120320025-hasan-mashuri/'.$media->id.'/'.$media->file_name;
+        Storage::disk('public')->move($media->getPathRelativeToRoot(), $oldRelativePath);
+
+        $this->assertFalse(Storage::disk('public')->exists($media->getPathRelativeToRoot()));
+        $this->assertTrue(Storage::disk('public')->exists($oldRelativePath));
+
+        $resolved = app(ProposalPdfService::class)->getLocalPdfPath($media->fresh());
+
+        $this->assertNotNull($resolved);
+        $this->assertSame(
+            realpath(Storage::disk('public')->path($oldRelativePath)),
+            realpath($resolved)
+        );
+    }
+
+    /**
+     * Test that a relocated attachment is merged into the exported report PDF.
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     */
+    public function test_export_report_includes_attachment_relocated_after_profile_change()
+    {
+        Storage::fake('public');
+
+        $pkm = CommunityService::factory()->create();
+        $proposal = Proposal::factory()->create([
+            'submitter_id' => $this->dosen->id,
+            'detailable_id' => $pkm->id,
+            'detailable_type' => CommunityService::class,
+        ]);
+
+        $report = ProgressReport::create([
+            'proposal_id' => $proposal->id,
+            'reporting_period' => 'final',
+            'reporting_year' => date('Y'),
+            'status' => ReportStatus::APPROVED->value,
+            'summary_update' => 'Uji lampiran setelah perubahan profil.',
+        ]);
+
+        request()->query->remove('preview');
+        request()->query->remove('refresh');
+
+        $service = app(ProposalPdfService::class);
+        $basePdfPath = $service->exportReport($proposal, $report, false);
+        $basePages = (new Fpdi)->setSourceFile($basePdfPath);
+
+        $dummyPdfPath = tempnam(sys_get_temp_dir(), 'test_profile_change_').'.pdf';
+        file_put_contents(
+            $dummyPdfPath,
+            Pdf::loadHTML('<h1>Attachment After Profile Change</h1>')->output()
+        );
+
+        $media = $report->addMedia(new UploadedFile($dummyPdfPath, 'profile-change.pdf', 'application/pdf', null, true))
+            ->toMediaCollection('official_report_pkm');
+
+        $oldRelativePath = 'official_report_pkm/0058120320025-hasan-mashuri/'.$media->id.'/'.$media->file_name;
+        Storage::disk('public')->move($media->getPathRelativeToRoot(), $oldRelativePath);
+
+        $this->dosen->update(['name' => 'Hasan Mashuri']);
+        $this->dosen->identity->update(['identity_id' => '7700015028']);
+
+        $relocatedMedia = $report->fresh()->getFirstMedia('official_report_pkm');
+        $this->assertNotNull($relocatedMedia);
+        $this->assertNotNull($service->getLocalPdfPath($relocatedMedia));
+
+        request()->merge(['preview' => 1, 'refresh' => 1]);
+        $pdfPath = $service->exportReport($proposal, $report->fresh(), true);
+
+        $this->assertFileExists($pdfPath);
+        $this->assertGreaterThan($basePages, (new Fpdi)->setSourceFile($pdfPath));
     }
 
     /**

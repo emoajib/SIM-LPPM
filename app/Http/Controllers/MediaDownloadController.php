@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\MediaLibrary\MediaPathResolver;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Str;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class MediaDownloadController extends Controller
@@ -41,46 +41,23 @@ class MediaDownloadController extends Controller
                 $this->authorize('download', $media);
             }
 
-            $diskName = config('media-library.disk_name', 'public');
+            $diskName = $media->disk ?: config('media-library.disk_name', 'public');
 
             // 3. Path Traversal & Existence Check for local disks
             // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             // IMPORTANT: $media->getPath() may return a RELATIVE path (via CustomPathGenerator).
-            // realpath() on a relative path resolves from PHP's CWD (not disk root) → always fails → 404.
-            // Fix: use getPathRelativeToRoot() + disk->path() to build the correct absolute path first.
+            // MediaPathResolver handles primary, legacy, and relocated identity folders.
             $disk = Storage::disk($diskName);
-            $relativePath = $media->getPathRelativeToRoot();
+            $resolvedPath = MediaPathResolver::resolve($media);
+            $realPath = $resolvedPath !== null ? realpath($resolvedPath) : false;
 
-            if (str_contains($relativePath, '..')) {
-                abort(403, 'Invalid file path.');
-            }
-
-            $absolutePath = $disk->path($relativePath);
-            $realPath = realpath($absolutePath);
-
-            // Fallback: coba path lama format {collection}/{modelslug}-{id8}/{media_id}/{filename}
-            // File yang diupload sebelum CustomPathGenerator diupdate ke format NIDN masih ada di path lama.
             if ($realPath === false) {
-                $modelSlug = Str::slug(class_basename($media->model_type));
-                $modelId8 = is_string($media->model_id) ? substr($media->model_id, 0, 8) : $media->model_id;
-                $legacyRel = $media->collection_name.'/'.$modelSlug.'-'.$modelId8.'/'.$media->id.'/'.$media->file_name;
-                $legacyAbs = $disk->path($legacyRel);
-                $realPath = realpath($legacyAbs);
-
-                if ($realPath !== false) {
-                    Log::info('MediaDownload: resolved via legacy path fallback', [
-                        'media_id' => $media->id,
-                        'legacy' => $legacyRel,
-                        'user_id' => Auth::id(),
-                    ]);
-                } else {
-                    Log::warning('MediaDownload: file not found at primary or fallback path', [
-                        'media_id' => $media->id,
-                        'primary' => $relativePath,
-                        'legacy' => $legacyRel,
-                    ]);
-                    abort(404, 'File fisik tidak ditemukan di server.');
-                }
+                Log::warning('MediaDownload: file not found at primary or fallback path', [
+                    'media_id' => $media->id,
+                    'collection' => $media->collection_name,
+                    'file_name' => $media->file_name,
+                ]);
+                abort(404, 'File fisik tidak ditemukan di server.');
             }
 
             // Security Barrier: Ensure path is within the disk's root
