@@ -132,7 +132,7 @@ class ProposalService
             $yearFilter = (string) $filters['year'];
 
             if (AcademicPeriod::startYear($yearFilter) !== null) {
-                $query->forAcademicYear($yearFilter);
+                Proposal::applyAcademicYearFilter($query, $yearFilter);
             } else {
                 $year = (int) $yearFilter;
                 if ($year > 2000 && $year < 2100) {

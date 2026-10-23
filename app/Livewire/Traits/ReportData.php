@@ -170,7 +170,7 @@ trait ReportData
         $periods = $query->select('start_year', 'semester')
             ->distinct()
             ->get()
-            ->filter(fn ($period) => $period->start_year !== null);
+            ->filter(fn ($period) => $period->getAttribute('start_year') !== null);
 
         return collect(AcademicPeriod::optionsFromPeriods($periods));
     }
