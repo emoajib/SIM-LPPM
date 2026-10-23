@@ -97,7 +97,7 @@ class HistoricalProposalImport implements SkipsEmptyRows, ToCollection, WithHead
 
             // ── Wrap semua dalam satu transaction ────────────────────────────
             try {
-                $nidn = trim((string) ($row['nidn'] ?? ''));
+                $nidn = trim((string) ($row['identity_id'] ?? $row['nidn'] ?? ''));
                 $fingerprint = hash('sha256', implode('|', [
                     $nidn !== '' ? $nidn : mb_strtolower(trim($ketua->name)),
                     mb_strtolower(preg_replace('/\s+/', ' ', trim((string) $row['judul']))),
@@ -206,7 +206,7 @@ class HistoricalProposalImport implements SkipsEmptyRows, ToCollection, WithHead
     private function parseDosenAnggota(Collection $row): array
     {
         $found = [];
-        $raw = trim((string) ($row['nidn_anggota'] ?? ''));
+        $raw = trim((string) ($row['nidn_anggota'] ?? $row['identity_id_anggota'] ?? ''));
 
         if (empty($raw)) {
             return $found;

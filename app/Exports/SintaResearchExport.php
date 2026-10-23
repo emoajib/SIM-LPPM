@@ -118,9 +118,9 @@ class SintaResearchExport implements FromCollection, ShouldAutoSize, WithHeading
             $this->institutionCode,
             $proposal->title,
             $proposal->researchScheme->code ?? $proposal->researchScheme->name ?? '',
-            $proposal->start_year ?? date('Y'),
-            $proposal->start_year ?? date('Y'),
-            $proposal->start_year ?? date('Y'),
+            $proposal->academic_year ?? date('Y'),
+            $proposal->academic_year ?? date('Y'),
+            $proposal->academic_year ?? date('Y'),
             1, // lama_kegiatan default 1 tahun
             $proposal->detailable->macro_research_group_id ? 'Ilmu Komputer & Informatika' : 'Multidisiplin',
             $proposal->researchScheme->name ?? 'Penelitian Internal',

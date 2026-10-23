@@ -128,9 +128,9 @@ class ResearchProposalExport implements FromQuery, WithHeadings, WithMapping
             '', // kd_pt_ketua - not available in current schema
             $proposal->title ?? '',
             $proposal->researchScheme->name ?? '',
-            $proposal->start_year ?? '',
-            $proposal->start_year ?? '',
-            $proposal->start_year ?? '',
+            $proposal->academic_year ?? date('Y'),
+            $proposal->academic_year ?? date('Y'),
+            $proposal->academic_year ?? date('Y'),
             $proposal->duration_in_years ?? '',
             $proposal->focusArea->name ?? '',
             $proposal->researchScheme->name ?? '',
