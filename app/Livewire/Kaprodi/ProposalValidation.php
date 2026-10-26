@@ -7,6 +7,7 @@ use App\Models\CommunityService;
 use App\Models\Proposal;
 use App\Models\Research;
 use App\Models\Setting;
+use App\Support\AcademicPeriod;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -89,7 +90,7 @@ class ProposalValidation extends Component
             ->distinct()
             ->get();
 
-        return \App\Support\AcademicPeriod::optionsFromPeriods($periods);
+        return AcademicPeriod::optionsFromPeriods($periods);
     }
 
     /**

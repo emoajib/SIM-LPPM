@@ -6,9 +6,11 @@ namespace App\Livewire\KepalaLppm;
 
 use App\Enums\ProposalStatus;
 use App\Livewire\Concerns\HasToast;
+use App\Models\Faculty;
 use App\Models\Proposal;
 use App\Services\BudgetAmendmentService;
 use App\Services\NotificationService;
+use App\Support\AcademicPeriod;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -73,7 +75,7 @@ class FinancialApproval extends Component
     #[Computed]
     public function faculties()
     {
-        return \App\Models\Faculty::orderBy('name')->get();
+        return Faculty::orderBy('name')->get();
     }
 
     #[Computed]
@@ -85,7 +87,7 @@ class FinancialApproval extends Component
             ->distinct()
             ->get();
 
-        return \App\Support\AcademicPeriod::optionsFromPeriods($periods);
+        return AcademicPeriod::optionsFromPeriods($periods);
     }
 
     // Vetted by AI - Manual Review Required by Senior Engineer/Manager

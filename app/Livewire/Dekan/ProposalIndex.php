@@ -6,6 +6,7 @@ use App\Enums\ProposalStatus;
 use App\Models\CommunityService;
 use App\Models\Proposal;
 use App\Models\Research;
+use App\Models\StudyProgram;
 use App\Support\AcademicPeriod;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -82,7 +83,7 @@ class ProposalIndex extends Component
             return collect();
         }
 
-        return \App\Models\StudyProgram::where('faculty_id', $facultyId)->orderBy('name')->get();
+        return StudyProgram::where('faculty_id', $facultyId)->orderBy('name')->get();
     }
 
     /**
