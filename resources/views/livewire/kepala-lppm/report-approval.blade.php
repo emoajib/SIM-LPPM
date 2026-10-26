@@ -101,13 +101,14 @@
         <div class="col-12">
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
-                    <div class="row g-3">
+                    <div class="row g-2">
+                        <!-- Baris 1: Pencarian, Status, dan Jenis -->
                         <div class="col-md-5">
                             <input type="text" class="form-control" placeholder="Cari berdasarkan judul proposal atau peneliti..."
                                 wire:model.live.debounce.300ms="search" />
                         </div>
 
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <select class="form-select" wire:model.live="statusFilter">
                                 <option value="all">Semua Status Pelaporan</option>
                                 <option value="belum_laporan">⚠ Belum Laporan</option>
@@ -118,7 +119,7 @@
                             </select>
                         </div>
 
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                             <select class="form-select" wire:model.live="typeFilter">
                                 <option value="all">Semua Jenis</option>
                                 <option value="research">Penelitian</option>
@@ -126,10 +127,39 @@
                             </select>
                         </div>
 
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-outline-secondary w-100" wire:click="resetFilters">
-                                <x-lucide-rotate-ccw class="icon me-1" />
-                                Reset
+                        <!-- Baris 2: Fakultas, Skema, Tahun, dan Reset (Vetted by AI - Manual Review Required by Senior Engineer/Manager) -->
+                        <div class="col-md-4">
+                            <select class="form-select" wire:model.live="facultyFilter">
+                                <option value="all">Semua Fakultas</option>
+                                @foreach ($this->faculties as $faculty)
+                                    <option value="{{ $faculty->id }}">{{ $faculty->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        @if ($typeFilter !== 'all')
+                            <div class="col-md-4">
+                                <select class="form-select" wire:model.live="schemeFilter">
+                                    <option value="all">Semua Skema</option>
+                                    @foreach ($this->schemes as $scheme)
+                                        <option value="{{ $scheme->id }}">{{ $scheme->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @endif
+
+                        <div class="col-md-3">
+                            <select class="form-select" wire:model.live="yearFilter">
+                                <option value="">Semua Tahun</option>
+                                @foreach ($this->availableYears as $year)
+                                    <option value="{{ $year }}">{{ $year }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-1">
+                            <button type="button" class="btn btn-outline-secondary w-100" wire:click="resetFilters" title="Reset Filter">
+                                <x-lucide-rotate-ccw class="icon" />
                             </button>
                         </div>
                     </div>

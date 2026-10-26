@@ -11,13 +11,13 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <input type="text" class="form-control" placeholder="Cari berdasarkan judul proposal..."
+                    <div class="row g-2 align-items-center">
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" placeholder="Cari judul proposal / pengusul..."
                                 wire:model.live.debounce.300ms="search" />
                         </div>
 
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <select class="form-select" wire:model.live="typeFilter">
                                 <option value="all">Semua Jenis</option>
                                 <option value="research">Penelitian</option>
@@ -25,7 +25,7 @@
                             </select>
                         </div>
 
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <select class="form-select" wire:model.live="statusFilter">
                                 <option value="all">Semua Status</option>
                                 <option value="submitted">Diajukan</option>
@@ -35,10 +35,29 @@
                             </select>
                         </div>
 
+                        <!-- Study Program Filter (Vetted by AI - Manual Review Required by Senior Engineer/Manager) -->
                         <div class="col-md-2">
-                            <button type="button" class="btn-outline-secondary w-100 btn" wire:click="resetFilters">
+                            <select class="form-select" wire:model.live="studyProgramFilter">
+                                <option value="all">Semua Prodi</option>
+                                @foreach ($this->availableStudyPrograms as $prodi)
+                                    <option value="{{ $prodi->id }}">{{ $prodi->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Year Filter (Vetted by AI - Manual Review Required by Senior Engineer/Manager) -->
+                        <div class="col-md-2">
+                            <select class="form-select" wire:model.live="yearFilter">
+                                <option value="">Semua Tahun</option>
+                                @foreach ($this->availableYears as $year)
+                                    <option value="{{ $year }}">{{ $year }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-1">
+                            <button type="button" class="btn btn-outline-secondary w-100" wire:click="resetFilters" title="Reset Filter">
                                 <x-lucide-rotate-ccw class="icon" />
-                                Reset
                             </button>
                         </div>
                     </div>

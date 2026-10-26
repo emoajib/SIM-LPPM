@@ -130,9 +130,9 @@ class MenuComposer
                 'params' => ['group' => 'academic-structure', 'tab' => 'study-program-roadmaps'],
                 'roles' => ['kaprodi'],
             ]] : []),
-            // Dekan menu
+            // Dekan menu - Vetted by AI - Manual Review Required by Senior Engineer/Manager
             [
-                'title' => 'Persetujuan Dekan',
+                'title' => 'Persetujuan Proposal',
                 'icon' => 'clipboard-check',
                 'route' => 'dekan.proposals.index',
                 'roles' => ['dekan'],

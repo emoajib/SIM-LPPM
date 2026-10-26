@@ -91,16 +91,16 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <div class="row g-3">
+                    <div class="row g-2 align-items-center">
                         <!-- Search Input -->
                         <div class="col-md-5">
                             <input type="text" class="form-control"
-                                placeholder="Cari berdasarkan judul atau ringkasan..."
+                                placeholder="Cari berdasarkan judul, ringkasan, atau nama pengusul..."
                                 wire:model.live.debounce.300ms="search" />
                         </div>
 
                         <!-- Type Filter -->
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <select class="form-select" wire:model.live="typeFilter">
                                 <option value="all">Semua Jenis</option>
                                 <option value="research">Penelitian</option>
@@ -108,11 +108,20 @@
                             </select>
                         </div>
 
-                        <!-- Reset Button -->
+                        <!-- Year Filter (Vetted by AI - Manual Review Required by Senior Engineer/Manager) -->
                         <div class="col-md-3">
-                            <button type="button" class="btn-outline-secondary w-100 btn" wire:click="resetFilters">
+                            <select class="form-select" wire:model.live="yearFilter">
+                                <option value="">Semua Tahun</option>
+                                @foreach ($this->availableYears as $year)
+                                    <option value="{{ $year }}">{{ $year }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Reset Button -->
+                        <div class="col-md-1">
+                            <button type="button" class="btn btn-outline-secondary w-100" wire:click="resetFilters" title="Reset Filter">
                                 <x-lucide-rotate-ccw class="icon" />
-                                Reset
                             </button>
                         </div>
                     </div>

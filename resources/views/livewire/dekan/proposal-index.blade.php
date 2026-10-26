@@ -1,4 +1,4 @@
-<x-slot:title>Persetujuan Dekan</x-slot:title>
+<x-slot:title>Persetujuan Proposal</x-slot:title>
 <x-slot:pageTitle>Persetujuan Proposal @if($this->facultyName) - {{ $this->facultyName }} @endif</x-slot:pageTitle>
 <x-slot:pageSubtitle>Kelola persetujuan proposal penelitian dan pengabdian yang telah diajukan di fakultas Anda.</x-slot:pageSubtitle>
 
@@ -93,18 +93,28 @@
                 <div class="card-body">
                     <div class="row g-3">
                         <!-- Search Input -->
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <input type="text" class="form-control"
                                 placeholder="Cari berdasarkan judul atau ringkasan..."
                                 wire:model.live.debounce.300ms="search" />
                         </div>
 
                         <!-- Type Filter -->
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <select class="form-select" wire:model.live="typeFilter">
                                 <option value="all">Semua Jenis</option>
                                 <option value="research">Penelitian</option>
                                 <option value="community_service">Pengabdian</option>
+                            </select>
+                        </div>
+
+                        <!-- Study Program Filter (Vetted by AI - Manual Review Required by Senior Engineer/Manager) -->
+                        <div class="col-md-3">
+                            <select class="form-select" wire:model.live="studyProgramFilter">
+                                <option value="all">Semua Program Studi</option>
+                                @foreach ($this->availableStudyPrograms as $prodi)
+                                    <option value="{{ $prodi->id }}">{{ $prodi->name }}</option>
+                                @endforeach
                             </select>
                         </div>
 
@@ -119,9 +129,9 @@
                         </div>
 
                         <!-- Reset Button -->
-                        <div class="col-md-3">
-                            <button type="button" class="btn-outline-secondary w-100 btn" wire:click="resetFilters">
-                                <x-lucide-rotate-ccw class="icon" />
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-outline-secondary w-100" wire:click="resetFilters">
+                                <x-lucide-rotate-ccw class="icon me-1" />
                                 Reset
                             </button>
                         </div>

@@ -12,6 +12,7 @@ use App\Models\Research;
 use App\Models\ResearchScheme;
 use App\Models\Setting;
 use App\Models\StudyProgram;
+use App\Support\AcademicPeriod;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
@@ -43,17 +44,43 @@ class ReviewMonitoring extends Component
     #[Url]
     public string $schemeFilter = 'all';
 
-    public function mount()
+    #[Url]
+    public string $yearFilter = '';
+
+    public function mount(): void
     {
-        if (! Auth::user()->hasAnyRole(['admin lppm', 'kepala lppm', 'rektor'])) {
-            abort(403);
+        // Zero Trust RBAC: peran aktif wajib admin lppm, kepala lppm, atau rektor
+        abort_unless(Auth::user()?->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor']), 403);
+    }
+
+    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    public function updated(string $property): void
+    {
+        if ($property === 'typeFilter') {
+            $this->schemeFilter = 'all';
+        }
+
+        if (str_ends_with($property, 'Filter') || str_ends_with($property, 'Search') || $property === 'search') {
+            $this->resetPage();
         }
     }
 
-    public function resetFilters()
+    public function resetFilters(): void
     {
-        $this->reset(['search', 'typeFilter', 'reviewerSearch', 'progressFilter', 'facultyFilter', 'prodiFilter', 'schemeFilter']);
+        $this->reset(['search', 'typeFilter', 'reviewerSearch', 'progressFilter', 'facultyFilter', 'prodiFilter', 'schemeFilter', 'yearFilter']);
         $this->resetPage();
+    }
+
+    #[Computed]
+    public function availableYears(): array
+    {
+        $periods = Proposal::query()
+            ->whereNotNull('start_year')
+            ->select('start_year', 'semester')
+            ->distinct()
+            ->get();
+
+        return AcademicPeriod::optionsFromPeriods($periods);
     }
 
     #[Computed]
@@ -89,7 +116,7 @@ class ReviewMonitoring extends Component
     {
         $requiredCount = (int) Setting::get('reviewer_count_required', 1);
 
-        return Proposal::query()
+        $query = Proposal::query()
             ->whereIn('status', [
                 ProposalStatus::UNDER_REVIEW->value,
                 ProposalStatus::REVIEWED->value,
@@ -147,8 +174,19 @@ class ReviewMonitoring extends Component
                         });
                 }
             })
-            ->latest()
-            ->paginate(15);
+            ->when($this->yearFilter, fn ($q) => $q->forAcademicYear($this->yearFilter))
+            ->latest();
+
+        $paginator = $query->paginate(15);
+
+        // Self-healing pagination clamp
+        if ($paginator->currentPage() > $paginator->lastPage() && $paginator->total() > 0) {
+            $this->setPage(1);
+
+            return $query->paginate(15);
+        }
+
+        return $paginator;
     }
 
     public function render()

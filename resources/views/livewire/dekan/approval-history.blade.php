@@ -3,6 +3,54 @@
 <x-slot:pageSubtitle>Daftar proposal yang telah Anda tinjau dan berikan keputusan.</x-slot:pageSubtitle>
 
 <div>
+    <!-- Filter Section (Vetted by AI - Manual Review Required by Senior Engineer/Manager) -->
+    <div class="mb-3 row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" placeholder="Cari judul proposal / pengusul..."
+                                wire:model.live.debounce.300ms="search" />
+                        </div>
+
+                        <div class="col-md-2">
+                            <select class="form-select" wire:model.live="typeFilter">
+                                <option value="all">Semua Jenis</option>
+                                <option value="research">Penelitian</option>
+                                <option value="community_service">Pengabdian</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <select class="form-select" wire:model.live="decisionFilter">
+                                <option value="all">Semua Keputusan</option>
+                                <option value="approved">Disetujui</option>
+                                <option value="rejected">Ditolak</option>
+                                <option value="need_assignment">Perlu Perbaikan</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <select class="form-select" wire:model.live="yearFilter">
+                                <option value="">Semua Tahun</option>
+                                @foreach ($this->availableYears as $year)
+                                    <option value="{{ $year }}">{{ $year }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-1">
+                            <button type="button" class="btn btn-outline-secondary w-100" wire:click="resetFilters" title="Reset Filter">
+                                <x-lucide-rotate-ccw class="icon" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="card">
         <div class="table-responsive">
             <table class="card-table table table-vcenter">
@@ -27,17 +75,17 @@
                             </td>
                             <td>
                                 @php
-                                    $color = match($log->status_after) {
+                                    $color = match($log->status_after?->value) {
                                         'approved' => 'success',
                                         'rejected' => 'danger',
                                         'need_assignment' => 'warning',
                                         default => 'secondary'
                                     };
-                                    $label = match($log->status_after) {
+                                    $label = match($log->status_after?->value) {
                                         'approved' => 'Disetujui',
                                         'rejected' => 'Ditolak',
                                         'need_assignment' => 'Perlu Perbaikan',
-                                        default => $log->status_after
+                                        default => $log->status_after?->value ?? '—'
                                     };
                                 @endphp
                                 <span class="badge bg-{{ $color }}-lt">{{ $label }}</span>

@@ -73,8 +73,9 @@
     <!-- Filter Section -->
     <div class="card mb-3 border-0 shadow-sm">
         <div class="card-body">
-            <div class="row g-3 align-items-center">
-                <div class="col-md-5">
+            <div class="row g-2 align-items-center">
+                <!-- Baris 1: Pencarian, Jenis, dan Status -->
+                <div class="col-md-6">
                     <div class="input-icon">
                         <span class="input-icon-addon">
                             <x-lucide-search class="icon" />
@@ -98,6 +99,25 @@
                         <option value="pending">Menunggu Pengesahan LPPM</option>
                         <option value="approved">Sudah Disahkan LPPM</option>
                         <option value="empty">Belum Ada Catatan</option>
+                    </select>
+                </div>
+
+                <!-- Baris 2: Fakultas, Tahun, dan Reset (Vetted by AI - Manual Review Required by Senior Engineer/Manager) -->
+                <div class="col-md-6">
+                    <select class="form-select" wire:model.live="facultyFilter">
+                        <option value="all">Semua Fakultas</option>
+                        @foreach ($this->faculties as $faculty)
+                            <option value="{{ $faculty->id }}">{{ $faculty->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-5">
+                    <select class="form-select" wire:model.live="yearFilter">
+                        <option value="">Semua Tahun Anggaran</option>
+                        @foreach ($this->availableYears as $year)
+                            <option value="{{ $year }}">{{ $year }}</option>
+                        @endforeach
                     </select>
                 </div>
 

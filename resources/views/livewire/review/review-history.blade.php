@@ -104,6 +104,11 @@
         <div class="card-body">
             <div class="row g-3">
                 <div class="col-md-4">
+                    <label class="form-label">Cari Proposal / Pengusul</label>
+                    <input type="text" class="form-control" placeholder="Cari judul proposal atau nama dosen..."
+                        wire:model.live.debounce.300ms="search" />
+                </div>
+                <div class="col-md-2">
                     <label class="form-label">
                         Siklus Review
                         <span class="form-help ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Siklus review menunjukkan putaran review. #1 = review awal, #2+ = review ulang setelah revisi">?</span>
@@ -115,7 +120,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-2">
                     <label class="form-label">Filter Rekomendasi</label>
                     <select class="form-select" wire:model.live="recommendationFilter">
                         <option value="">Semua Rekomendasi</option>
@@ -124,10 +129,19 @@
                         <option value="rejected">Ditolak</option>
                     </select>
                 </div>
-                <div class="col-md-4 d-flex align-items-end">
-                    <button type="button" class="btn btn-outline-secondary" wire:click="resetFilters">
-                        <x-lucide-x class="icon" />
-                        Reset Filter
+                <div class="col-md-2">
+                    <label class="form-label">Tahun Akademik</label>
+                    <select class="form-select" wire:model.live="yearFilter">
+                        <option value="">Semua Tahun</option>
+                        @foreach ($this->availableYears as $value => $label)
+                            <option value="{{ $value }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="button" class="btn btn-outline-secondary w-100" wire:click="resetFilters">
+                        <x-lucide-rotate-ccw class="icon me-1" />
+                        Reset
                     </button>
                 </div>
             </div>

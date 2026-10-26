@@ -10,6 +10,7 @@ use App\Models\ProgressReport;
 use App\Models\Proposal;
 use App\Models\Research;
 use App\Models\StudyProgram;
+use App\Support\AcademicPeriod;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -42,11 +43,23 @@ class ReportApproval extends Component
     #[Url]
     public string $statusFilter = 'all';
 
+    #[Url]
+    public string $yearFilter = '';
+
+    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    public function updated(string $property): void
+    {
+        if (str_ends_with($property, 'Filter') || $property === 'search') {
+            $this->resetPage();
+        }
+    }
+
     public function resetFilters(): void
     {
         $this->search = '';
         $this->typeFilter = 'all';
         $this->statusFilter = 'all';
+        $this->yearFilter = '';
         $this->resetPage();
     }
 
@@ -111,6 +124,26 @@ class ReportApproval extends Component
     }
 
     /**
+     * Daftar tahun akademik dari proposal yang memiliki laporan akhir atau belum laporan.
+     *
+     * @return array<int, string>
+     */
+    #[Computed]
+    public function availableYears(): array
+    {
+        $prodiId = $this->kaprodiStudyProgramId;
+
+        $periods = Proposal::query()
+            ->when($prodiId, fn ($q) => $q->whereHas('submitter.identity', fn ($iq) => $iq->where('study_program_id', $prodiId)))
+            ->whereNotNull('start_year')
+            ->select('start_year', 'semester')
+            ->distinct()
+            ->get();
+
+        return AcademicPeriod::optionsFromPeriods($periods);
+    }
+
+    /**
      * Data laporan akhir dari prodi Kaprodi dengan filter status.
      */
     #[Computed]
@@ -120,17 +153,26 @@ class ReportApproval extends Component
 
         // Filter 'belum_laporan': proposal belum punya final report
         if ($this->statusFilter === 'belum_laporan') {
-            return Proposal::query()
+            $query = Proposal::query()
                 ->whereIn('status', ['approved', 'completed'])
                 ->when($prodiId, fn ($q) => $q->whereHas('submitter.identity', fn ($u) => $u->where('study_program_id', $prodiId)))
                 ->whereDoesntHave('progressReports', fn ($q) => $q->where('reporting_period', 'final'))
-                ->with(['submitter.identity.studyProgram', 'detailable', 'researchScheme'])
+                ->with(['submitter.identity.studyProgram', 'detailable', 'researchScheme', 'communityServiceScheme'])
                 ->when($this->search, fn ($q) => $q->where('title', 'like', "%{$this->search}%"))
                 ->when($this->typeFilter !== 'all', function ($q) {
                     $q->where('detailable_type', $this->typeFilter === 'research' ? Research::class : CommunityService::class);
                 })
-                ->latest()
-                ->paginate(15);
+                ->when($this->yearFilter, fn ($q) => $q->forAcademicYear($this->yearFilter))
+                ->latest();
+
+            $paginator = $query->paginate(15);
+            if ($paginator->currentPage() > $paginator->lastPage() && $paginator->total() > 0) {
+                $this->setPage(1);
+
+                return $query->paginate(15);
+            }
+
+            return $paginator;
         }
 
         $query = ProgressReport::query()
@@ -154,19 +196,31 @@ class ReportApproval extends Component
             ]);
         }
 
-        return $query
-            ->with(['proposal.submitter.identity.studyProgram', 'proposal.detailable', 'proposal.researchScheme'])
+        $query->with(['proposal.submitter.identity.studyProgram', 'proposal.detailable', 'proposal.researchScheme', 'proposal.communityServiceScheme'])
             ->when($this->search, fn ($q) => $q->whereHas('proposal', fn ($p) => $p->where('title', 'like', "%{$this->search}%")))
             ->when($this->typeFilter !== 'all', function ($query) {
                 $detailableType = $this->typeFilter === 'research' ? Research::class : CommunityService::class;
                 $query->whereHas('proposal', fn ($q) => $q->where('detailable_type', $detailableType));
+            })
+            ->when($this->yearFilter, function ($q) {
+                $q->whereHas('proposal', function ($p) {
+                    Proposal::applyAcademicYearFilter($p, $this->yearFilter);
+                });
             })
             ->orderByRaw("CASE
                 WHEN status = '".ReportStatus::APPROVED_BY_DEKAN->value."' THEN 1
                 WHEN status = '".ReportStatus::SUBMITTED->value."' THEN 2
                 WHEN status = '".ReportStatus::REJECTED->value."' THEN 3
                 ELSE 4 END")
-            ->latest('updated_at')
-            ->paginate(15);
+            ->latest('updated_at');
+
+        $paginator = $query->paginate(15);
+        if ($paginator->currentPage() > $paginator->lastPage() && $paginator->total() > 0) {
+            $this->setPage(1);
+
+            return $query->paginate(15);
+        }
+
+        return $paginator;
     }
 }

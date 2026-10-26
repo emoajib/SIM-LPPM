@@ -37,6 +37,12 @@ class FinancialApproval extends Component
     #[Url]
     public string $statusFilter = 'all';
 
+    #[Url]
+    public string $yearFilter = '';
+
+    #[Url(except: 'all')]
+    public string $facultyFilter = 'all';
+
     public ?string $returningProposalId = null;
 
     public string $returnNotes = '';
@@ -46,27 +52,40 @@ class FinancialApproval extends Component
         abort_unless(Auth::user()?->activeHasAnyRole(['kepala lppm', 'admin lppm', 'superadmin', 'rektor']), 403);
     }
 
+    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    public function updated(string $property): void
+    {
+        if (str_ends_with($property, 'Filter') || $property === 'search') {
+            $this->resetPage();
+        }
+    }
+
     public function resetFilters(): void
     {
         $this->search = '';
         $this->typeFilter = 'all';
         $this->statusFilter = 'all';
+        $this->yearFilter = '';
+        $this->facultyFilter = 'all';
         $this->resetPage();
     }
 
-    public function updatedSearch(): void
+    #[Computed]
+    public function faculties()
     {
-        $this->resetPage();
+        return \App\Models\Faculty::orderBy('name')->get();
     }
 
-    public function updatedTypeFilter(): void
+    #[Computed]
+    public function availableYears(): array
     {
-        $this->resetPage();
-    }
+        $periods = Proposal::where('status', ProposalStatus::COMPLETED)
+            ->whereNotNull('start_year')
+            ->select('start_year', 'semester')
+            ->distinct()
+            ->get();
 
-    public function updatedStatusFilter(): void
-    {
-        $this->resetPage();
+        return \App\Support\AcademicPeriod::optionsFromPeriods($periods);
     }
 
     // Vetted by AI - Manual Review Required by Senior Engineer/Manager
@@ -287,10 +306,30 @@ class FinancialApproval extends Component
                 ->whereDoesntHave('dailyNotes');
         }
 
-        return $query
+        if ($this->facultyFilter !== 'all') {
+            $query->whereHas('submitter.identity', fn ($iq) => $iq->where('faculty_id', $this->facultyFilter));
+        }
+
+        if ($this->yearFilter !== '') {
+            $query->forAcademicYear($this->yearFilter);
+        }
+
+        $paginator = $query
             ->orderByRaw('CASE WHEN logbook_approved_at IS NULL THEN 0 ELSE 1 END')
             ->latest('updated_at')
             ->paginate(15);
+
+        // Self-healing pagination clamp
+        if ($paginator->currentPage() > $paginator->lastPage() && $paginator->total() > 0) {
+            $this->setPage(1);
+
+            return $query
+                ->orderByRaw('CASE WHEN logbook_approved_at IS NULL THEN 0 ELSE 1 END')
+                ->latest('updated_at')
+                ->paginate(15);
+        }
+
+        return $paginator;
     }
 
     public function render(): View

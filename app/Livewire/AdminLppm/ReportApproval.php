@@ -6,10 +6,13 @@ namespace App\Livewire\AdminLppm;
 
 use App\Enums\ReportStatus;
 use App\Models\CommunityService;
+use App\Models\CommunityServiceScheme;
 use App\Models\Faculty;
 use App\Models\ProgressReport;
 use App\Models\Proposal;
 use App\Models\Research;
+use App\Models\ResearchScheme;
+use App\Support\AcademicPeriod;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
@@ -43,12 +46,32 @@ class ReportApproval extends Component
     #[Url]
     public string $facultyFilter = 'all';
 
+    #[Url]
+    public string $yearFilter = '';
+
+    #[Url(except: 'all')]
+    public string $schemeFilter = 'all';
+
+    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    public function updated(string $property): void
+    {
+        if ($property === 'typeFilter') {
+            $this->schemeFilter = 'all';
+        }
+
+        if (str_ends_with($property, 'Filter') || $property === 'search') {
+            $this->resetPage();
+        }
+    }
+
     public function resetFilters(): void
     {
         $this->search = '';
         $this->typeFilter = 'all';
         $this->statusFilter = 'all';
         $this->facultyFilter = 'all';
+        $this->yearFilter = '';
+        $this->schemeFilter = 'all';
         $this->resetPage();
     }
 
@@ -57,6 +80,30 @@ class ReportApproval extends Component
         return view('livewire.admin-lppm.report-approval', [
             'faculties' => Faculty::orderBy('name')->get(),
         ]);
+    }
+
+    #[Computed]
+    public function schemes()
+    {
+        if ($this->typeFilter === 'research') {
+            return ResearchScheme::orderBy('name')->get();
+        } elseif ($this->typeFilter === 'community_service') {
+            return CommunityServiceScheme::orderBy('name')->get();
+        }
+
+        return collect();
+    }
+
+    #[Computed]
+    public function availableYears(): array
+    {
+        $periods = Proposal::query()
+            ->whereNotNull('start_year')
+            ->select('start_year', 'semester')
+            ->distinct()
+            ->get();
+
+        return AcademicPeriod::optionsFromPeriods($periods);
     }
 
     /**
@@ -106,17 +153,33 @@ class ReportApproval extends Component
     {
         // Filter 'belum_laporan': proposal yang belum mengajukan final report
         if ($this->statusFilter === 'belum_laporan') {
-            return Proposal::query()
+            $proposalQuery = Proposal::query()
                 ->whereIn('status', ['approved', 'completed'])
                 ->whereDoesntHave('progressReports', fn ($q) => $q->where('reporting_period', 'final'))
-                ->with(['submitter.identity.studyProgram', 'submitter.identity.faculty', 'detailable', 'researchScheme'])
-                ->when($this->search, fn ($q) => $q->where('title', 'like', "%{$this->search}%"))
-                ->when($this->typeFilter !== 'all', fn ($q) => $q->where('detailable_type', $this->typeFilter === 'research' ? Research::class : CommunityService::class)
-                )
-                ->when($this->facultyFilter !== 'all', fn ($q) => $q->whereHas('submitter.identity', fn ($u) => $u->where('faculty_id', $this->facultyFilter))
-                )
-                ->latest()
-                ->paginate(15);
+                ->with(['submitter.identity.studyProgram', 'submitter.identity.faculty', 'detailable', 'researchScheme', 'communityServiceScheme'])
+                ->when($this->search, function ($q) {
+                    $q->where(function ($sub) {
+                        $sub->where('title', 'like', "%{$this->search}%")
+                            ->orWhereHas('submitter', fn ($sq) => $sq->where('name', 'like', "%{$this->search}%"));
+                    });
+                })
+                ->when($this->typeFilter !== 'all', fn ($q) => $q->where('detailable_type', $this->typeFilter === 'research' ? Research::class : CommunityService::class))
+                ->when($this->facultyFilter !== 'all', fn ($q) => $q->whereHas('submitter.identity', fn ($u) => $u->where('faculty_id', $this->facultyFilter)))
+                ->when($this->schemeFilter !== 'all' && $this->typeFilter !== 'all', function ($q) {
+                    $column = $this->typeFilter === 'research' ? 'research_scheme_id' : 'community_service_scheme_id';
+                    $q->where($column, $this->schemeFilter);
+                })
+                ->when($this->yearFilter, fn ($q) => $q->forAcademicYear($this->yearFilter))
+                ->latest();
+
+            $paginator = $proposalQuery->paginate(15);
+            if ($paginator->currentPage() > $paginator->lastPage() && $paginator->total() > 0) {
+                $this->setPage(1);
+
+                return $proposalQuery->paginate(15);
+            }
+
+            return $paginator;
         }
 
         $query = ProgressReport::query()->where('reporting_period', 'final');
@@ -134,16 +197,33 @@ class ReportApproval extends Component
             ]),
         };
 
-        return $query
-            ->with(['proposal.submitter.identity.studyProgram', 'proposal.submitter.identity.faculty', 'proposal.detailable', 'proposal.researchScheme'])
-            ->when($this->search, fn ($q) => $q->whereHas('proposal', fn ($p) => $p->where('title', 'like', "%{$this->search}%"))
-            )
+        $paginator = $query
+            ->with([
+                'proposal.submitter.identity.studyProgram',
+                'proposal.submitter.identity.faculty',
+                'proposal.detailable',
+                'proposal.researchScheme',
+                'proposal.communityServiceScheme',
+            ])
+            ->when($this->search, function ($q) {
+                $q->whereHas('proposal', function ($p) {
+                    $p->where('title', 'like', "%{$this->search}%")
+                        ->orWhereHas('submitter', fn ($sq) => $sq->where('name', 'like', "%{$this->search}%"));
+                });
+            })
             ->when($this->typeFilter !== 'all', fn ($q) => $q->whereHas('proposal', fn ($p) => $p->where(
                 'detailable_type', $this->typeFilter === 'research' ? Research::class : CommunityService::class
-            ))
-            )
-            ->when($this->facultyFilter !== 'all', fn ($q) => $q->whereHas('proposal.submitter.identity', fn ($u) => $u->where('faculty_id', $this->facultyFilter))
-            )
+            )))
+            ->when($this->facultyFilter !== 'all', fn ($q) => $q->whereHas('proposal.submitter.identity', fn ($u) => $u->where('faculty_id', $this->facultyFilter)))
+            ->when($this->schemeFilter !== 'all' && $this->typeFilter !== 'all', function ($q) {
+                $column = $this->typeFilter === 'research' ? 'research_scheme_id' : 'community_service_scheme_id';
+                $q->whereHas('proposal', fn ($sq) => $sq->where($column, $this->schemeFilter));
+            })
+            ->when($this->yearFilter, function ($q) {
+                $q->whereHas('proposal', function ($p) {
+                    Proposal::applyAcademicYearFilter($p, $this->yearFilter);
+                });
+            })
             ->orderByRaw("CASE
                 WHEN status = '".ReportStatus::APPROVED_BY_DEKAN->value."' THEN 1
                 WHEN status = '".ReportStatus::SUBMITTED->value."' THEN 2
@@ -151,5 +231,14 @@ class ReportApproval extends Component
                 ELSE 4 END")
             ->latest('updated_at')
             ->paginate(15);
+
+        // Self-healing pagination clamp
+        if ($paginator->currentPage() > $paginator->lastPage() && $paginator->total() > 0) {
+            $this->setPage(1);
+
+            return $query->paginate(15);
+        }
+
+        return $paginator;
     }
 }

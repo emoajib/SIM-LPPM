@@ -27,15 +27,17 @@
                         <option value="community_service">Pengabdian</option>
                     </select>
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label">Skema Usulan</label>
-                    <select class="form-select" wire:model.live="schemeFilter" @if($typeFilter === 'all') disabled title="Pilih Jenis Usulan terlebih dahulu" @endif>
-                        <option value="all">Semua Skema</option>
-                        @foreach($this->schemes as $scheme)
-                            <option value="{{ $scheme->id }}">{{ $scheme->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                @if($typeFilter !== 'all')
+                    <div class="col-md-4">
+                        <label class="form-label">Skema Usulan</label>
+                        <select class="form-select" wire:model.live="schemeFilter">
+                            <option value="all">Semua Skema</option>
+                            @foreach($this->schemes as $scheme)
+                                <option value="{{ $scheme->id }}">{{ $scheme->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
                 <div class="col-md-4">
                     <label class="form-label">Status Progres</label>
                     <select class="form-select" wire:model.live="progressFilter">
@@ -46,8 +48,8 @@
                     </select>
                 </div>
 
-                <!-- Baris 3: Institusi -->
-                <div class="col-md-5">
+                <!-- Baris 3: Institusi & Periode (Vetted by AI - Manual Review Required by Senior Engineer/Manager) -->
+                <div class="col-md-4">
                     <label class="form-label">Fakultas Pengusul</label>
                     <select class="form-select" wire:model.live="facultyFilter">
                         <option value="all">Semua Fakultas</option>
@@ -56,7 +58,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-4">
                     <label class="form-label">Program Studi Pengusul</label>
                     <select class="form-select" wire:model.live="prodiFilter" @if($facultyFilter === 'all') disabled title="Pilih Fakultas terlebih dahulu" @endif>
                         <option value="all">Semua Prodi</option>
@@ -65,8 +67,19 @@
                         @endforeach
                     </select>
                 </div>
+                <div class="col-md-2">
+                    <label class="form-label">Tahun Akademik</label>
+                    <select class="form-select" wire:model.live="yearFilter">
+                        <option value="">Semua Tahun</option>
+                        @foreach($this->availableYears as $year)
+                            <option value="{{ $year }}">{{ $year }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 <div class="col-md-2 d-flex align-items-end">
-                    <button class="btn-outline-secondary w-100 btn" wire:click="resetFilters">Reset Filter</button>
+                    <button class="btn btn-outline-secondary w-100" wire:click="resetFilters">
+                        <x-lucide-rotate-ccw class="icon me-1" /> Reset
+                    </button>
                 </div>
             </div>
         </div>

@@ -35,11 +35,23 @@ class ProposalIndex extends Component
     #[Url]
     public string $yearFilter = '';
 
+    #[Url(except: 'all')]
+    public string $studyProgramFilter = 'all';
+
+    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    public function updated(string $property): void
+    {
+        if (str_ends_with($property, 'Filter') || $property === 'search') {
+            $this->resetPage();
+        }
+    }
+
     public function resetFilters(): void
     {
         $this->search = '';
         $this->typeFilter = 'all';
         $this->yearFilter = '';
+        $this->studyProgramFilter = 'all';
         $this->resetPage();
     }
 
@@ -58,7 +70,24 @@ class ProposalIndex extends Component
     }
 
     /**
-     * Apply faculty scope to a query (only proposals from Dekan's faculty).
+     * Available study programs in Dekan's faculty for filtering.
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     */
+    #[Computed]
+    public function availableStudyPrograms()
+    {
+        $facultyId = $this->dekanFacultyId;
+
+        if (! $facultyId) {
+            return collect();
+        }
+
+        return \App\Models\StudyProgram::where('faculty_id', $facultyId)->orderBy('name')->get();
+    }
+
+    /**
+     * Apply faculty scope to a query (only proposals from Dekan's faculty) with double-lock IDOR protection.
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
      */
     protected function applyFacultyScope($query)
     {
@@ -68,7 +97,13 @@ class ProposalIndex extends Component
             $query->whereRaw('1 = 0');
         } else {
             $query->whereHas('submitter.identity', function ($q) use ($facultyId) {
+                // Lock 1: Selalu terisolasi di fakultas Dekan
                 $q->where('faculty_id', $facultyId);
+
+                // Lock 2: Filter prodi hanya berlaku di dalam fakultas tersebut
+                if ($this->studyProgramFilter !== 'all' && is_numeric($this->studyProgramFilter)) {
+                    $q->where('study_program_id', (int) $this->studyProgramFilter);
+                }
             });
         }
 
@@ -84,8 +119,8 @@ class ProposalIndex extends Component
         // Apply faculty scoping: Dekan only sees proposals from their faculty
         $this->applyFacultyScope($query);
 
-        return $query
-            ->with(['submitter.identity.studyProgram', 'detailable', 'focusArea', 'researchScheme'])
+        $paginator = $query
+            ->with(['submitter.identity.studyProgram', 'detailable', 'focusArea', 'researchScheme', 'communityServiceScheme'])
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('title', 'like', "%{$this->search}%")
@@ -103,6 +138,15 @@ class ProposalIndex extends Component
             })
             ->orderBy('created_at', 'desc')
             ->paginate(15);
+
+        // Self-healing pagination: jika page out-of-range saat filter aktif
+        if ($paginator->currentPage() > $paginator->lastPage() && $paginator->total() > 0) {
+            $this->setPage(1);
+
+            return $query->paginate(15);
+        }
+
+        return $paginator;
     }
 
     #[Computed]

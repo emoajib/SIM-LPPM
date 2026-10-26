@@ -96,7 +96,7 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
                     <div class="row g-3">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <input type="text" class="form-control" placeholder="Cari berdasarkan judul proposal..."
                                 wire:model.live.debounce.300ms="search" />
                         </div>
@@ -110,11 +110,19 @@
                                 <option value="revision">Perlu Revisi</option>
                             </select>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <select class="form-select" wire:model.live="typeFilter">
                                 <option value="all">Semua Jenis</option>
                                 <option value="research">Penelitian</option>
                                 <option value="community_service">Pengabdian</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" wire:model.live="yearFilter">
+                                <option value="">Semua Tahun</option>
+                                @foreach ($this->availableYears as $value => $label)
+                                    <option value="{{ $value }}">{{ $label }}</option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="col-md-2">

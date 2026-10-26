@@ -36,10 +36,22 @@ class ProposalValidation extends Component
     #[Url]
     public string $typeFilter = 'all';
 
+    #[Url]
+    public string $yearFilter = '';
+
+    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    public function updated(string $property): void
+    {
+        if (str_ends_with($property, 'Filter') || $property === 'search') {
+            $this->resetPage();
+        }
+    }
+
     public function resetFilters(): void
     {
         $this->search = '';
         $this->typeFilter = 'all';
+        $this->yearFilter = '';
         $this->resetPage();
     }
 
@@ -56,6 +68,28 @@ class ProposalValidation extends Component
     public function kaprodiStudyProgramId(): ?int
     {
         return Auth::user()?->identity?->study_program_id;
+    }
+
+    /**
+     * Available academic years for proposals from Kaprodi's study program.
+     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     */
+    #[Computed]
+    public function availableYears(): array
+    {
+        $studyProgramId = $this->kaprodiStudyProgramId();
+        $query = Proposal::where('status', ProposalStatus::SUBMITTED);
+
+        if ($studyProgramId) {
+            $query->whereHas('submitter.identity', fn ($q) => $q->where('study_program_id', $studyProgramId));
+        }
+
+        $periods = $query->whereNotNull('start_year')
+            ->select('start_year', 'semester')
+            ->distinct()
+            ->get();
+
+        return \App\Support\AcademicPeriod::optionsFromPeriods($periods);
     }
 
     /**
@@ -93,12 +127,13 @@ class ProposalValidation extends Component
         // Apply study program scoping: Kaprodi only sees proposals from their study program
         $this->applyStudyProgramScope($query);
 
-        return $query
-            ->with(['submitter.identity.studyProgram', 'detailable', 'focusArea', 'researchScheme', 'studyProgramRoadmap'])
+        $paginator = $query
+            ->with(['submitter.identity.studyProgram', 'detailable', 'focusArea', 'researchScheme', 'communityServiceScheme', 'studyProgramRoadmap'])
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('title', 'like', "%{$this->search}%")
-                        ->orWhere('summary', 'like', "%{$this->search}%");
+                        ->orWhere('summary', 'like', "%{$this->search}%")
+                        ->orWhereHas('submitter', fn ($sq) => $sq->where('name', 'like', "%{$this->search}%"));
                 });
             })
             ->when($this->typeFilter !== 'all', function ($query) {
@@ -107,8 +142,20 @@ class ProposalValidation extends Component
                     : CommunityService::class;
                 $query->where('detailable_type', $detailableType);
             })
+            ->when($this->yearFilter, function ($query) {
+                $query->forAcademicYear($this->yearFilter);
+            })
             ->orderBy('created_at', 'desc')
             ->paginate(15);
+
+        // Self-healing pagination clamp
+        if ($paginator->currentPage() > $paginator->lastPage() && $paginator->total() > 0) {
+            $this->setPage(1);
+
+            return $query->paginate(15);
+        }
+
+        return $paginator;
     }
 
     /**
