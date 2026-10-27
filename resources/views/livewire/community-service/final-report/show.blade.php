@@ -48,6 +48,12 @@
 ">
         <x-tabler.alert />
 
+        @include('livewire.proposals.components.identitas-usulan-detail', [
+            'proposal' => $proposal,
+            'type' => 'community-service',
+            'mode' => 'final-report',
+        ])
+
         {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
         <!-- Admin LPPM: Kelola Nomor Kontrak -->
         @if(auth()->user()->activeHasAnyRole(['admin lppm', 'admin lppm saintek', 'admin lppm dekabita', 'kepala lppm', 'superadmin']))

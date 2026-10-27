@@ -322,6 +322,12 @@
                 </div>
             </div>
 
+            @include('livewire.proposals.components.identitas-usulan-detail', [
+                'proposal' => $proposal,
+                'type' => 'research',
+                'mode' => 'revision',
+            ])
+
             <!-- Macro Research Group Card -->
             <div class="mb-3 card" data-field="Kelompok Makro Riset">
                 <div class="card-header">

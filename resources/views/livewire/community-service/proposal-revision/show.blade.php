@@ -239,6 +239,12 @@
                 </div>
             </div>
 
+            @include('livewire.proposals.components.identitas-usulan-detail', [
+                'proposal' => $proposal,
+                'type' => 'community-service',
+                'mode' => 'revision',
+            ])
+
             <!-- Partner/Mitra Card -->
             <div class="mb-3 card">
                 <div class="card-header">
