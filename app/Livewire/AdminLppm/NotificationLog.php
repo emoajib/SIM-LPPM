@@ -33,7 +33,7 @@ class NotificationLog extends Component
 
     public function render()
     {
-        $query = NotificationLogModel::with('user')->latest();
+        $query = NotificationLogModel::query()->latest();
 
         if ($this->search !== '') {
             $query->where(function ($q) {

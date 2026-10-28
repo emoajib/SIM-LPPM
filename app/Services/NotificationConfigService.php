@@ -12,6 +12,7 @@ class NotificationConfigService
         if ($db !== null && $db !== '') {
             return $db;
         }
-        return env($key, $default);
+
+        return getenv($key) ?: $default;
     }
 }
