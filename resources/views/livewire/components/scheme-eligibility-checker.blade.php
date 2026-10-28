@@ -119,8 +119,7 @@
                 <button
                     type="button"
                     wire:click="$set('showEligibilityModal', false)"
-                    class="text-gray-400 hover:text-gray-600"
-                >
+                    class="text-gray-400 hover:text-gray-600" title="Tutup" aria-label="Tutup">
                     <x-lucide-x class="w-5 h-5" />
                 </button>
             </div>

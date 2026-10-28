@@ -386,7 +386,7 @@
                                 </td>
                                 <td class="text-center">
                                     @if($hasL3 && $m3)
-                                        <a href="{{ route('media.download', $m3) }}" target="_blank" class="btn btn-sm btn-outline-primary"><x-lucide-download class="icon" /></a>
+                                        <a href="{{ route('media.download', $m3) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"><x-lucide-download class="icon" /></a>
                                     @else - @endif
                                 </td>
                             </tr>
@@ -412,7 +412,7 @@
                                 </td>
                                 <td class="text-center">
                                     @if($hasL4 && $m4)
-                                        <a href="{{ route('media.download', $m4) }}" target="_blank" class="btn btn-sm btn-outline-primary"><x-lucide-download class="icon" /></a>
+                                        <a href="{{ route('media.download', $m4) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"><x-lucide-download class="icon" /></a>
                                     @else - @endif
                                 </td>
                             </tr>
@@ -438,7 +438,7 @@
                                 </td>
                                 <td class="text-center">
                                     @if($hasL5 && $m5)
-                                        <a href="{{ route('media.download', $m5) }}" target="_blank" class="btn btn-sm btn-outline-primary"><x-lucide-download class="icon" /></a>
+                                        <a href="{{ route('media.download', $m5) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"><x-lucide-download class="icon" /></a>
                                     @else - @endif
                                 </td>
                             </tr>
@@ -464,7 +464,7 @@
                                 </td>
                                 <td class="text-center">
                                     @if($hasL6 && $m6)
-                                        <a href="{{ route('media.download', $m6) }}" target="_blank" class="btn btn-sm btn-outline-primary"><x-lucide-download class="icon" /></a>
+                                        <a href="{{ route('media.download', $m6) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"><x-lucide-download class="icon" /></a>
                                     @else - @endif
                                 </td>
                             </tr>
@@ -490,7 +490,7 @@
                                 </td>
                                 <td class="text-center">
                                     @if($hasL7 && $m7)
-                                        <a href="{{ route('media.download', $m7) }}" target="_blank" class="btn btn-sm btn-outline-primary"><x-lucide-download class="icon" /></a>
+                                        <a href="{{ route('media.download', $m7) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"><x-lucide-download class="icon" /></a>
                                     @else - @endif
                                 </td>
                             </tr>
@@ -516,7 +516,7 @@
                                 </td>
                                 <td class="text-center">
                                     @if($hasL8 && $m8)
-                                        <a href="{{ route('media.download', $m8) }}" target="_blank" class="btn btn-sm btn-outline-primary"><x-lucide-download class="icon" /></a>
+                                        <a href="{{ route('media.download', $m8) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"><x-lucide-download class="icon" /></a>
                                     @else - @endif
                                 </td>
                             </tr>
@@ -542,7 +542,7 @@
                                 </td>
                                 <td class="text-center">
                                     @if($hasL9 && $m9)
-                                        <a href="{{ route('media.download', $m9) }}" target="_blank" class="btn btn-sm btn-outline-primary"><x-lucide-download class="icon" /></a>
+                                        <a href="{{ route('media.download', $m9) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"><x-lucide-download class="icon" /></a>
                                     @else - @endif
                                 </td>
                             </tr>
@@ -568,7 +568,7 @@
                                 </td>
                                 <td class="text-center">
                                     @if($hasL10 && $m10)
-                                        <a href="{{ route('media.download', $m10) }}" target="_blank" class="btn btn-sm btn-outline-primary"><x-lucide-download class="icon" /></a>
+                                        <a href="{{ route('media.download', $m10) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"><x-lucide-download class="icon" /></a>
                                     @else - @endif
                                 </td>
                             </tr>
@@ -594,7 +594,7 @@
                                 </td>
                                 <td class="text-center">
                                     @if($hasL11 && $m11)
-                                        <a href="{{ route('media.download', $m11) }}" target="_blank" class="btn btn-sm btn-outline-primary"><x-lucide-download class="icon" /></a>
+                                        <a href="{{ route('media.download', $m11) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"><x-lucide-download class="icon" /></a>
                                     @else - @endif
                                 </td>
                             </tr>
@@ -620,7 +620,7 @@
                                 </td>
                                 <td class="text-center">
                                     @if($hasL12 && $m12)
-                                        <a href="{{ route('media.download', $m12) }}" target="_blank" class="btn btn-sm btn-outline-primary"><x-lucide-download class="icon" /></a>
+                                        <a href="{{ route('media.download', $m12) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"><x-lucide-download class="icon" /></a>
                                     @else - @endif
                                 </td>
                             </tr>

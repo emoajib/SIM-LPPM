@@ -177,7 +177,7 @@
                                         placeholder="Keterangan (URL)">
                                 </td>
                                 <td>
-                                    <button type="button" wire:click="removeOutput({{ $index }})" class="btn btn-sm btn-danger">
+                                    <button type="button" wire:click="removeOutput({{ $index }})" class="btn btn-sm btn-danger" title="Hapus" aria-label="Hapus">
                                         <x-lucide-trash-2 class="icon" />
                                     </button>
                                 </td>

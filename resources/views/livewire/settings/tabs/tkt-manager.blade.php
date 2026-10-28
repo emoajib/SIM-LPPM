@@ -45,10 +45,10 @@
                                 @enderror
                             </div>
                             <div class="btn-list">
-                                <button type="button" class="btn btn-success btn-sm" wire:click="saveNewCategory" wire:loading.class="btn-loading" wire:target="saveNewCategory">
+                                <button type="button" class="btn btn-success btn-sm" wire:click="saveNewCategory" wire:loading.class="btn-loading" wire:target="saveNewCategory" title="Simpan" aria-label="Simpan">
                                     <x-lucide-check class="icon" />
                                 </button>
-                                <button type="button" class="btn btn-secondary btn-sm" wire:click="cancelAddCategory">
+                                <button type="button" class="btn btn-secondary btn-sm" wire:click="cancelAddCategory" title="Batal" aria-label="Batal">
                                     <x-lucide-x class="icon" />
                                 </button>
                             </div>
@@ -77,10 +77,10 @@
                                                 wire:keydown.escape="cancelEditCategory"
                                                 autofocus
                                                 style="font-size: 0.85rem;">
-                                            <button type="button" class="btn btn-success btn-sm p-1" wire:click="saveCategory" wire:loading.class="btn-loading" wire:target="saveCategory">
+                                            <button type="button" class="btn btn-success btn-sm p-1" wire:click="saveCategory" wire:loading.class="btn-loading" wire:target="saveCategory" title="Simpan" aria-label="Simpan">
                                                 <x-lucide-check class="icon" style="width: 14px; height: 14px;" />
                                             </button>
-                                            <button type="button" class="btn btn-secondary btn-sm p-1" wire:click="cancelEditCategory">
+                                            <button type="button" class="btn btn-secondary btn-sm p-1" wire:click="cancelEditCategory" title="Batal" aria-label="Batal">
                                                 <x-lucide-x class="icon" style="width: 14px; height: 14px;" />
                                             </button>
                                         </div>

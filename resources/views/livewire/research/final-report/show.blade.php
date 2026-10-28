@@ -414,7 +414,7 @@
                                 </td>
                                 <td class="text-center">
                                     @if($hasTeachingMaterial && $tmMedia)
-                                        <a href="{{ route('media.download', $tmMedia) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <a href="{{ route('media.download', $tmMedia) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh">
                                             <x-lucide-download class="icon" />
                                         </a>
                                     @else

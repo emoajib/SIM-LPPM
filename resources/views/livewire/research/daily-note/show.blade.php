@@ -483,7 +483,7 @@
                                                             </a>
                                                         @else
                                                             @php $signedUrl = \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]); @endphp
-                                                            <a href="{{ $signedUrl }}" target="_blank">
+                                                            <a href="{{ $signedUrl }}" target="_blank" title="Unduh berkas" aria-label="Unduh berkas">
                                                                 <x-lucide-file class="text-muted icon" />
                                                             </a>
                                                         @endif

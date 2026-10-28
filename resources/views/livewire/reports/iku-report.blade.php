@@ -411,7 +411,7 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <button class="btn btn-icon btn-sm btn-ghost-primary">
+                                        <button class="btn btn-icon btn-sm btn-ghost-primary" title="Lihat detail" aria-label="Lihat detail">
                                             <i class="ti ti-chevron-right"></i>
                                         </button>
                                     </td>

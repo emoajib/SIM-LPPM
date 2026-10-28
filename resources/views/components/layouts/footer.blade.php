@@ -6,7 +6,7 @@
                 <ul class="list-inline list-inline-dots mb-0">
                     <li class="list-inline-item">
                         Built with
-                        <a href="#" target="_blank" class="link-secondary" rel="noopener">
+                        <a href="#" target="_blank" class="link-secondary" rel="noopener" title="Toggle" aria-label="Toggle">
                             <!-- Download SVG icon from http://tabler.io/icons/icon/heart -->
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"

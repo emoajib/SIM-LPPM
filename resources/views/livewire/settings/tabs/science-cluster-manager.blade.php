@@ -62,10 +62,10 @@
                             </div>
                             <div class="btn-list">
                                 <button type="button" class="btn btn-success btn-sm" wire:click="saveNewCluster"
-                                    wire:loading.class="btn-loading" wire:target="saveNewCluster">
+                                    wire:loading.class="btn-loading" wire:target="saveNewCluster" title="Simpan" aria-label="Simpan">
                                     <x-lucide-check class="icon" />
                                 </button>
-                                <button type="button" class="btn btn-secondary btn-sm" wire:click="cancelAddCluster">
+                                <button type="button" class="btn btn-secondary btn-sm" wire:click="cancelAddCluster" title="Batal" aria-label="Batal">
                                     <x-lucide-x class="icon" />
                                 </button>
                             </div>
@@ -92,11 +92,11 @@
                                                     style="font-size: 0.85rem;">
                                                 <button type="button" class="p-1 btn btn-success btn-sm"
                                                     wire:click="saveCluster" wire:loading.class="btn-loading"
-                                                    wire:target="saveCluster">
+                                                    wire:target="saveCluster" title="Simpan" aria-label="Simpan">
                                                     <x-lucide-check class="icon" style="width: 14px; height: 14px;" />
                                                 </button>
                                                 <button type="button" class="p-1 btn btn-secondary btn-sm"
-                                                    wire:click="cancelEditCluster">
+                                                    wire:click="cancelEditCluster" title="Batal" aria-label="Batal">
                                                     <x-lucide-x class="icon" style="width: 14px; height: 14px;" />
                                                 </button>
                                             </div>
@@ -179,13 +179,13 @@
                                                                     wire:keydown.escape="cancelEditCluster" autofocus
                                                                     style="font-size: 0.75rem;">
                                                                 <button type="button" class="p-1 btn btn-success btn-sm"
-                                                                    wire:click="saveCluster">
+                                                                    wire:click="saveCluster" title="Simpan" aria-label="Simpan">
                                                                     <x-lucide-check class="icon"
                                                                         style="width: 12px; height: 12px;" />
                                                                 </button>
                                                                 <button type="button"
                                                                     class="p-1 btn btn-secondary btn-sm"
-                                                                    wire:click="cancelEditCluster">
+                                                                    wire:click="cancelEditCluster" title="Batal" aria-label="Batal">
                                                                     <x-lucide-x class="icon"
                                                                         style="width: 12px; height: 12px;" />
                                                                 </button>
@@ -277,13 +277,13 @@
                                                                                 autofocus style="font-size: 0.7rem;">
                                                                             <button type="button"
                                                                                 class="p-1 btn btn-success btn-sm"
-                                                                                wire:click="saveCluster">
+                                                                                wire:click="saveCluster" title="Simpan" aria-label="Simpan">
                                                                                 <x-lucide-check class="icon"
                                                                                     style="width: 10px; height: 10px;" />
                                                                             </button>
                                                                             <button type="button"
                                                                                 class="p-1 btn btn-secondary btn-sm"
-                                                                                wire:click="cancelEditCluster">
+                                                                                wire:click="cancelEditCluster" title="Batal" aria-label="Batal">
                                                                                 <x-lucide-x class="icon"
                                                                                     style="width: 10px; height: 10px;" />
                                                                             </button>

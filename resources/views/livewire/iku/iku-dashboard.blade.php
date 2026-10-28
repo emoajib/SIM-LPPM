@@ -131,7 +131,7 @@
                     <x-lucide-table class="icon text-primary me-2" />
                     Rincian Data: {{ strtoupper($selectedIku) }} - {{ $this->ikuMetrics[$selectedIku]['name'] }}
                 </h5>
-                <button wire:click="selectIku(null)" class="btn btn-sm btn-light rounded-circle">
+                <button wire:click="selectIku(null)" class="btn btn-sm btn-light rounded-circle" title="Tutup" aria-label="Tutup">
                     <x-lucide-x class="icon" />
                 </button>
             </div>

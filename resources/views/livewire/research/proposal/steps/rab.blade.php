@@ -288,7 +288,7 @@
                                 </td>
                                 <td>
                                     <button type="button" wire:click="removeBudgetItem({{ $index }})"
-                                        class="btn btn-sm btn-danger">
+                                        class="btn btn-sm btn-danger" title="Hapus" aria-label="Hapus">
                                         <x-lucide-trash-2 class="icon" />
                                     </button>
                                 </td>
