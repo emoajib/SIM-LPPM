@@ -2,13 +2,13 @@
 
 namespace App\Notifications;
 
+use App\Channels\HybridNotificationChannel;
 use App\Models\Proposal;
 use App\Models\Research;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Notification;
-use App\Channels\HybridNotificationChannel;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class ProposalRevised extends Notification implements ShouldQueue
 {

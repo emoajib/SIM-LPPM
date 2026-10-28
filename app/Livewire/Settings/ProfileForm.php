@@ -23,7 +23,9 @@ class ProfileForm extends Component
     use HasToast, WithFileUploads;
 
     public string $name = '';
+
     public string $email = '';
+
     public string $whatsapp_number = '';
 
     public $photo;

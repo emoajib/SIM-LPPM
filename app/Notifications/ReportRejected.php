@@ -2,13 +2,13 @@
 
 namespace App\Notifications;
 
+use App\Channels\HybridNotificationChannel;
 use App\Models\ProgressReport;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Notification;
-use App\Channels\HybridNotificationChannel;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 // Vetted by AI - Manual Review Required by Senior Engineer/Manager
 class ReportRejected extends Notification implements ShouldQueue
