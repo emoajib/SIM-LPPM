@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Database\Factories\InstitutionFactory;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -56,6 +57,14 @@ class Institution extends Model
         'is_verified' => 'boolean',
         'is_default' => 'boolean',
     ];
+
+    protected function lppmHeadName(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => normalize_person_name($value),
+            set: fn (?string $value) => normalize_person_name($value),
+        );
+    }
 
     protected static function booted(): void
     {

@@ -233,6 +233,38 @@ if (! function_exists('format_name')) {
         return trim($full, ' ,');
     }
 }
+if (! function_exists('normalize_person_name')) {
+    /**
+     * Normalize the casing of a person's display name while preserving the
+     * casing of any trailing academic titles/gelar (which usually follow the
+     * first comma, e.g. "ARIA MULYAPRADANA, S.Psi, M.A." -> "Aria Mulyapradana, S.Psi, M.A.").
+     *
+     * Only the name portion (before the first comma) is converted to Title Case;
+     * the remainder (gelar/NIDN suffix) is kept verbatim.
+     */
+    function normalize_person_name(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $value = trim($value);
+        if ($value === '' || $value === '..........................') {
+            return $value;
+        }
+
+        if (str_contains($value, ',')) {
+            [$namePart, $rest] = explode(',', $value, 2);
+            $namePart = ucwords(strtolower(trim($namePart)));
+            $rest = trim($rest);
+
+            return trim($namePart.($rest !== '' ? ', '.$rest : ''), ' ,');
+        }
+
+        return ucwords(strtolower($value));
+    }
+}
+
 if (! function_exists('to_roman')) {
     /**
      * Convert an integer to a Roman numeral string.

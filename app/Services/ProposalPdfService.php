@@ -45,7 +45,7 @@ class ProposalPdfService
      */
     private function pdfTemplateVersion(string $mainView): int
     {
-        $files = [resource_path(str_replace('.', '/', $mainView).'.blade.php')];
+        $files = [resource_path('views/'.str_replace('.', '/', $mainView).'.blade.php')];
         $files = array_merge($files, glob(resource_path('views/pdf/partials/*.blade.php')) ?: []);
 
         $version = 0;
@@ -283,9 +283,6 @@ class ProposalPdfService
                 $lppmHeadName = $nm;
                 $lppmHeadId = $idn->identity_id ?? '';
             }
-        } else {
-            $lppmHeadName = get_institution_config('lppm_head_name') ?? $lppmHeadName;
-            $lppmHeadId = get_institution_config('lppm_head_id') ?? $lppmHeadId;
         }
 
         // Pre-fetch approval mode once (reused for Blade view & FPDI merge)
@@ -1067,9 +1064,6 @@ class ProposalPdfService
         } elseif ($institution) {
             $lppmHeadName = $institution->lppm_head_name ?: (get_institution_config('lppm_head_name') ?? $lppmHeadName);
             $lppmHeadId = $institution->lppm_head_id ?: (get_institution_config('lppm_head_id') ?? $lppmHeadId);
-        } else {
-            $lppmHeadName = get_institution_config('lppm_head_name') ?? $lppmHeadName;
-            $lppmHeadId = get_institution_config('lppm_head_id') ?? $lppmHeadId;
         }
 
         if ($institution && $lppmHeadName === '..........................') {

@@ -226,7 +226,7 @@
                         @if($studentMembers->count() > 0)
                             <ol style="margin: 0; padding-left: 15px;">
                             @foreach($studentMembers as $student)
-                                <li>{{ $student->name }} ({{ $student->identity?->identity_id ?? '-' }})</li>
+                                <li>{{ ucwords(strtolower($student->name)) }} ({{ $student->identity?->identity_id ?? '-' }})</li>
                             @endforeach
                             </ol>
                         @else
