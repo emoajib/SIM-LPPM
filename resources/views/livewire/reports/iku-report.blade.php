@@ -157,18 +157,41 @@
         </div>
 
         @if($selectedIku)
+            @php
+                $pendingDetails = collect($ikuDetails)->where('is_achieved', false);
+                $achievedDetails = collect($ikuDetails)->where('is_achieved', true);
+                $visibleDetails = $onlyPending ? $pendingDetails : collect($ikuDetails);
+            @endphp
             <div class="card shadow-sm border-0 mb-4 animate__animated animate__fadeIn">
                 <div class="card-header bg-light-lt d-flex justify-content-between align-items-center">
                     <div>
-                        <h3 class="card-title fw-bold text-primary">Detail Capaian {{ $selectedIku }}</h3>
-                        <p class="text-muted small mb-0">{{ $ikuMetrics[strtolower($selectedIku)]['description'] }}</p>
+                        <div class="d-flex align-items-center gap-2">
+                            <h3 class="card-title fw-bold text-primary mb-0">Detail Capaian {{ $selectedIku }}</h3>
+                            @if($pendingDetails->isNotEmpty())
+                                <span class="badge bg-warning-lt">{{ $pendingDetails->count() }} belum tercapai</span>
+                            @endif
+                        </div>
+                        <p class="text-muted small mb-0 mt-1">{{ $ikuMetrics[strtolower($selectedIku)]['description'] ?? '' }}</p>
+                        <p class="text-secondary small mb-0">
+                            {{ $achievedDetails->count() }} tercapai dari {{ count($ikuDetails) }} data.
+                            @if($pendingDetails->isNotEmpty())
+                                Baris berstatus <span class="badge bg-warning-lt">Belum</span> adalah data yang perlu dilengkapi/diverifikasi.
+                            @endif
+                        </p>
                     </div>
-                    <button class="btn-close" wire:click="toggleDetails(null)"></button>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" type="checkbox" id="iku-only-pending"
+                                wire:model.live="onlyPending">
+                            <label class="form-check-label small" for="iku-only-pending">Hanya yang belum tercapai</label>
+                        </div>
+                        <button class="btn-close" wire:click="toggleDetails(null)"></button>
+                    </div>
                 </div>
                 <div class="p-0 card-body">
                     <div class="table-responsive">
                         <table class="table table-vcenter card-table table-hover">
-                            @if($selectedIku == 'IKU4')
+                            @if($selectedIku === 'IKU04')
                                 <thead>
                                     <tr>
                                         <th>Nama Dosen</th>
@@ -176,34 +199,43 @@
                                         <th>Scopus ID</th>
                                         <th>SINTA ID</th>
                                         <th>WOS ID</th>
+                                        <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse($ikuDetails as $detail)
+                                    @forelse($visibleDetails as $detail)
                                         <tr>
                                             <td class="fw-bold">{{ $detail['name'] }}</td>
                                             <td class="text-muted">{{ $detail['id_number'] }}</td>
                                             <td><span class="badge bg-blue-lt">{{ $detail['scopus'] ?: '-' }}</span></td>
                                             <td><span class="badge bg-green-lt">{{ $detail['sinta'] ?: '-' }}</span></td>
                                             <td><span class="badge bg-purple-lt">{{ $detail['wos'] ?: '-' }}</span></td>
+                                            <td>
+                                                <span
+                                                    class="badge bg-{{ $detail['is_achieved'] ? 'success' : 'warning' }}-lt">{{ $detail['status'] }}</span>
+                                                @if(! $detail['is_achieved'])
+                                                    <div class="text-muted xsmall">{{ $detail['note'] }}</div>
+                                                @endif
+                                            </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="5" class="text-center py-4 text-muted">Data tidak ditemukan</td>
+                                            <td colspan="6" class="text-center py-4 text-muted">{{ $onlyPending ? 'Semua data sudah tercapai.' : 'Data tidak ditemukan' }}</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
-                            @elseif($selectedIku == 'IKU5')
+                            @elseif($selectedIku === 'IKU05')
                                 <thead>
                                     <tr>
                                         <th>Judul Kegiatan</th>
                                         <th>Ketua</th>
                                         <th>Mitra</th>
                                         <th class="text-center">Bobot</th>
+                                        <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse($ikuDetails as $detail)
+                                    @forelse($visibleDetails as $detail)
                                         <tr>
                                             <td class="text-wrap" style="max-width: 300px;">{{ $detail['title'] }}</td>
                                             <td class="small">{{ $detail['submitter'] }}</td>
@@ -211,14 +243,21 @@
                                             <td class="text-center"><span
                                                     class="badge bg-primary-lt">{{ number_format($detail['weight'], 1) }}</span>
                                             </td>
+                                            <td>
+                                                <span
+                                                    class="badge bg-{{ $detail['is_achieved'] ? 'success' : 'warning' }}-lt">{{ $detail['status'] }}</span>
+                                                @if(! $detail['is_achieved'])
+                                                    <div class="text-muted xsmall">{{ $detail['note'] }}</div>
+                                                @endif
+                                            </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="4" class="text-center py-4 text-muted">Data tidak ditemukan</td>
+                                            <td colspan="5" class="text-center py-4 text-muted">{{ $onlyPending ? 'Semua data sudah tercapai.' : 'Data tidak ditemukan' }}</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
-                            @elseif($selectedIku == 'IKU6')
+                            @elseif($selectedIku === 'IKU06')
                                 <thead>
                                     <tr>
                                         <th>Judul Artikel</th>
@@ -226,10 +265,11 @@
                                         <th>Ranking</th>
                                         <th>Indeks</th>
                                         <th class="text-center">Skor</th>
+                                        <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse($ikuDetails as $detail)
+                                    @forelse($visibleDetails as $detail)
                                         <tr>
                                             <td class="text-wrap" style="max-width: 300px;">
                                                 <div class="fw-bold">{{ $detail['title'] }}</div>
@@ -240,52 +280,82 @@
                                             </td>
                                             <td><span class="badge bg-indigo-lt">{{ $detail['indexing'] }}</span></td>
                                             <td class="text-center fw-bold">{{ number_format($detail['weight'], 1) }}</td>
+                                            <td>
+                                                <span
+                                                    class="badge bg-{{ $detail['is_achieved'] ? 'success' : 'warning' }}-lt">{{ $detail['status'] }}</span>
+                                                @if(! $detail['is_achieved'])
+                                                    <div class="text-muted xsmall">{{ $detail['note'] }}</div>
+                                                @endif
+                                            </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="5" class="text-center py-4 text-muted">Data tidak ditemukan</td>
+                                            <td colspan="6" class="text-center py-4 text-muted">{{ $onlyPending ? 'Semua data sudah tercapai.' : 'Data tidak ditemukan' }}</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
-                            @elseif($selectedIku == 'IKU7')
+                            @elseif($selectedIku === 'IKU07')
                                 <thead>
                                     <tr>
                                         <th>Judul Penelitian/PKM</th>
                                         <th>Ketua Pengusul</th>
                                         <th>SDGs yang Didukung</th>
+                                        <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse($ikuDetails as $detail)
+                                    @forelse($visibleDetails as $detail)
                                         <tr>
                                             <td class="text-wrap" style="max-width: 400px;">{{ $detail['title'] }}</td>
                                             <td>{{ $detail['submitter'] }}</td>
                                             <td><span class="text-wrap badge bg-teal-lt">{{ $detail['sdgs'] }}</span></td>
+                                            <td>
+                                                <span
+                                                    class="badge bg-{{ $detail['is_achieved'] ? 'success' : 'warning' }}-lt">{{ $detail['status'] }}</span>
+                                                @if(! $detail['is_achieved'])
+                                                    <div class="text-muted xsmall">{{ $detail['note'] }}</div>
+                                                @endif
+                                            </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="3" class="text-center py-4 text-muted">Data tidak ditemukan</td>
+                                            <td colspan="4" class="text-center py-4 text-muted">{{ $onlyPending ? 'Semua data sudah tercapai.' : 'Data tidak ditemukan' }}</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
-                            @elseif($selectedIku == 'IKU8')
+                            @elseif($selectedIku === 'IKU08')
                                 <thead>
                                     <tr>
                                         <th>Nama Dosen</th>
                                         <th>Keterlibatan Kebijakan / Rekognisi Pakar</th>
+                                        <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse($ikuDetails as $detail)
+                                    @forelse($visibleDetails as $detail)
                                         <tr>
                                             <td class="fw-bold">{{ $detail['name'] }}</td>
                                             <td class="text-wrap">{{ $detail['policies'] }}</td>
+                                            <td>
+                                                <span
+                                                    class="badge bg-{{ $detail['is_achieved'] ? 'success' : 'warning' }}-lt">{{ $detail['status'] }}</span>
+                                                @if(! $detail['is_achieved'])
+                                                    <div class="text-muted xsmall">{{ $detail['note'] }}</div>
+                                                @endif
+                                            </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="2" class="text-center py-4 text-muted">Data tidak ditemukan</td>
+                                            <td colspan="3" class="text-center py-4 text-muted">{{ $onlyPending ? 'Semua data sudah tercapai.' : 'Data tidak ditemukan' }}</td>
                                         </tr>
                                     @endforelse
+                                </tbody>
+                            @else
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center py-4 text-muted">Rincian data belum tersedia untuk
+                                            {{ $selectedIku }}.</td>
+                                    </tr>
                                 </tbody>
                             @endif
                         </table>

@@ -264,12 +264,32 @@ trait HasIkuCalculations
     }
 
     /**
+     * Normalize an IKU code so "iku4", "IKU-4" and "IKU04" resolve to the same key.
+     */
+    public function normalizeIkuCode(?string $code): ?string
+    {
+        if ($code === null || trim($code) === '') {
+            return null;
+        }
+
+        $normalized = strtoupper(preg_replace('/[\s_-]+/', '', $code) ?? '');
+
+        if (preg_match('/^IKU(\d+)([A-Z]?)$/', $normalized, $matches) === 1) {
+            return 'IKU'.str_pad($matches[1], 2, '0', STR_PAD_LEFT).$matches[2];
+        }
+
+        return $normalized;
+    }
+
+    /**
      * Get detailed data for a specific IKU metric.
+     *
+     * Every row carries `is_achieved`, `status` and `note` so the report can
+     * show both achieved rows and the ones still blocking the target.
      */
     public function getIkuDetails(string $ikuCode, string $period, string $search = ''): array
     {
-        // Add support for new IKUs in details view if needed
-        return match (strtoupper(str_replace('-', '', $ikuCode))) {
+        return match ($this->normalizeIkuCode($ikuCode)) {
             'IKU04' => $this->getIku4Details($period, $search),
             'IKU05' => $this->getIku5Details($period, $search),
             'IKU06' => $this->getIku6Details($period, $search),
@@ -282,84 +302,167 @@ trait HasIkuCalculations
     protected function getIku4Details(string $period, string $search = ''): array
     {
         return Identity::where('type', 'dosen')
-            ->where(function ($q) {
-                $q->whereNotNull('scopus_id')
-                    ->orWhereNotNull('wos_id')
-                    ->orWhereNotNull('sinta_id');
-            })
             ->when($search, function ($q) use ($search) {
-                $q->whereHas('user', function ($uq) use ($search) {
-                    $uq->where('name', 'like', "%{$search}%");
-                })->orWhere('identity_id', 'like', "%{$search}%");
+                $q->where(function ($sq) use ($search) {
+                    $sq->whereHas('user', fn ($uq) => $uq->where('name', 'like', "%{$search}%"))
+                        ->orWhere('identity_id', 'like', "%{$search}%");
+                });
             })
             ->with('user')
             ->get()
-            ->map(fn ($id) => [
-                'name' => $id->user->name ?? 'N/A',
-                'id_number' => $id->identity_id,
-                'scopus' => $id->scopus_id,
-                'sinta' => $id->sinta_id,
-                'wos' => $id->wos_id,
-            ])
-            ->toArray();
+            ->map(function ($id) {
+                $ids = [
+                    'Scopus' => $id->scopus_id,
+                    'SINTA' => $id->sinta_id,
+                    'WOS' => $id->wos_id,
+                ];
+                $achieved = collect($ids)->contains(fn ($value) => filled($value));
+                $missing = collect($ids)->filter(fn ($value) => blank($value))->keys()->implode(', ');
+
+                return [
+                    'name' => $id->user->name ?? 'N/A',
+                    'id_number' => $id->identity_id ?? '-',
+                    'scopus' => $id->scopus_id,
+                    'sinta' => $id->sinta_id,
+                    'wos' => $id->wos_id,
+                    'is_achieved' => $achieved,
+                    'status' => $achieved ? 'Tercapai' : 'Belum',
+                    'note' => $achieved ? '-' : "Belum punya ID: {$missing}",
+                ];
+            })
+            ->sortBy('is_achieved')
+            ->values()
+            ->all();
     }
 
     protected function getIku5Details(string $period, string $search = ''): array
     {
         return Proposal::query()->forAcademicYear($period)
             ->with(['partners', 'submitter'])
-            ->whereHas('partners')
             ->when($search, function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                    ->orWhereHas('submitter', function ($sq) use ($search) {
-                        $sq->where('name', 'like', "%{$search}%");
-                    });
+                $q->where(function ($sq) use ($search) {
+                    $sq->where('title', 'like', "%{$search}%")
+                        ->orWhereHas('submitter', fn ($uq) => $uq->where('name', 'like', "%{$search}%"))
+                        ->orWhereHas('partners', fn ($pq) => $pq->where('name', 'like', "%{$search}%"));
+                });
             })
             ->get()
-            ->map(fn ($p) => [
-                'title' => $p->title,
-                'submitter' => $p->submitter->name,
-                'partners' => $p->partners->pluck('name')->implode(', '),
-                'weight' => 1.0,
-            ])
-            ->toArray();
+            ->map(function ($p) {
+                $achieved = $p->partners->isNotEmpty();
+
+                return [
+                    'title' => $p->title,
+                    'submitter' => $p->submitter->name ?? 'N/A',
+                    'partners' => $achieved ? $p->partners->pluck('name')->implode(', ') : '-',
+                    'weight' => $achieved ? 1.0 : 0.0,
+                    'is_achieved' => $achieved,
+                    'status' => $achieved ? 'Tercapai' : 'Belum',
+                    'note' => $achieved ? '-' : 'Belum bermitra',
+                ];
+            })
+            ->sortBy('is_achieved')
+            ->values()
+            ->all();
     }
 
     protected function getIku6Details(string $period, string $search = ''): array
     {
         $mandatory = MandatoryOutput::whereHas('progressReport.proposal', fn ($q) => Proposal::applyAcademicYearFilter($q, $period))
-            ->where('is_verified', true)->with('progressReport.proposal')->get();
+            ->with('progressReport.proposal')
+            ->get();
         $additional = AdditionalOutput::whereHas('progressReport.proposal', fn ($q) => Proposal::applyAcademicYearFilter($q, $period))
-            ->where('is_verified', true)->with('progressReport.proposal')->get();
+            ->with('progressReport.proposal')
+            ->get();
 
-        return $mandatory->concat($additional)->map(fn ($o) => [
-            'title' => $o->article_title ?? 'N/A',
-            'journal' => $o->journal_title ?? 'N/A',
-            'rank' => $o->rank ?? 'N/A',
-            'indexing' => $o->indexing_body ?? 'N/A',
-            'weight' => $this->getJournalWeightKepmen($o),
-        ])->toArray();
+        return $mandatory->concat($additional)
+            ->map(function ($output) {
+                $verified = (bool) $output->is_verified;
+
+                return [
+                    'title' => $output->article_title ?? $output->book_title ?? $output->product_name ?? 'N/A',
+                    'proposal' => $output->progressReport->proposal->title ?? '-',
+                    'journal' => $output->journal_title ?? $output->publisher_name ?? '-',
+                    'rank' => $output->rank ?? '-',
+                    'indexing' => $output->indexing_body ?? '-',
+                    'weight' => $verified ? $this->getJournalWeightKepmen($output) : 0.0,
+                    'is_achieved' => $verified,
+                    'status' => $verified ? 'Terverifikasi' : 'Belum verifikasi',
+                    'note' => $verified ? '-' : 'Bobot belum dihitung',
+                ];
+            })
+            ->filter(fn ($row) => $this->matchesSearch($row, $search, ['title', 'proposal', 'journal', 'rank', 'indexing']))
+            ->sortBy('is_achieved')
+            ->values()
+            ->all();
     }
 
     protected function getIku7Details(string $period, string $search = ''): array
     {
-        return Proposal::query()->forAcademicYear($period)->has('sdgs')->with(['sdgs', 'submitter'])->get()
-            ->map(fn ($p) => [
-                'title' => $p->title,
-                'submitter' => $p->submitter->name,
-                'sdgs' => $p->sdgs->pluck('name')->implode(', '),
-            ])->toArray();
+        return Proposal::query()->forAcademicYear($period)
+            ->with(['sdgs', 'submitter'])
+            ->when($search, function ($q) use ($search) {
+                $q->where(function ($sq) use ($search) {
+                    $sq->where('title', 'like', "%{$search}%")
+                        ->orWhereHas('submitter', fn ($uq) => $uq->where('name', 'like', "%{$search}%"));
+                });
+            })
+            ->get()
+            ->map(function ($p) {
+                $achieved = $p->sdgs->isNotEmpty();
+
+                return [
+                    'title' => $p->title,
+                    'submitter' => $p->submitter->name ?? 'N/A',
+                    'sdgs' => $achieved ? $p->sdgs->pluck('name')->implode(', ') : '-',
+                    'is_achieved' => $achieved,
+                    'status' => $achieved ? 'Mendukung' : 'Belum',
+                    'note' => $achieved ? '-' : 'Belum memilih SDGs',
+                ];
+            })
+            ->sortBy('is_achieved')
+            ->values()
+            ->all();
     }
 
     protected function getIku8Details(string $period, string $search = ''): array
     {
         return User::role('dosen')
-            ->whereHas('policyInvolvements', fn ($q) => $q->where('status', 'verified'))
+            ->when($search, fn ($q) => $q->where('name', 'like', "%{$search}%"))
             ->with('policyInvolvements')
             ->get()
-            ->map(fn ($u) => [
-                'name' => $u->name,
-                'policies' => $u->policyInvolvements->pluck('title')->implode(', '),
-            ])->toArray();
+            ->map(function ($user) {
+                $verified = $user->policyInvolvements->where('status', 'verified');
+                $achieved = $verified->isNotEmpty();
+
+                return [
+                    'name' => $user->name,
+                    'policies' => $achieved ? $verified->pluck('title')->implode(', ') : '-',
+                    'is_achieved' => $achieved,
+                    'status' => $achieved ? 'Tercapai' : 'Belum',
+                    'note' => $achieved ? '-' : 'Belum ada rekognisi pakar terverifikasi',
+                ];
+            })
+            ->sortBy('is_achieved')
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @param  array<string, mixed>  $row
+     * @param  array<int, string>  $fields
+     */
+    private function matchesSearch(array $row, string $search, array $fields): bool
+    {
+        if ($search === '') {
+            return true;
+        }
+
+        foreach ($fields as $field) {
+            if (str_contains(mb_strtolower((string) ($row[$field] ?? '')), mb_strtolower($search))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

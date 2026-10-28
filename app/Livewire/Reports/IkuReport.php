@@ -23,6 +23,8 @@ class IkuReport extends Component
 
     public ?string $selectedIku = null;
 
+    public bool $onlyPending = false;
+
     public function updatedSearch(): void
     {
         // No need to reset page as IKU report detail is not paginated yet in current impl
@@ -42,6 +44,8 @@ class IkuReport extends Component
             $this->search = request()->query('search', '');
             $this->selectedIku = request()->query('selectedIku', null);
         }
+
+        $this->selectedIku = $this->normalizeIkuCode($this->selectedIku);
     }
 
     public function institutionalYear(): int
@@ -53,6 +57,7 @@ class IkuReport extends Component
     {
         $this->period = $period;
         $this->selectedIku = null;
+        $this->onlyPending = false;
     }
 
     public function resetFilters(): void
@@ -60,15 +65,14 @@ class IkuReport extends Component
         $this->search = '';
         $this->period = AcademicPeriod::current();
         $this->selectedIku = null;
+        $this->onlyPending = false;
     }
 
     public function toggleDetails(?string $ikuCode): void
     {
-        if ($this->selectedIku === $ikuCode) {
-            $this->selectedIku = null;
-        } else {
-            $this->selectedIku = $ikuCode;
-        }
+        $normalized = $this->normalizeIkuCode($ikuCode);
+
+        $this->selectedIku = $this->selectedIku === $normalized ? null : $normalized;
     }
 
     #[On('preview-pdf')]
