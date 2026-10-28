@@ -12,7 +12,7 @@
                 <div class="row align-items-center">
                     <div class="col-auto">
                         <div class="avatar bg-warning text-warning-fg shadow-sm">
-                            <i class="ti ti-user-plus fs-2"></i>
+                            
                         </div>
                     </div>
                     <div class="col">
@@ -35,12 +35,12 @@
                                     <span class="badge bg-{{ $variant }}-lt mb-1">{{ $type }}</span>
                                     <div class="fw-bold text-dark">{{ Str::limit($invitation->title, 100) }}</div>
                                     <div class="small text-muted mt-1">
-                                        <i class="ti ti-user me-1"></i> Ketua: {{ $invitation->submitter->name }}
+                                         Ketua: {{ $invitation->submitter->name }}
                                     </div>
                                 </div>
                                 <a href="{{ route($route, $invitation) }}" class="btn btn-primary btn-sm rounded-pill px-3"
                                     wire:navigate.hover>
-                                    Konfirmasi <i class="ti ti-chevron-right ms-1"></i>
+                                    Konfirmasi 
                                 </a>
                             </div>
                         @endforeach

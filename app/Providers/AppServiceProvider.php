@@ -17,7 +17,9 @@ use App\Policies\ProposalPolicy;
 use App\View\Composers\MenuComposer;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\File;
+use App\Channels\HybridNotificationChannel;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -82,6 +84,20 @@ class AppServiceProvider extends ServiceProvider
             Gate::policy(ProgressReport::class, LaporanPolicy::class);
             Gate::policy(Media::class, MediaPolicy::class);
             Gate::policy(Letter::class, LetterPolicy::class);
+
+            // Override mail config from DB notification settings (fallback to .env)
+            try {
+                $cfg = app(\App\Services\NotificationConfigService::class);
+                if ($v = $cfg->get('MAIL_HOST')) config(['mail.mailers.smtp.host' => $v]);
+                if ($v = $cfg->get('MAIL_PORT')) config(['mail.mailers.smtp.port' => $v]);
+                if ($v = $cfg->get('MAIL_USERNAME')) config(['mail.mailers.smtp.username' => $v]);
+                if ($v = $cfg->get('MAIL_PASSWORD')) config(['mail.mailers.smtp.password' => $v]);
+                if ($v = $cfg->get('MAIL_ENCRYPTION')) config(['mail.mailers.smtp.encryption' => $v]);
+                if ($v = $cfg->get('MAIL_FROM_ADDRESS')) config(['mail.from.address' => $v]);
+                if ($v = $cfg->get('MAIL_FROM_NAME')) config(['mail.from.name' => $v]);
+            } catch (\Throwable $e) {
+                // fallback to .env
+            }
 
             // Global Password Policy
             Password::defaults(function () {

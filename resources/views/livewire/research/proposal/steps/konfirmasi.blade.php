@@ -2,12 +2,12 @@
 <div class="mb-3 card">
     <div class="card-body">
         <div class="d-flex align-items-center mb-4">
-            <x-lucide-check-circle class="me-3 icon" />
+            
             <h3 class="mb-0 card-title">Konfirmasi Proposal</h3>
         </div>
 
         <div class="alert alert-info">
-            <x-lucide-info class="me-2 icon" />
+            
             Silakan periksa kembali seluruh data proposal Anda sebelum mengirimkan.
         </div>
 
@@ -86,13 +86,13 @@
                             <td><strong>File Substansi</strong></td>
                             <td>
                                 @if ($form->substance_file && !is_string($form->substance_file))
-                                    <x-lucide-file-check class="text-success icon" />
+                                    
                                     {{ $form->substance_file->getClientOriginalName() }}
                                 @elseif ($form->proposal && $form->proposal->detailable && $form->proposal->detailable->hasMedia('substance_file'))
                                     @php
                                         $media = $form->proposal->detailable->getFirstMedia('substance_file');
                                     @endphp
-                                    <x-lucide-file-check class="text-success icon" />
+                                    
                                     {{ $media->name }} <small class="text-muted">(Lama)</small>
                                 @else
                                     <span class="text-muted">Tidak ada file</span>
@@ -199,7 +199,7 @@
                                 <h6>Ringkasan Alokasi per Kelompok Anggaran</h6>
                                 @if (!$konfBudgetCap)
                                     <div class="alert alert-warning py-1 small mb-2">
-                                        <x-lucide-alert-triangle class="icon alert-icon" />
+                                        
                                         Batas anggaran belum ditetapkan Admin LPPM. Persentase ditampilkan terhadap total RAB.
                                     </div>
                                 @endif
@@ -319,7 +319,7 @@
                             @endphp
                             @if ($partner)
                                 <li class="mb-2">
-                                    <x-lucide-check class="text-success icon" />
+                                    
                                     {{ $partner->name }}
                                     @if ($partner->institution)
                                         ({{ $partner->institution }})
@@ -333,7 +333,7 @@
         </div>
 
         <div class="alert alert-warning">
-            <x-lucide-alert-triangle class="me-2 icon" />
+            
             <strong>Perhatian:</strong> Setelah Anda mengirimkan proposal, data akan disimpan sebagai draft.
             Anda masih dapat mengedit proposal sebelum melakukan pengiriman final.
         </div>

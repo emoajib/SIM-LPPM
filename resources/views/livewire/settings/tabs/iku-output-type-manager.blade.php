@@ -5,7 +5,7 @@
             <h3 class="card-title">Jenis Luaran IKU</h3>
             <button type="button" class="btn btn-primary" wire:click='create' data-bs-toggle="modal"
                 data-bs-target="#modal-iku-output-type">
-                <x-lucide-plus class="icon" />
+                
                 Tambah Jenis Luaran
             </button>
         </div>

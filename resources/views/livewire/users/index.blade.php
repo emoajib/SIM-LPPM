@@ -462,7 +462,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="alert alert-danger mb-3">
-                            <x-lucide-alert-triangle class="icon me-2" />
+                            
                             Tindakan ini akan mereset password <strong>SEMUA</strong> pengguna dengan role yang dipilih.
                         </div>
 
@@ -539,7 +539,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="alert alert-danger">
-                            <x-lucide-alert-triangle class="icon me-2" />
+                            
                             Apakah Anda yakin ingin menghapus pengguna ini? Tindakan ini tidak dapat diurungkan.
                         </div>
                     </div>

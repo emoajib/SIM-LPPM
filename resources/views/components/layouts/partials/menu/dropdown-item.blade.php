@@ -25,14 +25,14 @@
 @else
     <a class="{{ $item['class'] ?? 'dropdown-item' }}{{ $isActive ? ' active' : '' }}" href="{{ $item['href'] ?? '#' }}"
         @unless(($item['navigate'] ?? true) === false) wire:navigate.hover @endunless @foreach ($item['attributes'] ?? [] as $attribute => $value) {{ $attribute }}="{{ $value }}" @endforeach wire:key="menu-item-{{ $item['label'] ?? $loop->index }}">
-        @if (!empty($item['prefix_icon']))
+        @if (!empty($item['prefix_icon']) && $item['prefix_icon'] !== 'none')
             @include('components.layouts.partials.menu.icon', [
                 'name' => $item['prefix_icon'],
                 'class' => $item['prefix_icon_class'] ?? 'icon icon-2 icon-inline me-1',
             ])
         @elseif (!empty($item['prefix_html']))
-                {!! $item['prefix_html'] !!}
-            @endif
+            {!! $item['prefix_html'] !!}
+        @endif
     {{ $item['label'] }}
         @if (!empty($item['badge']))
             <span class="{{ $item['badge']['class'] ?? '' }}">{{ $item['badge']['text'] ?? '' }}</span>

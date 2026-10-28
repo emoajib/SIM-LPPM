@@ -5,7 +5,7 @@
             <h3 class="card-title">Daftar Mitra</h3>
             <button type="button" class="btn btn-primary" wire:click='create' data-bs-toggle="modal"
                 data-bs-target="#modal-partner">
-                <x-lucide-plus class="icon" />
+                
                 Tambah Mitra
             </button>
         </div>
@@ -44,7 +44,7 @@
                                     @php $media = $item->getFirstMedia('mou_pks'); @endphp
                                                 <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
                                                     download="{{ $media->file_name ?? $media->name ?? 'download' }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                        <x-lucide-file-text class="icon" /> Lihat
+                                         Lihat
                                     </a>
                                 @else
                                     <span class="badge bg-yellow-lt">Belum Ada</span>
@@ -158,7 +158,7 @@
                             @endif
                         </label>
                         <div class="text-muted small mb-1">
-                            <x-lucide-info class="icon me-1" />
+                            
                             Upload Memorandum of Understanding (MOU) atau Perjanjian Kerjasama (PKS) level institusi.
                             Surat Kesediaan Mitra diupload oleh dosen saat pengajuan proposal.
                         </div>
@@ -172,14 +172,14 @@
 
                         @if($mouPksFile)
                             <div class="mt-1 text-success small">
-                                <x-lucide-file-check class="icon" />
+                                
                                 File baru dipilih: {{ $mouPksFile->getClientOriginalName() }}
                             </div>
                         @elseif($editingId)
                             @php $p = \App\Models\Partner::find($editingId); @endphp
                             @if($p && $p->hasMedia('mou_pks'))
                                 <div class="mt-1 small">
-                                    <x-lucide-file-text class="icon text-primary" />
+                                    
                                     File saat ini:
                                     @php $media = $p->getFirstMedia('mou_pks'); @endphp
                                     <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"

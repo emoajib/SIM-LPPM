@@ -16,7 +16,7 @@
                     <div class="card-actions">
                         <button type="button" class="btn btn-primary btn-sm" wire:click="startAddCategory"
                             title="Tambah Kategori">
-                            <x-lucide-plus class="icon" />
+                            
                         </button>
                     </div>
                 </div>
@@ -25,7 +25,7 @@
                     <div class="mb-2">
                         <div class="input-icon">
                             <span class="input-icon-addon">
-                                <x-lucide-search class="icon" />
+                                
                             </span>
                             <input type="text" class="form-control form-control-sm" placeholder="Cari kategori..."
                                 wire:model.live.debounce.300ms="search">
@@ -46,10 +46,10 @@
                             </div>
                             <div class="btn-list">
                                 <button type="button" class="btn btn-success btn-sm" wire:click="saveNewCategory" wire:loading.class="btn-loading" wire:target="saveNewCategory" title="Simpan" aria-label="Simpan">
-                                    <x-lucide-check class="icon" />
+                                    
                                 </button>
                                 <button type="button" class="btn btn-secondary btn-sm" wire:click="cancelAddCategory" title="Batal" aria-label="Batal">
-                                    <x-lucide-x class="icon" />
+                                    
                                 </button>
                             </div>
                         </div>
@@ -78,19 +78,19 @@
                                                 autofocus
                                                 style="font-size: 0.85rem;">
                                             <button type="button" class="btn btn-success btn-sm p-1" wire:click="saveCategory" wire:loading.class="btn-loading" wire:target="saveCategory" title="Simpan" aria-label="Simpan">
-                                                <x-lucide-check class="icon" style="width: 14px; height: 14px;" />
+                                                
                                             </button>
                                             <button type="button" class="btn btn-secondary btn-sm p-1" wire:click="cancelEditCategory" title="Batal" aria-label="Batal">
-                                                <x-lucide-x class="icon" style="width: 14px; height: 14px;" />
+                                                
                                             </button>
                                         </div>
                                     @else
                                         {{-- Expand/Collapse Icon --}}
                                         <span class="me-1">
                                             @if ($this->isTypeExpanded($type))
-                                                <x-lucide-chevron-down class="icon" style="width: 16px; height: 16px;" />
+                                                
                                             @else
-                                                <x-lucide-chevron-right class="icon" style="width: 16px; height: 16px;" />
+                                                
                                             @endif
                                         </span>
 
@@ -107,7 +107,7 @@
                                         <div class="btn-group ms-1" wire:click.stop>
                                             <button type="button" class="btn btn-ghost-primary btn-sm p-1"
                                                 wire:click="startEditCategory('{{ $type }}')" title="Rename">
-                                                <x-lucide-pencil class="icon" style="width: 12px; height: 12px;" />
+                                                
                                             </button>
                                             <button type="button" class="btn btn-ghost-danger btn-sm p-1"
                                                 wire:click="confirmDeleteCategory('{{ $type }}')"
@@ -129,7 +129,7 @@
                                                 wire:click="selectLevel({{ $level->id }})"
                                                 wire:key="level-{{ $level->id }}">
                                                 <span class="me-2">
-                                                    <x-lucide-minus class="icon" style="width: 12px; height: 12px;" />
+                                                    
                                                 </span>
                                                 <span class="flex-grow-1">Level {{ $level->level }}</span>
                                                 <span class="badge {{ $selectedLevelId === $level->id ? 'bg-white text-primary' : 'bg-secondary-subtle text-secondary' }}"
@@ -177,7 +177,7 @@
                                 @if (!$editingLevelDesc)
                                     <button type="button" class="btn btn-ghost-primary btn-sm"
                                         wire:click="startEditLevelDesc">
-                                        <x-lucide-pencil class="icon me-1" /> Edit
+                                         Edit
                                     </button>
                                 @endif
                             </div>
@@ -204,7 +204,7 @@
 
                                     <div class="mt-2 btn-list">
                                         <button type="button" class="btn btn-primary btn-sm" wire:click="saveLevelDesc" wire:loading.class="btn-loading" wire:target="saveLevelDesc">
-                                            <x-lucide-check class="icon me-1" /> Simpan
+                                             Simpan
                                         </button>
                                         <button type="button" class="btn btn-secondary btn-sm"
                                             wire:click="cancelEditLevelDesc">
@@ -243,7 +243,7 @@
                                 </label>
                                 @if (!$addingIndicator)
                                     <button type="button" class="btn btn-primary btn-sm" wire:click="startAddIndicator">
-                                        <x-lucide-plus class="icon me-1" /> Tambah Indikator
+                                         Tambah Indikator
                                     </button>
                                 @endif
                             </div>
@@ -274,7 +274,7 @@
                                     </div>
                                     <div class="mt-2 btn-list">
                                         <button type="button" class="btn btn-success btn-sm" wire:click="saveNewIndicator" wire:loading.class="btn-loading" wire:target="saveNewIndicator">
-                                            <x-lucide-check class="icon me-1" /> Simpan
+                                             Simpan
                                         </button>
                                         <button type="button" class="btn btn-secondary btn-sm"
                                             wire:click="cancelAddIndicator">
@@ -318,11 +318,11 @@
                                                         <div class="btn-list flex-nowrap">
                                                             <button type="button" class="btn btn-success btn-sm p-1"
                                                                 wire:click="saveIndicator" wire:loading.class="btn-loading" wire:target="saveIndicator" title="Simpan">
-                                                                <x-lucide-check class="icon" />
+                                                                
                                                             </button>
                                                             <button type="button" class="btn btn-secondary btn-sm p-1"
                                                                 wire:click="cancelEditIndicator" title="Batal">
-                                                                <x-lucide-x class="icon" />
+                                                                
                                                             </button>
                                                         </div>
                                                     </td>
@@ -339,7 +339,7 @@
                                                             <button type="button" class="btn btn-ghost-primary btn-sm p-1"
                                                                 wire:click="startEditIndicator({{ $indicator->id }})"
                                                                 title="Edit">
-                                                                <x-lucide-pencil class="icon" />
+                                                                
                                                             </button>
                                                              <button type="button" class="btn btn-ghost-danger btn-sm p-1"
                                                                 wire:click="confirmDeleteIndicator({{ $indicator->id }}, '{{ $indicator->indicator }}')"
@@ -354,11 +354,11 @@
                                         @empty
                                             <tr>
                                                 <td colspan="3" class="text-muted text-center py-4">
-                                                    <x-lucide-inbox class="icon mb-2" style="width: 32px; height: 32px;" />
+                                                    
                                                     <div>Belum ada indikator untuk level ini</div>
                                                     <button type="button" class="btn btn-primary btn-sm mt-2"
                                                         wire:click="startAddIndicator">
-                                                        <x-lucide-plus class="icon me-1" /> Tambah Indikator Pertama
+                                                         Tambah Indikator Pertama
                                                     </button>
                                                 </td>
                                             </tr>
@@ -375,7 +375,7 @@
                     <div class="card-body">
                         <div class="empty">
                             <div class="empty-img">
-                                <x-lucide-layers class="icon" style="width: 64px; height: 64px; opacity: 0.5;" />
+                                
                             </div>
                             <p class="empty-title">Pilih Level TKT</p>
                             <p class="empty-subtitle text-muted">
@@ -384,7 +384,7 @@
                             @if ($this->types->isEmpty())
                                 <div class="empty-action">
                                     <button type="button" class="btn btn-primary" wire:click="startAddCategory">
-                                        <x-lucide-plus class="icon me-1" /> Tambah Kategori TKT Pertama
+                                         Tambah Kategori TKT Pertama
                                     </button>
                                 </div>
                             @endif

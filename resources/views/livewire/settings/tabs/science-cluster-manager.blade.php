@@ -16,7 +16,7 @@
                     <div class="card-actions">
                         <button type="button" class="btn btn-primary btn-sm" wire:click="startAddCluster(null)"
                             title="Tambah Level 1">
-                            <x-lucide-plus class="icon" />
+                            
                         </button>
                     </div>
                 </div>
@@ -25,7 +25,7 @@
                     <div class="mb-2">
                         <div class="input-icon">
                             <span class="input-icon-addon">
-                                <x-lucide-search class="icon" />
+                                
                             </span>
                             <input type="text" class="form-control form-control-sm" placeholder="Cari cluster..."
                                 wire:model.live.debounce.300ms="search">
@@ -63,10 +63,10 @@
                             <div class="btn-list">
                                 <button type="button" class="btn btn-success btn-sm" wire:click="saveNewCluster"
                                     wire:loading.class="btn-loading" wire:target="saveNewCluster" title="Simpan" aria-label="Simpan">
-                                    <x-lucide-check class="icon" />
+                                    
                                 </button>
                                 <button type="button" class="btn btn-secondary btn-sm" wire:click="cancelAddCluster" title="Batal" aria-label="Batal">
-                                    <x-lucide-x class="icon" />
+                                    
                                 </button>
                             </div>
                         </div>
@@ -93,11 +93,11 @@
                                                 <button type="button" class="p-1 btn btn-success btn-sm"
                                                     wire:click="saveCluster" wire:loading.class="btn-loading"
                                                     wire:target="saveCluster" title="Simpan" aria-label="Simpan">
-                                                    <x-lucide-check class="icon" style="width: 14px; height: 14px;" />
+                                                    
                                                 </button>
                                                 <button type="button" class="p-1 btn btn-secondary btn-sm"
                                                     wire:click="cancelEditCluster" title="Batal" aria-label="Batal">
-                                                    <x-lucide-x class="icon" style="width: 14px; height: 14px;" />
+                                                    
                                                 </button>
                                             </div>
                                             <div class="d-flex gap-2 mt-1">
@@ -115,17 +115,14 @@
                                         {{-- Expand/Collapse Icon --}}
                                         <span class="me-1">
                                             @if ($this->isLevel1Expanded($level1->id))
-                                                <x-lucide-chevron-down class="icon"
-                                                    style="width: 16px; height: 16px;" />
+                                                
                                             @else
-                                                <x-lucide-chevron-right class="icon"
-                                                    style="width: 16px; height: 16px;" />
+                                                
                                             @endif
                                         </span>
 
                                         {{-- Cluster Name with Icon --}}
-                                        <x-lucide-folder class="me-1 text-primary icon"
-                                            style="width: 14px; height: 14px;" />
+                                        
                                         <span class="flex-grow-1 text-truncate fw-semibold" style="font-size: 0.85rem;"
                                             title="{{ $level1->name }}"
                                             wire:click.stop="selectCluster({{ $level1->id }})">
@@ -142,11 +139,11 @@
                                             <button type="button" class="p-1 btn btn-ghost-success btn-sm"
                                                 wire:click="startAddCluster({{ $level1->id }})"
                                                 title="Tambah Sub-Cluster">
-                                                <x-lucide-plus class="icon" style="width: 12px; height: 12px;" />
+                                                
                                             </button>
                                             <button type="button" class="p-1 btn btn-ghost-primary btn-sm"
                                                 wire:click="startEditCluster({{ $level1->id }})" title="Rename">
-                                                <x-lucide-pencil class="icon" style="width: 12px; height: 12px;" />
+                                                
                                             </button>
                                             <button type="button" class="p-1 btn btn-ghost-danger btn-sm"
                                                 wire:click="confirmDelete({{ $level1->id }})"
@@ -180,14 +177,12 @@
                                                                     style="font-size: 0.75rem;">
                                                                 <button type="button" class="p-1 btn btn-success btn-sm"
                                                                     wire:click="saveCluster" title="Simpan" aria-label="Simpan">
-                                                                    <x-lucide-check class="icon"
-                                                                        style="width: 12px; height: 12px;" />
+                                                                    
                                                                 </button>
                                                                 <button type="button"
                                                                     class="p-1 btn btn-secondary btn-sm"
                                                                     wire:click="cancelEditCluster" title="Batal" aria-label="Batal">
-                                                                    <x-lucide-x class="icon"
-                                                                        style="width: 12px; height: 12px;" />
+                                                                    
                                                                 </button>
                                                             </div>
                                                             <div class="d-flex gap-2 mt-1">
@@ -205,17 +200,14 @@
                                                         {{-- Expand/Collapse Icon --}}
                                                         <span class="me-1">
                                                             @if ($this->isLevel2Expanded($level2->id))
-                                                                <x-lucide-chevron-down class="icon"
-                                                                    style="width: 14px; height: 14px;" />
+                                                                
                                                             @else
-                                                                <x-lucide-chevron-right class="icon"
-                                                                    style="width: 14px; height: 14px;" />
+                                                                
                                                             @endif
                                                         </span>
 
                                                         {{-- Cluster Name with Icon --}}
-                                                        <x-lucide-folder-open class="me-1 text-success icon"
-                                                            style="width: 12px; height: 12px;" />
+                                                        
                                                         <span class="flex-grow-1 text-truncate"
                                                             wire:click.stop="selectCluster({{ $level2->id }})">
                                                             {{ $level2->name }}
@@ -234,15 +226,13 @@
                                                                 class="p-1 btn btn-ghost-success btn-sm"
                                                                 wire:click="startAddCluster({{ $level2->id }})"
                                                                 title="Tambah Sub-Cluster">
-                                                                <x-lucide-plus class="icon"
-                                                                    style="width: 10px; height: 10px;" />
+                                                                
                                                             </button>
                                                             <button type="button"
                                                                 class="p-1 btn btn-ghost-primary btn-sm"
                                                                 wire:click="startEditCluster({{ $level2->id }})"
                                                                 title="Rename">
-                                                                <x-lucide-pencil class="icon"
-                                                                    style="width: 10px; height: 10px;" />
+                                                                
                                                             </button>
                                                             <button type="button"
                                                                 class="p-1 btn btn-ghost-danger btn-sm"
@@ -278,14 +268,12 @@
                                                                             <button type="button"
                                                                                 class="p-1 btn btn-success btn-sm"
                                                                                 wire:click="saveCluster" title="Simpan" aria-label="Simpan">
-                                                                                <x-lucide-check class="icon"
-                                                                                    style="width: 10px; height: 10px;" />
+                                                                                
                                                                             </button>
                                                                             <button type="button"
                                                                                 class="p-1 btn btn-secondary btn-sm"
                                                                                 wire:click="cancelEditCluster" title="Batal" aria-label="Batal">
-                                                                                <x-lucide-x class="icon"
-                                                                                    style="width: 10px; height: 10px;" />
+                                                                                
                                                                             </button>
                                                                         </div>
                                                                         <div class="d-flex gap-2 mt-1">
@@ -301,13 +289,11 @@
                                                                     </div>
                                                                 @else
                                                                     <span class="me-1">
-                                                                        <x-lucide-minus class="icon"
-                                                                            style="width: 12px; height: 12px;" />
+                                                                        
                                                                     </span>
 
                                                                     {{-- Cluster Name with Icon --}}
-                                                                    <x-lucide-file-text class="me-1 text-orange icon"
-                                                                        style="width: 10px; height: 10px;" />
+                                                                    
                                                                     <span class="flex-grow-1 text-truncate">
                                                                         {{ $level3->name }}
                                                                     </span>
@@ -318,8 +304,7 @@
                                                                             class="p-1 btn btn-ghost-primary btn-sm"
                                                                             wire:click="startEditCluster({{ $level3->id }})"
                                                                             title="Rename">
-                                                                            <x-lucide-pencil class="icon"
-                                                                                style="width: 9px; height: 9px;" />
+                                                                            
                                                                         </button>
                                                                         <button type="button"
                                                                             class="p-1 btn btn-ghost-danger btn-sm"
@@ -421,7 +406,7 @@
                                     </label>
                                     <button type="button" class="btn btn-primary btn-sm"
                                         wire:click="startAddCluster({{ $this->selectedCluster->id }})">
-                                        <x-lucide-plus class="me-1 icon" /> Tambah Sub-Cluster
+                                         Tambah Sub-Cluster
                                     </button>
                                 </div>
 
@@ -442,9 +427,9 @@
                                                     <td>
                                                         <div class="d-flex align-items-center">
                                                             @if ($child->level === 2)
-                                                                <x-lucide-folder-open class="me-2 text-success icon" />
+                                                                
                                                             @else
-                                                                <x-lucide-file-text class="me-2 text-orange icon" />
+                                                                
                                                             @endif
                                                             {{ $child->name }}
                                                         </div>
@@ -460,7 +445,7 @@
                                                                 class="p-1 btn btn-ghost-primary btn-sm"
                                                                 wire:click="startEditCluster({{ $child->id }})"
                                                                 title="Edit">
-                                                                <x-lucide-pencil class="icon" />
+                                                                
                                                             </button>
                                                             <button type="button"
                                                                 class="p-1 btn btn-ghost-danger btn-sm"
@@ -474,12 +459,11 @@
                                             @empty
                                                 <tr>
                                                     <td colspan="3" class="py-4 text-muted text-center">
-                                                        <x-lucide-inbox class="mb-2 icon"
-                                                            style="width: 32px; height: 32px;" />
+                                                        
                                                         <div>Belum ada sub-cluster</div>
                                                         <button type="button" class="mt-2 btn btn-primary btn-sm"
                                                             wire:click="startAddCluster({{ $this->selectedCluster->id }})">
-                                                            <x-lucide-plus class="me-1 icon" /> Tambah Sub-Cluster
+                                                             Tambah Sub-Cluster
                                                             Pertama
                                                         </button>
                                                     </td>
@@ -491,7 +475,7 @@
                             </div>
                         @else
                             <div class="alert alert-info">
-                                <x-lucide-info class="me-2 icon" />
+                                
                                 Cluster Level 3 adalah level terakhir dan tidak dapat memiliki sub-cluster.
                             </div>
                         @endif
@@ -503,7 +487,7 @@
                     <div class="card-body">
                         <div class="empty">
                             <div class="empty-img">
-                                <x-lucide-layers class="icon" style="width: 64px; height: 64px; opacity: 0.5;" />
+                                
                             </div>
                             <p class="empty-title">Pilih Cluster Ilmu</p>
                             <p class="text-muted empty-subtitle">
@@ -513,7 +497,7 @@
                                 <div class="empty-action">
                                     <button type="button" class="btn btn-primary"
                                         wire:click="startAddCluster(null)">
-                                        <x-lucide-plus class="me-1 icon" /> Tambah Cluster Level 1 Pertama
+                                         Tambah Cluster Level 1 Pertama
                                     </button>
                                 </div>
                             @endif

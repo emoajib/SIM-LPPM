@@ -1,7 +1,7 @@
 <div>
     @if ($this->canApprove)
         <div class="alert alert-info" role="alert">
-            <x-lucide-info class="icon" />
+            
             <div>
                 <h4 class="alert-heading">
                     Persetujuan Awal Kepala LPPM
@@ -15,7 +15,7 @@
 
         <div class="btn-list">
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#initialApprovalModal">
-                <x-lucide-check-circle class="icon" />
+                
                 Setujui & Lanjutkan ke Reviewer
             </button>
         </div>
@@ -28,7 +28,7 @@
         <x-tabler.modal id="initialApprovalModal" title="Konfirmasi Persetujuan Awal">
             <x-slot:body>
                 <div class="py-3 text-center">
-                    <x-lucide-check-circle class="mb-3 text-primary icon" style="width: 4rem; height: 4rem;" />
+                    
                     <h3>Setujui Proposal?</h3>
                     <div class="mt-2 text-secondary">
                         Dengan menyetujui proposal ini, Admin LPPM akan dapat menugaskan reviewer untuk melakukan penilaian.
@@ -55,7 +55,7 @@
                         <div class="col">
                             <button type="button" wire:click="approve" class="w-100 btn btn-primary"
                                 data-bs-dismiss="modal">
-                                <x-lucide-check-circle class="icon" />
+                                
                                 Ya, Setujui
                             </button>
                         </div>

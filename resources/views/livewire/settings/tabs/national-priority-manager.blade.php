@@ -5,7 +5,7 @@
             <h3 class="card-title">Prioritas Nasional</h3>
             <button type="button" class="btn btn-primary" wire:click='create' data-bs-toggle="modal"
                 data-bs-target="#modal-national-priority">
-                <x-lucide-plus class="icon" />
+                
                 Tambah Prioritas Nasional
             </button>
         </div>

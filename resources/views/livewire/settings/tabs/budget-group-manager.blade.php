@@ -5,7 +5,7 @@
             <h3 class="card-title">Kelompok Anggaran</h3>
             <button type="button" class="btn btn-primary" wire:click='create' data-bs-toggle="modal"
                 data-bs-target="#modal-budget-group">
-                <x-lucide-plus class="icon" />
+                
                 Tambah Kelompok Anggaran
             </button>
         </div>

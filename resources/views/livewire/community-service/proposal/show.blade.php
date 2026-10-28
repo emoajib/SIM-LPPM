@@ -5,28 +5,28 @@
     <div class="btn-list">
         @if (url()->previous() && url()->previous() !== url()->current())
             <a href="{{ url()->previous() }}" class="btn-outline-secondary btn" wire:navigate.hover>
-                <x-lucide-arrow-left class="icon" />
+                
                 Kembali
             </a>
         @elseif (active_has_role('reviewer'))
             <a href="{{ route('review.community-service') }}" class="btn-outline-secondary btn" wire:navigate.hover>
-                <x-lucide-arrow-left class="icon" />
+                
                 Kembali
             </a>
         @else
             <a href="{{ route('community-service.proposal.index') }}" class="btn-outline-secondary btn" wire:navigate.hover>
-                <x-lucide-arrow-left class="icon" />
+                
                 Kembali
             </a>
         @endif
         @if ($this->canEdit)
             <a href="{{ $this->getEditRoute($proposal->id) }}" wire:navigate.hover class="btn btn-primary">
-                <x-lucide-pencil class="icon" />
+                
                 Edit
             </a>
         @elseif ($proposal->status === \App\Enums\ProposalStatus::DRAFT && $proposal->submitter_id === auth()->id() && !$this->isScheduleOpen)
             <button type="button" class="btn btn-secondary" disabled title="Periode pengajuan ditutup">
-                <x-lucide-lock class="icon" />
+                
                 Edit (Ditutup)
             </button>
         @endif
@@ -37,12 +37,12 @@
             </button>
         @endif
         <a href="{{ route('proposals.preview-pdf', $proposal) }}" target="_blank" class="btn btn-outline-info">
-            <x-lucide-eye class="icon" />
+            
             Pratinjau Proposal
         </a>
         <a data-navigate-ignore="true" href="{{ route('proposals.export-pdf', $proposal) }}" target="_blank"
             class="btn-outline-primary btn">
-            <x-lucide-download class="icon" />
+            
             Unduh Proposal (PDF)
         </a>
     </div>
@@ -59,7 +59,7 @@
             <div class="card border-info shadow-sm">
                 <div class="card-header bg-info-lt d-flex justify-content-between align-items-center py-2">
                     <h3 class="card-title text-info mb-0 fs-4">
-                        <x-lucide-file-text class="icon me-2" />
+                        
                         Nomor Kontrak Pengabdian (Admin LPPM)
                     </h3>
                     @if($proposal->contract_number)
@@ -82,7 +82,7 @@
                         </div>
                         <div class="col-md-2">
                             <button type="button" wire:click="saveContract" wire:loading.attr="disabled" class="btn btn-info w-100">
-                                <span wire:loading.remove wire:target="saveContract"><x-lucide-save class="icon me-1" /> Simpan</span>
+                                <span wire:loading.remove wire:target="saveContract"> Simpan</span>
                                 <span wire:loading wire:target="saveContract"><span class="spinner-border spinner-border-sm"></span></span>
                             </button>
                         </div>
@@ -101,7 +101,7 @@
             <div class="alert alert-warning alert-dismissible" role="alert">
                 <div class="d-flex">
                     <div>
-                        <x-lucide-calendar-x class="alert-icon icon me-2" />
+                        
                     </div>
                     <div>
                         <h4 class="alert-title">Periode Pengajuan Ditutup</h4>
@@ -220,13 +220,13 @@
         <div class="mt-4">
             <div class="d-flex justify-content-between">
                 <button type="button" class="btn" @click="currentStep--" x-show="currentStep > 1">
-                    <x-lucide-arrow-left class="icon" />
+                    
                     Kembali
                 </button>
                 <div x-show="currentStep === 1"></div>
                 <button type="button" class="btn btn-primary" @click="currentStep++" x-show="currentStep < 5">
                     Selanjutnya
-                    <x-lucide-arrow-right class="icon" />
+                    
                 </button>
             </div>
         </div>

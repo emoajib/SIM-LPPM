@@ -14,7 +14,7 @@
             </div>
 
             <div class="alert alert-info">
-                <x-lucide-shield-check class="me-2 icon" />
+                
                 <strong>Keamanan Tinggi:</strong> Dengan autentikasi dua faktor diaktifkan, Anda akan diminta memasukkan
                 kode verifikasi dari aplikasi autentikator saat login.
             </div>
@@ -49,7 +49,7 @@
             </div>
 
             <div class="alert alert-warning">
-                <x-lucide-shield-alert class="me-2 icon" />
+                
                 <strong>Peringatan Keamanan:</strong> Mengaktifkan autentikasi dua faktor akan meningkatkan keamanan
                 akun Anda secara signifikan.
             </div>
@@ -59,7 +59,7 @@
                 <div class="col-md-4">
                     <div class="text-center">
                         <div class="bg-primary mx-auto mb-3 text-white avatar">
-                            <x-lucide-smartphone class="icon" />
+                            
                         </div>
                         <h4 class="card-title">1. Install Aplikasi</h4>
                         <p class="text-muted">Install aplikasi autentikator seperti Google Authenticator atau Authy</p>
@@ -68,7 +68,7 @@
                 <div class="col-md-4">
                     <div class="text-center">
                         <div class="bg-primary mx-auto mb-3 text-white avatar">
-                            <x-lucide-qr-code class="icon" />
+                            
                         </div>
                         <h4 class="card-title">2. Scan Kode QR</h4>
                         <p class="text-muted">Scan kode QR yang ditampilkan atau masukkan kode manual</p>
@@ -77,7 +77,7 @@
                 <div class="col-md-4">
                     <div class="text-center">
                         <div class="bg-primary mx-auto mb-3 text-white avatar">
-                            <x-lucide-check-circle class="icon" />
+                            
                         </div>
                         <h4 class="card-title">3. Verifikasi</h4>
                         <p class="text-muted">Masukkan kode dari aplikasi untuk mengaktifkan 2FA</p>

@@ -91,13 +91,13 @@
                 @php $media = $additionalOutput->getFirstMedia('book_document'); @endphp
                 <div class="bg-body-tertiary mt-2 rounded border p-2">
                     <div class="d-flex align-items-center">
-                        <x-lucide-file-text class="text-primary icon me-2" />
+                        
                         <div class="flex-fill">
                             <small class="text-muted">File yang sudah diunggah:</small><br>
                             <strong>{{ $media->name }}</strong> <small class="text-muted">({{ number_format($media->size / 1024, 2) }} KB)</small>
                         </div>
                         <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                            target="_blank" class="btn btn-sm btn-primary"><x-lucide-download class="icon" /> Download</a>
+                            target="_blank" class="btn btn-sm btn-primary"> Download</a>
                     </div>
                 </div>
             @endif
@@ -133,13 +133,13 @@
                 @php $media = $additionalOutput->getFirstMedia('book_document'); @endphp
                 <div class="bg-body-tertiary mt-2 rounded border p-2">
                     <div class="d-flex align-items-center">
-                        <x-lucide-file-text class="text-primary icon me-2" />
+                        
                         <div class="flex-fill">
                             <small class="text-muted">File yang sudah diunggah:</small><br>
                             <strong>{{ $media->name }}</strong> <small class="text-muted">({{ number_format($media->size / 1024, 2) }} KB)</small>
                         </div>
                         <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                            target="_blank" class="btn btn-sm btn-primary"><x-lucide-download class="icon" /> Download</a>
+                            target="_blank" class="btn btn-sm btn-primary"> Download</a>
                     </div>
                 </div>
             @endif
@@ -195,10 +195,10 @@
                 @php $media = $additionalOutput->getFirstMedia('book_document'); @endphp
                 <div class="bg-body-tertiary mt-2 rounded border p-2">
                     <div class="d-flex align-items-center">
-                        <x-lucide-file-text class="text-primary icon me-2" />
+                        
                         <div class="flex-fill"><small class="text-muted">File yang sudah diunggah:</small><br><strong>{{ $media->name }}</strong></div>
                         <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                            target="_blank" class="btn btn-sm btn-primary"><x-lucide-download class="icon" /> Download</a>
+                            target="_blank" class="btn btn-sm btn-primary"> Download</a>
                     </div>
                 </div>
             @endif
@@ -214,10 +214,10 @@
                 @php $media = $additionalOutput->getFirstMedia('publication_certificate'); @endphp
                 <div class="bg-body-tertiary mt-2 rounded border p-2">
                     <div class="d-flex align-items-center">
-                        <x-lucide-file-text class="text-primary icon me-2" />
+                        
                         <div class="flex-fill"><small class="text-muted">File yang sudah diunggah:</small><br><strong>{{ $media->name }}</strong></div>
                         <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                            target="_blank" class="btn btn-sm btn-primary"><x-lucide-download class="icon" /> Download</a>
+                            target="_blank" class="btn btn-sm btn-primary"> Download</a>
                     </div>
                 </div>
             @endif
@@ -257,10 +257,10 @@
                 @php $media = $additionalOutput->getFirstMedia('book_document'); @endphp
                 <div class="bg-body-tertiary mt-2 rounded border p-2">
                     <div class="d-flex align-items-center">
-                        <x-lucide-file-text class="text-primary icon me-2" />
+                        
                         <div class="flex-fill"><small class="text-muted">File yang sudah diunggah:</small><br><strong>{{ $media->name }}</strong></div>
                         <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                            target="_blank" class="btn btn-sm btn-primary"><x-lucide-download class="icon" /> Download</a>
+                            target="_blank" class="btn btn-sm btn-primary"> Download</a>
                     </div>
                 </div>
             @endif
@@ -276,10 +276,10 @@
                 @php $media = $additionalOutput->getFirstMedia('publication_certificate'); @endphp
                 <div class="bg-body-tertiary mt-2 rounded border p-2">
                     <div class="d-flex align-items-center">
-                        <x-lucide-file-text class="text-primary icon me-2" />
+                        
                         <div class="flex-fill"><small class="text-muted">File yang sudah diunggah:</small><br><strong>{{ $media->name }}</strong></div>
                         <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                            target="_blank" class="btn btn-sm btn-primary"><x-lucide-download class="icon" /> Download</a>
+                            target="_blank" class="btn btn-sm btn-primary"> Download</a>
                     </div>
                 </div>
             @endif
@@ -335,10 +335,10 @@
                 @php $media = $additionalOutput->getFirstMedia('book_document'); @endphp
                 <div class="bg-body-tertiary mt-2 rounded border p-2">
                     <div class="d-flex align-items-center">
-                        <x-lucide-file-text class="text-primary icon me-2" />
+                        
                         <div class="flex-fill"><small class="text-muted">File yang sudah diunggah:</small><br><strong>{{ $media->name }}</strong></div>
                         <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                            target="_blank" class="btn btn-sm btn-primary"><x-lucide-download class="icon" /> Download</a>
+                            target="_blank" class="btn btn-sm btn-primary"> Download</a>
                     </div>
                 </div>
             @endif
@@ -354,10 +354,10 @@
                 @php $media = $additionalOutput->getFirstMedia('publication_certificate'); @endphp
                 <div class="bg-body-tertiary mt-2 rounded border p-2">
                     <div class="d-flex align-items-center">
-                        <x-lucide-file-text class="text-primary icon me-2" />
+                        
                         <div class="flex-fill"><small class="text-muted">File yang sudah diunggah:</small><br><strong>{{ $media->name }}</strong></div>
                         <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                            target="_blank" class="btn btn-sm btn-primary"><x-lucide-download class="icon" /> Download</a>
+                            target="_blank" class="btn btn-sm btn-primary"> Download</a>
                     </div>
                 </div>
             @endif

@@ -9,9 +9,9 @@
         <div class="flex items-start gap-3">
             <div class="{{ $hasEligibleSchemes ? 'text-green-600' : 'text-amber-600' }}">
                 @if ($hasEligibleSchemes)
-                    <x-lucide-check-circle class="w-6 h-6" />
+                    
                 @else
-                    <x-lucide-alert-circle class="w-6 h-6" />
+                    
                 @endif
             </div>
             <div class="flex-1">
@@ -53,7 +53,7 @@
                                 <p class="font-medium text-gray-900">{{ $scheme->name }}</p>
                                 <p class="text-sm text-gray-600">{{ $scheme->description }}</p>
                             </div>
-                            <x-lucide-chevron-right class="w-5 h-5 text-green-600 flex-shrink-0" />
+                            
                         </div>
                     </button>
                 @endforeach
@@ -77,7 +77,7 @@
                                     {{ count($item['failed_checks']) }} persyaratan tidak terpenuhi
                                 </p>
                             </div>
-                            <x-lucide-chevron-down class="w-4 h-4 text-gray-400" />
+                            
                         </summary>
                         <div class="mt-3 pt-3 border-t space-y-2">
                             @foreach ($item['failed_checks'] as $check)
@@ -120,7 +120,7 @@
                     type="button"
                     wire:click="$set('showEligibilityModal', false)"
                     class="text-gray-400 hover:text-gray-600" title="Tutup" aria-label="Tutup">
-                    <x-lucide-x class="w-5 h-5" />
+                    
                 </button>
             </div>
 
@@ -128,10 +128,10 @@
             <div class="mb-6 p-3 rounded-lg {{ $eligibilityStatus['eligible'] ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200' }}">
                 <div class="flex items-center gap-2">
                     @if ($eligibilityStatus['eligible'])
-                        <x-lucide-check-circle class="w-5 h-5 text-green-600" />
+                        
                         <p class="font-semibold text-green-900">Anda eligible untuk skema ini!</p>
                     @else
-                        <x-lucide-x-circle class="w-5 h-5 text-red-600" />
+                        
                         <p class="font-semibold text-red-900">Anda tidak eligible</p>
                     @endif
                 </div>
@@ -144,7 +144,7 @@
                     <div class="space-y-2">
                         @foreach ($eligibilityStatus['passed_checks'] as $check)
                             <div class="flex items-start gap-2 p-2 rounded bg-green-50">
-                                <x-lucide-check class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                                
                                 <div>
                                     <p class="text-sm font-medium text-gray-900">{{ $check['name'] }}</p>
                                     @if ($check['type'] === 'numeric')
@@ -166,7 +166,7 @@
                     <div class="space-y-2">
                         @foreach ($eligibilityStatus['failed_checks'] as $check)
                             <div class="flex items-start gap-2 p-2 rounded bg-red-50">
-                                <x-lucide-x class="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+                                
                                 <div class="flex-1">
                                     <p class="text-sm font-medium text-gray-900">{{ $check['name'] }}</p>
                                     <p class="text-xs text-gray-600">{{ $check['message'] }}</p>

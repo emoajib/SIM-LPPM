@@ -5,7 +5,7 @@
             <h3 class="card-title">Pengaturan Anggaran Tahunan</h3>
             <button type="button" class="btn btn-primary" wire:click='create' data-bs-toggle="modal"
                 data-bs-target="#modal-budget-cap">
-                <x-lucide-plus class="icon" />
+                
                 Tambah Pengaturan Anggaran
             </button>
         </div>
@@ -137,7 +137,7 @@
                 </div>
                 <div class="alert alert-info py-2 mb-3">
                     <div class="d-flex">
-                        <x-lucide-info class="icon me-2" />
+                        
                         <div class="small">
                             <strong>Prioritas Anggaran:</strong> Batas Anggaran Spesifik akan selalu digunakan terlebih
                             dahulu. Jika dikosongkan, sistem akan menggunakan Batas Anggaran Default (Cadangan). Jika
@@ -206,7 +206,7 @@
                         </label>
                     </div>
                     <small class="form-hint text-warning">
-                        <x-lucide-info class="icon" /> Jika dinonaktifkan, validasi batasan persentase per kelompok anggaran akan dilewati. Gunakan hanya untuk keadaan darurat (panic button).
+                         Jika dinonaktifkan, validasi batasan persentase per kelompok anggaran akan dilewati. Gunakan hanya untuk keadaan darurat (panic button).
                     </small>
                 </div>
             </form>

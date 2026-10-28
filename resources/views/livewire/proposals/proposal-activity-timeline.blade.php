@@ -2,7 +2,7 @@
     @if ($activities->isEmpty())
         <div class="empty-state py-5 text-center">
             <div class="empty-img mb-3">
-                <x-lucide-history class="text-muted opacity-20" size="48" stroke-width="1" />
+                
             </div>
             <p class="empty-title">Belum ada riwayat perubahan</p>
             <p class="empty-subtitle text-muted">Aktivitas perubahan data proposal akan muncul di sini secara otomatis.</p>
@@ -27,8 +27,8 @@
                 @endphp
 
                 <div class="timeline-item">
-                    <div class="timeline-badge {{ $badgeColor }}">
-                        <x-dynamic-component :component="$icon" class="icon-inline" style="width: 12px; height: 12px;" />
+                    <div class="timeline-badge {{ $badgeColor }} opacity-50">
+                        <div class="dot" style="width: 8px; height: 8px; border-radius: 50%; background: currentColor;"></div>
                     </div>
 
                     <div class="timeline-content">

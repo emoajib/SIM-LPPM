@@ -1,39 +1,39 @@
-<x-slot:title>Catatan Harian PKM: {{ $proposal->title }}</x-slot:title>
-<x-slot:pageTitle>Catatan Harian (Logbook)</x-slot:pageTitle>
+<x-slot:title>Realisasi Anggaran PKM: {{ $proposal->title }}</x-slot:title>
+<x-slot:pageTitle>Realisasi Anggaran (Logbook)</x-slot:pageTitle>
 <x-slot:pageSubtitle>{{ $proposal->title }}</x-slot:pageSubtitle>
 <x-slot:pageActions>
     <a href="{{ route('community-service.daily-note.index') }}" class="btn-outline-secondary btn" wire:navigate.hover>
-        <x-lucide-arrow-left class="me-2 icon" />
+        
         Kembali
     </a>
     <a data-navigate-ignore="true" href="{{ route('financial-reports.export-pdf', ['proposal' => $proposal, 'preview' => 1]) }}" target="_blank" class="btn-outline-primary btn">
-        <x-lucide-eye class="me-2 icon" />
+        
         Pratinjau LPJ
     </a>
     @if ($this->logbookApprovalMode !== 'upload')
         <a data-navigate-ignore="true" href="{{ route('financial-reports.export-pdf', ['proposal' => $proposal, 'download' => 'true']) }}" target="_blank" class="btn-outline-success btn">
-            <x-lucide-download class="me-2 icon" />
+            
             Unduh LPJ
         </a>
     @endif
     @if ($proposal->logbook_approved_at)
         <span class="badge bg-success">
-            <x-lucide-check-circle class="me-1 icon icon-inline" /> Telah Disetujui LPPM
+             Telah Disetujui LPPM
         </span>
     @elseif ($proposal->logbook_rejection_notes)
         <span class="badge bg-warning">
-            <x-lucide-rotate-ccw class="me-1 icon icon-inline" /> Dikembalikan LPPM
+             Dikembalikan LPPM
         </span>
     @elseif ($this->logbookApprovalMode !== 'upload' && $this->canApprove($proposal) && $proposal->logbook_signed_at)
         <button type="button" class="btn-success btn" x-data @click="if(confirm('Apakah Anda sebagai Kepala LPPM memvalidasi kebenaran catatan harian dan laporan keuangan ini?')) { Livewire.dispatch('approve-logbook') }">
-            <x-lucide-shield-check class="me-2 icon" />
+            
             Validasi Kepala LPPM
         </button>
     @elseif ($proposal->logbook_signed_at && $this->logbookApprovalMode !== 'upload')
         <span class="badge bg-warning">Menunggu Validasi LPPM</span>
     @elseif ($this->logbookApprovalMode !== 'upload' && $this->canManage($proposal))
         <button type="button" class="btn-primary btn" x-data @click="if(confirm('Apakah Anda yakin ingin menandatangani logbook dan laporan keuangan ini secara digital? Tanda tangan ini menyatakan keabsahan seluruh aktivitas harian beserta laporannya.')) { Livewire.dispatch('sign-logbook') }">
-            <x-lucide-check-square class="me-2 icon" />
+            
             Tandatangani & Unduh LPJ
         </button>
     @endif
@@ -46,7 +46,7 @@
         <div class="alert alert-warning" role="alert">
             <div class="d-flex">
                 <div>
-                    <x-lucide-rotate-ccw class="icon alert-icon" />
+                    
                 </div>
                 <div class="w-100">
                     <h4 class="alert-title">LPJ Dikembalikan untuk Diperbaiki</h4>
@@ -62,10 +62,10 @@
     <div class="alert alert-info" role="alert">
         <div class="d-flex">
             <div>
-                <x-lucide-info class="icon alert-icon" />
+                
             </div>
             <div>
-                <h4 class="alert-title">Informasi Catatan Harian</h4>
+                <h4 class="alert-title">Informasi Realisasi Anggaran</h4>
                 <div class="text-secondary">
                     Gunakan fitur ini untuk mencatat aktivitas harian pengabdian masyarakat Anda sebagai bukti pelaksanaan kegiatan dan pemantauan progres pengabdian.
                     <div class="mt-1 small">
@@ -83,7 +83,7 @@
             <div class="p-3 border-bottom d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center">
                     <span class="bg-primary-lt p-2 rounded me-3">
-                        <x-lucide-calculator class="icon text-primary icon-md" />
+                        
                     </span>
                     <div>
                         <div class="text-secondary small fw-medium">Total RAB Disetujui</div>
@@ -137,7 +137,7 @@
                                 <td class="ps-3 fw-medium text-secondary">
                                     <div class="d-flex align-items-center">
                                        <span class="bg-blue-lt me-2 p-1 rounded-1">
-                                           <x-lucide-tag class="icon" style="width: 1rem; height: 1rem;" />
+                                           
                                        </span>
                                        {{ $group->name }}
                                     </div>
@@ -158,7 +158,7 @@
                                         <button type="button" wire:click="prefillFromBudgetGroup({{ $group->id }})"
                                             class="btn btn-sm btn-outline-primary" title="Buat catatan dari sisa kelompok ini"
                                             @disabled($groupSisa <= 0)>
-                                            <x-lucide-copy class="icon icon-sm me-1" /> Salin
+                                             Salin
                                         </button>
                                     </td>
                                 @endif
@@ -178,7 +178,7 @@
             @if ($this->canManage($proposal))
                 <div class="card-actions">
                     <button wire:click="create" class="btn btn-primary">
-                        <x-lucide-plus class="me-2 icon" />
+                        
                         Tambah Catatan
                     </button>
                 </div>
@@ -207,8 +207,7 @@
                                 <div class="fw-bold">{{ $note->activity_description }}</div>
                                 @if ($note->notes)
                                     <small class="d-block mt-1 text-muted italic">
-                                        <x-lucide-info class="icon-inline me-1 icon"
-                                            style="width: 12px; height: 12px;" />
+                                        
                                         {{ $note->notes }}
                                     </small>
                                 @endif
@@ -250,7 +249,7 @@
                                                         @click.prevent="window.ImagePreviewModal.show('image-preview-modal', $el.dataset.url)"
                                                         class="text-decoration-none text-truncate"
                                                         style="max-width: 150px;" title="{{ $media->file_name }}">
-                                                        <x-lucide-image class="icon-inline me-1 text-muted icon" />
+                                                        
                                                         <small>{{ $media->file_name }}</small>
                                                     </a>
                                                 @else
@@ -258,7 +257,7 @@
                                                         download="{{ $media->file_name ?? $media->name ?? 'download' }}"
                                                         class="text-decoration-none text-truncate" data-navigate-ignore="true"
                                                         style="max-width: 150px;" title="{{ $media->file_name }}">
-                                                        <x-lucide-file-text class="icon-inline me-1 text-muted icon" />
+                                                        
                                                         <small>{{ $media->file_name }}</small>
                                                     </a>
                                                 @endif
@@ -279,7 +278,7 @@
                                         <div class="dropdown-menu dropdown-menu-end">
                                             <a class="dropdown-item" href="#"
                                                 wire:click.prevent="edit('{{ $note->id }}')">
-                                                <x-lucide-pencil class="me-2 icon" />
+                                                
                                                 Edit
                                             </a>
                                             <a class="text-danger dropdown-item" href="#"
@@ -396,7 +395,7 @@
                         {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
                         <div class="alert alert-info py-2 px-3 mb-2 rounded border-info-subtle" style="background-color: #f0f7ff;">
                             <div class="d-flex align-items-start gap-2">
-                                <x-lucide-info class="icon text-primary flex-shrink-0 mt-1" style="width: 16px; height: 16px;" />
+                                
                                 <div class="text-secondary" style="font-size: 0.8rem; line-height: 1.4;">
                                     <strong>Disarankan file foto format JPG atau PNG:</strong> Berkas foto akan langsung disematkan & tampil rapi di lembar aktivitas kegiatan. Jika mengunggah file <strong>PDF</strong>, berkas akan terlampir di akhir halaman dokumen laporan.
                                 </div>
@@ -437,7 +436,7 @@
                                                                 class="rounded object-cover"
                                                                 style="width: 40px; height: 40px;">
                                                         @else
-                                                            <x-lucide-file class="text-muted icon" />
+                                                            
                                                         @endif
                                                         <div class="text-truncate small"
                                                             title="{{ $file->getClientOriginalName() }}">
@@ -454,7 +453,7 @@
                                                         wire:confirm="Batalkan upload file ini?"
                                                         class="btn btn-icon btn-sm btn-ghost-danger"
                                                         title="Hapus file">
-                                                        <x-lucide-x class="icon" />
+                                                        
                                                     </button>
                                                 </div>
                                             </div>
@@ -488,7 +487,7 @@
                                                         @else
                                                             @php $signedUrl = \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]); @endphp
                                                             <a href="{{ $signedUrl }}" target="_blank" download="{{ $media->file_name ?? $media->name ?? 'download' }}">
-                                                                <x-lucide-file class="text-muted icon" />
+                                                                
                                                             </a>
                                                         @endif
                                                         <div class="text-truncate small"
@@ -506,7 +505,7 @@
                                                         wire:confirm="Hapus file ini?"
                                                         class="btn btn-icon btn-sm btn-ghost-danger"
                                                         title="Hapus file">
-                                                        <x-lucide-x class="icon" />
+                                                        
                                                     </button>
                                                 </div>
                                             </div>
@@ -518,7 +517,7 @@
 
                         @if (!$evidence && (!$editingId || ($editingNote && $editingNote->media->isEmpty())))
                             <div class="py-5 text-muted text-center">
-                                <x-lucide-file-up class="opacity-50 mb-2 icon icon-lg" />
+                                
                                 <div class="small">Belum ada file yang dipilih/diupload</div>
                             </div>
                         @endif
@@ -532,7 +531,7 @@
                     Batal
                 </button>
                 <button type="submit" class="ms-auto btn btn-primary">
-                    <x-lucide-save class="me-2 icon" />
+                    
                     Simpan
                 </button>
             </div>

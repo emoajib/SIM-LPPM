@@ -23,8 +23,8 @@ class ProfileForm extends Component
     use HasToast, WithFileUploads;
 
     public string $name = '';
-
     public string $email = '';
+    public string $whatsapp_number = '';
 
     public $photo;
 
@@ -79,6 +79,7 @@ class ProfileForm extends Component
         // Load basic user data
         $this->name = $user->name;
         $this->email = $user->email;
+        $this->whatsapp_number = $user->whatsapp_number ?? '';
 
         // Load identity data
         if ($user->identity) {
@@ -189,6 +190,7 @@ class ProfileForm extends Component
                 'max:255',
                 Rule::unique(User::class)->ignore($user->id),
             ],
+            'whatsapp_number' => ['nullable', 'string', 'max:30'],
             'identity_id' => ['required', 'string', 'max:255'],
             'type' => [
                 Auth::user()->hasAnyRole(['superadmin', 'admin lppm', 'reviewer']) ? 'nullable' : 'required',
@@ -217,6 +219,7 @@ class ProfileForm extends Component
         $user->fill([
             'name' => $validated['name'],
             'email' => $validated['email'],
+            'whatsapp_number' => $validated['whatsapp_number'],
         ]);
 
         if ($user->isDirty('email')) {
@@ -341,6 +344,7 @@ class ProfileForm extends Component
         $user = Auth::user();
         $this->name = $user->name;
         $this->email = $user->email;
+        $this->whatsapp_number = $user->whatsapp_number ?? '';
 
         if ($user->identity) {
             $this->identity_id = $user->identity->identity_id;

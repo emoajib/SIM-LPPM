@@ -1,11 +1,11 @@
 <div>
 <div class="card mt-3">
     <div class="card-header">
-        <h3 class="card-title"><x-lucide-coins class="icon me-2" />Amandemen RAB</h3>
+        <h3 class="card-title">Amandemen RAB</h3>
         <div class="card-actions">
             @if ($canManage && ! $pendingExists && ! $proposal->logbook_approved_at)
                 <button type="button" wire:click="openRequestModal" class="btn btn-sm btn-outline-primary">
-                    <x-lucide-plus class="icon icon-sm me-1" /> Ajukan Amandemen
+                     Ajukan Amandemen
                 </button>
             @endif
         </div>
@@ -105,7 +105,7 @@
                 </div>
             </div>
         @endforeach
-        <button type="button" wire:click="addItemRow" class="btn btn-sm btn-outline-primary"><x-lucide-plus class="icon icon-sm me-1" /> Tambah Baris</button>
+        <button type="button" wire:click="addItemRow" class="btn btn-sm btn-outline-primary"> Tambah Baris</button>
         <div class="mt-3">
             <label class="form-label required">Alasan Amandemen (min. 10 karakter)</label>
             <textarea wire:model="reason" rows="3" class="form-control @error('reason') is-invalid @enderror"></textarea>

@@ -11,17 +11,17 @@
             @endphp
             <a href="{{ route('reports.partner.pdf', array_merge($exportParams, ['preview' => 1])) }}"
                 class="btn btn-outline-info shadow-sm" target="_blank" title="Tinjau PDF">
-                <i class="ti ti-eye me-2"></i>
+                
                 <span>{{ __('Tinjau PDF') }}</span>
             </a>
             <a href="{{ route('reports.partner.excel', $exportParams) }}" class="btn btn-outline-success shadow-sm"
                 data-navigate-ignore="true" title="Unduh Excel">
-                <i class="ti ti-table me-2"></i>
+                
                 <span>{{ __('Unduh Excel') }}</span>
             </a>
             <a href="{{ route('reports.partner.pdf', $exportParams) }}" class="btn btn-outline-danger shadow-sm"
                 data-navigate-ignore="true" title="Unduh PDF">
-                <i class="ti ti-file-type-pdf me-2"></i>
+                
                 <span>{{ __('Unduh PDF') }}</span>
             </a>
         </div>
@@ -38,7 +38,7 @@
                     <div class="col-md-4">
                         <div class="input-icon">
                             <span class="input-icon-addon">
-                                <i class="ti ti-search text-primary"></i>
+                                
                             </span>
                             <input type="text" wire:model.live.debounce.300ms="search"
                                 class="form-control" placeholder="Nama, institusi, atau email...">
@@ -63,7 +63,7 @@
                     {{-- ⑤ Reset button selalu tampil di col-auto ms-auto (konsisten dengan research.blade.php) --}}
                     <div class="col-auto ms-auto">
                         <button class="btn btn-icon btn-white shadow-sm" wire:click="resetFilters" title="Reset Filter">
-                            <i class="ti ti-refresh text-secondary"></i>
+                            
                         </button>
                     </div>
                 </div>
@@ -101,14 +101,14 @@
                         <!-- Draft Preview Icon (Support System) -->
                         <a href="{{ route('reports.partner.pdf', array_merge(['search' => $search, 'typeFilter' => $typeFilter, 'periodFilter' => $periodFilter], ['preview' => 1])) }}"
                             target="_blank" class="btn btn-outline-primary shadow-sm" title="Tinjau Draft PDF">
-                            <i class="ti ti-eye me-2"></i> Tinjau PDF
+                             Tinjau PDF
                         </a>
 
                         @if(active_role_is('kepala lppm') && (!$institutionalReport || in_array($institutionalReport->status, [\App\Enums\InstitutionalReportStatus::DRAFT, \App\Enums\InstitutionalReportStatus::REJECTED])))
                             <button class="btn btn-primary shadow-sm"
                                 wire:click="submitInstitutionalReport('partner', {{ $this->institutionalYear() }}, {{ json_encode(['search' => $search, 'typeFilter' => $typeFilter, 'periodFilter' => $periodFilter]) }})"
                                 wire:loading.attr="disabled">
-                                <i class="ti ti-send me-2"></i>
+                                
                                 Ajukan ke Rektor
                             </button>
                         @endif
@@ -116,13 +116,13 @@
                         @if(active_role_is('rektor') && ($institutionalReport?->status === \App\Enums\InstitutionalReportStatus::SUBMITTED))
                             <button class="btn btn-outline-danger shadow-sm" data-bs-toggle="modal"
                                 data-bs-target="#modal-reject-institutional">
-                                <i class="ti ti-x me-2"></i>
+                                
                                 Minta Perbaikan
                             </button>
                             <button class="btn btn-success shadow-sm"
                                 wire:click="approveInstitutionalReport('partner', {{ $this->institutionalYear() }})"
                                 wire:loading.attr="disabled">
-                                <i class="ti ti-circle-check me-2"></i>
+                                
                                 Setujui &amp; Tanda Tangani
                             </button>
                         @endif
@@ -143,11 +143,11 @@
                             {{-- ④ Fix typo icon: 'ti-chart-dotsfs-2' → 'ti-chart-dots fs-2' --}}
                             {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
                             @switch($card['icon'])
-                                @case('handshake')       <i class="ti ti-users-group fs-2"></i>       @break
-                                @case('file-check')      <i class="ti ti-file-certificate fs-2"></i>  @break
-                                @case('users')           <i class="ti ti-user-check fs-2"></i>        @break
-                                @case('currency-dollar') <i class="ti ti-coins fs-2"></i>             @break
-                                @default                 <i class="ti ti-chart-dots fs-2"></i>
+                                @case('handshake')              @break
+                                @case('file-check')        @break
+                                @case('users')                   @break
+                                @case('currency-dollar')              @break
+                                @default                 
                             @endswitch
                         </div>
                         <div>
@@ -170,7 +170,7 @@
             <div class="card">
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h3 class="card-title mb-0">
-                        <x-lucide-handshake class="icon me-2" />
+                        
                         Daftar Mitra Kerjasama
                     </h3>
                     <span class="badge bg-blue-lt">{{ $partners->total() }} mitra</span>
@@ -200,7 +200,7 @@
                                         @endif
                                         @if($partner->email)
                                             <div class="text-muted small">
-                                                <x-lucide-mail class="icon icon-sm me-1" />
+                                                
                                                 {{ $partner->email }}
                                             </div>
                                         @endif
@@ -235,7 +235,7 @@
                                             <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
                                                 download="{{ $media->file_name ?? $media->name ?? 'download' }}" target="_blank"
                                                 class="badge bg-green-lt text-green text-decoration-none" title="Lihat MOU/PKS">
-                                                <x-lucide-file-check class="icon icon-sm me-1" />
+                                                
                                                 Ada
                                             </a>
                                         @else
@@ -255,13 +255,13 @@
                                                     target="_blank"
                                                     class="badge bg-green-lt text-green text-decoration-none" 
                                                     title="Unduh/Lihat Surat Kesediaan ({{ $media->name }})">
-                                                    <x-lucide-check-circle class="icon icon-sm me-1" />
+                                                    
                                                     Ada
                                                 </a>
                                             @else
                                                 <div class="dropdown">
                                                     <a href="#" class="badge bg-green-lt text-green text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                                        <x-lucide-check-circle class="icon icon-sm me-1" />
+                                                        
                                                         Ada ({{ $commitmentLetters->count() }})
                                                     </a>
                                                     <div class="dropdown-menu dropdown-menu-end" style="max-width: 250px;">
@@ -279,7 +279,7 @@
                                                             @endphp
                                                             <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
                                                                 target="_blank" class="dropdown-item text-wrap text-sm py-1">
-                                                                <i class="ti ti-file-text me-1 text-secondary"></i>
+                                                                
                                                                 {{ $proposalTitle }}
                                                             </a>
                                                         @endforeach
@@ -297,14 +297,14 @@
                                             wire:click="selectPartner('{{ $partner->id }}')"
                                             class="btn btn-sm {{ $selectedPartnerId === $partner->id ? 'btn-primary' : 'btn-outline-primary' }}"
                                             title="Lihat Detail Proposal">
-                                            <x-lucide-eye class="icon" />
+                                            
                                         </button>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
                                     <td colspan="8" class="text-center text-muted py-4">
-                                        <x-lucide-search class="icon mb-2" />
+                                        
                                         <div>Tidak ada mitra yang cocok dengan filter.</div>
                                     </td>
                                 </tr>
@@ -334,14 +334,14 @@
                                 <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
                                     download="{{ $media->file_name ?? $media->name ?? 'download' }}" target="_blank"
                                     class="btn btn-sm btn-outline-primary" title="Unduh MOU/PKS">
-                                    <x-lucide-file-text class="icon" /> MOU/PKS
+                                     MOU/PKS
                                 </a>
                             @endif
                             {{-- ⑦ Tambah title tooltip pada tombol tutup panel --}}
                             <button type="button" wire:click="$set('selectedPartnerId', null)"
                                 class="btn btn-sm btn-ghost-secondary"
                                 title="Tutup panel detail">
-                                <x-lucide-x class="icon" />
+                                
                             </button>
                         </div>
                     </div>
@@ -413,7 +413,7 @@
                                                        target="_blank"
                                                        class="btn btn-sm btn-icon btn-ghost-success ms-auto"
                                                        title="Unduh Surat Kesediaan Mitra (Proposal Ini)">
-                                                        <x-lucide-file-check class="icon icon-sm" />
+                                                        
                                                     </a>
                                                 @endif
                                             @endif
@@ -445,7 +445,7 @@
                             </div>
                         @empty
                             <div class="list-group-item text-center text-muted py-4">
-                                <x-lucide-inbox class="icon mb-2" />
+                                
                                 <div>Belum ada proposal terkait mitra ini.</div>
                             </div>
                         @endforelse

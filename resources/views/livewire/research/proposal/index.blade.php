@@ -40,24 +40,24 @@
 
             @if ($canCreate)
                 <a href="{{ route('research.proposal.create') }}" wire:navigate.hover class="btn btn-primary">
-                    <x-lucide-plus class="icon" />
+                    
                     Usulan Penelitian Baru
                 </a>
             @elseif ($isQuotaFull)
                 <button type="button" class="btn btn-secondary" disabled title="{{ $this->quotaTooltip }}">
-                    <x-lucide-plus class="icon" />
+                    
                     Kuota Terbatas
                 </button>
             @else
                 <button class="btn btn-secondary" disabled title="{{ $lockReason }}">
-                    <x-lucide-lock class="icon" />
+                    
                     Usulan Dikunci
                 </button>
             @endif
         @endif
         @if (auth()->user()->activeHasRole('dosen'))
             <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#modal-eligibility-info">
-                <x-lucide-info class="icon" />
+                
                 Info Eligibilitas
             </button>
             <x-lecturer-eligibility-modal type="research" />
@@ -104,14 +104,7 @@
                 x-show="state !== 'hidden'">
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                     <div class="d-flex align-items-center gap-2">
-                        <i class="ti"
-                            :class="{
-                                'ti-clock': state === 'waiting',
-                                'ti-clock-hour-4': state === 'active' && !isUrgent,
-                                'ti-alert-triangle': state === 'active' && isUrgent,
-                                'ti-clock-off': state === 'grace',
-                                'ti-circle-x': state === 'closed'
-                            }"></i>
+                        
                         <span class="fw-semibold">
                             <span x-show="state === 'waiting'">Pendaftaran dibuka dalam:</span>
                             <span x-show="state === 'active' && !isUrgent">Sisa waktu pengajuan:</span>
@@ -143,7 +136,7 @@
         role="alert">
         <div class="d-flex">
             <div>
-                <x-lucide-info class="me-2 alert-icon icon" />
+                
             </div>
             <div>
                 @if ($isKepala)
@@ -172,7 +165,7 @@
     <div class="mb-3">
         <button class="btn btn-ghost-info btn-sm" type="button" data-bs-toggle="collapse"
             data-bs-target="#researchIndexInfo" aria-expanded="false" aria-controls="researchIndexInfo">
-            <x-lucide-info class="me-1 icon" />
+            
             Bantuan Penggunaan
         </button>
     </div>
@@ -185,7 +178,7 @@
                     <div class="align-items-center row">
                         <div class="col-auto">
                             <span class="bg-primary text-white avatar">
-                                <x-lucide-list class="icon" />
+                                
                             </span>
                         </div>
                         <div class="col">
@@ -202,7 +195,7 @@
                     <div class="align-items-center row">
                         <div class="col-auto">
                             <span class="bg-secondary text-white avatar">
-                                <x-lucide-file-text class="icon" />
+                                
                             </span>
                         </div>
                         <div class="col">
@@ -219,7 +212,7 @@
                     <div class="align-items-center row">
                         <div class="col-auto">
                             <span class="bg-info text-white avatar">
-                                <x-lucide-send class="icon" />
+                                
                             </span>
                         </div>
                         <div class="col">
@@ -237,7 +230,7 @@
                     <div class="align-items-center row">
                         <div class="col-auto">
                             <span class="bg-success text-white avatar">
-                                <x-lucide-check-circle class="icon" />
+                                
                             </span>
                         </div>
                         <div class="col">
@@ -254,7 +247,7 @@
                     <div class="align-items-center row">
                         <div class="col-auto">
                             <span class="bg-danger text-white avatar">
-                                <x-lucide-x-circle class="icon" />
+                                
                             </span>
                         </div>
                         <div class="col">
@@ -271,7 +264,7 @@
                     <div class="align-items-center row">
                         <div class="col-auto">
                             <span class="bg-azure text-white avatar">
-                                <x-lucide-award class="icon" />
+                                
                             </span>
                         </div>
                         <div class="col">
@@ -293,7 +286,7 @@
                     <button class="nav-link @if ($roleFilter === 'ketua') active @endif"
                         wire:click="$set('roleFilter', 'ketua')" role="tab"
                         aria-selected="@if ($roleFilter === 'ketua') true @else false @endif">
-                        <x-lucide-crown class="me-2 icon" />
+                        
                         Sebagai Ketua
                     </button>
                 </li>
@@ -301,7 +294,7 @@
                     <button class="nav-link @if ($roleFilter === 'anggota') active @endif"
                         wire:click="$set('roleFilter', 'anggota')" role="tab"
                         aria-selected="@if ($roleFilter === 'anggota') true @else false @endif">
-                        <x-lucide-users class="me-2 icon" />
+                        
                         Sebagai Anggota
                         @if($this->pendingInvitationsCount > 0)
                             <span class="badge bg-red ms-2">{{ $this->pendingInvitationsCount }}</span>
@@ -347,7 +340,7 @@
                         <!-- Reset Button -->
                         <div class="col-md-3">
                             <button type="button" class="btn-outline-secondary w-100 btn" wire:click="resetFilters">
-                                <x-lucide-rotate-ccw class="icon" />
+                                
                                 Reset
                             </button>
                         </div>
@@ -400,7 +393,7 @@
                                         <div class="flex-nowrap btn-list">
                                             <a href="{{ route('research.proposal.show', $proposal) }}"
                                                 class="btn btn-icon btn-ghost-primary" title="Lihat" wire:navigate.hover>
-                                                <x-lucide-eye class="icon" />
+                                                
                                             </a>
                                         </div>
                                     </td>
@@ -409,7 +402,7 @@
                                 <tr>
                                     <td colspan="4" class="py-8 text-center">
                                         <div class="mb-3">
-                                            <x-lucide-inbox class="text-secondary icon icon-lg" />
+                                            
                                         </div>
                                         <p class="text-secondary">Tidak ada data penelitian yang ditemukan.</p>
                                     </td>

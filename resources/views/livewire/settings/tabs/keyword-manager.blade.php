@@ -5,7 +5,7 @@
             <h3 class="card-title">Kata Kunci</h3>
             <button type="button" class="btn btn-primary" wire:click='create' data-bs-toggle="modal"
                 data-bs-target="#modal-keyword">
-                <x-lucide-plus class="icon" />
+                
                 Tambah Kata Kunci
             </button>
         </div>

@@ -30,7 +30,7 @@
                 @if ($isApprovalDisabled)
                     <div class="alert alert-warning mb-3">
                         <div class="d-flex">
-                            <div><x-lucide-alert-triangle class="icon alert-icon" /></div>
+                            <div></div>
                             <div>
                                 <h4 class="alert-title">Menunggu Validasi Prodi</h4>
                                 <div class="text-secondary">Persetujuan Dekan terkunci karena proposal ini belum divalidasi kesesuaian roadmap/pohon penelitiannya oleh Kepala Program Studi.</div>
@@ -45,17 +45,17 @@
                 <div class="gap-2 btn-list">
                     <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#approvalModal"
                         wire:click="$set('approvalDecision', 'approved')" @if($isApprovalDisabled) disabled @endif>
-                        <x-lucide-check class="icon" />
+                        
                         Setujui Proposal
                     </button>
                     <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#approvalModal"
                         wire:click="$set('approvalDecision', 'need_fix')">
-                        <x-lucide-alert-triangle class="icon" />
+                        
                         Perlu Perbaikan
                     </button>
                     <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#approvalModal"
                         wire:click="$set('approvalDecision', 'rejected')">
-                        <x-lucide-x class="icon" />
+                        
                         Tolak Proposal
                     </button>
                 </div>
@@ -108,12 +108,12 @@
                         <div class="d-flex gap-2 mb-3">
                             <button type="button" class="btn btn-success" data-bs-toggle="modal"
                                 data-bs-target="#acceptMemberModal">
-                                <x-lucide-check class="icon" />
+                                
                                 Terima Undangan
                             </button>
                             <button type="button" class="btn btn-danger" data-bs-toggle="modal"
                                 data-bs-target="#rejectMemberModal">
-                                <x-lucide-x class="icon" />
+                                
                                 Tolak Undangan
                             </button>
                         </div>

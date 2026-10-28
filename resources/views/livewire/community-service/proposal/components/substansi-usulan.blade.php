@@ -19,14 +19,14 @@
                         <div class="mb-0 alert alert-info">
                             <div class="d-flex align-items-center justify-content-between">
                                 <div>
-                                    <x-lucide-file-text class="me-2 text-primary icon" />
+                                    
                                     <strong>{{ $media->name }}</strong>
                                     <small class="ms-2 text-muted">({{ $media->human_readable_size }})</small>
                                 </div>
                                 <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
                                     download="{{ $media->file_name ?? $media->name ?? 'download' }}" target="_blank"
                                     class="btn-outline-primary btn btn-sm">
-                                    <x-lucide-download class="icon" />
+                                    
                                     Download
                                 </a>
                             </div>

@@ -16,20 +16,20 @@
             ];
         @endphp
         <a href="{{ route('reports.output.pdf', array_merge($exportParams, ['preview' => 1])) }}"
-            class="btn btn-outline-info shadow-sm" target="_blank" title="Tinjau PDF">
-            <i class="ti ti-eye me-2"></i>
-            <span>{{ __('Tinjau PDF') }}</span>
-        </a>
-        <a href="{{ route('reports.output.excel', $exportParams) }}" class="btn btn-outline-success shadow-sm" 
-            data-navigate-ignore="true" title="Unduh Excel">
-            <i class="ti ti-table me-2"></i>
-            <span>{{ __('Unduh Excel') }}</span>
-        </a>
-        <a href="{{ route('reports.output.pdf', $exportParams) }}" class="btn btn-outline-danger shadow-sm" 
-            data-navigate-ignore="true" title="Unduh PDF">
-            <i class="ti ti-file-type-pdf me-2"></i>
-            <span>{{ __('Unduh PDF') }}</span>
-        </a>
+                class="btn btn-outline-info shadow-sm" target="_blank" title="Tinjau PDF">
+                
+                <span class="d-none d-md-inline">{{ __('Tinjau PDF') }}</span>
+            </a>
+            <a href="{{ route('reports.output.excel', $exportParams) }}" class="btn btn-outline-success shadow-sm" 
+                data-navigate-ignore="true" title="Unduh Excel">
+                
+                <span class="d-none d-md-inline">{{ __('Unduh Excel') }}</span>
+            </a>
+            <a href="{{ route('reports.output.pdf', $exportParams) }}" class="btn btn-outline-danger shadow-sm" 
+                data-navigate-ignore="true" title="Unduh PDF">
+                
+                <span class="d-none d-md-inline">{{ __('Unduh PDF') }}</span>
+            </a>
     </div>
 </x-slot:pageActions>
 
@@ -76,13 +76,13 @@
                     <!-- Draft Preview Icon (Support System) -->
                     <a href="{{ route('reports.output.pdf', array_merge($currentFilters, ['preview' => 1])) }}" 
                        target="_blank" class="btn btn-outline-primary shadow-sm" title="Tinjau Draft PDF">
-                        <i class="ti ti-eye me-2"></i> Tinjau PDF
+                         Tinjau PDF
                     </a>
 
                     @if(active_role_is('kepala lppm') && (!$institutionalReport || in_array($institutionalReport->status, [\App\Enums\InstitutionalReportStatus::DRAFT, \App\Enums\InstitutionalReportStatus::REJECTED])))
                         <button class="btn btn-primary shadow-sm" wire:click="submitInstitutionalReport('output', {{ $this->institutionalYear() }}, {{ json_encode($currentFilters) }})"
                             wire:loading.attr="disabled">
-                            <i class="ti ti-send me-2"></i>
+                            
                             Ajukan ke Rektor
                         </button>
                     @endif
@@ -90,12 +90,12 @@
                     @if(active_role_is('rektor') && ($institutionalReport?->status === \App\Enums\InstitutionalReportStatus::SUBMITTED))
                         <button class="btn btn-outline-danger shadow-sm" data-bs-toggle="modal"
                             data-bs-target="#modal-reject-institutional">
-                            <i class="ti ti-x me-2"></i>
+                            
                             Minta Perbaikan
                         </button>
                         <button class="btn btn-success shadow-sm" wire:click="approveInstitutionalReport('output', {{ $this->institutionalYear() }})"
                             wire:loading.attr="disabled">
-                            <i class="ti ti-circle-check me-2"></i>
+                            
                             Setujui & Tanda Tangani
                         </button>
                     @endif
@@ -189,14 +189,14 @@
                     <li class="nav-item" role="presentation">
                         <button wire:click="setTab('research')"
                             class="nav-link {{ $activeTab === 'research' ? 'active' : '' }}" type="button">
-                            <x-lucide-puzzle class="icon me-1" />
+                            
                             {{ __('Penelitian') }}
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button wire:click="setTab('community-service')"
                             class="nav-link {{ $activeTab === 'community-service' ? 'active' : '' }}" type="button">
-                            <x-lucide-gift class="icon me-1" />
+                            
                             {{ __('Pengabdian') }}
                         </button>
                     </li>
@@ -209,7 +209,7 @@
                     <div class="col-md-3">
                         <div class="input-icon">
                             <span class="input-icon-addon">
-                                <i class="ti ti-search text-primary"></i>
+                                
                             </span>
                             <input type="text" wire:model.live.debounce.500ms="search" class="form-control"
                                 placeholder="Cari judul, ISBN, produk...">
@@ -249,7 +249,7 @@
                     </div>
                     <div class="col-auto ms-auto">
                         <button class="btn btn-icon btn-white shadow-sm" wire:click="resetFilters" title="Reset">
-                            <i class="ti ti-refresh text-secondary"></i>
+                            
                         </button>
                     </div>
                 </div>
@@ -269,10 +269,10 @@
                                         {{ $proposal->title }}
                                     </h3>
                                     <div class="text-secondary small d-flex align-items-center">
-                                        <x-lucide-user class="icon icon-inline me-1" />
+                                        
                                         <span>{{ $proposal->user?->name ?? '-' }}</span>
                                         <span class="mx-2 text-muted">|</span>
-                                        <x-lucide-calendar class="icon icon-inline me-1" />
+                                        
                                         <span>Tahun Akademik {{ $proposal->academic_year ?? $proposal->start_year }}</span>
                                     </div>
                                 </div>
@@ -350,7 +350,7 @@
                                                         <button type="button" wire:click="viewMandatoryOutput('{{ $output->id }}')"
                                                             wire:loading.attr="disabled" class="btn btn-sm btn-icon btn-outline-info"
                                                             title="Lihat Detail">
-                                                            <x-lucide-eye class="icon" />
+                                                            
                                                         </button>
                                                     </td>
                                                 </tr>
@@ -402,7 +402,7 @@
                                                         <button type="button" wire:click="viewAdditionalOutput('{{ $output->id }}')"
                                                             wire:loading.attr="disabled" class="btn btn-sm btn-icon btn-outline-info"
                                                             title="Lihat Detail">
-                                                            <x-lucide-eye class="icon" />
+                                                            
                                                         </button>
                                                     </td>
                                                 </tr>
@@ -416,7 +416,7 @@
                 @empty
                     <div class="empty">
                         <div class="empty-icon">
-                            <x-lucide-inbox class="icon" />
+                            
                         </div>
                         <p class="empty-title">{{ __('Tidak ada data luaran') }}</p>
                         <p class="empty-subtitle text-muted">
@@ -536,7 +536,7 @@
                             <label class="form-label">Dokumen</label>
                             <div class="bg-surface-secondary rounded border p-2">
                                 <div class="d-flex align-items-center">
-                                    <x-lucide-file-text class="text-primary icon me-2" />
+                                    
                                     <div class="flex-fill">
                                         <small>{{ $media->name }}</small><br>
                                         <small class="text-muted">({{ $media->human_readable_size }})</small>
@@ -544,7 +544,7 @@
                                     <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
                                         download="{{ $media->file_name ?? $media->name ?? 'download' }}"
                                         target="_blank" class="btn btn-sm btn-primary">
-                                        <x-lucide-download class="icon" /> Download
+                                         Download
                                     </a>
                                 </div>
                             </div>
@@ -648,7 +648,7 @@
                             <label class="form-label">Dokumen</label>
                             <div class="bg-surface-secondary rounded border p-2">
                                 <div class="d-flex align-items-center">
-                                    <x-lucide-file-text class="text-primary icon me-2" />
+                                    
                                     <div class="flex-fill">
                                         <small>{{ $media->name }}</small><br>
                                         <small class="text-muted">({{ $media->human_readable_size }})</small>
@@ -656,7 +656,7 @@
                                     <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
                                         download="{{ $media->file_name ?? $media->name ?? 'download' }}"
                                         target="_blank" class="btn btn-sm btn-primary">
-                                        <x-lucide-download class="icon" /> Download
+                                         Download
                                     </a>
                                 </div>
                             </div>

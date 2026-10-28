@@ -14,17 +14,17 @@
                 <div class="col-auto ms-auto d-flex gap-2">
                     <a href="{{ route('reports.reviewer.pdf', ['period' => $yearFilter, 'semester' => $semesterFilter, 'type' => $typeFilter, 'search' => $search, 'preview' => 1]) }}" 
                        class="btn btn-outline-danger d-flex align-items-center gap-1 shadow-sm" target="_blank">
-                        <i class="ti ti-eye fs-2"></i>
+                        
                         <span>Tinjau PDF</span>
                     </a>
                     <a href="{{ route('reports.reviewer.pdf', ['period' => $yearFilter, 'semester' => $semesterFilter, 'type' => $typeFilter, 'search' => $search]) }}" 
                        class="btn btn-danger d-flex align-items-center gap-1 shadow-sm" target="_blank">
-                        <i class="ti ti-file-text fs-2"></i>
+                        
                         <span>Unduh PDF</span>
                     </a>
                     <a href="{{ route('reports.reviewer.excel', ['period' => $yearFilter, 'semester' => $semesterFilter, 'type' => $typeFilter, 'search' => $search]) }}" 
                        class="btn btn-success d-flex align-items-center gap-1 shadow-sm">
-                        <i class="ti ti-file-spreadsheet fs-2"></i>
+                        
                         <span>Ekspor Excel</span>
                     </a>
                 </div>
@@ -38,7 +38,7 @@
                         <div class="row align-items-center g-3">
                             <div class="col">
                                 <div class="d-flex align-items-center gap-2">
-                                    <i class="ti ti-info-circle fs-2"></i>
+                                    
                                     <div>
                                         <span class="fw-bold">Status Pelaporan Institutional:</span>
                                         @if($report)
@@ -63,11 +63,11 @@
                                         <button class="btn btn-primary btn-sm d-flex align-items-center gap-1" 
                                                 wire:click="submitToRektor"
                                                 wire:confirm="Anda akan mengajukan laporan penugasan reviewer tahun {{ $yearFilter }} secara formal kepada Rektor. Lanjutkan?">
-                                            <i class="ti ti-send"></i> Ajukan ke Rektor
+                                             Ajukan ke Rektor
                                         </button>
                                     @elseif($report->status->value === 'submitted')
                                         <button class="btn btn-ghost-danger btn-sm" wire:click="resetReport" wire:confirm="Batalkan pengajuan laporan ini?">
-                                            <i class="ti ti-rotate"></i> Reset Pengajuan
+                                             Reset Pengajuan
                                         </button>
                                     @endif
                                 @elseif(active_role_is('rektor') && $report && $report->status->value === 'submitted')
@@ -84,7 +84,7 @@
                                 
                                 @if($report && $report->status->value === 'approved')
                                     <a href="{{ route('reports.monitoring') }}" class="btn btn-ghost-primary btn-sm" wire:navigate>
-                                        <i class="ti ti-search"></i> Cek TTD Barcode
+                                         Cek TTD Barcode
                                     </a>
                                 @endif
                             </div>
@@ -103,7 +103,7 @@
                     <div class="row align-items-center">
                         <div class="col-auto">
                             <span class="bg-primary text-white avatar shadow-sm border-0">
-                                <i class="ti ti-file-description fs-2"></i>
+                                
                             </span>
                         </div>
                         <div class="col">
@@ -120,7 +120,7 @@
                     <div class="row align-items-center">
                         <div class="col-auto">
                             <span class="bg-warning text-white avatar shadow-sm border-0">
-                                <i class="ti ti-user-plus fs-2"></i>
+                                
                             </span>
                         </div>
                         <div class="col">
@@ -137,7 +137,7 @@
                     <div class="row align-items-center">
                         <div class="col-auto">
                             <span class="bg-teal text-white avatar shadow-sm border-0">
-                                <i class="ti ti-chart-pie fs-2"></i>
+                                
                             </span>
                         </div>
                         <div class="col">
@@ -154,7 +154,7 @@
                     <div class="row align-items-center">
                         <div class="col-auto">
                             <span class="bg-purple text-white avatar shadow-sm border-0">
-                                <i class="ti ti-award fs-2"></i>
+                                
                             </span>
                         </div>
                         <div class="col">
@@ -176,19 +176,19 @@
                     <li class="nav-item">
                         <button class="nav-link border-0 px-3 py-2 fw-bold d-flex align-items-center gap-1 {{ $activeTab === 'assignment' ? 'active text-primary bg-light' : 'text-muted' }}" 
                                 wire:click="$set('activeTab', 'assignment')">
-                            <i class="ti ti-user-plus"></i> Ikhtisar Penugasan
+                             Ikhtisar Penugasan
                         </button>
                     </li>
                     <li class="nav-item">
                         <button class="nav-link border-0 px-3 py-2 fw-bold d-flex align-items-center gap-1 {{ $activeTab === 'workload' ? 'active text-primary bg-light' : 'text-muted' }}" 
                                 wire:click="$set('activeTab', 'workload')">
-                            <i class="ti ti-chart-bar"></i> Beban Kerja Reviewer
+                             Beban Kerja Reviewer
                         </button>
                     </li>
                     <li class="nav-item">
                         <button class="nav-link border-0 px-3 py-2 fw-bold d-flex align-items-center gap-1 {{ $activeTab === 'scoring' ? 'active text-primary bg-light' : 'text-muted' }}" 
                                 wire:click="$set('activeTab', 'scoring')">
-                            <i class="ti ti-award"></i> Rekap Nilai Penilaian
+                             Rekap Nilai Penilaian
                         </button>
                     </li>
                 </ul>
@@ -197,7 +197,7 @@
                 <div class="d-flex align-items-center gap-2 flex-grow-1 flex-md-grow-0">
                     <div class="input-icon flex-grow-1">
                         <span class="input-icon-addon">
-                            <i class="ti ti-search text-muted"></i>
+                            
                         </span>
                         <input type="text" class="form-control" placeholder="Cari dosen / judul..." wire:model.live.debounce.350ms="search">
                     </div>
@@ -218,7 +218,7 @@
                     </select>
                     @if ($search || $typeFilter !== 'all')
                         <button class="btn btn-ghost-danger p-2" wire:click="resetFilters" title="Reset filter">
-                            <i class="ti ti-x fs-2"></i>
+                            
                         </button>
                     @endif
                 </div>
@@ -264,11 +264,11 @@
                                     <div class="d-flex flex-column gap-1">
                                         @forelse ($proposal->reviewers as $rev)
                                             <div class="d-flex align-items-center small">
-                                                <i class="ti ti-user-check text-success me-1"></i>
+                                                
                                                 <span class="fw-medium">{{ $rev->user->name }}</span>
                                             </div>
                                         @empty
-                                            <span class="text-danger small fw-medium"><i class="ti ti-alert-triangle me-1"></i>Belum ada reviewer</span>
+                                            <span class="text-danger small fw-medium">Belum ada reviewer</span>
                                         @endforelse
                                     </div>
                                 </td>
@@ -404,7 +404,7 @@
                                     <button class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1 shadow-sm" 
                                             wire:click="selectProposal('{{ $proposal->id }}')" 
                                             data-bs-toggle="modal" data-bs-target="#modal-detail-skor">
-                                        <i class="ti ti-eye"></i> Detail
+                                         Detail
                                     </button>
                                 </td>
                             </tr>
@@ -431,7 +431,7 @@
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content border-0 shadow">
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title fw-bold"><i class="ti ti-award me-1"></i> Rincian Komponen Nilai Kriteria</h5>
+                    <h5 class="modal-title fw-bold"> Rincian Komponen Nilai Kriteria</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" wire:click="selectProposal(null)"></button>
                 </div>
                 <div class="modal-body py-3">
@@ -449,7 +449,7 @@
                             <div class="card border border-light shadow-sm mb-3">
                                 <div class="card-header bg-light py-2">
                                     <h4 class="card-title fw-bold mb-0 text-primary">
-                                        <i class="ti ti-user me-1"></i> Reviewer {{ $index + 1 }}: {{ $reviewer->user->name }}
+                                         Reviewer {{ $index + 1 }}: {{ $reviewer->user->name }}
                                     </h4>
                                     <div class="ms-auto small">
                                         Status: 

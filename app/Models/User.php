@@ -63,6 +63,7 @@ class User extends Authenticatable implements HasMedia
         'name',
         'username',
         'email',
+        'whatsapp_number',
         'password',
         'email_verified_at',
         'last_active_at',

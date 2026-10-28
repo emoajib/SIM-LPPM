@@ -34,7 +34,7 @@
                                     <div class="alert alert-info mb-4" role="alert">
                                         <div class="d-flex">
                                             <div>
-                                                <x-lucide-info class="icon alert-icon" />
+                                                
                                             </div>
                                             <div>
                                                 <h4 class="alert-title">Batasan Anggaran Tahun {{ $currentYear }}</h4>
@@ -62,7 +62,7 @@
                                                     @endif
                                                 </div>
                                                 <small class="text-muted d-block mt-2">
-                                                    <x-lucide-info class="icon icon-sm me-1" />
+                                                    
                                                     Untuk mengubah batasan anggaran, silakan akses <strong>Settings →
                                                         Master Data → Batas Anggaran Tahunan</strong>
                                                 </small>
@@ -73,7 +73,7 @@
                                     <div class="alert alert-warning mb-4" role="alert">
                                         <div class="d-flex">
                                             <div>
-                                                <x-lucide-alert-triangle class="icon alert-icon" />
+                                                
                                             </div>
                                             <div>
                                                 <h4 class="alert-title">Belum Ada Batasan Anggaran</h4>

@@ -4,7 +4,7 @@
 <x-slot:pageActions>
     <div class="btn-list">
         <a href="{{ route('research.proposal-revision.index') }}" class="btn-outline-secondary btn" wire:navigate.hover>
-            <x-lucide-arrow-left class="icon" />
+            
             Kembali
         </a>
     </div>
@@ -31,7 +31,7 @@
         <div class="col-md-12 mb-3">
             <div class="alert alert-important alert-info shadow-sm border-0">
                 <div class="d-flex align-items-center">
-                    <x-lucide-lock class="icon me-2 flex-shrink-0" />
+                    
                     <div>
                         <h4 class="alert-title mb-0">Mode Hanya Lihat (Read-Only)</h4>
                         <div class="text-secondary small mt-1">
@@ -48,7 +48,7 @@
         <div class="col-md-12 mb-3">
             <div class="alert alert-important alert-warning shadow-sm border-0">
                 <div class="d-flex align-items-start">
-                    <x-lucide-message-square class="alert-icon icon me-2 mt-1" />
+                    
                     <div>
                         <h4 class="alert-title fw-bold">Catatan Perbaikan dari Kepala LPPM:</h4>
                         <div class="text-secondary small mt-1" style="white-space: pre-wrap; font-size: 10.5pt; color: #495057 !important;">
@@ -67,7 +67,7 @@
             <div class="card shadow-sm border-0">
                 <div class="card-header">
                     <h3 class="card-title">
-                        <x-lucide-users class="icon me-2" />
+                        
                         Ringkasan Rekomendasi Reviewer
                     </h3>
                 </div>
@@ -75,20 +75,20 @@
                     {{-- Pesan kontekstual berdasarkan hasil review --}}
                     @if ($allApproved)
                         <div class="alert alert-success mb-3 py-2">
-                            <x-lucide-check-circle class="icon me-2" />
+                            
                             <strong>Semua reviewer menyetujui usulan Anda.</strong>
                             Baca catatan reviewer di bawah, lalu klik <strong>"Kirim Perbaikan"</strong> untuk mengajukan ke Kepala LPPM.
                             Upload dokumen PDF baru bersifat <strong>opsional</strong> jika tidak ada perubahan substansi.
                         </div>
                     @elseif ($hasRejected)
                         <div class="alert alert-danger mb-3 py-2">
-                            <x-lucide-alert-triangle class="icon me-2" />
+                            
                             <strong>Ada reviewer yang merekomendasikan penolakan.</strong>
                             Baca catatan reviewer dengan seksama. Anda tetap dapat mengajukan perbaikan — keputusan akhir ada di tangan Kepala LPPM.
                         </div>
                     @else
                         <div class="alert alert-warning mb-3 py-2">
-                            <x-lucide-file-edit class="icon me-2" />
+                            
                             <strong>Ada reviewer yang meminta revisi.</strong>
                             Lakukan perbaikan sesuai catatan reviewer, upload dokumen PDF baru, lalu kirim ulang ke Kepala LPPM.
                         </div>
@@ -106,7 +106,7 @@
                                                     $isOwnerOrMember = $proposal->submitter_id === auth()->id() || $proposal->teamMembers->contains('id', auth()->id());
                                                     $canSeeIdentity = !$isOwnerOrMember && active_has_any_role(['admin lppm','kepala lppm','dekan','reviewer']);
                                                 @endphp
-                                                <x-lucide-user-circle class="icon icon-sm me-2 text-secondary" />
+                                                
                                                 <span class="fw-semibold small">
                                                     {{ $canSeeIdentity ? ($reviewer->user?->name ?? 'Reviewer') : 'Pereview #'.($idx+1) }}
                                                 </span>
@@ -170,11 +170,11 @@
                 <div class="card-body">
                     <div class="mb-3 row">
                         <div class="col-md-6">
-                            <label class="form-label"><x-lucide-file-text class="me-2 icon" />Judul</label>
+                            <label class="form-label">Judul</label>
                             <p class="text-reset">{{ $proposal->title }}</p>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label"><x-lucide-info class="me-2 icon" />Status</label>
+                            <label class="form-label">Status</label>
                             <p>
                                 <x-tabler.badge :color="$proposal->status->color()" class="fw-normal">
                                     {{ $proposal->status->label() }}
@@ -185,11 +185,11 @@
 
                     <div class="mb-3 row">
                         <div class="col-md-3">
-                            <label class="form-label"><x-lucide-user class="me-2 icon" />Author</label>
+                            <label class="form-label">Author</label>
                             <p class="text-reset">{{ $proposal->submitter?->name }}</p>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label {{ $this->canEdit() ? 'required' : '' }}"><x-lucide-clipboard-list class="me-2 icon" />Skema
+                            <label class="form-label {{ $this->canEdit() ? 'required' : '' }}">Skema
                                 Penelitian</label>
                             @if ($this->canEdit())
                                 <select wire:model="researchSchemeId" class="form-select form-select-sm @error('researchSchemeId') is-invalid @enderror">
@@ -206,7 +206,7 @@
                             @endif
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label {{ $this->canEdit() ? 'required' : '' }}"><x-lucide-activity class="me-2 icon" />Kategori TKT</label>
+                            <label class="form-label {{ $this->canEdit() ? 'required' : '' }}">Kategori TKT</label>
                             @if ($this->canEdit())
                                 <select wire:model.live="form.tkt_type" class="form-select form-select-sm @error('form.tkt_type') is-invalid @enderror">
                                     <option value="">Pilih Kategori TKT</option>
@@ -222,7 +222,7 @@
                             @endif
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label"><x-lucide-ruler class="me-2 icon" />Level TKT</label>
+                            <label class="form-label">Level TKT</label>
                             @if ($this->canEdit())
                                 <div class="d-flex align-items-center gap-2">
                                     @php
@@ -273,7 +273,7 @@
 
                     <div class="mb-3 row">
                         <div class="col-md-3">
-                            <label class="form-label {{ $this->canEdit() ? 'required' : '' }}"><x-lucide-calendar class="me-2 icon" />Tahun Akademik</label>
+                            <label class="form-label {{ $this->canEdit() ? 'required' : '' }}">Tahun Akademik</label>
                             @if ($this->canEdit())
                                 <select wire:model="form.academic_year" class="form-select form-select-sm @error('form.academic_year') is-invalid @enderror">
                                     <option value="">Pilih Tahun Akademik</option>
@@ -289,7 +289,7 @@
                             @endif
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label {{ $this->canEdit() ? 'required' : '' }}"><x-lucide-calendar-check class="me-2 icon" />Semester</label>
+                            <label class="form-label {{ $this->canEdit() ? 'required' : '' }}">Semester</label>
                             @if ($this->canEdit())
                                 <select wire:model="form.semester" class="form-select form-select-sm @error('form.semester') is-invalid @enderror">
                                     <option value="">Pilih Semester</option>
@@ -307,13 +307,13 @@
 
                     <div class="mb-3 row">
                         <div class="col-md-6">
-                            <label class="form-label"><x-lucide-calendar class="me-2 icon" />Tanggal Pengajuan</label>
+                            <label class="form-label">Tanggal Pengajuan</label>
                             <p class="text-reset">
                                 {{ $proposal->created_at?->format('d M Y H:i') ?? '—' }}
                             </p>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label"><x-lucide-calendar-check class="me-2 icon" />Tanggal Update</label>
+                            <label class="form-label">Tanggal Update</label>
                             <p class="text-reset">
                                 {{ $proposal->detailable->updated_at?->format('d M Y H:i') ?? '—' }}
                             </p>
@@ -335,7 +335,7 @@
                     @if ($this->canEdit())
                         <div class="card-actions">
                             <x-tabler.badge color="info">
-                                <x-lucide-pencil class="icon icon-sm" />
+                                
                                 Dapat Diedit
                             </x-tabler.badge>
                         </div>
@@ -347,7 +347,7 @@
                     @if ($this->canEdit())
                         <div class="mb-3">
                             <label class="form-label required">
-                                <x-lucide-layers class="me-2 icon" />
+                                
                                 Kelompok Makro Riset
                             </label>
                             <select wire:model="macroResearchGroupId"
@@ -374,7 +374,7 @@
                         </div>
                     @else
                         <div class="mb-3">
-                            <label class="form-label"><x-lucide-layers class="me-2 icon" />Kelompok Makro
+                            <label class="form-label">Kelompok Makro
                                 Riset</label>
                             <p class="text-reset">{{ $research?->macroResearchGroup?->name ?? '—' }}</p>
                             @if ($research?->macroResearchGroup?->description)
@@ -392,7 +392,7 @@
                     @if ($this->canEdit())
                         <div class="card-actions">
                             <x-tabler.badge color="info">
-                                <x-lucide-pencil class="icon icon-sm" />
+                                
                                 Dapat Diedit
                             </x-tabler.badge>
                         </div>
@@ -403,22 +403,22 @@
 
                     <!-- Current File -->
                     <div class="mb-3">
-                        <label class="form-label"><x-lucide-file class="me-2 icon" />File Substansi Saat Ini</label>
+                        <label class="form-label">File Substansi Saat Ini</label>
                         @php $substanceMedia = $research->getFirstMedia('substance_file'); @endphp
                         @if ($substanceMedia)
                             <div class="d-flex align-items-center gap-2">
                                 <a href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $substanceMedia]) }}"
                                     class="btn-outline-primary btn btn-sm">
-                                    <x-lucide-download class="icon icon-sm" />
+                                    
                                     Download File Substansi
                                 </a>
                                 <a href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $substanceMedia, 'view' => 1]) }}" target="_blank"
                                     class="btn-outline-info btn btn-sm">
-                                    <x-lucide-eye class="icon icon-sm" />
+                                    
                                     Lihat PDF
                                 </a>
                                 <small class="text-muted ms-2">
-                                    <x-lucide-check class="text-success icon icon-sm" />
+                                    
                                     File tersedia ({{ $substanceMedia->file_name }})
                                 </small>
                             </div>
@@ -432,7 +432,7 @@
                         @if ($allApproved)
                             <div class="alert alert-info mb-3">
                                 <div class="d-flex align-items-start">
-                                    <x-lucide-info class="icon me-2 text-info mt-1" />
+                                    
                                     <div>
                                         <strong>Catatan:</strong> Semua reviewer telah menyetujui usulan Anda. Pengunggahan dokumen PDF baru bersifat <strong>opsional</strong> jika tidak ada perubahan substansi usulan.
                                     </div>
@@ -441,7 +441,7 @@
                         @else
                             <div class="alert alert-warning mb-3">
                                 <div class="d-flex align-items-start">
-                                    <x-lucide-alert-triangle class="icon me-2 text-warning mt-1" />
+                                    
                                     <div>
                                         <strong>Perhatian:</strong> Untuk melakukan perbaikan usulan sesuai masukan reviewer, Anda <strong>wajib</strong> mengunggah kembali Dokumen PDF Substansi Usulan yang telah direvisi.
                                     </div>
@@ -450,7 +450,7 @@
                         @endif
                         <div class="mb-3">
                             <label class="form-label">
-                                <x-lucide-upload class="me-2 icon" />
+                                
                                 Upload File Substansi Baru
                             </label>
                             <input type="file" wire:model="substanceFile"
@@ -478,7 +478,7 @@
                             @if ($substanceFile && !$errors->has('substanceFile'))
                                 <div class="mt-2">
                                     <small class="text-success">
-                                        <x-lucide-check class="icon icon-sm" />
+                                        
                                         File siap diunggah: {{ $substanceFile->getClientOriginalName() }}
                                     </small>
                                 </div>
@@ -514,7 +514,7 @@
                                 <div class="mb-3">
                                     <div class="d-flex align-items-center justify-content-between mb-2">
                                         <div class="d-flex align-items-center">
-                                            <x-lucide-user-circle class="me-2 text-primary icon" />
+                                            
                                             <div class="fw-bold">{{ $canSeeReviewerIdentity ? ($reviewer->user?->name ?? 'Reviewer') : 'Pereview #' . $loop->iteration }}</div>
                                         </div>
                                         <div class="text-end">
@@ -574,14 +574,14 @@
                                     </div>
 
                                     <div class="mb-3 text-secondary small">
-                                        <x-lucide-info class="icon-inline me-1 icon" />
+                                        
                                         Total nilai dihitung otomatis: (Skor × Bobot). Passing Grade: 300.
                                     </div>
 
                                     @if ($reviewer->review_notes)
                                         <div class="mb-0">
                                             <label class="mb-1 form-label fw-bold small">
-                                                <x-lucide-message-square class="icon icon-sm" />
+                                                
                                                 Catatan Review Keseluruhan:
                                             </label>
                                             <div class="bg-body-tertiary p-3 border rounded">
@@ -602,7 +602,7 @@
                 <div class="mb-3 card">
                     <div class="card-header">
                         <h3 class="card-title">
-                            <x-lucide-history class="me-2 icon" />
+                            
                             Riwayat Review Sebelumnya
                         </h3>
                     </div>
@@ -614,7 +614,7 @@
                                         <button class="py-2 accordion-button collapsed" type="button"
                                             data-bs-toggle="collapse"
                                             data-bs-target="#historyRound{{ $round }}">
-                                            <x-lucide-layers class="me-2 icon" />
+                                            
                                             Round #{{ $round }}
                                             <span class="bg-secondary-lt ms-2 badge">{{ $logs->count() }}
                                                 review</span>
@@ -703,7 +703,7 @@
                     @if ($proposal->budgetItems->isEmpty())
                         <div class="card-body">
                             <div class="py-4 text-muted text-center">
-                                <x-lucide-inbox class="mb-2 icon icon-lg" />
+                                
                                 <p>Belum ada item anggaran</p>
                             </div>
                         </div>
@@ -801,7 +801,7 @@
             <div class="d-flex justify-content-between">
                 @if ($currentStep > 1)
                     <button type="button" class="btn" wire:click="setStep({{ $currentStep - 1 }})">
-                        <x-lucide-arrow-left class="icon" />
+                        
                         Kembali
                     </button>
                 @else
@@ -810,7 +810,7 @@
                 @if ($currentStep < 2)
                     <button type="button" class="btn btn-primary" wire:click="setStep({{ $currentStep + 1 }})">
                         Selanjutnya
-                        <x-lucide-arrow-right class="icon" />
+                        
                     </button>
                 @endif
             </div>
@@ -826,7 +826,7 @@
                         <button type="button" wire:click="save" class="position-relative btn btn-primary"
                             wire:loading.attr="disabled" wire:target="save" wire:loading.class="btn-loading">
                             <span wire:loading.remove wire:target="save">
-                                <x-lucide-save class="icon" />
+                                
                                 Simpan Perubahan
                             </span>
                             <span wire:loading wire:target="save">
@@ -836,7 +836,7 @@
                         </button>
                     </div>
                     <small class="d-block mt-2 text-muted">
-                        <x-lucide-info class="icon icon-sm" />
+                        
                         Pastikan Anda telah memilih skema penelitian, kelompok makro riset, mengunggah file substansi baru, dan/atau memperbarui RAB sebelum menyimpan.
                     </small>
                 </div>

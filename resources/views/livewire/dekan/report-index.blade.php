@@ -57,7 +57,7 @@
 
                         <div class="col-md-1">
                             <button type="button" class="btn btn-outline-secondary w-100" wire:click="resetFilters" title="Reset Filter">
-                                <x-lucide-rotate-ccw class="icon" />
+                                
                             </button>
                         </div>
                     </div>
@@ -130,7 +130,7 @@
                                         : route('community-service.final-report.show', $report->proposal);
                                 @endphp
                                 <a href="{{ $showRoute }}" class="btn btn-sm btn-primary" wire:navigate.hover>
-                                    <x-lucide-eye class="icon me-1" />
+                                    
                                     Tinjau
                                 </a>
                             </td>
@@ -139,7 +139,7 @@
                         <tr>
                             <td colspan="6" class="py-8 text-center">
                                 <div class="mb-3">
-                                    <x-lucide-inbox class="text-secondary icon icon-lg" />
+                                    
                                 </div>
                                 <p class="text-secondary">Tidak ada laporan akhir yang ditemukan.</p>
                             </td>

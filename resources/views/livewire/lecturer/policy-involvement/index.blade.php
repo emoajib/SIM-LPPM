@@ -4,7 +4,7 @@
         <x-slot:actions>
             @if(!$isAdmin)
                 <button class="btn btn-primary" wire:click="openModal">
-                    <i class="ti ti-plus me-2"></i> Tambah Rekognisi
+                     Tambah Rekognisi
                 </button>
             @endif
         </x-slot:actions>
@@ -62,7 +62,7 @@
                                                 <a data-navigate-ignore="true"
                                                     href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
                                                     target="_blank" class="btn btn-icon btn-ghost-info" title="Lihat Dokumen">
-                                                    <i class="ti ti-file-text"></i>
+                                                    
                                                 </a>
                                             @endif
 
@@ -70,13 +70,13 @@
                                                 @if($item->status !== 'verified')
                                                     <button class="btn btn-icon btn-ghost-success"
                                                         wire:click="verify('{{ $item->id }}')" title="Verifikasi">
-                                                        <i class="ti ti-check"></i>
+                                                        
                                                     </button>
                                                 @endif
                                                 @if($item->status !== 'rejected')
                                                     <button class="btn btn-icon btn-ghost-danger"
                                                         wire:click="reject('{{ $item->id }}')" title="Tolak">
-                                                        <i class="ti ti-x"></i>
+                                                        
                                                     </button>
                                                 @endif
                                             @endif
@@ -84,14 +84,14 @@
                                             @if(!$isAdmin || $item->user_id === auth()->id())
                                                 <button class="btn btn-icon btn-ghost-primary"
                                                     wire:click="openModal('{{ $item->id }}')" title="Edit">
-                                                    <i class="ti ti-edit"></i>
+                                                    
                                                 </button>
                                             @endif
 
                                             <button class="btn btn-icon btn-ghost-danger"
                                                 onclick="confirm('Apakah Anda yakin ingin menghapus data ini?') || event.stopImmediatePropagation()"
                                                 wire:click="delete('{{ $item->id }}')" title="Hapus">
-                                                <i class="ti ti-trash"></i>
+                                                
                                             </button>
                                         </div>
                                     </td>
@@ -199,7 +199,7 @@
                         <button type="button" class="btn btn-link link-secondary" wire:click="$set('showModal', false)">
                             Batal </button>
                         <button type="submit" class="btn btn-primary ms-auto" wire:loading.attr="disabled">
-                            <i class="ti ti-device-floppy me-2"></i>
+                            
                             {{ $editingId ? 'Simpan Perubahan' : 'Simpan Rekognisi' }}
                         </button>
                     </div>

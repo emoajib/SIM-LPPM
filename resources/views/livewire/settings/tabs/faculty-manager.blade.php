@@ -5,7 +5,7 @@
             <h3 class="card-title">Fakultas</h3>
             <button type="button" class="btn btn-primary" wire:click='create' data-bs-toggle="modal"
                 data-bs-target="#modal-faculty">
-                <x-lucide-plus class="icon" />
+                
                 Tambah Fakultas
             </button>
         </div>

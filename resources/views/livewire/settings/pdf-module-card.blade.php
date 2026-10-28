@@ -46,7 +46,7 @@
             class="btn btn-sm w-100 mb-2"
             :style="'border: 1px dashed ' + (overridesActive ? '#2fb344' : '#adb5bd') + '; color: ' + (overridesActive ? '#2fb344' : '#6c757d') + '; background: transparent;'"
             wire:click="$toggle('showInlineEditor')" title="Aksi" aria-label="Aksi">
-            <x-lucide-sliders class="icon icon-sm me-1" />
+            
             <span x-text="showInlineEditor ? 'Sembunyikan Editor' : (overridesActive ? 'Edit Override Khusus' : 'Atur Override Khusus')"></span>
         </button>
 
@@ -138,7 +138,7 @@
                 wire:click="resetOverrides"
                 wire:confirm="Reset semua pengaturan kustom untuk '{{ $moduleName }}' ke nilai global?"
                 @disabled(!$hasOverrides) title="Reset" aria-label="Reset">
-                <x-lucide-rotate-ccw class="icon icon-sm" />
+                
             </button>
         </div>
     </div>

@@ -13,11 +13,11 @@
                 </h3>
                 <div class="card-actions d-flex gap-2">
                     <button wire:click="resetMatrix" class="btn btn-outline-secondary btn-sm" wire:loading.attr="disabled">
-                        <x-lucide-rotate-ccw class="icon me-1" />
+                        
                         Reset
                     </button>
                     <button wire:click="save" class="btn btn-primary btn-sm" wire:loading.attr="disabled">
-                        <x-lucide-save class="icon me-1" />
+                        
                         Simpan Perubahan
                         <span wire:loading wire:target="save" class="spinner-border spinner-border-sm ms-2" role="status"></span>
                     </button>

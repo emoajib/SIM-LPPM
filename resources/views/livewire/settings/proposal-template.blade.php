@@ -7,7 +7,7 @@
             <div class="row g-2 align-items-center">
                 <div class="col">
                     <h2 class="page-title">
-                        <x-lucide-file-text class="icon me-2" /> Template Proposal &amp; Laporan
+                         Template Proposal &amp; Laporan
                     </h2>
                     <div class="text-secondary mt-1">
                         Kelola semua template dokumen yang digunakan dosen untuk menyusun proposal, laporan, dan monev.
@@ -26,20 +26,20 @@
             {{-- Flash Success/Error --}}
             @if(session('success'))
                 <div class="alert alert-success d-flex align-items-center" role="alert">
-                    <x-lucide-check-circle class="icon me-2 flex-shrink-0" />
+                    
                     <div>{{ session('success') }}</div>
                 </div>
             @endif
             @if(session('error'))
                 <div class="alert alert-danger d-flex align-items-center" role="alert">
-                    <x-lucide-alert-circle class="icon me-2 flex-shrink-0" />
+                    
                     <div>{{ session('error') }}</div>
                 </div>
             @endif
 
             {{-- Info Banner --}}
             <div class="alert alert-info d-flex align-items-center" role="alert">
-                <x-lucide-info class="icon me-2 flex-shrink-0" />
+                
                 <div>
                     Unggah dokumen <strong>DOC/DOCX/PDF</strong> maksimum 10&nbsp;MB untuk masing‑masing template.
                     Klik tombol <strong>"Unduh"</strong> untuk mengunduh template yang sedang aktif.
@@ -50,7 +50,7 @@
             SECTION 1: Template Proposal Utama
             ─────────────────────────────────────────────────────────── --}}
             <h3 class="mb-3">
-                <x-lucide-file-edit class="icon me-1" /> Template Proposal Utama
+                 Template Proposal Utama
             </h3>
             <p class="text-secondary small mb-3">
                 Template ini digunakan oleh dosen saat membuat proposal penelitian atau pengabdian masyarakat.
@@ -103,7 +103,7 @@
                                             accept=".doc,.docx,.pdf"
                                         >
                                         <button type="submit" class="btn btn-primary">
-                                            <x-lucide-upload class="icon icon-sm me-1" /> Unggah
+                                             Unggah
                                         </button>
                                     </div>
                                     @error('template_file')
@@ -114,7 +114,7 @@
                                 @if($template['media'])
                                     <div class="mt-3 p-2 bg-light rounded d-flex align-items-center justify-content-between">
                                         <div class="d-flex align-items-center">
-                                            <x-lucide-file-check class="icon text-success me-2" />
+                                            
                                             <div>
                                                 <div class="fw-medium small">{{ $template['media']->file_name }}</div>
                                                 <div class="text-secondary" style="font-size: 0.75rem;">
@@ -130,7 +130,7 @@
                                             target="_blank"
                                             download="{{ $template['media']->file_name }}"
                                         >
-                                            <x-lucide-download class="icon icon-sm me-1" /> Unduh
+                                             Unduh
                                         </a>
                                     </div>
                                 @endif
@@ -144,7 +144,7 @@
             SECTION 2: Template Laporan Akhir
             ─────────────────────────────────────────────────────────── --}}
             <h3 class="mb-3">
-                <x-lucide-clipboard-list class="icon me-1" /> Template Laporan Akhir
+                 Template Laporan Akhir
             </h3>
             <p class="text-secondary small mb-3">
                 Berkas berikut digunakan saat dosen membuat laporan akhir untuk penelitian ataupun
@@ -195,7 +195,7 @@
                                                     accept=".doc,.docx,.pdf"
                                                 >
                                                 <button type="submit" class="btn btn-primary">
-                                                    <x-lucide-upload class="icon icon-sm me-1" /> Unggah
+                                                     Unggah
                                                 </button>
                                             </div>
                                             @error('template_file')
@@ -205,7 +205,7 @@
                                         @if($template['media'])
                                             <div class="mt-2 p-2 bg-light rounded d-flex align-items-center justify-content-between">
                                                 <div class="d-flex align-items-center">
-                                                    <x-lucide-file-check class="icon text-success me-2" />
+                                                    
                                                     <div>
                                                         <div class="fw-medium small">{{ $template['media']->file_name }}</div>
                                                         <div class="text-secondary" style="font-size: 0.75rem;">
@@ -220,7 +220,7 @@
                                                     target="_blank"
                                                     download="{{ $template['media']->file_name }}"
                                                 >
-                                                    <x-lucide-download class="icon icon-sm me-1" /> Unduh
+                                                     Unduh
                                                 </a>
                                             </div>
                                         @endif
@@ -236,7 +236,7 @@
             SECTION 3: Konfigurasi Persetujuan & Pengesahan
             ─────────────────────────────────────────────────────────── --}}
             <h3 class="mb-3">
-                <x-lucide-settings class="icon me-1" /> Konfigurasi Persetujuan &amp; Pengesahan
+                 Konfigurasi Persetujuan &amp; Pengesahan
             </h3>
 
             <div class="card shadow-sm mb-4">
@@ -284,7 +284,7 @@
                         </div>
                         <div class="text-end">
                             <button type="submit" class="btn btn-success">
-                                <x-lucide-save class="icon me-1" /> Simpan Konfigurasi
+                                 Simpan Konfigurasi
                             </button>
                         </div>
                     </form>
@@ -324,13 +324,13 @@
                                 @if ($this->proposalApprovalPageTemplateMedia)
                                     <div class="mt-2 p-2 bg-light rounded d-flex align-items-center justify-content-between">
                                         <div class="d-flex align-items-center">
-                                            <x-lucide-file-check class="icon text-success me-2" />
+                                            
                                             <span class="small fw-medium">{{ $this->proposalApprovalPageTemplateMedia->file_name }}</span>
                                         </div>
                                         <a href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $this->proposalApprovalPageTemplateMedia]) }}"
                                             class="btn btn-outline-primary btn-sm" data-navigate-ignore="true" target="_blank"
                                             download="{{ $this->proposalApprovalPageTemplateMedia->file_name }}">
-                                            <x-lucide-download class="icon icon-sm me-1" /> Unduh
+                                             Unduh
                                         </a>
                                     </div>
                                 @endif
@@ -374,13 +374,13 @@
                                 @if ($this->reportApprovalPageTemplateMedia)
                                     <div class="mt-2 p-2 bg-light rounded d-flex align-items-center justify-content-between">
                                         <div class="d-flex align-items-center">
-                                            <x-lucide-file-check class="icon text-success me-2" />
+                                            
                                             <span class="small fw-medium">{{ $this->reportApprovalPageTemplateMedia->file_name }}</span>
                                         </div>
                                         <a href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $this->reportApprovalPageTemplateMedia]) }}"
                                             class="btn btn-outline-primary btn-sm" data-navigate-ignore="true" target="_blank"
                                             download="{{ $this->reportApprovalPageTemplateMedia->file_name }}">
-                                            <x-lucide-download class="icon icon-sm me-1" /> Unduh
+                                             Unduh
                                         </a>
                                     </div>
                                 @endif
@@ -394,7 +394,7 @@
             SECTION 4: Template Monev Internal
             ─────────────────────────────────────────────────────────── --}}
             <h3 class="mb-3">
-                <x-lucide-clipboard-check class="icon me-1" /> Template Monev Internal
+                 Template Monev Internal
             </h3>
             <p class="text-secondary small mb-3">
                 Template berikut digunakan untuk keperluan monitoring dan evaluasi internal.
@@ -443,7 +443,7 @@
                                             accept=".doc,.docx,.pdf"
                                         >
                                         <button type="submit" class="btn btn-primary">
-                                            <x-lucide-upload class="icon icon-sm me-1" /> Unggah
+                                             Unggah
                                         </button>
                                     </div>
                                     @error('template_file')
@@ -453,7 +453,7 @@
                                 @if($template['media'])
                                     <div class="mt-3 p-2 bg-light rounded d-flex align-items-center justify-content-between">
                                         <div class="d-flex align-items-center">
-                                            <x-lucide-file-check class="icon text-success me-2" />
+                                            
                                             <div>
                                                 <div class="fw-medium small">{{ $template['media']->file_name }}</div>
                                             </div>
@@ -465,7 +465,7 @@
                                             target="_blank"
                                             download="{{ $template['media']->file_name }}"
                                         >
-                                            <x-lucide-download class="icon icon-sm me-1" /> Unduh
+                                             Unduh
                                         </a>
                                     </div>
                                 @endif

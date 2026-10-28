@@ -7,7 +7,7 @@
         <div class="d-flex align-items-center gap-2">
             <div class="dropdown">
                 <button class="btn btn-white shadow-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                    <x-lucide-calendar class="icon me-2 text-primary" />
+                    
                     Tahun: {{ $period }}
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
@@ -22,19 +22,19 @@
                 </ul>
             </div>
             <button wire:click="previewPdf" wire:loading.attr="disabled" class="btn btn-outline-primary shadow-sm">
-                <i class="ti ti-eye me-2" wire:loading.remove wire:target="previewPdf"></i>
+                
                 <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" wire:loading
                     wire:target="previewPdf"></span>
                 <span>Tinjau PDF</span>
             </button>
             <a href="{{ route('admin.iku.export-pdf', ['period' => $period]) }}" class="btn btn-primary shadow-sm"
                 data-navigate-ignore="true" target="_blank">
-                <x-lucide-printer class="icon me-2" />
+                
                 Cetak PDF
             </a>
             <a href="{{ route('admin.iku.export-excel', ['period' => $period]) }}" class="btn btn-success shadow-sm"
                 data-navigate-ignore="true" target="_blank">
-                <x-lucide-file-spreadsheet class="icon me-2" />
+                
                 Export Excel
             </a>
         </div>
@@ -59,12 +59,12 @@
                                 @endif
                                 @if($metric['achievement'] >= $metric['target'])
                                     <div class="d-flex align-items-center text-success small font-weight-bold">
-                                        <x-lucide-check-circle class="icon icon-sm me-1" />
+                                        
                                         Mencapai Target
                                     </div>
                                 @else
                                     <div class="d-flex align-items-center text-warning small font-weight-bold">
-                                        <x-lucide-alert-circle class="icon icon-sm me-1" />
+                                        
                                         Berjalan
                                     </div>
                                 @endif
@@ -109,7 +109,7 @@
 
                         <button wire:click="selectIku('{{ $key }}')"
                             class="btn @if($selectedIku == $key) btn-primary @else btn-outline-primary @endif btn-sm w-100 rounded-pill">
-                            <x-lucide-list class="icon icon-sm me-1" />
+                            
                             Lihat Rincian
                         </button>
                     </div>
@@ -128,11 +128,11 @@
         <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px;">
             <div class="card-header bg-white border-0 p-4 pb-0 d-flex justify-content-between align-items-center">
                 <h5 class="font-weight-bold mb-0">
-                    <x-lucide-table class="icon text-primary me-2" />
+                    
                     Rincian Data: {{ strtoupper($selectedIku) }} - {{ $this->ikuMetrics[$selectedIku]['name'] }}
                 </h5>
                 <button wire:click="selectIku(null)" class="btn btn-sm btn-light rounded-circle" title="Tutup" aria-label="Tutup">
-                    <x-lucide-x class="icon" />
+                    
                 </button>
             </div>
             <div class="card-body p-4">
@@ -259,7 +259,7 @@
                         <div class="d-flex align-items-center">
                             <div class="rounded-circle bg-primary p-2 me-3 d-flex align-items-center justify-content-center"
                                 style="width: 40px; height: 40px;">
-                                <x-lucide-refresh-ccw class="icon text-white" style="width: 20px;" />
+                                
                             </div>
                             <div>
                                 <h5 class="mb-0 text-white" style="font-size: 0.9rem;">Auto-Sync</h5>
@@ -269,7 +269,7 @@
                         <div class="d-flex align-items-center">
                             <div class="rounded-circle bg-success p-2 me-3 d-flex align-items-center justify-content-center"
                                 style="width: 40px; height: 40px;">
-                                <x-lucide-shield-check class="icon text-white" style="width: 20px;" />
+                                
                             </div>
                             <div>
                                 <h5 class="mb-0 text-white" style="font-size: 0.9rem;">Kepmen 358/2025</h5>
@@ -280,7 +280,7 @@
                 </div>
                 <div class="col-lg-4 d-none d-lg-block text-center">
                     <div class="display-1 text-white opacity-25">
-                        <x-lucide-gauge style="width: 150px; height: 150px;" />
+                        
                     </div>
                 </div>
             </div>

@@ -14,7 +14,7 @@
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h3 class="card-title">Penelitian</h3>
                     <button class="btn btn-sm btn-primary" wire:click="openCreate('research')">
-                        <x-lucide-plus class="icon" />
+                        
                         Tambah Kriteria
                     </button>
                 </div>
@@ -48,7 +48,7 @@
                                         <div class="btn-list gap-1">
                                             <button class="btn btn-icon btn-ghost-primary"
                                                 wire:click="edit({{ $criteria->id }})">
-                                                <x-lucide-edit class="icon" />
+                                                
                                             </button>
                                             <button class="btn btn-icon btn-ghost-danger"
                                                 wire:click="delete({{ $criteria->id }})"
@@ -77,7 +77,7 @@
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h3 class="card-title">Pengabdian Masyarakat (PkM)</h3>
                     <button class="btn btn-sm btn-primary" wire:click="openCreate('community_service')">
-                        <x-lucide-plus class="icon" />
+                        
                         Tambah Kriteria
                     </button>
                 </div>
@@ -111,7 +111,7 @@
                                         <div class="btn-list gap-1">
                                             <button class="btn btn-icon btn-ghost-primary"
                                                 wire:click="edit({{ $criteria->id }})">
-                                                <x-lucide-edit class="icon" />
+                                                
                                             </button>
                                             <button class="btn btn-icon btn-ghost-danger"
                                                 wire:click="delete({{ $criteria->id }})"
@@ -146,7 +146,7 @@
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h3 class="card-title">Monev Penelitian</h3>
                     <button class="btn btn-sm btn-primary" wire:click="openCreate('monev_research')">
-                        <x-lucide-plus class="icon" />
+                        
                         Tambah Kriteria
                     </button>
                 </div>
@@ -180,7 +180,7 @@
                                         <div class="btn-list gap-1">
                                             <button class="btn btn-icon btn-ghost-primary"
                                                 wire:click="edit({{ $criteria->id }})">
-                                                <x-lucide-edit class="icon" />
+                                                
                                             </button>
                                             <button class="btn btn-icon btn-ghost-danger"
                                                 wire:click="delete({{ $criteria->id }})"
@@ -210,7 +210,7 @@
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h3 class="card-title">Monev Pengabdian Masyarakat (PkM)</h3>
                     <button class="btn btn-sm btn-primary" wire:click="openCreate('monev_community_service')">
-                        <x-lucide-plus class="icon" />
+                        
                         Tambah Kriteria
                     </button>
                 </div>
@@ -244,7 +244,7 @@
                                         <div class="btn-list gap-1">
                                             <button class="btn btn-icon btn-ghost-primary"
                                                 wire:click="edit({{ $criteria->id }})">
-                                                <x-lucide-edit class="icon" />
+                                                
                                             </button>
                                             <button class="btn btn-icon btn-ghost-danger"
                                                 wire:click="delete({{ $criteria->id }})"

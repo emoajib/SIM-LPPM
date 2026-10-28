@@ -44,7 +44,7 @@
                         <!-- Reset Button -->
                         <div class="col-md-3">
                             <button type="button" class="btn-outline-secondary w-100 btn" wire:click="resetFilters">
-                                <x-lucide-rotate-ccw class="icon" />
+                                
                                 Reset
                             </button>
                         </div>
@@ -99,7 +99,7 @@
                                     @foreach ($proposal->reviewers as $reviewer)
                                         <div class="d-flex align-items-center gap-2" wire:key="reviewer-{{ $reviewer->id }}">
                                             <x-tabler.badge color="success" class="fw-normal">
-                                                <x-lucide-check class="icon icon-sm" />
+                                                
                                                 {{ $reviewer->user->name }}
                                             </x-tabler.badge>
                                         </div>
@@ -116,7 +116,7 @@
                                     <a href="{{ route('research.proposal-revision.show', $proposal) }}"
                                         class="btn btn-icon btn-ghost-primary" title="Lihat Detail Revisi"
                                         wire:navigate.hover>
-                                        <x-lucide-eye class="icon" />
+                                        
                                     </a>
                                 </div>
                             </td>
@@ -125,7 +125,7 @@
                         <tr>
                             <td colspan="7" class="py-8 text-center">
                                 <div class="mb-3">
-                                    <x-lucide-inbox class="text-secondary icon icon-lg" />
+                                    
                                 </div>
                                 <p class="text-secondary">
                                     @if (active_has_role('dosen'))

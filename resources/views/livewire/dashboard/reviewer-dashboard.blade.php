@@ -3,7 +3,7 @@
         <div class="d-flex align-items-center gap-2">
             <div class="dropdown">
                 <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
-                    <i class="ti ti-calendar-event fs-2"></i>
+                    
                     <span>Tahun: {{ $selectedYear }}</span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end">
@@ -28,7 +28,7 @@
                         <div class="card-body">
                             <div class="d-flex align-items-center gap-3">
                                 <div class="avatar bg-danger text-danger-fg shadow-sm">
-                                    <i class="ti ti-alert-triangle fs-2"></i>
+                                    
                                 </div>
                                 <div class="flex-fill overflow-hidden">
                                     <div class="fw-bold text-danger mb-0">TERLAMBAT ({{ $review->days_overdue }} Hari)</div>
@@ -53,7 +53,7 @@
                         <div class="card-body">
                             <div class="d-flex align-items-center gap-3">
                                 <div class="avatar bg-warning text-warning-fg shadow-sm">
-                                    <i class="ti ti-refresh fs-2"></i>
+                                    
                                 </div>
                                 <div class="flex-fill overflow-hidden">
                                     <div class="fw-bold text-warning mb-0">REVIEW ULANG (PUTARAN {{ $review->round }})</div>
@@ -78,7 +78,7 @@
                         <div class="card-body">
                             <div class="d-flex align-items-center gap-3">
                                 <div class="avatar bg-info text-info-fg shadow-sm">
-                                    <i class="ti ti-clock-pause fs-2"></i>
+                                    
                                 </div>
                                 <div class="flex-fill overflow-hidden">
                                     <div class="fw-bold text-info mb-0">DEADLINE DEKAT ({{ $review->days_remaining }} Hari)</div>
@@ -104,7 +104,7 @@
                 <div class="card border-0 shadow-sm" style="border-radius: 12px;">
                     <div class="card-header bg-transparent border-0 py-3 d-flex align-items-center">
                         <div class="avatar bg-primary-lt text-primary shadow-sm avatar-sm me-3 border-0">
-                            <i class="ti ti-chart-line"></i>
+                            
                         </div>
                         <h3 class="card-title fw-bold mb-0">Tren Review Selesai</h3>
                     </div>
@@ -254,7 +254,7 @@
                     <div class="d-flex align-items-center mb-4">
                         <div class="subheader text-primary fw-bold">Statistik Penelitian</div>
                         <div class="ms-auto text-primary bg-primary-lt rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                            <i class="ti ti-microscope fs-3"></i>
+                            
                         </div>
                     </div>
                     <div class="row g-3">
@@ -289,7 +289,7 @@
                     <div class="d-flex align-items-center mb-4">
                         <div class="subheader text-green fw-bold">Statistik Pengabdian (PKM)</div>
                         <div class="ms-auto text-green bg-green-lt rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                            <i class="ti ti-users fs-3"></i>
+                            
                         </div>
                     </div>
                     <div class="row g-3">
@@ -324,7 +324,7 @@
             <div class="card border-0 shadow-sm" style="border-radius: 12px;">
                 <div class="card-header bg-transparent border-0 py-3 d-flex align-items-center">
                     <div class="avatar bg-primary-lt text-primary shadow-sm avatar-sm me-3 border-0">
-                        <i class="ti ti-flask-2"></i>
+                        
                     </div>
                     <h3 class="card-title fw-bold mb-0">Tugas Penelitian (Butuh Review)</h3>
                     <div class="ms-auto">
@@ -349,7 +349,7 @@
                                             {{ $research->title }}
                                         </div>
                                         <div class="small text-muted d-flex align-items-center mt-1">
-                                            <i class="ti ti-user me-1"></i> {{ $research->submitter->name }}
+                                             {{ $research->submitter->name }}
                                         </div>
                                     </td>
                                     <td class="text-center">
@@ -361,7 +361,7 @@
                                     </td>
                                     <td class="text-end pe-4">
                                         <a href="{{ route('research.proposal.show', $research) }}" class="btn btn-icon btn-outline-primary btn-sm rounded-circle shadow-sm" title="Buka Detail" wire:navigate.hover>
-                                            <i class="ti ti-chevron-right fs-2"></i>
+                                            
                                         </a>
                                     </td>
                                 </tr>
@@ -378,7 +378,7 @@
             <div class="card border-0 shadow-sm" style="border-radius: 12px;">
                 <div class="card-header bg-transparent border-0 py-3 d-flex align-items-center">
                     <div class="avatar bg-green-lt text-green shadow-sm avatar-sm me-3 border-0">
-                        <i class="ti ti-users-group"></i>
+                        
                     </div>
                     <h3 class="card-title fw-bold mb-0">Tugas PKM (Butuh Review)</h3>
                     <div class="ms-auto">
@@ -403,7 +403,7 @@
                                             {{ $pkm->title }}
                                         </div>
                                         <div class="small text-muted d-flex align-items-center mt-1">
-                                            <i class="ti ti-user me-1"></i> {{ $pkm->submitter->name }}
+                                             {{ $pkm->submitter->name }}
                                         </div>
                                     </td>
                                     <td class="text-center">
@@ -415,7 +415,7 @@
                                     </td>
                                     <td class="text-end pe-4">
                                         <a href="{{ route('community-service.proposal.show', $pkm) }}" class="btn btn-icon btn-outline-green btn-sm rounded-circle shadow-sm" title="Buka Detail" wire:navigate.hover>
-                                            <i class="ti ti-chevron-right fs-2"></i>
+                                            
                                         </a>
                                     </td>
                                 </tr>

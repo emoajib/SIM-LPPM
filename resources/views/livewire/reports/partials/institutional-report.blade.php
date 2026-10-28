@@ -6,7 +6,7 @@
                 <div class="col-md-3">
                     <div class="input-icon">
                         <span class="input-icon-addon">
-                            <i class="ti ti-search text-primary"></i>
+                            
                         </span>
                         <input type="text" wire:model.live.debounce.500ms="search" class="form-control"
                             placeholder="Cari judul atau nama pengusul...">
@@ -58,7 +58,7 @@
                 </div>
                 <div class="col-auto ms-auto">
                     <button class="btn btn-icon btn-white shadow-sm" wire:click="resetFilters" title="Reset Filter">
-                        <i class="ti ti-refresh text-secondary"></i>
+                        
                     </button>
                 </div>
             </div>
@@ -105,14 +105,14 @@
                     <!-- Draft Preview Icon (Support System) -->
                     <a href="{{ route($config['pdfRoute'], array_merge($currentFilters, ['preview' => 1])) }}"
                         target="_blank" class="btn btn-outline-primary shadow-sm" title="Tinjau Draft PDF">
-                        <i class="ti ti-eye me-2"></i> Tinjau PDF
+                         Tinjau PDF
                     </a>
 
                     @if(active_role_is('kepala lppm') && (!$institutionalReport || in_array($institutionalReport->status, [\App\Enums\InstitutionalReportStatus::DRAFT, \App\Enums\InstitutionalReportStatus::REJECTED])))
                         <button class="btn btn-primary shadow-sm"
                             wire:click="submitInstitutionalReport('{{ $config['reportType'] }}', {{ $this->institutionalYear() }}, {{ json_encode($currentFilters) }})"
                             wire:loading.attr="disabled">
-                            <i class="ti ti-send me-2"></i>
+                            
                             Ajukan ke Rektor
                         </button>
                     @endif
@@ -120,12 +120,12 @@
                     @if(active_role_is('rektor') && ($institutionalReport?->status === \App\Enums\InstitutionalReportStatus::SUBMITTED))
                         <button class="btn btn-outline-danger shadow-sm" data-bs-toggle="modal"
                             data-bs-target="#modal-reject-institutional">
-                            <i class="ti ti-x me-2"></i>
+                            
                             Minta Perbaikan
                         </button>
                         <button class="btn btn-success shadow-sm" wire:click="approveInstitutionalReport('{{ $config['reportType'] }}', {{ $this->institutionalYear() }})"
                             wire:loading.attr="disabled">
-                            <i class="ti ti-circle-check me-2"></i>
+                            
                             Setujui & Tanda Tangani
                         </button>
                     @endif
@@ -143,7 +143,7 @@
                     <div class="p-2.5 bg-opacity-10 {{ str_replace('bg-', 'bg-opacity-10 text-', explode(' ', $card['variant'])[0]) }} rounded-3 d-flex align-items-center justify-content-center"
                         style="width: 56px; height: 56px;">
                         {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
-                        <i class="ti ti-{{ $card['icon'] }} fs-2"></i>
+                        
                     </div>
                     <div>
                         <div class="text-secondary small fw-medium mb-1">{{ $card['label'] }}</div>
@@ -390,7 +390,7 @@
                                             @endif
                                         @else
                                             <span class="badge bg-warning-lt">
-                                                <i class="ti ti-alert-triangle me-1"></i> Belum Laporan
+                                                 Belum Laporan
                                             </span>
                                         @endif
                                     </td>
@@ -407,12 +407,12 @@
                                             <a href="{{ route($config['finalReportRoute'], $proposal) }}"
                                                 class="btn btn-sm btn-primary" title="Lihat Dokumen Laporan Akhir"
                                                 wire:navigate.hover>
-                                                <i class="ti ti-file-text me-1"></i> {{ __('Laporan') }}
+                                                 {{ __('Laporan') }}
                                             </a>
                                             <a href="{{ route($config['detailRoute'], $proposal) }}"
                                                 class="btn btn-sm btn-icon btn-outline-secondary" title="Lihat Usulan Proposal"
                                                 wire:navigate.hover>
-                                                <i class="ti ti-file-search"></i>
+                                                
                                             </a>
                                         </div>
                                     </td>

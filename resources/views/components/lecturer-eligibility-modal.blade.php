@@ -123,7 +123,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title d-flex align-items-center">
-                        <x-lucide-info class="icon me-2" />
+                        
                         Info Eligibilitas
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -155,7 +155,7 @@
                             <h2 class="accordion-header" id="heading-eligibility-{{ $tabKey }}">
                                 <button class="accordion-button {{ $tabElig['eligible'] ? 'text-success' : 'text-danger' }} fw-bold" type="button"
                                     data-bs-toggle="collapse" data-bs-target="#collapse-eligibility-{{ $tabKey }}" aria-expanded="true">
-                                    <i class="ti ti-{{ $tabElig['eligible'] ? 'circle-check' : 'alert-triangle' }} me-2"></i>
+                                    
                                     {{ $tab['alertTitle'] }}
                                 </button>
                             </h2>
@@ -176,7 +176,7 @@
                                         @endif
                                     @else
                                         <p class="mb-0 text-secondary">
-                                            <i class="ti ti-check text-success me-1"></i>
+                                            
                                             Anda memenuhi syarat untuk mengajukan proposal baru.
                                         </p>
                                     @endif
@@ -204,7 +204,7 @@
                             <h2 class="accordion-header" id="heading-schedule">
                                 <button class="accordion-button text-primary fw-bold" type="button"
                                     data-bs-toggle="collapse" data-bs-target="#collapse-schedule" aria-expanded="true">
-                                    <i class="ti ti-calendar-event me-2"></i>
+                                    
                                     Status Jadwal Pengajuan LPPM
                                 </button>
                             </h2>
@@ -218,7 +218,7 @@
                                                 <div class="d-flex align-items-center mb-2">
                                                     <div
                                                         class="avatar avatar-xs {{ $eligibility['schedule']['research_open'] ? 'bg-blue text-white' : 'bg-secondary text-white' }} rounded me-2">
-                                                        <i class="ti ti-flask"></i>
+                                                        
                                                     </div>
                                                     <div
                                                         class="fw-bold {{ $eligibility['schedule']['research_open'] ? 'text-blue' : 'text-secondary' }}">
@@ -250,7 +250,7 @@
                                                 @elseif($eligibility['schedule']['research_open'] && empty($eligibility['schedule']['research_schemes']))
                                                     <div class="mt-2 pt-2 border-top border-warning">
                                                         <div class="text-warning small">
-                                                            <i class="ti ti-alert-triangle me-1"></i>
+                                                            
                                                             Tidak ada skema yang memenuhi syarat
                                                         </div>
                                                     </div>
@@ -264,7 +264,7 @@
                                                 <div class="d-flex align-items-center mb-2">
                                                     <div
                                                         class="avatar avatar-xs {{ $eligibility['schedule']['pkm_open'] ? 'bg-green text-white' : 'bg-secondary text-white' }} rounded me-2">
-                                                        <i class="ti ti-users"></i>
+                                                        
                                                     </div>
                                                     <div
                                                         class="fw-bold {{ $eligibility['schedule']['pkm_open'] ? 'text-green' : 'text-secondary' }}">
@@ -296,7 +296,7 @@
                                                 @elseif($eligibility['schedule']['pkm_open'] && empty($eligibility['schedule']['pkm_schemes']))
                                                     <div class="mt-2 pt-2 border-top border-warning">
                                                         <div class="text-warning small">
-                                                            <i class="ti ti-alert-triangle me-1"></i>
+                                                            
                                                             Tidak ada skema yang memenuhi syarat
                                                         </div>
                                                     </div>
@@ -314,7 +314,7 @@
                                         <button class="accordion-button text-warning fw-bold bg-transparent" type="button"
                                             data-bs-toggle="collapse" data-bs-target="#collapse-scheme-eligible"
                                             aria-expanded="true">
-                                            <x-lucide-alert-triangle class="icon me-2" />
+                                            
                                             Status Eligibilitas Skema
                                             <span class="badge bg-warning ms-auto text-white rounded-pill">Informasi</span>
                                         </button>
@@ -323,7 +323,7 @@
                                         <div class="accordion-body pt-0 bg-white rounded-bottom">
                                             <!-- User Current Profile -->
                                             <div class="p-3 bg-info-lt rounded mb-3">
-                                                <div class="fw-bold text-info mb-2"><i class="ti ti-user me-1"></i> Profil
+                                                <div class="fw-bold text-info mb-2"> Profil
                                                     Anda:</div>
                                                 <div class="row">
                                                     <div class="col-6">
@@ -395,7 +395,7 @@
                                              @endif
 
                                             <p class="mt-2 mb-0 text-secondary small">
-                                                <i class="ti ti-info-circle me-1"></i>
+                                                
                                                 Hubungi Admin LPPM jika ada ketidaksesuaian data.
                                             </p>
                                         </div>

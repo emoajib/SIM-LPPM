@@ -4,7 +4,7 @@
             <div class="card-header bg-transparent border-0 py-3">
                 <div class="d-flex align-items-center">
                     <div class="avatar avatar-sm bg-blue-lt text-blue me-3">
-                        <i class="ti ti-database-import"></i>
+                        
                     </div>
                     <div>
                         <h3 class="card-title fw-bold mb-0">Sinkronisasi Data Dosen via SINTA</h3>
@@ -19,7 +19,7 @@
                     {{-- Upload Area --}}
                     <div class="mb-4">
                         <label class="form-label fw-semibold required">
-                            <i class="ti ti-file-spreadsheet me-1 text-success"></i>
+                            
                             File Export SINTA (.xlsx / .xls)
                         </label>
                         <input type="file"
@@ -27,7 +27,7 @@
                             class="form-control form-control-lg @error('file') is-invalid @enderror"
                             accept=".xlsx,.xls">
                         <div class="form-text mt-1">
-                            <i class="ti ti-info-circle me-1"></i>
+                            
                             Unduh file dari: SINTA Operator &rarr; <strong>Author Verification</strong> &rarr; <strong>Export Author</strong>
                         </div>
                         @error('file')
@@ -38,7 +38,7 @@
                     {{-- Info Alert --}}
                     <div class="alert alert-info" role="alert">
                         <div class="d-flex">
-                            <div class="me-2"><i class="ti ti-info-circle fs-4"></i></div>
+                            <div class="me-2"></div>
                             <div>
                                 <h4 class="alert-title">Cara Kerja Sinkronisasi</h4>
                                 <ul class="mb-0 ps-3 text-secondary small">
@@ -54,7 +54,7 @@
                     {{-- Warning --}}
                     <div class="alert alert-warning" role="alert">
                         <div class="d-flex">
-                            <div class="me-2"><i class="ti ti-alert-triangle fs-4"></i></div>
+                            <div class="me-2"></div>
                             <div class="small text-secondary">
                                 <strong>Perhatian:</strong> Proses ini akan <strong>menimpa</strong> data profil dosen yang sudah ada (nama, gelar, prodi, skor SINTA). Pastikan file yang diunggah adalah export terbaru dari SINTA sebelum melanjutkan.
                             </div>
@@ -64,11 +64,11 @@
 
                 <div class="card-footer bg-transparent d-flex justify-content-between align-items-center">
                     <a href="{{ route('users.index') }}" class="btn btn-link link-secondary">
-                        <i class="ti ti-arrow-left me-1"></i> Kembali ke Daftar Pengguna
+                         Kembali ke Daftar Pengguna
                     </a>
                     <button type="submit" class="btn btn-primary px-4" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="import">
-                            <i class="ti ti-database-import me-1"></i> Mulai Sinkronisasi
+                             Mulai Sinkronisasi
                         </span>
                         <span wire:loading wire:target="import">
                             <span class="spinner-border spinner-border-sm me-2" role="status"></span>
@@ -85,7 +85,7 @@
         <div class="card shadow-sm border-0 mb-3">
             <div class="card-header bg-transparent border-0 py-3">
                 <h4 class="card-title mb-0 fw-bold">
-                    <i class="ti ti-table me-1 text-green"></i>
+                    
                     Format Kolom SINTA
                 </h4>
             </div>
@@ -117,7 +117,7 @@
         <div class="card shadow-sm border-0">
             <div class="card-body text-center py-4">
                 <div class="avatar avatar-lg bg-blue-lt text-blue mb-3 mx-auto">
-                    <i class="ti ti-cloud-upload fs-2"></i>
+                    
                 </div>
                 <div class="text-muted small">
                     Upload file export SINTA dan klik <strong>Mulai Sinkronisasi</strong> untuk memperbarui data dosen secara massal.

@@ -55,12 +55,20 @@
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
+        <div class="col-md">
+            <div class="form-label">WhatsApp Number (Optional)</div>
+            <input type="text" class="form-control @error('whatsapp_number') is-invalid @enderror" wire:model="whatsapp_number"
+                placeholder="Contoh: 628123456789" />
+            @error('whatsapp_number')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
     </div>
 
     <div class="mt-1 row g-3">
         <div class="col-md-6">
             <div class="form-label">Gelar Depan</div>
-            <input type="text" class="form-control @error('title_prefix') is-invalid @enderror"
+            <input type="text" class="form-control @error('title_prefix')is-invalid @enderror"
                 wire:model="title_prefix" placeholder="misal: Dr., Prof." />
             @error('title_prefix')
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -134,7 +142,7 @@
                 placeholder="ResearcherID (misal: A-1234-20...) " />
             <small class="text-muted">Gunakan ResearcherID atau Author ID.</small>
             @error('wos_id')
-                <div class="invalid-feedback">{{ $message }}</div>
+                <divclass="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
     </div>
@@ -214,7 +222,7 @@
         <div class="col-md">
             <div class="form-label">Fakultas</div>
             <div wire:key="faculty-select-{{ $institution_id }}">
-                <select class="form-select @error('faculty_id') is-invalid @enderror" wire:model.live="faculty_id"
+<select class="form-select @error('faculty_id') is-invalid @enderror" wire:model.live="faculty_id"
                     x-data="tomSelect" placeholder="Pilih Fakultas">
                     <option value="">Pilih Fakultas</option>
                     @foreach ($this->faculties as $faculty)
@@ -264,7 +272,7 @@
             <div class="alert alert-warning">
                 <div class="d-flex">
                     <div>
-                        <x-lucide-alert-triangle class="icon alert-icon" />
+                        
                     </div>
                     <div class="ms-2">
                         <h4 class="alert-title">Email belum diverifikasi</h4>
@@ -283,12 +291,12 @@
                 <div class="alert alert-success">
                     <div class="d-flex">
                         <div>
-                            <x-lucide-check-circle class="icon alert-icon" />
+                            
                         </div>
                         <div class="ms-2">
                             <h4 class="alert-title">Email verifikasi dikirim</h4>
                             <div class="text-muted">
-                                Tautan verifikasi baru telah dikirim ke alamat email Anda.
+Tautan verifikasi baru telah dikirim ke alamat email Anda.
                             </div>
                         </div>
                     </div>

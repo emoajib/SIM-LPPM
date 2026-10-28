@@ -6,17 +6,17 @@
             <ul class="nav nav-tabs card-header-tabs">
                 @php
                     $tabs = [
-                        'pending_approval' => ['label' => 'Perlu Diproses', 'icon' => 'ti-clock', 'count' => $stats['pending']],
-                        'published' => ['label' => 'Diterbitkan', 'icon' => 'ti-check', 'count' => $stats['published']],
-                        'rejected' => ['label' => 'Ditolak', 'icon' => 'ti-x', 'count' => $stats['rejected']],
-                        'cancelled' => ['label' => 'Dibatalkan', 'icon' => 'ti-ban', 'count' => $stats['cancelled']],
-                        'ready_to_print' => ['label' => 'Siap Cetak', 'icon' => 'ti-printer', 'count' => $stats['ready_to_print']],
+                        'pending_approval' => ['label' => 'Perlu Diproses', 'count' => $stats['pending']],
+                        'published' => ['label' => 'Diterbitkan', 'count' => $stats['published']],
+                        'rejected' => ['label' => 'Ditolak', 'count' => $stats['rejected']],
+                        'cancelled' => ['label' => 'Dibatalkan', 'count' => $stats['cancelled']],
+                        'ready_to_print' => ['label' => 'Siap Cetak', 'count' => $stats['ready_to_print']],
                     ];
                 @endphp
                 @foreach($tabs as $key => $tab)
                 <li class="nav-item">
                     <a class="nav-link {{ $statusFilter === $key ? 'active' : '' }}" href="#" wire:click.prevent="setFilter('{{ $key }}')">
-                        <i class="ti {{ $tab['icon'] }} me-1"></i> {{ $tab['label'] }}
+                         {{ $tab['label'] }}
                         <span class="badge bg-secondary-lt ms-1">{{ $tab['count'] }}</span>
                     </a>
                 </li>
@@ -28,7 +28,7 @@
                 <div class="col">
                     <div class="input-icon">
                         <span class="input-icon-addon">
-                            <i class="ti ti-search"></i>
+                            
                         </span>
                         <input type="text" class="form-control" placeholder="Cari nomor surat, nama dosen, atau jenis surat..." wire:model.live="search">
                     </div>
@@ -38,10 +38,10 @@
                     <div class="btn-list">
                         @if(count($selectedIds) > 0)
                         <button class="btn btn-success btn-sm" wire:click="batchApprove">
-                            <i class="ti ti-check me-1"></i> Setujui ({{ count($selectedIds) }})
+                             Setujui ({{ count($selectedIds) }})
                         </button>
                         <button class="btn btn-danger btn-sm" wire:click="batchReject">
-                            <i class="ti ti-x me-1"></i> Tolak ({{ count($selectedIds) }})
+                             Tolak ({{ count($selectedIds) }})
                         </button>
                         @endif
                     </div>
@@ -107,16 +107,16 @@
 <div class="btn-list flex-nowrap">
                                 @if($letter->status?->value === 'pending_approval')
                                 <button class="btn btn-primary btn-sm shadow-sm" wire:click="preview('{{ $letter->id }}')">
-                                    <i class="ti ti-signature me-1"></i> Proses
+                                     Proses
                                 </button>
                                 @else
                                 @if($letter->file_path)
                                 <a href="{{ route('letter.view', $letter->id) }}" target="_blank" class="btn btn-outline-info btn-sm" title="Lihat PDF">
-                                    <i class="ti ti-eye me-1"></i>
+                                    
                                 </a>
                                 @endif
                                 <a href="{{ route('letter.download', $letter->id) }}" target="_blank" class="btn btn-outline-info btn-sm" title="Unduh PDF">
-                                    <i class="ti ti-download me-1"></i>
+                                    
                                 </a>
                                 @endif
                             </div>
@@ -220,7 +220,7 @@
                     <button type="button" class="btn btn-link link-secondary" wire:click="closePreviewModal">Batal</button>
                     @if($selectedLetter && $selectedLetter->status?->value === 'pending_approval')
                     <button type="button" class="btn btn-success px-4 shadow-sm" wire:click="approve('{{ $selectedLetter?->id }}')">
-                        <i class="ti ti-check me-2"></i> Tanda Tangani & Publish
+                         Tanda Tangani & Publish
                     </button>
                     @endif
                 </div>
@@ -263,7 +263,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-link" wire:click="closeRejectModal">Batal</button>
                     <button type="button" class="btn btn-danger" wire:click="confirmReject" {{ empty($rejectReason) ? 'disabled' : '' }}>
-                        <i class="ti ti-x me-1"></i> Tolak Surat
+                         Tolak Surat
                     </button>
                 </div>
             </div>

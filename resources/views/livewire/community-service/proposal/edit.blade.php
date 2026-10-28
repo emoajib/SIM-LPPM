@@ -3,7 +3,7 @@
 <x-slot:pageSubtitle>Perbarui proposal penelitian Anda dengan mengisi form di bawah ini.</x-slot:pageSubtitle>
 <x-slot:pageActions>
     <a href="{{ route('research.proposal.index') }}" class="btn-outline-secondary btn">
-        <x-lucide-arrow-left class="icon" />
+        
         Kembali ke Daftar
     </a>
 </x-slot:pageActions>
@@ -37,7 +37,7 @@
     @if ($errors->any())
         <div class="alert alert-danger mb-3">
             <div class="d-flex">
-                <x-lucide-alert-circle class="icon me-2" />
+                
                 <div>
                     <h4 class="alert-title">Terdapat kesalahan pada input form:</h4>
                     <ul class="mb-0 ps-3">
@@ -70,12 +70,12 @@
             <div>
                 @if ($currentStep > 1)
                     <button type="button" wire:click="previousStep" class="btn btn-outline-secondary">
-                        <x-lucide-arrow-left class="icon" />
+                        
                         Sebelumnya
                     </button>
                 @else
                     <a href="{{ route('research.proposal.index') }}" class="btn btn-outline-secondary">
-                        <x-lucide-x class="icon" />
+                        
                         Batal
                     </a>
                 @endif
@@ -86,7 +86,7 @@
                     <button type="button" wire:click="saveDraft" class="btn btn-outline-info me-2"
                         wire:loading.attr="disabled" wire:target="saveDraft">
                         <span wire:loading.remove wire:target="saveDraft">
-                            <x-lucide-save class="icon" />
+                            
                             Simpan Draft
                         </span>
                         <span wire:loading wire:target="saveDraft">
@@ -96,13 +96,13 @@
                     </button>
                     <button type="button" wire:click="nextStep" class="btn btn-primary">
                         Selanjutnya
-                        <x-lucide-arrow-right class="icon" />
+                        
                     </button>
                 @else
                     <button type="button" wire:click="saveDraft" class="btn btn-outline-info me-2"
                         wire:loading.attr="disabled" wire:target="saveDraft">
                         <span wire:loading.remove wire:target="saveDraft">
-                            <x-lucide-save class="icon" />
+                            
                             Simpan Draft
                         </span>
                         <span wire:loading wire:target="saveDraft">
@@ -113,7 +113,7 @@
                     <button type="submit" class="btn btn-success">
                         <span class="spinner-border spinner-border-sm me-2" wire:loading role="status"
                             aria-hidden="true"></span>
-                        <x-lucide-save class="icon" />
+                        
                         <span wire:loading.remove>Simpan Proposal</span>
                         <span wire:loading>Menyimpan...</span>
                     </button>

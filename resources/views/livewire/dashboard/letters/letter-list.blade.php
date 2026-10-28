@@ -3,7 +3,7 @@
     <div class="card border-0 shadow-sm mt-4">
         <div class="card-header bg-transparent border-0 py-3">
             <h3 class="card-title">
-                <i class="ti ti-mail-opened me-2"></i> Dokumen Persuratan Terkait
+                 Dokumen Persuratan Terkait
             </h3>
         </div>
         <div class="table-responsive">
@@ -36,7 +36,7 @@
                         <td>
                             @if(in_array($letter->status?->value, ['published', 'ready_to_print']))
                             <a href="{{ route('letter.download', $letter->id) }}" target="_blank" class="btn btn-sm btn-ghost-primary">
-                                <i class="ti ti-download"></i> Unduh PDF
+                                 Unduh PDF
                             </a>
                             @endif
                         </td>

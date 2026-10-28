@@ -5,7 +5,7 @@
             <h3 class="card-title">Pesan Kuota</h3>
             <button type="button" class="btn btn-primary" wire:click='create' data-bs-toggle="modal"
                 data-bs-target="#modal-quota-message">
-                <x-lucide-plus class="icon" />
+                
                 Tambah Pesan Kuota
             </button>
         </div>

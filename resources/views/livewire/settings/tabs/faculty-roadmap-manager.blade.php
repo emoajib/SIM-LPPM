@@ -5,7 +5,7 @@
             <h3 class="card-title">Peta Jalan Fakultas</h3>
             <button type="button" class="btn btn-primary" wire:click='create' data-bs-toggle="modal"
                 data-bs-target="#modal-faculty-roadmap">
-                <x-lucide-plus class="icon" />
+                
                 Tambah Peta Jalan
             </button>
         </div>
@@ -28,7 +28,7 @@
                                 <div class="font-weight-medium">{{ $item->title }}</div>
                                 @if($item->document_url)
                                     <a href="{{ $item->document_url }}" target="_blank" class="text-secondary small">
-                                        <x-lucide-external-link class="icon icon-sm" /> Lihat Dokumen
+                                         Lihat Dokumen
                                     </a>
                                 @endif
                             </td>

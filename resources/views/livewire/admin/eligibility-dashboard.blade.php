@@ -20,7 +20,7 @@
                     <p class="text-sm text-gray-600">Total Dosen</p>
                     <p class="text-3xl font-bold text-gray-900">{{ $totalDosen }}</p>
                 </div>
-                <x-lucide-users class="w-10 h-10 text-blue-500" />
+                
             </div>
         </div>
 
@@ -30,7 +30,7 @@
                     <p class="text-sm text-gray-600">Skema Penelitian Aktif</p>
                     <p class="text-3xl font-bold text-gray-900">{{ count($allSchemesStats) }}</p>
                 </div>
-                <x-lucide-briefcase class="w-10 h-10 text-green-500" />
+                
             </div>
         </div>
 
@@ -40,7 +40,7 @@
                     <p class="text-sm text-gray-600">Rata-rata Kelayakan</p>
                     <p class="text-3xl font-bold text-gray-900">{{ $avgEligibility }}%</p>
                 </div>
-                <x-lucide-trending-up class="w-10 h-10 text-purple-500" />
+                
             </div>
         </div>
     </div>
@@ -119,7 +119,7 @@
                         type="button"
                         wire:click="$set('selectedSchemeId', null)"
                         class="text-gray-400 hover:text-gray-600" title="Tutup" aria-label="Tutup">
-                        <x-lucide-x class="w-5 h-5" />
+                        
                     </button>
                 </div>
 
@@ -192,7 +192,7 @@
                                                 <td class="py-3 px-4 text-sm text-gray-600">{{ $dosen['nip'] }}</td>
                                                 <td class="py-3 px-4 text-center">
                                                     <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium">
-                                                        <x-lucide-check class="w-3 h-3" />
+                                                        
                                                         {{ count($dosen['passed_checks']) }}
                                                     </span>
                                                 </td>
@@ -259,7 +259,7 @@
                         wire:click="exportEligibilityReport('{{ $selectedSchemeId }}')"
                         class="inline-flex items-center gap-2 px-4 py-2 font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
                     >
-                        <x-lucide-download class="w-4 h-4" />
+                        
                         Export CSV
                     </button>
                 </div>

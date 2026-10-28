@@ -12,17 +12,17 @@
                     <div class="list-group list-group-transparent">
                         <button wire:click="setActiveTab('profile')"
                             class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'profile' ? 'active' : '' }}">
-                            <x-lucide-user class="icon" />
+                            
                             <span>Profil Saya</span>
                         </button>
                         <button wire:click="setActiveTab('password')"
                             class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'password' ? 'active' : '' }}">
-                            <x-lucide-lock class="icon" />
+                            
                             <span>Ubah Kata Sandi</span>
                         </button>
                         <button wire:click="setActiveTab('security')"
                             class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'security' ? 'active' : '' }}">
-                            <x-lucide-activity class="icon" />
+                            
                             <span>Log Keamanan</span>
                         </button>
                     </div>
@@ -32,49 +32,54 @@
                             @if(active_has_role('admin lppm'))
                             <button wire:click="setActiveTab('appearance')"
                                 class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'appearance' ? 'active' : '' }}">
-                                <x-lucide-palette class="icon" />
+                                
                                 <span>Tampilan</span>
                             </button>
                             {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
                              <button wire:click="setActiveTab('pdf-export')"
                                  class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'pdf-export' ? 'active' : '' }}">
-                                 <x-lucide-printer class="icon" />
+                                 
                                  <span>PDF & Ekspor</span>
                              </button>
                              <button wire:click="setActiveTab('tkt-manager')"
                                  class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'tkt-manager' ? 'active' : '' }}">
-                                 <x-lucide-file-spreadsheet class="icon" />
+                                 
                                  <span>Manajemen TKT</span>
                              </button>
                             <button wire:click="setActiveTab('audit')"
                                 class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'audit' ? 'active' : '' }}">
-                                <x-lucide-eye class="icon" />
+                                
                                 <span>Audit Log</span>
+                            </button>
+                            <button wire:click="setActiveTab('notification-config')"
+                                class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'notification-config' ? 'active' : '' }}">
+                                
+                                <span>Konfigurasi Notifikasi</span>
                             </button>
                              <button wire:click="setActiveTab('feature-flags')"
                                  class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'feature-flags' ? 'active' : '' }}">
-                                 <x-lucide-toggle-left class="icon" />
+                                 
                                  <span>Feature Flags</span>
                              </button>
                              <button wire:click="setActiveTab('sync')"
                                   class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'sync' ? 'active' : '' }}">
-                                  <x-lucide-refresh-ccw class="icon" />
+                                  
                                   <span>Sinkronisasi Data</span>
                               </button>
                               <button wire:click="setActiveTab('backup')"
                                   class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'backup' ? 'active' : '' }}">
-                                  <x-lucide-database class="icon" />
+                                  
                                   <span>Backup Data</span>
                               </button>
                               <button wire:click="setActiveTab('restore')"
                                   class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'restore' ? 'active' : '' }}">
-                                  <x-lucide-cloud-upload class="icon" />
+                                  
                                   <span>Pulihkan Data</span>
                               </button>
                             @endif
                              <button wire:click="setActiveTab('captcha')"
                                  class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'captcha' ? 'active' : '' }}">
-                                 <x-lucide-shield-check class="icon" />
+                                 
                                  <span>Keamanan CAPTCHA</span>
                              </button>
                          </div>
@@ -116,6 +121,12 @@
                             <h2 class="mb-4">Audit Log</h2>
                             <p class="mb-4 card-subtitle">Pantau aktivitas sistem untuk semua pengguna.</p>
                             <livewire:settings.audit-log />
+                        </div>
+                    @elseif ($activeTab === 'notification-config')
+                        <div>
+                            <h2 class="mb-4">Konfigurasi Notifikasi</h2>
+                            <p class="mb-4 card-subtitle">Kelola SMTP & WhatsApp untuk notifikasi email/WA (admin LPPM & super admin).</p>
+                            <livewire:settings.notification-config />
                         </div>
                     @elseif ($activeTab === 'security')
                         <div>

@@ -5,7 +5,7 @@
             <h3 class="card-title">Skema Penelitian</h3>
             <button type="button" class="btn btn-primary" wire:click='create' data-bs-toggle="modal"
                 data-bs-target="#modal-research-scheme">
-                <x-lucide-plus class="icon" />
+                
                 Tambah Skema Penelitian
             </button>
         </div>

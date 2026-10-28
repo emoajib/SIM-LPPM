@@ -54,19 +54,19 @@
             <ul class="nav nav-tabs nav-fill" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link" :class="activePdfTab === 'layout' ? 'active' : ''" href="#" @click.prevent="activePdfTab = 'layout'">
-                        <x-lucide-sliders class="icon me-1" />
+                        
                         Tata Letak &amp; Tipografi
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" :class="activePdfTab === 'cache' ? 'active' : ''" href="#" @click.prevent="activePdfTab = 'cache'">
-                        <x-lucide-hard-drive class="icon me-1" />
+                        
                         Kelola Cache PDF
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" :class="activePdfTab === 'modules' ? 'active' : ''" href="#" @click.prevent="activePdfTab = 'modules'">
-                        <x-lucide-layout-list class="icon me-1" />
+                        
                         Modul &amp; Fitur PDF
                     </a>
                 </li>
@@ -81,7 +81,7 @@
 
                     {{-- === LOGO & KOP SURAT === --}}
                     <h4 class="card-title mb-3">
-                        <x-lucide-image class="icon me-1 text-primary" />
+                        
                         Logo &amp; Kop Surat
                     </h4>
 
@@ -160,7 +160,7 @@
 
                     {{-- === COVER & APPROVAL EDITOR === --}}
                     <h4 class="card-title mb-3 mt-4">
-                        <x-lucide-file-text class="icon me-1 text-purple" />
+                        
                         Cover &amp; Halaman Pengesahan
                     </h4>
 
@@ -200,7 +200,7 @@
 
                     {{-- === TIPOGRAFI (Family A) === --}}
                     <h4 class="card-title mb-3 mt-2">
-                        <x-lucide-type class="icon me-1 text-indigo" />
+                        
                         Tipografi — Surat &amp; Proposal (Keluarga A)
                     </h4>
 
@@ -286,7 +286,7 @@
 
                     {{-- === MARGIN HALAMAN === --}}
                     <h4 class="card-title mb-3 mt-2">
-                        <x-lucide-maximize class="icon me-1 text-orange" />
+                        
                         Margin Halaman
                     </h4>
 
@@ -326,7 +326,7 @@
 
                     {{-- === LAPORAN MODUL (Family B) === --}}
                     <h4 class="card-title mb-3 mt-2">
-                        <x-lucide-file-text class="icon me-1 text-success" />
+                        
                         Tipografi — Laporan Modul (Keluarga B)
                     </h4>
 
@@ -369,7 +369,7 @@
 
                     {{-- === LAPORAN AKHIR & PROPOSAL (Family C) === --}}
                     <h4 class="card-title mb-3 mt-2">
-                        <x-lucide-file-text class="icon me-1 text-purple" />
+                        
                         Tipografi — Usulan & Hasil (Keluarga C)
                     </h4>
 
@@ -485,14 +485,14 @@
                     <div class="card bg-light border-0 mb-3">
                         <div class="card-body d-flex align-items-center">
                             <span class="avatar bg-indigo-lt me-3">
-                                <x-lucide-settings class="icon" />
+                                
                             </span>
                             <div>
                                 <div class="fw-medium">Pengaturan Alur Tanda Tangan &amp; Bypass</div>
                                 <div class="text-muted small">
                                     Dikonfigurasi melalui
                                     <a href="#" wire:click.prevent="$parent.setActiveTab('feature-flags')" class="fw-semibold text-decoration-underline">
-                                        Tab Feature Flags <x-lucide-arrow-right class="icon icon-inline ms-1" />
+                                        Tab Feature Flags 
                                     </a>
                                 </div>
                             </div>
@@ -511,11 +511,11 @@
                     <div class="sticky-top" style="top: 1.5rem; z-index: 100;">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <h4 class="card-title mb-0">
-                                <x-lucide-monitor class="icon me-1 text-primary" />
+                                
                                 Pratinjau Instan (Real PDF)
                             </h4>
                             <button class="btn btn-sm btn-outline-primary" @click="refreshPreview()">
-                                <x-lucide-refresh-cw class="icon me-1" /> Segarkan
+                                 Segarkan
                             </button>
                         </div>
                         <p class="text-muted small mb-2">Pratinjau ini dirender menggunakan <strong>mesin PDF asli (DomPDF)</strong>. Data ditarik sinkron dari sistem backend.</p>
@@ -541,7 +541,7 @@
         <div x-show="activePdfTab === 'cache'" x-cloak>
             <div class="mb-3">
                 <h4 class="card-title">
-                    <x-lucide-hard-drive class="icon me-1 text-primary" />
+                    
                     Kelola Cache PDF
                 </h4>
                 <p class="text-muted">Cache PDF dibuat otomatis saat pertama kali dokumen diunduh dan disimpan sementara di server untuk mempercepat unduhan berikutnya. Membersihkan cache tidak menghapus dokumen — PDF akan di-generate ulang otomatis saat diunduh lagi.</p>
@@ -605,14 +605,14 @@
                         class="btn btn-danger"
                         @if($totalFiles === 0) disabled @endif
                     >
-                        <x-lucide-trash class="icon me-1" />
+                        
                         Bersihkan Semua ({{ $totalFiles }} file)
                     </button>
                 </div>
             </div>
 
             <div class="alert alert-info">
-                <x-lucide-info class="icon me-2" />
+                
                 <strong>Info:</strong> Cache PDF secara otomatis di-invalidasi saat dokumen sumbernya diperbarui (berdasarkan timestamp <code>updated_at</code>). Membersihkan cache manual hanya perlu dilakukan jika ada perubahan pengaturan tampilan PDF atau untuk membebaskan storage.
             </div>
         </div>
@@ -622,7 +622,7 @@
             <div class="d-flex align-items-start justify-content-between mb-3">
                 <div>
                     <h4 class="card-title mb-1">
-                        <x-lucide-layout-list class="icon me-1 text-primary" />
+                        
                         Daftar Modul &amp; Fitur Penghasil PDF
                     </h4>
                     <p class="text-muted mb-0">Klik <strong>Edit Detail</strong> untuk editor konten &amp; tipografi lengkap. Toggle <strong>Atur Override</strong> untuk perubahan cepat.</p>
@@ -632,7 +632,7 @@
                         <x-lucide-grid-3x3 class="icon" />
                     </button>
                     <button type="button" class="btn {{ $viewMode === 'table' ? 'btn-primary' : 'btn-outline-primary' }}" wire:click="$set('viewMode', 'table')" title="Tampilan Tabel">
-                        <x-lucide-list class="icon" />
+                        
                     </button>
                 </div>
             </div>
@@ -743,12 +743,12 @@
         <div class="mt-4 card">
             <div class="card-header">
                 <h4 class="card-title">
-                    <x-lucide-building class="icon me-1 text-primary" />
+                    
                     Data Institusi untuk Kop Surat & Laporan
                 </h4>
                 <div class="card-actions">
                     <a href="{{ url('/settings/master-data?group=academic-structure') }}" class="btn btn-outline-primary btn-sm">
-                        <x-lucide-external-link class="icon me-1" /> Edit di Master Data
+                         Edit di Master Data
                     </a>
                 </div>
             </div>
@@ -800,16 +800,16 @@
                         </div>
                         <div class="modal-body">
                             <div class="alert alert-info bg-info-lt">
-                                <x-lucide-info class="icon me-2" />
+                                
                                 <strong>Info:</strong> Pengaturan di bawah ini hanya akan diterapkan secara khusus pada dokumen <strong>{{ $editingModuleName }}</strong>, menimpa pengaturan global.
                             </div>
 
                             <ul class="nav nav-tabs nav-fill" data-bs-toggle="tabs">
                                 <li class="nav-item">
-                                    <a href="#tabs-override-content" class="nav-link active" data-bs-toggle="tab"><x-lucide-type class="icon me-2" /> Konten Teks Ekstra</a>
+                                    <a href="#tabs-override-content" class="nav-link active" data-bs-toggle="tab"> Konten Teks Ekstra</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="#tabs-override-cover" class="nav-link" data-bs-toggle="tab"><x-lucide-file-text class="icon me-2" /> Cover & Pengesahan</a>
+                                    <a href="#tabs-override-cover" class="nav-link" data-bs-toggle="tab"> Cover & Pengesahan</a>
                                 </li>
                             </ul>
 
@@ -831,7 +831,7 @@
                                 {{-- TAB 2: Cover & Pengesahan --}}
                                 <div class="tab-pane" id="tabs-override-cover">
                                     <div class="alert alert-warning bg-warning-lt">
-                                        <x-lucide-alert-triangle class="icon me-2" />
+                                        
                                         <strong>Penting:</strong> Fitur override cover saat ini hanya berlaku untuk tipe tampilan <code>cover</code> dan <code>approval</code>.
                                     </div>
                                     <div class="row g-3">
@@ -860,7 +860,7 @@
                             <div>
                                 <button type="button" class="btn me-2" wire:click="closeContentEditor">Batal</button>
                                 <button type="button" class="btn btn-primary" wire:click="saveContentEditor">
-                                    <x-lucide-save class="icon me-1" /> Simpan Konfigurasi
+                                     Simpan Konfigurasi
                                 </button>
                             </div>
                         </div>

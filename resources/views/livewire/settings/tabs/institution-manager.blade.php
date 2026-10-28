@@ -5,12 +5,12 @@
             <h3 class="card-title">Institusi</h3>
             <button type="button" class="btn btn-primary" wire:click='create' data-bs-toggle="modal"
                 data-bs-target="#modal-institution">
-                <x-lucide-plus class="icon" />
+                
                 Tambah Institusi
             </button>
         </div>
         <div class="alert alert-info mb-3">
-            <x-lucide-info class="icon me-2" />
+            
             Institusi yang memiliki <strong>pengguna, fakultas, atau program studi</strong> tidak dapat dihapus.
         </div>
         <div class="table-responsive">
@@ -29,7 +29,7 @@
                             <td>
                                 @if($item->code)
                                     <span class="badge bg-blue text-blue-fg" title="Kode PT SINTA">
-                                        <i class="ti ti-hash me-1 opacity-75"></i>{{ $item->code }}
+                                        {{ $item->code }}
                                     </span>
                                 @else
                                     <span class="text-muted small">-</span>

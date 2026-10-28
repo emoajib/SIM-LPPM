@@ -10,7 +10,7 @@
     
     <button type="button" class="mb-3 w-full btn btn-success @if(!$this->canSubmit) disabled @endif"
         @if($this->canSubmit) wire:click="confirmSubmit" @endif>
-        <x-lucide-send class="icon" />
+        
         {{ $buttonText }}
     </button>
 
@@ -18,7 +18,7 @@
         <x-tabler.modal id="confirmSubmitModal" title="{{ $modalTitle }}" component-id="{{ $this->getId() }}">
             <x-slot:body>
                 <div class="py-4 text-center">
-                    <x-lucide-send class="mb-2 text-success icon" style="width: 3rem; height: 3rem;" />
+                    
                     <h3>{{ $modalTitle }}</h3>
                     <div class="text-secondary">
                         {{ $modalText }}

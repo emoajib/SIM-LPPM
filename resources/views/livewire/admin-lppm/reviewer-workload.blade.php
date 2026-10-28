@@ -22,7 +22,7 @@
             </div>
             <div class="col-md-3">
                 <button class="btn btn-outline-secondary w-100" wire:click="resetFilters">
-                    <i class="ti ti-rotate"></i> Reset
+                     Reset
                 </button>
             </div>
         </div>

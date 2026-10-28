@@ -15,7 +15,7 @@
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-auto">
-                            <span class="bg-primary text-white avatar"><i class="ti ti-file-text fs-2"></i></span>
+                            <span class="bg-primary text-white avatar"></span>
                         </div>
                         <div class="col">
                             <div class="font-weight-medium">{{ $this->stats['total_submitted'] }} Laporan</div>
@@ -30,7 +30,7 @@
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-auto">
-                            <span class="bg-purple text-white avatar"><i class="ti ti-check fs-2"></i></span>
+                            <span class="bg-purple text-white avatar"></span>
                         </div>
                         <div class="col">
                             <div class="font-weight-medium text-purple">{{ $this->stats['ready_lppm'] }} Laporan</div>
@@ -45,7 +45,7 @@
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-auto">
-                            <span class="bg-info text-white avatar"><i class="ti ti-clock fs-2"></i></span>
+                            <span class="bg-info text-white avatar"></span>
                         </div>
                         <div class="col">
                             <div class="font-weight-medium text-info">{{ $this->stats['waiting_dekan'] }} Laporan</div>
@@ -60,7 +60,7 @@
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-auto">
-                            <span class="bg-success text-white avatar"><i class="ti ti-check-double fs-2"></i></span>
+                            <span class="bg-success text-white avatar"></span>
                         </div>
                         <div class="col">
                             <div class="font-weight-medium text-success">{{ $this->stats['approved_lppm'] }} Laporan</div>
@@ -77,7 +77,7 @@
         <div class="row row-cards mb-3">
             <div class="col-12">
                 <div class="alert alert-warning d-flex align-items-center gap-2 shadow-sm border-0 mb-0" role="alert">
-                    <i class="ti ti-alert-triangle fs-3 text-warning"></i>
+                    
                     <div>
                         <strong>{{ $this->stats['belum_laporan'] }} proposal</strong>
                         dari prodi Anda sudah disetujui/selesai namun <strong>belum mengajukan laporan akhir</strong>.
@@ -127,7 +127,7 @@
                         </div>
                         <div class="col-md-2">
                             <button type="button" class="btn btn-outline-secondary w-100" wire:click="resetFilters">
-                                <x-lucide-rotate-ccw class="icon me-1" /> Reset
+                                 Reset
                             </button>
                         </div>
                     </div>

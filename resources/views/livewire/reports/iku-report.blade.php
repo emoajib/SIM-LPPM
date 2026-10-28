@@ -7,17 +7,17 @@
         <div class="btn-list">
             <a href="{{ route('admin.iku.export-pdf', ['period' => $period, 'search' => $search, 'preview' => 1]) }}"
                 class="btn btn-outline-info shadow-sm" target="_blank" title="Tinjau PDF">
-                <i class="ti ti-eye me-2"></i>
+                
                 <span>{{ __('Tinjau PDF') }}</span>
             </a>
             <a href="{{ route('admin.iku.export-excel', ['period' => $period, 'search' => $search]) }}"
                 class="btn btn-outline-success shadow-sm" data-navigate-ignore="true" title="Unduh Excel">
-                <i class="ti ti-table me-2"></i>
+                
                 <span>{{ __('Unduh Excel') }}</span>
             </a>
             <a href="{{ route('admin.iku.export-pdf', ['period' => $period, 'search' => $search]) }}"
                 class="btn btn-outline-danger shadow-sm" data-navigate-ignore="true" title="Unduh PDF">
-                <i class="ti ti-file-type-pdf me-2"></i>
+                
                 <span>{{ __('Unduh PDF') }}</span>
             </a>
         </div>
@@ -31,7 +31,7 @@
                     <div class="col">
                         <div class="input-icon">
                             <span class="input-icon-addon">
-                                <i class="ti ti-search text-primary"></i>
+                                
                             </span>
                             <input type="text" wire:model.live.debounce.500ms="search" class="form-control"
                                 placeholder="Cari data detail IKU (Nama, Judul, dll)...">
@@ -40,7 +40,7 @@
                     <div class="col-auto">
                         <div class="dropdown">
                             <button class="btn btn-white dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
-                                <i class="ti ti-calendar-event me-2 text-primary"></i>
+                                
                                 Periode: <span class="fw-bold ms-1">{{ $period }}</span>
                             </button>
                             <div class="dropdown-menu dropdown-menu-end shadow-lg border-0">
@@ -55,7 +55,7 @@
                     </div>
                     <div class="col-auto">
                         <button class="btn btn-icon btn-white shadow-sm" wire:click="resetFilters" title="Reset Filter">
-                            <i class="ti ti-refresh text-secondary"></i>
+                            
                         </button>
                     </div>
                 </div>
@@ -95,14 +95,14 @@
                         <!-- Draft Preview Icon (Support System) -->
                         <a href="{{ route('admin.iku.export-pdf', array_merge($currentFilters, ['preview' => 1])) }}"
                             target="_blank" class="btn btn-outline-primary shadow-sm" title="Tinjau Draft PDF">
-                            <i class="ti ti-eye me-2"></i> Tinjau PDF
+                             Tinjau PDF
                         </a>
 
                         @if(active_role_is('kepala lppm') && (!$institutionalReport || in_array($institutionalReport->status, [\App\Enums\InstitutionalReportStatus::DRAFT, \App\Enums\InstitutionalReportStatus::REJECTED])))
                             <button class="btn btn-primary shadow-sm"
                                 wire:click="submitInstitutionalReport('iku', {{ $this->institutionalYear() }}, {{ json_encode($currentFilters) }})"
                                 wire:loading.attr="disabled">
-                                <i class="ti ti-send me-2"></i>
+                                
                                 Ajukan ke Rektor
                             </button>
                         @endif
@@ -110,12 +110,12 @@
                         @if(active_role_is('rektor') && ($institutionalReport?->status === \App\Enums\InstitutionalReportStatus::SUBMITTED))
                             <button class="btn btn-outline-danger shadow-sm" data-bs-toggle="modal"
                                 data-bs-target="#modal-reject-institutional">
-                                <i class="ti ti-x me-2"></i>
+                                
                                 Minta Perbaikan
                             </button>
                             <button class="btn btn-success shadow-sm" wire:click="approveInstitutionalReport('iku', {{ $this->institutionalYear() }})"
                                 wire:loading.attr="disabled">
-                                <i class="ti ti-circle-check me-2"></i>
+                                
                                 Setujui & Tanda Tangani
                             </button>
                         @endif
@@ -134,9 +134,9 @@
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                 <div class="badge bg-primary-lt">{{ $metric['code'] }}</div>
                                 @if($metric['achievement'] >= $metric['target'])
-                                    <i class="ti ti-circle-check text-success"></i>
+                                    
                                 @else
-                                    <i class="ti ti-circle-x text-warning"></i>
+                                    
                                 @endif
                             </div>
                             <div class="text-secondary small fw-medium mb-1 text-truncate" title="{{ $metric['name'] }}">
@@ -402,17 +402,17 @@
                                     <td class="text-center">
                                         @if($metric['achievement'] >= $metric['target'])
                                             <span class="badge bg-success-lt p-2">
-                                                <i class="ti ti-check me-1"></i> Tercapai
+                                                 Tercapai
                                             </span>
                                         @else
                                             <span class="badge bg-warning-lt p-2">
-                                                <i class="ti ti-alert-triangle me-1"></i> Belum
+                                                 Belum
                                             </span>
                                         @endif
                                     </td>
                                     <td>
                                         <button class="btn btn-icon btn-sm btn-ghost-primary" title="Lihat detail" aria-label="Lihat detail">
-                                            <i class="ti ti-chevron-right"></i>
+                                            
                                         </button>
                                     </td>
                                 </tr>

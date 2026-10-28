@@ -46,16 +46,16 @@
                                     @if($editingIndex === $index)
                                         <button type="button" wire:click="saveEditingMember" class="btn btn-sm btn-success"
                                             title="Simpan">
-                                            <x-lucide-check class="icon" />
+                                            
                                         </button>
                                         <button type="button" wire:click="cancelEditingMember"
                                             class="btn btn-sm btn-outline-secondary" title="Batal">
-                                            <x-lucide-x class="icon" />
+                                            
                                         </button>
                                     @else
                                         <button type="button" wire:click="startEditingMember({{ $index }})"
                                             class="btn-outline-primary btn btn-sm me-1" title="Edit Tugas">
-                                            <x-lucide-edit class="icon me-1" /> Edit
+                                             Edit
                                         </button>
                                         <button type="button" wire:click="openDeleteModal({{ $index }})"
                                             class="btn-outline-danger btn btn-sm" title="Hapus">
@@ -74,7 +74,7 @@
     <!-- Add Button -->
     <button type="button" class="btn btn-primary" wire:click="openAddModal" data-bs-toggle="modal"
         data-bs-target="#modal-add-member">
-        <x-lucide-plus class="icon" />
+        
         Tambah Anggota
     </button>
 
@@ -92,7 +92,7 @@
                     <label class="form-label mb-0" for="member_nidn">NIDN / NIP / NIM <span
                             class="text-danger">*</span></label>
                     <button type="button" class="btn btn-ghost-primary btn-sm" wire:click="toggleManual">
-                        <x-lucide-user-plus class="icon me-1" />
+                        
                         {{ $isManual ? 'Kembali ke Cari' : 'Input Manual (Dosen/Eksternal/Mahasiswa)' }}
                     </button>
                 </div>
@@ -102,7 +102,7 @@
                         <input id="member_nidn" type="text" class="form-control @error('member_nidn') is-invalid @enderror"
                             wire:model.live="member_nidn" placeholder="Masukkan NIDN, NIP, atau NIM">
                         <button class="btn-outline-primary btn" type="button" wire:click="checkMember" id="button-addon2">
-                            <x-lucide-search class="icon" />
+                            
                             Cek
                         </button>
                     </div>
@@ -220,7 +220,7 @@
                 Batal
             </button>
             <button type="button" wire:click="addMember" class="btn btn-primary" {{ !$memberFound ? 'disabled' : '' }}>
-                <x-lucide-plus class="icon" />
+                
                 Tambah
             </button>
         </x-slot:footer>
@@ -235,7 +235,7 @@
                 <x-slot:body>
                     <div class="text-center">
                         <div class="mb-3">
-                            <x-lucide-alert-triangle class="text-danger" style="width: 64px; height: 64px;" />
+                            
                         </div>
                         <h3 class="mb-2">Hapus Anggota?</h3>
                         <p class="text-muted">

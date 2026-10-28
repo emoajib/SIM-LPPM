@@ -26,7 +26,7 @@
                     <div class="list-group-item bg-warning-lt">
                         <div class="align-items-center row">
                             <div class="col-auto">
-                                <i class="ti ti-user-plus text-warning"></i>
+                                
                             </div>
                             <div class="text-truncate col">
                                 <a href="{{ route('notifications') }}"

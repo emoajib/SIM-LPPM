@@ -42,7 +42,7 @@
 
                         <div class="col-md-1">
                             <button type="button" class="btn btn-outline-secondary w-100" wire:click="resetFilters" title="Reset Filter">
-                                <x-lucide-rotate-ccw class="icon" />
+                                
                             </button>
                         </div>
                     </div>

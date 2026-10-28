@@ -5,7 +5,7 @@
     <x-slot:pageActions>
         <div class="btn-list">
             <a href="{{ route('community-service.final-report.index') }}" class="btn-outline-secondary btn" wire:navigate.hover>
-                <x-lucide-arrow-left class="icon" />
+                
                 Kembali
             </a>
             @if ($progressReport && $progressReport->reporting_period === 'final')
@@ -13,23 +13,23 @@
                     href="{{ route('reports.export-pdf', ['proposal' => $proposal, 'type' => 'final', 'preview' => 1]) }}" target="_blank"
                     class="btn btn-outline-info shadow-sm"
                     title="Pratinjau Laporan Akhir (Pastikan draft telah disimpan agar seluruh lampiran terlampir)">
-                    <i class="ti ti-eye me-2"></i>
+                    
                     Tinjau PDF
                 </a>
                 <a data-navigate-ignore="true"
                     href="{{ route('reports.export-pdf', ['proposal' => $proposal, 'type' => 'final', 'download' => 'true']) }}"
                     class="btn btn-primary shadow-sm">
-                    <x-lucide-download class="icon me-2" />
+                    
                     Unduh Laporan Akhir
                 </a>
                 <a data-navigate-ignore="true"
                     href="{{ route('financial-reports.export-pdf', ['proposal' => $proposal, 'download' => 'true']) }}"
                     class="btn btn-outline-success shadow-sm">
-                    <x-lucide-file-spreadsheet class="icon me-2" />
+                    
                     Unduh Laporan Keuangan
                 </a>
                 <button type="button" wire:click="doCheckCompleteness" class="btn btn-outline-warning shadow-sm">
-                    <x-lucide-search-check class="icon me-1" />
+                    
                     Cek Kelengkapan
                 </button>
             @endif
@@ -60,7 +60,7 @@
             <div class="card mb-3 border-info shadow-sm">
                 <div class="card-header bg-info-lt d-flex justify-content-between align-items-center py-2">
                     <h3 class="card-title text-info mb-0 fs-4">
-                        <x-lucide-file-text class="icon me-2" />
+                        
                         Nomor Kontrak Pengabdian (Admin LPPM)
                     </h3>
                     @if($proposal->contract_number)
@@ -83,7 +83,7 @@
                         </div>
                         <div class="col-md-2">
                             <button type="button" wire:click="saveContract" wire:loading.attr="disabled" class="btn btn-info w-100">
-                                <span wire:loading.remove wire:target="saveContract"><x-lucide-save class="icon me-1" /> Simpan</span>
+                                <span wire:loading.remove wire:target="saveContract"> Simpan</span>
                                 <span wire:loading wire:target="saveContract"><span class="spinner-border spinner-border-sm"></span></span>
                             </button>
                         </div>
@@ -110,7 +110,7 @@
                         <div class="d-flex align-items-center justify-content-between mb-3">
                             <div>
                                 <h3 class="card-title text-primary mb-1">
-                                    <x-lucide-check-circle class="icon me-2" />
+                                    
                                     Butuh Persetujuan Anda
                                 </h3>
                                 <p class="text-secondary mb-0">
@@ -120,12 +120,12 @@
                             <div class="btn-list">
                                 <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
                                     data-bs-target="#modalReject">
-                                    <x-lucide-x-circle class="icon me-1" />
+                                    
                                     Tolak Laporan
                                 </button>
                                 <button type="button" class="btn btn-primary" wire:click="approve" wire:loading.attr="disabled">
                                     <span wire:loading.remove wire:target="approve">
-                                        <x-lucide-check-circle class="icon me-1" />
+                                        
                                         Setujui Laporan
                                     </span>
                                     <span wire:loading wire:target="approve">
@@ -146,7 +146,7 @@
                                 Dosen (Diajukan)</div>
                             @if ($isRejected)
                                 <div class="step-item active text-danger">
-                                    <x-lucide-x-circle class="icon icon-sm" /> Ditolak</div>
+                                     Ditolak</div>
                             @else
                                 <div
                                     class="step-item {{ !in_array($progressReport->status, [\App\Enums\ReportStatus::DRAFT, \App\Enums\ReportStatus::SUBMITTED]) ? 'active' : '' }}">
@@ -171,7 +171,7 @@
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
                                 <h3 class="card-title text-warning mb-1">
-                                    <x-lucide-rotate-ccw class="icon me-2" />
+                                    
                                     Laporan Sudah Disahkan
                                 </h3>
                                 <p class="text-secondary mb-0">
@@ -181,7 +181,7 @@
                             <div class="btn-list">
                                 <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal"
                                     data-bs-target="#modalReject">
-                                    <x-lucide-rotate-ccw class="icon me-1" />
+                                    
                                     Kembalikan ke Dosen
                                 </button>
                             </div>
@@ -196,7 +196,7 @@
             <div class="alert alert-danger mb-3" role="alert">
                 <div class="d-flex">
                     <div>
-                        <x-lucide-x-circle class="icon alert-icon" />
+                        
                     </div>
                     <div class="w-100">
                         <h4 class="alert-title">Laporan Akhir Ditolak</h4>
@@ -211,7 +211,7 @@
                             </blockquote>
                             @if ($progressReport->rejected_at)
                                 <small class="text-muted">
-                                    <x-lucide-clock class="icon icon-sm" />
+                                    
                                     Ditolak {{ $progressReport->rejected_at->diffForHumans() }}
                                     ({{ $progressReport->rejected_at->format('d M Y H:i') }})
                                 </small>
@@ -239,7 +239,7 @@
             <div class="alert alert-info" role="alert">
                 <div class="d-flex">
                     <div>
-                        <x-lucide-info class="icon alert-icon" />
+                        
                     </div>
                     <div>
                         <h4 class="alert-title">Panduan Pengisian Laporan Akhir PKM</h4>
@@ -285,7 +285,7 @@
         <div class="card mb-3 shadow-sm border-primary">
             <div class="card-header bg-primary-lt d-flex justify-content-between align-items-center py-2">
                 <h3 class="card-title text-primary mb-0 fs-4">
-                    <x-lucide-check-square class="icon me-2" />
+                    
                     Checklist Kelengkapan Berkas Substansi & Lampiran PKM (Lampiran 1 s.d. 12)
                 </h3>
                 <div class="d-flex align-items-center gap-2">
@@ -315,9 +315,9 @@
                                 <td><span class="badge bg-secondary-lt">Upload PDF</span></td>
                                 <td class="text-center">
                                     @if($hasSubstance)
-                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Lengkap</span>
+                                        <span class="badge bg-success"> Lengkap</span>
                                     @else
-                                        <span class="badge bg-danger"><x-lucide-alert-circle class="icon icon-inline me-1" /> Belum Diunggah</span>
+                                        <span class="badge bg-danger"> Belum Diunggah</span>
                                     @endif
                                 </td>
                                 <td>
@@ -331,7 +331,7 @@
                                 <td class="text-center">
                                     @if($hasSubstance && $subMedia)
                                         <a href="{{ route('media.download', $subMedia) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh Berkas Substansi">
-                                            <x-lucide-download class="icon" />
+                                            
                                         </a>
                                     @else
                                         -
@@ -345,9 +345,9 @@
                                 <td><span class="badge bg-blue-lt">Otomatis Sistem</span></td>
                                 <td class="text-center">
                                     @if($hasBudget)
-                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Siap Cetak</span>
+                                        <span class="badge bg-success"> Siap Cetak</span>
                                     @else
-                                        <span class="badge bg-warning"><x-lucide-alert-triangle class="icon icon-inline me-1" /> Kosong</span>
+                                        <span class="badge bg-warning"> Kosong</span>
                                     @endif
                                 </td>
                                 <td><small class="text-muted">Tabel rekapitulasi realisasi anggaran otomatis digenerate ke PDF</small></td>
@@ -359,7 +359,7 @@
                                 <td><strong>Lampiran 2. Format Biodata Ketua & Anggota Tim Pengusul</strong></td>
                                 <td><span class="badge bg-blue-lt">Otomatis Sistem</span></td>
                                 <td class="text-center">
-                                    <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Siap Cetak</span>
+                                    <span class="badge bg-success"> Siap Cetak</span>
                                 </td>
                                 <td><small class="text-muted">{{ $proposal->teamMembers->count() }} Anggota tim terdaftar</small></td>
                                 <td class="text-center"><span class="badge bg-light text-muted">Auto</span></td>
@@ -371,9 +371,9 @@
                                 <td><span class="badge bg-secondary-lt">Upload PDF/Gambar</span></td>
                                 <td class="text-center">
                                     @if($hasL3)
-                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Lengkap</span>
+                                        <span class="badge bg-success"> Lengkap</span>
                                     @else
-                                        <span class="badge bg-warning"><x-lucide-alert-triangle class="icon icon-inline me-1" /> Belum Diunggah</span>
+                                        <span class="badge bg-warning"> Belum Diunggah</span>
                                     @endif
                                 </td>
                                 <td>
@@ -386,7 +386,7 @@
                                 </td>
                                 <td class="text-center">
                                     @if($hasL3 && $m3)
-                                        <a href="{{ route('media.download', $m3) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"><x-lucide-download class="icon" /></a>
+                                        <a href="{{ route('media.download', $m3) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"></a>
                                     @else - @endif
                                 </td>
                             </tr>
@@ -397,9 +397,9 @@
                                 <td><span class="badge bg-secondary-lt">Upload PDF</span></td>
                                 <td class="text-center">
                                     @if($hasL4)
-                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Lengkap</span>
+                                        <span class="badge bg-success"> Lengkap</span>
                                     @else
-                                        <span class="badge bg-warning"><x-lucide-alert-triangle class="icon icon-inline me-1" /> Belum Diunggah</span>
+                                        <span class="badge bg-warning"> Belum Diunggah</span>
                                     @endif
                                 </td>
                                 <td>
@@ -412,7 +412,7 @@
                                 </td>
                                 <td class="text-center">
                                     @if($hasL4 && $m4)
-                                        <a href="{{ route('media.download', $m4) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"><x-lucide-download class="icon" /></a>
+                                        <a href="{{ route('media.download', $m4) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"></a>
                                     @else - @endif
                                 </td>
                             </tr>
@@ -423,9 +423,9 @@
                                 <td><span class="badge bg-secondary-lt">Upload PDF/Gambar</span></td>
                                 <td class="text-center">
                                     @if($hasL5)
-                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Lengkap</span>
+                                        <span class="badge bg-success"> Lengkap</span>
                                     @else
-                                        <span class="badge bg-warning"><x-lucide-alert-triangle class="icon icon-inline me-1" /> Belum Diunggah</span>
+                                        <span class="badge bg-warning"> Belum Diunggah</span>
                                     @endif
                                 </td>
                                 <td>
@@ -438,7 +438,7 @@
                                 </td>
                                 <td class="text-center">
                                     @if($hasL5 && $m5)
-                                        <a href="{{ route('media.download', $m5) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"><x-lucide-download class="icon" /></a>
+                                        <a href="{{ route('media.download', $m5) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"></a>
                                     @else - @endif
                                 </td>
                             </tr>
@@ -449,9 +449,9 @@
                                 <td><span class="badge bg-secondary-lt">Upload PDF</span></td>
                                 <td class="text-center">
                                     @if($hasL6)
-                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Lengkap</span>
+                                        <span class="badge bg-success"> Lengkap</span>
                                     @else
-                                        <span class="badge bg-warning"><x-lucide-alert-triangle class="icon icon-inline me-1" /> Belum Diunggah</span>
+                                        <span class="badge bg-warning"> Belum Diunggah</span>
                                     @endif
                                 </td>
                                 <td>
@@ -464,7 +464,7 @@
                                 </td>
                                 <td class="text-center">
                                     @if($hasL6 && $m6)
-                                        <a href="{{ route('media.download', $m6) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"><x-lucide-download class="icon" /></a>
+                                        <a href="{{ route('media.download', $m6) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"></a>
                                     @else - @endif
                                 </td>
                             </tr>
@@ -475,9 +475,9 @@
                                 <td><span class="badge bg-secondary-lt">Upload PDF</span></td>
                                 <td class="text-center">
                                     @if($hasL7)
-                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Lengkap</span>
+                                        <span class="badge bg-success"> Lengkap</span>
                                     @else
-                                        <span class="badge bg-warning"><x-lucide-alert-triangle class="icon icon-inline me-1" /> Belum Diunggah</span>
+                                        <span class="badge bg-warning"> Belum Diunggah</span>
                                     @endif
                                 </td>
                                 <td>
@@ -490,7 +490,7 @@
                                 </td>
                                 <td class="text-center">
                                     @if($hasL7 && $m7)
-                                        <a href="{{ route('media.download', $m7) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"><x-lucide-download class="icon" /></a>
+                                        <a href="{{ route('media.download', $m7) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"></a>
                                     @else - @endif
                                 </td>
                             </tr>
@@ -501,9 +501,9 @@
                                 <td><span class="badge bg-secondary-lt">Upload PDF</span></td>
                                 <td class="text-center">
                                     @if($hasL8)
-                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Lengkap</span>
+                                        <span class="badge bg-success"> Lengkap</span>
                                     @else
-                                        <span class="badge bg-warning"><x-lucide-alert-triangle class="icon icon-inline me-1" /> Belum Diunggah</span>
+                                        <span class="badge bg-warning"> Belum Diunggah</span>
                                     @endif
                                 </td>
                                 <td>
@@ -516,7 +516,7 @@
                                 </td>
                                 <td class="text-center">
                                     @if($hasL8 && $m8)
-                                        <a href="{{ route('media.download', $m8) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"><x-lucide-download class="icon" /></a>
+                                        <a href="{{ route('media.download', $m8) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"></a>
                                     @else - @endif
                                 </td>
                             </tr>
@@ -527,9 +527,9 @@
                                 <td><span class="badge bg-secondary-lt">Upload PDF</span></td>
                                 <td class="text-center">
                                     @if($hasL9)
-                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Lengkap</span>
+                                        <span class="badge bg-success"> Lengkap</span>
                                     @else
-                                        <span class="badge bg-warning"><x-lucide-alert-triangle class="icon icon-inline me-1" /> Belum Diunggah</span>
+                                        <span class="badge bg-warning"> Belum Diunggah</span>
                                     @endif
                                 </td>
                                 <td>
@@ -542,7 +542,7 @@
                                 </td>
                                 <td class="text-center">
                                     @if($hasL9 && $m9)
-                                        <a href="{{ route('media.download', $m9) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"><x-lucide-download class="icon" /></a>
+                                        <a href="{{ route('media.download', $m9) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"></a>
                                     @else - @endif
                                 </td>
                             </tr>
@@ -553,9 +553,9 @@
                                 <td><span class="badge bg-secondary-lt">Upload PDF</span></td>
                                 <td class="text-center">
                                     @if($hasL10)
-                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Lengkap</span>
+                                        <span class="badge bg-success"> Lengkap</span>
                                     @else
-                                        <span class="badge bg-warning"><x-lucide-alert-triangle class="icon icon-inline me-1" /> Belum Diunggah</span>
+                                        <span class="badge bg-warning"> Belum Diunggah</span>
                                     @endif
                                 </td>
                                 <td>
@@ -568,7 +568,7 @@
                                 </td>
                                 <td class="text-center">
                                     @if($hasL10 && $m10)
-                                        <a href="{{ route('media.download', $m10) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"><x-lucide-download class="icon" /></a>
+                                        <a href="{{ route('media.download', $m10) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"></a>
                                     @else - @endif
                                 </td>
                             </tr>
@@ -579,9 +579,9 @@
                                 <td><span class="badge bg-secondary-lt">Upload PDF/PPT</span></td>
                                 <td class="text-center">
                                     @if($hasL11)
-                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Lengkap</span>
+                                        <span class="badge bg-success"> Lengkap</span>
                                     @else
-                                        <span class="badge bg-warning"><x-lucide-alert-triangle class="icon icon-inline me-1" /> Belum Diunggah</span>
+                                        <span class="badge bg-warning"> Belum Diunggah</span>
                                     @endif
                                 </td>
                                 <td>
@@ -594,7 +594,7 @@
                                 </td>
                                 <td class="text-center">
                                     @if($hasL11 && $m11)
-                                        <a href="{{ route('media.download', $m11) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"><x-lucide-download class="icon" /></a>
+                                        <a href="{{ route('media.download', $m11) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"></a>
                                     @else - @endif
                                 </td>
                             </tr>
@@ -605,9 +605,9 @@
                                 <td><span class="badge bg-secondary-lt">Upload Berkas Foto</span></td>
                                 <td class="text-center">
                                     @if($hasL12)
-                                        <span class="badge bg-success"><x-lucide-check class="icon icon-inline me-1" /> Lengkap</span>
+                                        <span class="badge bg-success"> Lengkap</span>
                                     @else
-                                        <span class="badge bg-warning"><x-lucide-alert-triangle class="icon icon-inline me-1" /> Belum Diunggah</span>
+                                        <span class="badge bg-warning"> Belum Diunggah</span>
                                     @endif
                                 </td>
                                 <td>
@@ -620,7 +620,7 @@
                                 </td>
                                 <td class="text-center">
                                     @if($hasL12 && $m12)
-                                        <a href="{{ route('media.download', $m12) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"><x-lucide-download class="icon" /></a>
+                                        <a href="{{ route('media.download', $m12) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"></a>
                                     @else - @endif
                                 </td>
                             </tr>
@@ -637,7 +637,7 @@
             <div class="alert alert-danger alert-dismissible mb-3" role="alert">
                 <div class="d-flex">
                     <div>
-                        <x-lucide-alert-circle class="icon alert-icon" />
+                        
                     </div>
                     <div>
                         <h4 class="alert-title">Terdapat kesalahan!</h4>
@@ -657,7 +657,7 @@
         <!-- Ringkasan & Kata Kunci -->
         <div class="card mb-3">
             <div class="card-header">
-                <h3 class="card-title"><x-lucide-file-text class="icon me-2" />Ringkasan & Kata Kunci</h3>
+                <h3 class="card-title">Ringkasan & Kata Kunci</h3>
             </div>
             <div class="card-body">
                 <div class="mb-3">
@@ -703,7 +703,7 @@
         <!-- Dokumen Laporan Akhir -->
         <div class="card mb-3">
             <div class="card-header">
-                <h3 class="card-title"><x-lucide-file-text class="icon me-2" />Dokumen Laporan Akhir</h3>
+                <h3 class="card-title">Dokumen Laporan Akhir</h3>
             </div>
             <div class="card-body">
                 <div class="mb-3">
@@ -711,7 +711,7 @@
                         <label class="form-label mb-0 required">File Substansi (PDF)</label>
                         @if($this->templateUrl)
                             <a href="{{ $this->templateUrl }}" class="btn btn-link btn-sm p-0" target="_blank">
-                                <x-lucide-download class="icon icon-sm" /> Unduh Template
+                                 Unduh Template
                             </a>
                         @endif
                     </div>
@@ -734,7 +734,7 @@
                         <div class="alert alert-info mb-0 mt-2">
                             <div class="d-flex align-items-center justify-content-between">
                                 <div>
-                                    <x-lucide-file-warning class="text-info icon me-2" />
+                                    
                                     <strong>{{ $substanceFile->getClientOriginalName() }}</strong>
                                     <small class="text-muted ms-2">
                                         ({{ number_format($substanceFile->getSize() / 1024, 1) }} KB)
@@ -744,11 +744,11 @@
                                 <div class="btn-group btn-group-sm" role="group">
                                     <a href="{{ $substanceFile->temporaryUrl() }}" target="_blank"
                                         class="btn btn-sm btn-outline-primary">
-                                        <x-lucide-eye class="icon" /> Cek File
+                                         Cek File
                                     </a>
                                     <button type="button" wire:click="saveSubstanceFileNow"
                                         wire:loading.attr="disabled" class="btn btn-sm btn-success">
-                                        <x-lucide-save class="icon" /> Simpan
+                                         Simpan
                                     </button>
                                 </div>
                             </div>
@@ -762,7 +762,7 @@
                         <div class="alert alert-success mb-0 mt-2">
                             <div class="d-flex align-items-center justify-content-between">
                                 <div>
-                                    <x-lucide-file-check class="text-success icon me-2" />
+                                    
                                     <strong>{{ $media->name }}</strong>
                                     <small class="text-muted ms-2">({{ $media->human_readable_size }})</small>
                                 </div>
@@ -770,7 +770,7 @@
                                     <a data-navigate-ignore="true"
                                         href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
                                         target="_blank" class="btn btn-sm btn-primary">
-                                        <x-lucide-eye class="icon" /> Lihat
+                                         Lihat
                                     </a>
                                     @if ($canEdit)
                                         <button type="button" wire:click="removeSubstanceFile"
@@ -809,7 +809,7 @@
                         <div class="alert alert-success mb-0 mt-2">
                             <div class="d-flex align-items-center justify-content-between">
                                 <div>
-                                    <x-lucide-file-check class="text-success icon me-2" />
+                                    
                                     <strong>{{ $media->name }}</strong>
                                     <small class="text-muted ms-2">({{ $media->human_readable_size }})</small>
                                 </div>
@@ -817,7 +817,7 @@
                                     <a data-navigate-ignore="true"
                                         href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
                                         target="_blank" class="btn btn-sm btn-primary">
-                                        <x-lucide-eye class="icon" /> Lihat
+                                         Lihat
                                     </a>
                                     @if ($canEdit)
                                         <button type="button" wire:click="removeRealizationFile"
@@ -856,7 +856,7 @@
                         <div class="alert alert-success mb-0 mt-2">
                             <div class="d-flex align-items-center justify-content-between">
                                 <div>
-                                    <x-lucide-file-check class="text-success icon me-2" />
+                                    
                                     <strong>{{ $media->name }}</strong>
                                     <small class="text-muted ms-2">({{ $media->human_readable_size }})</small>
                                 </div>
@@ -864,7 +864,7 @@
                                     <a data-navigate-ignore="true"
                                         href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
                                         target="_blank" class="btn btn-sm btn-primary">
-                                        <x-lucide-eye class="icon" /> Lihat
+                                         Lihat
                                     </a>
                                     @if ($canEdit)
                                         <button type="button" wire:click="removeRpsFile"
@@ -884,7 +884,7 @@
                             <label class="form-label mb-0 required">Halaman Pengesahan (Scan Tanda Tangan Fisik)</label>
                             <button type="button" wire:click="downloadReportApprovalPageTemplate"
                                 class="btn btn-link btn-sm p-0">
-                                <x-lucide-download class="icon icon-sm" /> Unduh Template Halaman Pengesahan
+                                 Unduh Template Halaman Pengesahan
                             </button>
                         </div>
                         <input type="file" wire:model="signatureFile"
@@ -909,7 +909,7 @@
                             <div class="bg-blue-lt mt-2 rounded border p-2">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div>
-                                        <x-lucide-file-check class="text-blue icon me-2" />
+                                        
                                         <strong>{{ $media->name }}</strong>
                                         <small class="text-muted ms-2">({{ $media->human_readable_size }})</small>
                                     </div>
@@ -917,7 +917,7 @@
                                         <a data-navigate-ignore="true"
                                             href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
                                             target="_blank" class="btn btn-sm btn-primary">
-                                            <x-lucide-eye class="icon" /> Lihat
+                                             Lihat
                                         </a>
                                         @if ($canEdit)
                                             <button type="button" wire:click="removeSignatureFile"
@@ -942,7 +942,7 @@
         <div class="card mb-3">
             <div class="card-header bg-azure-lt py-2">
                 <h3 class="card-title text-azure mb-0">
-                    <x-lucide-paperclip class="icon me-2" />
+                    
                     Berkas Lampiran Pengabdian (Lampiran 3 s/d 12)
                 </h3>
             </div>
@@ -961,14 +961,14 @@
                         </div>
                         @if ($partnerAgreementFile instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile)
                             <div class="alert alert-info py-1 px-2 mt-1 mb-0 small">
-                                <x-lucide-file-check class="icon icon-inline me-1 text-info" />
+                                
                                 <strong>{{ $partnerAgreementFile->getClientOriginalName() }}</strong> (Siap disimpan)
                             </div>
                         @endif
                         @if ($progressReport && $progressReport->hasMedia('partner_agreement_letter'))
                             @php $media = $progressReport->getFirstMedia('partner_agreement_letter'); @endphp
                             <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
-                                <small class="text-success text-truncate"><x-lucide-check class="icon icon-sm" /> {{ $media->name }}</small>
+                                <small class="text-success text-truncate"> {{ $media->name }}</small>
                                 <div class="d-flex gap-2 align-items-center">
                                     <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
                                     @if ($canEdit)
@@ -988,14 +988,14 @@
                         </div>
                         @if ($chairpersonStatementFile instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile)
                             <div class="alert alert-info py-1 px-2 mt-1 mb-0 small">
-                                <x-lucide-file-check class="icon icon-inline me-1 text-info" />
+                                
                                 <strong>{{ $chairpersonStatementFile->getClientOriginalName() }}</strong> (Siap disimpan)
                             </div>
                         @endif
                         @if ($progressReport && $progressReport->hasMedia('chairperson_statement_letter'))
                             @php $media = $progressReport->getFirstMedia('chairperson_statement_letter'); @endphp
                             <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
-                                <small class="text-success text-truncate"><x-lucide-check class="icon icon-sm" /> {{ $media->name }}</small>
+                                <small class="text-success text-truncate"> {{ $media->name }}</small>
                                 <div class="d-flex gap-2 align-items-center">
                                     <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
                                     @if ($canEdit)
@@ -1015,14 +1015,14 @@
                         </div>
                         @if ($serviceLocationMapFile instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile)
                             <div class="alert alert-info py-1 px-2 mt-1 mb-0 small">
-                                <x-lucide-file-check class="icon icon-inline me-1 text-info" />
+                                
                                 <strong>{{ $serviceLocationMapFile->getClientOriginalName() }}</strong> (Siap disimpan)
                             </div>
                         @endif
                         @if ($progressReport && $progressReport->hasMedia('service_location_map'))
                             @php $media = $progressReport->getFirstMedia('service_location_map'); @endphp
                             <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
-                                <small class="text-success text-truncate"><x-lucide-check class="icon icon-sm" /> {{ $media->name }}</small>
+                                <small class="text-success text-truncate"> {{ $media->name }}</small>
                                 <div class="d-flex gap-2 align-items-center">
                                     <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
                                     @if ($canEdit)
@@ -1042,14 +1042,14 @@
                         </div>
                         @if ($officialReportPkmFile instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile)
                             <div class="alert alert-info py-1 px-2 mt-1 mb-0 small">
-                                <x-lucide-file-check class="icon icon-inline me-1 text-info" />
+                                
                                 <strong>{{ $officialReportPkmFile->getClientOriginalName() }}</strong> (Siap disimpan)
                             </div>
                         @endif
                         @if ($progressReport && $progressReport->hasMedia('official_report_pkm'))
                             @php $media = $progressReport->getFirstMedia('official_report_pkm'); @endphp
                             <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
-                                <small class="text-success text-truncate"><x-lucide-check class="icon icon-sm" /> {{ $media->name }}</small>
+                                <small class="text-success text-truncate"> {{ $media->name }}</small>
                                 <div class="d-flex gap-2 align-items-center">
                                     <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
                                     @if ($canEdit)
@@ -1069,14 +1069,14 @@
                         </div>
                         @if ($assignmentLetterPkmFile instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile)
                             <div class="alert alert-info py-1 px-2 mt-1 mb-0 small">
-                                <x-lucide-file-check class="icon icon-inline me-1 text-info" />
+                                
                                 <strong>{{ $assignmentLetterPkmFile->getClientOriginalName() }}</strong> (Siap disimpan)
                             </div>
                         @endif
                         @if ($progressReport && $progressReport->hasMedia('assignment_letter_pkm'))
                             @php $media = $progressReport->getFirstMedia('assignment_letter_pkm'); @endphp
                             <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
-                                <small class="text-success text-truncate"><x-lucide-check class="icon icon-sm" /> {{ $media->name }}</small>
+                                <small class="text-success text-truncate"> {{ $media->name }}</small>
                                 <div class="d-flex gap-2 align-items-center">
                                     <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
                                     @if ($canEdit)
@@ -1096,14 +1096,14 @@
                         </div>
                         @if ($questionnairePkmFile instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile)
                             <div class="alert alert-info py-1 px-2 mt-1 mb-0 small">
-                                <x-lucide-file-check class="icon icon-inline me-1 text-info" />
+                                
                                 <strong>{{ $questionnairePkmFile->getClientOriginalName() }}</strong> (Siap disimpan)
                             </div>
                         @endif
                         @if ($progressReport && $progressReport->hasMedia('questionnaire_pkm'))
                             @php $media = $progressReport->getFirstMedia('questionnaire_pkm'); @endphp
                             <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
-                                <small class="text-success text-truncate"><x-lucide-check class="icon icon-sm" /> {{ $media->name }}</small>
+                                <small class="text-success text-truncate"> {{ $media->name }}</small>
                                 <div class="d-flex gap-2 align-items-center">
                                     <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
                                     @if ($canEdit)
@@ -1123,14 +1123,14 @@
                         </div>
                         @if ($teamAttendanceFile instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile)
                             <div class="alert alert-info py-1 px-2 mt-1 mb-0 small">
-                                <x-lucide-file-check class="icon icon-inline me-1 text-info" />
+                                
                                 <strong>{{ $teamAttendanceFile->getClientOriginalName() }}</strong> (Siap disimpan)
                             </div>
                         @endif
                         @if ($progressReport && $progressReport->hasMedia('team_attendance_list'))
                             @php $media = $progressReport->getFirstMedia('team_attendance_list'); @endphp
                             <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
-                                <small class="text-success text-truncate"><x-lucide-check class="icon icon-sm" /> {{ $media->name }}</small>
+                                <small class="text-success text-truncate"> {{ $media->name }}</small>
                                 <div class="d-flex gap-2 align-items-center">
                                     <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
                                     @if ($canEdit)
@@ -1150,14 +1150,14 @@
                         </div>
                         @if ($participantAttendanceFile instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile)
                             <div class="alert alert-info py-1 px-2 mt-1 mb-0 small">
-                                <x-lucide-file-check class="icon icon-inline me-1 text-info" />
+                                
                                 <strong>{{ $participantAttendanceFile->getClientOriginalName() }}</strong> (Siap disimpan)
                             </div>
                         @endif
                         @if ($progressReport && $progressReport->hasMedia('participant_attendance_list'))
                             @php $media = $progressReport->getFirstMedia('participant_attendance_list'); @endphp
                             <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
-                                <small class="text-success text-truncate"><x-lucide-check class="icon icon-sm" /> {{ $media->name }}</small>
+                                <small class="text-success text-truncate"> {{ $media->name }}</small>
                                 <div class="d-flex gap-2 align-items-center">
                                     <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
                                     @if ($canEdit)
@@ -1177,14 +1177,14 @@
                         </div>
                         @if ($trainingMaterialFile instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile)
                             <div class="alert alert-info py-1 px-2 mt-1 mb-0 small">
-                                <x-lucide-file-check class="icon icon-inline me-1 text-info" />
+                                
                                 <strong>{{ $trainingMaterialFile->getClientOriginalName() }}</strong> (Siap disimpan)
                             </div>
                         @endif
                         @if ($progressReport && $progressReport->hasMedia('training_material_pkm'))
                             @php $media = $progressReport->getFirstMedia('training_material_pkm'); @endphp
                             <div class="d-flex align-items-center justify-content-between mt-1 p-1 bg-light rounded">
-                                <small class="text-success text-truncate"><x-lucide-check class="icon icon-sm" /> {{ $media->name }}</small>
+                                <small class="text-success text-truncate"> {{ $media->name }}</small>
                                 <div class="d-flex gap-2 align-items-center">
                                     <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-link p-0">Lihat</a>
                                     @if ($canEdit)
@@ -1204,14 +1204,14 @@
                         </div>
                         @if (! empty($activityPhotosFiles))
                             <div class="alert alert-info py-1 px-2 mt-1 mb-0 small">
-                                <x-lucide-file-check class="icon icon-inline me-1 text-info" />
+                                
                                 <strong>{{ count($activityPhotosFiles) }} berkas dipilih</strong> (Siap disimpan)
                             </div>
                         @endif
                         @if ($progressReport && $progressReport->hasMedia('activity_photos_pkm'))
                             <div class="mt-1 p-1 bg-light rounded">
                                 <div class="d-flex align-items-center justify-content-between mb-1">
-                                    <small class="text-success"><x-lucide-check class="icon icon-sm" /> {{ $progressReport->getMedia('activity_photos_pkm')->count() }} Foto/Berkas tersimpan:</small>
+                                    <small class="text-success"> {{ $progressReport->getMedia('activity_photos_pkm')->count() }} Foto/Berkas tersimpan:</small>
                                     @if ($canEdit)
                                         <button type="button" wire:click="removeActivityPhotosFiles" class="btn btn-sm btn-link text-danger p-0" wire:confirm="Hapus semua foto kegiatan?">Hapus Semua</button>
                                     @endif
@@ -1232,7 +1232,7 @@
         {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
         <div class="card mb-3">
             <div class="card-header">
-                <h3 class="card-title"><x-lucide-users class="icon me-2" />Perubahan Mitra</h3>
+                <h3 class="card-title">Perubahan Mitra</h3>
             </div>
             <div class="card-body">
                 <div class="mb-3">
@@ -1270,7 +1270,7 @@
                             <div class="alert alert-success mb-0 mt-2 p-2">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="text-truncate me-2">
-                                        <x-lucide-file-check class="text-success icon me-1" />
+                                        
                                         <strong>{{ $media->name }}</strong>
                                         <small class="text-muted ms-1">({{ $media->human_readable_size }})</small>
                                     </div>
@@ -1278,7 +1278,7 @@
                                         <a data-navigate-ignore="true"
                                             href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}"
                                             target="_blank" class="btn btn-sm btn-primary">
-                                            <x-lucide-eye class="icon" /> Lihat
+                                             Lihat
                                         </a>
                                         @if ($canEdit)
                                             <button type="button" wire:click="removeCooperationProofFile"
@@ -1316,7 +1316,7 @@
                             <div class="alert alert-success mb-0 mt-2 p-2">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="text-truncate me-2">
-                                        <x-lucide-file-check class="text-success icon me-1" />
+                                        
                                         <strong>{{ $media->name }}</strong>
                                         <small class="text-muted ms-1">({{ $media->human_readable_size }})</small>
                                     </div>
@@ -1324,7 +1324,7 @@
                                         <a data-navigate-ignore="true"
                                             href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(5), ['media' => $media]) }}"
                                             target="_blank" class="btn btn-sm btn-primary">
-                                            <x-lucide-eye class="icon" /> Lihat
+                                             Lihat
                                         </a>
                                         @if ($canEdit)
                                             <button type="button" wire:click="removeImplementationProofFile"
@@ -1346,7 +1346,7 @@
     @if ($isFinalReportDraft || ($progressReport && $progressReport->status === \App\Enums\ReportStatus::APPROVED))
         <div class="card mb-3">
             <div class="card-header">
-                <h3 class="card-title"><x-lucide-book-open class="icon me-2" />Luaran Wajib</h3>
+                <h3 class="card-title">Luaran Wajib</h3>
             </div>
             <div class="card-body">
                 @php
@@ -1393,7 +1393,7 @@
                                             @endphp
                                             @if ($hasData)
                                                 <x-tabler.badge color="success">
-                                                    <x-lucide-check class="icon icon-sm" />
+                                                    
                                                     Sudah Diisi
                                                 </x-tabler.badge>
                                             @else
@@ -1411,14 +1411,14 @@
                                                     class="btn btn-sm btn-animate-icon btn-animate-icon-rotate" data-bs-toggle="modal"
                                                     data-bs-target="#modalMandatoryOutput" title="Edit Luaran Wajib"
                                                     aria-label="Edit Luaran Wajib">
-                                                    <x-lucide-pencil class="icon" />
+                                                    
                                                 </button>
                                             @else
                                                 <button type="button" wire:click="editMandatoryOutput({{ $output->id }})"
                                                     class="btn btn-sm btn-animate-icon btn-animate-icon-rotate" data-bs-toggle="modal"
                                                     data-bs-target="#modalMandatoryOutput" title="Lihat Luaran Wajib"
                                                     aria-label="Lihat Luaran Wajib">
-                                                    <x-lucide-eye class="icon" />
+                                                    
                                                 </button>
                                             @endif
                                         </td>
@@ -1429,7 +1429,7 @@
                     </div>
                 @else
                     <div class="text-muted py-4 text-center">
-                        <x-lucide-inbox class="icon icon-lg mb-2" />
+                        
                         <p>Tidak ada luaran wajib yang direncanakan</p>
                     </div>
                 @endif
@@ -1439,10 +1439,10 @@
         <!-- Luaran Tambahan -->
         <div class="card mb-3">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h3 class="card-title mb-0"><x-lucide-book class="icon me-2" />Luaran Tambahan</h3>
+                <h3 class="card-title mb-0">Luaran Tambahan</h3>
                 @if ($canEdit)
                     <button type="button" wire:click="openAddOutputModal" class="btn btn-sm btn-primary">
-                        <x-lucide-plus class="icon icon-sm me-1" /> Tambah Luaran Tambahan
+                         Tambah Luaran Tambahan
                     </button>
                 @endif
             </div>
@@ -1486,7 +1486,7 @@
                                             @endphp
                                             @if ($hasData)
                                                 <x-tabler.badge color="success">
-                                                    <x-lucide-check class="icon icon-sm" />
+                                                    
                                                     Sudah Diisi
                                                 </x-tabler.badge>
                                             @else
@@ -1505,12 +1505,12 @@
                                                         class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
                                                         data-bs-target="#modalAdditionalOutput" title="Isi Dokumen / Bukti Luaran"
                                                         aria-label="Isi Dokumen / Bukti Luaran">
-                                                        <x-lucide-file-text class="icon icon-sm" />
+                                                        
                                                     </button>
                                                     <button type="button" wire:click="openEditProposalOutputModal({{ $output->id }})"
                                                         class="btn btn-sm btn-outline-secondary" title="Edit Rencana Luaran"
                                                         aria-label="Edit Rencana Luaran">
-                                                        <x-lucide-pencil class="icon icon-sm" />
+                                                        
                                                     </button>
                                                     <button type="button" wire:click="deleteProposalOutput({{ $output->id }})"
                                                         wire:confirm="Yakin ingin menghapus luaran tambahan ini beserta bukti dokumennya?"
@@ -1523,7 +1523,7 @@
                                                         class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
                                                         data-bs-target="#modalAdditionalOutput" title="Lihat Luaran Tambahan"
                                                         aria-label="Lihat Luaran Tambahan">
-                                                        <x-lucide-eye class="icon icon-sm" />
+                                                        
                                                     </button>
                                                 @endif
                                             </div>
@@ -1535,11 +1535,11 @@
                     </div>
                 @else
                     <div class="text-muted py-4 text-center">
-                        <x-lucide-inbox class="icon icon-lg mb-2" />
+                        
                         <p>Tidak ada luaran tambahan yang direncanakan</p>
                         @if ($canEdit)
                             <button type="button" wire:click="openAddOutputModal" class="btn btn-outline-primary btn-sm mt-1">
-                                <x-lucide-plus class="icon icon-sm me-1" /> Tambah Luaran Tambahan
+                                 Tambah Luaran Tambahan
                             </button>
                         @endif
                     </div>
@@ -1612,7 +1612,7 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" wire:click="closeOutputModal">Batal</button>
                             <button type="button" class="btn btn-primary" wire:click="saveProposalOutputPlan">
-                                <x-lucide-save class="icon icon-sm me-1" /> Simpan Luaran
+                                 Simpan Luaran
                             </button>
                         </div>
                     </div>
@@ -1628,7 +1628,7 @@
                 <div class="alert alert-warning mb-3" role="alert">
                     <div class="d-flex">
                         <div>
-                            <x-lucide-refresh-cw class="icon alert-icon" />
+                            
                         </div>
                         <div>
                             <h4 class="alert-title">Laporan Siap Diajukan Ulang</h4>
@@ -1642,7 +1642,7 @@
                 <div class="alert alert-info mb-3" role="alert">
                     <div class="d-flex">
                         <div>
-                            <x-lucide-info class="icon alert-icon" />
+                            
                         </div>
                         <div>
                             <h4 class="alert-title">Informasi Pengajuan Laporan Akhir</h4>
@@ -1659,7 +1659,7 @@
                 <div class="justify-content-end btn-list">
                     <button type="button" wire:click="save" class="btn btn-outline-primary" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="save">
-                            <x-lucide-save class="icon" /> Simpan Draft
+                             Simpan Draft
                         </span>
                         <span wire:loading wire:target="save">
                             <span class="spinner-border spinner-border-sm me-2"></span>
@@ -1669,7 +1669,7 @@
                     @if ($isFinalReportDraft)
                         <button type="button" wire:click="submit" class="btn btn-success" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="submit">
-                                <x-lucide-send class="icon" />
+                                
                                 @if ($progressReport && $progressReport->status === \App\Enums\ReportStatus::REJECTED)
                                     Ajukan Ulang Laporan Akhir
                                 @else
@@ -1692,7 +1692,7 @@
                     @if ($progressReport->status === \App\Enums\ReportStatus::APPROVED)
                         <x-lucide-check-circle-2 class="icon text-success me-3 icon-lg" />
                     @else
-                        <x-lucide-clock class="icon text-info me-3 icon-lg" />
+                        
                     @endif
                     <div>
                         <h4 class="card-title {{ $progressReport->status === \App\Enums\ReportStatus::APPROVED ? 'text-success' : 'text-info' }} mb-1">
@@ -1738,7 +1738,7 @@
                 <div class="alert alert-danger alert-dismissible" role="alert">
                     <div class="d-flex">
                         <div>
-                            <x-lucide-alert-circle class="icon alert-icon" />
+                            
                         </div>
                         <div>
                             <h4 class="alert-title">Terdapat kesalahan pada form!</h4>
@@ -2005,7 +2005,7 @@
                         @if ($mandatoryOutput = $this->mandatoryOutput())
                             @if ($media = $mandatoryOutput->getFirstMedia('journal_article'))                                <div class="bg-body-tertiary mt-2 rounded border p-2">
                                     <div class="d-flex align-items-center">
-                                        <x-lucide-file-text class="text-primary icon me-2" />
+                                        
                                         <div class="flex-fill">
                                             <small class="text-muted">File yang sudah diunggah:</small><br>
                                             <strong>{{ $media->name }}</strong>
@@ -2015,7 +2015,7 @@
                                         <a data-navigate-ignore="true"
                                             href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
                                             target="_blank" class="btn btn-sm btn-primary">
-                                            <x-lucide-download class="icon" /> Download
+                                             Download
                                         </a>
                                     </div>
                                 </div>
@@ -2026,7 +2026,7 @@
                             @if (! empty($savedLink))
                                 <div class="bg-body-tertiary mt-2 rounded border p-2">
                                     <div class="d-flex align-items-center gap-2">
-                                        <x-lucide-external-link class="text-primary icon me-2" />
+                                        
                                         <div class="flex-fill">
                                             <small class="text-muted">Link tersimpan:</small><br>
                                             <strong class="text-truncate d-inline-block" style="max-width: 260px;" title="{{ $savedLink }}">{{ \Illuminate\Support\Str::limit($savedLink, 50) }}</strong>
@@ -2053,7 +2053,7 @@
                 <button type="button" wire:click="saveMandatoryOutput({{ $form->editingMandatoryId }})"
                     class="btn btn-primary" wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="saveMandatoryOutput">
-                        <x-lucide-save class="icon" /> Simpan
+                         Simpan
                     </span>
                     <span wire:loading wire:target="saveMandatoryOutput">
                         <span class="spinner-border spinner-border-sm me-2"></span>
@@ -2086,7 +2086,7 @@
                 <div class="alert alert-danger alert-dismissible" role="alert">
                     <div class="d-flex">
                         <div>
-                            <x-lucide-alert-circle class="icon alert-icon" />
+                            
                         </div>
                         <div>
                             <h4 class="alert-title">Terdapat kesalahan pada form!</h4>
@@ -2122,7 +2122,7 @@
                 <button type="button" wire:click="saveAdditionalOutput({{ $form->editingAdditionalId }})"
                     class="btn btn-primary" wire:loading.attr="disabled">
                     <span wire:loading.remove wire:target="saveAdditionalOutput">
-                        <x-lucide-save class="icon" /> Simpan
+                         Simpan
                     </span>
                     <span wire:loading wire:target="saveAdditionalOutput">
                         <span class="spinner-border spinner-border-sm me-2"></span>
@@ -2146,7 +2146,7 @@
                 @enderror
             </div>
             <p class="text-secondary small">
-                <x-lucide-info class="icon icon-sm" />
+                
                 Laporan yang ditolak akan dikembalikan statusnya ke Draft dan Dosen harus memperbaikinya.
             </p>
         </x-slot:body>

@@ -8,7 +8,7 @@
     <div class="alert alert-info alert-dismissible fade show border-0 shadow-sm collapse" id="researchReviewInfo" role="alert">
         <div class="d-flex">
             <div>
-                <x-lucide-info class="alert-icon icon me-2" />
+                
             </div>
             <div>
                 <h4 class="alert-title">Daftar Review Penelitian</h4>
@@ -23,7 +23,7 @@
 
     <div class="mb-3">
         <button class="btn btn-ghost-info btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#researchReviewInfo" aria-expanded="false" aria-controls="researchReviewInfo">
-            <x-lucide-info class="icon me-1" />
+            
             Informasi Daftar Review
         </button>
     </div>
@@ -51,7 +51,7 @@
                     <div class="d-flex align-items-baseline">
                         <div class="h1 mb-0 me-2 text-warning">{{ $this->statusStats['pending'] }}</div>
                         <div class="me-auto">
-                            <x-lucide-clock class="icon text-warning" />
+                            
                         </div>
                     </div>
                 </div>
@@ -66,7 +66,7 @@
                     <div class="d-flex align-items-baseline">
                         <div class="h1 mb-0 me-2 text-purple">{{ $this->statusStats['re_review'] }}</div>
                         <div class="me-auto">
-                            <x-lucide-refresh-cw class="icon text-purple" />
+                            
                         </div>
                     </div>
                 </div>
@@ -81,7 +81,7 @@
                     <div class="d-flex align-items-baseline">
                         <div class="h1 mb-0 me-2 text-success">{{ $this->statusStats['completed'] }}</div>
                         <div class="me-auto">
-                            <x-lucide-check-circle class="icon text-success" />
+                            
                         </div>
                     </div>
                 </div>
@@ -95,7 +95,7 @@
             <div class="row g-3">
                 <div class="col-md-6">
                     <label class="form-label" for="search">
-                        <x-lucide-search class="me-2 icon" />
+                        
                         Cari Proposal
                     </label>
                     <input type="text" id="search" class="form-control"
@@ -103,7 +103,7 @@
                 </div>
                 <div class="col-md-3">
                     <label class="form-label" for="status">
-                        <x-lucide-filter class="me-2 icon" />
+                        
                         Status Review
                     </label>
                     <select id="status" class="form-select" wire:model.live="statusFilter">
@@ -116,7 +116,7 @@
                 </div>
                 <div class="col-md-3">
                     <label class="form-label" for="year">
-                        <x-lucide-calendar class="me-2 icon" />
+                        
                         Tahun
                     </label>
                     <select id="year" class="form-select" wire:model.live="selectedYear">
@@ -130,7 +130,7 @@
             @if (!empty($search) || !empty($selectedYear) || $statusFilter !== 'all')
                 <div class="mt-3">
                     <button type="button" class="btn btn-ghost-secondary btn-sm" wire:click="resetFilters">
-                        <x-lucide-x class="me-1 icon" />
+                        
                         Reset Filter
                     </button>
                 </div>
@@ -166,8 +166,8 @@
                                             @endif
                                         </div>
                                         <div class="text-muted small d-flex align-items-center gap-3">
-                                            <span><x-lucide-user class="icon icon-inline me-1" />{{ $proposal->submitter?->name }}</span>
-                                            <span><x-lucide-tag class="icon icon-inline me-1" />{{ $proposal->focusArea?->name ?? '—' }}</span>
+                                            <span>{{ $proposal->submitter?->name }}</span>
+                                            <span>{{ $proposal->focusArea?->name ?? '—' }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -198,7 +198,7 @@
                             <td>
                                 @if($review && $review->deadline_at)
                                     <div class="small {{ $review->isOverdue() ? 'text-danger fw-bold' : 'text-secondary' }}">
-                                        <x-lucide-calendar class="icon icon-inline me-1" />
+                                        
                                         {{ $review->deadline_at->format('d M Y') }}
                                         @if($review->isOverdue())
                                             <div class="text-danger small mt-1">Terlambat!</div>
@@ -220,7 +220,7 @@
                         <tr>
                             <td colspan="4" class="py-8 text-center bg-surface-secondary">
                                 <div class="mb-3">
-                                    <x-lucide-inbox class="text-muted icon icon-lg" />
+                                    
                                 </div>
                                 <h3 class="text-secondary">Tidak ada proposal</h3>
                                 <p class="text-muted">Tidak ada proposal penelitian yang perlu direview saat ini.</p>

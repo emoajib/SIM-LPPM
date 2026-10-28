@@ -497,7 +497,7 @@
                 Batal
             </a>
             <div x-show="show" class="text-green fw-bold">
-                <x-lucide-check-circle class="icon me-1" />
+                
                 Pengguna telah diperbarui.
             </div>
             <button type="submit" class="btn btn-primary" wire:loading.attr="disabled">

@@ -7,8 +7,9 @@ use App\Models\Research;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use App\Channels\HybridNotificationChannel;
+use Illuminate\Notifications\Messages\MailMessage;
 
 class DekanApprovalDecision extends Notification implements ShouldQueue
 {
@@ -22,7 +23,7 @@ class DekanApprovalDecision extends Notification implements ShouldQueue
 
     public function via(object $notifiable): array
     {
-        return ['database', 'mail'];
+        return ['database', HybridNotificationChannel::class];
     }
 
     public function toDatabase(object $notifiable): array

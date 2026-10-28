@@ -25,11 +25,11 @@
             @if ($showBasic)
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="form-label"><x-lucide-file-text class="me-2 icon" />Judul</label>
+                        <label class="form-label">Judul</label>
                         <p class="text-reset">{{ $proposal->title }}</p>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label"><x-lucide-info class="me-2 icon" />Status</label>
+                        <label class="form-label">Status</label>
                         <p>
                             <x-tabler.badge :color="$proposal->status->color()" class="fw-normal">
                                 {{ $proposal->status->label() }}
@@ -37,32 +37,29 @@
                         </p>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label"><x-lucide-user class="me-2 icon" />Author</label>
+                        <label class="form-label">Author</label>
                         <p class="text-reset">{{ $proposal->submitter?->name ?? '—' }}</p>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label"><x-lucide-mail class="me-2 icon" />Email</label>
+                        <label class="form-label">Email</label>
                         <p class="text-reset">{{ $proposal->submitter?->email ?? '—' }}</p>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">
-                            <x-lucide-clipboard-list class="me-2 icon" />
-                            Skema {{ $type === 'research' ? 'Penelitian' : 'Pengabdian' }}
-                        </label>
+                        <label class="form-label">Skema {{ $type === 'research' ? 'Penelitian' : 'Pengabdian' }}</label>
                         <p class="text-reset">{{ $scheme?->name ?? '—' }}</p>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label"><x-lucide-calendar class="me-2 icon" />Tahun Akademik</label>
+                        <label class="form-label">Tahun Akademik</label>
                         <p class="text-reset">{{ $proposal->academic_year ?? '—' }}</p>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label"><x-lucide-calendar-check class="me-2 icon" />Semester</label>
+                        <label class="form-label">Semester</label>
                         <p class="text-reset">
                             {{ $proposal->semester_period_label ?: (ucfirst($proposal->semester ?? '') ?: '—') }}
                         </p>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label"><x-lucide-hourglass class="me-2 icon" />Durasi</label>
+                        <label class="form-label">Durasi</label>
                         <p class="text-reset">
                             {{ $proposal->duration_in_years ? $proposal->duration_in_years . ' Tahun' : '—' }}
                         </p>
@@ -72,32 +69,32 @@
 
             <hr class="my-3">
             <div class="row g-3">
-                <div class="col-md-4">
-                    <label class="form-label"><x-lucide-focus class="me-2 icon" />Bidang Fokus</label>
-                    <p class="text-reset">{{ $proposal->focusArea?->name ?? '—' }}</p>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label"><x-lucide-tag class="me-2 icon" />Tema</label>
-                    <p class="text-reset">{{ $proposal->theme?->name ?? '—' }}</p>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label"><x-lucide-hash class="me-2 icon" />Topik</label>
-                    <p class="text-reset">{{ $proposal->topic?->name ?? '—' }}</p>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label"><x-lucide-star class="me-2 icon" />Prioritas Nasional</label>
-                    <p class="text-reset">{{ $proposal->nationalPriority?->name ?? '—' }}</p>
-                </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Bidang Fokus</label>
+                        <p class="text-reset">{{ $proposal->focusArea?->name ?? '—' }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Tema</label>
+                        <p class="text-reset">{{ $proposal->theme?->name ?? '—' }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Topik</label>
+                        <p class="text-reset">{{ $proposal->topic?->name ?? '—' }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Prioritas Nasional</label>
+                        <p class="text-reset">{{ $proposal->nationalPriority?->name ?? '—' }}</p>
+                    </div>
                 @if ($type === 'community-service' && $proposal->sbk_value > 0)
                     <div class="col-md-4">
-                        <label class="form-label"><x-lucide-dollar-sign class="me-2 icon" />Nilai SBK</label>
+                        <label class="form-label">Nilai SBK</label>
                         <p class="text-reset">Rp {{ number_format($proposal->sbk_value, 0, ',', '.') }}</p>
                     </div>
                 @endif
                 @if (\App\Models\Setting::get('feature_roadmap_active', false))
                     <div class="col-md-12">
                         <label class="form-label">
-                            <x-lucide-git-merge class="me-2 icon" />Peta Jalan / Pohon Penelitian Prodi
+                            Peta Jalan / Pohon Penelitian Prodi
                         </label>
                         <p class="text-reset">{{ $proposal->studyProgramRoadmap?->title ?? '—' }}</p>
                     </div>
@@ -186,7 +183,7 @@
                     @forelse ($proposal->sdgs as $sdg)
                         <div class="col-md-6">
                             <div class="d-flex align-items-center">
-                                <x-lucide-globe class="icon icon-sm me-2 text-success" />
+                                
                                 <div>
                                     <div class="fw-bold small text-reset">{{ $sdg->name }}</div>
                                     <div class="text-muted" style="font-size: 0.75rem;">{{ Str::limit($sdg->description, 80) }}</div>

@@ -2,7 +2,7 @@
 <div class="mb-3 card">
     <div class="card-body">
         <div class="d-flex align-items-center mb-4">
-            <x-lucide-book-open class="me-3 icon" />
+            
             <h3 class="mb-0 card-title">2.1 Substansi Usulan</h3>
         </div>
 
@@ -13,7 +13,7 @@
                         Kelompok Makro Riset
                         <span class="text-muted" data-bs-toggle="tooltip"
                             title="Pilihlah kelompok riset yang paling sesuai dengan fokus penelitian Anda untuk memudahkan pemetaan data SINTA.">
-                            <i class="ti ti-info-circle"></i>
+                            
                         </span>
                     </label>
                     <div wire:ignore>
@@ -40,7 +40,7 @@
                         @if ($this->templateUrl)
                             <a href="{{ $this->templateUrl }}" target="_blank" class="text-primary text-decoration-none"
                                 style="font-size: 0.875rem;">
-                                <x-lucide-download class="me-1 icon" style="width: 1rem; height: 1rem;" />
+                                
                                 Unduh Template
                             </a>
                         @endif
@@ -59,12 +59,12 @@
 
                     @if ($form->substance_file)
                         <div class="mt-2">
-                            <x-lucide-file-check class="text-success icon" />
+                            
                             File terpilih: {{ $form->substance_file->getClientOriginalName() }}
                         </div>
                     @elseif ($form->proposal && $form->proposal->detailable && $form->proposal->detailable->hasMedia('substance_file'))
                         <div class="mt-2">
-                            <x-lucide-file-check class="text-success icon" />
+                            
                             @php $media = $form->proposal->detailable->getFirstMedia('substance_file'); @endphp
                             <a href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}" target="_blank"
                                 class="text-decoration-none" data-navigate-ignore="true">
@@ -83,11 +83,11 @@
     <div class="card-body">
         <div class="d-flex align-items-center justify-content-between mb-4">
             <div class="d-flex align-items-center">
-                <x-lucide-target class="me-3 icon" />
+                
                 <h3 class="mb-0 card-title">2.2 Luaran Target Capaian</h3>
             </div>
             <button type="button" wire:click="addOutput" class="btn btn-primary btn-sm">
-                <x-lucide-plus class="icon" />
+                
                 Tambah Luaran
             </button>
         </div>
@@ -95,7 +95,7 @@
         @error('form.outputs')
             <div class="mb-3 alert alert-danger">
                 <div class="d-flex">
-                    <x-lucide-alert-circle class="me-2 icon" />
+                    
                     <div>{{ $message }}</div>
                 </div>
             </div>
@@ -103,7 +103,7 @@
 
         @if (empty($form->outputs))
             <div class="alert alert-info">
-                <x-lucide-info class="me-2 icon" />
+                
                 Belum ada luaran target. Klik tombol "Tambah Luaran" untuk menambahkan.
             </div>
         @else

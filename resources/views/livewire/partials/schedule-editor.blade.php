@@ -2,7 +2,7 @@
 <div class="card mb-3 border-primary-subtle shadow-sm">
     <div class="card-header bg-light d-flex justify-content-between align-items-center flex-wrap gap-2">
         <div class="d-flex align-items-center">
-            <x-lucide-calendar class="icon me-2 text-primary" />
+            
             <h3 class="card-title mb-0">
                 Jadwal Pelaksanaan Kegiatan
                 <span class="badge bg-blue-lt ms-2">Lampiran 3 PDF</span>
@@ -13,15 +13,15 @@
                 <button type="button" wire:click="resetScheduleToDefault" wire:loading.attr="disabled"
                     class="btn btn-outline-secondary btn-sm"
                     wire:confirm="Kembalikan jadwal ke template default? Perubahan yang belum disimpan akan digantikan.">
-                    <x-lucide-rotate-ccw class="icon icon-sm me-1" /> Template Default
+                     Template Default
                 </button>
                 <button type="button" wire:click="addScheduleItem" wire:loading.attr="disabled"
                     class="btn btn-outline-primary btn-sm">
-                    <x-lucide-plus class="icon icon-sm me-1" /> Tambah Baris
+                     Tambah Baris
                 </button>
                 <button type="button" wire:click="saveScheduleItems" wire:loading.attr="disabled"
                     class="btn btn-primary btn-sm">
-                    <x-lucide-save class="icon icon-sm me-1" />
+                    
                     <span wire:loading.remove wire:target="saveScheduleItems">Simpan Jadwal</span>
                     <span wire:loading wire:target="saveScheduleItems">Menyimpan...</span>
                 </button>
@@ -117,7 +117,7 @@
                     @empty
                         <tr>
                             <td colspan="{{ $canEdit ? 6 : 5 }}" class="text-center text-muted py-4">
-                                <x-lucide-calendar-x class="icon mb-2 text-secondary" style="width: 2rem; height: 2rem;" />
+                                
                                 <div>Belum ada jadwal kegiatan.</div>
                                 @if ($canEdit)
                                     <button type="button" wire:click="resetScheduleToDefault"
@@ -134,11 +134,11 @@
         @if ($canEdit && !empty($scheduleItems))
             <div class="p-2 bg-light border-top d-flex justify-content-between align-items-center">
                 <small class="text-muted">
-                    <x-lucide-info class="icon icon-inline me-1" /> Klik tombol <strong>Simpan Jadwal</strong> untuk menerapkan perubahan ke dokumen PDF.
+                     Klik tombol <strong>Simpan Jadwal</strong> untuk menerapkan perubahan ke dokumen PDF.
                 </small>
                 <button type="button" wire:click="saveScheduleItems" wire:loading.attr="disabled"
                     class="btn btn-primary btn-sm">
-                    <x-lucide-save class="icon icon-sm me-1" /> Simpan Jadwal
+                     Simpan Jadwal
                 </button>
             </div>
         @endif

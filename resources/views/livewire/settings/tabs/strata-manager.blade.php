@@ -4,7 +4,7 @@
         <div class="d-flex align-items-center justify-content-between card-header">
             <h3 class="card-title">Strata</h3>
             <button type="button" class="btn btn-primary" wire:click='create'>
-                <x-lucide-plus class="icon" />
+                
                 Tambah Strata
             </button>
         </div>

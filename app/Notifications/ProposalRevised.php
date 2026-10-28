@@ -6,8 +6,9 @@ use App\Models\Proposal;
 use App\Models\Research;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use App\Channels\HybridNotificationChannel;
+use Illuminate\Notifications\Messages\MailMessage;
 
 class ProposalRevised extends Notification implements ShouldQueue
 {
@@ -21,7 +22,7 @@ class ProposalRevised extends Notification implements ShouldQueue
 
     public function via(object $notifiable): array
     {
-        return ['database', 'mail'];
+        return ['database', HybridNotificationChannel::class];
     }
 
     public function toDatabase(object $notifiable): array

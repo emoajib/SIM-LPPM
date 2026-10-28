@@ -5,7 +5,7 @@
             <h3 class="card-title">Skema Pengabdian</h3>
             <button type="button" class="btn btn-primary" wire:click='create' data-bs-toggle="modal"
                 data-bs-target="#modal-community-service-scheme">
-                <x-lucide-plus class="icon" />
+                
                 Tambah Skema Pengabdian
             </button>
         </div>

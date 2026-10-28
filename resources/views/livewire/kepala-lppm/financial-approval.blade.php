@@ -18,7 +18,7 @@
                     <div class="d-flex align-items-center">
                         <div class="subheader text-primary fw-bold">Total Usulan Didanai</div>
                         <div class="ms-auto text-primary">
-                            <x-lucide-award class="icon" />
+                            
                         </div>
                     </div>
                     <div class="h1 mb-1 mt-2">{{ $this->stats['total'] }}</div>
@@ -32,7 +32,7 @@
                     <div class="d-flex align-items-center">
                         <div class="subheader text-success fw-bold">Sudah Disahkan LPPM</div>
                         <div class="ms-auto text-success">
-                            <x-lucide-check-circle class="icon" />
+                            
                         </div>
                     </div>
                     <div class="h1 mb-1 mt-2 text-success">{{ $this->stats['approved'] }}</div>
@@ -46,7 +46,7 @@
                     <div class="d-flex align-items-center">
                         <div class="subheader text-warning fw-bold">Menunggu Pengesahan</div>
                         <div class="ms-auto text-warning">
-                            <x-lucide-clock class="icon" />
+                            
                         </div>
                     </div>
                     <div class="h1 mb-1 mt-2 text-warning">{{ $this->stats['pending'] }}</div>
@@ -60,7 +60,7 @@
                     <div class="d-flex align-items-center">
                         <div class="subheader text-secondary fw-bold">Belum Ada Catatan</div>
                         <div class="ms-auto text-secondary">
-                            <x-lucide-alert-circle class="icon" />
+                            
                         </div>
                     </div>
                     <div class="h1 mb-1 mt-2 text-muted">{{ $this->stats['empty'] }}</div>
@@ -78,7 +78,7 @@
                 <div class="col-md-6">
                     <div class="input-icon">
                         <span class="input-icon-addon">
-                            <x-lucide-search class="icon" />
+                            
                         </span>
                         <input type="text" class="form-control" placeholder="Cari judul proposal atau nama pengusul..."
                             wire:model.live.debounce.300ms="search" />
@@ -123,7 +123,7 @@
 
                 <div class="col-md-1">
                     <button type="button" class="btn btn-outline-secondary w-100" wire:click="resetFilters" title="Reset Filter">
-                        <x-lucide-rotate-ccw class="icon" />
+                        
                     </button>
                 </div>
             </div>
@@ -198,7 +198,7 @@
                             <td>
                                 @if ($scanMedia)
                                     <a href="{{ route('media.download', ['media' => $scanMedia, 'view' => 1]) }}" target="_blank" class="btn btn-sm btn-outline-info text-truncate" style="max-width: 150px;">
-                                        <x-lucide-file-text class="icon icon-sm me-1 text-primary" />
+                                        
                                         Scan LPJ PDF
                                     </a>
                                     <div class="small text-muted mt-1" style="font-size: 0.72rem;">
@@ -206,7 +206,7 @@
                                     </div>
                                 @else
                                     <span class="badge bg-secondary-lt">
-                                        <x-lucide-file-x class="icon icon-sm me-1 text-secondary" />
+                                        
                                         Belum Ada Scan
                                     </span>
                                 @endif
@@ -214,7 +214,7 @@
                             <td>
                                 @if ($isApproved)
                                     <span class="badge bg-success-lt d-inline-flex align-items-center gap-1">
-                                        <x-lucide-check-circle class="icon icon-sm text-success" />
+                                        
                                         Sudah Disahkan
                                     </span>
                                     <div class="small text-muted mt-1" style="font-size: 0.72rem;">
@@ -222,7 +222,7 @@
                                     </div>
                                 @elseif ($proposal->logbook_rejection_notes)
                                     <span class="badge bg-orange-lt d-inline-flex align-items-center gap-1">
-                                        <x-lucide-rotate-ccw class="icon icon-sm text-orange" />
+                                        
                                         Dikembalikan
                                     </span>
                                     <div class="small text-muted mt-1" style="font-size: 0.72rem;" title="{{ $proposal->logbook_rejection_notes }}">
@@ -230,7 +230,7 @@
                                     </div>
                                 @elseif ($scanMedia)
                                     <span class="badge bg-warning-lt d-inline-flex align-items-center gap-1">
-                                        <x-lucide-clock class="icon icon-sm text-warning" />
+                                        
                                         Menunggu Pengesahan
                                     </span>
                                 @elseif ($proposal->dailyNotes->count() > 0)
@@ -245,11 +245,11 @@
                             <td class="text-end text-nowrap">
                                 <div class="btn-list flex-nowrap justify-content-end">
                                     <a href="{{ route('financial-reports.export-pdf', $proposal) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Tinjau Berkas PDF Laporan Keuangan (LPJ)">
-                                        <x-lucide-file-text class="icon icon-sm me-1" />
+                                        
                                         Tinjau PDF
                                     </a>
                                     <a href="{{ $dailyNoteRoute }}" target="_blank" class="btn btn-sm btn-ghost-secondary px-2" title="Buka Logbook &amp; Nota di Web">
-                                        <x-lucide-external-link class="icon icon-sm" />
+                                        
                                     </a>
 
                                     @if ($isApproved)
@@ -257,7 +257,7 @@
                                             wire:confirm="Yakin ingin membatalkan pengesahan LPJ proposal ini? Dosen akan dapat merevisi kembali berkas/catatan."
                                             wire:loading.attr="disabled">
                                             <span wire:loading.remove wire:target="unapproveLpj('{{ $proposal->id }}')">
-                                                <x-lucide-rotate-ccw class="icon icon-sm me-1" />
+                                                
                                                 Batal Sahkan
                                             </span>
                                             <span wire:loading wire:target="unapproveLpj('{{ $proposal->id }}')">
@@ -269,7 +269,7 @@
                                             wire:confirm="Sahkan Laporan Keuangan (LPJ) untuk proposal ini?"
                                             wire:loading.attr="disabled">
                                             <span wire:loading.remove wire:target="approveLpj('{{ $proposal->id }}')">
-                                                <x-lucide-check class="icon icon-sm me-1" />
+                                                
                                                 Sahkan LPJ
                                             </span>
                                             <span wire:loading wire:target="approveLpj('{{ $proposal->id }}')">
@@ -279,7 +279,7 @@
                                         @if ($scanMedia || $proposal->dailyNotes->count() > 0)
                                             <button type="button" wire:click="openReturnModal('{{ $proposal->id }}')" class="btn btn-sm btn-outline-warning"
                                                 data-bs-toggle="modal" data-bs-target="#modalReturnLpj" title="Kembalikan LPJ ke dosen beserta catatan perbaikan">
-                                                <x-lucide-rotate-ccw class="icon icon-sm me-1" />
+                                                
                                                 Kembalikan
                                             </button>
                                         @endif
@@ -291,7 +291,7 @@
                         <tr>
                             <td colspan="6" class="py-8 text-center">
                                 <div class="mb-3">
-                                    <x-lucide-inbox class="text-secondary icon icon-lg" />
+                                    
                                 </div>
                                 <p class="text-secondary mb-0">Tidak ada data usulan / LPJ yang cocok dengan filter.</p>
                             </td>
@@ -323,7 +323,7 @@
             <button type="button" class="btn btn-ghost-secondary" data-bs-dismiss="modal">Batal</button>
             <button type="button" class="btn btn-warning" wire:click="returnToDosen" wire:loading.attr="disabled">
                 <span wire:loading.remove wire:target="returnToDosen">
-                    <x-lucide-rotate-ccw class="icon me-1" />
+                    
                     Kembalikan ke Dosen
                 </span>
                 <span wire:loading wire:target="returnToDosen">

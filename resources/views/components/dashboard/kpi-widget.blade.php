@@ -15,14 +15,14 @@
             <div class="subheader text-{{ $color }} fw-bold">{{ $title }}</div>
             <div class="ms-auto text-{{ $color }} bg-{{ $color }}-lt rounded-circle p-2 d-flex align-items-center justify-content-center"
                 style="width: 38px; height: 38px;">
-                <i class="ti ti-{{ $icon }} fs-3"></i>
+                
             </div>
         </div>
         <div class="d-flex align-items-baseline">
             <div class="h1 mb-1 fw-bold text-dark">{{ $value }}</div>
             @if ($trend !== null)
                 <span class="ms-2 badge bg-{{ $trendType === 'up' ? 'green' : 'red' }}-lt d-inline-flex align-items-center gap-1 small">
-                    <i class="ti ti-trending-{{ $trendType === 'up' ? 'up' : 'down' }} fs-4"></i>
+                    
                     {{ $trend }}%
                 </span>
             @endif

@@ -18,7 +18,7 @@
                         
                         @error('general')
                             <div class="alert alert-danger alert-dismissible d-flex align-items-center py-2 px-3 mb-4" role="alert">
-                                <x-lucide-alert-circle class="icon me-2 flex-shrink-0" style="width:1.25rem;height:1.25rem;" />
+                                
                                 <span>{{ $message }}</span>
                                 <button type="button" class="btn-close btn-close-sm ms-auto" data-bs-dismiss="alert"></button>
                             </div>
@@ -29,7 +29,7 @@
                                 <label class="form-label fw-medium text-secondary mb-2">Email atau ID Identitas</label>
                                 <div class="input-group input-group-flat border rounded-3 focus-within-glow">
                                     <span class="input-group-text bg-transparent border-0 px-3">
-                                        <x-lucide-user class="icon text-muted" />
+                                        
                                     </span>
                                     <input type="text" wire:model="email"
                                         class="form-control border-0 ps-0 @error('email') is-invalid @enderror"
@@ -55,7 +55,7 @@
                                 </label>
                                 <div class="input-group input-group-flat border rounded-3 focus-within-glow" x-data="{ showPassword: false }">
                                     <span class="input-group-text bg-transparent border-0 px-3">
-                                        <x-lucide-lock class="icon text-muted" />
+                                        
                                     </span>
                                     <input x-bind:type="showPassword ? 'text' : 'password'"
                                         class="form-control border-0 ps-0 @error('password') is-invalid @enderror"
@@ -65,10 +65,10 @@
                                             x-on:click="showPassword = ! showPassword"
                                             x-bind:title="showPassword ? 'Hide password' : 'Show password'">
                                             <template x-if="!showPassword">
-                                                <x-lucide-eye class="icon-1 icon" />
+                                                
                                             </template>
                                             <template x-if="showPassword">
-                                                <x-lucide-eye-off class="icon-1 icon" />
+                                                
                                             </template>
                                         </button>
                                     </span>

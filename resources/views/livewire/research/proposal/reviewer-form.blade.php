@@ -3,7 +3,7 @@
     @if (session('success'))
         <div class="mb-3 alert alert-success alert-dismissible" role="alert">
             <div class="d-flex">
-                <x-lucide-check-circle class="me-2 alert-icon" />
+                
                 <div>{{ session('success') }}</div>
             </div>
             <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
@@ -25,7 +25,7 @@
         <div class="shadow-sm mb-3 border-0 card card-md">
             <div class="card-header">
                 <h3 class="card-title">
-                    <x-lucide-users class="me-2 icon" />
+                    
                     Status Reviewer Saat Ini
                 </h3>
                 <div class="card-actions">
@@ -72,13 +72,13 @@
                                                                                                 <div class="d-flex align-items-center justify-content-between mb-1">
                                                                                                     <div class="d-flex align-items-center small fw-bold">
                                                                                                         @if ($review->recommendation === 'approved')
-                                                                                                            <x-lucide-check-circle class="me-1 text-success icon" />
+                                                                                                            
                                                                                                             Rekomendasi: Disetujui
                                                                                                         @elseif($review->recommendation === 'rejected')
-                                                                                                            <x-lucide-x-circle class="me-1 text-danger icon" />
+                                                                                                            
                                                                                                             Rekomendasi: Ditolak
                                                                                                         @else
-                                                                                                            <x-lucide-refresh-cw class="me-1 text-warning icon" />
+                                                                                                            
                                                                                                             Rekomendasi: Perlu Revisi
                                                                                                         @endif
                                                                                                     </div>
@@ -92,13 +92,13 @@
                                                                                                                 <a data-navigate-ignore="true" href="{{ route('reviewers.export-pdf', [$review->id, 'preview' => 1]) }}"
                                                                                                                     target="_blank"
                                                                                                                     class="px-2 py-1 btn btn-sm btn-ghost-danger">
-                                                                                                                    <x-lucide-eye class="me-1 icon icon-sm" />
+                                                                                                                    
                                                                                                                     Tinjau PDF
                                                                                                                 </a>
                                                                                                                 <a data-navigate-ignore="true" href="{{ route('reviewers.export-pdf', $review->id) }}"
                                                                                                                     target="_blank"
                                                                                                                     class="px-2 py-1 btn btn-sm btn-ghost-danger">
-                                                                                                                    <x-lucide-file-text class="me-1 icon icon-sm" />
+                                                                                                                    
                                                                                                                     Export PDF
                                                                                                                 </a>
                                                                                                             @endif
@@ -163,7 +163,7 @@
 
                                         <div class="d-flex align-items-center justify-content-between mt-2">
                                             <small class="text-secondary">
-                                                <x-lucide-clock class="icon-inline me-1 icon" />
+                                                
                                                 {{ $review->updated_at?->diffForHumans() ?? '-' }}
                                             </small>
                                             @if ($review->completed_at)
@@ -179,7 +179,7 @@
                     </div>
                 @else
                     <div class="bg-surface-secondary py-5 rounded-3 text-center">
-                        <x-lucide-users class="mb-2 text-muted icon icon-lg" />
+                        
                         <div class="text-secondary">Belum ada reviewer yang ditugaskan.</div>
                     </div>
                 @endif
@@ -191,7 +191,7 @@
             <div class="shadow-sm mb-3 border-0 card card-md">
                 <div class="card-header">
                     <h3 class="card-title">
-                        <x-lucide-history class="me-2 icon" />
+                        
                         Riwayat & Daftar Review
                     </h3>
                 </div>
@@ -204,7 +204,7 @@
                                         type="button" data-bs-toggle="collapse"
                                         data-bs-target="#historyRound{{ $round }}"
                                         aria-expanded="{{ $loop->first ? 'true' : 'false' }}">
-                                        <x-lucide-clipboard-list class="me-2 icon" />
+                                        
                                         <span data-bs-toggle="tooltip" data-bs-placement="top"
                                             title="Siklus review. #1 = review awal, #2+ = review ulang setelah revisi">#{{ $round }}</span>
                                         <span class="bg-secondary-lt ms-2 badge">{{ $logs->count() }} review</span>
@@ -313,7 +313,7 @@
                                                             <div
                                                                 class="d-flex align-items-center justify-content-between mt-2">
                                                                 <small class="text-secondary">
-                                                                    <x-lucide-clock class="icon-inline me-1 icon" />
+                                                                    
                                                                     {{ $log->completed_at?->diffForHumans() ?? '-' }}
                                                                 </small>
                                                                 @if ($log->completed_at)
@@ -361,10 +361,10 @@
                                 class="btn {{ $this->showForm ? 'btn-secondary' : 'btn-primary' }} btn-pill shadow-sm"
                                 wire:click="toggleForm">
                                 @if ($this->showForm)
-                                    <x-lucide-x class="me-1 icon" />
+                                    
                                     Tutup Form
                                 @else
-                                    <x-lucide-play-circle class="me-1 icon" />
+                                    
                                     Mulai Review
                                 @endif
                             </button>
@@ -393,7 +393,7 @@
                                 <div class="ps-3 col-auto" style="border-left: 1px solid var(--tblr-border-color);">
                                     <div class="text-secondary small">Batas Waktu:</div>
                                     <div class="fw-bold {{ $this->isOverdue ? 'text-danger' : 'text-body' }}">
-                                        <x-lucide-calendar class="me-1 icon" />
+                                        
                                         {{ $this->deadline ? \Carbon\Carbon::parse($this->deadline)->format('d M Y') : '-' }}
                                         @if ($this->isOverdue)
                                             <span class="bg-danger-lt ms-1 badge">Terlambat!</span>
@@ -414,7 +414,7 @@
                         @if ($errors->has('error'))
                             <div class="mb-4 alert alert-danger" role="alert">
                                 <div class="d-flex">
-                                    <x-lucide-alert-circle class="me-2 alert-icon" />
+                                    
                                     <div>{{ $errors->first('error') }}</div>
                                 </div>
                             </div>
@@ -424,7 +424,7 @@
                             @if ($this->needsReReview)
                                 <div class="shadow-sm mb-4 alert alert-important alert-warning" role="alert">
                                     <div class="d-flex">
-                                        <div><x-lucide-refresh-cw class="me-2 alert-icon" /></div>
+                                        <div></div>
                                         <div>
                                             <h4 class="alert-title">Review Ulang Dibutuhkan</h4>
                                             <div class="text-secondary">Proposal ini telah direvisi oleh pengusul.
@@ -519,7 +519,7 @@
                                     </table>
                                 </div>
                                 <div class="mt-2 text-secondary small">
-                                    <x-lucide-info class="icon-inline me-1 icon" />
+                                    
                                     Total nilai dihitung otomatis: (Skor × Bobot). Passing Grade: 300.
                                 </div>
                             </div>
@@ -571,7 +571,7 @@
 
                             <div class="d-flex align-items-center justify-content-between mt-4">
                                 <div class="text-muted small">
-                                    <x-lucide-info class="me-1 icon" />
+                                    
                                     Review Anda akan dapat dilihat oleh Admin dan Kepala LPPM.
                                 </div>
                                 <div class="btn-list">
@@ -580,7 +580,7 @@
                                     <button type="submit" class="shadow-sm px-4 btn btn-primary"
                                         wire:loading.attr="disabled">
                                         <span wire:loading class="me-2 spinner-border spinner-border-sm"></span>
-                                        <x-lucide-send class="me-1 icon" wire:loading.remove />
+                                        
                                         {{ $this->hasReviewed ? 'Simpan Perubahan' : 'Kirim Review Sekarang' }}
                                     </button>
                                 </div>

@@ -35,9 +35,9 @@
                                     Level {{ $achievedTkt }}
                                 </x-tabler.badge>
                                 @if ($isWithinTarget === true)
-                                    <i class="ti ti-check text-success ms-1"></i>
+                                    
                                 @elseif ($isWithinTarget === false)
-                                    <i class="ti ti-alert-triangle text-warning ms-1"></i>
+                                    
                                 @endif
                             </div>
                         </div>
@@ -64,7 +64,7 @@
                                         @if ($isPassed)
                                             <x-tabler.badge color="success">Pass</x-tabler.badge>
                                         @elseif($isLocked)
-                                            <x-tabler.badge color="secondary"><i class="ti ti-lock"></i></x-tabler.badge>
+                                            <x-tabler.badge color="secondary"></x-tabler.badge>
                                         @else
                                             <x-tabler.badge color="warning">{{ $average }}%</x-tabler.badge>
                                         @endif

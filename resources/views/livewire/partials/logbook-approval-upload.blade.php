@@ -3,20 +3,20 @@
     <div class="card mb-3 border-azure-subtle shadow-sm">
         <div class="card-header bg-azure-lt d-flex justify-content-between align-items-center py-2">
             <h4 class="card-title mb-0 text-azure d-flex align-items-center">
-                <x-lucide-file-signature class="icon me-2" />
+                
                 Lembar Pengesahan Catatan Harian & Keuangan (Tanda Tangan & Cap Basah)
             </h4>
             @if ($proposal->logbook_approved_at)
                 <span class="badge bg-success">
-                    <x-lucide-check-circle class="icon icon-sm me-1" /> Disahkan LPPM ({{ \Carbon\Carbon::parse($proposal->logbook_approved_at)->format('d/m/Y') }})
+                     Disahkan LPPM ({{ \Carbon\Carbon::parse($proposal->logbook_approved_at)->format('d/m/Y') }})
                 </span>
             @elseif ($proposal->hasMedia('logbook_approval_file'))
                 <span class="badge bg-warning text-dark">
-                    <x-lucide-clock class="icon icon-sm me-1" /> Menunggu Verifikasi LPPM
+                     Menunggu Verifikasi LPPM
                 </span>
             @else
                 <span class="badge bg-secondary">
-                    <x-lucide-alert-circle class="icon icon-sm me-1" /> Belum Diunggah
+                     Belum Diunggah
                 </span>
             @endif
         </div>
@@ -30,10 +30,10 @@
                     <label class="form-label font-weight-bold small mb-1">Langkah 1: Unduh Lembar Pengesahan LPJ</label>
                     <div class="d-flex flex-column gap-2">
                         <a data-navigate-ignore="true" href="{{ route('financial-reports.approval-template', ['proposal' => $proposal, 'download' => 'true']) }}" target="_blank" class="btn btn-outline-primary btn-sm w-100">
-                            <x-lucide-file-signature class="icon icon-sm me-1" /> Unduh Template Pengesahan Saja (TTD Basah)
+                             Unduh Template Pengesahan Saja (TTD Basah)
                         </a>
                         <a data-navigate-ignore="true" href="{{ route('financial-reports.export-pdf', ['proposal' => $proposal, 'download' => 'true']) }}" target="_blank" class="btn btn-outline-secondary btn-sm w-100">
-                            <x-lucide-download class="icon icon-sm me-1" /> Unduh Dokumen LPJ Lengkap
+                             Unduh Dokumen LPJ Lengkap
                         </a>
                         <div class="text-secondary small mt-1" style="font-size: 0.75rem;">
                             Cetak lembar pengesahan, bubuhi tanda tangan dosen & Kepala LPPM + cap basah, lalu scan PDF untuk diunggah.
@@ -47,7 +47,7 @@
                         @php $media = $proposal->getFirstMedia('logbook_approval_file'); @endphp
                         <div class="alert alert-success d-flex align-items-center justify-content-between p-2 mb-0">
                             <div class="d-flex align-items-center text-truncate me-2">
-                                <x-lucide-file-check class="icon text-success me-2 flex-shrink-0" />
+                                
                                 <div class="text-truncate">
                                     <strong class="d-block text-truncate">{{ $media->name }}</strong>
                                     <small class="text-muted">({{ $media->human_readable_size }})</small>
@@ -55,11 +55,11 @@
                             </div>
                             <div class="btn-group btn-group-sm flex-shrink-0">
                                 <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(10), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-primary">
-                                    <x-lucide-eye class="icon icon-sm me-1" /> Lihat
+                                     Lihat
                                 </a>
                                 @if ($this->canApprove($proposal) && ! $proposal->logbook_approved_at)
                                     <button type="button" wire:click="verifyLogbookApprovalFile" class="btn btn-sm btn-success" wire:confirm="Apakah Anda sebagai Kepala LPPM memvalidasi dan mengesahkan berkas lembar pengesahan basah ini?">
-                                        <x-lucide-shield-check class="icon icon-sm me-1" /> Sahkan LPJ
+                                         Sahkan LPJ
                                     </button>
                                 @endif
                                 @if ($this->canManage($proposal) && ! $proposal->logbook_approved_at)
@@ -78,7 +78,7 @@
                                 @enderror
                             </div>
                             <button type="submit" wire:loading.attr="disabled" class="btn btn-primary btn-sm flex-shrink-0">
-                                <span wire:loading.remove wire:target="logbookApprovalFile,saveLogbookApprovalFile"><x-lucide-upload class="icon icon-sm me-1" /> Unggah</span>
+                                <span wire:loading.remove wire:target="logbookApprovalFile,saveLogbookApprovalFile"> Unggah</span>
                                 <span wire:loading wire:target="logbookApprovalFile,saveLogbookApprovalFile"><span class="spinner-border spinner-border-sm me-1"></span> Mengunggah...</span>
                             </button>
                         </form>

@@ -28,6 +28,7 @@ use App\Livewire\AdminLppm\ReportApproval as AdminLppmReportApproval;
 use App\Livewire\AdminLppm\ReviewerAssignment;
 use App\Livewire\AdminLppm\ReviewerWorkload;
 use App\Livewire\AdminLppm\ReviewMonitoring;
+use App\Livewire\AdminLppm\NotificationLog;
 use App\Livewire\AdminLppm\SyncSinta;
 use App\Livewire\Dashboard;
 use App\Livewire\Dashboard\Dosen\LetterDashboard;
@@ -67,6 +68,7 @@ use App\Livewire\Review\Research as ReviewResearch;
 use App\Livewire\Review\ReviewHistory;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\AuditLog;
+use App\Livewire\Settings\NotificationConfig;
 use App\Livewire\Settings\ContractManager;
 use App\Livewire\Settings\ManualBookSetting;
 use App\Livewire\Settings\MasterData;
@@ -351,6 +353,10 @@ Route::middleware(['auth'])->group(function () {
             ->middleware(['role:admin lppm|kepala lppm|rektor'])
             ->name('review-monitoring');
 
+        Route::get('log-notifikasi', NotificationLog::class)
+            ->middleware(['role:admin lppm|kepala lppm|rektor'])
+            ->name('notification-log');
+
         // Monev
         Route::get('monev', MonevIndex::class)
             ->middleware('permission:module_monev')
@@ -363,6 +369,10 @@ Route::middleware(['auth'])->group(function () {
         // route for global audit log access outside settings tab
         Route::get('audit-log', AuditLog::class)
             ->name('audit-log');
+
+        Route::get('notification-config', NotificationConfig::class)
+            ->middleware(['role:admin lppm|superadmin'])
+            ->name('notification-config');
 
         // Manual Books - Per-role view (all authenticated users)
         Route::middleware(['auth', 'verified'])->prefix('manual-books')->name('manual-books.')->group(function () {

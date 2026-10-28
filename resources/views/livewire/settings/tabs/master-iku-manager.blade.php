@@ -7,7 +7,7 @@
                 <div class="text-muted small">Kelola target dan rumus pencapaian IKU</div>
             </div>
             <button class="btn btn-primary btn-sm rounded-pill shadow-sm" wire:click="create">
-                <x-lucide-plus-circle class="icon icon-sm me-1" />
+                
                 Tambah IKU
             </button>
         </div>
@@ -49,7 +49,7 @@
                                     </span>
                                 @else
                                     <span class="badge bg-success-lt" title="Rumus Otomatis Aktif">
-                                        <x-lucide-cpu class="icon icon-sm me-1" />
+                                        
                                         Otomatis
                                     </span>
                                 @endif
@@ -63,7 +63,7 @@
                             <td>
                                 <button type="button" class="btn btn-outline-primary btn-sm rounded-pill"
                                     wire:click="edit({{ $item->id }})">
-                                    <x-lucide-settings class="icon icon-sm me-1" />
+                                    
                                     Atur
                                 </button>
                             </td>
@@ -126,7 +126,7 @@
                             <div class="card-body p-3">
                                 <div class="d-flex align-items-center justify-content-between mb-3">
                                     <h6 class="mb-0 font-weight-bold">
-                                        <x-lucide-cpu class="icon me-2 text-primary" />
+                                        
                                         Kontrol Manual (Override)
                                     </h6>
                                     <div class="form-check form-switch px-0">

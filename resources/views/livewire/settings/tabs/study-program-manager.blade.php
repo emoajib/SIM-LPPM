@@ -5,7 +5,7 @@
             <h3 class="card-title">Program Studi</h3>
             <button type="button" class="btn btn-primary" wire:click='create' data-bs-toggle="modal"
                 data-bs-target="#modal-study-program">
-                <x-lucide-plus class="icon" />
+                
                 Tambah Program Studi
             </button>
         </div>
@@ -64,7 +64,7 @@
                                     @if($item->roadmap_status === 'submitted' && active_has_any_role(['dekan', 'admin lppm', 'superadmin']))
                                         <button type="button" class="btn btn-sm btn-success"
                                             wire:click="$set('validatingProgramId', '{{ $item->id }}'); $dispatch('open-modal', { modalId: 'modal-roadmap-validation' })">
-                                            <x-lucide-check class="icon me-1" /> Validasi
+                                             Validasi
                                         </button>
                                     @endif
                                     <button type="button" class="btn-outline-warning btn btn-sm"
@@ -106,11 +106,11 @@
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
             <button type="button" class="btn btn-danger" wire:click="rejectRoadmap('{{ $validatingProgramId }}')"
                 wire:loading.attr="disabled">
-                <x-lucide-x class="icon me-1" /> Tolak
+                 Tolak
             </button>
             <button type="button" class="btn btn-success" wire:click="approveRoadmap('{{ $validatingProgramId }}')"
                 wire:loading.attr="disabled">
-                <x-lucide-check class="icon me-1" /> Setujui
+                 Setujui
             </button>
         </x-slot:footer>
     </x-tabler.modal>
@@ -206,7 +206,7 @@
                 @if($activeTab === 'roadmap' && \App\Models\Setting::get('feature_roadmap_active', false))
                     <div class="alert alert-info border-0 shadow-sm mb-4">
                         <div class="d-flex align-items-start">
-                            <x-lucide-info class="me-2 icon" />
+                            
                             <div>
                                 <strong>Peta Jalan Penelitian Prodi</strong>
                                 <p class="mb-0 small">Isi roadmap berdasarkan CPL dan fokus keilmuan program studi. Roadmap ini akan digunakan sebagai acuan alignment proposal dosen.</p>
@@ -256,7 +256,7 @@
                                 <div class="text-center text-secondary py-3">Belum ada prioritas tahunan. Klik tombol di bawah untuk menambahkan.</div>
                             @endforelse
                             <button type="button" class="btn btn-sm btn-primary" wire:click="$push('researchRoadmap.priorities', { year: {{ now()->year }}, themes: '', tkt_focus: '', funding: '', cpl_alignment: '' })">
-                                <x-lucide-plus class="icon me-1" /> Tambah Prioritas
+                                 Tambah Prioritas
                             </button>
                         </div>
                     </div>

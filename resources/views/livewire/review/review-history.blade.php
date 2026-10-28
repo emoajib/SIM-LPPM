@@ -6,7 +6,7 @@
     <div class="alert alert-info alert-dismissible fade show border-0 shadow-sm collapse" id="reviewHistoryInfo" role="alert">
         <div class="d-flex">
             <div>
-                <x-lucide-info class="alert-icon icon me-2" />
+                
             </div>
             <div>
                 <h4 class="alert-title">Tentang Siklus Review</h4>
@@ -22,7 +22,7 @@
 
     <div class="mb-3">
         <button class="btn btn-ghost-info btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#reviewHistoryInfo" aria-expanded="false" aria-controls="reviewHistoryInfo">
-            <x-lucide-info class="icon me-1" />
+            
             Informasi Siklus Review
         </button>
     </div>
@@ -35,7 +35,7 @@
                     <div class="row align-items-center">
                         <div class="col-auto">
                             <span class="bg-primary text-white avatar">
-                                <x-lucide-clipboard-check class="icon" />
+                                
                             </span>
                         </div>
                         <div class="col">
@@ -52,7 +52,7 @@
                     <div class="row align-items-center">
                         <div class="col-auto">
                             <span class="bg-success text-white avatar">
-                                <x-lucide-check-circle class="icon" />
+                                
                             </span>
                         </div>
                         <div class="col">
@@ -69,7 +69,7 @@
                     <div class="row align-items-center">
                         <div class="col-auto">
                             <span class="bg-warning text-white avatar">
-                                <x-lucide-refresh-cw class="icon" />
+                                
                             </span>
                         </div>
                         <div class="col">
@@ -86,7 +86,7 @@
                     <div class="row align-items-center">
                         <div class="col-auto">
                             <span class="bg-danger text-white avatar">
-                                <x-lucide-x-circle class="icon" />
+                                
                             </span>
                         </div>
                         <div class="col">
@@ -140,7 +140,7 @@
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
                     <button type="button" class="btn btn-outline-secondary w-100" wire:click="resetFilters">
-                        <x-lucide-rotate-ccw class="icon me-1" />
+                        
                         Reset
                     </button>
                 </div>
@@ -225,7 +225,7 @@
                                         <div class="p-2 border-top">
                                             <a href="{{ $proposal->detailable_type === 'App\Models\Research' ? route('research.proposal.show', $proposal) : route('community-service.proposal.show', $proposal) }}" 
                                                 class="btn btn-sm btn-ghost-primary" wire:navigate.hover>
-                                                <x-lucide-external-link class="icon me-1" />
+                                                
                                                 Lihat Proposal
                                             </a>
                                         </div>
@@ -240,7 +240,7 @@
     @else
         <div class="card border-0 shadow-sm">
             <div class="card-body text-center py-5">
-                <x-lucide-clipboard-x class="icon icon-lg text-muted mb-3" />
+                
                 <h3 class="text-muted">Belum Ada Riwayat Review</h3>
                 <p class="text-secondary">Review yang telah Anda selesaikan akan ditampilkan di sini.</p>
             </div>

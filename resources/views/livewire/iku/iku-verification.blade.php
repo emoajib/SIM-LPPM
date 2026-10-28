@@ -8,7 +8,7 @@
             <div class="col-auto">
                 <div class="btn-list">
                     <a href="{{ route('accreditation.hub') }}" class="btn btn-outline-primary" wire:navigate>
-                        <x-lucide-gauge class="icon me-2" />
+                        
                         Dashboard IKU
                     </a>
                 </div>
@@ -25,7 +25,7 @@
                         <div class="col-md-4">
                             <div class="input-icon">
                                 <span class="input-icon-addon">
-                                    <x-lucide-search class="icon" />
+                                    
                                 </span>
                                 <input type="text" wire:model.live.debounce.300ms="search" class="form-control"
                                     placeholder="Cari judul jurnal, artikel, atau usulan...">
@@ -100,8 +100,7 @@
                                                     <a href="{{ $output->document_url }}" target="_blank"
                                                         class="btn btn-sm btn-ghost-info py-1 px-2 border-info-subtle"
                                                         style="font-size: 0.7rem; border: 1px solid rgba(0,0,0,0.1)">
-                                                        <x-lucide-file-text class="icon me-1"
-                                                            style="width: 12px; height: 12px;" />
+                                                        
                                                         Lihat Dokumen
                                                     </a>
                                                 </div>
@@ -154,7 +153,7 @@
                                     <td>
                                         @if($output->is_verified_status)
                                             <span class="badge bg-success-lt px-3 py-1">
-                                                <x-lucide-check class="icon me-1" style="width: 12px; height: 12px;" />
+                                                
                                                 Terverifikasi
                                             </span>
                                             <div class="mt-1 small text-muted" style="font-size: 10px;">
@@ -184,7 +183,7 @@
                                 <tr>
                                     <td colspan="6" class="text-center py-5">
                                         <div class="text-muted">
-                                            <x-lucide-clipboard-list class="icon icon-2 me-2" />
+                                            
                                             Tidak ada luaran yang butuh verifikasi.
                                         </div>
                                     </td>

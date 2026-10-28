@@ -26,17 +26,17 @@
             <ul class="nav nav-tabs card-header-tabs">
                 @php
                     $tabs = [
-                        'pending_approval' => ['label' => 'Perlu Diproses', 'icon' => 'ti-clock', 'count' => $stats['pending']],
-                        'published' => ['label' => 'Diterbitkan', 'icon' => 'ti-check', 'count' => $stats['published']],
-                        'rejected' => ['label' => 'Ditolak', 'icon' => 'ti-x', 'count' => $stats['rejected']],
-                        'cancelled' => ['label' => 'Dibatalkan', 'icon' => 'ti-ban', 'count' => $stats['cancelled']],
-                        'ready_to_print' => ['label' => 'Siap Cetak', 'icon' => 'ti-printer', 'count' => $stats['ready_to_print']],
+                        'pending_approval' => ['label' => 'Perlu Diproses', 'count' => $stats['pending']],
+                        'published' => ['label' => 'Diterbitkan', 'count' => $stats['published']],
+                        'rejected' => ['label' => 'Ditolak', 'count' => $stats['rejected']],
+                        'cancelled' => ['label' => 'Dibatalkan', 'count' => $stats['cancelled']],
+                        'ready_to_print' => ['label' => 'Siap Cetak', 'count' => $stats['ready_to_print']],
                     ];
                 @endphp
                 @foreach($tabs as $key => $tab)
                 <li class="nav-item" wire:key="tab-{{ $key }}">
                     <a class="nav-link {{ $statusFilter === $key ? 'active' : '' }}" href="#" wire:click.prevent="setFilter('{{ $key }}')">
-                        <i class="ti {{ $tab['icon'] }} me-1"></i> {{ $tab['label'] }}
+                         {{ $tab['label'] }}
                         <span class="badge bg-secondary-lt ms-1">{{ $tab['count'] }}</span>
                     </a>
                 </li>
@@ -47,14 +47,14 @@
                 <div class="col">
                     <div class="input-icon">
                         <span class="input-icon-addon">
-                            <i class="ti ti-search"></i>
+                            
                         </span>
                         <input type="text" class="form-control" placeholder="Cari nomor surat atau jenis surat..." wire:model.live="search">
                     </div>
                 </div>
                 <div class="col-auto">
                     <button class="btn btn-primary btn-sm" wire:click="showSectionForm">
-                        <i class="ti ti-plus me-1"></i> Ajukan Surat
+                         Ajukan Surat
                     </button>
                 </div>
             </div>
@@ -104,10 +104,10 @@
                             <div class="btn-list flex-nowrap">
                                 @if(in_array($letter->status?->value, ['published', 'ready_to_print']) && $letter->file_path)
                                 <a href="{{ route('letter.view', $letter->id) }}" target="_blank" class="btn btn-outline-info btn-sm" title="Lihat PDF">
-                                    <i class="ti ti-eye"></i>
+                                    
                                 </a>
                                 <a href="{{ route('letter.download', $letter->id) }}" target="_blank" class="btn btn-outline-info btn-sm" title="Unduh PDF">
-                                    <i class="ti ti-download"></i>
+                                    
                                 </a>
                                 @elseif(in_array($letter->status?->value, ['published', 'ready_to_print']))
                                 <span class="text-muted small">PDF belum tersedia</span>
@@ -115,13 +115,13 @@
 
                                 @if($letter->status?->value === 'pending_approval')
                                 <button class="btn btn-outline-danger btn-sm" wire:click="cancel('{{ $letter->id }}')" wire:confirm="Yakin ingin membatalkan surat ini?">
-                                    <i class="ti ti-x"></i>
+                                    
                                 </button>
                                 @endif
 
                                 @if($letter->status?->value === 'rejected')
                                 <button class="btn btn-outline-primary btn-sm" wire:click="openResubmitModal('{{ $letter->id }}')">
-                                    <i class="ti ti-refresh"></i> Ajukan Ulang
+                                     Ajukan Ulang
                                 </button>
                                 @endif
                             </div>
@@ -130,10 +130,10 @@
                     @empty
                     <tr>
                         <td colspan="7" class="text-center py-5 text-muted">
-                            <i class="ti ti-mail-opened icon-lg mb-2"></i>
+                            
                             <div>Belum ada surat dengan status ini.</div>
                             <button class="btn btn-primary btn-sm mt-2" wire:click="showSectionForm">
-                                <i class="ti ti-plus me-1"></i> Ajukan Surat Baru
+                                 Ajukan Surat Baru
                             </button>
                         </td>
                     </tr>
@@ -148,15 +148,15 @@
 
     {{-- FAB --}}
     <button class="btn btn-primary btn-fab shadow-lg @if($showForm) fab-hidden @endif" id="fabAjukan" title="Ajukan Surat Baru" wire:click="showSectionForm">
-        <i class="ti ti-plus" style="font-size: 1.5rem;"></i>
+        
     </button>
 
     {{-- Form --}}
     <div class="card border-0 shadow-sm section-form @if($showForm) active @endif" id="sectionForm">
         <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center py-3">
-            <h5 class="card-title mb-0"><i class="ti ti-file-plus me-2"></i> Ajukan Surat Baru</h5>
+            <h5 class="card-title mb-0"> Ajukan Surat Baru</h5>
             <button class="btn btn-outline-secondary btn-sm" wire:click="showSectionTable">
-                <i class="ti ti-arrow-left me-1"></i> Kembali
+                 Kembali
             </button>
         </div>
         <div class="card-body p-4">
@@ -248,7 +248,7 @@
                     <label class="form-label">Tim Pelaksana</label>
                     <div class="input-icon mb-2">
                         <span class="input-icon-addon">
-                            <i class="ti ti-search"></i>
+                            
                         </span>
                         <input type="text" class="form-control" wire:model.live.debounce.500ms="searchQuery" wire:keydown.enter.prevent wire:keydown.enter.stop placeholder="Ketik nama dosen untuk mencari...">
                     </div>
@@ -287,7 +287,7 @@
                                     </td>
                                     <td>
                                         <button type="button" class="btn btn-sm btn-outline-danger" wire:click="removeTeamMember({{ $index }})" title="Tutup" aria-label="Tutup">
-                                            <i class="ti ti-x"></i>
+                                            
                                         </button>
                                     </td>
                                 </tr>
@@ -303,7 +303,7 @@
                 <div class="d-flex justify-content-end gap-2">
                     <button type="button" class="btn btn-link" onclick="showSectionTable()">Batal</button>
                     <button type="submit" class="btn btn-primary px-4" wire:loading.attr="disabled">
-                        <i class="ti ti-send me-1"></i> Kirim ke Kepala LPPM
+                         Kirim ke Kepala LPPM
                     </button>
                 </div>
             </form>
@@ -356,7 +356,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-link" wire:click="closeResubmitModal">Batal</button>
                     <button type="button" class="btn btn-primary" wire:click="confirmResubmit">
-                        <i class="ti ti-send me-1"></i> Kirim Ulang
+                         Kirim Ulang
                     </button>
                 </div>
             </div>

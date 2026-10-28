@@ -5,8 +5,8 @@
             <x-tabler.modal id="deleteModal" title="Hapus Proposal?" wire:ignore.self>
                 <x-slot:body>
                     <div class="py-1 text-center">
-                        <x-lucide-alert-circle class="mb-2 text-danger icon" style="width: 3rem; height: 3rem;" />
-                        <h3>Hapus Proposal?</h3>
+                        
+                        <h3 class="mt-2">Hapus Proposal?</h3>
                         <div class="text-secondary">
                             Apakah Anda yakin ingin menghapus proposal ini? Tindakan ini tidak dapat dibatalkan.
                         </div>
@@ -30,11 +30,11 @@
         <x-tabler.modal id="acceptMemberModal" title="Terima Undangan?" wire:ignore.self>
             <x-slot:body>
                 <div class="py-1 text-center">
-                    <x-lucide-check-circle class="mb-2 text-success icon" style="width: 3rem; height: 3rem;" />
-                    <h3>Terima Undangan?</h3>
-                    <div class="text-secondary">
-                        Apakah Anda yakin ingin menerima undangan sebagai anggota tim proposal ini?
-                    </div>
+                        
+                        <h3 class="mt-2">Terima Undangan?</h3>
+                        <div class="text-secondary">
+                            Apakah Anda yakin ingin menerima undangan sebagai anggota tim proposal ini?
+                        </div>
                 </div>
             </x-slot:body>
 
@@ -55,11 +55,11 @@
         <x-tabler.modal id="rejectMemberModal" title="Tolak Undangan?" wire:ignore.self>
             <x-slot:body>
                 <div class="py-1 text-center">
-                    <x-lucide-x-circle class="mb-2 text-danger icon" style="width: 3rem; height: 3rem;" />
-                    <h3>Tolak Undangan?</h3>
-                    <div class="text-secondary">
-                        Apakah Anda yakin ingin menolak undangan sebagai anggota tim proposal ini?
-                    </div>
+                        
+                        <h3 class="mt-2">Tolak Undangan?</h3>
+                        <div class="text-secondary">
+                            Apakah Anda yakin ingin menolak undangan sebagai anggota tim proposal ini?
+                        </div>
                 </div>
             </x-slot:body>
 
@@ -82,13 +82,13 @@
                 <div class="py-1">
                     <div class="mb-3 text-center">
                         @if ($approvalDecision === 'approved')
-                            <x-lucide-check-circle class="mb-2 text-success icon" style="width: 3rem; height: 3rem;" />
+                            
                             <h3>Setujui Proposal?</h3>
                         @elseif($approvalDecision === 'need_fix')
-                            <x-lucide-alert-triangle class="mb-2 text-warning icon" style="width: 3rem; height: 3rem;" />
+                            
                             <h3>Perlu Perbaikan?</h3>
                         @elseif($approvalDecision === 'rejected')
-                            <x-lucide-x-circle class="mb-2 text-danger icon" style="width: 3rem; height: 3rem;" />
+                            
                             <h3>Tolak Proposal?</h3>
                         @endif
                         <div class="text-secondary">

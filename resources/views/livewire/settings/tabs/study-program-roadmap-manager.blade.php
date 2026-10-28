@@ -6,7 +6,7 @@
             @if($canMutate)
             <button type="button" class="btn btn-primary" wire:click='create' data-bs-toggle="modal"
                 data-bs-target="#modal-study-program-roadmap">
-                <x-lucide-plus class="icon" />
+                
                 Tambah Peta Jalan
             </button>
             @endif

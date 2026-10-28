@@ -9,11 +9,11 @@
                 </div>
                 <div class="d-flex align-items-center gap-2">
                     <a href="https://sinta.kemdiktisaintek.go.id/authorverification" target="_blank" class="btn btn-outline-primary btn-sm d-none d-sm-inline-flex" style="font-size: 0.75rem;">
-                        <i class="ti ti-external-link me-1"></i> Buka Portal SINTA
+                         Buka Portal SINTA
                     </a>
                     <div class="input-group">
                         <span class="input-group-text bg-white border-end-0">
-                            <i class="ti ti-calendar-event text-primary"></i>
+                            
                         </span>
                         <select class="form-select" wire:model.live="selectedYear" style="min-width: 130px;">
                             @foreach($availableYears as $year)
@@ -34,7 +34,7 @@
             <div class="card-body">
                 <div class="d-flex align-items-center mb-3">
                     <div class="avatar avatar-md bg-primary-lt text-primary me-3">
-                        <i class="ti ti-flask fs-3"></i>
+                        
                     </div>
                     <div>
                         <h3 class="card-title fw-bold mb-0">Penelitian (Research)</h3>
@@ -60,12 +60,12 @@
                         class="btn btn-primary w-100"
                         wire:navigate.disabled
                         id="btn-download-research">
-                        <i class="ti ti-table-export me-2"></i>
+                        
                         Unduh Excel Penelitian ({{ $summary['research'] }} data)
                     </a>
                 @else
                     <div class="alert alert-warning mb-0 py-2 small">
-                        <i class="ti ti-info-circle me-1"></i>
+                        
                         Tidak ada data penelitian yang Disetujui/Selesai untuk tahun <strong>{{ $selectedYear }}</strong>.
                     </div>
                 @endif
@@ -78,7 +78,7 @@
             <div class="card-body">
                 <div class="d-flex align-items-center mb-3">
                     <div class="avatar avatar-md bg-green-lt text-green me-3">
-                        <i class="ti ti-users-group fs-3"></i>
+                        
                     </div>
                     <div>
                         <h3 class="card-title fw-bold mb-0">Pengabdian Masyarakat (PKM)</h3>
@@ -104,12 +104,12 @@
                         class="btn btn-success w-100"
                         wire:navigate.disabled
                         id="btn-download-pkm">
-                        <i class="ti ti-table-export me-2"></i>
+                        
                         Unduh Excel PKM ({{ $summary['pkm'] }} data)
                     </a>
                 @else
                     <div class="alert alert-warning mb-0 py-2 small">
-                        <i class="ti ti-info-circle me-1"></i>
+                        
                         Tidak ada data PKM yang Disetujui/Selesai untuk tahun <strong>{{ $selectedYear }}</strong>.
                     </div>
                 @endif
@@ -122,7 +122,7 @@
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-transparent border-0">
                 <h4 class="card-title mb-0 fw-bold">
-                    <i class="ti ti-help-circle me-1 text-orange"></i>
+                    
                     Panduan Upload ke SINTA Author Verification
                 </h4>
             </div>
@@ -147,7 +147,7 @@
                 </div>
             </div>
             <div class="card-footer bg-transparent border-0 d-flex align-items-center gap-2">
-                <i class="ti ti-alert-circle text-warning"></i>
+                
                 <span class="text-muted small">
                     Pastikan data profil dosen (terutama <strong>SINTA ID</strong> dan <strong>NIDN</strong>) sudah lengkap di menu 
                     <a href="{{ route('users.index') }}" wire:navigate class="text-primary">Kelola Pengguna</a> 

@@ -5,7 +5,7 @@
             <div class="dropdown">
                 <a href="#" class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2"
                     data-bs-toggle="dropdown">
-                    <i class="ti ti-calendar-event fs-2"></i>
+                    
                     <span>Tahun: {{ $selectedYear }}</span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end">
@@ -62,7 +62,7 @@
                             @endphp
                             <div class="text-green bg-green-lt rounded-circle p-2 d-flex align-items-center justify-content-center"
                                 style="width: 32px; height: 32px;">
-                                <i class="ti ti-brand-chrome fs-3"></i>
+                                
                             </div>
                         </div>
                     </div>
@@ -87,7 +87,7 @@
                             @endphp
                             <div class="text-yellow bg-yellow-lt rounded-circle p-2 d-flex align-items-center justify-content-center"
                                 style="width: 32px; height: 32px;">
-                                <i class="ti ti-brand-google fs-3"></i>
+                                
                             </div>
                         </div>
                     </div>
@@ -111,7 +111,7 @@
                             @endphp
                             <div class="text-purple bg-purple-lt rounded-circle p-2 d-flex align-items-center justify-content-center"
                                 style="width: 32px; height: 32px;">
-                                <i class="ti ti-flask fs-3"></i>
+                                
                             </div>
                         </div>
                     </div>
@@ -131,8 +131,7 @@
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-auto">
-                            <span class="bg-primary-lt text-primary avatar border-0 shadow-sm"><i
-                                    class="ti ti-flask"></i></span>
+                            <span class="bg-primary-lt text-primary avatar border-0 shadow-sm"></span>
                         </div>
                         <div class="col">
                             <div class="fw-bold">Penelitian</div>
@@ -147,8 +146,7 @@
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-auto">
-                            <span class="bg-azure-lt text-azure avatar border-0 shadow-sm"><i
-                                    class="ti ti-users"></i></span>
+                            <span class="bg-azure-lt text-azure avatar border-0 shadow-sm"></span>
                         </div>
                         <div class="col">
                             <div class="fw-bold">Pengabdian</div>
@@ -163,8 +161,7 @@
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-auto">
-                            <span class="bg-green-lt text-green avatar border-0 shadow-sm"><i
-                                    class="ti ti-user-plus"></i></span>
+                            <span class="bg-green-lt text-green avatar border-0 shadow-sm"></span>
                         </div>
                         <div class="col">
                             <div class="fw-bold">Penelitian Pending</div>
@@ -179,8 +176,7 @@
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-auto">
-                            <span class="bg-azure-lt text-azure avatar border-0 shadow-sm"><i
-                                    class="ti ti-check"></i></span>
+                            <span class="bg-azure-lt text-azure avatar border-0 shadow-sm"></span>
                         </div>
                         <div class="col">
                             <div class="fw-bold">Penelitian Disetujui</div>
@@ -195,8 +191,7 @@
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-auto">
-                            <span class="bg-yellow-lt text-yellow avatar border-0 shadow-sm"><i
-                                    class="ti ti-user-plus"></i></span>
+                            <span class="bg-yellow-lt text-yellow avatar border-0 shadow-sm"></span>
                         </div>
                         <div class="col">
                             <div class="fw-bold">PKM Pending</div>
@@ -211,8 +206,7 @@
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-auto">
-                            <span class="bg-teal-lt text-teal avatar border-0 shadow-sm"><i
-                                    class="ti ti-check"></i></span>
+                            <span class="bg-teal-lt text-teal avatar border-0 shadow-sm"></span>
                         </div>
                         <div class="col">
                             <div class="fw-bold">PKM Disetujui</div>
@@ -227,8 +221,7 @@
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-auto">
-                            <span class="bg-purple-lt text-purple avatar border-0 shadow-sm"><i
-                                    class="ti ti-chart-dots"></i></span>
+                            <span class="bg-purple-lt text-purple avatar border-0 shadow-sm"></span>
                         </div>
                         <div class="col">
                             <div class="fw-bold">Member</div>
@@ -249,7 +242,7 @@
                 <div class="card border-0 shadow-sm" style="border-radius: 12px;">
                     <div class="card-header bg-transparent border-0 py-3 d-flex align-items-center">
                         <div class="avatar bg-primary-lt text-primary shadow-sm avatar-sm me-3 border-0">
-                            <i class="ti ti-chart-line"></i>
+                            
                         </div>
                         <h3 class="card-title fw-bold mb-0">Tren Penelitian & Pengabdian</h3>
                         <div class="ms-auto d-flex gap-3 flex-wrap">
@@ -432,7 +425,7 @@
         <div class="col-12">
             <div class="d-flex align-items-center justify-content-between mb-2">
                 <h3 class="card-title fw-bold text-dark d-flex align-items-center gap-2 mb-0">
-                    <i class="ti ti-git-fork text-primary"></i>
+                    
                     Alur Proses Penelitian & Pengabdian Saya
                 </h3>
                 <span class="badge bg-blue-lt">Klik kartu untuk rincian data usulan</span>
@@ -450,7 +443,7 @@
                 <div class="card-body py-3">
                     <div class="d-flex align-items-center mb-2">
                         <span class="avatar avatar-sm bg-primary-lt text-primary rounded shadow-none me-2">
-                            <i class="ti ti-file-text fs-2"></i>
+                            
                         </span>
                         <div>
                             <div class="subheader text-primary fw-bold mb-0">Usulan</div>
@@ -489,7 +482,7 @@
                 <div class="card-body py-3">
                     <div class="d-flex align-items-center mb-2">
                         <span class="avatar avatar-sm bg-warning-lt text-warning rounded shadow-none me-2">
-                            <i class="ti ti-edit fs-2"></i>
+                            
                         </span>
                         <div>
                             <div class="subheader text-warning fw-bold mb-0">Perbaikan Usulan</div>
@@ -527,7 +520,7 @@
                 <div class="card-body py-3">
                     <div class="d-flex align-items-center mb-2">
                         <span class="avatar avatar-sm bg-indigo-lt text-indigo rounded shadow-none me-2">
-                            <i class="ti ti-receipt-2 fs-2"></i>
+                            
                         </span>
                         <div>
                             <div class="subheader text-indigo fw-bold mb-0">Catatan & Keuangan</div>
@@ -565,7 +558,7 @@
                 <div class="card-body py-3">
                     <div class="d-flex align-items-center mb-2">
                         <span class="avatar avatar-sm bg-success-lt text-success rounded shadow-none me-2">
-                            <i class="ti ti-certificate fs-2"></i>
+                            
                         </span>
                         <div>
                             <div class="subheader text-success fw-bold mb-0">Laporan Akhir</div>
@@ -601,7 +594,7 @@
                 <div class="card-header bg-transparent border-0 py-3 d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center">
                         <div class="avatar bg-primary-lt text-primary shadow-sm avatar-sm me-3 border-0">
-                            <i class="ti ti-flask-2"></i>
+                            
                         </div>
                         <h3 class="card-title fw-bold mb-0">Penelitian Terbaru</h3>
                         <span class="badge bg-primary-lt ms-2">{{ count($recentResearch) }} Data</span>
@@ -638,23 +631,23 @@
                                                 @endphp
                                                 @if($repStatus === \App\Enums\ReportStatus::APPROVED)
                                                     <span class="badge bg-success text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-check me-1"></i>Laporan Disetujui
+                                                        Laporan Disetujui
                                                     </span>
                                                 @elseif($repStatus === \App\Enums\ReportStatus::APPROVED_BY_DEKAN)
                                                     <span class="badge bg-purple text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-clock-check me-1"></i>Disetujui Dekan
+                                                        Disetujui Dekan
                                                     </span>
                                                 @elseif($repStatus === \App\Enums\ReportStatus::SUBMITTED)
                                                     <span class="badge bg-primary text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-send me-1"></i>Laporan Diajukan
+                                                        Laporan Diajukan
                                                     </span>
                                                 @elseif($repStatus === \App\Enums\ReportStatus::REJECTED)
                                                     <span class="badge bg-danger text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-alert-circle me-1"></i>Revisi Laporan
+                                                        Revisi Laporan
                                                     </span>
                                                 @elseif($repStatus === \App\Enums\ReportStatus::DRAFT)
                                                     <span class="badge bg-warning text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-edit me-1"></i>Draf Laporan
+                                                        Draf Laporan
                                                     </span>
                                                 @endif
                                             @else
@@ -689,7 +682,7 @@
                 <div class="card-header bg-transparent border-0 py-3 d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center">
                         <div class="avatar bg-azure-lt text-azure shadow-sm avatar-sm me-3 border-0">
-                            <i class="ti ti-users-group"></i>
+                            
                         </div>
                         <h3 class="card-title fw-bold mb-0">PKM Terbaru</h3>
                         <span class="badge bg-azure-lt ms-2">{{ count($recentCommunityService) }} Data</span>
@@ -726,23 +719,23 @@
                                                 @endphp
                                                 @if($repStatus === \App\Enums\ReportStatus::APPROVED)
                                                     <span class="badge bg-success text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-check me-1"></i>Laporan Disetujui
+                                                        Laporan Disetujui
                                                     </span>
                                                 @elseif($repStatus === \App\Enums\ReportStatus::APPROVED_BY_DEKAN)
                                                     <span class="badge bg-purple text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-clock-check me-1"></i>Disetujui Dekan
+                                                        Disetujui Dekan
                                                     </span>
                                                 @elseif($repStatus === \App\Enums\ReportStatus::SUBMITTED)
                                                     <span class="badge bg-primary text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-send me-1"></i>Laporan Diajukan
+                                                        Laporan Diajukan
                                                     </span>
                                                 @elseif($repStatus === \App\Enums\ReportStatus::REJECTED)
                                                     <span class="badge bg-danger text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-alert-circle me-1"></i>Revisi Laporan
+                                                        Revisi Laporan
                                                     </span>
                                                 @elseif($repStatus === \App\Enums\ReportStatus::DRAFT)
                                                     <span class="badge bg-warning text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-edit me-1"></i>Draf Laporan
+                                                        Draf Laporan
                                                     </span>
                                                 @endif
                                             @else
@@ -781,7 +774,7 @@
                 <form wire:submit="saveMetrics">
                     <div class="modal-header border-bottom-0 pb-0">
                         <h5 class="modal-title fw-bold">
-                            <i class="ti ti-pencil me-2 text-primary"></i>
+                            
                             Sesuaikan Metrik Publikasi
                         </h5>
                         <button type="button" class="btn-close" wire:click="$set('showEditMetricsModal', false)"
@@ -790,7 +783,7 @@
                     <div class="modal-body">
                         <div class="alert alert-info bg-info-lt mb-4 border-0 shadow-sm">
                             <div class="d-flex">
-                                <div><i class="ti ti-info-circle me-3 fs-2 text-info"></i></div>
+                                <div></div>
                                 <div>
                                     <h4 class="alert-title mb-1">Informasi Sinkronisasi</h4>
                                     <div class="text-secondary">Anda dapat memperbarui skor metrik secara manual untuk
@@ -803,8 +796,7 @@
                             <div class="col-sm-6">
                                 <label class="form-label fw-bold">SINTA Score Overall</label>
                                 <div class="input-group input-group-flat">
-                                    <span class="input-group-text bg-transparent text-primary"><i
-                                            class="ti ti-star"></i></span>
+                                    <span class="input-group-text bg-transparent text-primary"></span>
                                     <input type="number" step="0.01" class="form-control"
                                         wire:model="sinta_score_v3_overall">
                                 </div>
@@ -814,8 +806,7 @@
                             <div class="col-sm-6">
                                 <label class="form-label fw-bold">Scopus H-Index</label>
                                 <div class="input-group input-group-flat">
-                                    <span class="input-group-text bg-transparent text-green"><i
-                                            class="ti ti-chart-bar"></i></span>
+                                    <span class="input-group-text bg-transparent text-green"></span>
                                     <input type="number" class="form-control" wire:model="scopus_h_index">
                                 </div>
                                 @error('scopus_h_index') <div class="text-danger small mt-1">{{ $message }}</div>
@@ -824,8 +815,7 @@
                             <div class="col-sm-6">
                                 <label class="form-label fw-bold">Google Scholar H-Index</label>
                                 <div class="input-group input-group-flat">
-                                    <span class="input-group-text bg-transparent text-yellow"><i
-                                            class="ti ti-book"></i></span>
+                                    <span class="input-group-text bg-transparent text-yellow"></span>
                                     <input type="number" class="form-control" wire:model="gs_h_index">
                                 </div>
                                 @error('gs_h_index') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
@@ -833,8 +823,7 @@
                             <div class="col-sm-6">
                                 <label class="form-label fw-bold">Web Of Science (WoS)</label>
                                 <div class="input-group input-group-flat">
-                                    <span class="input-group-text bg-transparent text-purple"><i
-                                            class="ti ti-flask"></i></span>
+                                    <span class="input-group-text bg-transparent text-purple"></span>
                                     <input type="number" class="form-control" wire:model="wos_h_index"
                                         placeholder="H-Index">
                                 </div>
@@ -845,12 +834,12 @@
                     <div class="modal-footer border-top-0 pt-0">
                         <button type="button" class="btn btn-outline-secondary"
                             wire:click="$set('showEditMetricsModal', false)">
-                            <i class="ti ti-x me-2"></i> Batal
+                             Batal
                         </button>
                         <button type="submit" class="btn btn-primary shadow-sm" wire:loading.attr="disabled"
                             wire:target="saveMetrics">
                             <span wire:loading.remove wire:target="saveMetrics">
-                                <i class="ti ti-device-floppy me-2"></i> Simpan Metrik
+                                 Simpan Metrik
                             </span>
                             <span wire:loading wire:target="saveMetrics">
                                 <div class="spinner-border spinner-border-sm me-2" role="status"></div>

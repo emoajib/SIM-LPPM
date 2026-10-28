@@ -43,74 +43,74 @@ class MenuComposer
             // Dashboard - available for all roles
             [
                 'title' => 'Dashboard',
-                'icon' => 'smart-home',
+                'icon' => null,
                 'route' => 'dashboard',
             ],
             // Manual Book / Panduan - admin/superadmin ke CRUD, lainnya ke viewer
             [
                 'title' => 'Panduan',
-                'icon' => 'book-2',
+                'icon' => null,
                 'route' => 'admin-lppm.manual-books.index',
                 'roles' => ['dosen', 'kepala lppm', 'admin lppm', 'superadmin', 'rektor', 'dekan', 'kaprodi', 'reviewer'],
             ],
             // Dosen menu (+ dekan for monitoring their faculty proposals)
             [
                 'title' => 'Penelitian',
-                'icon' => 'microscope',
+                'icon' => null,
                 'roles' => ['dosen', 'kepala lppm', 'admin lppm', 'rektor', 'dekan', 'kaprodi'],
                 'children' => [
                     [
                         'title' => 'Usulan',
-                        'icon' => 'file-text',
+                        'icon' => null,
                         'route' => 'research.proposal.index',
                     ],
                     [
                         'title' => 'Perbaikan Usulan',
-                        'icon' => 'checkbox',
+                        'icon' => null,
                         'route' => 'research.proposal-revision.index',
                     ],
                     [
                         'title' => 'Laporan Akhir',
-                        'icon' => 'file-text',
+                        'icon' => null,
                         'route' => 'research.final-report.index',
                     ],
                     [
-                        'title' => 'Catatan Harian',
-                        'icon' => 'layout-2',
+                        'title' => 'Realisasi Anggaran',
+                        'icon' => null,
                         'route' => 'research.daily-note.index',
                     ],
                 ],
             ],
             [
                 'title' => 'Pengabdian',
-                'icon' => 'heart-handshake',
+                'icon' => null,
                 'roles' => ['dosen', 'kepala lppm', 'admin lppm', 'rektor', 'dekan', 'kaprodi'],
                 'children' => [
                     [
                         'title' => 'Usulan',
-                        'icon' => 'file-text',
+                        'icon' => null,
                         'route' => 'community-service.proposal.index',
                     ],
                     [
                         'title' => 'Perbaikan Usulan',
-                        'icon' => 'checkbox',
+                        'icon' => null,
                         'route' => 'community-service.proposal-revision.index',
                     ],
                     [
                         'title' => 'Laporan Akhir',
-                        'icon' => 'file-text',
+                        'icon' => null,
                         'route' => 'community-service.final-report.index',
                     ],
                     [
-                        'title' => 'Catatan Harian',
-                        'icon' => 'layout-2',
+                        'title' => 'Realisasi Anggaran',
+                        'icon' => null,
                         'route' => 'community-service.daily-note.index',
                     ],
                 ],
             ],
             ...($kaprodiValidationActive ? [[
                 'title' => 'Persetujuan Kaprodi',
-                'icon' => 'clipboard-check',
+                'icon' => null,
                 'route' => 'kaprodi.proposals.index',
                 'roles' => ['kaprodi'],
             ]] : []),
@@ -118,14 +118,14 @@ class MenuComposer
             // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             [
                 'title' => 'Monitoring Laporan',
-                'icon' => 'report-analytics',
+                'icon' => null,
                 'route' => 'kaprodi.report-approval',
                 'roles' => ['kaprodi'],
             ],
             // Kaprodi - Conditional Roadmap
             ...($roadmapActive ? [[
                 'title' => 'Kelola Peta Jalan',
-                'icon' => 'map-2',
+                'icon' => null,
                 'route' => 'settings.master-data',
                 'params' => ['group' => 'academic-structure', 'tab' => 'study-program-roadmaps'],
                 'roles' => ['kaprodi'],
@@ -133,65 +133,65 @@ class MenuComposer
             // Dekan menu - Vetted by AI - Manual Review Required by Senior Engineer/Manager
             [
                 'title' => 'Persetujuan Proposal',
-                'icon' => 'clipboard-check',
+                'icon' => null,
                 'route' => 'dekan.proposals.index',
                 'roles' => ['dekan'],
             ],
             [
                 'title' => 'Persetujuan Laporan',
-                'icon' => 'report-analytics',
+                'icon' => null,
                 'route' => 'dekan.reports.index',
                 'roles' => ['dekan'],
             ],
             // Dekan - Conditional Roadmap
             ...($roadmapActive ? [[
                 'title' => 'Kelola Peta Jalan',
-                'icon' => 'map-2',
+                'icon' => null,
                 'route' => 'settings.master-data',
                 'params' => ['group' => 'academic-structure', 'tab' => 'faculty-roadmaps'],
                 'roles' => ['dekan'],
             ]] : []),
             [
                 'title' => 'Riwayat Persetujuan',
-                'icon' => 'history',
+                'icon' => null,
                 'route' => 'dekan.approval-history',
                 'roles' => ['dekan'],
             ],
             // Kepala LPPM menus
             [
                 'title' => 'Persetujuan (Awal)',
-                'icon' => 'checkbox',
+                'icon' => null,
                 'route' => 'kepala-lppm.initial-approval',
                 'roles' => ['kepala lppm'],
             ],
             [
                 'title' => 'Persetujuan (Akhir)',
-                'icon' => 'circle-check',
+                'icon' => null,
                 'route' => 'kepala-lppm.final-decision',
                 'roles' => ['kepala lppm'],
             ],
             [
                 'title' => 'Persetujuan Laporan',
-                'icon' => 'report-analytics',
+                'icon' => null,
                 'route' => 'kepala-lppm.report-approval',
                 'roles' => ['kepala lppm'],
             ],
             [
                 'title' => 'Laporan Keuangan',
-                'icon' => 'wallet',
+                'icon' => null,
                 'route' => 'kepala-lppm.financial-approval',
                 'roles' => ['kepala lppm', 'admin lppm'],
             ],
             ...($letteringActive ? [[
                 'title' => 'Persetujuan Surat',
-                'icon' => 'mail-check',
+                'icon' => null,
                 'route' => 'kepala-lppm.letter-approval',
                 'roles' => ['kepala lppm'],
             ]] : []),
             // Dosen - Persuratan
             ...($letteringActive ? [[
                 'title' => 'Persuratan',
-                'icon' => 'mail',
+                'icon' => null,
                 'route' => 'dashboard.dosen.surat.dashboard',
                 'roles' => ['dosen'],
             ]] : []),
@@ -199,39 +199,45 @@ class MenuComposer
             // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             ...($letteringActive ? [[
                 'title' => 'Persuratan',
-                'icon' => 'mail',
+                'icon' => null,
                 'route' => 'admin-lppm.letters.dashboard',
                 'roles' => ['admin lppm'],
             ]] : []),
             // Admin LPPM - Reviewer Management Group
             [
                 'title' => 'Reviewer',
-                'icon' => 'clipboard-check',
+                'icon' => null,
                 'roles' => ['admin lppm', 'kepala lppm', 'rektor'],
                 'children' => [
                     [
                         'title' => 'Penugasan Reviewer',
-                        'icon' => 'user-plus',
+                        'icon' => null,
                         'route' => 'admin-lppm.assign-reviewers',
                         'roles' => ['admin lppm'],
                     ],
                     [
                         'title' => 'Beban Kerja Reviewer',
-                        'icon' => 'chart-bar',
+                        'icon' => null,
                         'route' => 'admin-lppm.reviewer-workload',
                         'roles' => ['admin lppm'],
                     ],
                     [
                         'title' => 'Monitoring Review',
-                        'icon' => 'eye',
+                        'icon' => null,
                         'route' => 'admin-lppm.review-monitoring',
+                        'roles' => ['admin lppm', 'kepala lppm', 'rektor'],
+                    ],
+                    [
+                        'title' => 'Log Notifikasi',
+                        'icon' => null,
+                        'route' => 'admin-lppm.notification-log',
                         'roles' => ['admin lppm', 'kepala lppm', 'rektor'],
                     ],
                 ],
             ],
             [
                 'title' => 'Monev',
-                'icon' => 'chart-infographic',
+                'icon' => null,
                 'route' => 'admin-lppm.monev.index',
                 'roles' => ['admin lppm'],
             ],
@@ -239,48 +245,48 @@ class MenuComposer
             // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             [
                 'title' => 'Monitoring Laporan',
-                'icon' => 'report-analytics',
+                'icon' => null,
                 'route' => 'admin-lppm.report-approval',
                 'roles' => ['admin lppm'],
             ],
             // Reviewer menu
             [
                 'title' => 'Review Penelitian',
-                'icon' => 'lifebuoy',
+                'icon' => null,
                 'route' => 'review.research',
                 'roles' => ['reviewer'],
             ],
             [
                 'title' => 'Review Pengabdian',
-                'icon' => 'lifebuoy',
+                'icon' => null,
                 'route' => 'review.community-service',
                 'roles' => ['reviewer'],
             ],
             [
                 'title' => 'Riwayat Review',
-                'icon' => 'history',
+                'icon' => null,
                 'route' => 'review.review-history',
                 'roles' => ['reviewer'],
             ],
             [
                 'title' => 'Monev Laporan',
-                'icon' => 'chart-infographic',
+                'icon' => null,
                 'route' => 'review.monev',
                 'roles' => ['reviewer'],
             ],
             [
                 'title' => 'IKU & Luaran',
-                'icon' => 'target-arrow',
+                'icon' => null,
                 'roles' => ['admin lppm', 'rektor', 'kepala lppm'],
                 'children' => [
                     [
                         'title' => 'Dashboard IKU',
-                        'icon' => 'chart-pie',
+                        'icon' => null,
                         'route' => 'accreditation.hub',
                     ],
                     [
                         'title' => 'Verifikasi Luaran',
-                        'icon' => 'checkbox',
+                        'icon' => null,
                         'route' => 'accreditation.verification',
                     ],
                 ],
@@ -288,60 +294,60 @@ class MenuComposer
             // Laporan - Reports menu (+ dekan + kepala lppm for decision-making)
             [
                 'title' => 'Laporan',
-                'icon' => 'report-analytics',
+                'icon' => null,
                 'roles' => ['admin lppm', 'rektor', 'kepala lppm', 'dekan'],
                 'children' => [
                     [
                         'title' => 'Monitoring Laporan',
-                        'icon' => 'list-search',
+                        'icon' => null,
                         'route' => 'reports.monitoring',
                     ],
                     [
                         'title' => 'Laporan Penelitian',
-                        'icon' => 'report',
+                        'icon' => null,
                         'route' => 'reports.research',
                     ],
                     [
                         'title' => 'Laporan PKM',
-                        'icon' => 'report',
+                        'icon' => null,
                         'route' => 'reports.pkm',
                     ],
                     [
                         'title' => 'Laporan Luaran',
-                        'icon' => 'award',
+                        'icon' => null,
                         'route' => 'reports.outputs',
                     ],
                     [
                         'title' => 'Laporan Kerjasama Mitra',
-                        'icon' => 'handshake',
+                        'icon' => null,
                         'route' => 'reports.partners',
                     ],
                     [
                         'title' => 'Laporan IKU',
-                        'icon' => 'file-text',
+                        'icon' => null,
                         'route' => 'reports.iku',
                     ],
                     [
                         'title' => 'Laporan Monev',
-                        'icon' => 'clipboard-data',
+                        'icon' => null,
                         'route' => 'reports.monev',
                     ],
                     // Vetted by AI - Manual Review Required by Senior Engineer/Manager
                     [
                         'title' => 'Laporan Reviewer',
-                        'icon' => 'users-group',
+                        'icon' => null,
                         'route' => 'reports.reviewer',
                         'roles' => ['admin lppm', 'superadmin', 'rektor', 'kepala lppm'],
                     ],
                     [
                         'title' => 'Rekap Monev',
-                        'icon' => 'chart-dots',
+                        'icon' => null,
                         'route' => 'kepala-lppm.monev.recap',
                         'roles' => ['kepala lppm', 'rektor'],
                     ],
                     [
                         'title' => 'Capaian Monev',
-                        'icon' => 'dashboard',
+                        'icon' => null,
                         'route' => 'kepala-lppm.rektor.monev-dashboard',
                         'roles' => ['kepala lppm', 'rektor'],
                     ],
@@ -351,7 +357,7 @@ class MenuComposer
             // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             [
                 'title' => 'Arsip',
-                'icon' => 'folders',
+                'icon' => null,
                 'route' => 'admin.archives',
                 'roles' => ['admin lppm', 'superadmin'],
             ],
@@ -360,40 +366,40 @@ class MenuComposer
             // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             [
                 'title' => 'Pengaturan',
-                'icon' => 'settings-2',
+                'icon' => null,
                 'roles' => ['admin lppm', 'superadmin'],
                 'children' => [
                     [
                         'title' => 'Pengguna',
-                        'icon' => 'users-group',
+                        'icon' => null,
                         'children' => [
                             [
                                 'title' => 'Daftar Pengguna',
-                                'icon' => 'list',
+                                'icon' => null,
                                 'route' => 'users.index',
                                 'active' => ['users.index', 'users.show', 'users.edit'],
                                 'expand_index' => false,
                             ],
                             [
                                 'title' => 'Buat Pengguna',
-                                'icon' => 'user-plus',
+                                'icon' => null,
                                 'route' => 'users.create',
                             ],
                             [
                                 'title' => 'Import Pengguna',
-                                'icon' => 'upload',
+                                'icon' => null,
                                 'route' => 'users.import',
                             ],
                             [
                                 'title' => 'Sinkronisasi SINTA',
-                                'icon' => 'database-import',
+                                'icon' => null,
                                 'route' => 'users.sync-sinta',
                             ],
                         ],
                     ],
                     [
                         'title' => 'Integrasi SINTA',
-                        'icon' => 'database-export',
+                        'icon' => null,
                         'route' => 'export-sinta',
                     ],
                     [
@@ -402,51 +408,51 @@ class MenuComposer
                     ],
                     [
                         'title' => 'Master Data',
-                        'icon' => 'layers',
+                        'icon' => null,
                         'route' => 'settings.master-data',
                         'params' => ['group' => 'academic-content'],
                         'active' => ['group=academic-content'],
                     ],
                     [
                         'title' => 'Struktur Akademik',
-                        'icon' => 'building-2',
+                        'icon' => null,
                         'route' => 'settings.master-data',
                         'params' => ['group' => 'academic-structure'],
                         'active' => ['group=academic-structure'],
                     ],
                     [
                         'title' => 'Anggaran & RAB',
-                        'icon' => 'archive',
+                        'icon' => null,
                         'route' => 'settings.master-data',
                         'params' => ['group' => 'budget'],
                         'active' => ['group=budget'],
                     ],
                     [
                         'title' => 'Kemitraan',
-                        'icon' => 'users',
+                        'icon' => null,
                         'route' => 'settings.master-data',
                         'params' => ['group' => 'partnership'],
                         'active' => ['group=partnership'],
                     ],
                     [
                         'title' => 'Jadwal Proposal',
-                        'icon' => 'calendar-time',
+                        'icon' => null,
                         'route' => 'settings.proposal-schedule',
                     ],
                     [
                         'title' => 'Template Proposal',
-                        'icon' => 'file-download',
+                        'icon' => null,
                         'route' => 'settings.proposal-template',
                     ],
                     [
                         'title' => 'Nomor Kontrak Usulan',
-                        'icon' => 'file-check',
+                        'icon' => null,
                         'route' => 'settings.contracts',
                         'roles' => ['admin lppm', 'superadmin'],
                     ],
                     [
                         'title' => 'Manual Book',
-                        'icon' => 'book-upload',
+                        'icon' => null,
                         'route' => 'settings.manual-books',
                         'roles' => ['admin lppm', 'superadmin'],
                     ],
@@ -460,19 +466,19 @@ class MenuComposer
 
             $reviewMonev = [
                 'title' => 'Review & Monev',
-                'icon' => 'checkbox',
+                'icon' => null,
                 'roles' => [$activeRole],
                 'children' => [],
             ];
             $laporanArsip = [
                 'title' => 'Laporan & Arsip',
-                'icon' => 'report-analytics',
+                'icon' => null,
                 'roles' => [$activeRole],
                 'children' => [],
             ];
             $sistemPengaturan = [
                 'title' => 'Sistem & Pengaturan',
-                'icon' => 'settings',
+                'icon' => null,
                 'roles' => [$activeRole],
                 'children' => [],
             ];

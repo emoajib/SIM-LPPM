@@ -1,7 +1,7 @@
 <div>
     @if ($this->canDecide)
         <div class="alert alert-purple" role="alert">
-            <x-lucide-refresh-cw class="icon" />
+            
             <div>
                 <h4 class="alert-heading">
                     Keputusan Final &mdash; Revisi Telah Diajukan
@@ -15,17 +15,17 @@
         <div class="btn-list">
             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#finalDecisionModal"
                 wire:click="$set('decision', 'completed')">
-                <x-lucide-check class="icon" />
+                
                 Setujui Proposal
             </button>
             <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#finalDecisionModal"
                 wire:click="$set('decision', 'revision_needed')">
-                <x-lucide-file-edit class="icon" />
+                
                 Minta Perbaikan Lanjutan
             </button>
             <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#finalDecisionModal"
                 wire:click="$set('decision', 'rejected')">
-                <x-lucide-x-circle class="icon" />
+                
                 Tolak Proposal
             </button>
         </div>
@@ -42,7 +42,7 @@
                 <div class="py-3">
                     @if ($decision === 'completed')
                         <div class="mb-3 text-center">
-                            <x-lucide-check-circle class="mb-2 text-success icon" style="width: 3rem; height: 3rem;" />
+                            
                             <h3>Setujui Proposal?</h3>
                             <div class="text-secondary">
                                 Proposal akan disetujui dan statusnya akan berubah menjadi <strong>Selesai</strong>.
@@ -50,7 +50,7 @@
                         </div>
                     @elseif ($decision === 'rejected')
                         <div class="mb-3 text-center">
-                            <x-lucide-x-circle class="mb-2 text-danger icon" style="width: 3rem; height: 3rem;" />
+                            
                             <h3>Tolak Proposal?</h3>
                             <div class="text-secondary">
                                 Proposal akan <strong>ditolak secara permanen</strong>. Tindakan ini tidak dapat dibatalkan.
@@ -58,7 +58,7 @@
                         </div>
                     @else
                         <div class="mb-3 text-center">
-                            <x-lucide-file-edit class="mb-2 text-warning icon" style="width: 3rem; height: 3rem;" />
+                            
                             <h3>Minta Perbaikan Lanjutan?</h3>
                             <div class="text-secondary">
                                 Proposal akan dikembalikan ke pengusul untuk melakukan perbaikan lanjutan.
@@ -111,13 +111,13 @@
                                 class="w-100 btn {{ $btnClass }}"
                                 data-bs-dismiss="modal">
                                 @if ($decision === 'completed')
-                                    <x-lucide-check class="icon" />
+                                    
                                     Ya, Setujui
                                 @elseif ($decision === 'rejected')
-                                    <x-lucide-x-circle class="icon" />
+                                    
                                     Ya, Tolak
                                 @else
-                                    <x-lucide-file-edit class="icon" />
+                                    
                                     Ya, Minta Perbaikan
                                 @endif
                             </button>

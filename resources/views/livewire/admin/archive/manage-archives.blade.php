@@ -7,15 +7,15 @@
         <div class="btn-list">
             <button onclick="Livewire.dispatch('request-template-download')"
                 class="btn btn-ghost-success border shadow-sm">
-                <i class="ti ti-download me-2"></i>
+                
                 {{ __('Unduh Template') }}
             </button>
             <button onclick="Livewire.dispatch('request-export-data')" class="btn btn-success shadow-sm">
-                <i class="ti ti-table-export me-2"></i>
+                
                 {{ __('Eksport (Excel)') }}
             </button>
             <button onclick="Livewire.dispatch('open-import-modal')" class="btn btn-indigo shadow-sm">
-                <i class="ti ti-file-import me-2"></i>
+                
                 {{ __('Import Excel') }}
             </button>
         </div>
@@ -30,7 +30,7 @@
                         <div class="col-md-7">
                             <div class="input-group input-group-flat">
                                 <span class="input-group-text">
-                                    <i class="ti ti-search text-muted"></i>
+                                    
                                 </span>
                                 <input type="text" class="form-control border-start-0"
                                     placeholder="Cari judul kegiatan atau nama pengusul..."
@@ -39,8 +39,7 @@
                         </div>
                         <div class="col-md-5">
                             <div class="d-flex align-items-center gap-2">
-                                <div class="text-muted small text-nowrap"><i
-                                        class="ti ti-filter me-1"></i>{{ __('Tahun') }}:</div>
+                                <div class="text-muted small text-nowrap">{{ __('Tahun') }}:</div>
                                 <select class="form-select shadow-none border-0 bg-white" wire:model.live="yearFilter">
                                     <option value="">{{ __('Semua Tahun') }}</option>
                                     @foreach($availableYears as $y)
@@ -110,13 +109,13 @@
                                             <div class="dropdown-menu dropdown-menu-end shadow-sm">
                                                 <a class="dropdown-item" href="#"
                                                     wire:click.prevent="edit('{{ $archive->id }}')">
-                                                    <i class="ti ti-edit me-2 text-primary"></i> {{ __('Edit Arsip') }}
+                                                     {{ __('Edit Arsip') }}
                                                 </a>
                                                 <div class="dropdown-divider"></div>
                                                 <a class="dropdown-item text-danger" href="#"
                                                     wire:confirm="{{ __('Yakin ingin menghapus arsip ini? Data yang dihapus tidak dapat dikembalikan.') }}"
                                                     wire:click.prevent="delete('{{ $archive->id }}')">
-                                                    <i class="ti ti-trash me-2"></i> {{ __('Hapus Arsip') }}
+                                                     {{ __('Hapus Arsip') }}
                                                 </a>
                                             </div>
                                         </div>
@@ -127,7 +126,7 @@
                                     <td colspan="6" class="text-center py-5">
                                         <div class="empty bg-white py-4 rounded-3 border">
                                             <div class="empty-icon mb-3">
-                                                <i class="ti ti-database-x text-muted fs-0"></i>
+                                                
                                             </div>
                                             <p class="empty-title fw-bold">{{ __('Tidak ada data arsip') }}</p>
                                             <p class="empty-subtitle text-secondary">
@@ -136,7 +135,7 @@
                                             <div class="empty-action mt-4">
                                                 <button wire:click="$set('showImportModal', true)"
                                                     class="btn btn-indigo shadow-sm">
-                                                    <i class="ti ti-plus me-2"></i>{{ __('Import Data Pertama') }}
+                                                    {{ __('Import Data Pertama') }}
                                                 </button>
                                             </div>
                                         </div>
@@ -161,7 +160,7 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content shadow-lg border-0">
                     <div class="modal-header bg-light-lt">
-                        <h5 class="modal-title fw-bold"><i class="ti ti-file-import me-2"></i>{{ __('Import Data Arsip') }}
+                        <h5 class="modal-title fw-bold">{{ __('Import Data Arsip') }}
                         </h5>
                         <button type="button" class="btn-close shadow-none"
                             wire:click="$set('showImportModal', false)"></button>
@@ -169,7 +168,7 @@
                     <form wire:submit="import">
                         <div class="modal-body py-4">
                             <div class="mb-4 text-center">
-                                <i class="ti ti-cloud-upload text-indigo opacity-25" style="font-size: 4rem;"></i>
+                                
                                 <div class="text-secondary small mt-2">
                                     {{ __('Unggah berkas Excel (.xlsx) sesuai dengan template yang telah disediakan.') }}
                                 </div>
@@ -177,12 +176,11 @@
                             <div class="mb-3">
                                 <label class="form-label fw-bold">{{ __('Pilih Berkas Excel') }}</label>
                                 <input type="file" class="form-control" wire:model="importFile">
-                                @error('importFile') <div class="text-danger small mt-1"><i
-                                class="ti ti-alert-triangle me-1"></i>{{ $message }}</div> @enderror
+                                @error('importFile') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                             </div>
                             <div class="alert alert-important alert-info bg-indigo-lt border-0 shadow-sm">
                                 <div class="d-flex">
-                                    <div><i class="ti ti-info-circle me-3 fs-1"></i></div>
+                                    <div></div>
                                     <div>
                                         <div class="fw-bold mb-1">{{ __('Petunjuk Import') }}</div>
                                         <div class="small opacity-75">
@@ -196,7 +194,7 @@
                             <button type="button" class="btn btn-ghost-secondary px-4"
                                 wire:click="$set('showImportModal', false)">{{ __('Batal') }}</button>
                             <button type="submit" class="btn btn-indigo px-4" wire:loading.attr="disabled">
-                                <span wire:loading.remove><i class="ti ti-check me-2"></i>{{ __('Mulai Import') }}</span>
+                                <span wire:loading.remove>{{ __('Mulai Import') }}</span>
                                 <span wire:loading><span
                                         class="spinner-border spinner-border-sm me-2"></span>{{ __('Memproses...') }}</span>
                             </button>
@@ -213,7 +211,7 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content shadow-lg border-0">
                     <div class="modal-header bg-light-lt">
-                        <h5 class="modal-title fw-bold"><i class="ti ti-edit me-2"></i>{{ __('Edit Data Arsip') }}</h5>
+                        <h5 class="modal-title fw-bold">{{ __('Edit Data Arsip') }}</h5>
                         <button type="button" class="btn-close shadow-none"
                             wire:click="$set('showEditModal', false)"></button>
                     </div>
@@ -229,7 +227,7 @@
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label fw-bold">{{ __('Tahun Akademik') }}</label>
                                     <div class="input-group">
-                                        <span class="input-group-text"><i class="ti ti-calendar"></i></span>
+                                        <span class="input-group-text"></span>
                                         <input type="text" class="form-control" wire:model="editTahunAkademik"
                                             placeholder="2025/2026">
                                     </div>
@@ -263,7 +261,7 @@
                             <button type="button" class="btn btn-ghost-secondary px-4"
                                 wire:click="$set('showEditModal', false)">{{ __('Batal') }}</button>
                             <button type="submit" class="btn btn-primary px-4 shadow-sm">
-                                <i class="ti ti-device-floppy me-2"></i>{{ __('Simpan Perubahan') }}
+                                {{ __('Simpan Perubahan') }}
                             </button>
                         </div>
                     </form>

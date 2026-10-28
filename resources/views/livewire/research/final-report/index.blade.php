@@ -16,7 +16,7 @@
                     <button class="nav-link @if ($roleFilter === 'ketua') active @endif"
                         wire:click="$set('roleFilter', 'ketua')" role="tab"
                         aria-selected="@if ($roleFilter === 'ketua') true @else false @endif">
-                        <x-lucide-crown class="icon me-2" />
+                        
                         Sebagai Ketua
                     </button>
                 </li>
@@ -24,7 +24,7 @@
                     <button class="nav-link @if ($roleFilter === 'anggota') active @endif"
                         wire:click="$set('roleFilter', 'anggota')" role="tab"
                         aria-selected="@if ($roleFilter === 'anggota') true @else false @endif">
-                        <x-lucide-users class="icon me-2" />
+                        
                         Sebagai Anggota
                     </button>
                 </li>
@@ -41,7 +41,7 @@
                     <div class="row align-items-center">
                         <div class="col-auto">
                             <span class="bg-primary text-white avatar">
-                                <x-lucide-file-text class="icon" />
+                                
                             </span>
                         </div>
                         <div class="col">
@@ -79,7 +79,7 @@
                     <div class="row align-items-center">
                         <div class="col-auto">
                             <span class="bg-info text-white avatar">
-                                <x-lucide-clock class="icon" />
+                                
                             </span>
                         </div>
                         <div class="col">
@@ -98,7 +98,7 @@
                     <div class="row align-items-center">
                         <div class="col-auto">
                             <span class="bg-warning text-white avatar">
-                                <x-lucide-alert-triangle class="icon" />
+                                
                             </span>
                         </div>
                         <div class="col">
@@ -121,7 +121,7 @@
                         <div class="col-md-4">
                             <div class="input-icon">
                                 <span class="input-icon-addon">
-                                    <x-lucide-search class="icon text-muted" />
+                                    
                                 </span>
                                 <input type="text" class="form-control"
                                     placeholder="Cari judul, ketua, atau NIDN..."
@@ -165,7 +165,7 @@
                         <!-- Reset Button -->
                         <div class="col-md-1 text-end">
                             <button type="button" class="btn btn-icon btn-outline-secondary w-100" wire:click="resetFilters" title="Reset Semua Filter">
-                                <x-lucide-rotate-ccw class="icon" />
+                                
                             </button>
                         </div>
                     </div>
@@ -236,7 +236,7 @@
                                     @endif
                                 @else
                                     <span class="badge bg-warning-lt">
-                                        <x-lucide-alert-triangle class="icon icon-inline me-1" />
+                                        
                                         Belum Laporan
                                     </span>
                                 @endif
@@ -247,7 +247,7 @@
                                 @endphp
                                 <a href="{{ route('research.final-report.show', $proposal) }}"
                                     class="btn {{ $hasFinal ? 'btn-primary' : 'btn-outline-warning' }} btn-sm" wire:navigate.hover>
-                                    <x-lucide-file-edit class="icon me-1" />
+                                    
                                     {{ $hasFinal ? 'Lihat Laporan' : 'Buat Laporan' }}
                                 </a>
                             </td>
@@ -256,13 +256,13 @@
                         <tr>
                             <td colspan="5" class="py-5 text-center">
                                 <div class="mb-3">
-                                    <x-lucide-inbox class="text-secondary icon icon-lg" />
+                                    
                                 </div>
                                 <p class="text-secondary mb-1">
                                     Tidak ada data laporan akhir penelitian yang sesuai filter.
                                 </p>
                                 <button type="button" class="btn btn-sm btn-outline-secondary mt-2" wire:click="resetFilters">
-                                    <x-lucide-rotate-ccw class="icon me-1" /> Reset Filter
+                                     Reset Filter
                                 </button>
                             </td>
                         </tr>

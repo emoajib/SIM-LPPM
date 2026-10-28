@@ -71,11 +71,11 @@
             <div class="card-footer">
                 <div class="btn-list">
                     <button wire:click="acceptInvitation" class="btn btn-success">
-                        <x-lucide-check class="icon" />
+                        
                         Terima Undangan
                     </button>
                     <button wire:click="rejectInvitation" class="btn btn-danger">
-                        <x-lucide-x class="icon" />
+                        
                         Tolak Undangan
                     </button>
                 </div>

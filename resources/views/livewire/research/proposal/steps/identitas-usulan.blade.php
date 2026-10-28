@@ -2,7 +2,7 @@
 <div class="card mb-3">
     <div class="card-body">
         <div class="d-flex align-items-center mb-4">
-            <x-lucide-file-text class="icon me-3" />
+            
             <h3 class="card-title mb-0">1.1 Informasi Dasar Proposal</h3>
         </div>
 
@@ -13,7 +13,7 @@
                         Judul Proposal <span class="text-danger">*</span>
                         <span class="text-muted" data-bs-toggle="tooltip"
                             title="Gunakan judul yang ringkas, spesifik, dan merepresentasikan substansi penelitian Anda (Maksimal 20 kata).">
-                            <i class="ti ti-info-circle"></i>
+                            
                         </span>
                     </label>
                     <input id="title" type="text" class="form-control @error('form.title') is-invalid @enderror"
@@ -30,7 +30,7 @@
                         Skema Penelitian <span class="text-danger">*</span>
                         <span class="text-muted" data-bs-toggle="tooltip"
                             title="Pilihan skema menentukan pagu anggaran dan luaran wajib yang harus dipenuhi.">
-                            <i class="ti ti-info-circle"></i>
+                            
                         </span>
                     </label>
                     <div wire:ignore>
@@ -107,7 +107,7 @@
                         Bidang Fokus <span class="text-danger">*</span>
                         <span class="text-muted" data-bs-toggle="tooltip"
                             title="Bidang fokus disesuaikan dengan Rencana Induk Penelitian (RIP) Institusi.">
-                            <i class="ti ti-info-circle"></i>
+                            
                         </span>
                     </label>
                     <div wire:ignore>
@@ -173,7 +173,7 @@
                             Pohon Penelitian Prodi <span class="text-danger">*</span>
                             <span class="text-muted" data-bs-toggle="tooltip"
                                 title="Pilih topik/pohon penelitian prodi yang relevan dengan usulan ini.">
-                                <i class="ti ti-info-circle"></i>
+                                
                             </span>
                         </label>
                         <div wire:ignore>
@@ -200,7 +200,7 @@
 <div class="card mb-3">
     <div class="card-body">
         <div class="d-flex align-items-center mb-4">
-            <x-lucide-dna class="icon me-3" />
+            
             <h3 class="card-title mb-0">1.2 Rumpun Ilmu</h3>
         </div>
 
@@ -276,7 +276,7 @@
 <div class="card mb-3">
     <div class="card-body">
         <div class="d-flex align-items-center mb-4">
-            <x-lucide-file-text class="icon me-3" />
+            
             <h3 class="card-title mb-0">1.3 Ringkasan Proposal</h3>
         </div>
 
@@ -313,7 +313,7 @@
                 Asta Cita Terkait (Opsional)
                 <span class="text-muted" data-bs-toggle="tooltip"
                     title="Jelaskan kaitan usulan ini dengan poin-poin Asta Cita terkait jika ada.">
-                    <i class="ti ti-info-circle"></i>
+                    
                 </span>
             </label>
             <textarea id="asta_cita" class="form-control @error('form.asta_cita') is-invalid @enderror"
@@ -329,7 +329,7 @@
 <div class="card mb-3">
     <div class="card-body">
         <div class="d-flex align-items-center mb-4">
-            <x-lucide-globe class="icon me-3" />
+            
             <h3 class="card-title mb-0">1.4 Sustainable Development Goals (SDGs)</h3>
         </div>
 
@@ -338,7 +338,7 @@
                 Pilih SDGs yang Relevan <span class="text-danger">*</span>
                 <span class="text-muted" data-bs-toggle="tooltip"
                     title="Pilih satu atau lebih SDGs yang berkaitan dengan usulan penelitian Anda. Data ini digunakan untuk perhitungan IKU-07.">
-                    <i class="ti ti-info-circle"></i>
+                    
                 </span>
             </label>
             <div wire:ignore>
@@ -362,7 +362,7 @@
 <div class="card mb-3">
     <div class="card-body">
         <div class="d-flex align-items-center mb-4">
-            <x-lucide-target class="icon me-3" />
+            
             <h3 class="card-title mb-0">1.5 Pemetaan Target IKU</h3>
         </div>
 
@@ -371,7 +371,7 @@
                 Pilih Target IKU Kepmen 358 <span class="text-danger">*</span>
                 <span class="text-muted" data-bs-toggle="tooltip"
                     title="Pilih IKU yang menjadi target luaran dari usulan ini. Gunakan CTRL/CMD + Klik untuk memilih lebih dari satu.">
-                    <i class="ti ti-info-circle"></i>
+                    
                 </span>
             </label>
 
@@ -402,7 +402,7 @@
 <div class="card mb-3">
     <div class="card-body">
         <div class="d-flex align-items-center mb-4">
-            <x-lucide-microscope class="icon me-3" />
+            
             <h3 class="card-title mb-0">Detail Penelitian</h3>
         </div>
 
@@ -446,7 +446,7 @@
                     data-bs-target="#tkt-measurement-modal"
                     wire:click="$dispatch('tkt-type-selected', { tktType: '{{ $form->tkt_type }}', existingScores: @js($form->tkt_indicator_scores), strata: '{{ $schemeStrata }}' })"
                     @if (!$form->tkt_type) disabled @endif>
-                    <x-lucide-ruler class="icon me-2" />
+                    
                     Ukur TKT Saat Ini
                 </button>
 
@@ -474,9 +474,9 @@
                         : 'secondary')">
                             TKT Saat Ini: Level {{ $currentTkt }}
                             @if ($isWithinTarget === true)
-                                <i class="ti ti-check ms-1"></i>
+                                
                             @elseif ($isWithinTarget === false)
-                                <i class="ti ti-alert-triangle ms-1"></i>
+                                
                             @endif
                         </x-tabler.badge>
                 @endif
@@ -516,7 +516,7 @@
 <div class="card mb-3">
     <div class="card-body">
         <div class="d-flex align-items-center mb-4">
-            <x-lucide-user-check class="icon me-3" />
+            
             <h3 class="card-title mb-0">Tugas Ketua Peneliti</h3>
         </div>
 
@@ -546,7 +546,7 @@
 <div class="card mb-3">
     <div class="card-body">
         <div class="d-flex align-items-center mb-4">
-            <x-lucide-users class="icon me-3" />
+            
             <h3 class="card-title mb-0">Anggota Peneliti</h3>
         </div>
 

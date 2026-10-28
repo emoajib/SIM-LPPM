@@ -9,7 +9,7 @@
     <div class="alert alert-info alert-dismissible fade show border-0 shadow-sm collapse" id="reviewerAssignmentInfo" role="alert">
         <div class="d-flex">
             <div>
-                <x-lucide-info class="alert-icon icon me-2" />
+                
             </div>
             <div>
                 <h4 class="alert-title">Panduan Penugasan Reviewer</h4>
@@ -25,7 +25,7 @@
 
     <div class="mb-3">
         <button class="btn btn-ghost-info btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#reviewerAssignmentInfo" aria-expanded="false" aria-controls="reviewerAssignmentInfo">
-            <x-lucide-info class="icon me-1" />
+            
             Panduan Penugasan
         </button>
     </div>
@@ -60,7 +60,7 @@
                         <div class="me-2 mb-0 h1">{{ $this->statusStats['research'] }}</div>
                         <div class="me-auto">
                             <span class="d-inline-flex align-items-center text-blue lh-1">
-                                <x-lucide-microscope class="icon icon-sm" />
+                                
                             </span>
                         </div>
                     </div>
@@ -78,7 +78,7 @@
                         <div class="me-2 mb-0 h1">{{ $this->statusStats['community_service'] }}</div>
                         <div class="me-auto">
                             <span class="d-inline-flex align-items-center text-green lh-1">
-                                <x-lucide-hand-heart class="icon icon-sm" />
+                                
                             </span>
                         </div>
                     </div>
@@ -96,7 +96,7 @@
                         <div class="me-2 mb-0 h1">{{ $this->statusStats['unassigned'] }}</div>
                         <div class="me-auto">
                             <span class="d-inline-flex align-items-center text-yellow lh-1">
-                                <x-lucide-alert-circle class="icon icon-sm" />
+                                
                             </span>
                         </div>
                     </div>
@@ -178,7 +178,7 @@
                         <!-- Reset Button -->
                         <div class="col-md-2">
                             <button type="button" class="btn-outline-secondary w-100 btn" wire:click="resetFilters">
-                                <x-lucide-rotate-ccw class="icon" />
+                                
                                 Reset
                             </button>
                         </div>
@@ -216,12 +216,12 @@
                             <td>
                                 @if ($proposal->detailable_type === 'App\Models\Research')
                                     <x-tabler.badge color="blue" variant="light">
-                                        <x-lucide-microscope class="me-1 icon icon-sm" />
+                                        
                                         Penelitian
                                     </x-tabler.badge>
                                 @else
                                     <x-tabler.badge color="green" variant="light">
-                                        <x-lucide-hand-heart class="me-1 icon icon-sm" />
+                                        
                                         Pengabdian
                                     </x-tabler.badge>
                                 @endif
@@ -256,12 +256,12 @@
                                         wire:click="openAssignModal('{{ $proposal->id }}')"
                                         class="btn btn-sm btn-primary"
                                         data-bs-toggle="modal" data-bs-target="#modal-assign-reviewer">
-                                        <x-lucide-user-plus class="icon" />
+                                        
                                         Tugaskan
                                     </button>
                                     <a href="{{ $proposal->detailable_type === 'App\Models\Research' ? route('research.proposal.show', $proposal) : route('community-service.proposal.show', $proposal) }}"
                                         class="btn btn-sm btn-outline-secondary" wire:navigate.hover>
-                                        <x-lucide-eye class="icon" />
+                                        
                                         Detail
                                     </a>
                                 </div>
@@ -271,7 +271,7 @@
                         <tr>
                             <td colspan="5" class="py-8 text-center">
                                 <div class="mb-3">
-                                    <x-lucide-inbox class="text-secondary icon icon-lg" />
+                                    
                                 </div>
                                 <p class="text-secondary">Tidak ada proposal yang perlu ditugaskan ke reviewer.</p>
                             </td>
@@ -322,7 +322,7 @@
                 </button>
                 <button type="submit" form="admin-reviewer-assignment-form" class="btn btn-primary" wire:loading.attr="disabled"
                     data-bs-dismiss="modal">
-                    <x-lucide-send class="icon" />
+                    
                     <span wire:loading.remove>Tugaskan</span>
                     <span wire:loading>Menyimpan...</span>
                 </button>

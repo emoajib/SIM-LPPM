@@ -212,7 +212,7 @@
     <div class="bg-transparent mt-auto card-footer">
         <div class="justify-content-end btn-list">
             <button type="button" class="btn" @click="resetTheme()">
-                <x-lucide-rotate-ccw class="icon icon-1" />
+                
                 Reset Perubahan Tema
             </button>
             <button type="button" class="btn btn-primary" @click="saveTheme()">

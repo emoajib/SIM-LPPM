@@ -82,7 +82,7 @@
                                 <button class="btn btn-primary shadow-sm" wire:click="reportToRektor"
                                     wire:loading.attr="disabled"
                                     onclick="confirm('Apakah Anda yakin ingin melaporkan hasil monev periode ini ke Rektor?') || event.stopImmediatePropagation()">
-                                    <i class="ti ti-send me-2"></i>
+                                    
                                     Ajukan ke Rektor
                                 </button>
                             @endif
@@ -90,12 +90,12 @@
                             @if(active_role_is('rektor') && ($institutionalReport?->status === \App\Enums\InstitutionalReportStatus::SUBMITTED))
                                 <button class="btn btn-outline-danger shadow-sm" data-bs-toggle="modal"
                                     data-bs-target="#modal-reject-institutional">
-                                    <i class="ti ti-x me-2"></i>
+                                    
                                     Minta Perbaikan
                                 </button>
                                 <button class="btn btn-success shadow-sm" wire:click="approveInstitutionalReport('monev', {{ $this->institutionalYear() }})"
                                     wire:loading.attr="disabled">
-                                    <i class="ti ti-circle-check me-2"></i>
+                                    
                                     Setujui & Tanda Tangani
                                 </button>
                             @endif

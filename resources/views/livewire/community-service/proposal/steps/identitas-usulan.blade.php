@@ -2,7 +2,7 @@
 <div class="card mb-3">
     <div class="card-body">
         <div class="d-flex align-items-center mb-4">
-            <x-lucide-file-text class="icon me-3" />
+            
             <h3 class="card-title mb-0">1.1 Informasi Dasar Proposal</h3>
         </div>
 
@@ -156,7 +156,7 @@
                             Pohon Penelitian Prodi <span class="text-danger">*</span>
                             <span class="text-muted" data-bs-toggle="tooltip"
                                 title="Pilih topik/pohon penelitian prodi yang relevan dengan usulan ini.">
-                                <i class="ti ti-info-circle"></i>
+                                
                             </span>
                         </label>
                         <div wire:ignore>
@@ -183,7 +183,7 @@
 <div class="card mb-3">
     <div class="card-body">
         <div class="d-flex align-items-center mb-4">
-            <x-lucide-dna class="icon me-3" />
+            
             <h3 class="card-title mb-0">1.2 Klasifikasi Ilmu (Klaster Sains)</h3>
         </div>
 
@@ -261,7 +261,7 @@
 <div class="card mb-3">
     <div class="card-body">
         <div class="d-flex align-items-center mb-4">
-            <x-lucide-file-text class="icon me-3" />
+            
             <h3 class="card-title mb-0">1.3 Ringkasan & Masalah Mitra</h3>
         </div>
 
@@ -298,7 +298,7 @@
                 Asta Cita Terkait (Opsional)
                 <span class="text-muted" data-bs-toggle="tooltip"
                     title="Jelaskan kaitan usulan ini dengan poin-poin Asta Cita terkait jika ada.">
-                    <i class="ti ti-info-circle"></i>
+                    
                 </span>
             </label>
             <textarea id="asta_cita" class="form-control @error('form.asta_cita') is-invalid @enderror"
@@ -313,7 +313,7 @@
                 Sustainable Development Goals (SDGs) <span class="text-danger">*</span>
                 <span class="text-muted" data-bs-toggle="tooltip"
                     title="Pilih satu atau lebih SDGs yang berkaitan dengan usulan pengabdian Anda. Data ini digunakan untuk perhitungan IKU-07.">
-                    <i class="ti ti-info-circle"></i>
+                    
                 </span>
             </label>
             <div wire:ignore>
@@ -337,7 +337,7 @@
                 Pilih Target IKU Kepmen 358 <span class="text-danger">*</span>
                 <span class="text-muted" data-bs-toggle="tooltip"
                     title="Pilih IKU yang menjadi target luaran dari usulan ini.">
-                    <i class="ti ti-info-circle"></i>
+                    
                 </span>
             </label>
 
@@ -393,7 +393,7 @@
 <div class="card mb-3">
     <div class="card-body">
         <div class="d-flex align-items-center mb-4">
-            <x-lucide-user-check class="icon me-3" />
+            
             <h3 class="card-title mb-0">Tugas Ketua Pengabdian</h3>
         </div>
 
@@ -423,7 +423,7 @@
 <div class="card mb-3">
     <div class="card-body">
         <div class="d-flex align-items-center mb-4">
-            <x-lucide-users class="icon me-3" />
+            
             <h3 class="card-title mb-0">Anggota Pengabdian</h3>
         </div>
 

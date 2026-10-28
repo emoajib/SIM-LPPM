@@ -10,7 +10,7 @@
         role="alert">
         <div class="d-flex">
             <div>
-                <x-lucide-info class="alert-icon icon me-2" />
+                
             </div>
             <div>
                 <h4 class="alert-title">Panduan Persetujuan Awal</h4>
@@ -29,7 +29,7 @@
     <div class="mb-3">
         <button class="btn btn-ghost-info btn-sm" type="button" data-bs-toggle="collapse"
             data-bs-target="#initialApprovalInfo" aria-expanded="false" aria-controls="initialApprovalInfo">
-            <x-lucide-info class="icon me-1" />
+            
             Informasi Alur
         </button>
     </div>
@@ -64,7 +64,7 @@
                         <div class="h1 mb-0 me-2">{{ $this->statusStats['research'] }}</div>
                         <div class="me-auto">
                             <span class="d-inline-flex align-items-center text-blue lh-1">
-                                <x-lucide-microscope class="icon icon-sm" />
+                                
                             </span>
                         </div>
                     </div>
@@ -82,7 +82,7 @@
                         <div class="h1 mb-0 me-2">{{ $this->statusStats['community_service'] }}</div>
                         <div class="me-auto">
                             <span class="d-inline-flex align-items-center text-green lh-1">
-                                <x-lucide-hand-heart class="icon icon-sm" />
+                                
                             </span>
                         </div>
                     </div>
@@ -144,7 +144,7 @@
 
                         <div class="col-md-1">
                             <button type="button" class="btn btn-outline-secondary w-100" wire:click="resetFilters" title="Reset Filter">
-                                <x-lucide-rotate-ccw class="icon" />
+                                
                             </button>
                         </div>
                     </div>
@@ -179,12 +179,12 @@
                             <td>
                                 @if ($proposal->detailable_type === 'App\Models\Research')
                                     <x-tabler.badge color="blue" variant="light">
-                                        <x-lucide-microscope class="icon icon-sm me-1" />
+                                        
                                         Penelitian
                                     </x-tabler.badge>
                                 @else
                                     <x-tabler.badge color="green" variant="light">
-                                        <x-lucide-hand-heart class="icon icon-sm me-1" />
+                                        
                                         Pengabdian
                                     </x-tabler.badge>
                                 @endif
@@ -201,13 +201,13 @@
                                     @if ($proposal->detailable_type === 'App\Models\Research')
                                         <a href="{{ route('research.proposal.show', $proposal) }}"
                                             class="btn btn-sm btn-primary" wire:navigate.hover>
-                                            <x-lucide-eye class="icon" />
+                                            
                                             Lihat & Proses
                                         </a>
                                     @else
                                         <a href="{{ route('community-service.proposal.show', $proposal) }}"
                                             class="btn btn-sm btn-primary" wire:navigate.hover>
-                                            <x-lucide-eye class="icon" />
+                                            
                                             Lihat & Proses
                                         </a>
                                     @endif
@@ -218,7 +218,7 @@
                         <tr>
                             <td colspan="4" class="py-8 text-center">
                                 <div class="mb-3">
-                                    <x-lucide-inbox class="text-secondary icon icon-lg" />
+                                    
                                 </div>
                                 <p class="text-secondary">Tidak ada proposal yang menunggu persetujuan awal.</p>
                             </td>

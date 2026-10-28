@@ -1,7 +1,7 @@
 <div class="alert alert-info alert-dismissible fade show border-0 shadow-sm collapse" id="roleInfoAlert" role="alert">
     <div class="d-flex">
         <div>
-            <x-lucide-info class="alert-icon icon me-2" />
+            
         </div>
         <div>
             @if($role === 'reviewer')
@@ -45,7 +45,7 @@
 </div>
 <div class="mb-3">
     <button class="btn btn-ghost-info btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#roleInfoAlert" aria-expanded="false" aria-controls="roleInfoAlert">
-        <x-lucide-info class="icon me-1" />
+        
         @if($role === 'reviewer') Petunjuk Review @else Bantuan Role @endif
     </button>
 </div>

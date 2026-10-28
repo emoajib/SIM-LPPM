@@ -2,11 +2,11 @@
     @if ($this->canApprove)
         <div class="btn-list">
             <button wire:click="approve" class="btn btn-success" wire:confirm="Setujui proposal ini?">
-                <x-lucide-check class="icon" />
+                
                 Setujui Proposal
             </button>
             <button wire:click="reject" class="btn btn-danger" wire:confirm="Tolak proposal ini?">
-                <x-lucide-x class="icon" />
+                
                 Tolak Proposal
             </button>
         </div>

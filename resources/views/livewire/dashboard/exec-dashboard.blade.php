@@ -10,7 +10,7 @@
             <a href="#"
                 class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2"
                 data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="ti ti-calendar-event"></i>
+                
                 <span>Tahun: {{ $selectedYear }}</span>
             </a>
             <div class="dropdown-menu">
@@ -29,7 +29,7 @@
             <a href="#"
                 class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2"
                 data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="ti ti-calendar-stats"></i>
+                
                 <span>Semester: {{ $selectedSemester === 'all' ? 'Semua' : ($selectedSemester === 'ganjil' ? 'Ganjil' : 'Genap') }}</span>
             </a>
             <div class="dropdown-menu">
@@ -56,7 +56,7 @@
             <a href="#"
                 class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2"
                 data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="ti ti-filter"></i>
+                
                 <span>Status: {{ $availableStatuses[$selectedStatus] ?? 'Semua Status' }}</span>
             </a>
             <div class="dropdown-menu" style="max-height: 280px; overflow-y: auto;">
@@ -77,7 +77,7 @@
                 <a href="#"
                     class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2"
                     data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="ti ti-building"></i>
+                    
                     <span>Fakultas: {{ $selectedFaculty !== 'all' ? ($availableFaculties[$selectedFaculty] ?? 'Fakultas') : 'Semua Fakultas' }}</span>
                 </a>
                 <div class="dropdown-menu" style="max-height: 280px; overflow-y: auto;">
@@ -96,7 +96,7 @@
                 <a href="#"
                     class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2"
                     data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="ti ti-book"></i>
+                    
                     <span>Prodi: {{ $selectedProdi !== 'all' ? ($availableProdis[$selectedProdi] ?? 'Prodi') : 'Semua Prodi' }}</span>
                 </a>
                 <div class="dropdown-menu" style="max-height: 280px; overflow-y: auto;">
@@ -116,7 +116,7 @@
             <a href="#"
                 class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2"
                 data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="ti ti-flask"></i>
+                
                 <span>Skema Penelitian: {{ $selectedResearchScheme !== 'all' ? ($availableResearchSchemes[$selectedResearchScheme] ?? 'Skema') : 'Semua Skema' }}</span>
             </a>
             <div class="dropdown-menu" style="max-height: 280px; overflow-y: auto;">
@@ -135,7 +135,7 @@
             <a href="#"
                 class="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2"
                 data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="ti ti-users-group"></i>
+                
                 <span>Skema PKM: {{ $selectedCommunityServiceScheme !== 'all' ? ($availableCommunityServiceSchemes[$selectedCommunityServiceScheme] ?? 'Skema') : 'Semua Skema' }}</span>
             </a>
             <div class="dropdown-menu dropdown-menu-end" style="max-height: 280px; overflow-y: auto;">
@@ -155,7 +155,7 @@
                 type="button"
                 wire:click="resetFilters"
                 title="Reset semua filter">
-                <i class="ti ti-x"></i>
+                
                 <span>Reset</span>
             </button>
         @endif
@@ -299,7 +299,7 @@
                  onmouseout="this.style.transform='scale(1)';this.style.boxShadow='none'">
                 <div class="card-header bg-transparent border-0 py-3 d-flex align-items-center">
                     <div class="avatar bg-primary-lt text-primary shadow-sm avatar-sm me-3 border-0">
-                        <i class="ti ti-chart-line"></i>
+                        
                     </div>
                     <h3 class="card-title fw-bold mb-0">Tren Usulan & Pendanaan</h3>
                 </div>
@@ -464,7 +464,7 @@
         <div class="col-12">
             <div class="d-flex align-items-center justify-content-between mb-2">
                 <h3 class="card-title fw-bold text-dark d-flex align-items-center gap-2 mb-0">
-                    <i class="ti ti-git-fork text-primary"></i>
+                    
                     Alur Proses Penelitian & Pengabdian
                 </h3>
                 <span class="badge bg-blue-lt">Klik kartu untuk rincian data usulan</span>
@@ -482,7 +482,7 @@
                 <div class="card-body py-3">
                     <div class="d-flex align-items-center mb-2">
                         <span class="avatar avatar-sm bg-primary-lt text-primary rounded shadow-none me-2">
-                            <i class="ti ti-file-text fs-2"></i>
+                            
                         </span>
                         <div>
                             <div class="subheader text-primary fw-bold mb-0">Usulan</div>
@@ -521,7 +521,7 @@
                 <div class="card-body py-3">
                     <div class="d-flex align-items-center mb-2">
                         <span class="avatar avatar-sm bg-warning-lt text-warning rounded shadow-none me-2">
-                            <i class="ti ti-edit fs-2"></i>
+                            
                         </span>
                         <div>
                             <div class="subheader text-warning fw-bold mb-0">Perbaikan Usulan</div>
@@ -559,7 +559,7 @@
                 <div class="card-body py-3">
                     <div class="d-flex align-items-center mb-2">
                         <span class="avatar avatar-sm bg-indigo-lt text-indigo rounded shadow-none me-2">
-                            <i class="ti ti-receipt-2 fs-2"></i>
+                            
                         </span>
                         <div>
                             <div class="subheader text-indigo fw-bold mb-0">Catatan & Keuangan</div>
@@ -597,7 +597,7 @@
                 <div class="card-body py-3">
                     <div class="d-flex align-items-center mb-2">
                         <span class="avatar avatar-sm bg-success-lt text-success rounded shadow-none me-2">
-                            <i class="ti ti-certificate fs-2"></i>
+                            
                         </span>
                         <div>
                             <div class="subheader text-success fw-bold mb-0">Laporan Akhir</div>
@@ -640,7 +640,7 @@
                 <div class="card-body py-3">
                     <div class="d-flex align-items-center mb-2">
                         <div class="subheader text-warning fw-bold d-flex align-items-center">
-                            <i class="ti ti-clipboard-check me-1"></i>Progress Review
+                            Progress Review
                         </div>
                         <div class="ms-auto">
                             <span class="badge bg-warning-lt">{{ $processStats['review_progress'] ?? 0 }}%</span>
@@ -651,7 +651,7 @@
                     </div>
                     <div class="mt-2 small text-muted d-flex justify-content-between align-items-center">
                         <span>{{ $processStats['review_completed'] ?? 0 }} dari {{ $processStats['review_total'] ?? 0 }} proposal selesai</span>
-                        <span class="text-warning fw-semibold"><i class="ti ti-arrow-right"></i></span>
+                        <span class="text-warning fw-semibold"></span>
                     </div>
                 </div>
             </div>
@@ -669,7 +669,7 @@
                 <div class="card-body py-3">
                     <div class="d-flex align-items-center mb-2">
                         <div class="subheader text-info fw-bold d-flex align-items-center">
-                            <i class="ti ti-chart-dots me-1"></i>Progress Monev
+                            Progress Monev
                         </div>
                         <div class="ms-auto">
                             <span class="badge bg-info-lt">{{ $processStats['monev_progress'] ?? 0 }}%</span>
@@ -680,7 +680,7 @@
                     </div>
                     <div class="mt-2 small text-muted d-flex justify-content-between align-items-center">
                         <span>{{ $processStats['monev_completed'] ?? 0 }} dari {{ $processStats['monev_total'] ?? 0 }} proposal selesai</span>
-                        <span class="text-info fw-semibold"><i class="ti ti-arrow-right"></i></span>
+                        <span class="text-info fw-semibold"></span>
                     </div>
                 </div>
             </div>
@@ -698,7 +698,7 @@
                 <div class="card-body py-3">
                     <div class="d-flex align-items-center mb-2">
                         <div class="subheader text-primary fw-bold d-flex align-items-center">
-                            <i class="ti ti-award me-1"></i>Progress IKU (Luaran)
+                            Progress IKU (Luaran)
                         </div>
                         <div class="ms-auto">
                             <span class="badge bg-primary-lt">{{ number_format($processStats['output_progress'] ?? 0, 1) }}%</span>
@@ -709,7 +709,7 @@
                     </div>
                     <div class="mt-2 small text-muted d-flex justify-content-between align-items-center">
                         <span>{{ $processStats['output_achieved'] ?? 0 }} dari {{ $processStats['output_target'] ?? 0 }} target tercapai</span>
-                        <span class="text-primary fw-semibold"><i class="ti ti-arrow-right"></i></span>
+                        <span class="text-primary fw-semibold"></span>
                     </div>
                 </div>
             </div>
@@ -723,7 +723,7 @@
                 <div class="card-header bg-transparent border-0 py-3">
                     <div class="d-flex align-items-center">
                         <div class="avatar bg-primary-lt text-primary shadow-sm avatar-sm me-3 border-0">
-                            <i class="ti ti-flask-2"></i>
+                            
                         </div>
                         <h3 class="card-title fw-bold mb-0">Ringkasan Penelitian per Periode</h3>
                     </div>
@@ -784,7 +784,7 @@
                 <div class="card-header bg-transparent border-0 py-3">
                     <div class="d-flex align-items-center">
                         <div class="avatar bg-azure-lt text-azure shadow-sm avatar-sm me-3 border-0">
-                            <i class="ti ti-users-group"></i>
+                            
                         </div>
                         <h3 class="card-title fw-bold mb-0">Ringkasan PKM per Periode</h3>
                     </div>
@@ -848,7 +848,7 @@
                 <div class="card-header bg-transparent border-0 py-3 d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center">
                         <div class="avatar bg-primary-lt text-primary shadow-sm avatar-sm me-3 border-0">
-                            <i class="ti ti-flask-2"></i>
+                            
                         </div>
                         <h3 class="card-title fw-bold mb-0">Penelitian Terbaru</h3>
                         <span class="badge bg-primary-lt ms-2">{{ count($recentResearch) }} Data</span>
@@ -885,23 +885,23 @@
                                                 @endphp
                                                 @if($repStatus === \App\Enums\ReportStatus::APPROVED)
                                                     <span class="badge bg-success text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-check me-1"></i>Laporan Disetujui
+                                                        Laporan Disetujui
                                                     </span>
                                                 @elseif($repStatus === \App\Enums\ReportStatus::APPROVED_BY_DEKAN)
                                                     <span class="badge bg-purple text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-clock-check me-1"></i>Disetujui Dekan
+                                                        Disetujui Dekan
                                                     </span>
                                                 @elseif($repStatus === \App\Enums\ReportStatus::SUBMITTED)
                                                     <span class="badge bg-primary text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-send me-1"></i>Laporan Diajukan
+                                                        Laporan Diajukan
                                                     </span>
                                                 @elseif($repStatus === \App\Enums\ReportStatus::REJECTED)
                                                     <span class="badge bg-danger text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-alert-circle me-1"></i>Revisi Laporan
+                                                        Revisi Laporan
                                                     </span>
                                                 @elseif($repStatus === \App\Enums\ReportStatus::DRAFT)
                                                     <span class="badge bg-warning text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-edit me-1"></i>Draf Laporan
+                                                        Draf Laporan
                                                     </span>
                                                 @endif
                                             @else
@@ -936,7 +936,7 @@
                 <div class="card-header bg-transparent border-0 py-3 d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center">
                         <div class="avatar bg-azure-lt text-azure shadow-sm avatar-sm me-3 border-0">
-                            <i class="ti ti-users-group"></i>
+                            
                         </div>
                         <h3 class="card-title fw-bold mb-0">PKM Terbaru</h3>
                         <span class="badge bg-azure-lt ms-2">{{ count($recentCommunityService) }} Data</span>
@@ -973,23 +973,23 @@
                                                 @endphp
                                                 @if($repStatus === \App\Enums\ReportStatus::APPROVED)
                                                     <span class="badge bg-success text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-check me-1"></i>Laporan Disetujui
+                                                        Laporan Disetujui
                                                     </span>
                                                 @elseif($repStatus === \App\Enums\ReportStatus::APPROVED_BY_DEKAN)
                                                     <span class="badge bg-purple text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-clock-check me-1"></i>Disetujui Dekan
+                                                        Disetujui Dekan
                                                     </span>
                                                 @elseif($repStatus === \App\Enums\ReportStatus::SUBMITTED)
                                                     <span class="badge bg-primary text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-send me-1"></i>Laporan Diajukan
+                                                        Laporan Diajukan
                                                     </span>
                                                 @elseif($repStatus === \App\Enums\ReportStatus::REJECTED)
                                                     <span class="badge bg-danger text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-alert-circle me-1"></i>Revisi Laporan
+                                                        Revisi Laporan
                                                     </span>
                                                 @elseif($repStatus === \App\Enums\ReportStatus::DRAFT)
                                                     <span class="badge bg-warning text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-edit me-1"></i>Draf Laporan
+                                                        Draf Laporan
                                                     </span>
                                                 @endif
                                             @else

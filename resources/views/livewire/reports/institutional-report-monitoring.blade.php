@@ -193,7 +193,7 @@
                                         <a href="{{ route($pdfRoute, array_merge($params, ['preview' => 1])) }}"
                                             target="_blank" class="btn btn-outline-primary btn-sm shadow-sm"
                                             title="Tinjau PDF" data-bs-toggle="tooltip">
-                                            <x-lucide-eye class="icon me-1" />
+                                            
                                             Tinjau PDF
                                         </a>
                                     @endif
@@ -203,7 +203,7 @@
                                             <a href="{{ route($pdfRoute, array_merge($params, ['export' => 'pdf'])) }}"
                                                 class="btn btn-primary btn-sm shadow-sm" title="Unduh PDF Resmi"
                                                 data-bs-toggle="tooltip" data-navigate-ignore="true">
-                                                <x-lucide-printer class="icon me-1" />
+                                                
                                                 Unduh PDF
                                             </a>
                                         @endif
@@ -212,7 +212,7 @@
                                             <a href="{{ route($excelRoute, $params) }}"
                                                 class="btn btn-success btn-sm shadow-sm" title="Unduh Excel"
                                                 data-bs-toggle="tooltip" data-navigate-ignore="true">
-                                                <x-lucide-file-spreadsheet class="icon me-1" />
+                                                
                                                 Unduh Excel
                                             </a>
                                         @endif

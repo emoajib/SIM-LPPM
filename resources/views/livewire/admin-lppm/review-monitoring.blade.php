@@ -78,7 +78,7 @@
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
                     <button class="btn btn-outline-secondary w-100" wire:click="resetFilters">
-                        <x-lucide-rotate-ccw class="icon me-1" /> Reset
+                         Reset
                     </button>
                 </div>
             </div>
@@ -125,9 +125,9 @@
                                         @foreach ($proposal->reviewers as $reviewer)
                                             <div class="d-flex align-items-center mb-1">
                                                 @if ($reviewer->isCompleted())
-                                                    <x-lucide-check-circle class="me-1 text-success icon icon-sm" />
+                                                    
                                                 @else
-                                                    <x-lucide-clock class="me-1 text-warning icon icon-sm" />
+                                                    
                                                 @endif
                                                 <span>{{ $reviewer->user?->name }}</span>
                                             </div>

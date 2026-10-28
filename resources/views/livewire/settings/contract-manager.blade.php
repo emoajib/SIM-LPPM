@@ -13,16 +13,16 @@
             </button>
             <div class="dropdown-menu dropdown-menu-end shadow-sm">
                 <a href="#" wire:click.prevent="openBatchModal('research')" class="dropdown-item">
-                    <x-lucide-microscope class="icon me-2 text-primary" />
+                    
                     1. Generate Nomor Kontrak Penelitian
                 </a>
                 <a href="#" wire:click.prevent="openBatchModal('community-service')" class="dropdown-item">
-                    <x-lucide-heart-handshake class="icon me-2 text-success" />
+                    
                     2. Generate Nomor Kontrak Pengabdian
                 </a>
                 <div class="dropdown-divider"></div>
                 <a href="#" wire:click.prevent="openBatchModal('all')" class="dropdown-item">
-                    <x-lucide-layers class="icon me-2 text-secondary" />
+                    
                     Generate Semua Jenis (Otomatis L & PKM)
                 </a>
             </div>
@@ -39,7 +39,7 @@
                     <div class="row align-items-center">
                         <div class="col-auto">
                             <span class="bg-primary text-white avatar">
-                                <x-lucide-file-spreadsheet class="icon" />
+                                
                             </span>
                         </div>
                         <div class="col">
@@ -73,7 +73,7 @@
                     <div class="row align-items-center">
                         <div class="col-auto">
                             <span class="bg-warning text-white avatar">
-                                <x-lucide-alert-circle class="icon" />
+                                
                             </span>
                         </div>
                         <div class="col">
@@ -90,7 +90,7 @@
     @if(count($selectedProposals) > 0)
         <div class="alert alert-primary d-flex align-items-center justify-content-between mb-3 shadow-sm">
             <div class="d-flex align-items-center">
-                <x-lucide-check-square class="icon alert-icon me-2 text-primary" />
+                
                 <span><strong>{{ count($selectedProposals) }}</strong> usulan telah dipilih untuk tindakan massal.</span>
             </div>
             <div class="d-flex gap-2">
@@ -111,7 +111,7 @@
             <div class="row g-2 align-items-center w-100">
                 <div class="col-md-4">
                     <div class="input-icon">
-                        <span class="input-icon-addon"><x-lucide-search class="icon" /></span>
+                        <span class="input-icon-addon"></span>
                         <input type="text" wire:model.live.debounce.300ms="search" class="form-control" placeholder="Cari judul, ketua, NIDN, kontrak...">
                     </div>
                 </div>
@@ -202,7 +202,7 @@
                                 @if($proposal->contract_number)
                                     <div class="d-flex align-items-center">
                                         <span class="badge bg-success me-2">
-                                            <x-lucide-check class="icon icon-inline" />
+                                            
                                         </span>
                                         <div>
                                             <div class="font-weight-semibold text-monospace">{{ $proposal->contract_number }}</div>
@@ -213,7 +213,7 @@
                                     </div>
                                 @else
                                     <span class="badge bg-warning-lt">
-                                        <x-lucide-alert-triangle class="icon icon-inline me-1" /> Belum Diterbitkan
+                                         Belum Diterbitkan
                                     </span>
                                 @endif
                             </td>
@@ -223,13 +223,13 @@
                             <td class="text-center">
                                 <div class="btn-group">
                                     <button type="button" wire:click="openEdit('{{ $proposal->id }}')" class="btn btn-sm btn-outline-primary" title="Edit Nomor Kontrak">
-                                        <x-lucide-pencil class="icon" />
+                                        
                                     </button>
                                     <a data-navigate-ignore="true" href="{{ route('reports.export-pdf', ['proposal' => $proposal, 'type' => 'final', 'preview' => 1]) }}" target="_blank" class="btn btn-sm btn-outline-secondary" title="Pratinjau Cover & Laporan Akhir">
-                                        <x-lucide-eye class="icon" />
+                                        
                                     </a>
                                     <a data-navigate-ignore="true" href="{{ route('financial-reports.export-pdf', ['proposal' => $proposal, 'preview' => 1]) }}" target="_blank" class="btn btn-sm btn-outline-success" title="Pratinjau Laporan Keuangan (LPJ)">
-                                        <x-lucide-file-spreadsheet class="icon" />
+                                        
                                     </a>
                                 </div>
                             </td>
@@ -237,7 +237,7 @@
                     @empty
                         <tr>
                             <td colspan="6" class="text-center py-4 text-muted">
-                                <x-lucide-inbox class="icon icon-lg mb-2 text-secondary" />
+                                
                                 <div>Tidak ada data usulan yang sesuai dengan filter pencarian.</div>
                             </td>
                         </tr>
@@ -261,7 +261,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">
-                            <x-lucide-file-edit class="icon me-1 text-primary" />
+                            
                             Edit Nomor Kontrak Usulan
                         </h5>
                         <button type="button" wire:click="$set('showEditModal', false)" class="btn-close" aria-label="Close"></button>
@@ -286,7 +286,7 @@
                     <div class="modal-footer">
                         <button type="button" wire:click="$set('showEditModal', false)" class="btn btn-link link-secondary">Batal</button>
                         <button type="button" wire:click="saveSingle" wire:loading.attr="disabled" class="btn btn-primary">
-                            <span wire:loading.remove wire:target="saveSingle"><x-lucide-save class="icon me-1" /> Simpan Nomor Kontrak</span>
+                            <span wire:loading.remove wire:target="saveSingle"> Simpan Nomor Kontrak</span>
                             <span wire:loading wire:target="saveSingle"><span class="spinner-border spinner-border-sm"></span> Menyimpan...</span>
                         </button>
                     </div>
@@ -313,15 +313,15 @@
                             <label class="form-label required">Kategori Usulan yang Digenerate</label>
                             <div class="btn-group w-100" role="group">
                                 <button type="button" wire:click="setBatchScopeType('research')" class="btn {{ $batchScopeType === 'research' ? 'btn-primary' : 'btn-outline-primary' }}">
-                                    <x-lucide-microscope class="icon me-1" />
+                                    
                                     1. Khusus Penelitian (KTR-L)
                                 </button>
                                 <button type="button" wire:click="setBatchScopeType('community-service')" class="btn {{ $batchScopeType === 'community-service' ? 'btn-success' : 'btn-outline-success' }}">
-                                    <x-lucide-heart-handshake class="icon me-1" />
+                                    
                                     2. Khusus Pengabdian (KTR-PKM)
                                 </button>
                                 <button type="button" wire:click="setBatchScopeType('all')" class="btn {{ $batchScopeType === 'all' ? 'btn-secondary' : 'btn-outline-secondary' }}">
-                                    <x-lucide-layers class="icon me-1" />
+                                    
                                     Semua Jenis (L & PKM)
                                 </button>
                             </div>
@@ -396,7 +396,7 @@
                     <div class="modal-footer">
                         <button type="button" wire:click="$set('showBatchModal', false)" class="btn btn-link link-secondary">Batal</button>
                         <button type="button" wire:click="generateBatch" wire:loading.attr="disabled" class="btn btn-primary">
-                            <span wire:loading.remove wire:target="generateBatch"><x-lucide-check class="icon me-1" /> Terapkan Penomoran Massal</span>
+                            <span wire:loading.remove wire:target="generateBatch"> Terapkan Penomoran Massal</span>
                             <span wire:loading wire:target="generateBatch"><span class="spinner-border spinner-border-sm"></span> Memproses...</span>
                         </button>
                     </div>

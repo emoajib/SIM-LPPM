@@ -1,6 +1,6 @@
 <div>
     <h3 class="card-title mb-3">
-        <x-lucide-toggle-left class="icon me-1" />
+        
         Hierarki Riset & Validasi Kaprodi
     </h3>
     <p class="text-secondary mb-3">
@@ -13,7 +13,7 @@
             <div class="row align-items-center">
                 <div class="col-auto">
                     <span class="avatar bg-blue-lt">
-                        <x-lucide-git-branch class="icon" />
+                        
                     </span>
                 </div>
                 <div class="col text-truncate">
@@ -34,7 +34,7 @@
             <div class="row align-items-center">
                 <div class="col-auto">
                     <span class="avatar bg-green-lt">
-                        <x-lucide-check-square class="icon" />
+                        
                     </span>
                 </div>
                 <div class="col text-truncate">
@@ -55,7 +55,7 @@
             <div class="row align-items-center">
                 <div class="col-auto">
                     <span class="avatar bg-purple-lt">
-                        <x-lucide-handshake class="icon" />
+                        
                     </span>
                 </div>
                 <div class="col text-truncate">
@@ -76,7 +76,7 @@
             <div class="row align-items-center">
                 <div class="col-auto">
                     <span class="avatar bg-orange-lt">
-                        <x-lucide-users class="icon" />
+                        
                     </span>
                 </div>
                 <div class="col text-truncate">
@@ -98,7 +98,7 @@
     </div>
 
     <h3 class="card-title mb-3 mt-4">
-        <x-lucide-mail class="icon me-1" />
+        
         Modul Persuratan Terintegrasi
     </h3>
     <p class="text-secondary mb-3">
@@ -110,7 +110,7 @@
             <div class="row align-items-center">
                 <div class="col-auto">
                     <span class="avatar bg-azure-lt">
-                        <x-lucide-toggle-right class="icon" />
+                        
                     </span>
                 </div>
                 <div class="col text-truncate">
@@ -131,7 +131,7 @@
             <div class="row align-items-center">
                 <div class="col-auto">
                     <span class="avatar bg-indigo-lt">
-                        <x-lucide-pen-tool class="icon" />
+                        
                     </span>
                 </div>
                 <div class="col text-truncate">
@@ -151,14 +151,14 @@
             <div class="row align-items-center mt-2">
                 <div class="col-auto">
                     <span class="avatar bg-50-lt">
-                        <x-lucide-shield-off class="icon" />
+                        
                     </span>
                 </div>
                 <div class="col text-truncate">
                     <div class="text-body d-block font-weight-medium">Lewati Persetujuan Kepala LPPM</div>
                     <div class="text-muted text-truncate mt-n1">
                         @if($suratWetSignatureBypass)
-                            <span class="text-warning"><i class="ti ti-alert-triangle me-1"></i>Dosen dapat mencetak surat langsung tanpa persetujuan.</span>
+                            <span class="text-warning">Dosen dapat mencetak surat langsung tanpa persetujuan.</span>
                         @else
                             Dosen tetap harus menunggu persetujuan Kepala LPPM sebelum mencetak.
                         @endif

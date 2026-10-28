@@ -42,7 +42,7 @@
                             <h2 class="mb-0 mt-1">{{ $stats['total'] }}</h2>
                         </div>
                         <div class="avatar avatar-lg bg-primary-lt">
-                            <i class="ti ti-mail avatar-icon"></i>
+                            
                         </div>
                     </div>
                 </div>
@@ -57,7 +57,7 @@
                             <h2 class="mb-0 mt-1 text-warning">{{ $stats['pending'] }}</h2>
                         </div>
                         <div class="avatar avatar-lg bg-warning-lt">
-                            <i class="ti ti-clock avatar-icon"></i>
+                            
                         </div>
                     </div>
                 </div>
@@ -72,7 +72,7 @@
                             <h2 class="mb-0 mt-1 text-success">{{ $stats['published'] }}</h2>
                         </div>
                         <div class="avatar avatar-lg bg-success-lt">
-                            <i class="ti ti-check avatar-icon"></i>
+                            
                         </div>
                     </div>
                 </div>
@@ -87,7 +87,7 @@
                             <h2 class="mb-0 mt-1 text-danger">{{ $stats['rejected'] }}</h2>
                         </div>
                         <div class="avatar avatar-lg bg-danger-lt">
-                            <i class="ti ti-x avatar-icon"></i>
+                            
                         </div>
                     </div>
                 </div>
@@ -104,47 +104,47 @@
                 <ul class="nav nav-tabs card-header-tabs">
                     <li class="nav-item">
                         <a class="nav-link @if($activeTab === 'letters' && $statusFilter === 'all') active @endif" href="#" wire:click.prevent="setTab('letters', 'all')">
-                            <i class="ti ti-mail me-1"></i> Semua
+                             Semua
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link @if($activeTab === 'letters' && $statusFilter === 'pending_approval') active @endif" href="#" wire:click.prevent="setTab('letters', 'pending_approval')">
-                            <i class="ti ti-clock me-1"></i> Perlu Diproses
+                             Perlu Diproses
                             <span class="badge bg-warning-lt ms-1">{{ $stats['pending'] }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link @if($activeTab === 'letters' && $statusFilter === 'published') active @endif" href="#" wire:click.prevent="setTab('letters', 'published')">
-                            <i class="ti ti-check me-1"></i> Diterbitkan
+                             Diterbitkan
                             <span class="badge bg-success-lt ms-1">{{ $stats['published'] }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link @if($activeTab === 'letters' && $statusFilter === 'rejected') active @endif" href="#" wire:click.prevent="setTab('letters', 'rejected')">
-                            <i class="ti ti-x me-1"></i> Ditolak
+                             Ditolak
                             <span class="badge bg-danger-lt ms-1">{{ $stats['rejected'] }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link @if($activeTab === 'letters' && $statusFilter === 'cancelled') active @endif" href="#" wire:click.prevent="setTab('letters', 'cancelled')">
-                            <i class="ti ti-ban me-1"></i> Dibatalkan
+                             Dibatalkan
                             <span class="badge bg-secondary-lt ms-1">{{ $stats['cancelled'] }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link @if($activeTab === 'letters' && $statusFilter === 'ready_to_print') active @endif" href="#" wire:click.prevent="setTab('letters', 'ready_to_print')">
-                            <i class="ti ti-printer me-1"></i> Siap Cetak
+                             Siap Cetak
                             <span class="badge bg-info-lt ms-1">{{ $stats['ready_to_print'] }}</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link @if($activeTab === 'types') active @endif" href="#" wire:click.prevent="setTab('types')">
-                            <i class="ti ti-settings me-1"></i> Kelola Jenis Surat
+                             Kelola Jenis Surat
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link @if($activeTab === 'categories') active @endif" href="#" wire:click.prevent="setTab('categories')">
-                            <i class="ti ti-tags me-1"></i> Kelola Kategori
+                             Kelola Kategori
                         </a>
                     </li>
                 </ul>
@@ -152,11 +152,11 @@
                 {{-- Action Buttons inside Livewire DOM --}}
                 @if($activeTab === 'types')
                     <button class="btn btn-primary btn-sm shadow-sm" wire:click="openCreateModal">
-                        <i class="ti ti-plus me-1"></i> Tambah Jenis Surat
+                         Tambah Jenis Surat
                     </button>
                 @elseif($activeTab === 'categories')
                     <button class="btn btn-primary btn-sm shadow-sm" wire:click="openCreateCategoryModal">
-                        <i class="ti ti-plus me-1"></i> Tambah Kategori
+                         Tambah Kategori
                     </button>
                 @endif
             </div>
@@ -171,7 +171,7 @@
                         <label class="form-label">Pencarian</label>
                         <div class="input-icon">
                             <span class="input-icon-addon">
-                                <i class="ti ti-search"></i>
+                                
                             </span>
                             <input type="text" class="form-control" placeholder="Cari nomor surat, nama dosen, atau jenis..." wire:model.live="search">
                         </div>
@@ -195,7 +195,7 @@
                     </div>
                     <div class="col-md-1 col-sm-12">
                         <button type="button" class="btn btn-outline-secondary w-100" wire:click="resetFilters" title="Reset Filters">
-                            <i class="ti ti-rotate-2"></i>
+                            
                         </button>
                     </div>
                 </div>
@@ -253,11 +253,11 @@
                                 <div class="btn-list flex-nowrap">
                                     @if($letter->file_path)
                                     <a href="{{ route('letter.view', $letter->id) }}" target="_blank" class="btn btn-outline-info btn-sm" title="Lihat PDF">
-                                        <i class="ti ti-eye"></i>
+                                        
                                     </a>
                                     @endif
                                     <a href="{{ route('letter.download', $letter->id) }}" target="_blank" class="btn btn-outline-info btn-sm" title="Unduh PDF">
-                                        <i class="ti ti-download"></i>
+                                        
                                     </a>
                                 </div>
                             </td>
@@ -320,10 +320,10 @@
                             <td>
                                 <div class="btn-list flex-nowrap">
                                     <button class="btn btn-outline-primary btn-sm shadow-sm" wire:click="openEditModal('{{ $type->id }}')">
-                                        <i class="ti ti-pencil"></i>
+                                        
                                     </button>
                                     <button class="btn btn-outline-danger btn-sm shadow-sm" wire:click="confirmDelete('{{ $type->id }}')" {{ $type->letters_count > 0 ? 'disabled' : '' }}>
-                                        <i class="ti ti-trash"></i>
+                                        
                                     </button>
                                 </div>
                             </td>
@@ -365,10 +365,10 @@
                             <td>
                                 <div class="btn-list flex-nowrap">
                                     <button class="btn btn-outline-primary btn-sm shadow-sm" wire:click="openEditCategoryModal('{{ $cat->id }}')">
-                                        <i class="ti ti-pencil"></i>
+                                        
                                     </button>
                                     <button class="btn btn-outline-danger btn-sm shadow-sm" wire:click="confirmDeleteCategory('{{ $cat->id }}')" {{ $cat->letter_types_count > 0 ? 'disabled' : '' }}>
-                                        <i class="ti ti-trash"></i>
+                                        
                                     </button>
                                 </div>
                             </td>
@@ -480,7 +480,7 @@
                         <div class="d-flex justify-content-end gap-2">
                             <button type="button" class="btn btn-link" wire:click="closeTypeModal">Batal</button>
                             <button type="submit" class="btn btn-primary shadow-sm">
-                                <i class="ti ti-check me-1"></i> {{ $editMode ? 'Simpan Perubahan' : 'Tambah' }}
+                                 {{ $editMode ? 'Simpan Perubahan' : 'Tambah' }}
                             </button>
                         </div>
                     </form>
@@ -500,14 +500,14 @@
             <div class="modal-content shadow-sm">
                 <div class="modal-status bg-danger"></div>
                 <div class="modal-body text-center py-4">
-                    <i class="ti ti-alert-triangle icon-lg text-danger mb-2"></i>
+                    
                     <h3>Hapus Jenis Surat?</h3>
                     <p class="text-muted">Yakin ingin menghapus <strong>{{ $deletingLetterType?->name }} ({{ $deletingLetterType?->code }})</strong>?</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-link" wire:click="closeDeleteModal">Batal</button>
                     <button type="button" class="btn btn-danger shadow-sm" wire:click="delete">
-                        <i class="ti ti-trash me-1"></i> Hapus
+                         Hapus
                     </button>
                 </div>
             </div>
@@ -540,7 +540,7 @@
                         <div class="d-flex justify-content-end gap-2">
                             <button type="button" class="btn btn-link" wire:click="closeCategoryModal">Batal</button>
                             <button type="submit" class="btn btn-primary shadow-sm">
-                                <i class="ti ti-check me-1"></i> {{ $categoryEditMode ? 'Simpan' : 'Tambah' }}
+                                 {{ $categoryEditMode ? 'Simpan' : 'Tambah' }}
                             </button>
                         </div>
                     </form>
@@ -560,14 +560,14 @@
             <div class="modal-content shadow-sm">
                 <div class="modal-status bg-danger"></div>
                 <div class="modal-body text-center py-4">
-                    <i class="ti ti-alert-triangle icon-lg text-danger mb-2"></i>
+                    
                     <h3>Hapus Kategori Surat?</h3>
                     <p class="text-muted">Yakin ingin menghapus kategori <strong>{{ $deletingCategory?->name }}</strong>?</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-link" wire:click="closeDeleteCategoryModal">Batal</button>
                     <button type="button" class="btn btn-danger shadow-sm" wire:click="deleteCategory">
-                        <i class="ti ti-trash me-1"></i> Hapus
+                         Hapus
                     </button>
                 </div>
             </div>

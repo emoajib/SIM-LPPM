@@ -7,15 +7,15 @@
         @if ($progressReport && $progressReport->title_change_status)
             @if ($progressReport->title_change_status === 'pending')
                 <span class="badge bg-warning text-dark">
-                    <x-lucide-clock class="icon icon-sm me-1" /> Menunggu Persetujuan LPPM
+                     Menunggu Persetujuan LPPM
                 </span>
             @elseif ($progressReport->title_change_status === 'approved')
                 <span class="badge bg-success">
-                    <x-lucide-check-circle class="icon icon-sm me-1" /> Perubahan Judul Disetujui
+                     Perubahan Judul Disetujui
                 </span>
             @elseif ($progressReport->title_change_status === 'rejected')
                 <span class="badge bg-danger">
-                    <x-lucide-x-circle class="icon icon-sm me-1" /> Pengajuan Ditolak
+                     Pengajuan Ditolak
                 </span>
             @endif
         @endif
@@ -30,7 +30,7 @@
 
         @if ($progressReport && $progressReport->title_change_status === 'pending')
             <div class="alert alert-info d-flex align-items-start mb-3">
-                <x-lucide-info class="icon me-2 mt-1 flex-shrink-0" />
+                
                 <div class="flex-grow-1">
                     <strong>Pengajuan Perubahan Judul Sedang Ditinjau:</strong>
                     <div class="mt-1"><strong>Judul Baru:</strong> {{ $progressReport->proposed_title }}</div>
@@ -49,7 +49,7 @@
             </div>
         @elseif ($progressReport && $progressReport->title_change_status === 'rejected')
             <div class="alert alert-danger d-flex align-items-start mb-3">
-                <x-lucide-alert-triangle class="icon me-2 text-danger mt-1" />
+                
                 <div>
                     <strong>Pengajuan perubahan judul ditolak oleh LPPM pada {{ $progressReport->title_change_reviewed_at?->format('d/m/Y H:i') }}.</strong>
                     <div class="small mt-1"><strong>Alasan Penolakan:</strong> {{ $progressReport->title_change_review_notes ?? '-' }}</div>
@@ -61,7 +61,7 @@
         @if (auth()->user()?->activeHasAnyRole(['admin lppm', 'admin lppm saintek', 'admin lppm dekabita', 'kepala lppm', 'superadmin']) && $progressReport && $progressReport->title_change_status === 'pending')
             <div class="border border-warning rounded p-3 bg-warning-lt mb-3">
                 <h4 class="text-warning-emphasis mb-2 d-flex align-items-center">
-                    <x-lucide-shield-alert class="icon me-2" /> Panel Verifikasi Perubahan Judul (Admin LPPM)
+                     Panel Verifikasi Perubahan Judul (Admin LPPM)
                 </h4>
                 <p class="small text-muted mb-2">
                     Dosen pengusul mengajukan perubahan judul laporan akhir. Tinjau justifikasi di atas sebelum menyetujui atau menolak.
@@ -75,10 +75,10 @@
                 </div>
                 <div class="d-flex gap-2">
                     <button type="button" wire:click="approveTitleChange" wire:loading.attr="disabled" class="btn btn-success btn-sm">
-                        <x-lucide-check class="icon me-1" /> Setujui Perubahan Judul
+                         Setujui Perubahan Judul
                     </button>
                     <button type="button" wire:click="rejectTitleChange" wire:loading.attr="disabled" class="btn btn-outline-danger btn-sm">
-                        <x-lucide-x class="icon me-1" /> Tolak Pengajuan
+                         Tolak Pengajuan
                     </button>
                 </div>
             </div>
@@ -115,7 +115,7 @@
 
                     <div class="d-flex gap-2">
                         <button type="button" wire:click="saveTitleChangeRequest" wire:loading.attr="disabled" class="btn btn-primary btn-sm">
-                            <x-lucide-send class="icon me-1" /> Kirim Pengajuan Perubahan Judul
+                             Kirim Pengajuan Perubahan Judul
                         </button>
                         @if ($progressReport && $progressReport->title_change_status === 'pending')
                             <button type="button" wire:click="cancelTitleChangeRequest" wire:loading.attr="disabled" class="btn btn-outline-secondary btn-sm">

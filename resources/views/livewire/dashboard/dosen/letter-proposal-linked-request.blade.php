@@ -2,16 +2,16 @@
     <div class="card border-0 shadow-sm">
         <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center py-3">
             <h5 class="card-title mb-0">
-                <i class="ti ti-file-plus me-2"></i> Buat Surat dari Proposal
+                 Buat Surat dari Proposal
             </h5>
             <a href="{{ route('dashboard.dosen.surat.dashboard') }}" class="btn btn-outline-secondary btn-sm" wire:navigate.hover>
-                <i class="ti ti-arrow-left me-1"></i> Kembali
+                 Kembali
             </a>
         </div>
         <div class="card-body p-4">
             <div class="alert alert-info border-0 shadow-sm mb-4">
                 <div class="d-flex align-items-center">
-                    <i class="ti ti-info-circle fs-2 me-2"></i>
+                    
                     <div>
                         Data judul, lokasi, dan tim diisi otomatis dari proposal <strong>{{ $proposal->title }}</strong>.
                         Anda dapat mengedit data tersebut sesuai kebutuhan.
@@ -94,7 +94,7 @@
                     <label class="form-label">Tim Pelaksana <small class="text-muted">(dari proposal, bisa diedit)</small></label>
                     <div class="input-icon mb-2">
                         <span class="input-icon-addon">
-                            <i class="ti ti-search"></i>
+                            
                         </span>
                         <input type="text" class="form-control" wire:model.live.debounce.500ms="searchQuery" placeholder="Ketik nama dosen untuk menambah anggota...">
                     </div>
@@ -133,7 +133,7 @@
                                     </td>
                                     <td>
                                         <button type="button" class="btn btn-sm btn-outline-danger" wire:click="removeTeamMember({{ $index }})" title="Tutup" aria-label="Tutup">
-                                            <i class="ti ti-x"></i>
+                                            
                                         </button>
                                     </td>
                                 </tr>
@@ -147,7 +147,7 @@
                 <div class="d-flex justify-content-end gap-2">
                     <a href="{{ route('dashboard.dosen.surat.dashboard') }}" class="btn btn-link" wire:navigate.hover>Batal</a>
                     <button type="submit" class="btn btn-primary px-4">
-                        <i class="ti ti-send me-1"></i> Kirim ke Kepala LPPM
+                         Kirim ke Kepala LPPM
                     </button>
                 </div>
             </form>

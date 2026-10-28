@@ -96,7 +96,7 @@
                                     <label class="form-label">Tim Pelaksana</label>
                                     <div class="input-icon mb-2">
                                         <span class="input-icon-addon">
-                                            <i class="ti ti-search"></i>
+                                            
                                         </span>
                                         <input type="text" class="form-control" wire:model.live.debounce.500ms="searchQuery" wire:keydown.enter.prevent wire:keydown.enter.stop placeholder="Ketik nama dosen untuk mencari...">
                                     </div>
@@ -135,7 +135,7 @@
                                                     </td>
                                                     <td>
                                                         <button type="button" class="btn btn-sm btn-outline-danger" wire:click="removeTeamMember({{ $index }})" title="Tutup" aria-label="Tutup">
-                                                            <i class="ti ti-x"></i>
+                                                            
                                                         </button>
                                                     </td>
                                                 </tr>
@@ -152,7 +152,7 @@
                                 <div class="d-flex justify-content-end gap-2">
                                     <a href="{{ route('dashboard.dosen.surat.dashboard') }}" class="btn btn-link">Batal</a>
                                     <button type="submit" class="btn btn-primary px-4" wire:loading.attr="disabled">
-                                        <i class="ti ti-send me-1"></i> Kirim ke Kepala LPPM
+                                         Kirim ke Kepala LPPM
                                     </button>
                                 </div>
                             </form>

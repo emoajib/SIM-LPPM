@@ -1,5 +1,5 @@
-<x-slot:title>Catatan Harian PKM</x-slot:title>
-<x-slot:pageTitle>Catatan Harian PKM</x-slot:pageTitle>
+<x-slot:title>Realisasi Anggaran PKM</x-slot:title>
+<x-slot:pageTitle>Realisasi Anggaran PKM</x-slot:pageTitle>
 <x-slot:pageSubtitle>
     Kelola buku harian (logbook) aktivitas pengabdian masyarakat Anda.
 </x-slot:pageSubtitle>
@@ -14,14 +14,14 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link @if ($roleFilter === 'ketua') active @endif"
                         wire:click="$set('roleFilter', 'ketua')" role="tab">
-                        <x-lucide-crown class="me-2 icon" />
+                        
                         Sebagai Ketua
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link @if ($roleFilter === 'anggota') active @endif"
                         wire:click="$set('roleFilter', 'anggota')" role="tab">
-                        <x-lucide-users class="me-2 icon" />
+                        
                         Sebagai Anggota
                     </button>
                 </li>
@@ -50,7 +50,7 @@
                         </div>
                         <div class="col-md-3">
                             <button type="button" class="btn btn-outline-secondary w-100" wire:click="resetFilters">
-                                <x-lucide-rotate-ccw class="icon me-2" />
+                                
                                 Reset
                             </button>
                         </div>
@@ -98,27 +98,27 @@
                             <td>
                                 @if ($isApproved)
                                     <span class="badge bg-success-lt text-success fw-bold d-inline-flex align-items-center">
-                                        <x-lucide-check-circle class="icon icon-sm me-1" /> Disetujui LPPM
+                                         Disetujui LPPM
                                     </span>
                                 @elseif ($proposal->logbook_rejection_notes)
                                     <span class="badge bg-orange-lt text-orange fw-bold d-inline-flex align-items-center" title="{{ $proposal->logbook_rejection_notes }}">
-                                        <x-lucide-rotate-ccw class="icon icon-sm me-1" /> Dikembalikan LPPM
+                                         Dikembalikan LPPM
                                     </span>
                                 @elseif ($hasScannedFile)
                                     <span class="badge bg-warning-lt text-warning fw-bold d-inline-flex align-items-center" title="Dosen telah mengunggah scan pengesahan basah">
-                                        <x-lucide-file-text class="icon icon-sm me-1" /> Menunggu Validasi (Berkas Scan)
+                                         Menunggu Validasi (Berkas Scan)
                                     </span>
                                 @elseif ($isSigned)
                                     <span class="badge bg-warning-lt text-warning fw-bold d-inline-flex align-items-center" title="Dosen telah menandatangani digital">
-                                        <x-lucide-file-signature class="icon icon-sm me-1" /> Menunggu Validasi (TTD Digital)
+                                         Menunggu Validasi (TTD Digital)
                                     </span>
                                 @elseif ($notesCount > 0)
                                     <span class="badge bg-info-lt text-info fw-bold d-inline-flex align-items-center">
-                                        <x-lucide-clock class="icon icon-sm me-1" /> Sedang Berjalan ({{ $notesCount }} Catatan)
+                                         Sedang Berjalan ({{ $notesCount }} Catatan)
                                     </span>
                                 @else
                                     <span class="badge bg-secondary-lt text-secondary d-inline-flex align-items-center">
-                                        <x-lucide-help-circle class="icon icon-sm me-1" /> Belum Diisi
+                                         Belum Diisi
                                     </span>
                                 @endif
                             </td>
@@ -144,7 +144,7 @@
                             <td>
                                 <a href="{{ route('community-service.daily-note.show', $proposal) }}"
                                     class="btn btn-primary btn-sm" wire:navigate.hover>
-                                    <x-lucide-book class="icon me-1" />
+                                    
                                     Buka Logbook
                                 </a>
                             </td>
@@ -153,7 +153,7 @@
                         <tr>
                             <td colspan="6" class="py-8 text-center">
                                 <div class="mb-3">
-                                    <x-lucide-inbox class="text-secondary icon icon-lg" />
+                                    
                                 </div>
                                 <p class="text-secondary">Tidak ada PKM yang ditemukan.</p>
                             </td>

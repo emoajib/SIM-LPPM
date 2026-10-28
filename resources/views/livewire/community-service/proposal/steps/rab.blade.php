@@ -20,11 +20,11 @@
     <div class="card-body">
         <div class="d-flex align-items-center justify-content-between mb-4">
             <div class="d-flex align-items-center">
-                <x-lucide-calculator class="icon me-3" />
+                
                 <h3 class="card-title mb-0">Rencana Anggaran Biaya (RAB)</h3>
             </div>
             <button type="button" wire:click="addBudgetItem" class="btn btn-primary btn-sm">
-                <x-lucide-plus class="icon" />
+                
                 Tambah Item
             </button>
         </div>
@@ -33,7 +33,7 @@
         <div class="alert alert-info mb-3" role="alert">
             <div class="d-flex">
                 <div>
-                    <x-lucide-info class="icon alert-icon" />
+                    
                 </div>
                 <div class="w-100">
                     <h4 class="alert-title">Batasan Persentase Kelompok Anggaran</h4>
@@ -110,7 +110,7 @@
                         <div class="alert alert-warning mb-0 mt-3" role="alert">
                             <div class="d-flex">
                                 <div>
-                                    <x-lucide-alert-triangle class="icon alert-icon" />
+                                    
                                 </div>
                                 <div>
                                     @php $semesterLabel = ucfirst($currentSemester); @endphp
@@ -152,7 +152,7 @@
             <div class="alert alert-danger" role="alert">
                 <div class="d-flex">
                     <div>
-                        <x-lucide-alert-circle class="icon alert-icon" />
+                        
                     </div>
                     <div>
                         <h4 class="alert-title">Peringatan: Alokasi Anggaran Melebihi Batas</h4>
@@ -169,7 +169,7 @@
         @error('form.budget_items')
             <div class="alert alert-danger mb-3">
                 <div class="d-flex">
-                    <x-lucide-alert-circle class="icon me-2" />
+                    
                     <div>{{ $message }}</div>
                 </div>
             </div>
@@ -177,7 +177,7 @@
 
         @if (empty($form->budget_items))
             <div class="alert alert-info">
-                <x-lucide-info class="icon me-2" />
+                
                 Belum ada item anggaran. Klik tombol "Tambah Item" untuk menambahkan.
             </div>
         @else
@@ -315,7 +315,7 @@
     <div class="card-body">
         <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
             <div class="d-flex align-items-center">
-                <x-lucide-calendar class="icon me-3" />
+                
                 <h3 class="card-title mb-0">Jadwal Pelaksanaan Pengabdian
                     <small class="text-muted fw-normal ms-2" style="font-size:0.85rem;">(Lampiran 3 PDF)</small>
                 </h3>
@@ -323,17 +323,17 @@
             <div class="d-flex gap-2">
                 <button type="button" wire:click="initDefaultSchedule" class="btn btn-outline-secondary btn-sm"
                     wire:confirm="Muat ulang template jadwal default?">
-                    <x-lucide-rotate-ccw class="icon icon-sm me-1" /> Template Default
+                     Template Default
                 </button>
                 <button type="button" wire:click="addScheduleItem" class="btn btn-primary btn-sm">
-                    <x-lucide-plus class="icon icon-sm me-1" /> Tambah Baris
+                     Tambah Baris
                 </button>
             </div>
         </div>
 
         @if (empty($form->schedule_items))
             <div class="text-center text-muted py-4 border rounded-2">
-                <x-lucide-calendar-x class="icon mb-2 text-secondary" style="width: 2rem; height: 2rem;" />
+                
                 <p class="mb-2">Belum ada jadwal kegiatan.</p>
                 <button type="button" wire:click="initDefaultSchedule" class="btn btn-sm btn-outline-primary">
                     <x-lucide-wand-2 class="icon icon-sm me-1" /> Generate Template Otomatis

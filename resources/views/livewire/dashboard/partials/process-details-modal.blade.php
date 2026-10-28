@@ -29,10 +29,10 @@
                                     Semua Jenis
                                 </button>
                                 <button type="button" class="btn {{ $processTypeFilter === 'research' ? 'btn-primary' : 'btn-outline-secondary bg-white' }}" wire:click="$set('processTypeFilter', 'research')">
-                                    <i class="ti ti-flask me-1"></i>Penelitian
+                                    Penelitian
                                 </button>
                                 <button type="button" class="btn {{ $processTypeFilter === 'community_service' ? 'btn-primary' : 'btn-outline-secondary bg-white' }}" wire:click="$set('processTypeFilter', 'community_service')">
-                                    <i class="ti ti-users me-1"></i>Pengabdian (PKM)
+                                    Pengabdian (PKM)
                                 </button>
                             </div>
                         </div>
@@ -41,12 +41,12 @@
                         <div class="col-12 col-md-4">
                             <div class="input-icon">
                                 <span class="input-icon-addon">
-                                    <i class="ti ti-search"></i>
+                                    
                                 </span>
                                 <input type="text" class="form-control form-control-sm bg-white" placeholder="Cari judul usulan / pengusul..." wire:model.live.debounce.300ms="processSearch">
                                 @if(!empty($processSearch))
                                     <span class="input-icon-addon pe-2" style="cursor: pointer;" wire:click="$set('processSearch', '')">
-                                        <i class="ti ti-x text-muted"></i>
+                                        
                                     </span>
                                 @endif
                             </div>
@@ -118,7 +118,7 @@
                                         <td class="ps-4">
                                             <a href="{{ $targetTitleUrl }}" target="_blank" class="fw-bold text-dark text-decoration-none lh-sm d-block mb-1 hover-primary" title="{{ $targetTitleTooltip }}: {{ $item->title }}">
                                                 {{ $item->title }}
-                                                <i class="ti ti-external-link text-muted ms-1 fs-4"></i>
+                                                
                                             </a>
                                             <div class="d-flex align-items-center text-muted small mt-1">
                                                 <div class="avatar avatar-xs me-2 border-0 shadow-sm {{ $isResearch ? 'bg-primary-lt text-primary' : 'bg-azure-lt text-azure' }}">
@@ -137,11 +137,11 @@
                                         <td>
                                             @if($isResearch)
                                                 <span class="badge bg-primary-lt fw-bold px-2 py-1 mb-1">
-                                                    <i class="ti ti-flask me-1"></i>Penelitian
+                                                    Penelitian
                                                 </span>
                                             @else
                                                 <span class="badge bg-azure-lt fw-bold px-2 py-1 mb-1">
-                                                    <i class="ti ti-users me-1"></i>Pengabdian
+                                                    Pengabdian
                                                 </span>
                                             @endif
                                             <div class="small text-muted text-truncate" style="max-width: 180px;" title="{{ $schemeName }}">
@@ -163,15 +163,15 @@
                                                 @endphp
                                                 @if($isCompletedReview)
                                                     <span class="badge bg-success text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-check me-1"></i>Selesai Direview
+                                                        Selesai Direview
                                                     </span>
                                                 @elseif($item->status->value === \App\Enums\ProposalStatus::UNDER_REVIEW->value)
                                                     <span class="badge bg-warning text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-clock me-1"></i>Sedang Direview
+                                                        Sedang Direview
                                                     </span>
                                                 @elseif($item->status->value === \App\Enums\ProposalStatus::WAITING_REVIEWER->value || $item->reviewers->isEmpty())
                                                     <span class="badge bg-azure text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-user-search me-1"></i>Menunggu Reviewer
+                                                        Menunggu Reviewer
                                                     </span>
                                                 @else
                                                     <span class="badge bg-{{ $item->status->color() }}-lt fw-bold px-2 py-1">
@@ -182,12 +182,12 @@
 
                                                 @if($item->reviewers->isNotEmpty())
                                                     <div class="small text-muted mt-1 text-truncate" style="max-width: 220px; font-size: 0.75rem;" title="{{ $item->reviewers->pluck('user.name')->filter()->join(', ') }}">
-                                                        <i class="ti ti-user-check me-1 text-primary"></i>
+                                                        
                                                         {{ $item->reviewers->pluck('user.name')->filter()->join(', ') }}
                                                     </div>
                                                 @else
                                                     <div class="small text-muted mt-1" style="font-size: 0.75rem;">
-                                                        <i class="ti ti-user-x me-1"></i>Belum ada reviewer
+                                                        Belum ada reviewer
                                                     </div>
                                                 @endif
 
@@ -199,25 +199,25 @@
                                                 @endphp
                                                 @if($completedMonevReview)
                                                     <span class="badge bg-success text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-check me-1"></i>Selesai Dimonitoring
+                                                        Selesai Dimonitoring
                                                     </span>
                                                     <div class="small text-muted mt-1" style="font-size: 0.75rem;">
                                                         Skor: <strong class="text-dark">{{ $completedMonevReview->score }}</strong> • {{ $completedMonevReview->reviewer?->name ?? 'Reviewer' }}
                                                     </div>
                                                 @elseif($firstMonevReview)
                                                     <span class="badge bg-warning text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-clock me-1"></i>Proses Monev
+                                                        Proses Monev
                                                     </span>
                                                     <div class="small text-muted mt-1 text-truncate" style="max-width: 200px; font-size: 0.75rem;">
                                                         Reviewer: {{ $firstMonevReview->reviewer?->name ?? '-' }}
                                                     </div>
                                                 @elseif($firstMonevLegacy)
                                                     <span class="badge bg-info text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-chart-line me-1"></i>Progress {{ $firstMonevLegacy->progress_percentage }}%
+                                                        Progress {{ $firstMonevLegacy->progress_percentage }}%
                                                     </span>
                                                 @else
                                                     <span class="badge bg-secondary-lt fw-bold px-2 py-1">
-                                                        <i class="ti ti-hourglass me-1"></i>Belum Dimonitoring
+                                                        Belum Dimonitoring
                                                     </span>
                                                 @endif
 
@@ -231,15 +231,15 @@
                                                 @endphp
                                                 @if($targetCount > 0 && $achievedCount >= $targetCount)
                                                     <span class="badge bg-success text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-award me-1"></i>{{ $achievedCount }}/{{ $targetCount }} Tercapai Penuh
+                                                        {{ $achievedCount }}/{{ $targetCount }} Tercapai Penuh
                                                     </span>
                                                 @elseif($achievedCount > 0)
                                                     <span class="badge bg-primary text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-check me-1"></i>{{ $achievedCount }}/{{ $targetCount }} Tercapai Sebagian
+                                                        {{ $achievedCount }}/{{ $targetCount }} Tercapai Sebagian
                                                     </span>
                                                 @else
                                                     <span class="badge bg-secondary-lt fw-bold px-2 py-1">
-                                                        <i class="ti ti-hourglass me-1"></i>Belum Ada Bukti
+                                                        Belum Ada Bukti
                                                     </span>
                                                 @endif
                                                 @if($targetCount > 0)
@@ -254,35 +254,35 @@
                                                         @foreach($allUploadedOutputs->take(3) as $out)
                                                             @if(!empty($out->video_url))
                                                                 <a href="{{ $out->video_url }}" target="_blank" class="badge bg-red-lt text-red text-decoration-none px-2 py-1" style="font-size: 0.7rem;" title="{{ $out->video_url }}">
-                                                                    <i class="ti ti-brand-youtube me-1"></i>{{ $out->platform ?: 'YouTube' }}
+                                                                    {{ $out->platform ?: 'YouTube' }}
                                                                 </a>
                                                             @elseif(!empty($out->journal_url) || !empty($out->article_url))
                                                                 <a href="{{ $out->journal_url ?: $out->article_url }}" target="_blank" class="badge bg-blue-lt text-blue text-decoration-none px-2 py-1" style="font-size: 0.7rem;" title="{{ $out->article_title ?: ($out->journal_url ?: $out->article_url) }}">
-                                                                    <i class="ti ti-link me-1"></i>{{ \Illuminate\Support\Str::limit($out->journal_title ?: 'Publikasi', 14) }}
+                                                                    {{ \Illuminate\Support\Str::limit($out->journal_title ?: 'Publikasi', 14) }}
                                                                 </a>
                                                             @elseif(!empty($out->doi))
                                                                 <a href="https://doi.org/{{ $out->doi }}" target="_blank" class="badge bg-purple-lt text-purple text-decoration-none px-2 py-1" style="font-size: 0.7rem;">
-                                                                    <i class="ti ti-bookmark me-1"></i>DOI
+                                                                    DOI
                                                                 </a>
                                                             @elseif(!empty($out->registration_number))
                                                                 <span class="badge bg-indigo-lt text-indigo px-2 py-1" style="font-size: 0.7rem;" title="No. HKI: {{ $out->registration_number }}">
-                                                                    <i class="ti ti-certificate me-1"></i>HKI
+                                                                    HKI
                                                                 </span>
                                                             @elseif(!empty($out->isbn))
                                                                 <span class="badge bg-teal-lt text-teal px-2 py-1" style="font-size: 0.7rem;" title="ISBN: {{ $out->isbn }}">
-                                                                    <i class="ti ti-book me-1"></i>Buku
+                                                                    Buku
                                                                 </span>
                                                             @elseif(!empty($out->media_url))
                                                                 <a href="{{ $out->media_url }}" target="_blank" class="badge bg-azure-lt text-azure text-decoration-none px-2 py-1" style="font-size: 0.7rem;">
-                                                                    <i class="ti ti-news me-1"></i>Media
+                                                                    Media
                                                                 </a>
                                                             @elseif(!empty($out->document_file) || $out->media->isNotEmpty())
                                                                 <span class="badge bg-secondary-lt text-dark px-2 py-1" style="font-size: 0.7rem;">
-                                                                    <i class="ti ti-file-text me-1"></i>Berkas
+                                                                    Berkas
                                                                 </span>
                                                             @else
                                                                 <span class="badge bg-primary-lt px-2 py-1" style="font-size: 0.7rem;">
-                                                                    <i class="ti ti-file-check me-1"></i>Bukti Dilaporkan
+                                                                    Bukti Dilaporkan
                                                                 </span>
                                                             @endif
                                                         @endforeach
@@ -299,54 +299,54 @@
                                                     @endphp
                                                     @if($repStatus === \App\Enums\ReportStatus::APPROVED)
                                                         <span class="badge bg-success text-white fw-bold px-2 py-1">
-                                                            <i class="ti ti-check me-1"></i>Disetujui LPPM
+                                                            Disetujui LPPM
                                                         </span>
                                                     @elseif($repStatus === \App\Enums\ReportStatus::APPROVED_BY_DEKAN)
                                                         <span class="badge bg-purple text-white fw-bold px-2 py-1">
-                                                            <i class="ti ti-clock-check me-1"></i>Disetujui Dekan
+                                                            Disetujui Dekan
                                                         </span>
                                                     @elseif($repStatus === \App\Enums\ReportStatus::SUBMITTED)
                                                         <span class="badge bg-primary text-white fw-bold px-2 py-1">
-                                                            <i class="ti ti-send me-1"></i>Diajukan
+                                                            Diajukan
                                                         </span>
                                                     @elseif($repStatus === \App\Enums\ReportStatus::REJECTED)
                                                         <span class="badge bg-danger text-white fw-bold px-2 py-1">
-                                                            <i class="ti ti-alert-circle me-1"></i>Revisi Laporan
+                                                            Revisi Laporan
                                                         </span>
                                                     @elseif($repStatus === \App\Enums\ReportStatus::DRAFT)
                                                         <span class="badge bg-warning text-white fw-bold px-2 py-1">
-                                                            <i class="ti ti-edit me-1"></i>Draf Laporan
+                                                            Draf Laporan
                                                         </span>
                                                     @endif
                                                 @else
                                                     <span class="badge bg-secondary-lt fw-bold px-2 py-1">
-                                                        <i class="ti ti-hourglass me-1"></i>Belum Lapor
+                                                        Belum Lapor
                                                     </span>
                                                 @endif
 
                                             @elseif($activeProcessType === 'catatan_harian_keuangan')
                                                 @if($item->logbook_approved_at)
                                                     <span class="badge bg-success text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-check me-1"></i>LPJ Disahkan
+                                                        LPJ Disahkan
                                                     </span>
                                                 @elseif($item->daily_notes_count > 0 || $item->hasMedia('financial_report_scan') || $item->hasMedia('logbook_scan'))
                                                     <span class="badge bg-warning text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-clock me-1"></i>Menunggu Pengesahan
+                                                        Menunggu Pengesahan
                                                     </span>
                                                 @else
                                                     <span class="badge bg-secondary-lt fw-bold px-2 py-1">
-                                                        <i class="ti ti-minus me-1"></i>Belum Ada Catatan
+                                                        Belum Ada Catatan
                                                     </span>
                                                 @endif
 
                                             @elseif($activeProcessType === 'perbaikan_usulan')
                                                 @if($item->status->value === \App\Enums\ProposalStatus::REVISION_SUBMITTED->value)
                                                     <span class="badge bg-purple text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-send me-1"></i>Revisi Diajukan
+                                                        Revisi Diajukan
                                                     </span>
                                                 @else
                                                     <span class="badge bg-warning text-white fw-bold px-2 py-1">
-                                                        <i class="ti ti-alert-triangle me-1"></i>Perlu Revisi Dosen
+                                                        Perlu Revisi Dosen
                                                     </span>
                                                 @endif
 
@@ -365,7 +365,7 @@
                                                     {{ $item->reviewers->count() }} Reviewer Terdaftar
                                                 </div>
                                                 <a href="{{ $showRoute }}" target="_blank" class="btn btn-outline-warning btn-sm py-0 px-2" style="font-size: 0.75rem;">
-                                                    <i class="ti ti-clipboard-check me-1"></i>Buka Usulan
+                                                    Buka Usulan
                                                 </a>
 
                                             @elseif($activeProcessType === 'monev')
@@ -373,7 +373,7 @@
                                                     Tahun Akademik: {{ $item->academic_year ?? $item->start_year }}
                                                 </div>
                                                 <a href="{{ $showRoute }}" target="_blank" class="btn btn-outline-info btn-sm py-0 px-2" style="font-size: 0.75rem;">
-                                                    <i class="ti ti-chart-dots me-1"></i>Buka Usulan
+                                                    Buka Usulan
                                                 </a>
 
                                             @elseif($activeProcessType === 'iku')
@@ -387,14 +387,14 @@
                                                 </div>
                                                 @if($canOpenFinalReport)
                                                     <a href="{{ $finalReportRoute }}" target="_blank" class="btn btn-outline-primary btn-sm py-0 px-2" style="font-size: 0.75rem;" title="Buka Laporan Akhir & Bukti Luaran">
-                                                        <i class="ti ti-file-certificate me-1"></i>Buka Laporan
+                                                        Buka Laporan
                                                     </a>
                                                 @else
                                                     <span class="badge bg-secondary-lt fw-normal py-1 px-2 mb-1" style="font-size: 0.75rem;">Belum Ada Laporan</span>
                                                 @endif
                                                 <div class="mt-1">
                                                     <a href="{{ $showRoute }}" target="_blank" class="text-muted small text-decoration-none" style="font-size: 0.7rem;" title="Buka Rincian Usulan Asli">
-                                                        <i class="ti ti-eye me-1"></i>Detail Usulan
+                                                        Detail Usulan
                                                     </a>
                                                 </div>
 
@@ -412,7 +412,7 @@
                                                             : route('community-service.daily-note.show', $item->id);
                                                     @endphp
                                                     <a href="{{ $dailyNoteRoute }}" target="_blank" class="btn btn-outline-indigo btn-sm py-0 px-2" style="font-size: 0.75rem;">
-                                                        <i class="ti ti-receipt me-1"></i>Buka Logbook
+                                                        Buka Logbook
                                                     </a>
                                                 </div>
 
@@ -427,12 +427,12 @@
                                                             : route('community-service.final-report.show', $item->id);
                                                     @endphp
                                                     <a href="{{ $finalReportRoute }}" target="_blank" class="btn btn-outline-success btn-sm py-0 px-2" style="font-size: 0.75rem;">
-                                                        <i class="ti ti-file-text me-1"></i>Buka Laporan
+                                                        Buka Laporan
                                                     </a>
                                                 @else
                                                     <span class="text-muted small d-block">Belum ada berkas</span>
                                                     <a href="{{ $showRoute }}" target="_blank" class="btn btn-outline-secondary btn-sm py-0 px-2 mt-1" style="font-size: 0.75rem;">
-                                                        <i class="ti ti-eye me-1"></i>Detail Usulan
+                                                        Detail Usulan
                                                     </a>
                                                 @endif
 
@@ -446,7 +446,7 @@
                                                         : route('community-service.proposal-revision.show', $item->id);
                                                 @endphp
                                                 <a href="{{ $revisionRoute }}" target="_blank" class="btn btn-outline-warning btn-sm py-0 px-2" style="font-size: 0.75rem;">
-                                                    <i class="ti ti-edit me-1"></i>Buka Revisi
+                                                    Buka Revisi
                                                 </a>
 
                                             @else
@@ -454,7 +454,7 @@
                                                     Diajukan: {{ $item->created_at->format('d/m/Y') }}
                                                 </div>
                                                 <a href="{{ $showRoute }}" target="_blank" class="btn btn-outline-primary btn-sm py-0 px-2" style="font-size: 0.75rem;">
-                                                    <i class="ti ti-eye me-1"></i>Buka Proposal
+                                                    Buka Proposal
                                                 </a>
                                             @endif
                                         </td>
@@ -462,7 +462,7 @@
                                 @empty
                                     <tr>
                                         <td colspan="4" class="text-center py-5 text-muted">
-                                            <i class="ti ti-inbox fs-1 d-block mb-2 text-secondary"></i>
+                                            
                                             <div class="fw-semibold">Tidak ada usulan yang sesuai dengan filter</div>
                                             <div class="small mt-1">Coba gunakan kata kunci pencarian lain atau pilih tab jenis yang berbeda.</div>
                                         </td>
@@ -479,7 +479,7 @@
                         Menampilkan <strong>{{ $this->processModalData->count() }}</strong> usulan penelitian & PKM
                     </div>
                     <button type="button" class="btn btn-secondary btn-sm px-4" wire:click="closeProcessModal">
-                        <i class="ti ti-x me-1"></i>Tutup
+                        Tutup
                     </button>
                 </div>
             </div>

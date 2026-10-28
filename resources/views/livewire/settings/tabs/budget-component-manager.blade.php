@@ -5,14 +5,14 @@
         <h3 class="card-title">Komponen Anggaran</h3>
         <button type="button" class="btn btn-primary" wire:click='create' data-bs-toggle="modal"
             data-bs-target="#modal-budget-component">
-            <x-lucide-plus class="icon" />
+            
             Tambah Komponen Anggaran
         </button>
     </div>
     <div class="d-flex gap-2 px-3 pb-3">
         <div class="input-icon flex-grow-1">
             <span class="input-icon-addon">
-                <x-lucide-search class="icon" />
+                
             </span>
             <input type="text" class="form-control" placeholder="Cari nama/kode/unit..."
                 wire:model.live.debounce.300ms="search">

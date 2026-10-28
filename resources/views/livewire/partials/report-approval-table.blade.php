@@ -49,7 +49,7 @@
                             </td>
                             <td class="text-center">
                                 <span class="badge bg-warning text-white fw-bold px-2 py-1 shadow-sm">
-                                    <i class="ti ti-alert-triangle me-1"></i>Belum Laporan
+                                    Belum Laporan
                                 </span>
                             </td>
                             <td>
@@ -63,7 +63,7 @@
                                         : route('community-service.proposal.show', $proposal);
                                 @endphp
                                 <a href="{{ $proposalRoute }}" class="btn btn-sm btn-outline-warning" wire:navigate.hover>
-                                    <x-lucide-eye class="icon me-1" /> Detail
+                                     Detail
                                 </a>
                             </td>
                         </tr>
@@ -71,7 +71,7 @@
                         <tr>
                             <td colspan="6" class="py-5 text-center text-muted">
                                 <div class="empty bg-transparent">
-                                    <div class="empty-icon text-muted opacity-25"><i class="ti ti-circle-check fs-1"></i></div>
+                                    <div class="empty-icon text-muted opacity-25"></div>
                                     <p class="empty-title">Semua proposal sudah mengajukan laporan akhir.</p>
                                 </div>
                             </td>
@@ -111,19 +111,19 @@
                             <td class="text-center">
                                 @if($report->status === \App\Enums\ReportStatus::APPROVED_BY_DEKAN)
                                     <span class="badge bg-purple text-white fw-bold px-2 py-1 shadow-sm">
-                                        <i class="ti ti-check me-1"></i>Siap Disahkan LPPM
+                                        Siap Disahkan LPPM
                                     </span>
                                 @elseif($report->status === \App\Enums\ReportStatus::SUBMITTED)
                                     <span class="badge bg-info text-white fw-bold px-2 py-1 shadow-sm">
-                                        <i class="ti ti-clock me-1"></i>Menunggu Dekan
+                                        Menunggu Dekan
                                     </span>
                                 @elseif($report->status === \App\Enums\ReportStatus::APPROVED)
                                     <span class="badge bg-success text-white fw-bold px-2 py-1 shadow-sm">
-                                        <i class="ti ti-check-double me-1"></i>Sudah Disahkan
+                                        Sudah Disahkan
                                     </span>
                                 @elseif($report->status === \App\Enums\ReportStatus::REJECTED)
                                     <span class="badge bg-danger text-white fw-bold px-2 py-1 shadow-sm">
-                                        <i class="ti ti-alert-circle me-1"></i>Perlu Revisi
+                                        Perlu Revisi
                                     </span>
                                 @else
                                     <span class="badge bg-secondary text-white fw-bold px-2 py-1">
@@ -141,7 +141,7 @@
                                         : route('community-service.final-report.show', $report->proposal);
                                 @endphp
                                 <a href="{{ $showRoute }}" class="btn btn-sm btn-primary" wire:navigate.hover>
-                                    <x-lucide-eye class="icon me-1" /> Tinjau
+                                     Tinjau
                                 </a>
                             </td>
                         </tr>
@@ -149,7 +149,7 @@
                         <tr>
                             <td colspan="6" class="py-5 text-center text-muted">
                                 <div class="empty bg-transparent">
-                                    <div class="empty-icon text-muted opacity-25"><i class="ti ti-file-off fs-1"></i></div>
+                                    <div class="empty-icon text-muted opacity-25"></div>
                                     <p class="empty-title">Tidak ada laporan akhir yang sesuai filter.</p>
                                     <p class="empty-subtitle text-muted">Silakan ubah kata kunci atau filter status pelaporan.</p>
                                 </div>

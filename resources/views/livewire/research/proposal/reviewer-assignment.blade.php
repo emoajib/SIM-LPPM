@@ -1,7 +1,7 @@
 <div>
     <!-- Add Button -->
     <button type="button" class="mb-3 btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-assign-reviewer">
-        <x-lucide-user-plus class="icon" />
+        
         Tugaskan Reviewer
     </button>
 
@@ -39,7 +39,7 @@
                 </button>
                 <button type="submit" form="reviewer-assignment-form" class="btn btn-primary" wire:loading.attr="disabled"
                     data-bs-dismiss="modal">
-                    <x-lucide-send class="icon" />
+                    
                     <span wire:loading.remove>Tugaskan</span>
                     <span wire:loading>Menyimpan...</span>
                 </button>
@@ -107,7 +107,7 @@
         <x-tabler.modal id="deleteReviewerModal" title="Hapus Reviewer?">
             <x-slot:body>
                 <div class="py-4 text-center">
-                    <x-lucide-alert-circle class="mb-2 text-danger icon" style="width: 3rem; height: 3rem;" />
+                    
                     <h3>Hapus Reviewer?</h3>
                     <div class="text-secondary">
                         Apakah Anda yakin ingin menghapus reviewer dari proposal ini?

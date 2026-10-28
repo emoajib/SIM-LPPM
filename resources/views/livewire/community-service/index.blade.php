@@ -11,13 +11,13 @@
                 <div class="btn-list">
                     @if ($this->canCreateProposal()['can_create'])
                         <a href="{{ route('community-service.create') }}" class="btn btn-primary d-none d-sm-inline-block">
-                            <x-lucide-plus class="icon" />
+                            
                             {{ __('Ajukan Pengabdian Baru') }}
                         </a>
                     @else
                         <span class="d-inline-block" tabindex="0" data-bs-toggle="tooltip" title="{{ $this->quotaTooltip }}">
                             <button class="btn btn-primary d-none d-sm-inline-block" disabled>
-                                <x-lucide-plus class="icon" />
+                                
                                 {{ __('Ajukan Pengabdian Baru') }}
                             </button>
                         </span>
@@ -51,7 +51,7 @@
                 <!-- Reset Button -->
                 <div class="col-md-3">
                     <button type="button" class="btn-outline-secondary w-100 btn" wire:click="resetFilters">
-                        <x-lucide-rotate-ccw class="icon" />
+                        
                         {{ __('Reset') }}
                     </button>
                 </div>
@@ -190,7 +190,7 @@
                             <td colspan="6" class="text-center py-4">
                                 <div class="empty">
                                     <div class="empty-icon">
-                                        <x-lucide-search class="icon" />
+                                        
                                     </div>
                                     <p class="empty-title">{{ __('Tidak ada data ditemukan') }}</p>
                                     <p class="empty-subtitle text-secondary">

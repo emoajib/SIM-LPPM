@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col-md-8">
             <h3 class="card-title mb-3">
-                <x-lucide-cloud-upload class="icon me-1" />
+                
                 Pulihkan Data
             </h3>
 
@@ -13,7 +13,7 @@
 
             <div class="mb-4">
                 <div class="alert alert-warning d-flex align-items-center gap-2" role="alert">
-                    <x-lucide-alert-triangle class="icon" />
+                    
                     <div>
                         <strong>Perhatian:</strong>
                         Mode <strong>Sinkron</strong> akan menghapus data lama dan mengganti dengan data backup.
@@ -28,7 +28,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h4 class="card-title">
-                                <x-lucide-database class="icon me-1" />
+                                
                                 Database
                             </h4>
                             <p class="text-secondary small">
@@ -51,7 +51,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h4 class="card-title">
-                                <x-lucide-archive class="icon me-1" />
+                                
                                 Storage
                             </h4>
                             <p class="text-secondary small">
@@ -76,12 +76,12 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <h4 class="card-title mb-0 d-flex align-items-center">
-                            <x-lucide-hard-drive class="icon me-2 text-primary" />
+                            
                             File Cadangan di Server (Direct Restore / &gt;512MB)
                         </h4>
                         <button type="button" wire:click="scanServerFiles" class="btn btn-sm btn-outline-secondary" wire:loading.attr="disabled">
                             <span wire:loading.remove wire:target="scanServerFiles">
-                                <x-lucide-refresh-cw class="icon icon-sm me-1" /> Segarkan
+                                 Segarkan
                             </span>
                             <span wire:loading wire:target="scanServerFiles">
                                 <span class="spinner-border spinner-border-sm me-1"></span> Memindai...
@@ -144,7 +144,7 @@
                         </div>
                     @else
                         <div class="text-center py-3 text-muted bg-light rounded">
-                            <x-lucide-folder-open class="icon mb-1 text-secondary" style="width: 28px; height: 28px;" />
+                            
                             <div class="small">Belum ada file cadangan (.sql / .zip) di direktori <code>storage/app/backup/</code>.</div>
                         </div>
                     @endif
@@ -153,7 +153,7 @@
 
             @if ($uploadErrorMessage)
                 <div class="alert alert-danger mb-4">
-                    <x-lucide-alert-circle class="icon me-2" />
+                    
                     {{ $uploadErrorMessage }}
                 </div>
             @endif
@@ -260,12 +260,12 @@
                         <h4 class="subheader">Preview File ZIP</h4>
                         @if ($preview['valid'])
                             <div class="alert alert-success d-flex align-items-center gap-2">
-                                <x-lucide-check-circle class="icon" />
+                                
                                 <div>File ZIP aman untuk dipulihkan.</div>
                             </div>
                         @else
                             <div class="alert alert-danger d-flex align-items-center gap-2">
-                                <x-lucide-alert-octagon class="icon" />
+                                
                                 <div>
                                     <strong>File ZIP mengandung masalah:</strong>
                                     <ul class="mb-0 mt-1">
@@ -315,7 +315,7 @@
 
                         @if ($preview['blocked_count'] > 0)
                             <div class="alert alert-info d-flex align-items-center gap-2">
-                                <x-lucide-info class="icon" />
+                                
                                 <div>
                                     <strong>{{ $preview['blocked_count'] }} statement</strong> diblokir (DROP, ALTER, dll.)
                                     akan dilewati.
@@ -325,7 +325,7 @@
 
                         @if ($replaceMode && !empty($preservedTables))
                             <div class="alert alert-info d-flex align-items-center gap-2">
-                                <x-lucide-shield class="icon" />
+                                
                                 <div>
                                     <strong>Tabel sistem dipertahankan:</strong>
                                     {{ implode(', ', array_keys($preservedTables)) }}
@@ -337,7 +337,7 @@
                         @if ($hasWarnings)
                             <div class="alert alert-warning border-start border-4 border-warning mb-3" role="alert">
                                 <div class="d-flex gap-2">
-                                    <x-lucide-alert-triangle class="icon mt-1 flex-shrink-0" />
+                                    
                                     <div>
                                         <strong class="d-block mb-1">⚠️ Periksa Kembali</strong>
                                         <p class="small mb-2">Ditemukan potensi ketidakcocokan kolom. Data mungkin tidak ter-restore sempurna.</p>
@@ -362,7 +362,7 @@
                         @disabled($isRunning)
                     >
                         <span wire:loading.remove>
-                            <x-lucide-play class="icon me-1" />
+                            
                             Pulihkan Data
                         </span>
                         <span wire:loading>
@@ -378,7 +378,7 @@
                     class="btn btn-outline-secondary"
                     @disabled($isRunning)
                 >
-                    <x-lucide-x class="icon me-1" />
+                    
                     Batal
                 </button>
             @endif
@@ -400,14 +400,14 @@
                     <h4 class="subheader">Yang Akan Dipulihkan</h4>
                     <ul class="list-unstyled mb-0 mt-2">
                         <li class="py-1 d-flex align-items-center gap-2">
-                            <x-lucide-database class="icon" />
+                            
                             <div>
                                 Database
                                 <small class="text-secondary d-block ms-0">File .sql → INSERT into tabel</small>
                             </div>
                         </li>
                         <li class="py-1 d-flex align-items-center gap-2">
-                            <x-lucide-archive class="icon" />
+                            
                             <div>
                                 File Storage
                                 <small class="text-secondary d-block ms-0">File .zip → extract ke storage</small>
@@ -421,7 +421,7 @@
                     <div class="d-flex flex-column gap-2 mt-2">
                         <div class="alert alert-info mb-0 py-2">
                             <div class="d-flex align-items-center gap-2">
-                                <x-lucide-shield class="icon" />
+                                
                                 <small>
                                     <strong>Keamanan:</strong><br>
                                     Statement berbahaya (DROP, ALTER, DELETE) otomatis diblokir.
@@ -431,7 +431,7 @@
 
                         <div class="alert alert-info mb-0 py-2">
                             <div class="d-flex align-items-center gap-2">
-                                <x-lucide-database class="icon" />
+                                
                                 <small>
                                     <strong>Backup Otomatis:</strong><br>
                                     Database saat ini akan di-backup sebelum restore.
@@ -441,7 +441,7 @@
 
                         <div class="alert alert-secondary mb-0 py-2">
                             <div class="d-flex align-items-center gap-2">
-                                <x-lucide-terminal class="icon" />
+                                
                                 <small>
                                     <strong>Alternatif CLI:</strong><br>
                                     <code class="d-block mt-1">
