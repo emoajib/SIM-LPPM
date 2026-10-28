@@ -68,13 +68,13 @@
                                 @endphp
                                 @if($isImage)
                                     <p class="text-success mb-1">
-                                        <i class="icon icon-tabler icon-tabler-photo me-1"></i>
+                                        <i class="icon ti ti-photo me-1"></i>
                                         Gambar terupload:
                                     </p>
                                     <img src="{{ $existingFile['url'] }}?view=1" class="img-fluid rounded mb-2" style="max-height:200px">
                                 @else
                                     <p class="text-success mb-1">
-                                        <i class="icon icon-tabler icon-tabler-file-check me-1"></i>
+                                        <i class="icon ti ti-file-check me-1"></i>
                                         File terupload:
                                     </p>
                                 @endif
@@ -82,11 +82,11 @@
                                 <p class="text-muted small">{{ number_format($existingFile['size'] / 1024, 1) }} KB</p>
                                 <div class="d-flex gap-2">
                                     <a href="{{ $existingFile['url'] }}" class="btn btn-sm btn-outline-primary" target="_blank">
-                                        <i class="icon icon-tabler icon-tabler-download"></i> Download
+                                        <i class="icon ti ti-download"></i> Download
                                     </a>
                                     <button type="button" class="btn btn-sm btn-outline-danger"
                                         wire:click="removeFile" wire:confirm="Hapus file ini?">
-                                        <i class="icon icon-tabler icon-tabler-trash"></i> Hapus
+                                        <i class="icon ti ti-trash"></i> Hapus
                                     </button>
                                 </div>
                             </div>
@@ -101,7 +101,7 @@
                             <small class="text-muted">Format: PDF, DOC, DOCX, JPG, PNG, WebP, GIF. Maks 10 MB</small>
                             @error('file') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             <div wire:loading wire:target="file" class="text-info small mt-1">
-                                <i class="icon icon-tabler icon-tabler-loader icon-spin"></i> Mengupload...
+                                <i class="icon ti ti-loader icon-spin"></i> Mengupload...
                             </div>
                         </div>
                     </div>
@@ -111,7 +111,7 @@
                     <div class="card-body">
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary">
-                                <i class="icon icon-tabler icon-tabler-device-floppy me-1"></i>
+                                <i class="icon ti ti-device-floppy me-1"></i>
                                 {{ $isEdit ? 'Simpan Perubahan' : 'Buat Manual Book' }}
                             </button>
                             <a href="{{ route('admin-lppm.manual-books.admin.index') }}" class="btn btn-outline-secondary" wire:navigate>

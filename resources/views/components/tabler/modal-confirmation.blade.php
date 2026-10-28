@@ -22,11 +22,11 @@
     };
 
     $iconClasses = match ($variant) {
-        'danger' => 'icon-tabler icon-tabler-trash',
-        'warning' => 'icon-tabler icon-tabler-alert-triangle',
-        'info' => 'icon-tabler icon-tabler-info-circle',
-        'primary' => 'icon-tabler icon-tabler-check',
-        default => 'icon-tabler icon-tabler-trash',
+        'danger' => 'ti ti-trash',
+        'warning' => 'ti ti-alert-triangle',
+        'info' => 'ti ti-info-circle',
+        'primary' => 'ti ti-check',
+        default => 'ti ti-trash',
     };
 @endphp
 

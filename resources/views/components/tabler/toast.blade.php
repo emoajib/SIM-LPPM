@@ -36,10 +36,10 @@
     };
 
     $variantIconClasses = match ($variant) {
-        'success' => 'icon-tabler icon-tabler-check text-success',
-        'danger' => 'icon-tabler icon-tabler-x text-danger',
-        'warning' => 'icon-tabler icon-tabler-alert-triangle text-warning',
-        'info' => 'icon-tabler icon-tabler-info-circle text-info',
+        'success' => 'ti ti-check text-success',
+        'danger' => 'ti ti-x text-danger',
+        'warning' => 'ti ti-alert-triangle text-warning',
+        'info' => 'ti ti-info-circle text-info',
         default => '',
     };
 @endphp
@@ -54,7 +54,7 @@
                 @elseif ($icon)
                     <x-lucide-{{ $icon }} class="me-2 icon" />
                 @elseif ($variant !== 'default')
-                    <i class="{{ $variantIconClasses }} me-2"></i>
+                    <i class="{{ $variantIconClasses }} me-2" aria-hidden="true"></i>
                 @endif
 
                 @if ($title)

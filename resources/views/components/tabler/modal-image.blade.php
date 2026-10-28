@@ -46,20 +46,20 @@
                 @if($zoomable || $downloadable)
                     <div class="image-actions d-flex gap-2">
                         @if($zoomable)
-                            <button type="button" class="btn btn-sm btn-light" @click="zoomOut">
-                                <i class="icon-tabler icon-tabler-zoom-out"></i>
+                            <button type="button" class="btn btn-sm btn-light" title="Perkecil" aria-label="Perkecil" @click="zoomOut">
+                                <i class="ti ti-zoom-out" aria-hidden="true"></i>
                             </button>
-                            <button type="button" class="btn btn-sm btn-light" @click="resetZoom">
+                            <button type="button" class="btn btn-sm btn-light" title="Reset zoom" aria-label="Reset zoom" @click="resetZoom">
                                 100%
                             </button>
-                            <button type="button" class="btn btn-sm btn-light" @click="zoomIn">
-                                <i class="icon-tabler icon-tabler-zoom-in"></i>
+                            <button type="button" class="btn btn-sm btn-light" title="Perbesar" aria-label="Perbesar" @click="zoomIn">
+                                <i class="ti ti-zoom-in" aria-hidden="true"></i>
                             </button>
                         @endif
 
                         @if($downloadable)
                             <button type="button" class="btn btn-sm btn-light" @click="downloadImage">
-                                <i class="icon-tabler icon-tabler-download"></i>
+                                <i class="ti ti-download"></i>
                                 {{ $downloadText }}
                             </button>
                         @endif
