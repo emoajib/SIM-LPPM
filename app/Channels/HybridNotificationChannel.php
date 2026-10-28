@@ -2,9 +2,9 @@
 
 namespace App\Channels;
 
+use App\Models\NotificationLog;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Log;
-use App\Models\NotificationLog;
 use Illuminate\Support\Facades\Notification as LaravelNotification;
 
 class HybridNotificationChannel
@@ -13,7 +13,6 @@ class HybridNotificationChannel
      * Send the notification.
      *
      * @param  mixed  $notifiable
-     * @param  mixed  $notification
      * @return void
      */
     public function send($notifiable, Notification $notification)
@@ -27,10 +26,10 @@ class HybridNotificationChannel
             try {
                 // In a real implementation, you would call your WhatsApp service here
                 // e.g., $this->whatsappService->send($whatsappNumber, $notification->toWhatsApp($notifiable));
-                
+
                 // For now, we simulate success logic or you can integrate an actual API.
                 // If you have a WhatsApp driver, call it here.
-                
+
                 // Example logic (placeholder):
                 // $success = $this->whatsappService->send($whatsappNumber, $notification->toWhatsapp($notifiable));
                 // if ($success) {
@@ -40,9 +39,8 @@ class HybridNotificationChannel
 
                 // If we reach here, WhatsApp failed or wasn't configured correctly
                 throw new \Exception('WhatsApp service unavailable or failed');
-
             } catch (\Exception $e) {
-                Log::error("WhatsApp notification failed: " . $e->getMessage());
+                Log::error('WhatsApp notification failed: '.$e->getMessage());
                 $this->log($notifiable, 'whatsapp', $whatsappNumber, $notification, 'failed', $e->getMessage());
                 // Fallback to Email is implicit as we won't 'return' here
             }
@@ -53,7 +51,7 @@ class HybridNotificationChannel
             LaravelNotification::route('mail', $recipient)->notify($notification);
             $this->log($notifiable, 'mail', $recipient, $notification, 'success');
         } catch (\Exception $e) {
-            Log::error("Email notification failed: " . $e->getMessage());
+            Log::error('Email notification failed: '.$e->getMessage());
             $this->log($notifiable, 'mail', $recipient, $notification, 'failed', $e->getMessage());
         }
     }
@@ -69,7 +67,7 @@ class HybridNotificationChannel
             'recipient' => $recipient,
             'notification_type' => get_class($notification),
             'payload' => [
-                'data' => $notification->toMail($notifiable)->toArray(), // Basic payload extraction
+                'data' => json_encode($notification), // Basic payload extraction
             ],
             'status' => $status,
             'error_message' => $error,

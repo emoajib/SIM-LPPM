@@ -5,23 +5,36 @@ namespace App\Livewire\Settings;
 use App\Models\NotificationSetting;
 use App\Services\NotificationConfigService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 
 class NotificationConfig extends Component
 {
     public string $mailHost = '';
+
     public string $mailPort = '587';
+
     public string $mailUsername = '';
+
     public string $mailPassword = '';
+
     public string $mailEncryption = 'tls';
+
     public string $mailFromAddress = '';
+
     public string $mailFromName = '';
+
     public string $waApiUrl = '';
+
     public string $waApiKey = '';
+
     public string $waSenderId = '';
+
     public string $testEmail = '';
+
     public string $testPhone = '';
+
     public ?string $message = null;
 
     public function mount(): void
@@ -85,12 +98,12 @@ class NotificationConfig extends Component
     {
         $this->validate(['testPhone' => 'required|string']);
         try {
-            $url = (string) app(\App\Services\NotificationConfigService::class)->get('WHATSAPP_API_URL', '');
+            $url = (string) app(NotificationConfigService::class)->get('WHATSAPP_API_URL', '');
             if ($url === '') {
                 throw new \Exception('WHATSAPP_API_URL belum diisi');
             }
-            $response = \Illuminate\Support\Facades\Http::withHeaders([
-                'Authorization' => 'Bearer '.app(\App\Services\NotificationConfigService::class)->get('WHATSAPP_API_KEY', ''),
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer '.app(NotificationConfigService::class)->get('WHATSAPP_API_KEY', ''),
             ])->post($url, [
                 'to' => $this->testPhone,
                 'message' => 'Test notifikasi WhatsApp dari SIM LPPM ITSNU.',

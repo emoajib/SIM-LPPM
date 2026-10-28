@@ -20,6 +20,7 @@ class NotificationSetting extends Model
                 return null;
             }
         }
+
         return $value;
     }
 
@@ -35,6 +36,7 @@ class NotificationSetting extends Model
     public static function get(string $key, $default = null)
     {
         $row = static::where('key', $key)->first();
+
         return $row ? $row->value : $default;
     }
 
