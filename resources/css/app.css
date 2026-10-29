@@ -334,3 +334,54 @@ body.theme-modern .glow-cyan-text {
     color: #38bdf8;
     text-shadow: 0 0 16px rgba(56, 189, 248, 0.6);
 }
+
+/* === Theme: Modern — site-wide overrides === */
+body.theme-modern .navbar {
+    background: rgba(15, 23, 42, 0.9) !important;
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+}
+body.theme-modern .navbar .navbar-brand span,
+body.theme-modern .navbar .nav-link {
+    color: #e2e8f0 !important;
+}
+body.theme-modern .page-header {
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.15) 0%, rgba(2, 132, 199, 0.05) 100%);
+    border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+}
+body.theme-modern .table {
+    color: #e2e8f0;
+}
+body.theme-modern .table thead th {
+    background: rgba(14, 165, 233, 0.1);
+    color: #38bdf8;
+    border-bottom: 1px solid rgba(56, 189, 248, 0.3);
+}
+body.theme-modern .form-control,
+body.theme-modern .form-select {
+    background: rgba(15, 23, 42, 0.6);
+    color: #e2e8f0;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+}
+body.theme-modern .form-control:focus,
+body.theme-modern .form-select:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 0.2rem rgba(56, 189, 248, 0.25);
+}
+body.theme-modern .sidebar {
+    background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+    border-right: 1px solid rgba(56, 189, 248, 0.2);
+}
+body.theme-modern .sidebar .nav-link {
+    color: #cbd5e1;
+}
+body.theme-modern .sidebar .nav-link.active,
+body.theme-modern .sidebar .nav-link:hover {
+    color: #38bdf8;
+    background: rgba(14, 165, 233, 0.1);
+}
+body.theme-modern .footer {
+    background: rgba(15, 23, 42, 0.9);
+    border-top: 1px solid rgba(56, 189, 248, 0.2);
+    color: #94a3b8;
+}
