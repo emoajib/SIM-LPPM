@@ -82,9 +82,9 @@
                         };
                     @endphp
                     @if ($roles->count() > 0)
-                        <div class="nav-item dropdown">
-                            <a href="#" class="d-flex align-items-center px-2 nav-link" data-bs-toggle="dropdown"
-                                aria-label="Switch role" data-bs-auto-close="outside" aria-expanded="false">
+                        <div class="nav-item dropdown" x-data="{ open: false }" @click.outside="open = false">
+                            <a href="#" class="d-flex align-items-center px-2 nav-link" @click.prevent="open = !open"
+                                aria-label="Switch role" :aria-expanded="open">
                                 @if ($activeRole)
                                     <div class="d-flex align-items-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
@@ -98,7 +98,7 @@
                                 @endif
                             </a>
                             @if ($roles->count() > 1)
-                                <div class="dropdown-menu dropdown-menu-arrow dropdown-menu-end">
+                                <div class="dropdown-menu dropdown-menu-arrow dropdown-menu-end" x-show="open" x-transition @click="open = false" style="display: none;">
                                     <div class="dropdown-item-text">
                                         <div class="text-secondary small">Pilih Peran:</div>
                                     </div>
@@ -151,7 +151,7 @@
                                     @endforeach
                                 </div>
                             @else
-                                <div class="dropdown-menu dropdown-menu-arrow dropdown-menu-end">
+                                <div class="dropdown-menu dropdown-menu-arrow dropdown-menu-end" x-show="open" x-transition @click="open = false" style="display: none;">
                                     <div class="text-muted dropdown-item-text small">
                                         Hanya memiliki satu peran
                                     </div>
