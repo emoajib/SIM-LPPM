@@ -87,7 +87,7 @@ trait HasProcessDetailsModal
         return match ($this->activeProcessType) {
             'usulan' => 'Data Usulan Penelitian & Pengabdian',
             'perbaikan_usulan' => 'Data Perbaikan Usulan (Revisi)',
-            'catatan_harian_keuangan' => 'Data Catatan Harian & Laporan Keuangan (LPJ)',
+            'catatan_harian_keuangan' => 'Data Realisasi Anggaran Data Catatan Harian & Laporan Keuangan (LPJ) Laporan Keuangan (LPJ)',
             'laporan_akhir' => 'Data Laporan Akhir Penelitian & Pengabdian',
             'review' => 'Data Progress Review Proposal',
             'monev' => 'Data Progress Monitoring & Evaluasi (Monev)',

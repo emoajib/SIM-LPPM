@@ -4,7 +4,7 @@
         <div class="card-header bg-azure-lt d-flex justify-content-between align-items-center py-2">
             <h4 class="card-title mb-0 text-azure d-flex align-items-center">
                 
-                Lembar Pengesahan Catatan Harian & Keuangan (Tanda Tangan & Cap Basah)
+                Lembar Pengesahan Realisasi Anggaran Lembar Pengesahan Catatan Harian & Keuangan Keuangan (Tanda Tangan & Cap Basah)
             </h4>
             @if ($proposal->logbook_approved_at)
                 <span class="badge bg-success">

@@ -425,7 +425,7 @@
                             <!-- Item 6: Catatan Harian / LPJ -->
                             <tr>
                                 <td class="text-center">6</td>
-                                <td><strong>Catatan Harian & LPJ Keuangan</strong></td>
+                                <td><strong>Realisasi Anggaran Catatan Harian & LPJ Keuangan LPJ Keuangan</strong></td>
                                 <td><span class="badge bg-blue-lt">Menu Mandiri</span></td>
                                 <td class="text-center">
                                     @if($hasLogbook)
@@ -434,9 +434,9 @@
                                         <span class="badge bg-secondary"> Dikelola Terpisah</span>
                                     @endif
                                 </td>
-                                <td><small class="text-muted">Laporan Keuangan (LPJ) dikelola mandiri di Catatan Harian tanpa memblokir laporan ini.</small></td>
+                                <td><small class="text-muted">Laporan Keuangan (LPJ) dikelola mandiri di Realisasi Anggaran tanpa memblokir laporan ini.</small></td>
                                 <td class="text-center">
-                                    <a href="{{ route('research.daily-note.show', $proposal) }}" target="_blank" class="btn btn-sm btn-outline-info" title="Buka Catatan Harian & LPJ">
+                                    <a href="{{ route('research.daily-note.show', $proposal) }}" target="_blank" class="btn btn-sm btn-outline-info" title="Buka Realisasi Anggaran title="Buka Catatan Harian & LPJ" LPJ">
                                         
                                     </a>
                                 </td>

@@ -33,7 +33,7 @@
     {{-- Modern 3D Infographic Showcase Section --}}
     @if ($dashboardTheme === 'modern')
         <div class="mb-4">
-            <x-dashboard.modern-infographic :userName="$user->name ?? 'Pengguna'" />
+            <x-dashboard.modern-infographic :stats="$infographicStats" :userName="$user->name ?? 'Pengguna'" />
         </div>
     @endif
 

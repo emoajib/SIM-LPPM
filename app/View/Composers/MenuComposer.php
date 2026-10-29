@@ -190,7 +190,7 @@ class MenuComposer
             ]] : []),
             // Dosen - Persuratan
             ...($letteringActive ? [[
-                'title' => 'Persuratan',
+                'title' => 'Surat',
                 'icon' => null,
                 'route' => 'dashboard.dosen.surat.dashboard',
                 'roles' => ['dosen'],
@@ -198,7 +198,7 @@ class MenuComposer
             // Admin LPPM - Persuratan
             // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             ...($letteringActive ? [[
-                'title' => 'Persuratan',
+                'title' => 'Surat',
                 'icon' => null,
                 'route' => 'admin-lppm.letters.dashboard',
                 'roles' => ['admin lppm'],
@@ -520,8 +520,8 @@ class MenuComposer
             if (isset($collectedItems['Pengabdian'])) {
                 $newItems[] = $collectedItems['Pengabdian'];
             }
-            if (isset($collectedItems['Persuratan'])) {
-                $newItems[] = $collectedItems['Persuratan'];
+            if (isset($collectedItems['Surat'])) {
+                $newItems[] = $collectedItems['Surat'];
             }
             if (isset($collectedItems['IKU & Luaran'])) {
                 $newItems[] = $collectedItems['IKU & Luaran'];
@@ -538,7 +538,7 @@ class MenuComposer
             }
 
             foreach ($collectedItems as $title => $item) {
-                if (! in_array($title, ['Dashboard', 'Penelitian', 'Pengabdian', 'Persuratan', 'IKU & Luaran'])) {
+                if (! in_array($title, ['Dashboard', 'Penelitian', 'Pengabdian', 'Surat', 'IKU & Luaran'])) {
                     $newItems[] = $item;
                 }
             }

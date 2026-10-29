@@ -108,7 +108,7 @@
                                         $targetTitleTooltip = match($activeProcessType) {
                                             'iku' => 'Buka Laporan Akhir & Bukti Capaian Luaran',
                                             'laporan_akhir' => 'Buka Laporan Akhir',
-                                            'catatan_harian_keuangan' => 'Buka Catatan Harian (Logbook) & LPJ',
+                                            'catatan_harian_keuangan' => 'Buka Realisasi Anggaran Buka Catatan Harian (Logbook) & LPJ LPJ',
                                             'perbaikan_usulan' => 'Buka Perbaikan Usulan (Revisi)',
                                             default => 'Buka Rincian Usulan',
                                         };
