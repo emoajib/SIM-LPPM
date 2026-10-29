@@ -29,7 +29,7 @@
                                 <label class="form-label fw-medium text-secondary mb-2">Email atau ID Identitas</label>
                                 <div class="input-group input-group-flat border rounded-3 focus-within-glow">
                                     <span class="input-group-text bg-transparent border-0 px-3">
-                                        
+                                        <i class="ti ti-lock"></i>
                                     </span>
                                     <input type="text" wire:model="email"
                                         class="form-control border-0 ps-0 @error('email') is-invalid @enderror"
@@ -55,7 +55,7 @@
                                 </label>
                                 <div class="input-group input-group-flat border rounded-3 focus-within-glow" x-data="{ showPassword: false }">
                                     <span class="input-group-text bg-transparent border-0 px-3">
-                                        
+                                        <i class="ti ti-lock"></i>
                                     </span>
                                     <input x-bind:type="showPassword ? 'text' : 'password'"
                                         class="form-control border-0 ps-0 @error('password') is-invalid @enderror"
@@ -65,10 +65,10 @@
                                             x-on:click="showPassword = ! showPassword"
                                             x-bind:title="showPassword ? 'Hide password' : 'Show password'">
                                             <template x-if="!showPassword">
-                                                
+                                                <i class="ti ti-eye"></i>
                                             </template>
                                             <template x-if="showPassword">
-                                                
+                                                <i class="ti ti-eye-off"></i>
                                             </template>
                                         </button>
                                     </span>
