@@ -315,13 +315,13 @@ body > div.page > div.page-wrapper > div.page-header.d-print-none > div > div > 
 body.theme-modern {
     --tblr-primary: #0ea5e9;
     --tblr-primary-rgb: 14, 165, 233;
-    --tblr-body-bg: #f5f5dc;
+    --tblr-body-bg: #FCFFFA;
     --tblr-body-color: #1f2937;
     --tblr-card-bg: #ffffff;
     --tblr-border-color: rgba(56, 189, 248, 0.3);
 }
 body.theme-modern .page {
-    background: #f5f5dc;
+    background: #FCFFFA;
 }
 body.theme-modern .card {
     background: #ffffff;
