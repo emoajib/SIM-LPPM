@@ -348,7 +348,6 @@ body.theme-modern .page {
 }
 body.theme-modern .navbar {
     background: #008000 !important;
-    backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(56, 189, 248, 0.2);
     position: relative;
     z-index: 10000;
