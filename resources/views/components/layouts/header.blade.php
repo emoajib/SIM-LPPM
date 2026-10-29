@@ -305,8 +305,8 @@
             return;
         }
         // close dropdowns when clicking outside
-        if (!e.target.closest('.nav-item.dropdown')) {
-            document.querySelectorAll('.nav-item.dropdown .dropdown-menu.show').forEach(function (m) { m.classList.remove('show'); });
+        if (!e.target.closest('.nav-item.dropdown') && !e.target.closest('livewire-notification') && !e.target.closest('[wire\\:id]')) {
+            document.querySelectorAll('.dropdown-menu.show').forEach(function (m) { m.classList.remove('show'); });
         }
     });
 </script>
