@@ -74,7 +74,6 @@ class Dashboard extends Component
         $titles = match ($this->roleName) {
             'superadmin', 'admin lppm', 'admin lppm saintek', 'admin lppm dekabita' => [
                 'title' => 'Dashboard Admin LPPM',
-                'subtitle' => 'Ikhtisar performa dan aktivitas LPPM ITSNU Pekalongan.',
             ],
             'kepala lppm' => [
                 'title' => 'Dashboard Kepala LPPM',
