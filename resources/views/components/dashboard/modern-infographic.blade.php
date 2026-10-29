@@ -2,6 +2,7 @@
     'stats' => [],
     'year' => date('Y'),
     'userName' => auth()->user()->name ?? 'Pengguna',
+    'trendData' => [],
 ])
 
 @php
@@ -935,15 +936,8 @@
 <!-- JAVASCRIPT CONTROLLER (100% IDENTICAL BEHAVIOR & INTERACTION TO GOOGLE AI STUDIO) -->
 <script>
 (function() {
-    // 1. Data Store
-    const trendData = [
-        { year: '2021', usulanPenelitian: 20, didanaiPenelitian: 12, usulanPengabdian: 14, didanaiPengabdian: 8, danaTotalJuta: 310, catatan: 'Laporan Akhir Lengkap & Luaran Sinta Terbit' },
-        { year: '2022', usulanPenelitian: 25, didanaiPenelitian: 15, usulanPengabdian: 18, didanaiPengabdian: 11, danaTotalJuta: 420, catatan: 'Pertanggungjawaban Keuangan & SPTB 100%' },
-        { year: '2023', usulanPenelitian: 32, didanaiPenelitian: 21, usulanPengabdian: 22, didanaiPengabdian: 15, danaTotalJuta: 580, catatan: 'Monev Selesai & Prototipe Terdaftar' },
-        { year: '2024', usulanPenelitian: 38, didanaiPenelitian: 26, usulanPengabdian: 28, didanaiPengabdian: 19, danaTotalJuta: 725, catatan: 'Serah Terima BASTB & BAST Luaran Jurnal' },
-        { year: '2025', usulanPenelitian: 46, didanaiPenelitian: 32, usulanPengabdian: 34, didanaiPengabdian: 24, danaTotalJuta: 890, catatan: 'Surat Tugas & Kontrak Tahap Pelaporan' },
-        { year: '2026', usulanPenelitian: 54, didanaiPenelitian: 38, usulanPengabdian: 40, didanaiPengabdian: 29, danaTotalJuta: 1080, catatan: 'Tahun Berjalan / Seleksi & Verifikasi Aktif' }
-    ];
+    // 1. Data Store (real data from server, no fabricated values)
+    const trendData = @json($trendData ?? []);
 
     const defaultBulletins = [
         {

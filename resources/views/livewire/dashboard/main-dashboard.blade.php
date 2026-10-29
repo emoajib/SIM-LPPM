@@ -38,7 +38,7 @@
             <div class="col-12 col-lg-8 col-xl-9">
                 {{-- 1. Modern Infographic Component --}}
                 <div class="mb-3">
-                    <x-dashboard.modern-infographic :stats="$infographicStats" :userName="$user->name ?? 'Pengguna'" />
+                    <x-dashboard.modern-infographic :stats="$infographicStats" :userName="$user->name ?? 'Pengguna'" :trendData="$trendData ?? []" />
                 </div>
 
                 {{-- 2. Daftar Usulan Terdaftar Table (Modern Presentation) --}}
@@ -170,6 +170,10 @@
                         </h4>
                     </div>
                     <div class="list-group list-group-flush small">
+                        <div class="list-group-item py-3 px-3 text-center text-muted small">
+                            Belum ada riwayat Tri Dharma yang dapat ditampilkan.
+                        </div>
+                        <!--
                         <div class="list-group-item py-2 px-3">
                             <div class="d-flex align-items-center justify-content-between">
                                 <span class="badge bg-rose-lt text-rose">Penelitian</span>
@@ -207,6 +211,7 @@
                             </div>
                         </div>
                     </div>
+                        -->
                 </div>
 
                 {{-- Quick Actions --}}

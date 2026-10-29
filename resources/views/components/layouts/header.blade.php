@@ -177,14 +177,6 @@
                         <a href="{{ route('settings.profile') }}" class="dropdown-item">Profile</a>
                         <a href="#" class="dropdown-item">Feedback</a>
                         <div class="dropdown-divider"></div> --}}
-                        @php $isModern = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'classic')) === 'modern'; @endphp
-                        <form method="POST" action="{{ route('theme.switch') }}">
-                            @csrf
-                            <input type="hidden" name="theme" value="{{ $isModern ? 'classic' : 'modern' }}">
-                            <button type="submit" class="w-100 text-start dropdown-item">
-                                Ganti ke Tema {{ $isModern ? 'Klasik' : 'Modern' }}
-                            </button>
-                        </form>
                         <a href="{{ route('settings') }}" class="dropdown-item">
                             @include('components.layouts.partials.menu.icon', [
                                 'name' => 'settings',

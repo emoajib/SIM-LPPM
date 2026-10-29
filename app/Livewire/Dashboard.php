@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\MandatoryOutput;
 use App\Models\Proposal;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -12,8 +13,11 @@ use Livewire\Component;
 class Dashboard extends Component
 {
     public $user;
+
     public $roleName;
+
     public $dashboardComponent;
+
     public string $dashboardTheme = 'modern';
 
     public function mount()
@@ -58,9 +62,9 @@ class Dashboard extends Component
                     ->whereIn('status', ['approved', 'completed', 'reviewed'])
                     ->count();
 
-                $totalLuaran = class_exists(\App\Models\MandatoryOutput::class)
-                    ? \App\Models\MandatoryOutput::count()
-                    : 45;
+                $totalLuaran = class_exists(MandatoryOutput::class)
+                    ? MandatoryOutput::count()
+                    : 0;
 
                 return [
                     'total_usulan' => $totalUsulan,
@@ -79,6 +83,38 @@ class Dashboard extends Component
                 ];
             }
         });
+    }
+
+    protected function loadTrendData(): array
+    {
+        try {
+            $rows = Proposal::query()
+                ->select(['start_year', 'detailable_type', 'status'])
+                ->get();
+
+            $years = range((int) date('Y') - 5, (int) date('Y'));
+            $data = [];
+            foreach ($years as $y) {
+                $yr = $rows->filter(fn ($r) => (int) $r->start_year === $y);
+                $usulanPenelitian = $yr->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'Research'))->count();
+                $didanaiPenelitian = $yr->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'Research') && in_array($r->status?->value ?? $r->status, ['approved', 'completed', 'reviewed']))->count();
+                $usulanPengabdian = $yr->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'CommunityService'))->count();
+                $didanaiPengabdian = $yr->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'CommunityService') && in_array($r->status?->value ?? $r->status, ['approved', 'completed', 'reviewed']))->count();
+                $data[] = [
+                    'year' => (string) $y,
+                    'usulanPenelitian' => $usulanPenelitian,
+                    'didanaiPenelitian' => $didanaiPenelitian,
+                    'usulanPengabdian' => $usulanPengabdian,
+                    'didanaiPengabdian' => $didanaiPengabdian,
+                    'danaTotalJuta' => 0,
+                    'catatan' => '',
+                ];
+            }
+
+            return $data;
+        } catch (\Throwable $e) {
+            return [];
+        }
     }
 
     protected function loadRecentProposals()
@@ -101,35 +137,7 @@ class Dashboard extends Component
             // fallback
         }
 
-        return collect([
-            (object)[
-                'title' => 'Sistem Rekomendasi Motif Batik Berbasis Large Language Model dan Knowledge Base untuk UMKM',
-                'category_label' => 'Penelitian Terapan',
-                'focus_label' => 'Sosial Humaniora & Seni',
-                'year' => date('Y'),
-                'role' => 'Ketua',
-                'status_label' => 'Didanai',
-                'status_class' => 'bg-green-lt text-green',
-            ],
-            (object)[
-                'title' => 'Pemberdayaan Pengelolaan BUMDes Melalui Implementasi Digital Marketing dan E-Commerce',
-                'category_label' => 'Pengabdian Masyarakat',
-                'focus_label' => 'Ekonomi & Bisnis',
-                'year' => date('Y'),
-                'role' => 'Ketua',
-                'status_label' => 'Dalam Proses',
-                'status_class' => 'bg-yellow-lt text-yellow',
-            ],
-            (object)[
-                'title' => 'Analisis Persepsi Wisatawan Internasional Terhadap Batik Pekalongan',
-                'category_label' => 'Penelitian Dosen Pemula',
-                'focus_label' => 'Sosial Humaniora',
-                'year' => date('Y') - 1,
-                'role' => 'Anggota',
-                'status_label' => 'Selesai',
-                'status_class' => 'bg-blue-lt text-blue',
-            ],
-        ]);
+        return collect(); // no fabricated dummy data
     }
 
     public function render()
@@ -162,12 +170,14 @@ class Dashboard extends Component
 
         $infographicStats = $this->loadInfographicStats();
         $recentProposals = $this->loadRecentProposals();
+        $trendData = $this->loadTrendData();
 
         return view('livewire.dashboard.main-dashboard', [
             'pageTitle' => $titles['title'],
             'pageSubtitle' => $titles['subtitle'] ?? null,
             'infographicStats' => $infographicStats,
             'recentProposals' => $recentProposals,
+            'trendData' => $trendData,
         ])->layoutData([
             'pageTitle' => $titles['title'],
             'pageSubtitle' => $titles['subtitle'] ?? null,
