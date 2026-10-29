@@ -1,15 +1,15 @@
 @props([
     'stats' => [],
     'year' => date('Y'),
-    'userName' => auth()->user()->name ?? 'MUJIBUL HAKIM',
+    'userName' => auth()->user()->name ?? 'Pengguna',
 ])
 
 @php
-    $totalUsulan = $stats['total_usulan'] ?? 142;
-    $totalDidanai = $stats['total_didanai'] ?? 114;
-    $fundingRate = $totalUsulan > 0 ? round(($totalDidanai / $totalUsulan) * 100, 1) : 80;
-    $totalLuaran = $stats['total_luaran'] ?? 86;
-    $totalDanaM = '1.08';
+    $totalUsulan = $stats['total_usulan'] ?? 0;
+    $totalDidanai = $stats['total_didanai'] ?? 0;
+    $fundingRate = $totalUsulan > 0 ? round(($totalDidanai / $totalUsulan) * 100, 1) : 0;
+    $totalLuaran = $stats['total_luaran'] ?? 0;
+    $totalDanaM = '0';
 
     // Indonesian formatted date
     $days = ['Sunday' => 'Minggu', 'Monday' => 'Senin', 'Tuesday' => 'Selasa', 'Wednesday' => 'Rabu', 'Thursday' => 'Kamis', 'Friday' => 'Jumat', 'Saturday' => 'Sabtu'];

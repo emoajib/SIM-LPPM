@@ -60,19 +60,19 @@ class Dashboard extends Component
                     : 45;
 
                 return [
-                    'total_usulan' => $totalUsulan > 0 ? $totalUsulan : 142,
-                    'total_didanai' => $totalDidanai > 0 ? $totalDidanai : 114,
-                    'total_pkm' => $totalPkm > 0 ? $totalPkm : 68,
-                    'total_pkm_didanai' => $totalPkmDidanai > 0 ? $totalPkmDidanai : 34,
-                    'total_luaran' => $totalLuaran > 0 ? $totalLuaran : 86,
+                    'total_usulan' => $totalUsulan,
+                    'total_didanai' => $totalDidanai,
+                    'total_pkm' => $totalPkm,
+                    'total_pkm_didanai' => $totalPkmDidanai,
+                    'total_luaran' => $totalLuaran,
                 ];
             } catch (\Throwable $e) {
                 return [
-                    'total_usulan' => 142,
-                    'total_didanai' => 114,
-                    'total_pkm' => 68,
-                    'total_pkm_didanai' => 34,
-                    'total_luaran' => 86,
+                    'total_usulan' => 0,
+                    'total_didanai' => 0,
+                    'total_pkm' => 0,
+                    'total_pkm_didanai' => 0,
+                    'total_luaran' => 0,
                 ];
             }
         });
