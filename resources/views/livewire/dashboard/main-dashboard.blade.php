@@ -46,7 +46,7 @@
                     <div class="card-header bg-white py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
                         <div>
                             <h3 class="card-title fw-bold text-dark mb-0 d-flex align-items-center gap-2">
-                                <span class="badge bg-cyan-lt text-cyan p-1">📋</span>
+                                <span class="badge bg-cyan-lt text-cyan p-1">Daftar</span>
                                 <span>Daftar Usulan Terdaftar</span>
                             </h3>
                             <div class="text-secondary small mt-0.5">Usulan penelitian dan pengabdian masyarakat terdata di sistem</div>
@@ -126,22 +126,22 @@
                         <div class="mb-2">
                             <x-user-avatar :user="$user" size="avatar-xl" class="shadow-sm" />
                         </div>
-                        <h4 class="card-title fw-bold text-dark mb-0">{{ $user->name ?? 'MUJIBUL HAKIM' }}</h4>
-                        <div class="text-secondary small">NIDN: {{ $user->identity?->nidn ?? '0608068901' }}</div>
+                        <h4 class="card-title fw-bold text-dark mb-0">{{ $user->name ?? 'Pengguna' }}</h4>
+                        <div class="text-secondary small">NIDN: {{ $user->identity?->nidn ?? '-' }}</div>
                         <div class="badge bg-green-lt mt-1">{{ format_role_name($roleName) }}</div>
 
                         <div class="text-muted small mt-2 pt-2 border-top border-secondary-subtle text-start">
                             <div class="d-flex justify-content-between py-1">
                                 <span>Pendidikan:</span>
-                                <strong class="text-dark">S2</strong>
+                                <strong class="text-dark">{{ $user->identity?->last_education ?? '-' }}</strong>
                             </div>
                             <div class="d-flex justify-content-between py-1">
                                 <span>Jabatan:</span>
-                                <strong class="text-dark">Lektor</strong>
+                                <strong class="text-dark">{{ $user->identity?->functional_position ?? '-' }}</strong>
                             </div>
                             <div class="d-flex justify-content-between py-1">
                                 <span>Instansi:</span>
-                                <strong class="text-dark">ITSNU Pekalongan</strong>
+                                <strong class="text-dark">{{ $user->identity?->institution_name ?? ($user->identity?->institution?->name ?? 'ITSNU Pekalongan') }}</strong>
                             </div>
                         </div>
 
@@ -150,7 +150,7 @@
                             <div class="d-flex align-items-center justify-content-between">
                                 <span class="text-secondary small fw-bold">Skor SINTA Overall</span>
                                 <span class="badge bg-primary text-white font-monospace fw-bold">
-                                    {{ number_format($user->identity?->sinta_score_v3_overall ?? 767, 0, ',', '.') }}
+                                    {{ number_format($user->identity?->sinta_score_v3_overall ?? 0, 0, ',', '.') }}
                                 </span>
                             </div>
                             <div class="d-flex align-items-center justify-content-between mt-2 pt-1 border-top border-secondary-subtle small text-muted">
@@ -218,7 +218,7 @@
                                 + Ajukan Usulan Baru
                             </a>
                             <a href="{{ Route::has('letters.manual-request') ? route('letters.manual-request') : (Route::has('dashboard.dosen.surat.dashboard') ? route('dashboard.dosen.surat.dashboard') : url('surat')) }}" class="btn btn-outline-secondary btn-sm">
-                                ✉️ Buat Surat Tugas / Izin
+                                Buat Surat Tugas / Izin
                             </a>
                         </div>
                     </div>
