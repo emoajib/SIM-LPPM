@@ -181,7 +181,7 @@
                                         <span class="badge bg-green-lt me-2">Pengabdian</span>
                                     @endif
                                     <span class="badge bg-secondary-lt">{{ $schemeName }}</span>
-                                    <span class="badge bg-light text-muted ms-1">TA {{ $proposal->academic_year ?? ($proposal->start_year ?? $proposal->created_at->year) }}</span>
+                                    <span class="badge bg-light text-secondary ms-1">TA {{ $proposal->academic_year ?? ($proposal->start_year ?? $proposal->created_at->year) }}</span>
                                 </div>
                                 <div class="font-weight-medium text-wrap" style="max-width: 420px;">
                                     <a href="{{ $isResearch ? route('research.proposal.show', $proposal) : route('community-service.proposal.show', $proposal) }}" target="_blank" class="text-reset">

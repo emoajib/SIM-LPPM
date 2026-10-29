@@ -287,7 +287,7 @@
                                                             @endif
                                                         @endforeach
                                                         @if($achievedCount > 3)
-                                                            <span class="badge bg-light text-muted px-1" style="font-size: 0.65rem;">+{{ $achievedCount - 3 }}</span>
+                                                            <span class="badge bg-light text-secondary px-1" style="font-size: 0.65rem;">+{{ $achievedCount - 3 }}</span>
                                                         @endif
                                                     </div>
                                                 @endif

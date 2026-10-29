@@ -346,7 +346,7 @@
                                 </td>
                                 <td><small class="text-muted">Tabel rekapitulasi realisasi anggaran otomatis digenerate ke PDF</small></td>
                                 <td class="text-center">
-                                    <span class="badge bg-light text-muted">Auto</span>
+                                    <span class="badge bg-light text-secondary">Auto</span>
                                 </td>
                             </tr>
                             <!-- Item 2: Lampiran 2 -->
@@ -359,7 +359,7 @@
                                 </td>
                                 <td><small class="text-muted">{{ $proposal->teamMembers->count() }} Anggota terdaftar pada data tim usulan</small></td>
                                 <td class="text-center">
-                                    <span class="badge bg-light text-muted">Auto</span>
+                                    <span class="badge bg-light text-secondary">Auto</span>
                                 </td>
                             </tr>
                             <!-- Item 3: Lampiran 3 -->
@@ -372,7 +372,7 @@
                                 </td>
                                 <td><small class="text-muted">Jadwal pelaksanaan tahapan penelitian terintegrasi</small></td>
                                 <td class="text-center">
-                                    <span class="badge bg-light text-muted">Auto</span>
+                                    <span class="badge bg-light text-secondary">Auto</span>
                                 </td>
                             </tr>
                             <!-- Item 4: Lampiran 4 -->
@@ -389,7 +389,7 @@
                                 </td>
                                 <td><small class="text-muted">Naskah artikel publikasi / draft buku luaran penelitian</small></td>
                                 <td class="text-center">
-                                    <span class="badge bg-light text-muted">Di Bagian Bawah</span>
+                                    <span class="badge bg-light text-secondary">Di Bagian Bawah</span>
                                 </td>
                             </tr>
                             <!-- Item 5: Lampiran 5 -->

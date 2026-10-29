@@ -143,7 +143,7 @@
                             </table>
                         </div>
                     @else
-                        <div class="text-center py-3 text-muted bg-light rounded">
+                        <div class="text-center py-3 text-secondary bg-light rounded">
                             
                             <div class="small">Belum ada file cadangan (.sql / .zip) di direktori <code>storage/app/backup/</code>.</div>
                         </div>

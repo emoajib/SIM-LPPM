@@ -351,7 +351,7 @@
                                     @endif
                                 </td>
                                 <td><small class="text-muted">Tabel rekapitulasi realisasi anggaran otomatis digenerate ke PDF</small></td>
-                                <td class="text-center"><span class="badge bg-light text-muted">Auto</span></td>
+                                <td class="text-center"><span class="badge bg-light text-secondary">Auto</span></td>
                             </tr>
                             <!-- Item 2: Lampiran 2 -->
                             <tr>
@@ -362,7 +362,7 @@
                                     <span class="badge bg-success"> Siap Cetak</span>
                                 </td>
                                 <td><small class="text-muted">{{ $proposal->teamMembers->count() }} Anggota tim terdaftar</small></td>
-                                <td class="text-center"><span class="badge bg-light text-muted">Auto</span></td>
+                                <td class="text-center"><span class="badge bg-light text-secondary">Auto</span></td>
                             </tr>
                             <!-- Item 3: Lampiran 3 -->
                             <tr>
