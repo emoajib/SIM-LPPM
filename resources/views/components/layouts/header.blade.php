@@ -83,8 +83,8 @@
                     @endphp
                     @if ($roles->count() > 0)
                         <div class="nav-item dropdown">
-                            <a href="#" class="d-flex align-items-center px-2 nav-link" data-bs-toggle="dropdown"
-                                aria-label="Switch role" data-bs-auto-close="outside" aria-expanded="false">
+                            <a href="#" class="d-flex align-items-center px-2 nav-link" onclick="event.preventDefault(); var dd=this.parentElement; var m=dd.querySelector('.dropdown-menu'); var show=!m.classList.contains('show'); document.querySelectorAll('.dropdown-menu.show').forEach(function(x){x.classList.remove('show');}); if(show){m.classList.add('show'); var r=this.getBoundingClientRect(); m.style.position='fixed'; m.style.top=(r.bottom+4)+'px'; m.style.left=Math.max(8,r.right-m.offsetWidth)+'px'; m.style.zIndex='2147483647';} return false;"
+                                aria-label="Switch role">
                                 @if ($activeRole)
                                     <div class="d-flex align-items-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
@@ -164,7 +164,7 @@
                 </div>
 
                 <div class="nav-item dropdown">
-                    <a href="#" class="d-flex p-0 px-2 nav-link lh-1" data-bs-toggle="dropdown"
+                    <a href="#" class="d-flex p-0 px-2 nav-link lh-1" onclick="event.preventDefault(); var dd=this.parentElement; var m=dd.querySelector('.dropdown-menu'); var show=!m.classList.contains('show'); document.querySelectorAll('.dropdown-menu.show').forEach(function(x){x.classList.remove('show');}); if(show){m.classList.add('show'); var r=this.getBoundingClientRect(); m.style.position='fixed'; m.style.top=(r.bottom+4)+'px'; m.style.left=Math.max(8,r.right-m.offsetWidth)+'px'; m.style.zIndex='2147483647';} return false;"
                         aria-label="Open user menu">
                         <x-user-avatar :user="auth()->user()" size="avatar-sm" />
                         <div class="d-xl-block ps-2 d-none">
@@ -290,5 +290,12 @@
         </div>
     </header>
 </div>
+<script>
+    document.addEventListener('click', function (e) {
+        if (e.target.closest('.dropdown-menu')) return;
+        if (e.target.closest('[aria-label="Open user menu"], [aria-label="Switch role"], [aria-label="Show notifications"]')) return;
+        document.querySelectorAll('.dropdown-menu.show').forEach(function (m) { m.classList.remove('show'); });
+    });
+</script>
 
 <!-- END NAVBAR  -->

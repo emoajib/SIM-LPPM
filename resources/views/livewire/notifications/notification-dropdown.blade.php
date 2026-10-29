@@ -1,6 +1,5 @@
 <div>
-    <a href="#" class="px-0 nav-link" data-bs-toggle="dropdown" tabindex="-1" aria-label="Show notifications"
-        data-bs-auto-close="outside" aria-expanded="false">
+    <a href="#" class="px-0 nav-link" tabindex="-1" aria-label="Show notifications" onclick="event.preventDefault(); var root=this.closest('[wire\\:id]')||this.parentElement; var m=root.querySelector('.dropdown-menu'); var show=!m.classList.contains('show'); document.querySelectorAll('.dropdown-menu.show').forEach(function(x){x.classList.remove('show');}); if(show){m.classList.add('show'); var r=this.getBoundingClientRect(); m.style.position='fixed'; m.style.top=(r.bottom+4)+'px'; m.style.left=Math.max(8,r.right-m.offsetWidth)+'px'; m.style.zIndex='2147483647';} return false;">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
             <path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" />
