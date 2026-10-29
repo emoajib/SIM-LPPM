@@ -14,9 +14,9 @@ use App\Http\Controllers\ReportExportController;
 use App\Http\Controllers\ReportVerificationController;
 use App\Http\Controllers\ReviewExportController;
 use App\Http\Controllers\RoleSwitcherController;
+use App\Http\Controllers\ThemeSwitcherController;
 use App\Http\Controllers\Settings\BackupDownloadController;
 use App\Http\Controllers\Settings\PdfPreviewController;
-use App\Http\Controllers\ThemeSwitcherController;
 use App\Http\Controllers\Settings\ProposalTemplateUploadController;
 use App\Http\Controllers\SintaExportController;
 use App\Livewire\Admin\Archive\ManageArchives;
@@ -112,15 +112,6 @@ Route::get('captcha/math/{id}/audio', [MathCaptchaController::class, 'audio'])
     ->name('captcha.audio');
 
 Route::redirect('/', 'dashboard', 302);
-
-Route::get('theme/{theme}', function ($theme) {
-    $theme = in_array($theme, ['modern', 'classic']) ? $theme : 'classic';
-    session(['sim_lppm_app_theme' => $theme]);
-    session(['sim_lppm_dashboard_theme' => $theme]);
-    return redirect()->back()->withCookie(cookie('sim_lppm_app_theme', $theme, 60 * 24 * 365));
-})->name('theme.switch');
-
-Route::post('theme/switch', [ThemeSwitcherController::class, 'switch'])->name('theme.switch.post');
 
 Route::get('dashboard', Dashboard::class)
     ->middleware(['auth', 'verified'])
@@ -470,6 +461,10 @@ Route::middleware(['auth'])->group(function () {
     // Role Switcher Route
     Route::post('role/switch', [RoleSwitcherController::class, 'switch'])
         ->name('role.switch');
+
+    // Theme Switcher Route (Modern 3D Infografis vs Classic Tabler)
+    Route::match(['get', 'post'], 'theme/switch', [ThemeSwitcherController::class, 'switch'])
+        ->name('theme.switch');
 
     // PDF Export Route
     Route::get('proposals/{proposal}/export-pdf', [ProposalExportController::class, 'download'])
