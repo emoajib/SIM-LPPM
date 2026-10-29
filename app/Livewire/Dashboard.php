@@ -181,15 +181,17 @@ class Dashboard extends Component
         $recentProposals = $this->loadRecentProposals();
         $trendData = $this->loadTrendData();
 
+        $isModernDashboard = $this->dashboardTheme === 'modern';
+
         return view('livewire.dashboard.main-dashboard', [
-            'pageTitle' => $titles['title'],
-            'pageSubtitle' => $titles['subtitle'] ?? null,
+            'pageTitle' => $isModernDashboard ? null : $titles['title'],
+            'pageSubtitle' => $isModernDashboard ? null : ($titles['subtitle'] ?? null),
             'infographicStats' => $infographicStats,
             'recentProposals' => $recentProposals,
             'trendData' => $trendData,
         ])->layoutData([
-            'pageTitle' => $titles['title'],
-            'pageSubtitle' => $titles['subtitle'] ?? null,
+            'pageTitle' => $isModernDashboard ? null : $titles['title'],
+            'pageSubtitle' => $isModernDashboard ? null : ($titles['subtitle'] ?? null),
         ]);
     }
 }
