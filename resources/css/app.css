@@ -345,6 +345,13 @@ body.theme-modern .navbar {
     background: #008000 !important;
     backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+    min-height: 48px;
+}
+body.theme-modern .navbar .dropdown-menu {
+    z-index: 1080;
+}
+body.theme-modern .page-header.d-print-none {
+    margin-top: 0;
 }
 body.theme-modern .navbar .navbar-brand span,
 body.theme-modern .navbar .nav-link {
