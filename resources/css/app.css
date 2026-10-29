@@ -310,9 +310,9 @@ select option {
 body.theme-modern {
     --tblr-primary: #0ea5e9;
     --tblr-primary-rgb: 14, 165, 233;
-    --tblr-body-bg: #0f172a;
-    --tblr-body-color: #e2e8f0;
-    --tblr-card-bg: rgba(15, 23, 42, 0.85);
+    --tblr-body-bg: #f8fafc;
+    --tblr-body-color: #0f172a;
+    --tblr-card-bg: #ffffff;
     --tblr-border-color: rgba(56, 189, 248, 0.3);
 }
 body.theme-modern .page {
