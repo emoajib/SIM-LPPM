@@ -163,17 +163,16 @@
                     @livewire('notifications.notification-dropdown')
                 </div>
 
-                <div class="nav-item dropdown">
-                    <a href="#" class="d-flex p-0 px-2 nav-link lh-1" data-bs-toggle="dropdown"
-                        data-bs-popper-config='{"strategy":"fixed"}'
-                        aria-label="Open user menu">
+                <div class="nav-item dropdown" x-data="{ open: false }" @click.outside="open = false">
+                    <a href="#" class="d-flex p-0 px-2 nav-link lh-1" @click.prevent="open = !open"
+                        aria-label="Open user menu" :aria-expanded="open">
                         <x-user-avatar :user="auth()->user()" size="avatar-sm" />
                         <div class="d-xl-block ps-2 d-none">
                             <div>{{ Auth::user()->name }}</div>
                             <div class="mt-1 text-secondary small">{{ Auth::user()->email }}</div>
                         </div>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow" x-show="open" x-transition @click="open = false" style="display: none;">
                         {{-- <a href="#" class="dropdown-item">Status</a>
                         <a href="{{ route('settings.profile') }}" class="dropdown-item">Profile</a>
                         <a href="#" class="dropdown-item">Feedback</a>
