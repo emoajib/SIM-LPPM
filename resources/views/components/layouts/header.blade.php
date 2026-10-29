@@ -154,6 +154,70 @@
 
                     @livewire('notifications.notification-dropdown')
                 </div>
+
+                {{-- Website Theme Switcher: Modern 3D Infografis vs Klasik Tabler --}}
+                @php
+                    $userActiveTheme = session('sim_lppm_dashboard_theme') ?? request()->cookie('sim_lppm_dashboard_theme') ?? 'modern';
+                @endphp
+                <div class="nav-item dropdown d-none d-sm-flex me-1">
+                    <a href="#" class="btn btn-sm btn-ghost-secondary px-2 d-flex align-items-center gap-1.5 border border-secondary-subtle rounded-2" data-bs-toggle="dropdown" aria-expanded="false" title="Pilih Tema Website (Modern / Klasik)">
+                        @if ($userActiveTheme === 'modern')
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                            <span class="fw-bold text-azure small">Tema Modern</span>
+                        @else
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                            <span class="fw-bold text-secondary small">Tema Klasik</span>
+                        @endif
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ms-0.5 opacity-60">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-arrow dropdown-menu-end shadow-sm p-2" style="min-width: 250px;">
+                        <div class="dropdown-header px-2 py-1 text-uppercase text-secondary fw-bold small">Pilihan Tema Website</div>
+                        
+                        <form method="POST" action="{{ route('theme.switch') }}" class="mb-1">
+                            @csrf
+                            <input type="hidden" name="theme" value="modern">
+                            <button type="submit" class="w-100 dropdown-item d-flex align-items-center justify-content-between p-2 rounded {{ $userActiveTheme === 'modern' ? 'active font-weight-bold bg-primary text-white' : '' }}">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge {{ $userActiveTheme === 'modern' ? 'bg-white text-primary' : 'bg-cyan-lt' }} p-1">⚡</span>
+                                    <div class="text-start">
+                                        <div class="fw-bold">Tema Modern</div>
+                                        <div class="small {{ $userActiveTheme === 'modern' ? 'text-white-50' : 'text-muted' }}" style="font-size: 11px;">3D Infografis & Trend Neo-Cyan</div>
+                                    </div>
+                                </div>
+                                @if ($userActiveTheme === 'modern')
+                                    <span class="badge bg-white text-primary ms-1">Aktif</span>
+                                @endif
+                            </button>
+                        </form>
+
+                        <form method="POST" action="{{ route('theme.switch') }}">
+                            @csrf
+                            <input type="hidden" name="theme" value="classic">
+                            <button type="submit" class="w-100 dropdown-item d-flex align-items-center justify-content-between p-2 rounded {{ $userActiveTheme === 'classic' ? 'active font-weight-bold bg-primary text-white' : '' }}">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge {{ $userActiveTheme === 'classic' ? 'bg-white text-primary' : 'bg-blue-lt' }} p-1">📄</span>
+                                    <div class="text-start">
+                                        <div class="fw-bold">Tema Klasik</div>
+                                        <div class="small {{ $userActiveTheme === 'classic' ? 'text-white-50' : 'text-muted' }}" style="font-size: 11px;">Standar Tabler LPPM</div>
+                                    </div>
+                                </div>
+                                @if ($userActiveTheme === 'classic')
+                                    <span class="badge bg-white text-primary ms-1">Aktif</span>
+                                @endif
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
                 <div class="nav-item dropdown">
                     <a href="#" class="d-flex p-0 px-2 nav-link lh-1" data-bs-toggle="dropdown"
                         aria-label="Open user menu">
@@ -175,6 +239,23 @@
                             ])
                             Settings
                         </a>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-header px-3 py-1 text-uppercase text-secondary fw-bold small">Tema Website</div>
+                        <form method="POST" action="{{ route('theme.switch') }}" class="d-inline">
+                            @csrf
+                            <input type="hidden" name="theme" value="{{ ($userActiveTheme ?? 'modern') === 'modern' ? 'classic' : 'modern' }}">
+                            <button type="submit" class="w-100 text-start dropdown-item d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 text-cyan">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                    </svg>
+                                    <span>Ganti ke {{ ($userActiveTheme ?? 'modern') === 'modern' ? 'Tema Klasik' : 'Tema Modern' }}</span>
+                                </div>
+                                <span class="badge bg-secondary-lt">{{ ($userActiveTheme ?? 'modern') === 'modern' ? '⚡ Modern' : '📄 Klasik' }}</span>
+                            </button>
+                        </form>
+                        <div class="dropdown-divider"></div>
+
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="w-100 text-start dropdown-item">

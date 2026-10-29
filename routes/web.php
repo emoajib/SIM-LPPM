@@ -14,6 +14,7 @@ use App\Http\Controllers\ReportExportController;
 use App\Http\Controllers\ReportVerificationController;
 use App\Http\Controllers\ReviewExportController;
 use App\Http\Controllers\RoleSwitcherController;
+use App\Http\Controllers\ThemeSwitcherController;
 use App\Http\Controllers\Settings\BackupDownloadController;
 use App\Http\Controllers\Settings\PdfPreviewController;
 use App\Http\Controllers\Settings\ProposalTemplateUploadController;
@@ -460,6 +461,10 @@ Route::middleware(['auth'])->group(function () {
     // Role Switcher Route
     Route::post('role/switch', [RoleSwitcherController::class, 'switch'])
         ->name('role.switch');
+
+    // Theme Switcher Route (Modern 3D Infografis vs Classic Tabler)
+    Route::match(['get', 'post'], 'theme/switch', [ThemeSwitcherController::class, 'switch'])
+        ->name('theme.switch');
 
     // PDF Export Route
     Route::get('proposals/{proposal}/export-pdf', [ProposalExportController::class, 'download'])
