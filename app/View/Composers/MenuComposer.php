@@ -7,6 +7,7 @@ namespace App\View\Composers;
 use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\View\View;
@@ -16,7 +17,14 @@ class MenuComposer
 {
     public function compose(View $view): void
     {
-        $view->with('headerMenuItems', $this->menuItems(Auth::user()));
+        $user = Auth::user();
+        $cacheKey = 'menu_items_'.($user ? $user->id : 'guest').'_'.(active_role() ?? 'none');
+
+        $items = Cache::remember($cacheKey, 60, function () use ($user) {
+            return $this->menuItems($user);
+        });
+
+        $view->with('headerMenuItems', $items);
         $view->with('userActiveTheme', session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')));
     }
 
