@@ -316,7 +316,7 @@
                                             aria-expanded="true">
                                             
                                             Status Eligibilitas Skema
-                                            <span class="badge bg-warning ms-auto text-white rounded-pill">Informasi</span>
+                                            <span class="badge bg-warning ms-auto text-dark rounded-pill">Informasi</span>
                                         </button>
                                     </h2>
                                     <div id="collapse-scheme-eligible" class="accordion-collapse collapse show">

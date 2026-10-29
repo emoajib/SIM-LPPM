@@ -341,7 +341,7 @@
                                     @if($hasBudget)
                                         <span class="badge bg-success"> Siap Cetak</span>
                                     @else
-                                        <span class="badge bg-warning"> Kosong</span>
+                                        <span class="badge bg-warning text-dark"> Kosong</span>
                                     @endif
                                 </td>
                                 <td><small class="text-muted">Tabel rekapitulasi realisasi anggaran otomatis digenerate ke PDF</small></td>
@@ -384,7 +384,7 @@
                                     @if($hasOutputs)
                                         <span class="badge bg-success"> Lengkap</span>
                                     @else
-                                        <span class="badge bg-warning"> Belum Diisi</span>
+                                        <span class="badge bg-warning text-dark"> Belum Diisi</span>
                                     @endif
                                 </td>
                                 <td><small class="text-muted">Naskah artikel publikasi / draft buku luaran penelitian</small></td>
@@ -401,7 +401,7 @@
                                     @if($hasTeachingMaterial)
                                         <span class="badge bg-success"> Lengkap</span>
                                     @else
-                                        <span class="badge bg-warning"> Belum Diunggah</span>
+                                        <span class="badge bg-warning text-dark"> Belum Diunggah</span>
                                     @endif
                                 </td>
                                 <td>
