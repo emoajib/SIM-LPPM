@@ -97,9 +97,9 @@ class Dashboard extends Component
             foreach ($years as $y) {
                 $yr = $rows->filter(fn ($r) => (int) $r->start_year === $y);
                 $usulanPenelitian = $yr->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'Research'))->count();
-                $didanaiPenelitian = $yr->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'Research') && in_array($r->status?->value ?? $r->status, ['approved', 'completed', 'reviewed']))->count();
+                $didanaiPenelitian = $yr->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'Research') && in_array($r->status instanceof \BackedEnum ? $r->status->value : $r->status, ['approved', 'completed', 'reviewed']))->count();
                 $usulanPengabdian = $yr->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'CommunityService'))->count();
-                $didanaiPengabdian = $yr->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'CommunityService') && in_array($r->status?->value ?? $r->status, ['approved', 'completed', 'reviewed']))->count();
+                $didanaiPengabdian = $yr->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'CommunityService') && in_array($r->status instanceof \BackedEnum ? $r->status->value : $r->status, ['approved', 'completed', 'reviewed']))->count();
                 $data[] = [
                     'year' => (string) $y,
                     'usulanPenelitian' => $usulanPenelitian,
