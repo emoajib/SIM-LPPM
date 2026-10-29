@@ -165,6 +165,7 @@
 
                 <div class="nav-item dropdown">
                     <a href="#" class="d-flex p-0 px-2 nav-link lh-1" data-bs-toggle="dropdown"
+                        data-bs-popper-config='{"strategy":"fixed"}'
                         aria-label="Open user menu">
                         <x-user-avatar :user="auth()->user()" size="avatar-sm" />
                         <div class="d-xl-block ps-2 d-none">
