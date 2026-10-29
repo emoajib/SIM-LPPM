@@ -351,10 +351,15 @@ body.theme-modern .navbar {
     backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(56, 189, 248, 0.2);
     position: relative;
-    z-index: 9999;
+    z-index: 10000;
+}
+body.theme-modern .navbar-expand-md,
+body.theme-modern .navbar-expand-md .navbar {
+    position: relative;
+    z-index: 1;
 }
 body.theme-modern .navbar .dropdown-menu {
-    z-index: 10000 !important;
+    z-index: 10001 !important;
     position: absolute;
 }
 body.theme-modern .page-header.d-print-none {
