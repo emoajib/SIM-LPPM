@@ -112,6 +112,12 @@ Route::get('captcha/math/{id}/audio', [MathCaptchaController::class, 'audio'])
 
 Route::redirect('/', 'dashboard', 302);
 
+Route::get('theme/{theme}', function ($theme) {
+    $theme = in_array($theme, ['modern', 'classic']) ? $theme : 'classic';
+    session(['sim_lppm_app_theme' => $theme]);
+    return redirect()->back();
+})->name('theme.switch');
+
 Route::get('dashboard', Dashboard::class)
     ->middleware(['auth', 'verified'])
     ->name('dashboard');

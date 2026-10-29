@@ -19,7 +19,7 @@
     <!-- END CUSTOM FONT -->
 </head>
 
-<body>
+<body class="{{ session('sim_lppm_app_theme', 'classic') === 'modern' ? 'theme-modern' : 'theme-classic' }}">
     <!-- Toast Container for notifications -->
     <x-tabler.toast-container />
 

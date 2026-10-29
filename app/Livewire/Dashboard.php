@@ -19,7 +19,7 @@ class Dashboard extends Component
     {
         $this->user = Auth::user();
         $this->roleName = active_role();
-        $this->dashboardTheme = session('sim_lppm_dashboard_theme', 'modern');
+        $this->dashboardTheme = session('sim_lppm_app_theme', session('sim_lppm_dashboard_theme', 'modern'));
 
         $this->dashboardComponent = match ($this->roleName) {
             'superadmin', 'admin lppm', 'admin lppm saintek', 'admin lppm dekabita' => 'dashboard.admin-dashboard',
@@ -35,6 +35,7 @@ class Dashboard extends Component
     {
         $this->dashboardTheme = in_array($theme, ['classic', 'modern']) ? $theme : 'classic';
         session(['sim_lppm_dashboard_theme' => $this->dashboardTheme]);
+        session(['sim_lppm_app_theme' => $this->dashboardTheme]);
     }
 
     protected function loadInfographicStats(): array

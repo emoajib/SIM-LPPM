@@ -53,6 +53,14 @@
                         </a>
                     </div>
 
+                    <!-- Theme Switcher -->
+                    <div class="nav-item d-none d-md-flex me-2">
+                        <div class="btn-group btn-group-sm" role="group">
+                            <a href="{{ route('theme.switch', 'modern') }}" class="btn {{ session('sim_lppm_app_theme','classic') === 'modern' ? 'btn-primary' : 'btn-outline-secondary' }}">Modern</a>
+                            <a href="{{ route('theme.switch', 'classic') }}" class="btn {{ session('sim_lppm_app_theme','classic') === 'classic' ? 'btn-primary' : 'btn-outline-secondary' }}">Klasik</a>
+                        </div>
+                    </div>
+
                     <!-- Role Selector -->
                     @php
                         $user = Auth::user();

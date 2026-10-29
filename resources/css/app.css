@@ -305,3 +305,32 @@ select option {
 [x-cloak] {
     display: none !important;
 }
+
+/* === Theme: Modern (cyan/blue) === */
+body.theme-modern {
+    --tblr-primary: #0ea5e9;
+    --tblr-primary-rgb: 14, 165, 233;
+    --tblr-body-bg: #0f172a;
+    --tblr-body-color: #e2e8f0;
+    --tblr-card-bg: rgba(15, 23, 42, 0.85);
+    --tblr-border-color: rgba(56, 189, 248, 0.3);
+}
+body.theme-modern .page {
+    background: radial-gradient(circle at 50% 0%, rgba(14, 165, 233, 0.08) 0%, #0f172a 100%);
+}
+body.theme-modern .card {
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 30px -10px rgba(2, 132, 199, 0.25);
+    border-radius: 1.25rem;
+}
+body.theme-modern .btn-primary {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    border: none;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+}
+body.theme-modern .glow-cyan-text {
+    color: #38bdf8;
+    text-shadow: 0 0 16px rgba(56, 189, 248, 0.6);
+}

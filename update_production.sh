@@ -1,5 +1,5 @@
 #!/bin/bash
-# update_production.sh — Script update cPanel (versi simpel)
+PLATE# update_production.sh — Script update cPanel (versi simpel)
 # Vetted by AI - Manual Review Required by Senior Engineer/Manager
 
 set -euo pipefail
