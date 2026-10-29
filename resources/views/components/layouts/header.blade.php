@@ -290,12 +290,5 @@
         </div>
     </header>
 </div>
-<script>
-    document.addEventListener('click', function (e) {
-        if (e.target.closest('.dropdown-menu')) return;
-        if (e.target.closest('[aria-label="Open user menu"], [aria-label="Switch role"], [aria-label="Show notifications"]')) return;
-        document.querySelectorAll('.dropdown-menu.show').forEach(function (m) { m.classList.remove('show'); });
-    });
-</script>
 
 <!-- END NAVBAR  -->
