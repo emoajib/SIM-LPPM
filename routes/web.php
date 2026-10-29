@@ -16,6 +16,7 @@ use App\Http\Controllers\ReviewExportController;
 use App\Http\Controllers\RoleSwitcherController;
 use App\Http\Controllers\Settings\BackupDownloadController;
 use App\Http\Controllers\Settings\PdfPreviewController;
+use App\Http\Controllers\ThemeSwitcherController;
 use App\Http\Controllers\Settings\ProposalTemplateUploadController;
 use App\Http\Controllers\SintaExportController;
 use App\Livewire\Admin\Archive\ManageArchives;
@@ -115,8 +116,11 @@ Route::redirect('/', 'dashboard', 302);
 Route::get('theme/{theme}', function ($theme) {
     $theme = in_array($theme, ['modern', 'classic']) ? $theme : 'classic';
     session(['sim_lppm_app_theme' => $theme]);
-    return redirect()->back();
+    session(['sim_lppm_dashboard_theme' => $theme]);
+    return redirect()->back()->withCookie(cookie('sim_lppm_app_theme', $theme, 60 * 24 * 365));
 })->name('theme.switch');
+
+Route::post('theme/switch', [ThemeSwitcherController::class, 'switch'])->name('theme.switch.post');
 
 Route::get('dashboard', Dashboard::class)
     ->middleware(['auth', 'verified'])
