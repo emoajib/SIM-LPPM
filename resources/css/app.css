@@ -379,8 +379,8 @@ body.theme-modern .table thead th {
 }
 body.theme-modern .form-control,
 body.theme-modern .form-select {
-    background: rgba(15, 23, 42, 0.6);
-    color: #e2e8f0;
+    background: #ffffff;
+    color: #1f2937;
     border: 1px solid rgba(56, 189, 248, 0.3);
 }
 body.theme-modern .form-control:focus,

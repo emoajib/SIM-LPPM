@@ -66,12 +66,18 @@ class Dashboard extends Component
                     ? MandatoryOutput::count()
                     : 0;
 
+                $totalDana = Proposal::query()
+                    ->whereIn('status', ['approved', 'completed', 'reviewed'])
+                    ->get()
+                    ->sum(fn ($p) => $p->approved_budget_total);
+
                 return [
                     'total_usulan' => $totalUsulan,
                     'total_didanai' => $totalDidanai,
                     'total_pkm' => $totalPkm,
                     'total_pkm_didanai' => $totalPkmDidanai,
                     'total_luaran' => $totalLuaran,
+                    'total_dana_m' => round($totalDana / 1000000, 1),
                 ];
             } catch (\Throwable $e) {
                 return [
@@ -89,7 +95,8 @@ class Dashboard extends Component
     {
         try {
             $rows = Proposal::query()
-                ->select(['start_year', 'detailable_type', 'status'])
+                ->select(['id', 'start_year', 'detailable_type', 'status', 'sbk_value'])
+                ->with('activeBudgetItems:id,proposal_id,total_price')
                 ->get();
 
             $years = range((int) date('Y') - 5, (int) date('Y'));
@@ -100,13 +107,15 @@ class Dashboard extends Component
                 $didanaiPenelitian = $yr->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'Research') && in_array($r->status instanceof \BackedEnum ? $r->status->value : $r->status, ['approved', 'completed', 'reviewed']))->count();
                 $usulanPengabdian = $yr->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'CommunityService'))->count();
                 $didanaiPengabdian = $yr->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'CommunityService') && in_array($r->status instanceof \BackedEnum ? $r->status->value : $r->status, ['approved', 'completed', 'reviewed']))->count();
+                $danaTotal = $yr->filter(fn ($r) => in_array($r->status instanceof \BackedEnum ? $r->status->value : $r->status, ['approved', 'completed', 'reviewed']))
+                    ->sum(fn ($r) => $r->approved_budget_total);
                 $data[] = [
                     'year' => (string) $y,
                     'usulanPenelitian' => $usulanPenelitian,
                     'didanaiPenelitian' => $didanaiPenelitian,
                     'usulanPengabdian' => $usulanPengabdian,
                     'didanaiPengabdian' => $didanaiPengabdian,
-                    'danaTotalJuta' => 0,
+                    'danaTotalJuta' => round($danaTotal / 1000000, 1),
                     'catatan' => '',
                 ];
             }

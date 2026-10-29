@@ -10,7 +10,7 @@
     $totalDidanai = $stats['total_didanai'] ?? 0;
     $fundingRate = $totalUsulan > 0 ? round(($totalDidanai / $totalUsulan) * 100, 1) : 0;
     $totalLuaran = $stats['total_luaran'] ?? 0;
-    $totalDanaM = '0';
+    $totalDanaM = $stats['total_dana_m'] ?? 0;
 
     // Indonesian formatted date
     $days = ['Sunday' => 'Minggu', 'Monday' => 'Senin', 'Tuesday' => 'Selasa', 'Wednesday' => 'Rabu', 'Thursday' => 'Kamis', 'Friday' => 'Jumat', 'Saturday' => 'Sabtu'];
@@ -344,9 +344,11 @@
                     👋 MOTIVASI & SALAM
                 </span>
 
+                @if(auth()->user()?->activeHasAnyRole(['admin lppm', 'superadmin']))
                 <button type="button" onclick="sliOpenModal()" class="sli-badge-pill" style="background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.3); color: #ffffff; cursor: pointer; margin-left: auto;">
                     ⚙️ Kelola Pengumuman/Jadwal
                 </button>
+                @endif
             </div>
 
             <!-- Personalized Greeting -->
