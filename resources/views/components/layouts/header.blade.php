@@ -291,23 +291,48 @@
     </header>
 </div>
 <script>
+    function positionMenuFixed(toggle, menu) {
+        var rect = toggle.getBoundingClientRect();
+        menu.style.position = 'fixed';
+        menu.style.top = (rect.bottom + 4) + 'px';
+        menu.style.left = Math.max(8, rect.right - menu.offsetWidth) + 'px';
+        menu.style.zIndex = '2147483647';
+    }
     document.addEventListener('click', function (e) {
-        var toggle = e.target.closest('.nav-item.dropdown > a.nav-link');
+        var toggle = e.target.closest('.nav-item.dropdown > a.nav-link, [aria-label="Show notifications"]');
         if (toggle && !e.target.closest('.dropdown-menu')) {
             e.preventDefault();
             var dd = toggle.parentElement;
+            // notification dropdown root may be different
             var menu = dd.querySelector('.dropdown-menu');
+            if (!menu) {
+                // search up
+                var root = toggle.closest('div');
+                menu = root ? root.querySelector('.dropdown-menu') : null;
+            }
             // close others
-            document.querySelectorAll('.nav-item.dropdown .dropdown-menu.show').forEach(function (m) {
+            document.querySelectorAll('.dropdown-menu.show').forEach(function (m) {
                 if (m !== menu) m.classList.remove('show');
             });
-            if (menu) menu.classList.toggle('show');
+            if (menu) {
+                var willShow = !menu.classList.contains('show');
+                if (willShow) {
+                    menu.classList.add('show');
+                    // position after display
+                    requestAnimationFrame(function () { positionMenuFixed(toggle, menu); });
+                } else {
+                    menu.classList.remove('show');
+                }
+            }
             return;
         }
         // close dropdowns when clicking outside
-        if (!e.target.closest('.nav-item.dropdown') && !e.target.closest('livewire-notification') && !e.target.closest('[wire\\:id]')) {
+        if (!e.target.closest('.nav-item.dropdown') && !e.target.closest('[wire\\:id]')) {
             document.querySelectorAll('.dropdown-menu.show').forEach(function (m) { m.classList.remove('show'); });
         }
     });
+    window.addEventListener('scroll', function () {
+        document.querySelectorAll('.dropdown-menu.show').forEach(function (m) { m.classList.remove('show'); });
+    }, true);
 </script>
 <!-- END NAVBAR  -->
