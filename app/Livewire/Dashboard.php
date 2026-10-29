@@ -101,11 +101,11 @@ class Dashboard extends Component
 
         return view('livewire.dashboard.main-dashboard', [
             'pageTitle' => $titles['title'],
-            'pageSubtitle' => $titles['subtitle'],
+            'pageSubtitle' => $titles['subtitle'] ?? null,
             'infographicStats' => $infographicStats,
         ])->layoutData([
             'pageTitle' => $titles['title'],
-            'pageSubtitle' => $titles['subtitle'],
+            'pageSubtitle' => $titles['subtitle'] ?? null,
         ]);
     }
 }
