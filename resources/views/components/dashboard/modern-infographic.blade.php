@@ -1507,12 +1507,22 @@
         }
     }, 6000);
 
-    // Initial boot
-    renderBanner();
-    renderCapsuleBarChart();
-    renderMountainSplineChart();
-    renderYearInspection();
-    renderTable();
+    function renderAll() {
+        renderBanner();
+        renderCapsuleBarChart();
+        renderMountainSplineChart();
+        renderYearInspection();
+        renderTable();
+    }
 
+    window.sliInit = renderAll;
+    renderAll();
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', renderAll);
+    }
+    document.addEventListener('livewire:initialized', renderAll);
+    document.addEventListener('livewire:navigated', renderAll);
+    document.addEventListener('livewire:load', renderAll);
 })();
 </script>
