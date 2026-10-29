@@ -83,8 +83,8 @@
                     @endphp
                     @if ($roles->count() > 0)
                         <div class="nav-item dropdown">
-                            <a href="#" class="d-flex align-items-center px-2 nav-link" onclick="event.preventDefault(); var m=this.parentElement.querySelector('.dropdown-menu'); m.classList.toggle('show'); return false;"
-                                aria-label="Switch role">
+                            <a href="#" class="d-flex align-items-center px-2 nav-link" data-bs-toggle="dropdown"
+                                aria-label="Switch role" data-bs-auto-close="outside" aria-expanded="false">
                                 @if ($activeRole)
                                     <div class="d-flex align-items-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
@@ -164,7 +164,7 @@
                 </div>
 
                 <div class="nav-item dropdown">
-                    <a href="#" class="d-flex p-0 px-2 nav-link lh-1" data-profile-toggle
+                    <a href="#" class="d-flex p-0 px-2 nav-link lh-1" data-bs-toggle="dropdown"
                         aria-label="Open user menu">
                         <x-user-avatar :user="auth()->user()" size="avatar-sm" />
                         <div class="d-xl-block ps-2 d-none">
@@ -290,49 +290,5 @@
         </div>
     </header>
 </div>
-<script>
-    function positionMenuFixed(toggle, menu) {
-        var rect = toggle.getBoundingClientRect();
-        menu.style.position = 'fixed';
-        menu.style.top = (rect.bottom + 4) + 'px';
-        menu.style.left = Math.max(8, rect.right - menu.offsetWidth) + 'px';
-        menu.style.zIndex = '2147483647';
-    }
-    document.addEventListener('click', function (e) {
-        var toggle = e.target.closest('.nav-item.dropdown > a.nav-link, [aria-label="Show notifications"]');
-        if (toggle && !e.target.closest('.dropdown-menu')) {
-            e.preventDefault();
-            var dd = toggle.parentElement;
-            // notification dropdown root may be different
-            var menu = dd.querySelector('.dropdown-menu');
-            if (!menu) {
-                // search up
-                var root = toggle.closest('div');
-                menu = root ? root.querySelector('.dropdown-menu') : null;
-            }
-            // close others
-            document.querySelectorAll('.dropdown-menu.show').forEach(function (m) {
-                if (m !== menu) m.classList.remove('show');
-            });
-            if (menu) {
-                var willShow = !menu.classList.contains('show');
-                if (willShow) {
-                    menu.classList.add('show');
-                    // position after display
-                    requestAnimationFrame(function () { positionMenuFixed(toggle, menu); });
-                } else {
-                    menu.classList.remove('show');
-                }
-            }
-            return;
-        }
-        // close dropdowns when clicking outside
-        if (!e.target.closest('.nav-item.dropdown') && !e.target.closest('[wire\\:id]')) {
-            document.querySelectorAll('.dropdown-menu.show').forEach(function (m) { m.classList.remove('show'); });
-        }
-    });
-    window.addEventListener('scroll', function () {
-        document.querySelectorAll('.dropdown-menu.show').forEach(function (m) { m.classList.remove('show'); });
-    }, true);
-</script>
+
 <!-- END NAVBAR  -->
