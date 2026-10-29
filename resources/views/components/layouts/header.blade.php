@@ -53,12 +53,12 @@
                         </a>
                     </div>
 
-                    <!-- Theme Switcher -->
+                    <!-- Theme Switcher (single toggle) -->
                     <div class="nav-item d-none d-md-flex me-2">
-                        <div class="btn-group btn-group-sm" role="group">
-                            <a href="{{ route('theme.switch', 'modern') }}" class="btn {{ session('sim_lppm_app_theme','classic') === 'modern' ? 'btn-primary' : 'btn-outline-secondary' }}">Modern</a>
-                            <a href="{{ route('theme.switch', 'classic') }}" class="btn {{ session('sim_lppm_app_theme','classic') === 'classic' ? 'btn-primary' : 'btn-outline-secondary' }}">Klasik</a>
-                        </div>
+                        @php $isModern = session('sim_lppm_app_theme','classic') === 'modern'; @endphp
+                        <a href="{{ route('theme.switch', $isModern ? 'classic' : 'modern') }}" class="btn btn-sm {{ $isModern ? 'btn-primary' : 'btn-outline-secondary' }}" title="Ganti tema">
+                            {{ $isModern ? 'Klasik' : 'Modern' }}
+                        </a>
                     </div>
 
                     <!-- Role Selector -->
