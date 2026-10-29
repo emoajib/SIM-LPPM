@@ -87,7 +87,7 @@
                                             </span>
                                             <div class="mt-1">
                                                 <span class="badge bg-soft-primary text-primary text-uppercase px-2"
-                                                    style="font-size: 0.65rem;">
+                                                    style="font-size: 0.75rem;">
                                                     @if($output->model_type === 'policy')
                                                         {{ $output->level }}
                                                     @else

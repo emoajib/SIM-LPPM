@@ -100,9 +100,9 @@
             display: inline-flex;
             align-items: center;
             gap: 0.375rem;
-            padding: 0.2rem 0.65rem;
+            padding: 0.2rem 0.75rem;
             border-radius: 9999px;
-            font-size: 0.65rem;
+            font-size: 0.75rem;
             font-weight: 800;
             letter-spacing: 0.05em;
             text-transform: uppercase;
@@ -116,7 +116,7 @@
             border-radius: 0.75rem;
             padding: 0.75rem 0.9rem;
             color: #ffffff;
-            margin-top: 0.65rem;
+            margin-top: 0.75rem;
             transition: all 0.3s ease;
         }
 
@@ -365,7 +365,7 @@
                             <span id="sli-bulletin-title" style="font-weight: 800; font-size: 0.75rem; color: #67e8f9; text-transform: uppercase;">
                                 Salam Semangat Tri Dharma
                             </span>
-                            <span id="sli-bulletin-date" style="font-size: 0.65rem; color: rgba(255, 255, 255, 0.7); font-family: monospace;">
+                            <span id="sli-bulletin-date" style="font-size: 0.75rem; color: rgba(255, 255, 255, 0.7); font-family: monospace;">
                                 • {{ $fullIndoDate }}
                             </span>
                         </div>
@@ -379,7 +379,7 @@
                         <button type="button" onclick="sliPrevBulletin()" style="width: 1.5rem; height: 1.5rem; border-radius: 0.25rem; background: rgba(255, 255, 255, 0.15); border: none; color: #ffffff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem;">
                             ◀
                         </button>
-                        <span id="sli-bulletin-counter" style="font-size: 0.65rem; font-family: monospace; font-weight: 800; padding: 0 0.25rem; color: rgba(255, 255, 255, 0.85);">
+                        <span id="sli-bulletin-counter" style="font-size: 0.75rem; font-family: monospace; font-weight: 800; padding: 0 0.25rem; color: rgba(255, 255, 255, 0.85);">
                             1/4
                         </span>
                         <button type="button" onclick="sliNextBulletin()" style="width: 1.5rem; height: 1.5rem; border-radius: 0.25rem; background: rgba(255, 255, 255, 0.15); border: none; color: #ffffff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem;">
@@ -402,7 +402,7 @@
             <div>
                 <div class="sli-stat-val">{{ $totalUsulan }}</div>
                 <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">Total Usulan Masuk</div>
-                <div style="font-size: 0.65rem; opacity: 0.85;">Penelitian & Pengabdian</div>
+                <div style="font-size: 0.75rem; opacity: 0.85;">Penelitian & Pengabdian</div>
             </div>
             <div style="width: 2.5rem; height: 2.5rem; border-radius: 9999px; background: rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
                 📄
@@ -413,7 +413,7 @@
             <div>
                 <div class="sli-stat-val">{{ $totalDidanai }}</div>
                 <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">Proposal Didanai</div>
-                <div style="font-size: 0.65rem; opacity: 0.85;">{{ $fundingRate }}% Rasio Lolos Seleksi</div>
+                <div style="font-size: 0.75rem; opacity: 0.85;">{{ $fundingRate }}% Rasio Lolos Seleksi</div>
             </div>
             <div style="width: 2.5rem; height: 2.5rem; border-radius: 9999px; background: rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
                 🎯
@@ -424,7 +424,7 @@
             <div>
                 <div class="sli-stat-val">Rp {{ $totalDanaM }} M</div>
                 <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">Realisasi Anggaran</div>
-                <div style="font-size: 0.65rem; opacity: 0.85;">Terserap Hibah LPPM</div>
+                <div style="font-size: 0.75rem; opacity: 0.85;">Terserap Hibah LPPM</div>
             </div>
             <div style="width: 2.5rem; height: 2.5rem; border-radius: 9999px; background: rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
                 💰
@@ -435,7 +435,7 @@
             <div>
                 <div class="sli-stat-val">{{ $totalLuaran }}</div>
                 <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">Luaran & Publikasi</div>
-                <div style="font-size: 0.65rem; opacity: 0.85;">Jurnal Sinta, HKI & BASTB</div>
+                <div style="font-size: 0.75rem; opacity: 0.85;">Jurnal Sinta, HKI & BASTB</div>
             </div>
             <div style="width: 2.5rem; height: 2.5rem; border-radius: 9999px; background: rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
                 🏆
@@ -466,26 +466,26 @@
                 <!-- Scheme Filters -->
                 <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;">
                     <div style="background: #f1f5f9; padding: 0.2rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; display: flex; font-size: 0.75rem;">
-                        <button type="button" id="btn-scheme-all" onclick="sliSetScheme('all')" style="padding: 0.25rem 0.65rem; border-radius: 0.375rem; border: none; font-weight: 700; cursor: pointer; background: #ffffff; color: #0c4a6e; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                        <button type="button" id="btn-scheme-all" onclick="sliSetScheme('all')" style="padding: 0.25rem 0.75rem; border-radius: 0.375rem; border: none; font-weight: 700; cursor: pointer; background: #ffffff; color: #0c4a6e; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                             Semua Skema
                         </button>
-                        <button type="button" id="btn-scheme-penelitian" onclick="sliSetScheme('penelitian')" style="padding: 0.25rem 0.65rem; border-radius: 0.375rem; border: none; font-weight: 600; cursor: pointer; background: transparent; color: #64748b;">
+                        <button type="button" id="btn-scheme-penelitian" onclick="sliSetScheme('penelitian')" style="padding: 0.25rem 0.75rem; border-radius: 0.375rem; border: none; font-weight: 600; cursor: pointer; background: transparent; color: #64748b;">
                             Penelitian
                         </button>
-                        <button type="button" id="btn-scheme-pengabdian" onclick="sliSetScheme('pengabdian')" style="padding: 0.25rem 0.65rem; border-radius: 0.375rem; border: none; font-weight: 600; cursor: pointer; background: transparent; color: #64748b;">
+                        <button type="button" id="btn-scheme-pengabdian" onclick="sliSetScheme('pengabdian')" style="padding: 0.25rem 0.75rem; border-radius: 0.375rem; border: none; font-weight: 600; cursor: pointer; background: transparent; color: #64748b;">
                             Pengabdian
                         </button>
                     </div>
 
                     <!-- View Layout Selector -->
                     <div style="background: #f1f5f9; padding: 0.2rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; display: flex; font-size: 0.75rem;">
-                        <button type="button" id="btn-layout-both" onclick="sliSetLayout('both')" title="Infografis Lengkap" style="padding: 0.25rem 0.55rem; border-radius: 0.375rem; border: none; font-weight: 700; cursor: pointer; background: #0891b2; color: #ffffff;">
+                        <button type="button" id="btn-layout-both" onclick="sliSetLayout('both')" title="Infografis Lengkap" style="padding: 0.25rem 0.75rem; border-radius: 0.375rem; border: none; font-weight: 700; cursor: pointer; background: #0891b2; color: #ffffff;">
                             Infografis
                         </button>
-                        <button type="button" id="btn-layout-bar" onclick="sliSetLayout('bar')" title="Fokus Grafik Batang Kapsul" style="padding: 0.25rem 0.55rem; border-radius: 0.375rem; border: none; font-weight: 600; cursor: pointer; background: transparent; color: #64748b;">
+                        <button type="button" id="btn-layout-bar" onclick="sliSetLayout('bar')" title="Fokus Grafik Batang Kapsul" style="padding: 0.25rem 0.75rem; border-radius: 0.375rem; border: none; font-weight: 600; cursor: pointer; background: transparent; color: #64748b;">
                             📊
                         </button>
-                        <button type="button" id="btn-layout-trend" onclick="sliSetLayout('trend')" title="Fokus Kurva Area Mountain" style="padding: 0.25rem 0.55rem; border-radius: 0.375rem; border: none; font-weight: 600; cursor: pointer; background: transparent; color: #64748b;">
+                        <button type="button" id="btn-layout-trend" onclick="sliSetLayout('trend')" title="Fokus Kurva Area Mountain" style="padding: 0.25rem 0.75rem; border-radius: 0.375rem; border: none; font-weight: 600; cursor: pointer; background: transparent; color: #64748b;">
                             📈
                         </button>
                     </div>
@@ -525,7 +525,7 @@
                             <span id="sli-gauge-val-1" style="font-size: 1.5rem; font-weight: 900; color: #ffffff; font-family: monospace; line-height: 1;">
                                 {{ $fundingRate }}%
                             </span>
-                            <span style="font-size: 0.55rem; text-transform: uppercase; font-weight: 800; color: #cffafe; letter-spacing: 0.05em; margin-top: 0.15rem;">
+                            <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 800; color: #cffafe; letter-spacing: 0.05em; margin-top: 0.15rem;">
                                 Rasio Lolos
                             </span>
                         </div>
@@ -558,7 +558,7 @@
                             <span style="font-size: 1.5rem; font-weight: 900; color: #ffffff; font-family: monospace; line-height: 1;">
                                 72%
                             </span>
-                            <span style="font-size: 0.55rem; text-transform: uppercase; font-weight: 800; color: #e0e7ff; letter-spacing: 0.05em; margin-top: 0.15rem;">
+                            <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 800; color: #e0e7ff; letter-spacing: 0.05em; margin-top: 0.15rem;">
                                 Monev 70%
                             </span>
                         </div>
@@ -591,7 +591,7 @@
                             <span style="font-size: 1.5rem; font-weight: 900; color: #ffffff; font-family: monospace; line-height: 1;">
                                 85%
                             </span>
-                            <span style="font-size: 0.55rem; text-transform: uppercase; font-weight: 800; color: #cffafe; letter-spacing: 0.05em; margin-top: 0.15rem;">
+                            <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 800; color: #cffafe; letter-spacing: 0.05em; margin-top: 0.15rem;">
                                 Realisasi
                             </span>
                         </div>
@@ -625,7 +625,7 @@
                     <div id="sli-cap-val-1" style="font-size: 1.35rem; font-weight: 900; font-family: monospace; margin: 0.25rem 0; color: #ffffff;">
                         {{ $totalUsulan }} <span style="font-size: 0.75rem; font-weight: 400; color: #bae6fd;">Judul</span>
                     </div>
-                    <p style="margin: 0; font-size: 0.65rem; color: rgba(255,255,255,0.85); line-height: 1.25;">
+                    <p style="margin: 0; font-size: 0.75rem; color: rgba(255,255,255,0.85); line-height: 1.25;">
                         Proposal baru masuk & surat bebas plagiat
                     </p>
                 </div>
@@ -646,7 +646,7 @@
                     <div id="sli-cap-val-2" style="font-size: 1.35rem; font-weight: 900; font-family: monospace; margin: 0.25rem 0; color: #ffffff;">
                         {{ round($totalUsulan * 0.88) }} <span style="font-size: 0.75rem; font-weight: 400; color: #bae6fd;">Lolos</span>
                     </div>
-                    <p style="margin: 0; font-size: 0.65rem; color: rgba(255,255,255,0.85); line-height: 1.25;">
+                    <p style="margin: 0; font-size: 0.75rem; color: rgba(255,255,255,0.85); line-height: 1.25;">
                         Penilaian reviewer & telaah etik riset
                     </p>
                 </div>
@@ -667,7 +667,7 @@
                     <div id="sli-cap-val-3" style="font-size: 1.35rem; font-weight: 900; font-family: monospace; margin: 0.25rem 0; color: #ffffff;">
                         {{ $totalDidanai }} <span style="font-size: 0.75rem; font-weight: 400; color: #bae6fd;">SK</span>
                     </div>
-                    <p style="margin: 0; font-size: 0.65rem; color: rgba(255,255,255,0.85); line-height: 1.25;">
+                    <p style="margin: 0; font-size: 0.75rem; color: rgba(255,255,255,0.85); line-height: 1.25;">
                         Surat tugas, SPK bermaterai & termin dana
                     </p>
                 </div>
@@ -688,7 +688,7 @@
                     <div id="sli-cap-val-4" style="font-size: 1.35rem; font-weight: 900; font-family: monospace; margin: 0.25rem 0; color: #ffffff;">
                         38 <span style="font-size: 0.75rem; font-weight: 400; color: #bae6fd;">BASTB</span>
                     </div>
-                    <p style="margin: 0; font-size: 0.65rem; color: rgba(255,255,255,0.85); line-height: 1.25;">
+                    <p style="margin: 0; font-size: 0.75rem; color: rgba(255,255,255,0.85); line-height: 1.25;">
                         Laporan akhir, SPTB 100% & artikel Sinta
                     </p>
                 </div>
@@ -709,10 +709,10 @@
                     </div>
                     <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.7rem;">
                         <span style="display: flex; align-items: center; gap: 0.25rem; font-weight: 700; color: #0891b2;">
-                            <span style="width: 0.55rem; height: 0.55rem; border-radius: 9999px; background: #22d3ee;"></span> Usulan
+                            <span style="width: 0.75rem; height: 0.75rem; border-radius: 9999px; background: #22d3ee;"></span> Usulan
                         </span>
                         <span style="display: flex; align-items: center; gap: 0.25rem; font-weight: 700; color: #1d4ed8;">
-                            <span style="width: 0.55rem; height: 0.55rem; border-radius: 9999px; background: #2563eb;"></span> Didanai
+                            <span style="width: 0.75rem; height: 0.75rem; border-radius: 9999px; background: #2563eb;"></span> Didanai
                         </span>
                     </div>
                 </div>
@@ -724,7 +724,7 @@
                     </svg>
                 </div>
 
-                <p style="margin: 0; font-size: 0.65rem; color: #64748b; text-align: center; font-weight: 500;">
+                <p style="margin: 0; font-size: 0.75rem; color: #64748b; text-align: center; font-weight: 500;">
                     Setiap kolom menampilkan kapsul Usulan (cyan) dan Didanai (royal blue) dengan indikator simpul bead di puncak kapsul.
                 </p>
             </div>
@@ -738,7 +738,7 @@
                             Grafik Kurva Gelombang Mountain (Spline)
                         </h4>
                     </div>
-                    <span id="sli-trend-badge" style="font-size: 0.65rem; font-family: monospace; font-weight: 700; color: #64748b; background: #ffffff; padding: 0.15rem 0.5rem; border-radius: 0.25rem; border: 1px solid #e2e8f0;">
+                    <span id="sli-trend-badge" style="font-size: 0.75rem; font-family: monospace; font-weight: 700; color: #64748b; background: #ffffff; padding: 0.15rem 0.5rem; border-radius: 0.25rem; border: 1px solid #e2e8f0;">
                         Akumulasi: {{ $fundingRate }}% Lolos
                     </span>
                 </div>
@@ -750,7 +750,7 @@
                     </svg>
                 </div>
 
-                <p style="margin: 0; font-size: 0.65rem; color: #64748b; text-align: center; font-weight: 500;">
+                <p style="margin: 0; font-size: 0.75rem; color: #64748b; text-align: center; font-weight: 500;">
                     Kurva Mountain Wave menampilkan lintasan pertumbuhan proposal dengan simpul puncak data interaktif.
                 </p>
             </div>
@@ -760,13 +760,13 @@
         <div class="sli-year-inspect">
             <div style="display: flex; align-items: center; gap: 0.75rem;">
                 <div style="width: 3rem; height: 3rem; border-radius: 0.75rem; background: linear-gradient(135deg, #06b6d4 0%, #1d4ed8 100%); color: #ffffff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: monospace; font-weight: 900; line-height: 1; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 2px 4px rgba(2, 132, 199, 0.2);">
-                    <span style="font-size: 0.55rem; text-transform: uppercase; color: #cffafe;">TAHUN</span>
+                    <span style="font-size: 0.75rem; text-transform: uppercase; color: #cffafe;">TAHUN</span>
                     <span id="sli-active-year" style="font-size: 1rem; font-weight: 900;">2026</span>
                 </div>
                 <div>
                     <div style="font-weight: 800; font-size: 0.8rem; color: #0f172a; display: flex; align-items: center; gap: 0.5rem;">
                         <span id="sli-inspect-title">Rincian Volume Usulan & Pendanaan 2026</span>
-                        <span id="sli-active-rate" style="font-size: 0.65rem; font-weight: 800; color: #0369a1; background: #e0f2fe; padding: 0.15rem 0.5rem; border-radius: 9999px; border: 1px solid #bae6fd;">
+                        <span id="sli-active-rate" style="font-size: 0.75rem; font-weight: 800; color: #0369a1; background: #e0f2fe; padding: 0.15rem 0.5rem; border-radius: 9999px; border: 1px solid #bae6fd;">
                             Tingkat Kelolosan: 70.4%
                         </span>
                     </div>
@@ -778,16 +778,16 @@
 
             <!-- Quick Metrics for Active Year -->
             <div style="display: flex; align-items: center; gap: 0.5rem; font-family: monospace;">
-                <div style="padding: 0.35rem 0.65rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.5rem; text-align: right; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
-                    <div style="font-size: 0.55rem; color: #64748b; text-transform: uppercase; font-family: sans-serif; font-weight: 700;">Usulan Masuk</div>
+                <div style="padding: 0.35rem 0.75rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.5rem; text-align: right; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
+                    <div style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; font-family: sans-serif; font-weight: 700;">Usulan Masuk</div>
                     <div id="sli-inspect-usulan" style="font-weight: 900; color: #0369a1; font-size: 0.85rem;">54 Proposal</div>
                 </div>
-                <div style="padding: 0.35rem 0.65rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.5rem; text-align: right; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
-                    <div style="font-size: 0.55rem; color: #64748b; text-transform: uppercase; font-family: sans-serif; font-weight: 700;">Didanai LPPM</div>
+                <div style="padding: 0.35rem 0.75rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.5rem; text-align: right; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
+                    <div style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; font-family: sans-serif; font-weight: 700;">Didanai LPPM</div>
                     <div id="sli-inspect-didanai" style="font-weight: 900; color: #1d4ed8; font-size: 0.85rem;">38 Proposal</div>
                 </div>
-                <div style="padding: 0.35rem 0.65rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.5rem; text-align: right; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
-                    <div style="font-size: 0.55rem; color: #64748b; text-transform: uppercase; font-family: sans-serif; font-weight: 700;">Total Dana</div>
+                <div style="padding: 0.35rem 0.75rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.5rem; text-align: right; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
+                    <div style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; font-family: sans-serif; font-weight: 700;">Total Dana</div>
                     <div id="sli-inspect-dana" style="font-weight: 900; color: #0f172a; font-size: 0.85rem;">Rp 1.080 Jt</div>
                 </div>
             </div>
@@ -804,13 +804,13 @@
                 <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.75rem; color: #334155;">
                     <thead style="background: #f8fafc; font-size: 0.7rem; font-weight: 800; color: #1e293b; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #e2e8f0;">
                         <tr>
-                            <th style="padding: 0.65rem 0.75rem;">Tahun Akademik</th>
-                            <th style="padding: 0.65rem 0.75rem; text-align: right;">Usulan (Diunggah)</th>
-                            <th style="padding: 0.65rem 0.75rem; text-align: right;">Didanai LPPM</th>
-                            <th style="padding: 0.65rem 0.75rem; text-align: right;">Tidak Didanai</th>
-                            <th style="padding: 0.65rem 0.75rem; text-align: right;">Tingkat Lolos (%)</th>
-                            <th style="padding: 0.65rem 0.75rem; text-align: right;">Penyaluran Dana</th>
-                            <th style="padding: 0.65rem 0.75rem;">Catatan Administrasi</th>
+                            <th style="padding: 0.75rem 0.75rem;">Tahun Akademik</th>
+                            <th style="padding: 0.75rem 0.75rem; text-align: right;">Usulan (Diunggah)</th>
+                            <th style="padding: 0.75rem 0.75rem; text-align: right;">Didanai LPPM</th>
+                            <th style="padding: 0.75rem 0.75rem; text-align: right;">Tidak Didanai</th>
+                            <th style="padding: 0.75rem 0.75rem; text-align: right;">Tingkat Lolos (%)</th>
+                            <th style="padding: 0.75rem 0.75rem; text-align: right;">Penyaluran Dana</th>
+                            <th style="padding: 0.75rem 0.75rem;">Catatan Administrasi</th>
                         </tr>
                     </thead>
                     <tbody id="sli-table-body" style="font-family: monospace;">
@@ -827,7 +827,7 @@
         <div class="sli-modal-dialog">
             <!-- Modal Header -->
             <div style="background: linear-gradient(135deg, #0891b2 0%, #0284c7 50%, #1d4ed8 100%); color: #ffffff; padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between;">
-                <div style="display: flex; align-items: center; gap: 0.65rem;">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
                     <div style="width: 2rem; height: 2rem; border-radius: 0.5rem; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 1rem;">
                         📢
                     </div>
@@ -835,7 +835,7 @@
                         <h3 style="margin: 0; font-size: 0.85rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.03em;">
                             Kelola Pengumuman, Jadwal & Berita LPPM
                         </h3>
-                        <p style="margin: 0; font-size: 0.65rem; color: #cffafe;">
+                        <p style="margin: 0; font-size: 0.75rem; color: #cffafe;">
                             Kelola pesan sambutan, batas waktu kegiatan, dan pengumuman resmi dosen
                         </p>
                     </div>
@@ -858,9 +858,9 @@
                         </button>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 0.65rem; margin-bottom: 0.65rem;">
+                    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 0.75rem; margin-bottom: 0.75rem;">
                         <div>
-                            <label style="display: block; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: #475569; margin-bottom: 0.25rem;">
+                            <label style="display: block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #475569; margin-bottom: 0.25rem;">
                                 Kategori
                             </label>
                             <select id="sli-input-type" style="width: 100%; font-size: 0.75rem; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 0.5rem; padding: 0.35rem 0.5rem;">
@@ -871,23 +871,23 @@
                             </select>
                         </div>
                         <div>
-                            <label style="display: block; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: #475569; margin-bottom: 0.25rem;">
+                            <label style="display: block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #475569; margin-bottom: 0.25rem;">
                                 Judul / Topik Ringkas
                             </label>
                             <input type="text" id="sli-input-title" placeholder="Contoh: Batas Akhir Unggah SPTB 70%" style="width: 100%; font-size: 0.75rem; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 0.5rem; padding: 0.35rem 0.5rem;">
                         </div>
                     </div>
 
-                    <div style="margin-bottom: 0.65rem;">
-                        <label style="display: block; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: #475569; margin-bottom: 0.25rem;">
+                    <div style="margin-bottom: 0.75rem;">
+                        <label style="display: block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #475569; margin-bottom: 0.25rem;">
                             Isi Pesan / Pengumuman / Jadwal Lengkap *
                         </label>
                         <textarea id="sli-input-content" rows="2" required placeholder="Tuliskan isi informasi yang akan tampil pada banner selamat datang..." style="width: 100%; font-size: 0.75rem; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 0.5rem; padding: 0.5rem;"></textarea>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; align-items: center; margin-bottom: 0.75rem;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; align-items: center; margin-bottom: 0.75rem;">
                         <div>
-                            <label style="display: block; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: #475569; margin-bottom: 0.25rem;">
+                            <label style="display: block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #475569; margin-bottom: 0.25rem;">
                                 Tanggal / Periode
                             </label>
                             <input type="text" id="sli-input-date" placeholder="Contoh: 15 Juli 2026" style="width: 100%; font-size: 0.75rem; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 0.5rem; padding: 0.35rem 0.5rem;">
@@ -1257,13 +1257,13 @@
         const rateTotal = totalU > 0 ? ((totalD / totalU) * 100).toFixed(1) : 0;
         rowsHtml += `
             <tr style="background: #f8fafc; font-weight: 900; color: #0f172a; border-top: 2px solid #cbd5e1;">
-                <td style="padding: 0.65rem 0.75rem; font-family: sans-serif;">Total Akumulasi</td>
-                <td style="padding: 0.65rem 0.75rem; text-align: right; color: #0c4a6e;">${totalU}</td>
-                <td style="padding: 0.65rem 0.75rem; text-align: right; color: #1e3a8a;">${totalD}</td>
-                <td style="padding: 0.65rem 0.75rem; text-align: right; color: #64748b;">${totalTD}</td>
-                <td style="padding: 0.65rem 0.75rem; text-align: right;">${rateTotal}%</td>
-                <td style="padding: 0.65rem 0.75rem; text-align: right; font-family: sans-serif;">Rp ${(totalDana/1000).toFixed(2)} M</td>
-                <td style="padding: 0.65rem 0.75rem; font-family: sans-serif; font-size: 0.7rem; color: #475569;">Terverifikasi SIM LPPM ITSNU</td>
+                <td style="padding: 0.75rem 0.75rem; font-family: sans-serif;">Total Akumulasi</td>
+                <td style="padding: 0.75rem 0.75rem; text-align: right; color: #0c4a6e;">${totalU}</td>
+                <td style="padding: 0.75rem 0.75rem; text-align: right; color: #1e3a8a;">${totalD}</td>
+                <td style="padding: 0.75rem 0.75rem; text-align: right; color: #64748b;">${totalTD}</td>
+                <td style="padding: 0.75rem 0.75rem; text-align: right;">${rateTotal}%</td>
+                <td style="padding: 0.75rem 0.75rem; text-align: right; font-family: sans-serif;">Rp ${(totalDana/1000).toFixed(2)} M</td>
+                <td style="padding: 0.75rem 0.75rem; font-family: sans-serif; font-size: 0.7rem; color: #475569;">Terverifikasi SIM LPPM ITSNU</td>
             </tr>
         `;
 
@@ -1277,18 +1277,18 @@
         listEl.innerHTML = bulletins.map((b, idx) => {
             const isSelected = activeBulletinIndex === idx;
             return `
-                <div style="padding: 0.65rem 0.75rem; border-bottom: 1px solid #f1f5f9; display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; ${isSelected ? 'background: #ecfeff;' : ''}">
+                <div style="padding: 0.75rem 0.75rem; border-bottom: 1px solid #f1f5f9; display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; ${isSelected ? 'background: #ecfeff;' : ''}">
                     <div style="min-width: 0;">
                         <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; margin-bottom: 0.15rem;">
                             <span style="font-size: 0.6rem; font-weight: 800; text-transform: uppercase; padding: 0.1rem 0.35rem; border-radius: 0.25rem; background: #e2e8f0; color: #334155;">${b.badge}</span>
                             <strong style="font-size: 0.75rem; color: #0f172a;">${b.title}</strong>
-                            <span style="font-size: 0.65rem; color: #94a3b8; font-family: monospace;">(${b.date})</span>
-                            ${isSelected ? '<span style="font-size: 0.55rem; font-weight: 900; background: #0891b2; color: #ffffff; padding: 0.1rem 0.3rem; border-radius: 0.2rem; text-transform: uppercase;">Tampil Sekarang</span>' : ''}
+                            <span style="font-size: 0.75rem; color: #94a3b8; font-family: monospace;">(${b.date})</span>
+                            ${isSelected ? '<span style="font-size: 0.75rem; font-weight: 900; background: #0891b2; color: #ffffff; padding: 0.1rem 0.3rem; border-radius: 0.2rem; text-transform: uppercase;">Tampil Sekarang</span>' : ''}
                         </div>
                         <p style="margin: 0; font-size: 0.7rem; color: #475569; line-height: 1.3;">${b.content}</p>
                     </div>
                     <div style="display: flex; align-items: center; gap: 0.25rem; shrink-0;">
-                        <button type="button" onclick="sliGoToBulletin(${idx})" style="padding: 0.2rem 0.45rem; border-radius: 0.25rem; border: none; font-size: 0.65rem; font-weight: 700; cursor: pointer; ${isSelected ? 'background: #0891b2; color: #ffffff;' : 'background: #e2e8f0; color: #334155;'}">Pilih</button>
+                        <button type="button" onclick="sliGoToBulletin(${idx})" style="padding: 0.2rem 0.45rem; border-radius: 0.25rem; border: none; font-size: 0.75rem; font-weight: 700; cursor: pointer; ${isSelected ? 'background: #0891b2; color: #ffffff;' : 'background: #e2e8f0; color: #334155;'}">Pilih</button>
                         <button type="button" onclick="sliStartEdit('${b.id}')" style="padding: 0.2rem 0.35rem; background: none; border: none; font-size: 0.75rem; cursor: pointer;">✏️</button>
                         <button type="button" onclick="sliDeleteBulletin('${b.id}')" style="padding: 0.2rem 0.35rem; background: none; border: none; font-size: 0.75rem; cursor: pointer; color: #e11d48;">🗑️</button>
                     </div>

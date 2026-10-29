@@ -111,7 +111,7 @@
                             <div>
                                 <h2 class="fw-bolder text-slate-900 mb-0 fs-2 letter-spacing-tight">Audit Konsol Monev</h2>
                                 <div class="d-flex align-items-center gap-2">
-                                    <span class="badge bg-slate-200 text-slate-600 border-0 fw-bold px-2" style="font-size: 0.65rem;">Sesi Penilaian Aktif</span>
+                                    <span class="badge bg-slate-200 text-slate-600 border-0 fw-bold px-2" style="font-size: 0.75rem;">Sesi Penilaian Aktif</span>
                                     <span class="text-slate-500 text-truncate" style="font-size: 0.75rem; max-width: 500px;">{{ $selectedReview->proposal?->title }}</span>
                                 </div>
                             </div>
@@ -390,7 +390,7 @@
                                                 <div class="row g-0 align-items-center py-2 px-2 border-bottom border-slate-50 hover-bg-slate-50 rounded-2 transition-all">
                                                     <div class="col-md-8 pe-3">
                                                         <div class="d-flex gap-2">
-                                                            <div class="bg-blue-50 text-blue-600 rounded-circle fw-bold d-flex align-items-center justify-content-center" style="width: 20px; height: 20px; flex-shrink: 0; font-size: 0.65rem;">{{ $index+1 }}</div>
+                                                            <div class="bg-blue-50 text-blue-600 rounded-circle fw-bold d-flex align-items-center justify-content-center" style="width: 20px; height: 20px; flex-shrink: 0; font-size: 0.75rem;">{{ $index+1 }}</div>
                                                             <div>
                                                                 <div class="fw-bold text-slate-800 fs-5 mb-0">{{ $criteria->criteria }}</div>
                                                                 <p class="text-slate-500 fs-6 mb-0" style="text-align: justify; line-height: 1.3;">{{ $criteria->description }}</p>

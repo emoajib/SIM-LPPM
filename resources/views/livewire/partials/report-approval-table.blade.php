@@ -25,9 +25,9 @@
                             <td class="text-wrap ps-3">
                                 <div class="text-reset fw-bold">{{ $proposal->title }}</div>
                                 <div class="mt-1">
-                                    <span class="badge bg-warning-lt text-uppercase" style="font-size: 0.65rem;">Belum Laporan</span>
+                                    <span class="badge bg-warning-lt text-uppercase" style="font-size: 0.75rem;">Belum Laporan</span>
                                     @if ($proposal->researchScheme)
-                                        <span class="badge bg-secondary-lt ms-1" style="font-size: 0.65rem;">{{ $proposal->researchScheme->name }}</span>
+                                        <span class="badge bg-secondary-lt ms-1" style="font-size: 0.75rem;">{{ $proposal->researchScheme->name }}</span>
                                     @endif
                                 </div>
                             </td>
@@ -84,11 +84,11 @@
                             <td class="text-wrap ps-3">
                                 <div class="text-reset fw-bold">{{ $report->proposal->title }}</div>
                                 <div class="mt-1">
-                                    <x-tabler.badge variant="outline" class="text-uppercase" style="font-size: 0.65rem;">Laporan Akhir</x-tabler.badge>
+                                    <x-tabler.badge variant="outline" class="text-uppercase" style="font-size: 0.75rem;">Laporan Akhir</x-tabler.badge>
                                     @if ($report->proposal->researchScheme)
-                                        <span class="badge bg-secondary-lt ms-1" style="font-size: 0.65rem;">{{ $report->proposal->researchScheme->name }}</span>
+                                        <span class="badge bg-secondary-lt ms-1" style="font-size: 0.75rem;">{{ $report->proposal->researchScheme->name }}</span>
                                     @elseif ($report->proposal->communityServiceScheme)
-                                        <span class="badge bg-secondary-lt ms-1" style="font-size: 0.65rem;">{{ $report->proposal->communityServiceScheme->name }}</span>
+                                        <span class="badge bg-secondary-lt ms-1" style="font-size: 0.75rem;">{{ $report->proposal->communityServiceScheme->name }}</span>
                                     @endif
                                 </div>
                             </td>

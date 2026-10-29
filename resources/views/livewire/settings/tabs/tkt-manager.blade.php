@@ -133,7 +133,7 @@
                                                 </span>
                                                 <span class="flex-grow-1">Level {{ $level->level }}</span>
                                                 <span class="badge {{ $selectedLevelId === $level->id ? 'bg-white text-primary' : 'bg-secondary-subtle text-secondary' }}"
-                                                    style="font-size: 0.65rem;">
+                                                    style="font-size: 0.75rem;">
                                                     {{ $level->indicators->count() }}
                                                 </span>
                                             </div>

@@ -115,7 +115,7 @@
                     </div>
 
                     @if($metric['achievement'] >= $metric['target'])
-                        <div class="bg-success py-1 text-center text-white small" style="font-size: 0.65rem;">
+                        <div class="bg-success py-1 text-center text-white small" style="font-size: 0.75rem;">
                             TARGET TERCAPAI
                         </div>
                     @endif
@@ -375,7 +375,7 @@
         }
 
         .gauge-label {
-            font-size: 0.65rem;
+            font-size: 0.75rem;
             color: #64748b;
             font-weight: 600;
             text-transform: uppercase;

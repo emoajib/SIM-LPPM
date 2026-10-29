@@ -39,8 +39,8 @@
                                 @forelse ($recentProposals as $index => $prop)
                                     @php
                                         $title = $prop->title ?? 'Judul Usulan Penelitian';
-                                        $submitterName = $prop->submitter?->name ?? $user->name ?? 'MUJIBUL HAKIM';
-                                        $nidn = $prop->submitter?->identity?->nidn ?? $user->identity?->nidn ?? '0608068901';
+                                        $submitterName = $prop->submitter?->name ?? $user->name ?? '-';
+                                        $nidn = $prop->submitter?->identity?->nidn ?? $user->identity?->nidn ?? '-';
                                         $cat = $prop->category_label ?? ($prop->detailable_type === 'App\Models\CommunityService' ? 'Pengabdian Masyarakat' : 'Penelitian Terapan');
                                         $focus = $prop->focus_label ?? ($prop->focusArea?->name ?? 'Sosial Humaniora');
                                         $year = $prop->year ?? ($prop->created_at ? $prop->created_at->format('Y') : date('Y'));
@@ -122,8 +122,8 @@
                                 </span>
                             </div>
                             <div class="d-flex align-items-center justify-content-between mt-2 pt-1 border-top border-secondary-subtle small text-muted">
-                                <span>Scopus: <strong>{{ $user->identity?->scopus_h_index ?? '2' }}</strong></span>
-                                <span>Scholar: <strong>{{ $user->identity?->gs_h_index ?? '5' }}</strong></span>
+                                <span>Scopus: <strong>{{ $user->identity?->scopus_h_index ?? '-' }}</strong></span>
+                                <span>Scholar: <strong>{{ $user->identity?->gs_h_index ?? '-' }}</strong></span>
                                 <span>WoS: <strong>{{ $user->identity?->wos_h_index ?? '-' }}</strong></span>
                             </div>
                         </div>

@@ -103,11 +103,11 @@
                                             <div class="d-flex gap-2 mt-1">
                                                 <label class="form-check form-switch mb-0">
                                                     <input class="form-check-input" type="checkbox" wire:model="editIsActiveForResearch">
-                                                    <span class="form-check-label text-muted" style="font-size: 0.65rem;">Penelitian</span>
+                                                    <span class="form-check-label text-muted" style="font-size: 0.75rem;">Penelitian</span>
                                                 </label>
                                                 <label class="form-check form-switch mb-0">
                                                     <input class="form-check-input" type="checkbox" wire:model="editIsActiveForCommunityService">
-                                                    <span class="form-check-label text-muted" style="font-size: 0.65rem;">Pengabdian</span>
+                                                    <span class="form-check-label text-muted" style="font-size: 0.75rem;">Pengabdian</span>
                                                 </label>
                                             </div>
                                         </div>
@@ -188,11 +188,11 @@
                                                             <div class="d-flex gap-2 mt-1">
                                                                 <label class="form-check form-switch mb-0">
                                                                     <input class="form-check-input" type="checkbox" wire:model="editIsActiveForResearch">
-                                                                    <span class="form-check-label text-muted" style="font-size: 0.65rem;">Penelitian</span>
+                                                                    <span class="form-check-label text-muted" style="font-size: 0.75rem;">Penelitian</span>
                                                                 </label>
                                                                 <label class="form-check form-switch mb-0">
                                                                     <input class="form-check-input" type="checkbox" wire:model="editIsActiveForCommunityService">
-                                                                    <span class="form-check-label text-muted" style="font-size: 0.65rem;">Pengabdian</span>
+                                                                    <span class="form-check-label text-muted" style="font-size: 0.75rem;">Pengabdian</span>
                                                                 </label>
                                                             </div>
                                                         </div>
@@ -216,7 +216,7 @@
                                                         {{-- Children Count Badge --}}
                                                         <span
                                                             class="badge {{ $selectedClusterId === $level2->id ? 'bg-white text-primary' : 'bg-secondary-subtle text-secondary' }}"
-                                                            style="font-size: 0.65rem;">
+                                                            style="font-size: 0.75rem;">
                                                             {{ $level2->children_count }}
                                                         </span>
 
@@ -279,11 +279,11 @@
                                                                         <div class="d-flex gap-2 mt-1">
                                                                             <label class="form-check form-switch mb-0">
                                                                                 <input class="form-check-input" type="checkbox" wire:model="editIsActiveForResearch">
-                                                                                <span class="form-check-label text-muted" style="font-size: 0.65rem;">Penelitian</span>
+                                                                                <span class="form-check-label text-muted" style="font-size: 0.75rem;">Penelitian</span>
                                                                             </label>
                                                                             <label class="form-check form-switch mb-0">
                                                                                 <input class="form-check-input" type="checkbox" wire:model="editIsActiveForCommunityService">
-                                                                                <span class="form-check-label text-muted" style="font-size: 0.65rem;">Pengabdian</span>
+                                                                                <span class="form-check-label text-muted" style="font-size: 0.75rem;">Pengabdian</span>
                                                                             </label>
                                                                         </div>
                                                                     </div>

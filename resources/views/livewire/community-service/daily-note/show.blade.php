@@ -442,9 +442,9 @@
                                                             title="{{ $file->getClientOriginalName() }}">
                                                             {{ $file->getClientOriginalName() }}
                                                             @if (str_starts_with($file->getMimeType(), 'image/'))
-                                                                <span class="badge bg-green-lt ms-1" style="font-size: 0.65rem;">Foto (Inline)</span>
+                                                                <span class="badge bg-green-lt ms-1" style="font-size: 0.75rem;">Foto (Inline)</span>
                                                             @elseif (str_contains($file->getMimeType(), 'pdf'))
-                                                                <span class="badge bg-azure-lt ms-1" style="font-size: 0.65rem;">PDF (Akhir Halaman)</span>
+                                                                <span class="badge bg-azure-lt ms-1" style="font-size: 0.75rem;">PDF (Akhir Halaman)</span>
                                                             @endif
                                                         </div>
                                                     </div>
@@ -494,9 +494,9 @@
                                                             title="{{ $media->file_name }}">
                                                             {{ $media->file_name }}
                                                             @if (str_starts_with($media->mime_type, 'image/'))
-                                                                <span class="badge bg-green-lt ms-1" style="font-size: 0.65rem;">Foto (Inline)</span>
+                                                                <span class="badge bg-green-lt ms-1" style="font-size: 0.75rem;">Foto (Inline)</span>
                                                             @elseif (str_contains($media->mime_type, 'pdf'))
-                                                                <span class="badge bg-azure-lt ms-1" style="font-size: 0.65rem;">PDF (Akhir Halaman)</span>
+                                                                <span class="badge bg-azure-lt ms-1" style="font-size: 0.75rem;">PDF (Akhir Halaman)</span>
                                                             @endif
                                                         </div>
                                                     </div>
