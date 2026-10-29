@@ -82,9 +82,9 @@
                         };
                     @endphp
                     @if ($roles->count() > 0)
-                        <div class="nav-item dropdown" x-data="{ open: false }" @click.outside="open = false">
-                            <a href="#" class="d-flex align-items-center px-2 nav-link" @click.prevent="open = !open"
-                                aria-label="Switch role" :aria-expanded="open">
+                        <div class="nav-item dropdown">
+                            <a href="#" class="d-flex align-items-center px-2 nav-link" onclick="event.preventDefault(); var m=this.parentElement.querySelector('.dropdown-menu'); m.classList.toggle('show'); return false;"
+                                aria-label="Switch role">
                                 @if ($activeRole)
                                     <div class="d-flex align-items-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
@@ -98,7 +98,7 @@
                                 @endif
                             </a>
                             @if ($roles->count() > 1)
-                                <div class="dropdown-menu dropdown-menu-arrow dropdown-menu-end" x-show="open" x-transition @click="open = false" style="display: none;">
+                                <div class="dropdown-menu dropdown-menu-arrow dropdown-menu-end">
                                     <div class="dropdown-item-text">
                                         <div class="text-secondary small">Pilih Peran:</div>
                                     </div>
@@ -151,7 +151,7 @@
                                     @endforeach
                                 </div>
                             @else
-                                <div class="dropdown-menu dropdown-menu-arrow dropdown-menu-end" x-show="open" x-transition @click="open = false" style="display: none;">
+                                <div class="dropdown-menu dropdown-menu-arrow dropdown-menu-end">
                                     <div class="text-muted dropdown-item-text small">
                                         Hanya memiliki satu peran
                                     </div>
@@ -163,16 +163,16 @@
                     @livewire('notifications.notification-dropdown')
                 </div>
 
-                <div class="nav-item dropdown" x-data="{ open: false }" @click.outside="open = false">
-                    <a href="#" class="d-flex p-0 px-2 nav-link lh-1" @click.prevent="open = !open"
-                        aria-label="Open user menu" :aria-expanded="open">
+                <div class="nav-item dropdown">
+                    <a href="#" class="d-flex p-0 px-2 nav-link lh-1" onclick="event.preventDefault(); var m=this.parentElement.querySelector('.dropdown-menu'); m.classList.toggle('show'); this.setAttribute('aria-expanded', m.classList.contains('show')); return false;"
+                        aria-label="Open user menu">
                         <x-user-avatar :user="auth()->user()" size="avatar-sm" />
                         <div class="d-xl-block ps-2 d-none">
                             <div>{{ Auth::user()->name }}</div>
                             <div class="mt-1 text-secondary small">{{ Auth::user()->email }}</div>
                         </div>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow" x-show="open" x-transition @click="open = false" style="display: none;">
+                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                         {{-- <a href="#" class="dropdown-item">Status</a>
                         <a href="{{ route('settings.profile') }}" class="dropdown-item">Profile</a>
                         <a href="#" class="dropdown-item">Feedback</a>
