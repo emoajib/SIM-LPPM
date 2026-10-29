@@ -315,13 +315,13 @@ body > div.page > div.page-wrapper > div.page-header.d-print-none > div > div > 
 body.theme-modern {
     --tblr-primary: #0ea5e9;
     --tblr-primary-rgb: 14, 165, 233;
-    --tblr-body-bg: #00A800;
+    --tblr-body-bg: #f5f5dc;
     --tblr-body-color: #1f2937;
     --tblr-card-bg: #ffffff;
     --tblr-border-color: rgba(56, 189, 248, 0.3);
 }
 body.theme-modern .page {
-    background: #00A800;
+    background: #f5f5dc;
 }
 body.theme-modern .card {
     background: #ffffff;
@@ -342,7 +342,7 @@ body.theme-modern .glow-cyan-text {
 
 /* === Theme: Modern — site-wide overrides === */
 body.theme-modern .navbar {
-    background: rgba(15, 23, 42, 0.9) !important;
+    background: #00A800 !important;
     backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(56, 189, 248, 0.2);
 }
