@@ -17,6 +17,7 @@ class MenuComposer
     public function compose(View $view): void
     {
         $view->with('headerMenuItems', $this->menuItems(Auth::user()));
+        $view->with('userActiveTheme', session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')));
     }
 
     protected function menuItems(?User $user): array

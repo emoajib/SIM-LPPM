@@ -22,7 +22,7 @@
                             : null;
                         $logoUrl = $customLogo ?: asset('logo.png');
                     @endphp
-                    <img src="{{ $logoUrl }}?v={{ filemtime(public_path('logo.png')) }}" alt="" width="45" height="45" onerror="this.src='{{ asset('logo.png') }}'">
+                    <img src="{{ $logoUrl }}?v={{ is_file(public_path('logo.png')) ? filemtime(public_path('logo.png')) : time() }}" alt="" width="45" height="45" onerror="this.src='{{ asset('logo.png') }}'">
                     <span>{{ $appName }}</span>
                 </a>
             </div>
@@ -55,7 +55,7 @@
 
                     <!-- Theme Switcher (single toggle) -->
                     <div class="nav-item d-none d-md-flex me-2">
-                        @php $isModern = session('sim_lppm_app_theme','classic') === 'modern'; @endphp
+                        @php $isModern = session('sim_lppm_app_theme','modern') === 'modern'; @endphp
                         <a href="{{ route('theme.switch', $isModern ? 'classic' : 'modern') }}" class="btn btn-sm {{ $isModern ? 'btn-primary' : 'btn-outline-secondary' }}" title="Ganti tema">
                             {{ $isModern ? 'Klasik' : 'Modern' }}
                         </a>

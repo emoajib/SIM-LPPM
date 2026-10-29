@@ -18,7 +18,7 @@ class Dashboard extends Component
 
     public $dashboardComponent;
 
-    public string $dashboardTheme = 'modern';
+    public string $dashboardTheme = 'classic';
 
     public function mount()
     {

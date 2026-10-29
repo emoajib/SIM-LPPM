@@ -12,7 +12,7 @@ class ThemeSwitcherController extends Controller
         $theme = $request->input('theme', $request->query('theme'));
 
         if (! in_array($theme, ['modern', 'classic'])) {
-            $current = session('sim_lppm_app_theme', session('sim_lppm_dashboard_theme', 'modern'));
+            $current = session('sim_lppm_app_theme', session('sim_lppm_dashboard_theme', 'classic'));
             $theme = $current === 'modern' ? 'classic' : 'modern';
         }
 
