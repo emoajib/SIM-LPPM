@@ -6,8 +6,10 @@
         </div>
     @endif
 
-    {{-- Role Specific Management Views (Tables, Filters, Data) --}}
-    <div class="dashboard-content-area">
-        @livewire($dashboardComponent, key($dashboardComponent))
-    </div>
+    {{-- Role Specific Management Views (Tables, Filters, Data) - only in classic theme --}}
+    @if ($dashboardTheme === 'classic')
+        <div class="dashboard-content-area">
+            @livewire($dashboardComponent, key($dashboardComponent))
+        </div>
+    @endif
 </div>
