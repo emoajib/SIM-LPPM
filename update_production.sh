@@ -129,5 +129,12 @@ echo "Rate limiters cleared"
 trap - ERR
 php artisan up
 
+# Smoke test
+SMOKE=$(curl -s -o /dev/null -w "%{http_code}" https://sim-lppm.itsnupekalongan.ac.id/)
+echo "Smoke test (homepage): HTTP $SMOKE"
+if [ "$SMOKE" != "200" ]; then
+  echo "⚠️  Homepage returned $SMOKE — cek log!"
+fi
+
 echo "=== ✅ Update completed successfully! ==="
 echo "Test URL: https://sim-lppm.itsnupekalongan.ac.id"
