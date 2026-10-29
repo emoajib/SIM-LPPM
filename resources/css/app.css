@@ -358,8 +358,10 @@ body.theme-modern .navbar-expand-md .navbar {
     z-index: 1;
 }
 body.theme-modern .navbar .dropdown-menu {
-    z-index: 10001 !important;
-    position: absolute;
+    z-index: 2147483647 !important;
+}
+body.theme-modern .navbar .dropdown-menu.show {
+    position: fixed !important;
 }
 body.theme-modern .page-header.d-print-none {
     position: relative;
