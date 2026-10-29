@@ -78,9 +78,15 @@
                         <label class="form-label" for="create-password">
                             Kata sandi <span class="text-danger">*</span>
                         </label>
-                        <input id="create-password" type="password"
-                            class="form-control @error('password') is-invalid @enderror" wire:model="password"
-                            autocomplete="new-password" placeholder="Masukkan kata sandi yang kuat" required>
+                        <div class="input-group" x-data="{ show: false }">
+                            <input id="create-password" x-bind:type="show ? 'text' : 'password'"
+                                class="form-control @error('password') is-invalid @enderror" wire:model="password"
+                                autocomplete="new-password" placeholder="Masukkan kata sandi yang kuat" required>
+                            <button type="button" class="btn btn-outline-secondary" @click="show = !show">
+                                <i x-show="!show" class="ti ti-eye"></i>
+                                <i x-show="show" class="ti ti-eye-off"></i>
+                            </button>
+                        </div>
                         @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -92,10 +98,16 @@
                         <label class="form-label" for="create-password-confirmation">
                             Konfirmasi kata sandi <span class="text-danger">*</span>
                         </label>
-                        <input id="create-password-confirmation" type="password"
-                            class="form-control @error('password_confirmation') is-invalid @enderror"
-                            wire:model="password_confirmation" autocomplete="new-password"
-                            placeholder="Ulangi kata sandi" required>
+                        <div class="input-group" x-data="{ show: false }">
+                            <input id="create-password-confirmation" x-bind:type="show ? 'text' : 'password'"
+                                class="form-control @error('password_confirmation') is-invalid @enderror"
+                                wire:model="password_confirmation" autocomplete="new-password"
+                                placeholder="Ulangi kata sandi" required>
+                            <button type="button" class="btn btn-outline-secondary" @click="show = !show">
+                                <i x-show="!show" class="ti ti-eye"></i>
+                                <i x-show="show" class="ti ti-eye-off"></i>
+                            </button>
+                        </div>
                         @error('password_confirmation')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
