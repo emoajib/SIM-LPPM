@@ -341,15 +341,20 @@ body.theme-modern .glow-cyan-text {
 }
 
 /* === Theme: Modern — site-wide overrides === */
+body.theme-modern .navbar,
+body.theme-modern .navbar-collapse,
+body.theme-modern .page {
+    overflow: visible !important;
+}
 body.theme-modern .navbar {
     background: #008000 !important;
     backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(56, 189, 248, 0.2);
     position: relative;
-    z-index: 1030;
+    z-index: 9999;
 }
 body.theme-modern .navbar .dropdown-menu {
-    z-index: 1080;
+    z-index: 10000 !important;
     position: absolute;
 }
 body.theme-modern .page-header.d-print-none {
