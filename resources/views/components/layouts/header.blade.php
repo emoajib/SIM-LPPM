@@ -164,7 +164,7 @@
                 </div>
 
                 <div class="nav-item dropdown">
-                    <a href="#" class="d-flex p-0 px-2 nav-link lh-1" onclick="event.preventDefault(); var m=this.parentElement.querySelector('.dropdown-menu'); m.classList.toggle('show'); this.setAttribute('aria-expanded', m.classList.contains('show')); return false;"
+                    <a href="#" class="d-flex p-0 px-2 nav-link lh-1" data-profile-toggle
                         aria-label="Open user menu">
                         <x-user-avatar :user="auth()->user()" size="avatar-sm" />
                         <div class="d-xl-block ps-2 d-none">
@@ -290,4 +290,24 @@
         </div>
     </header>
 </div>
+<script>
+    document.addEventListener('click', function (e) {
+        var toggle = e.target.closest('.nav-item.dropdown > a.nav-link');
+        if (toggle && !e.target.closest('.dropdown-menu')) {
+            e.preventDefault();
+            var dd = toggle.parentElement;
+            var menu = dd.querySelector('.dropdown-menu');
+            // close others
+            document.querySelectorAll('.nav-item.dropdown .dropdown-menu.show').forEach(function (m) {
+                if (m !== menu) m.classList.remove('show');
+            });
+            if (menu) menu.classList.toggle('show');
+            return;
+        }
+        // close dropdowns when clicking outside
+        if (!e.target.closest('.nav-item.dropdown')) {
+            document.querySelectorAll('.nav-item.dropdown .dropdown-menu.show').forEach(function (m) { m.classList.remove('show'); });
+        }
+    });
+</script>
 <!-- END NAVBAR  -->
