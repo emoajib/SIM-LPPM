@@ -50,7 +50,7 @@ agar konsisten dengan `body.theme-modern` global di `app.css`.
 - [x] Page header dihapus dari dashboard modern
 - [x] Background modern → #FCFFFA
 - [x] Modul 1: Penelitian (Proposal) index — card/tabs/table/badge + empty state + pagination
-- [ ] Modul 2: Pengabdian index
+- [x] Modul 2: Pengabdian index — card/tabs/table/badge + empty state + pagination
 - [ ] Modul 3: Laporan (Reports)
 - [ ] Modul 4: Approval modules (Dekan/Kaprodi/Kepala LPPM/Admin)
 - [ ] Modul 5: Settings & Master Data

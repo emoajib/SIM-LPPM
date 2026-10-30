@@ -307,18 +307,24 @@
 
     <div class="mb-3 row">
         <div class="col-12">
-            <div class="card">
+            <div class="card border-0 shadow-sm">
                 <div class="card-body">
                     <div class="row g-3">
                         <!-- Search Input -->
                         <div class="col-md-4">
-                            <input type="text" class="form-control"
-                                placeholder="Cari berdasarkan judul atau ringkasan..."
-                                wire:model.live.debounce.300ms="search" />
+                            <label class="form-label">Pencarian</label>
+                            <div class="input-icon">
+                                <span class="input-icon-addon">
+                                </span>
+                                <input type="text" class="form-control"
+                                    placeholder="Cari berdasarkan judul atau ringkasan..."
+                                    wire:model.live.debounce.300ms="search" />
+                            </div>
                         </div>
 
                         <!-- Status Filter -->
                         <div class="col-md-3">
+                            <label class="form-label">Status</label>
                             <select class="form-select" wire:model.live="statusFilter">
                                 @php
                                     $statusOptions = [
@@ -343,6 +349,7 @@
 
                         <!-- Year Filter -->
                         <div class="col-md-2">
+                            <label class="form-label">Tahun</label>
                             <select class="form-select" wire:model.live="yearFilter">
                                 <option value="">Semua Tahun</option>
                                 @foreach ($this->availableYears as $year)
@@ -353,7 +360,8 @@
 
                         <!-- Reset Button -->
                         <div class="col-md-3">
-                            <button type="button" class="btn-outline-secondary w-100 btn" wire:click="resetFilters">
+                            <label class="form-label">&nbsp;</label>
+                            <button type="button" class="btn btn-outline-secondary w-100" wire:click="resetFilters" title="Reset Filters" aria-label="Reset filters">
                                 
                                 Reset
                             </button>
@@ -365,9 +373,9 @@
     </div>
 
     <!-- Proposals Table -->
-    <div class="card">
+    <div class="card border-0 shadow-sm">
         <div class="table-responsive">
-            <table class="card-table table table-vcenter">
+            <table class="table table-vcenter card-table table-hover">
                 <thead>
                     <tr>
                         <th>Judul</th>
@@ -382,9 +390,9 @@
                             <td style="max-width: 250px;">
                                 <div class="text-reset fw-bold">{{ $proposal->title }}</div>
                                 <div class="mt-1">
-                                    <x-tabler.badge variant="outline" class="text-uppercase" style="font-size: 0.75rem;">
+                                    <span class="badge bg-secondary-lt text-uppercase" style="font-size: 0.75rem;">
                                         {{ $proposal->focusArea?->name ?? '—' }}
-                                    </x-tabler.badge>
+                                    </span>
                                 </div>
                             </td>
                             <td>
@@ -392,9 +400,9 @@
                                 <small class="text-secondary">{{ $proposal->submitter->email }}</small>
                             </td>
                             <td>
-                                <x-tabler.badge :color="$proposal->status->color()" class="fw-normal">
+                                <span class="badge bg-{{ $proposal->status->color() }}-lt fw-normal">
                                     {{ $proposal->status->label() }}
-                                </x-tabler.badge>
+                                </span>
                                 <div class="mt-1">
                                     <small class="text-secondary">
                                         {{ $proposal->created_at->format('d M Y') }}
@@ -404,7 +412,7 @@
                             <td>
                                 <div class="flex-nowrap btn-list">
                                     <a href="{{ route('community-service.proposal.show', $proposal) }}"
-                                        class="btn btn-icon btn-ghost-primary" wire:navigate.hover title="Lihat">
+                                        class="btn btn-icon btn-ghost-primary" wire:navigate.hover title="Lihat" aria-label="Lihat detail proposal">
                                         
                                     </a>
                                 </div>
