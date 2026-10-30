@@ -14,10 +14,12 @@
                 <div class="col-md-6">
                     <label class="form-label">Host</label>
                     <input type="text" class="form-control" wire:model="mailHost" placeholder="smtp.gmail.com / smtp.itsnu.ac.id">
+                    @error('mailHost') <span class="text-danger small">{{ $message }}</span> @enderror
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Port</label>
                     <input type="number" class="form-control" wire:model="mailPort">
+                    @error('mailPort') <span class="text-danger small">{{ $message }}</span> @enderror
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Enkripsi</label>
@@ -38,10 +40,12 @@
                 <div class="col-md-6">
                     <label class="form-label">From Address</label>
                     <input type="email" class="form-control" wire:model="mailFromAddress">
+                    @error('mailFromAddress') <span class="text-danger small">{{ $message }}</span> @enderror
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">From Name</label>
                     <input type="text" class="form-control" wire:model="mailFromName">
+                    @error('mailFromName') <span class="text-danger small">{{ $message }}</span> @enderror
                 </div>
             </div>
         </div>

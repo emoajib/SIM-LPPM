@@ -170,6 +170,7 @@
                                 <label class="form-label fw-medium">Judul Cover (Kosongkan = pakai judul bawaan)</label>
                                 <input type="text" class="form-control" wire:model.blur="pdfCoverTitle"
                                     placeholder="Contoh: PROPOSAL PENELITIAN INTERNAL">
+                                @error('pdfCoverTitle') <span class="text-danger small">{{ $message }}</span> @enderror
                                 <small class="text-muted">Teks judul di halaman cover proposal/laporan. Biarkan kosong untuk menggunakan judul otomatis dari sistem.</small>
                             </div>
 
@@ -177,6 +178,7 @@
                                 <label class="form-label fw-medium">Subjudul Cover (Kosongkan = tidak tampil)</label>
                                 <input type="text" class="form-control" wire:model.blur="pdfCoverSubtitle"
                                     placeholder="Contoh: Tahun Akademik 2025/2026">
+                                @error('pdfCoverSubtitle') <span class="text-danger small">{{ $message }}</span> @enderror
                                 <small class="text-muted">Teks subjudul di bawah judul utama halaman cover. Biarkan kosong untuk menyembunyikannya.</small>
                             </div>
 
@@ -193,6 +195,7 @@
                                 <label class="form-label fw-medium">Teks Kustom Halaman Pengesahan</label>
                                 <textarea class="form-control" wire:model.blur="pdfApprovalCustomText" rows="3"
                                     placeholder="Kosongkan untuk menggunakan teks bawaan sistem."></textarea>
+                                @error('pdfApprovalCustomText') <span class="text-danger small">{{ $message }}</span> @enderror
                                 <small class="text-muted">Teks yang muncul di halaman pengesahan/approval. Mendukung HTML sederhana.</small>
                             </div>
                         </div>
@@ -820,10 +823,12 @@
                                         <div class="col-12">
                                             <label class="form-label fw-bold">Teks Pengantar Khusus <small class="text-muted fw-normal">(Intro)</small></label>
                                             <textarea class="form-control" rows="3" wire:model.blur="editingContentIntro" placeholder="Tambahkan teks pengantar khusus untuk dokumen ini (opsional)."></textarea>
+                                            @error('editingContentIntro') <span class="text-danger small">{{ $message }}</span> @enderror
                                         </div>
                                         <div class="col-12">
                                             <label class="form-label fw-bold">Teks Penutup Khusus <small class="text-muted fw-normal">(Outro)</small></label>
                                             <textarea class="form-control" rows="3" wire:model.blur="editingContentOutro" placeholder="Tambahkan teks penutup khusus untuk dokumen ini (opsional)."></textarea>
+                                            @error('editingContentOutro') <span class="text-danger small">{{ $message }}</span> @enderror
                                         </div>
                                     </div>
                                 </div>
@@ -838,10 +843,12 @@
                                         <div class="col-12">
                                             <label class="form-label fw-bold">Judul Cover Khusus</label>
                                             <input type="text" class="form-control" wire:model.blur="editingCoverTitle" placeholder="Kosongkan untuk menggunakan judul bawaan modul">
+                                            @error('editingCoverTitle') <span class="text-danger small">{{ $message }}</span> @enderror
                                         </div>
                                         <div class="col-12">
                                             <label class="form-label fw-bold">Subjudul Cover Khusus</label>
                                             <input type="text" class="form-control" wire:model.blur="editingCoverSubtitle" placeholder="Kosongkan untuk menggunakan subjudul bawaan modul">
+                                            @error('editingCoverSubtitle') <span class="text-danger small">{{ $message }}</span> @enderror
                                         </div>
                                         <div class="col-12">
                                             <div class="form-check form-switch mt-2">

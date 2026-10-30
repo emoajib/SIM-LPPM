@@ -53,7 +53,7 @@ agar konsisten dengan `body.theme-modern` global di `app.css`.
 - [x] Modul 2: Pengabdian index — card/tabs/table/badge + empty state + pagination
 - [x] Modul 3: Laporan (Reports) — final-report index (research & PKM) + dekan report-index
 - [x] Modul 4: Approval modules — badge consistency (dekan proposal-index, kaprodi proposal-validation, kepala-lppm initial-approval/final-decision, report-approval partial)
-- [ ] Modul 5: Settings & Master Data
+- [x] Modul 5: Settings & Master Data — @error feedback (pdf-export-settings, notification-config)
 - [ ] Tambah ikon menu
 - [ ] Bulletin pindah ke server-side
 - [ ] Aksesibilitas aria-label
