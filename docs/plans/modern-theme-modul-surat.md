@@ -49,7 +49,11 @@ agar konsisten dengan `body.theme-modern` global di `app.css`.
 - [x] Dropdown header (profil/role/notifikasi) diperbaiki (fixed position)
 - [x] Page header dihapus dari dashboard modern
 - [x] Background modern → #FCFFFA
-- [ ] Implementasi per modul (Penelitian → Pengabdian → Laporan → Approval → Settings) — besok
+- [x] Modul 1: Penelitian (Proposal) index — card/tabs/table/badge + empty state + pagination
+- [ ] Modul 2: Pengabdian index
+- [ ] Modul 3: Laporan (Reports)
+- [ ] Modul 4: Approval modules (Dekan/Kaprodi/Kepala LPPM/Admin)
+- [ ] Modul 5: Settings & Master Data
 - [ ] Tambah ikon menu
 - [ ] Bulletin pindah ke server-side
 - [ ] Aksesibilitas aria-label
