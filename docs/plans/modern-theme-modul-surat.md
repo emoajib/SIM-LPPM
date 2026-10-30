@@ -55,7 +55,7 @@ agar konsisten dengan `body.theme-modern` global di `app.css`.
 - [x] Modul 4: Approval modules — badge consistency (dekan proposal-index, kaprodi proposal-validation, kepala-lppm initial-approval/final-decision, report-approval partial)
 - [x] Modul 5: Settings & Master Data — @error feedback (pdf-export-settings, notification-config)
 - [x] Tambah ikon menu (MenuComposer: semua item diberi ikon Tabler)
-- [x] Komponen Tampilan (UI Halaman) — layout shell sudah Tabler standar (page/page-wrapper/page-body/container-xl)
+- [x] Komponen Tampilan (UI Halaman) — layout shell Tabler standar; ikon menu hanya tampil di tema modern (tema klasik tetap bersih)
 - [ ] Bulletin pindah ke server-side (fitur tersisa: migrasi + model + API + refactor view)
 - [x] Aksesibilitas aria-label (sweep icon buttons di modul-modul utama)
 

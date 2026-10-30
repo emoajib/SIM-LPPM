@@ -25,7 +25,7 @@
 @else
     <a class="{{ $item['class'] ?? 'dropdown-item' }}{{ $isActive ? ' active' : '' }}" href="{{ $item['href'] ?? '#' }}"
         @unless(($item['navigate'] ?? true) === false) wire:navigate.hover @endunless @foreach ($item['attributes'] ?? [] as $attribute => $value) {{ $attribute }}="{{ $value }}" @endforeach wire:key="menu-item-{{ $item['label'] ?? $loop->index }}">
-        @if (!empty($item['prefix_icon']) && $item['prefix_icon'] !== 'none')
+        @if (!empty($item['prefix_icon']) && $item['prefix_icon'] !== 'none' && session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')) === 'modern')
             @include('components.layouts.partials.menu.icon', [
                 'name' => $item['prefix_icon'],
                 'class' => $item['prefix_icon_class'] ?? 'icon icon-2 icon-inline me-1',
