@@ -55,7 +55,8 @@ agar konsisten dengan `body.theme-modern` global di `app.css`.
 - [x] Modul 4: Approval modules — badge consistency (dekan proposal-index, kaprodi proposal-validation, kepala-lppm initial-approval/final-decision, report-approval partial)
 - [x] Modul 5: Settings & Master Data — @error feedback (pdf-export-settings, notification-config)
 - [x] Tambah ikon menu (MenuComposer: semua item diberi ikon Tabler)
-- [x] Komponen Tampilan (UI Halaman) — layout shell Tabler standar; ikon menu hanya tampil di tema modern (tema klasik tetap bersih)
+- [x] Komponen Tampilan (UI Halaman) — layout shell Tabler standar; palet modern theme diselaraskan ke prototype (navy #1e3a6e, gradient, rounded-xl)
+- [x] Infrastruktur React+Tailwind (Fase 1) — vite config, entry resources/js/modern.jsx, build OK (belum di-mount, menunggu migrasi modul)
 - [ ] Bulletin pindah ke server-side (fitur tersisa: migrasi + model + API + refactor view)
 - [x] Aksesibilitas aria-label (sweep icon buttons di modul-modul utama)
 

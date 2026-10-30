@@ -68,7 +68,7 @@
     "src": "node_modules/@tabler/icons-webfont/dist/fonts/tabler-icons.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app-ByFPswuF.css",
+    "file": "assets/app-C8R71dOK.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "names": [
@@ -83,6 +83,12 @@
     "imports": [
       "resources/js/theme-config.js"
     ]
+  },
+  "resources/js/modern.jsx": {
+    "file": "assets/modern-RjfJZsVo.js",
+    "name": "modern",
+    "src": "resources/js/modern.jsx",
+    "isEntry": true
   },
   "resources/js/theme-config.js": {
     "file": "assets/theme-config-_-7EvQW4.js",

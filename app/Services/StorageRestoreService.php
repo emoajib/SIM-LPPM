@@ -14,7 +14,7 @@ class StorageRestoreService
         'exe', 'bat', 'cmd', 'dll', 'so',
     ];
 
-    protected int $maxUploadSize = 524288000;
+    protected int $maxUploadSize = 2147483648;
 
     protected int $maxExtractedSize = 2147483648;
 
@@ -117,7 +117,7 @@ class StorageRestoreService
 
             $resolvedPath = $targetDir.'/'.$entry;
             // Basic security check for path traversal
-            if (str_contains($entry, '..')) {
+            if (preg_match('@(^|/)\.\.(/|$)@', $entry)) {
                 $errors[] = $entry.' (path traversal detected)';
 
                 continue;

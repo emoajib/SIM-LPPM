@@ -311,33 +311,33 @@ body > div.page > div.page-wrapper > div.page-header.d-print-none > div > div > 
     color: #008000;
 }
 
-/* === Theme: Modern (cyan/blue) === */
+/* === Theme: Modern (navy/prototype) === */
 body.theme-modern {
-    --tblr-primary: #0ea5e9;
-    --tblr-primary-rgb: 14, 165, 233;
-    --tblr-body-bg: #FCFFFA;
+    --tblr-primary: #1e3a6e;
+    --tblr-primary-rgb: 30, 58, 110;
+    --tblr-body-bg: #f1f5f9;
     --tblr-body-color: #1f2937;
     --tblr-card-bg: #ffffff;
-    --tblr-border-color: rgba(56, 189, 248, 0.3);
+    --tblr-border-color: rgba(30, 58, 110, 0.15);
 }
 body.theme-modern .page {
-    background: #FCFFFA;
+    background: #f1f5f9;
 }
 body.theme-modern .card {
     background: #ffffff;
-    border: 1px solid rgba(56, 189, 248, 0.3);
-    backdrop-filter: blur(12px);
-    box-shadow: 0 10px 30px -10px rgba(2, 132, 199, 0.25);
-    border-radius: 1.25rem;
+    border: 1px solid rgba(30, 58, 110, 0.12);
+    backdrop-filter: none;
+    box-shadow: 0 1px 3px rgba(30, 58, 110, 0.08);
+    border-radius: 0.75rem;
 }
 body.theme-modern .btn-primary {
-    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    background: linear-gradient(135deg, #1e3a6e 0%, #254b8c 100%);
     border: none;
-    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+    box-shadow: 0 4px 14px rgba(30, 58, 110, 0.35);
 }
 body.theme-modern .glow-cyan-text {
-    color: #38bdf8;
-    text-shadow: 0 0 16px rgba(56, 189, 248, 0.6);
+    color: #1e3a6e;
+    text-shadow: none;
 }
 
 /* === Theme: Modern — site-wide overrides === */
@@ -347,8 +347,8 @@ body.theme-modern .page {
     overflow: visible !important;
 }
 body.theme-modern .navbar {
-    background: #008000 !important;
-    border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+    background: linear-gradient(135deg, #11244e 0%, #1e3a6e 50%, #254b8c 100%) !important;
+    border-bottom: 1px solid rgba(30, 58, 110, 0.2);
     position: relative;
     z-index: 10000;
 }
@@ -373,8 +373,8 @@ body.theme-modern .navbar .nav-link {
     color: #e2e8f0 !important;
 }
 body.theme-modern .page-header {
-    background: linear-gradient(135deg, rgba(14, 165, 233, 0.15) 0%, rgba(2, 132, 199, 0.05) 100%);
-    border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+    background: linear-gradient(135deg, rgba(30, 58, 110, 0.12) 0%, rgba(37, 75, 140, 0.04) 100%);
+    border-bottom: 1px solid rgba(30, 58, 110, 0.15);
 }
 body.theme-modern .table {
     color: #1f2937;
