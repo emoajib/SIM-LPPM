@@ -175,7 +175,7 @@
     </div>
 
     <!-- Proposals Table -->
-    <div class="card">
+    <div class="card border-0 shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title">Daftar Laporan Akhir Penelitian</h3>
             <span class="badge bg-blue-lt">
@@ -202,9 +202,9 @@
                                     {{ $proposal->title }}
                                 </div>
                                 <div class="mt-1 d-flex align-items-center gap-1">
-                                    <x-tabler.badge variant="outline" class="text-muted small">
+                                    <span class="badge bg-secondary-lt small">
                                         {{ $proposal->researchScheme?->name ?? 'Tanpa Skema' }}
-                                    </x-tabler.badge>
+                                    </span>
                                     @if($proposal->academic_year ?? $proposal->start_year)
                                         <span class="badge bg-secondary-lt small">TA {{ $proposal->academic_year ?? $proposal->start_year }}</span>
                                     @endif
@@ -225,9 +225,9 @@
                                 @endphp
                                 @if ($finalReport)
                                     <div>
-                                        <x-tabler.badge :color="$finalReport->status->color()">
+                                        <span class="badge bg-{{ $finalReport->status->color() }}-lt">
                                             {{ $finalReport->status->label() }}
-                                        </x-tabler.badge>
+                                        </span>
                                     </div>
                                     @if ($finalReport->submitted_at)
                                         <small class="text-secondary d-block mt-1">

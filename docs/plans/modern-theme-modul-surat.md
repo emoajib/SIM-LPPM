@@ -51,7 +51,7 @@ agar konsisten dengan `body.theme-modern` global di `app.css`.
 - [x] Background modern → #FCFFFA
 - [x] Modul 1: Penelitian (Proposal) index — card/tabs/table/badge + empty state + pagination
 - [x] Modul 2: Pengabdian index — card/tabs/table/badge + empty state + pagination
-- [ ] Modul 3: Laporan (Reports)
+- [x] Modul 3: Laporan (Reports) — final-report index (research & PKM) + dekan report-index
 - [ ] Modul 4: Approval modules (Dekan/Kaprodi/Kepala LPPM/Admin)
 - [ ] Modul 5: Settings & Master Data
 - [ ] Tambah ikon menu

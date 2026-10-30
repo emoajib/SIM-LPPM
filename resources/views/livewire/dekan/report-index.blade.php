@@ -9,7 +9,7 @@
     <!-- Filter Section -->
     <div class="mb-3 row">
         <div class="col-12">
-            <div class="card">
+            <div class="card border-0 shadow-sm">
                 <div class="card-body">
                     <div class="row g-2 align-items-center">
                         <div class="col-md-3">
@@ -67,9 +67,9 @@
     </div>
 
     <!-- Reports Table -->
-    <div class="card">
+    <div class="card border-0 shadow-sm">
         <div class="table-responsive">
-            <table class="card-table table table-vcenter">
+            <table class="table table-vcenter card-table table-hover">
                 <thead>
                     <tr>
                         <th>Judul Proposal</th>
@@ -86,16 +86,16 @@
                             <td class="text-wrap">
                                 <div class="text-reset fw-bold">{{ $report->proposal->title }}</div>
                                 <div class="mt-1">
-                                    <x-tabler.badge variant="outline" class="text-uppercase" style="font-size: 0.75rem;">
+                                    <span class="badge bg-secondary-lt text-uppercase" style="font-size: 0.75rem;">
                                         Laporan Akhir
-                                    </x-tabler.badge>
+                                    </span>
                                 </div>
                             </td>
                             <td>
                                 @if ($report->proposal->detailable_type === 'App\Models\Research')
-                                    <x-tabler.badge color="blue" variant="light">Penelitian</x-tabler.badge>
+                                    <span class="badge bg-blue-lt">Penelitian</span>
                                 @else
-                                    <x-tabler.badge color="green" variant="light">Pengabdian</x-tabler.badge>
+                                    <span class="badge bg-green-lt">Pengabdian</span>
                                 @endif
                             </td>
                             <td>
@@ -119,9 +119,9 @@
                                         default            => 'secondary',
                                     };
                                 @endphp
-                                <x-tabler.badge :color="$statusColor" variant="light">
+                                <span class="badge bg-{{ $statusColor }}-lt">
                                     {{ $report->status?->label() ?? '—' }}
-                                </x-tabler.badge>
+                                </span>
                             </td>
                             <td>
                                 @php
