@@ -108,7 +108,7 @@
                             @if ($canEdit)
                                 <td class="text-center">
                                     <button type="button" wire:click="removeScheduleItem({{ $sIdx }})"
-                                        class="btn btn-ghost-danger btn-icon btn-sm" title="Hapus Baris">
+                                        class="btn btn-ghost-danger btn-icon btn-sm" title="Hapus Baris" aria-label="Hapus Baris">
                                         <x-lucide-trash-2 class="icon icon-sm" />
                                     </button>
                                 </td>

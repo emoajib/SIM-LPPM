@@ -164,7 +164,7 @@
 
                         <!-- Reset Button -->
                         <div class="col-md-1 text-end">
-                            <button type="button" class="btn btn-icon btn-outline-secondary w-100" wire:click="resetFilters" title="Reset Semua Filter">
+                            <button type="button" class="btn btn-icon btn-outline-secondary w-100" wire:click="resetFilters" title="Reset Semua Filter" aria-label="Reset Semua Filter">
                                 
                             </button>
                         </div>

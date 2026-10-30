@@ -56,7 +56,7 @@ agar konsisten dengan `body.theme-modern` global di `app.css`.
 - [x] Modul 5: Settings & Master Data — @error feedback (pdf-export-settings, notification-config)
 - [x] Tambah ikon menu (MenuComposer: semua item diberi ikon Tabler)
 - [ ] Bulletin pindah ke server-side
-- [ ] Aksesibilitas aria-label
+- [x] Aksesibilitas aria-label (sweep icon buttons di modul-modul utama)
 
 ## File kunci
 - resources/views/components/dashboard/modern-infographic.blade.php

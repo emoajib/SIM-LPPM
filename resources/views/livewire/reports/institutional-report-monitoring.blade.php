@@ -153,7 +153,7 @@
 
                                     @if($route)
                                         <a href="{{ route($route, $params) }}" class="btn btn-icon btn-white"
-                                            title="Lihat Detail & Filter" data-bs-toggle="tooltip">
+                                            title="Lihat Detail & Filter" data-bs-toggle="tooltip" aria-label="Lihat Detail & Filter">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
                                                 viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
                                                 stroke-linecap="round" stroke-linejoin="round">

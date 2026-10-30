@@ -447,8 +447,8 @@
                                                     <button type="button"
                                                         wire:click="removeEvidence({{ $index }})"
                                                         wire:confirm="Batalkan upload file ini?"
-                                                        class="btn btn-icon btn-sm btn-ghost-danger"
-                                                        title="Hapus file">
+                                                        class="btn btn-icon btn-sm btn-ghost-danger" aria-label="Hapus"
+                                                        title="Hapus file" aria-label="Hapus file">
                                                         
                                                     </button>
                                                 </div>
@@ -499,7 +499,7 @@
                                                     <button type="button"
                                                         wire:click="deleteEvidence('{{ $media->id }}')"
                                                         wire:confirm="Hapus file ini?"
-                                                        class="btn btn-icon btn-sm btn-ghost-danger"
+                                                        class="btn btn-icon btn-sm btn-ghost-danger" aria-label="Hapus"
                                                         title="Hapus file">
                                                         
                                                     </button>

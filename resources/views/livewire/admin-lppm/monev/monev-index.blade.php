@@ -410,7 +410,7 @@
                                             </td>
                                             <td>
                                                 <div class="btn-list flex-nowrap">
-                                                    <button class="btn btn-icon btn-sm btn-outline-primary"
+                                                    <button class="btn btn-icon btn-sm btn-outline-primary" aria-label="Edit monev"
                                                         wire:click="editMonev('{{ $monev->id }}')">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24"
                                                             height="24" viewBox="0 0 24 24" stroke-width="2"
@@ -425,7 +425,7 @@
                                                             <line x1="16" y1="5" x2="19" y2="8"></line>
                                                         </svg>
                                                     </button>
-                                                    <button class="btn btn-icon btn-sm btn-outline-danger"
+                                                    <button class="btn btn-icon btn-sm btn-outline-danger" aria-label="Hapus monev"
                                                         wire:confirm="Hapus data monev ini?"
                                                         wire:click="deleteMonev('{{ $monev->id }}')">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24"

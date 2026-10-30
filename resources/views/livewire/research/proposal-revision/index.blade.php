@@ -115,7 +115,7 @@
                                 <div class="flex-nowrap btn-list">
                                     <a href="{{ route('research.proposal-revision.show', $proposal) }}"
                                         class="btn btn-icon btn-ghost-primary" title="Lihat Detail Revisi"
-                                        wire:navigate.hover>
+                                        wire:navigate.hover aria-label="Lihat Detail Revisi">
                                         
                                     </a>
                                 </div>

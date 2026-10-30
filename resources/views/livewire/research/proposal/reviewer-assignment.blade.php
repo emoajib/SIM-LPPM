@@ -88,7 +88,7 @@
                                 <td>
                                     <button type="button"
                                         wire:click="confirmRemoveReviewer('{{ $reviewer->user->id }}')"
-                                        class="btn btn-icon btn-ghost-danger btn-sm" data-bs-toggle="modal"
+                                        class="btn btn-icon btn-ghost-danger btn-sm" data-bs-toggle="modal" aria-label="Hapus reviewer"
                                         data-bs-target="#deleteReviewerModal">
                                         <x-lucide-trash-2 class="icon" />
                                     </button>

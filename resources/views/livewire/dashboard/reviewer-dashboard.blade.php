@@ -360,7 +360,7 @@
                                         @endif
                                     </td>
                                     <td class="text-end pe-4">
-                                        <a href="{{ route('research.proposal.show', $research) }}" class="btn btn-icon btn-outline-primary btn-sm rounded-circle shadow-sm" title="Buka Detail" wire:navigate.hover>
+                                        <a href="{{ route('research.proposal.show', $research) }}" class="btn btn-icon btn-outline-primary btn-sm rounded-circle shadow-sm" title="Buka Detail" wire:navigate.hover aria-label="Buka Detail">
                                             
                                         </a>
                                     </td>
@@ -414,7 +414,7 @@
                                         @endif
                                     </td>
                                     <td class="text-end pe-4">
-                                        <a href="{{ route('community-service.proposal.show', $pkm) }}" class="btn btn-icon btn-outline-green btn-sm rounded-circle shadow-sm" title="Buka Detail" wire:navigate.hover>
+                                        <a href="{{ route('community-service.proposal.show', $pkm) }}" class="btn btn-icon btn-outline-green btn-sm rounded-circle shadow-sm" title="Buka Detail" wire:navigate.hover aria-label="Buka Detail">
                                             
                                         </a>
                                     </td>

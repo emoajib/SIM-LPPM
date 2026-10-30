@@ -61,7 +61,7 @@
                                                 @php $media = $item->getFirstMedia('supporting_document'); @endphp
                                                 <a data-navigate-ignore="true"
                                                     href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                                                    target="_blank" class="btn btn-icon btn-ghost-info" title="Lihat Dokumen">
+                                                    target="_blank" class="btn btn-icon btn-ghost-info" title="Lihat Dokumen" aria-label="Lihat Dokumen">
                                                     
                                                 </a>
                                             @endif

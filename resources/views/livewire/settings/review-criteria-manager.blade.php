@@ -46,11 +46,11 @@
                                     </td>
                                     <td>
                                         <div class="btn-list gap-1">
-                                            <button class="btn btn-icon btn-ghost-primary"
+                                            <button class="btn btn-icon btn-ghost-primary" aria-label="Edit kriteria"
                                                 wire:click="edit({{ $criteria->id }})">
                                                 
                                             </button>
-                                            <button class="btn btn-icon btn-ghost-danger"
+                                            <button class="btn btn-icon btn-ghost-danger" aria-label="Hapus kriteria"
                                                 wire:click="delete({{ $criteria->id }})"
                                                 onclick="return confirm('Apakah Anda yakin ingin menghapus kriteria ini?')">
                                                 <x-lucide-trash-2 class="icon" />
@@ -109,11 +109,11 @@
                                     </td>
                                     <td>
                                         <div class="btn-list gap-1">
-                                            <button class="btn btn-icon btn-ghost-primary"
+                                            <button class="btn btn-icon btn-ghost-primary" aria-label="Edit kriteria"
                                                 wire:click="edit({{ $criteria->id }})">
                                                 
                                             </button>
-                                            <button class="btn btn-icon btn-ghost-danger"
+                                            <button class="btn btn-icon btn-ghost-danger" aria-label="Hapus kriteria"
                                                 wire:click="delete({{ $criteria->id }})"
                                                 onclick="return confirm('Apakah Anda yakin ingin menghapus kriteria ini?')">
                                                 <x-lucide-trash-2 class="icon" />
@@ -178,11 +178,11 @@
                                     </td>
                                     <td>
                                         <div class="btn-list gap-1">
-                                            <button class="btn btn-icon btn-ghost-primary"
+                                            <button class="btn btn-icon btn-ghost-primary" aria-label="Edit kriteria"
                                                 wire:click="edit({{ $criteria->id }})">
                                                 
                                             </button>
-                                            <button class="btn btn-icon btn-ghost-danger"
+                                            <button class="btn btn-icon btn-ghost-danger" aria-label="Hapus kriteria"
                                                 wire:click="delete({{ $criteria->id }})"
                                                 onclick="return confirm('Apakah Anda yakin ingin menghapus kriteria ini?')">
                                                 <x-lucide-trash-2 class="icon" />
@@ -242,11 +242,11 @@
                                     </td>
                                     <td>
                                         <div class="btn-list gap-1">
-                                            <button class="btn btn-icon btn-ghost-primary"
+                                            <button class="btn btn-icon btn-ghost-primary" aria-label="Edit kriteria"
                                                 wire:click="edit({{ $criteria->id }})">
                                                 
                                             </button>
-                                            <button class="btn btn-icon btn-ghost-danger"
+                                            <button class="btn btn-icon btn-ghost-danger" aria-label="Hapus kriteria"
                                                 wire:click="delete({{ $criteria->id }})"
                                                 onclick="return confirm('Apakah Anda yakin ingin menghapus kriteria ini?')">
                                                 <x-lucide-trash-2 class="icon" />

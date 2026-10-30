@@ -54,7 +54,7 @@
                         </div>
                     </div>
                     <div class="col-auto">
-                        <button class="btn btn-icon btn-white shadow-sm" wire:click="resetFilters" title="Reset Filter">
+                        <button class="btn btn-icon btn-white shadow-sm" wire:click="resetFilters" title="Reset Filter" aria-label="Reset Filter">
                             
                         </button>
                     </div>

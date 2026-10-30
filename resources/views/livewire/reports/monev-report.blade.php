@@ -64,7 +64,7 @@
                         </select>
                     </div>
                     <div class="col-auto ms-auto">
-                        <button class="btn btn-icon btn-white shadow-sm" wire:click="resetFilters" title="Reset Filter">
+                        <button class="btn btn-icon btn-white shadow-sm" wire:click="resetFilters" title="Reset Filter" aria-label="Reset Filter">
                             
                         </button>
                     </div>
@@ -209,7 +209,7 @@
                                             
                                         </a>
                                     @else
-                                        <button class="btn btn-sm btn-icon btn-outline-secondary" disabled title="Belum direview">
+                                        <button class="btn btn-sm btn-icon btn-outline-secondary" disabled title="Belum direview" aria-label="Belum direview">
                                             
                                         </button>
                                     @endif

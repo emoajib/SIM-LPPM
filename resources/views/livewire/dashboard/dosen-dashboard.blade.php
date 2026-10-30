@@ -32,7 +32,7 @@
                             @if(auth()->user()->identity?->sinta_id)
                                 <button wire:click.prevent="syncSinta" wire:loading.attr="disabled"
                                     class="btn btn-icon btn-ghost-primary btn-sm rounded-circle"
-                                    title="Sinkronkan Data SINTA">
+                                    title="Sinkronkan Data SINTA" aria-label="Sinkronkan Data SINTA">
                                     <i wire:loading.remove class="ti ti-refresh"></i>
                                     <div wire:loading class="spinner-border spinner-border-sm" role="status"></div>
                                 </button>
