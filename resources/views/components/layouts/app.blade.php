@@ -26,6 +26,9 @@
     <!-- BEGIN GLOBAL THEME SCRIPT -->
     {{-- @vite(['resources/js/theme-config.js']) --}}
     <!-- END GLOBAL THEME SCRIPT -->
+    @php
+        $isModernTheme = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')) === 'modern';
+    @endphp
     <div class="page">
         @persist('header')
         @include('components.layouts.header')
@@ -46,6 +49,10 @@
             <!-- BEGIN PAGE BODY -->
             <div class="page-body">
                 <div class="container-xl">
+                    @if ($isModernTheme)
+                        {{-- Modern theme: React + Tailwind enhancement (additive, Blade content tetap) --}}
+                        <div id="modern-root" class="mb-4"></div>
+                    @endif
                     {{ $slot }}
                 </div>
             </div>
@@ -53,6 +60,10 @@
             @include('components.layouts.footer')
         </div>
     </div>
+    @if ($isModernTheme)
+        @viteReactRefresh
+        @vite('resources/js/modern.jsx')
+    @endif
 
     @stack('scripts')
     <script>

@@ -1,25 +1,19 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 
-function ModernApp() {
+function ModernBanner() {
     return (
-        <div className="min-h-screen bg-slate-50 text-slate-800 p-6">
-            <h1 className="text-2xl font-bold text-[#1e3a6e]">Modern Theme (React + Tailwind)</h1>
-            <p className="text-sm text-slate-500 mt-2">
-                Shell modern aktif. Migrasi modul bertahap.
-            </p>
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4">
-                    <div className="text-xs font-bold text-slate-500 uppercase">Penelitian</div>
-                    <div className="text-2xl font-black text-[#1e3a6e] mt-1">—</div>
+        <div className="rounded-xl overflow-hidden shadow-md mb-4 border border-[#1e3a6e]/20">
+            <div className="bg-gradient-to-r from-[#11244e] via-[#1e3a6e] to-[#254b8c] text-white px-5 py-4 flex items-center justify-between">
+                <div>
+                    <div className="text-[10px] font-black uppercase tracking-widest text-blue-200">Tema Modern · React + Tailwind</div>
+                    <h2 className="text-lg font-black tracking-tight mt-0.5">Modern Mode Aktif</h2>
+                    <p className="text-[11px] text-blue-100 font-medium mt-1">Layout & komponen modern diadopsi dari prototype. Konten di bawah tetap berjalan (Blade/Livewire).</p>
                 </div>
-                <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4">
-                    <div className="text-xs font-bold text-slate-500 uppercase">Pengabdian</div>
-                    <div className="text-2xl font-black text-[#1e3a6e] mt-1">—</div>
-                </div>
-                <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4">
-                    <div className="text-xs font-bold text-slate-500 uppercase">Laporan</div>
-                    <div className="text-2xl font-black text-[#1e3a6e] mt-1">—</div>
+                <div className="hidden md:flex gap-2">
+                    <span className="bg-white/15 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">React 19</span>
+                    <span className="bg-white/15 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">Tailwind 4</span>
+                    <span className="bg-emerald-400/30 text-emerald-100 border border-emerald-400/40 text-[10px] font-bold px-2.5 py-1 rounded-full">Vite 7</span>
                 </div>
             </div>
         </div>
@@ -28,5 +22,5 @@ function ModernApp() {
 
 const rootEl = document.getElementById("modern-root");
 if (rootEl) {
-    createRoot(rootEl).render(<ModernApp />);
+    createRoot(rootEl).render(<ModernBanner />);
 }
