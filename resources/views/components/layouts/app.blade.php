@@ -24,7 +24,7 @@
     <x-tabler.toast-container />
 
     <!-- BEGIN GLOBAL THEME SCRIPT -->
-    {{-- @vite(['resources/js/theme-config.js']) --}}
+    @vite(['resources/js/theme-config.js'])
     <!-- END GLOBAL THEME SCRIPT -->
     @php
         $isModernTheme = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')) === 'modern';
@@ -53,6 +53,7 @@
                         @php
                             $modernPageMap = [
                                 'research.proposal.index' => 'proposals-index',
+                                'community-service.proposal.index' => 'pengabdian-index',
                             ];
                             $modernPage = $modernPageMap[request()->route()?->getName() ?? ''] ?? null;
                         @endphp
