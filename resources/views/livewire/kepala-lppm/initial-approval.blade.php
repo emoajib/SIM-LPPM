@@ -171,22 +171,22 @@
                             <td class="text-wrap">
                                 <div class="text-reset fw-bold">{{ $proposal->title }}</div>
                                 <div class="mt-1">
-                                    <x-tabler.badge variant="outline" class="text-uppercase" style="font-size: 0.75rem;">
+                                    <span class="badge bg-secondary-lt text-uppercase" style="font-size: 0.75rem;">
                                         {{ $proposal->focusArea?->name ?? '—' }}
-                                    </x-tabler.badge>
+                                    </span>
                                 </div>
                             </td>
                             <td>
                                 @if ($proposal->detailable_type === 'App\Models\Research')
-                                    <x-tabler.badge color="blue" variant="light">
+                                    <span class="badge bg-blue-lt">
                                         
                                         Penelitian
-                                    </x-tabler.badge>
+                                    </span>
                                 @else
-                                    <x-tabler.badge color="green" variant="light">
+                                    <span class="badge bg-green-lt">
                                         
                                         Pengabdian
-                                    </x-tabler.badge>
+                                    </span>
                                 @endif
                             </td>
                             <td>

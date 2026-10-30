@@ -84,7 +84,7 @@
                             <td class="text-wrap ps-3">
                                 <div class="text-reset fw-bold">{{ $report->proposal->title }}</div>
                                 <div class="mt-1">
-                                    <x-tabler.badge variant="outline" class="text-uppercase" style="font-size: 0.75rem;">Laporan Akhir</x-tabler.badge>
+                                    <span class="badge bg-secondary-lt text-uppercase" style="font-size: 0.75rem;">Laporan Akhir</span>
                                     @if ($report->proposal->researchScheme)
                                         <span class="badge bg-secondary-lt ms-1" style="font-size: 0.75rem;">{{ $report->proposal->researchScheme->name }}</span>
                                     @elseif ($report->proposal->communityServiceScheme)

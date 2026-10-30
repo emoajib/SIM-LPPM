@@ -142,9 +142,9 @@
     </div>
 
     <!-- Proposals Table -->
-    <div class="card">
+    <div class="card border-0 shadow-sm">
         <div class="table-responsive">
-            <table class="card-table table table-vcenter">
+            <table class="table table-vcenter card-table table-hover">
                 <thead>
                         <tr>
                             <th>Judul</th>
@@ -160,22 +160,22 @@
                             <td class="text-wrap">
                                 <div class="text-reset fw-bold">{{ $proposal->title }}</div>
                                 <div class="mt-1">
-                                    <x-tabler.badge variant="outline" class="text-uppercase" style="font-size: 0.75rem;">
+                                    <span class="badge bg-secondary-lt text-uppercase" style="font-size: 0.75rem;">
                                         {{ $proposal->focusArea?->name ?? '—' }}
-                                    </x-tabler.badge>
+                                    </span>
                                 </div>
                             </td>
                             <td>
                                 @if ($proposal->detailable_type === 'App\Models\Research')
-                                    <x-tabler.badge color="blue" variant="light">
+                                    <span class="badge bg-blue-lt">
                                         
                                         Penelitian
-                                    </x-tabler.badge>
+                                    </span>
                                 @else
-                                    <x-tabler.badge color="green" variant="light">
+                                    <span class="badge bg-green-lt">
                                         
                                         Pengabdian
-                                    </x-tabler.badge>
+                                    </span>
                                 @endif
                             </td>
                             <td>
@@ -185,9 +185,9 @@
                                 </div>
                             </td>
                             <td>
-                                <x-tabler.badge :color="$proposal->status->color()" class="fw-normal">
+                                <span class="badge bg-{{ $proposal->status->color() }}-lt fw-normal">
                                     {{ $proposal->status->label() }}
-                                </x-tabler.badge>
+                                </span>
                                 @if(\App\Models\Setting::get('feature_roadmap_active', false) && \App\Models\Setting::get('feature_kaprodi_validation', false))
                                     <div class="mt-1">
                                         @if($proposal->is_roadmap_validated_by_kaprodi)
