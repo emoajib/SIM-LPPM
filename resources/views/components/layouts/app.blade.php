@@ -50,10 +50,24 @@
             <div class="page-body">
                 <div class="container-xl">
                     @if ($isModernTheme)
-                        {{-- Modern theme: React + Tailwind enhancement (additive, Blade content tetap) --}}
-                        <div id="modern-root" class="mb-4"></div>
+                        @php
+                            $modernPageMap = [
+                                'research.proposal.index' => 'proposals-index',
+                            ];
+                            $modernPage = $modernPageMap[request()->route()?->getName() ?? ''] ?? null;
+                        @endphp
+                        <script>window.__MODERN_PAGE__ = @json($modernPage);</script>
+                        @if ($modernPage)
+                            {{-- Modern theme: React (migrasi) — tanpa Blade content --}}
+                            <div id="modern-root"></div>
+                        @else
+                            {{-- Modern theme: React banner + Blade content (hybrid) --}}
+                            <div id="modern-root" class="mb-4"></div>
+                            {{ $slot }}
+                        @endif
+                    @else
+                        {{ $slot }}
                     @endif
-                    {{ $slot }}
                 </div>
             </div>
             <!-- END PAGE BODY -->

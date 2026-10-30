@@ -2,6 +2,7 @@
 
 use App\Exports\UsersTemplateExport;
 use App\Http\Controllers\AdminLppm\ManualBookUploadController;
+use App\Http\Controllers\Api\ModernProposalController;
 use App\Http\Controllers\Auth\MathCaptchaController;
 use App\Http\Controllers\DailyNoteExportController;
 use App\Http\Controllers\DocumentSignatureVerificationController;
@@ -183,6 +184,10 @@ Route::middleware(['auth'])->group(function () {
     // Research Routes
     Route::middleware(['permission:module_penelitian'])->prefix('research')->name('research.')->group(function () {
         Route::get('/', Index::class)->name('proposal.index');
+
+        // Modern theme (React) data endpoint
+        Route::get('api/proposals', [ModernProposalController::class, 'index'])
+            ->name('proposal.api');
 
         // Only dosen can create proposals
         Route::get('proposal/create', Create::class)
