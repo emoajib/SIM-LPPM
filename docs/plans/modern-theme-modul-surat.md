@@ -58,6 +58,7 @@ agar konsisten dengan `body.theme-modern` global di `app.css`.
 - [x] Komponen Tampilan (UI Halaman) — layout shell Tabler standar; palet modern theme diselaraskan ke prototype (navy #1e3a6e, gradient, rounded-xl)
 - [x] Infrastruktur React+Tailwind (Fase 1) — vite config, entry resources/js/modern.jsx, build OK
 - [x] Modern theme shell (Fase 2) — React banner (navy gradient) + Blade content tetap (hybrid, fungsionalitas aman)
+- [x] Migrasi modul Penelitian (Proposal) index ke React (modern theme) + API endpoint /research/api/proposals
 - [ ] Bulletin pindah ke server-side (fitur tersisa: migrasi + model + API + refactor view)
 - [x] Aksesibilitas aria-label (sweep icon buttons di modul-modul utama)
 
