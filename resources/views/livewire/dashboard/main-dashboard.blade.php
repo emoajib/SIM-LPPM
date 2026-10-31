@@ -24,7 +24,6 @@
                                     ['label' => 'Monev', 'desc' => 'Monitoring & evaluasi usulan berjalan', 'route' => 'admin-lppm.monev.index', 'icon' => 'presentation-analytics', 'color' => 'cyan'],
                                     ['label' => 'Beban Kerja Reviewer', 'desc' => 'Pantau beban kerja reviewer', 'route' => 'admin-lppm.reviewer-workload', 'icon' => 'chart-pie', 'color' => 'purple'],
                                     ['label' => 'Monitoring Review', 'desc' => 'Pantau proses review berjalan', 'route' => 'admin-lppm.review-monitoring', 'icon' => 'eye', 'color' => 'teal'],
-                                    ['label' => 'Log Notifikasi', 'desc' => 'Riwayat notifikasi sistem', 'route' => 'admin-lppm.notification-log', 'icon' => 'list', 'color' => 'secondary'],
                                 ];
                             @endphp
                             @foreach ($adminQueue as $q)

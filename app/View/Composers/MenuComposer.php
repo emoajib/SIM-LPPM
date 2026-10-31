@@ -241,7 +241,7 @@ class MenuComposer
                         'title' => 'Log Notifikasi',
                         'icon' => 'list',
                         'route' => 'admin-lppm.notification-log',
-                        'roles' => ['admin lppm', 'kepala lppm', 'rektor'],
+                        'roles' => ['admin lppm', 'superadmin'],
                     ],
                 ],
             ],
