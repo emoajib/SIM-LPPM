@@ -99,8 +99,20 @@ Rekomendasi: Opsi A hanya jika tim sepakat; mitigasi dengan grep memastikan tida
 - Jangan ubah `.env`, migrasi, atau route tanpa review khusus.
 
 ## Kriteria Selesai (Definition of Done)
-- [ ] Tidak ada angka hardcoded di `modern-infographic.blade.php` (gauge/kapsul).
-- [ ] `total_luaran` konsisten dengan scoping role atau label disesuaikan.
-- [ ] Semua test pass (≥ baseline).
-- [ ] Pint & PHPStan bersih.
+- [x] Tidak ada angka hardcoded di `modern-infographic.blade.php` (gauge/kapsul).
+- [x] `total_luaran` konsisten dengan scoping role (institusi/dosen/kaprodi/reviewer) + label disesuaikan.
+- [x] Semua test pass (473 passed, 13 skipped).
+- [x] Pint & PHPStan bersih.
 - [ ] Verifikasi manual per role selesai.
+
+## Status Eksekusi
+- [x] Fase 0 — Baseline
+- [x] Fase 1 — Mock blade dihapus, data real (gauge 1, kapsul 02/04, placeholder)
+- [x] Fase 1b — Fix dropdown tertutup banner (CSS + build asset)
+- [x] Fase 2 — Scoping role: superadmin/admin variants (institusi), kaprodi (prodi), reviewer (ditugaskan), dosen (sendiri/tim), luaran scoped
+- [x] Fase 3 — `DashboardIndex.jsx` **tidak dihapus** (dead code, tidak ter-mount) agar tidak menghapus pekerjaan lain yang belum di-commit
+- [x] Fase 4 — Test suite, Pint, PHPStan
+
+### Catatan
+- `DashboardIndex.jsx` masih memiliki `surat`/`prototipe = 0` hardcoded, tetapi komponen ini tidak pernah di-mount (tidak ada di `modernPageMap`). Jika nanti diaktifkan, perlu endpoint/query real.
+- Verifikasi visual dropdown perlu hard-refresh browser.
