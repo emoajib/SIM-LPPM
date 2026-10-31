@@ -402,7 +402,7 @@
     <div class="sli-stat-grid">
         <div class="sli-stat-card" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
             <div>
-                <div class="sli-stat-val">{{ $totalUsulan }}</div>
+                <div class="sli-stat-val" id="sli-stat-usulan">{{ $totalUsulan }}</div>
                 <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">Total Usulan Masuk</div>
                 <div style="font-size: 0.75rem; opacity: 0.85;">Penelitian & Pengabdian</div>
             </div>
@@ -413,9 +413,9 @@
 
         <div class="sli-stat-card" style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);">
             <div>
-                <div class="sli-stat-val">{{ $totalDidanai }}</div>
+                <div class="sli-stat-val" id="sli-stat-didanai">{{ $totalDidanai }}</div>
                 <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">Proposal Didanai</div>
-                <div style="font-size: 0.75rem; opacity: 0.85;">{{ $fundingRate }}% Rasio Lolos Seleksi</div>
+                <div id="sli-stat-rate" style="font-size: 0.75rem; opacity: 0.85;">{{ $fundingRate }}% Rasio Lolos Seleksi</div>
             </div>
             <div style="width: 2.5rem; height: 2.5rem; border-radius: 9999px; background: rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
                 🎯
@@ -424,7 +424,7 @@
 
         <div class="sli-stat-card" style="background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);">
             <div>
-                <div class="sli-stat-val">Rp {{ $totalDanaM }} M</div>
+                <div class="sli-stat-val" id="sli-stat-dana">Rp {{ $totalDanaM }} M</div>
                 <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">Realisasi Anggaran</div>
                 <div style="font-size: 0.75rem; opacity: 0.85;">Terserap Hibah LPPM</div>
             </div>
@@ -435,7 +435,7 @@
 
         <div class="sli-stat-card" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%);">
             <div>
-                <div class="sli-stat-val">{{ $totalLuaran }}</div>
+                <div class="sli-stat-val" id="sli-stat-luaran">{{ $totalLuaran }}</div>
                 <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">Luaran & Publikasi</div>
                 <div style="font-size: 0.75rem; opacity: 0.85;">Luaran terdata (institusi)</div>
             </div>
@@ -602,7 +602,7 @@
                         <h4 style="margin: 0; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; color: #0f172a; letter-spacing: 0.02em;">
                             Penyaluran Hibah
                         </h4>
-                        <p style="margin: 0.15rem 0 0 0; font-size: 0.75rem; color: #64748b; font-weight: 500;">
+                        <p id="sli-gauge-sub-3" style="margin: 0.15rem 0 0 0; font-size: 0.75rem; color: #64748b; font-weight: 500;">
                             Rp {{ $totalDanaM }} M dana penelitian terserap
                         </p>
                     </div>
@@ -942,6 +942,7 @@
 (function() {
     // 1. Data Store (real data from server, no fabricated values)
     const trendData = @json($trendData ?? []);
+    const schemeStats = @json($stats['scheme'] ?? []);
 
     const defaultBulletins = [
         {
@@ -984,7 +985,7 @@
 
     let currentScheme = 'all';
     let currentLayout = 'both';
-    let activeYearIndex = 5; // default 2026
+    let activeYearIndex = Math.max(0, trendData.length - 1);
     let isTableOpen = false;
     let editingId = null;
 
@@ -998,22 +999,26 @@
     // Helper: calculate data
     function getProcessedData() {
         return trendData.map(item => {
-            let u = 0, d = 0;
+            let u = 0, d = 0, dana = 0;
             if (currentScheme === 'penelitian') {
                 u = item.usulanPenelitian;
                 d = item.didanaiPenelitian;
+                dana = item.danaPenelitianJuta || 0;
             } else if (currentScheme === 'pengabdian') {
                 u = item.usulanPengabdian;
                 d = item.didanaiPengabdian;
+                dana = item.danaPengabdianJuta || 0;
             } else {
                 u = item.usulanPenelitian + item.usulanPengabdian;
                 d = item.didanaiPenelitian + item.didanaiPengabdian;
+                dana = item.danaTotalJuta || ((item.danaPenelitianJuta || 0) + (item.danaPengabdianJuta || 0));
             }
             const rate = u > 0 ? ((d / u) * 100).toFixed(1) : 0;
             return {
                 ...item,
                 usulan: u,
                 didanai: d,
+                dana: dana,
                 tidakDidanai: u - d,
                 rate: Number(rate)
             };
@@ -1226,7 +1231,7 @@
         if (catatanEl) catatanEl.innerText = active.catatan;
         if (uEl) uEl.innerText = active.usulan + ' Proposal';
         if (dEl) dEl.innerText = active.didanai + ' Proposal';
-        if (danaEl) danaEl.innerText = 'Rp ' + active.danaTotalJuta + ' Jt';
+        if (danaEl) danaEl.innerText = 'Rp ' + active.dana + ' Jt';
     }
 
     function renderTable() {
@@ -1240,7 +1245,7 @@
             totalU += row.usulan;
             totalD += row.didanai;
             totalTD += row.tidakDidanai;
-            totalDana += row.danaTotalJuta;
+            totalDana += row.dana;
             const isSelected = data[activeYearIndex]?.year === row.year;
 
             return `
@@ -1250,7 +1255,7 @@
                     <td style="padding: 0.5rem 0.75rem; text-align: right; color: #1d4ed8; font-weight: 800;">${row.didanai}</td>
                     <td style="padding: 0.5rem 0.75rem; text-align: right; color: #94a3b8;">${row.tidakDidanai}</td>
                     <td style="padding: 0.5rem 0.75rem; text-align: right; font-weight: 800; color: #0f172a;">${row.rate}%</td>
-                    <td style="padding: 0.5rem 0.75rem; text-align: right; font-family: sans-serif;">Rp ${row.danaTotalJuta} Jt</td>
+                    <td style="padding: 0.5rem 0.75rem; text-align: right; font-family: sans-serif;">Rp ${row.dana} Jt</td>
                     <td style="padding: 0.5rem 0.75rem; font-family: sans-serif; font-size: 0.75rem; color: #64748b;">${row.catatan}</td>
                 </tr>
             `;
@@ -1318,6 +1323,58 @@
         renderModalList();
     };
 
+    // KPI cards, gauges, and capsules follow the active scheme filter
+    function formatDanaM(value) {
+        const n = Number(value) || 0;
+        return 'Rp ' + n.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 1 }) + ' M';
+    }
+
+    function updateKpiForScheme() {
+        const data = (schemeStats && schemeStats[currentScheme]) || (schemeStats && schemeStats.all) || {};
+        const usulan = Number(data.usulan) || 0;
+        const didanai = Number(data.didanai) || 0;
+        const deskReview = Number(data.desk_review) || 0;
+        const dana = Number(data.dana_m) || 0;
+        const luaran = Number(data.luaran) || 0;
+        const rate = usulan > 0 ? ((didanai / usulan) * 100).toFixed(1) : '0.0';
+
+        const setText = (id, text) => {
+            const el = document.getElementById(id);
+            if (el) el.innerText = text;
+        };
+        const setValueUnit = (id, value, unit) => {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = value + ' <span style="font-size: 0.75rem; font-weight: 400; color: #bae6fd;">' + unit + '</span>';
+        };
+
+        setText('sli-stat-usulan', usulan);
+        setText('sli-stat-didanai', didanai);
+        setText('sli-stat-rate', rate + '% Rasio Lolos Seleksi');
+        setText('sli-stat-dana', formatDanaM(dana));
+        setText('sli-stat-luaran', luaran);
+
+        setText('sli-gauge-val-1', rate + '%');
+        setText('sli-gauge-sub-1', didanai + ' dari ' + usulan + ' proposal didanai');
+
+        const danaLabel = currentScheme === 'pengabdian'
+            ? 'dana pengabdian terserap'
+            : (currentScheme === 'penelitian' ? 'dana penelitian terserap' : 'total dana terserap');
+        setText('sli-gauge-sub-3', formatDanaM(dana) + ' ' + danaLabel);
+
+        const circle = document.getElementById('sli-gauge-circle-1');
+        if (circle) {
+            const offset = 314 - (314 * Math.min(Number(rate), 100) / 100);
+            circle.style.strokeDashoffset = offset;
+        }
+
+        setText('sli-trend-badge', 'Akumulasi: ' + rate + '% Lolos');
+
+        setValueUnit('sli-cap-val-1', usulan, 'Judul');
+        setValueUnit('sli-cap-val-2', deskReview, 'Lolos');
+        setValueUnit('sli-cap-val-3', didanai, 'SK');
+        setValueUnit('sli-cap-val-4', luaran, 'BASTB');
+    }
+
     window.sliSetScheme = function(scheme) {
         currentScheme = scheme;
         ['all', 'penelitian', 'pengabdian'].forEach(s => {
@@ -1336,6 +1393,7 @@
                 }
             }
         });
+        updateKpiForScheme();
         renderCapsuleBarChart();
         renderMountainSplineChart();
         renderYearInspection();
@@ -1507,6 +1565,7 @@
 
     function renderAll() {
         renderBanner();
+        updateKpiForScheme();
         renderCapsuleBarChart();
         renderMountainSplineChart();
         renderYearInspection();

@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\MandatoryOutput;
 use App\Models\Proposal;
+use App\Models\ReviewLog;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -96,6 +97,25 @@ class Dashboard extends Component
         });
     }
 
+    /**
+     * Hitung jumlah proposal yang sudah melewati desk review (punya ReviewLog).
+     */
+    private function countReviewedProposals(string $detailableType, $user): int
+    {
+        $query = ReviewLog::query()->whereHas(
+            'proposal',
+            fn ($q) => $q->where('detailable_type', $detailableType)
+        );
+
+        if (! $user->activeHasAnyRole(self::INSTITUTION_WIDE_ROLES)) {
+            $query->whereHas('proposal', function ($pq) use ($user) {
+                $this->applyProposalScope($pq, $user);
+            });
+        }
+
+        return $query->distinct()->count('proposal_id');
+    }
+
     protected function loadInfographicStats(): array
     {
         return Cache::remember('dashboard_modern_infographic_stats_'.$this->user->id, 60, function (): array {
@@ -103,49 +123,95 @@ class Dashboard extends Component
                 $user = $this->user;
                 $isLeader = $user->activeHasAnyRole(self::INSTITUTION_WIDE_ROLES);
 
-                $baseQuery = $this->applyProposalScope(
+                $statusDidanai = ['approved', 'completed', 'reviewed'];
+
+                $research = $this->applyProposalScope(
                     Proposal::where('detailable_type', 'App\Models\Research'),
                     $user
                 );
-
-                $totalUsulan = (clone $baseQuery)->count();
-                $totalDidanai = (clone $baseQuery)->whereIn('status', ['approved', 'completed', 'reviewed'])->count();
-                $totalDeskReview = (clone $baseQuery)->whereIn('status', ['submitted', 'reviewed'])->count();
-
-                $basePkm = $this->applyProposalScope(
+                $pkm = $this->applyProposalScope(
                     Proposal::where('detailable_type', 'App\Models\CommunityService'),
                     $user
                 );
 
-                $totalPkm = (clone $basePkm)->count();
-                $totalPkmDidanai = (clone $basePkm)->whereIn('status', ['approved', 'completed', 'reviewed'])->count();
+                $researchUsulan = (clone $research)->count();
+                $researchDidanai = (clone $research)->whereIn('status', $statusDidanai)->count();
+                $researchReview = $this->countReviewedProposals('App\Models\Research', $user);
+                $researchDana = (clone $research)->whereIn('status', $statusDidanai)
+                    ->get()->sum(fn ($p) => $p->approved_budget_total);
 
-                $totalLuaran = 0;
+                $pkmUsulan = (clone $pkm)->count();
+                $pkmDidanai = (clone $pkm)->whereIn('status', $statusDidanai)->count();
+                $pkmReview = $this->countReviewedProposals('App\Models\CommunityService', $user);
+                $pkmDana = (clone $pkm)->whereIn('status', $statusDidanai)
+                    ->get()->sum(fn ($p) => $p->approved_budget_total);
+
+                $luaranResearch = 0;
+                $luaranPkm = 0;
                 if (class_exists(MandatoryOutput::class)) {
-                    $luaranQuery = MandatoryOutput::query();
+                    $luaranBase = MandatoryOutput::query();
                     if (! $isLeader) {
-                        $luaranQuery->whereHas('proposalOutput.proposal', function ($pq) use ($user) {
+                        $luaranBase->whereHas('proposalOutput.proposal', function ($pq) use ($user) {
                             $this->applyProposalScope($pq, $user);
                         });
                     }
-                    $totalLuaran = $luaranQuery->count();
+                    $luaranResearch = (clone $luaranBase)
+                        ->whereHas('proposalOutput.proposal', fn ($q) => $q->where('detailable_type', 'App\Models\Research'))
+                        ->count();
+                    $luaranPkm = (clone $luaranBase)
+                        ->whereHas('proposalOutput.proposal', fn ($q) => $q->where('detailable_type', 'App\Models\CommunityService'))
+                        ->count();
                 }
 
-                $totalDana = $this->applyProposalScope(Proposal::query(), $user)
-                    ->whereIn('status', ['approved', 'completed', 'reviewed'])
-                    ->get()
-                    ->sum(fn ($p) => $p->approved_budget_total);
+                $totalUsulan = $researchUsulan + $pkmUsulan;
+                $totalDidanai = $researchDidanai + $pkmDidanai;
+                $totalDeskReview = $researchReview + $pkmReview;
+                $totalLuaran = $luaranResearch + $luaranPkm;
+                $totalDana = $researchDana + $pkmDana;
+
+                $scheme = [
+                    'all' => [
+                        'usulan' => $totalUsulan,
+                        'didanai' => $totalDidanai,
+                        'desk_review' => $totalDeskReview,
+                        'dana_m' => round($totalDana / 1000000, 1),
+                        'luaran' => $totalLuaran,
+                    ],
+                    'penelitian' => [
+                        'usulan' => $researchUsulan,
+                        'didanai' => $researchDidanai,
+                        'desk_review' => $researchReview,
+                        'dana_m' => round($researchDana / 1000000, 1),
+                        'luaran' => $luaranResearch,
+                    ],
+                    'pengabdian' => [
+                        'usulan' => $pkmUsulan,
+                        'didanai' => $pkmDidanai,
+                        'desk_review' => $pkmReview,
+                        'dana_m' => round($pkmDana / 1000000, 1),
+                        'luaran' => $luaranPkm,
+                    ],
+                ];
 
                 return [
                     'total_usulan' => $totalUsulan,
                     'total_didanai' => $totalDidanai,
                     'total_desk_review' => $totalDeskReview,
-                    'total_pkm' => $totalPkm,
-                    'total_pkm_didanai' => $totalPkmDidanai,
+                    'total_pkm' => $pkmUsulan,
+                    'total_pkm_didanai' => $pkmDidanai,
                     'total_luaran' => $totalLuaran,
                     'total_dana_m' => round($totalDana / 1000000, 1),
+                    'scheme' => $scheme,
                 ];
             } catch (\Throwable $e) {
+                $emptyScheme = [
+                    'usulan' => 0,
+                    'didanai' => 0,
+                    'desk_review' => 0,
+                    'dana_m' => 0,
+                    'luaran' => 0,
+                ];
+
                 return [
                     'total_usulan' => 0,
                     'total_didanai' => 0,
@@ -154,6 +220,11 @@ class Dashboard extends Component
                     'total_pkm_didanai' => 0,
                     'total_luaran' => 0,
                     'total_dana_m' => 0,
+                    'scheme' => [
+                        'all' => $emptyScheme,
+                        'penelitian' => $emptyScheme,
+                        'pengabdian' => $emptyScheme,
+                    ],
                 ];
             }
         });
@@ -181,7 +252,9 @@ class Dashboard extends Component
                 $didanaiPenelitian = $yr->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'Research') && in_array($r->status instanceof \BackedEnum ? $r->status->value : $r->status, ['approved', 'completed', 'reviewed']))->count();
                 $usulanPengabdian = $yr->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'CommunityService'))->count();
                 $didanaiPengabdian = $yr->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'CommunityService') && in_array($r->status instanceof \BackedEnum ? $r->status->value : $r->status, ['approved', 'completed', 'reviewed']))->count();
-                $danaTotal = $yr->filter(fn ($r) => in_array($r->status instanceof \BackedEnum ? $r->status->value : $r->status, ['approved', 'completed', 'reviewed']))
+                $danaPenelitian = $yr->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'Research') && in_array($r->status instanceof \BackedEnum ? $r->status->value : $r->status, ['approved', 'completed', 'reviewed']))
+                    ->sum(fn ($r) => $r->approved_budget_total);
+                $danaPengabdian = $yr->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'CommunityService') && in_array($r->status instanceof \BackedEnum ? $r->status->value : $r->status, ['approved', 'completed', 'reviewed']))
                     ->sum(fn ($r) => $r->approved_budget_total);
                 $data[] = [
                     'year' => (string) $y,
@@ -189,7 +262,9 @@ class Dashboard extends Component
                     'didanaiPenelitian' => $didanaiPenelitian,
                     'usulanPengabdian' => $usulanPengabdian,
                     'didanaiPengabdian' => $didanaiPengabdian,
-                    'danaTotalJuta' => round($danaTotal / 1000000, 1),
+                    'danaPenelitianJuta' => round($danaPenelitian / 1000000, 1),
+                    'danaPengabdianJuta' => round($danaPengabdian / 1000000, 1),
+                    'danaTotalJuta' => round(($danaPenelitian + $danaPengabdian) / 1000000, 1),
                     'catatan' => '',
                 ];
             }
