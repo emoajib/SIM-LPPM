@@ -130,6 +130,7 @@
                     </div>
                 </div>
 
+                @if (in_array($roleName ?? '', ['dosen']))
                 {{-- Riwayat Tri Dharma Terakhir Card --}}
                 <div class="card border border-secondary-subtle shadow-sm rounded-3 mb-3">
                     <div class="card-header bg-white py-2.5">
@@ -181,18 +182,65 @@
                     </div>
                         -->
                 </div>
+                @endif
 
-                {{-- Quick Actions --}}
+                {{-- Quick Actions (disesuaikan dengan role aktif) --}}
                 <div class="card border border-secondary-subtle shadow-sm rounded-3">
                     <div class="card-body p-3">
-                        <div class="text-secondary small fw-bold text-uppercase mb-2">Aksi Cepat Peneliti</div>
+                        <div class="text-secondary small fw-bold text-uppercase mb-2">Aksi Cepat</div>
                         <div class="d-grid gap-2">
-                            <a href="{{ Route::has('research.proposal.create') ? route('research.proposal.create') : url('research/proposal/create') }}" class="btn btn-primary btn-sm fw-bold">
-                                + Ajukan Usulan Baru
-                            </a>
-                            <a href="{{ Route::has('letters.manual-request') ? route('letters.manual-request') : (Route::has('dashboard.dosen.surat.dashboard') ? route('dashboard.dosen.surat.dashboard') : url('surat')) }}" class="btn btn-outline-secondary btn-sm">
-                                Buat Surat Tugas / Izin
-                            </a>
+                            @php
+                                $quickActions = match ($roleName ?? '') {
+                                    'dosen' => [
+                                        ['label' => '+ Ajukan Usulan Baru', 'route' => 'research.proposal.create', 'class' => 'btn-primary fw-bold', 'fallback' => 'research/proposal/create'],
+                                        ['label' => 'Buat Surat Tugas / Izin', 'route' => 'dashboard.dosen.surat.dashboard', 'class' => 'btn-outline-secondary', 'fallback' => 'surat'],
+                                        ['label' => 'Laporan Akhir Saya', 'route' => 'research.final-report.index', 'class' => 'btn-outline-secondary', 'fallback' => null],
+                                    ],
+                                    'reviewer' => [
+                                        ['label' => 'Tugas Review Penelitian', 'route' => 'review.research', 'class' => 'btn-primary fw-bold', 'fallback' => null],
+                                        ['label' => 'Tugas Review Pengabdian', 'route' => 'review.community-service', 'class' => 'btn-outline-secondary', 'fallback' => null],
+                                        ['label' => 'Monev Laporan', 'route' => 'review.monev', 'class' => 'btn-outline-secondary', 'fallback' => null],
+                                    ],
+                                    'admin lppm', 'superadmin' => [
+                                        ['label' => 'Penugasan Reviewer', 'route' => 'admin-lppm.assign-reviewers', 'class' => 'btn-primary fw-bold', 'fallback' => null],
+                                        ['label' => 'Monitoring Laporan', 'route' => 'admin-lppm.report-approval', 'class' => 'btn-outline-secondary', 'fallback' => null],
+                                        ['label' => 'Monev', 'route' => 'admin-lppm.monev.index', 'class' => 'btn-outline-secondary', 'fallback' => null],
+                                    ],
+                                    'kepala lppm' => [
+                                        ['label' => 'Persetujuan (Awal)', 'route' => 'kepala-lppm.initial-approval', 'class' => 'btn-primary fw-bold', 'fallback' => null],
+                                        ['label' => 'Persetujuan (Akhir)', 'route' => 'kepala-lppm.final-decision', 'class' => 'btn-outline-secondary', 'fallback' => null],
+                                        ['label' => 'Persetujuan Laporan', 'route' => 'kepala-lppm.report-approval', 'class' => 'btn-outline-secondary', 'fallback' => null],
+                                    ],
+                                    'dekan' => [
+                                        ['label' => 'Persetujuan Proposal', 'route' => 'dekan.proposals.index', 'class' => 'btn-primary fw-bold', 'fallback' => null],
+                                        ['label' => 'Persetujuan Laporan', 'route' => 'dekan.reports.index', 'class' => 'btn-outline-secondary', 'fallback' => null],
+                                    ],
+                                    'kaprodi' => [
+                                        ['label' => 'Monitoring Laporan', 'route' => 'kaprodi.report-approval', 'class' => 'btn-primary fw-bold', 'fallback' => null],
+                                        ['label' => 'Persetujuan Proposal', 'route' => 'kaprodi.proposals.index', 'class' => 'btn-outline-secondary', 'fallback' => null],
+                                    ],
+                                    'rektor' => [
+                                        ['label' => 'Monitoring Laporan', 'route' => 'reports.monitoring', 'class' => 'btn-primary fw-bold', 'fallback' => null],
+                                        ['label' => 'Laporan IKU', 'route' => 'reports.iku', 'class' => 'btn-outline-secondary', 'fallback' => null],
+                                    ],
+                                    default => [],
+                                };
+                            @endphp
+                            @foreach ($quickActions as $qa)
+                                @php
+                                    $href = null;
+                                    if (Route::has($qa['route'])) {
+                                        $href = route($qa['route']);
+                                    } elseif (!empty($qa['fallback'])) {
+                                        $href = url($qa['fallback']);
+                                    }
+                                @endphp
+                                @if ($href)
+                                    <a href="{{ $href }}" class="btn {{ $qa['class'] }} btn-sm">
+                                        {{ $qa['label'] }}
+                                    </a>
+                                @endif
+                            @endforeach
                         </div>
                     </div>
                 </div>
