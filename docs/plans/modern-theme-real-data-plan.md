@@ -101,7 +101,7 @@ Rekomendasi: Opsi A hanya jika tim sepakat; mitigasi dengan grep memastikan tida
 ## Kriteria Selesai (Definition of Done)
 - [x] Tidak ada angka hardcoded di `modern-infographic.blade.php` (gauge/kapsul).
 - [x] `total_luaran` konsisten dengan scoping role (institusi/dosen/kaprodi/reviewer) + label disesuaikan.
-- [x] Semua test pass (473 passed, 13 skipped).
+- [x] Semua test pass (475 passed, 13 skipped).
 - [x] Pint & PHPStan bersih.
 - [ ] Verifikasi manual per role selesai.
 
@@ -112,7 +112,14 @@ Rekomendasi: Opsi A hanya jika tim sepakat; mitigasi dengan grep memastikan tida
 - [x] Fase 2 — Scoping role: superadmin/admin variants (institusi), kaprodi (prodi), reviewer (ditugaskan), dosen (sendiri/tim), luaran scoped
 - [x] Fase 3 — `DashboardIndex.jsx` **tidak dihapus** (dead code, tidak ter-mount) agar tidak menghapus pekerjaan lain yang belum di-commit
 - [x] Fase 4 — Test suite, Pint, PHPStan
+- [x] Fase 5 — Filter Tahun Akademik + Semester (Ganjil/Genap) pada dashboard modern
+  - `buildPeriodRows()` mengelompokkan proposal per (tahun akademik, semester) dan memisahkan angka penelitian vs pengabdian.
+  - `stats['periods']`, `stats['academic_years']`, `stats['current_period']` dikirim ke front-end.
+  - Filter TA + Semester (dropdown) mengubah KPI cards, gauge, kapsul, chart, rincian periode, dan tabel rekapitulasi tanpa reload.
+  - Label tahun pada chart/tabel memakai tahun akademik (`2026/2027`) + semester, bukan `start_year` mentah.
+  - Satuan dana diseragamkan menjadi "Jt" (sebelumnya "M" yang berarti juta dan menyesatkan).
 
 ### Catatan
 - `DashboardIndex.jsx` masih memiliki `surat`/`prototipe = 0` hardcoded, tetapi komponen ini tidak pernah di-mount (tidak ada di `modernPageMap`). Jika nanti diaktifkan, perlu endpoint/query real.
 - Verifikasi visual dropdown perlu hard-refresh browser.
+- Data aktual saat ini hanya 3 periode: 2025/2026 Genap, 2026/2027 Ganjil, 2027/2028 Ganjil. Periode tanpa data akan menampilkan pesan "Tidak ada data untuk filter ini".

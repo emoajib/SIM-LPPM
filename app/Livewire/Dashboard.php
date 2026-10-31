@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\MandatoryOutput;
 use App\Models\Proposal;
 use App\Models\ReviewLog;
+use App\Support\AcademicPeriod;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -98,110 +99,166 @@ class Dashboard extends Component
     }
 
     /**
-     * Hitung jumlah proposal yang sudah melewati desk review (punya ReviewLog).
+     * Bangun baris data per (tahun akademik, semester) untuk dashboard modern.
+     *
+     * Angka usulan/didanai/desk review/dana/luaran dipisah untuk penelitian
+     * dan pengabdian sehingga filter skema dapat dihitung di sisi klien
+     * tanpa query tambahan.
+     *
+     * @return array<int, array<string, mixed>>
      */
-    private function countReviewedProposals(string $detailableType, $user): int
+    private function buildPeriodRows($user): array
     {
-        $query = ReviewLog::query()->whereHas(
-            'proposal',
-            fn ($q) => $q->where('detailable_type', $detailableType)
-        );
+        $proposals = $this->applyProposalScope(
+            Proposal::query()
+                ->select(['id', 'start_year', 'semester', 'detailable_type', 'status', 'sbk_value'])
+                ->with('activeBudgetItems:id,proposal_id,total_price'),
+            $user
+        )->get();
 
-        if (! $user->activeHasAnyRole(self::INSTITUTION_WIDE_ROLES)) {
-            $query->whereHas('proposal', function ($pq) use ($user) {
-                $this->applyProposalScope($pq, $user);
-            });
+        if ($proposals->isEmpty()) {
+            return [];
         }
 
-        return $query->distinct()->count('proposal_id');
+        $proposalIds = $proposals->pluck('id');
+
+        $reviewedIds = ReviewLog::query()
+            ->whereIn('proposal_id', $proposalIds)
+            ->distinct()
+            ->pluck('proposal_id')
+            ->flip();
+
+        $luaranCounts = collect();
+        if (class_exists(MandatoryOutput::class)) {
+            $luaranCounts = MandatoryOutput::query()
+                ->join('proposal_outputs', 'proposal_outputs.id', '=', 'mandatory_outputs.proposal_output_id')
+                ->whereIn('proposal_outputs.proposal_id', $proposalIds)
+                ->selectRaw('proposal_outputs.proposal_id as proposal_id, count(*) as total')
+                ->groupBy('proposal_outputs.proposal_id')
+                ->pluck('total', 'proposal_id');
+        }
+
+        $statusDidanai = ['approved', 'completed', 'reviewed'];
+        $rows = [];
+
+        foreach ($proposals as $proposal) {
+            $status = $proposal->status instanceof \BackedEnum
+                ? $proposal->status->value
+                : (string) $proposal->status;
+
+            $schemeKey = $proposal->detailable_type === 'App\Models\Research' ? 'penelitian' : 'pengabdian';
+            $academicYear = $proposal->academic_year ?? (string) ($proposal->start_year ?? '');
+            $semester = $proposal->semester === 'genap' ? 'genap' : 'ganjil';
+            $periodKey = $academicYear.'|'.$semester;
+
+            $rows[$periodKey] ??= [
+                'academic_year' => $academicYear,
+                'semester' => $semester,
+                'catatan' => '',
+                'usulan_penelitian' => 0,
+                'didanai_penelitian' => 0,
+                'review_penelitian' => 0,
+                'dana_penelitian' => 0.0,
+                'luaran_penelitian' => 0,
+                'usulan_pengabdian' => 0,
+                'didanai_pengabdian' => 0,
+                'review_pengabdian' => 0,
+                'dana_pengabdian' => 0.0,
+                'luaran_pengabdian' => 0,
+            ];
+
+            $rows[$periodKey]['usulan_'.$schemeKey] += 1;
+            $rows[$periodKey]['luaran_'.$schemeKey] += (int) ($luaranCounts[$proposal->id] ?? 0);
+
+            if (isset($reviewedIds[$proposal->id])) {
+                $rows[$periodKey]['review_'.$schemeKey] += 1;
+            }
+
+            if (in_array($status, $statusDidanai, true)) {
+                $rows[$periodKey]['didanai_'.$schemeKey] += 1;
+                $rows[$periodKey]['dana_'.$schemeKey] += (float) ((float) ($proposal->sbk_value ?? 0) > 0
+                    ? $proposal->sbk_value
+                    : $proposal->activeBudgetItems->sum('total_price'));
+            }
+        }
+
+        $periods = array_values($rows);
+
+        usort($periods, fn (array $a, array $b): int => strcmp(
+            $a['academic_year'].'-'.($a['semester'] === 'ganjil' ? '0' : '1'),
+            $b['academic_year'].'-'.($b['semester'] === 'ganjil' ? '0' : '1')
+        ));
+
+        return $periods;
+    }
+
+    /**
+     * Jumlahkan baris periode untuk skema tertentu.
+     *
+     * @param  array<int, array<string, mixed>>  $periods
+     * @param  array<int, string>  $suffixes
+     * @return array{usulan: int, didanai: int, desk_review: int, dana_m: float, luaran: int}
+     */
+    private function sumPeriodRows(array $periods, array $suffixes): array
+    {
+        $usulan = 0;
+        $didanai = 0;
+        $review = 0;
+        $luaran = 0;
+        $dana = 0.0;
+
+        foreach ($periods as $row) {
+            foreach ($suffixes as $suffix) {
+                $usulan += $row['usulan_'.$suffix];
+                $didanai += $row['didanai_'.$suffix];
+                $review += $row['review_'.$suffix];
+                $luaran += $row['luaran_'.$suffix];
+                $dana += $row['dana_'.$suffix];
+            }
+        }
+
+        return [
+            'usulan' => $usulan,
+            'didanai' => $didanai,
+            'desk_review' => $review,
+            'dana_m' => round($dana / 1000000, 1),
+            'luaran' => $luaran,
+        ];
     }
 
     protected function loadInfographicStats(): array
     {
         return Cache::remember('dashboard_modern_infographic_stats_'.$this->user->id, 60, function (): array {
             try {
-                $user = $this->user;
-                $isLeader = $user->activeHasAnyRole(self::INSTITUTION_WIDE_ROLES);
-
-                $statusDidanai = ['approved', 'completed', 'reviewed'];
-
-                $research = $this->applyProposalScope(
-                    Proposal::where('detailable_type', 'App\Models\Research'),
-                    $user
-                );
-                $pkm = $this->applyProposalScope(
-                    Proposal::where('detailable_type', 'App\Models\CommunityService'),
-                    $user
-                );
-
-                $researchUsulan = (clone $research)->count();
-                $researchDidanai = (clone $research)->whereIn('status', $statusDidanai)->count();
-                $researchReview = $this->countReviewedProposals('App\Models\Research', $user);
-                $researchDana = (clone $research)->whereIn('status', $statusDidanai)
-                    ->get()->sum(fn ($p) => $p->approved_budget_total);
-
-                $pkmUsulan = (clone $pkm)->count();
-                $pkmDidanai = (clone $pkm)->whereIn('status', $statusDidanai)->count();
-                $pkmReview = $this->countReviewedProposals('App\Models\CommunityService', $user);
-                $pkmDana = (clone $pkm)->whereIn('status', $statusDidanai)
-                    ->get()->sum(fn ($p) => $p->approved_budget_total);
-
-                $luaranResearch = 0;
-                $luaranPkm = 0;
-                if (class_exists(MandatoryOutput::class)) {
-                    $luaranBase = MandatoryOutput::query();
-                    if (! $isLeader) {
-                        $luaranBase->whereHas('proposalOutput.proposal', function ($pq) use ($user) {
-                            $this->applyProposalScope($pq, $user);
-                        });
-                    }
-                    $luaranResearch = (clone $luaranBase)
-                        ->whereHas('proposalOutput.proposal', fn ($q) => $q->where('detailable_type', 'App\Models\Research'))
-                        ->count();
-                    $luaranPkm = (clone $luaranBase)
-                        ->whereHas('proposalOutput.proposal', fn ($q) => $q->where('detailable_type', 'App\Models\CommunityService'))
-                        ->count();
-                }
-
-                $totalUsulan = $researchUsulan + $pkmUsulan;
-                $totalDidanai = $researchDidanai + $pkmDidanai;
-                $totalDeskReview = $researchReview + $pkmReview;
-                $totalLuaran = $luaranResearch + $luaranPkm;
-                $totalDana = $researchDana + $pkmDana;
+                $periods = $this->buildPeriodRows($this->user);
 
                 $scheme = [
-                    'all' => [
-                        'usulan' => $totalUsulan,
-                        'didanai' => $totalDidanai,
-                        'desk_review' => $totalDeskReview,
-                        'dana_m' => round($totalDana / 1000000, 1),
-                        'luaran' => $totalLuaran,
-                    ],
-                    'penelitian' => [
-                        'usulan' => $researchUsulan,
-                        'didanai' => $researchDidanai,
-                        'desk_review' => $researchReview,
-                        'dana_m' => round($researchDana / 1000000, 1),
-                        'luaran' => $luaranResearch,
-                    ],
-                    'pengabdian' => [
-                        'usulan' => $pkmUsulan,
-                        'didanai' => $pkmDidanai,
-                        'desk_review' => $pkmReview,
-                        'dana_m' => round($pkmDana / 1000000, 1),
-                        'luaran' => $luaranPkm,
-                    ],
+                    'all' => $this->sumPeriodRows($periods, ['penelitian', 'pengabdian']),
+                    'penelitian' => $this->sumPeriodRows($periods, ['penelitian']),
+                    'pengabdian' => $this->sumPeriodRows($periods, ['pengabdian']),
                 ];
 
+                $academicYears = array_values(array_unique(array_map(
+                    fn (array $row): string => (string) $row['academic_year'],
+                    $periods
+                )));
+                rsort($academicYears);
+
                 return [
-                    'total_usulan' => $totalUsulan,
-                    'total_didanai' => $totalDidanai,
-                    'total_desk_review' => $totalDeskReview,
-                    'total_pkm' => $pkmUsulan,
-                    'total_pkm_didanai' => $pkmDidanai,
-                    'total_luaran' => $totalLuaran,
-                    'total_dana_m' => round($totalDana / 1000000, 1),
+                    'total_usulan' => $scheme['all']['usulan'],
+                    'total_didanai' => $scheme['all']['didanai'],
+                    'total_desk_review' => $scheme['all']['desk_review'],
+                    'total_pkm' => $scheme['pengabdian']['usulan'],
+                    'total_pkm_didanai' => $scheme['pengabdian']['didanai'],
+                    'total_luaran' => $scheme['all']['luaran'],
+                    'total_dana_m' => $scheme['all']['dana_m'],
                     'scheme' => $scheme,
+                    'periods' => $periods,
+                    'academic_years' => $academicYears,
+                    'current_period' => [
+                        'academic_year' => AcademicPeriod::current(),
+                        'semester' => AcademicPeriod::currentSemester(),
+                    ],
                 ];
             } catch (\Throwable $e) {
                 $emptyScheme = [
@@ -225,6 +282,9 @@ class Dashboard extends Component
                         'penelitian' => $emptyScheme,
                         'pengabdian' => $emptyScheme,
                     ],
+                    'periods' => [],
+                    'academic_years' => [],
+                    'current_period' => null,
                 ];
             }
         });

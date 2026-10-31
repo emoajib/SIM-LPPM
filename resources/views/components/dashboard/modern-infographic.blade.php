@@ -14,6 +14,14 @@
     $totalDeskReview = $stats['total_desk_review'] ?? 0;
     $gaugeOffset1 = 314 - (314 * $fundingRate / 100);
 
+    $academicYears = $stats['academic_years'] ?? [];
+    $academicRange = '—';
+    if (count($academicYears) === 1) {
+        $academicRange = $academicYears[0];
+    } elseif (count($academicYears) > 1) {
+        $academicRange = end($academicYears).' s.d. '.$academicYears[0];
+    }
+
     // Indonesian formatted date
     $days = ['Sunday' => 'Minggu', 'Monday' => 'Senin', 'Tuesday' => 'Selasa', 'Wednesday' => 'Rabu', 'Thursday' => 'Kamis', 'Friday' => 'Jumat', 'Saturday' => 'Sabtu'];
     $months = [1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
@@ -404,7 +412,7 @@
             <div>
                 <div class="sli-stat-val" id="sli-stat-usulan">{{ $totalUsulan }}</div>
                 <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">Total Usulan Masuk</div>
-                <div style="font-size: 0.75rem; opacity: 0.85;">Penelitian & Pengabdian</div>
+                <div id="sli-stat-scope" style="font-size: 0.75rem; opacity: 0.85;">Penelitian & Pengabdian</div>
             </div>
             <div style="width: 2.5rem; height: 2.5rem; border-radius: 9999px; background: rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
                 📄
@@ -424,7 +432,7 @@
 
         <div class="sli-stat-card" style="background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);">
             <div>
-                <div class="sli-stat-val" id="sli-stat-dana">Rp {{ $totalDanaM }} M</div>
+                <div class="sli-stat-val" id="sli-stat-dana">Rp {{ $totalDanaM }} Jt</div>
                 <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">Realisasi Anggaran</div>
                 <div style="font-size: 0.75rem; opacity: 0.85;">Terserap Hibah LPPM</div>
             </div>
@@ -461,7 +469,7 @@
                         </h3>
                     </div>
                     <p style="margin: 0.25rem 0 0 0; font-size: 0.75rem; color: #64748b;">
-                        Menghitung visualisasi volume usulan yang diunggah dan didanai (Tahun Akademik 2021 - 2026)
+                        Menghitung visualisasi volume usulan yang diunggah dan didanai (Tahun Akademik {{ $academicRange }})
                     </p>
                 </div>
 
@@ -477,6 +485,23 @@
                         <button type="button" id="btn-scheme-pengabdian" onclick="sliSetScheme('pengabdian')" style="padding: 0.25rem 0.75rem; border-radius: 0.375rem; border: none; font-weight: 600; cursor: pointer; background: transparent; color: #64748b;">
                             Pengabdian
                         </button>
+                    </div>
+
+                    <!-- Tahun Akademik & Semester Filters -->
+                    <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; color: #475569;">
+                        <label for="sli-filter-ta" style="font-weight: 700; margin: 0;">TA</label>
+                        <select id="sli-filter-ta" onchange="sliSetAcademicYear(this.value)" style="font-size: 0.75rem; padding: 0.25rem 0.4rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; background: #ffffff; color: #0f172a; font-weight: 700; cursor: pointer;">
+                            <option value="all">Semua</option>
+                            @foreach($academicYears as $ta)
+                                <option value="{{ $ta }}">{{ $ta }}</option>
+                            @endforeach
+                        </select>
+                        <label for="sli-filter-semester" style="font-weight: 700; margin: 0;">Semester</label>
+                        <select id="sli-filter-semester" onchange="sliSetSemester(this.value)" style="font-size: 0.75rem; padding: 0.25rem 0.4rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; background: #ffffff; color: #0f172a; font-weight: 700; cursor: pointer;">
+                            <option value="all">Semua</option>
+                            <option value="ganjil">Ganjil</option>
+                            <option value="genap">Genap</option>
+                        </select>
                     </div>
 
                     <!-- View Layout Selector -->
@@ -502,7 +527,7 @@
                     <span style="width: 0.5rem; height: 0.5rem; border-radius: 9999px; background: #06b6d4; display: inline-block;"></span>
                     Indikator Capaian Kinerja Utama LPPM (KPI Gauge)
                 </span>
-                <span style="font-size: 0.75rem; font-family: monospace; color: #0369a1; background: #e0f2fe; border: 1px solid #bae6fd; padding: 0.15rem 0.5rem; border-radius: 9999px; font-weight: 700;">
+                <span id="sli-kpi-period" style="font-size: 0.75rem; font-family: monospace; color: #0369a1; background: #e0f2fe; border: 1px solid #bae6fd; padding: 0.15rem 0.5rem; border-radius: 9999px; font-weight: 700;">
                     Tahun Berjalan {{ $year }}
                 </span>
             </div>
@@ -603,7 +628,7 @@
                             Penyaluran Hibah
                         </h4>
                         <p id="sli-gauge-sub-3" style="margin: 0.15rem 0 0 0; font-size: 0.75rem; color: #64748b; font-weight: 500;">
-                            Rp {{ $totalDanaM }} M dana penelitian terserap
+                            Rp {{ $totalDanaM }} Jt total dana terserap
                         </p>
                     </div>
                 </div>
@@ -941,8 +966,8 @@
 <script>
 (function() {
     // 1. Data Store (real data from server, no fabricated values)
-    const trendData = @json($trendData ?? []);
-    const schemeStats = @json($stats['scheme'] ?? []);
+    const periodData = @json($stats['periods'] ?? []);
+    const currentPeriod = @json($stats['current_period'] ?? null);
 
     const defaultBulletins = [
         {
@@ -984,8 +1009,10 @@
     ];
 
     let currentScheme = 'all';
+    let currentAcademicYear = 'all';
+    let currentSemester = 'all';
     let currentLayout = 'both';
-    let activeYearIndex = Math.max(0, trendData.length - 1);
+    let activeYearIndex = -1;
     let isTableOpen = false;
     let editingId = null;
 
@@ -996,33 +1023,99 @@
     } catch(e) {}
     let activeBulletinIndex = 0;
 
+    // Helper: filter periode (tahun akademik + semester)
+    function getFilteredPeriods() {
+        return periodData.filter(row =>
+            (currentAcademicYear === 'all' || row.academic_year === currentAcademicYear) &&
+            (currentSemester === 'all' || row.semester === currentSemester)
+        );
+    }
+
+    function shortAcademicYear(academicYear) {
+        const parts = String(academicYear || '').split('/');
+        return parts.length === 2 ? parts[0].slice(-2) + '/' + parts[1].slice(-2) : String(academicYear || '');
+    }
+
+    function semesterLabel(semester) {
+        return semester === 'genap' ? 'Genap' : 'Ganjil';
+    }
+
+    function periodLabel(item) {
+        return semesterLabel(item.semester) + ' ' + item.academic_year;
+    }
+
+    function periodAxisLabel(item) {
+        return (item.semester === 'genap' ? 'Gnp ' : 'Gjl ') + shortAcademicYear(item.academic_year);
+    }
+
+    function currentSchemeLabel() {
+        if (currentScheme === 'penelitian') return 'Penelitian';
+        if (currentScheme === 'pengabdian') return 'Pengabdian';
+        return 'Penelitian & Pengabdian';
+    }
+
+    function currentPeriodLabel() {
+        if (currentAcademicYear === 'all' && currentSemester === 'all') return 'semua periode';
+        if (currentAcademicYear === 'all') return 'Semua TA · ' + semesterLabel(currentSemester);
+        if (currentSemester === 'all') return 'TA ' + currentAcademicYear;
+        return semesterLabel(currentSemester) + ' ' + currentAcademicYear;
+    }
+
     // Helper: calculate data
     function getProcessedData() {
-        return trendData.map(item => {
+        return getFilteredPeriods().map(item => {
             let u = 0, d = 0, dana = 0;
             if (currentScheme === 'penelitian') {
-                u = item.usulanPenelitian;
-                d = item.didanaiPenelitian;
-                dana = item.danaPenelitianJuta || 0;
+                u = item.usulan_penelitian;
+                d = item.didanai_penelitian;
+                dana = item.dana_penelitian || 0;
             } else if (currentScheme === 'pengabdian') {
-                u = item.usulanPengabdian;
-                d = item.didanaiPengabdian;
-                dana = item.danaPengabdianJuta || 0;
+                u = item.usulan_pengabdian;
+                d = item.didanai_pengabdian;
+                dana = item.dana_pengabdian || 0;
             } else {
-                u = item.usulanPenelitian + item.usulanPengabdian;
-                d = item.didanaiPenelitian + item.didanaiPengabdian;
-                dana = item.danaTotalJuta || ((item.danaPenelitianJuta || 0) + (item.danaPengabdianJuta || 0));
+                u = item.usulan_penelitian + item.usulan_pengabdian;
+                d = item.didanai_penelitian + item.didanai_pengabdian;
+                dana = (item.dana_penelitian || 0) + (item.dana_pengabdian || 0);
             }
             const rate = u > 0 ? ((d / u) * 100).toFixed(1) : 0;
             return {
                 ...item,
+                year: item.academic_year,
+                period_label: periodLabel(item),
+                axis_label: periodAxisLabel(item),
+                short_year: shortAcademicYear(item.academic_year),
                 usulan: u,
                 didanai: d,
-                dana: dana,
+                dana_m: Math.round((dana / 1000000) * 10) / 10,
                 tidakDidanai: u - d,
                 rate: Number(rate)
             };
         });
+    }
+
+    function defaultPeriodIndex() {
+        const rows = getFilteredPeriods();
+        if (rows.length === 0) return 0;
+        if (currentPeriod) {
+            const idx = rows.findIndex(row =>
+                row.academic_year === currentPeriod.academic_year && row.semester === currentPeriod.semester
+            );
+            if (idx >= 0) return idx;
+        }
+        return rows.length - 1;
+    }
+
+    function resetActivePeriod() {
+        activeYearIndex = defaultPeriodIndex();
+    }
+
+    function refreshVisuals() {
+        updateKpiForScheme();
+        renderCapsuleBarChart();
+        renderMountainSplineChart();
+        renderYearInspection();
+        renderTable();
     }
 
     // 2. Render Functions
@@ -1072,6 +1165,11 @@
         const data = getProcessedData();
         const maxVal = 65;
 
+        if (data.length === 0) {
+            svg.innerHTML = '<text x="170" y="90" text-anchor="middle" font-size="11" fill="#94a3b8" font-family="monospace">Tidak ada data untuk filter ini</text>';
+            return;
+        }
+
         let defs = `
             <defs>
                 <linearGradient id="capsuleGradUsulan" x1="0" y1="0" x2="0" y2="1">
@@ -1100,8 +1198,8 @@
 
         let barsHtml = data.map((d, i) => {
             const isHovered = activeYearIndex === i;
-            const colWidth = 44;
-            const startX = 40 + i * colWidth;
+            const colWidth = data.length > 1 ? 280 / (data.length - 1) : 0;
+            const startX = data.length > 1 ? 40 + i * colWidth : 160;
             const barWidth = 14;
 
             const hUsulan = Math.max((d.usulan / maxVal) * 125, 18);
@@ -1129,7 +1227,7 @@
                     <circle cx="${startX + barWidth + 4 + barWidth / 2}" cy="${yDidanai + barWidth / 2 + 1}" r="1.8" fill="#ffffff" />
 
                     <!-- X-Axis Year -->
-                    <text x="${startX + barWidth + 2}" y="172" text-anchor="middle" font-size="9" font-family="monospace" font-weight="${isHovered ? '900' : '600'}" fill="${isHovered ? '#0369a1' : '#64748b'}">${d.year}</text>
+                    <text x="${startX + barWidth + 2}" y="172" text-anchor="middle" font-size="9" font-family="monospace" font-weight="${isHovered ? '900' : '600'}" fill="${isHovered ? '#0369a1' : '#64748b'}">${d.axis_label}</text>
 
                     ${isHovered ? `
                         <text x="${startX + barWidth + 2}" y="${Math.min(yUsulan, yDidanai) - 4}" text-anchor="middle" font-size="8" font-weight="bold" font-family="monospace" fill="#0284c7">${d.rate}%</text>
@@ -1147,6 +1245,14 @@
         const data = getProcessedData();
         const count = data.length;
         const maxVal = 65;
+
+        if (count === 0) {
+            svg.innerHTML = '<text x="170" y="90" text-anchor="middle" font-size="11" fill="#94a3b8" font-family="monospace">Tidak ada data untuk filter ini</text>';
+            return;
+        }
+
+        const stepX = count > 1 ? 290 / (count - 1) : 0;
+        const firstX = count > 1 ? 30 : 170;
 
         let defs = `
             <defs>
@@ -1168,18 +1274,20 @@
         `).join('');
 
         const usulanPts = data.map((d, i) => ({
-            x: 30 + (i / (count - 1)) * 290,
+            x: firstX + i * stepX,
             y: 155 - (d.usulan / maxVal) * 130,
             val: d.usulan,
             year: d.year,
+            axis_label: d.axis_label,
             rate: d.rate
         }));
 
         const didanaiPts = data.map((d, i) => ({
-            x: 30 + (i / (count - 1)) * 290,
+            x: firstX + i * stepX,
             y: 155 - (d.didanai / maxVal) * 130,
             val: d.didanai,
-            year: d.year
+            year: d.year,
+            axis_label: d.axis_label
         }));
 
         const uPath = usulanPts.reduce((acc, curr, idx) => idx === 0 ? `M ${curr.x} ${curr.y}` : `${acc} L ${curr.x} ${curr.y}`, '');
@@ -1197,7 +1305,7 @@
                     ` : ''}
                     <circle cx="${pt.x}" cy="${pt.y}" r="${isHovered ? 7 : 5}" fill="#0284c7" stroke="#ffffff" stroke-width="2.5" />
                     <circle cx="${didanaiPts[i].x}" cy="${didanaiPts[i].y}" r="${isHovered ? 6 : 4}" fill="#2563eb" stroke="#ffffff" stroke-width="2" />
-                    <text x="${pt.x}" y="172" text-anchor="middle" font-size="9" font-family="monospace" font-weight="${isHovered ? '900' : '600'}" fill="${isHovered ? '#0369a1' : '#64748b'}">${pt.year}</text>
+                    <text x="${pt.x}" y="172" text-anchor="middle" font-size="9" font-family="monospace" font-weight="${isHovered ? '900' : '600'}" fill="${isHovered ? '#0369a1' : '#64748b'}">${pt.axis_label}</text>
                 </g>
             `;
         }).join('');
@@ -1225,13 +1333,24 @@
         const dEl = document.getElementById('sli-inspect-didanai');
         const danaEl = document.getElementById('sli-inspect-dana');
 
-        if (yrEl) yrEl.innerText = active.year;
-        if (titleEl) titleEl.innerText = 'Rincian Volume Usulan & Pendanaan ' + active.year;
+        if (!active) {
+            if (yrEl) yrEl.innerText = '—';
+            if (titleEl) titleEl.innerText = 'Rincian Volume Usulan & Pendanaan';
+            if (rateEl) rateEl.innerText = 'Tingkat Kelolosan: —';
+            if (catatanEl) catatanEl.innerText = 'Tidak ada data untuk filter ini';
+            if (uEl) uEl.innerText = '—';
+            if (dEl) dEl.innerText = '—';
+            if (danaEl) danaEl.innerText = '—';
+            return;
+        }
+
+        if (yrEl) yrEl.innerText = active.short_year;
+        if (titleEl) titleEl.innerText = 'Rincian Volume Usulan & Pendanaan ' + active.period_label;
         if (rateEl) rateEl.innerText = 'Tingkat Kelolosan: ' + active.rate + '%';
-        if (catatanEl) catatanEl.innerText = active.catatan;
+        if (catatanEl) catatanEl.innerText = active.catatan || 'Data tercatat pada sistem';
         if (uEl) uEl.innerText = active.usulan + ' Proposal';
         if (dEl) dEl.innerText = active.didanai + ' Proposal';
-        if (danaEl) danaEl.innerText = 'Rp ' + active.dana + ' Jt';
+        if (danaEl) danaEl.innerText = 'Rp ' + active.dana_m + ' Jt';
     }
 
     function renderTable() {
@@ -1239,23 +1358,28 @@
         if (!tbody) return;
         const data = getProcessedData();
 
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="padding: 1rem; text-align: center; color: #94a3b8; font-family: sans-serif;">Tidak ada data untuk filter ini</td></tr>';
+            return;
+        }
+
         let totalU = 0, totalD = 0, totalTD = 0, totalDana = 0;
 
-        let rowsHtml = data.map(row => {
+        let rowsHtml = data.map((row, idx) => {
             totalU += row.usulan;
             totalD += row.didanai;
             totalTD += row.tidakDidanai;
-            totalDana += row.dana;
-            const isSelected = data[activeYearIndex]?.year === row.year;
+            totalDana += row.dana_m;
+            const isSelected = activeYearIndex === idx;
 
             return `
                 <tr style="border-bottom: 1px solid #f1f5f9; ${isSelected ? 'background: #ecfeff; font-weight: 700;' : ''}">
-                    <td style="padding: 0.5rem 0.75rem; font-weight: 700; color: #0f172a; font-family: sans-serif;">Tahun ${row.year}</td>
+                    <td style="padding: 0.5rem 0.75rem; font-weight: 700; color: #0f172a; font-family: sans-serif;">${row.period_label}</td>
                     <td style="padding: 0.5rem 0.75rem; text-align: right; color: #0891b2; font-weight: 800;">${row.usulan}</td>
                     <td style="padding: 0.5rem 0.75rem; text-align: right; color: #1d4ed8; font-weight: 800;">${row.didanai}</td>
                     <td style="padding: 0.5rem 0.75rem; text-align: right; color: #94a3b8;">${row.tidakDidanai}</td>
                     <td style="padding: 0.5rem 0.75rem; text-align: right; font-weight: 800; color: #0f172a;">${row.rate}%</td>
-                    <td style="padding: 0.5rem 0.75rem; text-align: right; font-family: sans-serif;">Rp ${row.dana} Jt</td>
+                    <td style="padding: 0.5rem 0.75rem; text-align: right; font-family: sans-serif;">Rp ${row.dana_m} Jt</td>
                     <td style="padding: 0.5rem 0.75rem; font-family: sans-serif; font-size: 0.75rem; color: #64748b;">${row.catatan}</td>
                 </tr>
             `;
@@ -1269,7 +1393,7 @@
                 <td style="padding: 0.75rem 0.75rem; text-align: right; color: #1e3a8a;">${totalD}</td>
                 <td style="padding: 0.75rem 0.75rem; text-align: right; color: #64748b;">${totalTD}</td>
                 <td style="padding: 0.75rem 0.75rem; text-align: right;">${rateTotal}%</td>
-                <td style="padding: 0.75rem 0.75rem; text-align: right; font-family: sans-serif;">Rp ${(totalDana/1000).toFixed(2)} M</td>
+                <td style="padding: 0.75rem 0.75rem; text-align: right; font-family: sans-serif;">Rp ${(Math.round(totalDana * 10) / 10).toLocaleString('id-ID')} Jt</td>
                 <td style="padding: 0.75rem 0.75rem; font-family: sans-serif; font-size: 0.75rem; color: #475569;">Terverifikasi SIM LPPM ITSNU</td>
             </tr>
         `;
@@ -1323,19 +1447,38 @@
         renderModalList();
     };
 
-    // KPI cards, gauges, and capsules follow the active scheme filter
-    function formatDanaM(value) {
+    // KPI cards, gauges, and capsules follow skema + tahun akademik + semester
+    function formatDanaJuta(value) {
         const n = Number(value) || 0;
-        return 'Rp ' + n.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 1 }) + ' M';
+        return 'Rp ' + n.toFixed(1).replace(/\.0$/, '') + ' Jt';
     }
 
     function updateKpiForScheme() {
-        const data = (schemeStats && schemeStats[currentScheme]) || (schemeStats && schemeStats.all) || {};
-        const usulan = Number(data.usulan) || 0;
-        const didanai = Number(data.didanai) || 0;
-        const deskReview = Number(data.desk_review) || 0;
-        const dana = Number(data.dana_m) || 0;
-        const luaran = Number(data.luaran) || 0;
+        const rows = getFilteredPeriods();
+        let usulan = 0, didanai = 0, deskReview = 0, dana = 0, luaran = 0;
+
+        rows.forEach(row => {
+            if (currentScheme === 'penelitian') {
+                usulan += row.usulan_penelitian;
+                didanai += row.didanai_penelitian;
+                deskReview += row.review_penelitian;
+                dana += row.dana_penelitian || 0;
+                luaran += row.luaran_penelitian;
+            } else if (currentScheme === 'pengabdian') {
+                usulan += row.usulan_pengabdian;
+                didanai += row.didanai_pengabdian;
+                deskReview += row.review_pengabdian;
+                dana += row.dana_pengabdian || 0;
+                luaran += row.luaran_pengabdian;
+            } else {
+                usulan += row.usulan_penelitian + row.usulan_pengabdian;
+                didanai += row.didanai_penelitian + row.didanai_pengabdian;
+                deskReview += row.review_penelitian + row.review_pengabdian;
+                dana += (row.dana_penelitian || 0) + (row.dana_pengabdian || 0);
+                luaran += row.luaran_penelitian + row.luaran_pengabdian;
+            }
+        });
+
         const rate = usulan > 0 ? ((didanai / usulan) * 100).toFixed(1) : '0.0';
 
         const setText = (id, text) => {
@@ -1350,8 +1493,10 @@
         setText('sli-stat-usulan', usulan);
         setText('sli-stat-didanai', didanai);
         setText('sli-stat-rate', rate + '% Rasio Lolos Seleksi');
-        setText('sli-stat-dana', formatDanaM(dana));
+        setText('sli-stat-dana', formatDanaJuta(dana / 1000000));
         setText('sli-stat-luaran', luaran);
+        setText('sli-stat-scope', currentSchemeLabel() + ' · ' + currentPeriodLabel());
+        setText('sli-kpi-period', (currentAcademicYear === 'all' && currentSemester === 'all') ? 'Semua Periode' : currentPeriodLabel());
 
         setText('sli-gauge-val-1', rate + '%');
         setText('sli-gauge-sub-1', didanai + ' dari ' + usulan + ' proposal didanai');
@@ -1359,7 +1504,7 @@
         const danaLabel = currentScheme === 'pengabdian'
             ? 'dana pengabdian terserap'
             : (currentScheme === 'penelitian' ? 'dana penelitian terserap' : 'total dana terserap');
-        setText('sli-gauge-sub-3', formatDanaM(dana) + ' ' + danaLabel);
+        setText('sli-gauge-sub-3', formatDanaJuta(dana / 1000000) + ' ' + danaLabel);
 
         const circle = document.getElementById('sli-gauge-circle-1');
         if (circle) {
@@ -1393,11 +1538,20 @@
                 }
             }
         });
-        updateKpiForScheme();
-        renderCapsuleBarChart();
-        renderMountainSplineChart();
-        renderYearInspection();
-        renderTable();
+        resetActivePeriod();
+        refreshVisuals();
+    };
+
+    window.sliSetAcademicYear = function(value) {
+        currentAcademicYear = value || 'all';
+        resetActivePeriod();
+        refreshVisuals();
+    };
+
+    window.sliSetSemester = function(value) {
+        currentSemester = value || 'all';
+        resetActivePeriod();
+        refreshVisuals();
     };
 
     window.sliSetLayout = function(layout) {
@@ -1565,11 +1719,11 @@
 
     function renderAll() {
         renderBanner();
-        updateKpiForScheme();
-        renderCapsuleBarChart();
-        renderMountainSplineChart();
-        renderYearInspection();
-        renderTable();
+        const periods = getProcessedData();
+        if (activeYearIndex < 0 || activeYearIndex >= periods.length) {
+            activeYearIndex = defaultPeriodIndex();
+        }
+        refreshVisuals();
     }
 
     window.sliInit = renderAll;
