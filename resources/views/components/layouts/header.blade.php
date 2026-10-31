@@ -179,12 +179,19 @@
                         <a href="{{ route('settings.profile') }}" class="dropdown-item">Profile</a>
                         <a href="#" class="dropdown-item">Feedback</a>
                         <div class="dropdown-divider"></div> --}}
+                        <a href="{{ Route::has('settings.profile') ? route('settings.profile') : route('settings') }}" class="dropdown-item">
+                            @include('components.layouts.partials.menu.icon', [
+                                'name' => 'user',
+                                'class' => 'icon icon-2 icon-inline me-1',
+                            ])
+                            Profil Saya
+                        </a>
                         <a href="{{ route('settings') }}" class="dropdown-item">
                             @include('components.layouts.partials.menu.icon', [
                                 'name' => 'settings',
                                 'class' => 'icon icon-2 icon-inline me-1',
                             ])
-                            Settings
+                            Pengaturan Akun
                         </a>
                         <div class="dropdown-divider"></div>
                         <div class="dropdown-header px-3 py-1 text-uppercase text-secondary fw-bold small">Tema Website</div>
