@@ -83,14 +83,14 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="card-footer bg-white d-flex justify-content-between align-items-center flex-wrap gap-2 py-2">
+                    <div class="card-footer bg-white d-flex justify-content-between align-items-center flex-wrap gap-2 py-2" style="position: relative; z-index: 5;">
                         <span class="text-secondary small">Menampilkan {{ count($recentProposals) }} usulan terbaru (dari total {{ $infographicStats['total_usulan'] ?? 0 }}).</span>
                         <div class="d-flex gap-2">
                             @if (Route::has('research.proposal.index'))
-                                <a href="{{ route('research.proposal.index') }}" class="btn btn-sm btn-outline-primary">Semua Penelitian →</a>
+                                <a href="{{ route('research.proposal.index') }}" target="_self" class="btn btn-sm btn-outline-primary" style="cursor: pointer;">Semua Penelitian →</a>
                             @endif
                             @if (Route::has('community-service.proposal.index'))
-                                <a href="{{ route('community-service.proposal.index') }}" class="btn btn-sm btn-outline-secondary">Semua Pengabdian →</a>
+                                <a href="{{ route('community-service.proposal.index') }}" target="_self" class="btn btn-sm btn-outline-secondary" style="cursor: pointer;">Semua Pengabdian →</a>
                             @endif
                         </div>
                     </div>
