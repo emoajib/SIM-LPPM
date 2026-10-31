@@ -23,9 +23,9 @@
                             <span class="badge bg-blue-lt">Tahun Berjalan {{ date('Y') }}</span>
                         </div>
                     </div>
-                    <div class="table-responsive">
+                    <div class="table-responsive" style="max-height: 480px; overflow-y: auto;">
                         <table class="table table-vcenter table-hover card-table">
-                            <thead>
+                            <thead class="sticky-top bg-white">
                                 <tr class="bg-light text-secondary text-uppercase" style="font-size: 11px;">
                                     <th class="w-1">No</th>
                                     <th>Pengusul & Judul Usulan</th>
