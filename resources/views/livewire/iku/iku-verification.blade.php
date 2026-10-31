@@ -99,7 +99,7 @@
                                                 <div class="mt-2">
                                                     <a href="{{ $output->document_url }}" target="_blank"
                                                         class="btn btn-sm btn-ghost-info py-1 px-2 border-info-subtle"
-                                                        style="font-size: 0.7rem; border: 1px solid rgba(0,0,0,0.1)">
+                                                        style="font-size: 0.75rem; border: 1px solid rgba(0,0,0,0.1)">
                                                         
                                                         Lihat Dokumen
                                                     </a>

@@ -264,7 +264,7 @@
                                                                                 wire:model="clusterNameInput"
                                                                                 wire:keydown.enter="saveCluster"
                                                                                 wire:keydown.escape="cancelEditCluster"
-                                                                                autofocus style="font-size: 0.7rem;">
+                                                                                autofocus style="font-size: 0.75rem;">
                                                                             <button type="button"
                                                                                 class="p-1 btn btn-success btn-sm"
                                                                                 wire:click="saveCluster" title="Simpan" aria-label="Simpan">

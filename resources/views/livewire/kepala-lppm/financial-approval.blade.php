@@ -191,7 +191,7 @@
                                     <div class="progress-bar {{ $budgetPct >= 100 ? 'bg-success' : ($budgetPct >= 70 ? 'bg-primary' : 'bg-warning') }}"
                                          style="width: {{ min($budgetPct, 100) }}%"></div>
                                 </div>
-                                <div class="small text-muted mt-1" style="font-size: 0.72rem;">
+                                <div class="small text-muted mt-1" style="font-size: 0.75rem;">
                                     Pagu: Rp {{ number_format($totalBudget, 0, ',', '.') }}
                                 </div>
                             </td>
@@ -201,7 +201,7 @@
                                         
                                         Scan LPJ PDF
                                     </a>
-                                    <div class="small text-muted mt-1" style="font-size: 0.72rem;">
+                                    <div class="small text-muted mt-1" style="font-size: 0.75rem;">
                                         {{ $scanMedia->created_at?->format('d/m/Y H:i') }}
                                     </div>
                                 @else
@@ -217,7 +217,7 @@
                                         
                                         Sudah Disahkan
                                     </span>
-                                    <div class="small text-muted mt-1" style="font-size: 0.72rem;">
+                                    <div class="small text-muted mt-1" style="font-size: 0.75rem;">
                                         {{ \Carbon\Carbon::parse($proposal->logbook_approved_at)->format('d/m/Y H:i') }}
                                     </div>
                                 @elseif ($proposal->logbook_rejection_notes)
@@ -225,7 +225,7 @@
                                         
                                         Dikembalikan
                                     </span>
-                                    <div class="small text-muted mt-1" style="font-size: 0.72rem;" title="{{ $proposal->logbook_rejection_notes }}">
+                                    <div class="small text-muted mt-1" style="font-size: 0.75rem;" title="{{ $proposal->logbook_rejection_notes }}">
                                         Perlu perbaikan dosen
                                     </div>
                                 @elseif ($scanMedia)

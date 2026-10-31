@@ -402,13 +402,13 @@
                                                     </div>
                                                     <div class="col-md-3 ps-2" x-data="{ showWarning: false }">
                                                         <div class="input-group mb-1 shadow-sm">
-                                                            <span class="input-group-text bg-blue-600 text-white border-blue-600 px-2 fw-bold" style="font-size: 0.6rem;">SKOR</span>
+                                                            <span class="input-group-text bg-blue-600 text-white border-blue-600 px-2 fw-bold" style="font-size: 0.75rem;">SKOR</span>
                                                             <input type="number" wire:model.live="borang_data.{{ $key }}_score" 
                                                                    class="form-control text-center fw-black border-2 border-blue-600 text-blue-900 bg-blue-50 focus-ring" 
                                                                    style="font-size: 1.25rem; height: 40px;" min="0" max="100"
                                                                    @input="if($el.value > 100) { $el.value = 100; showWarning = true; setTimeout(() => { showWarning = false; }, 3000); $wire.set('borang_data.{{ $key }}_score', 100); } else if ($el.value < 0) { $el.value = 0; $wire.set('borang_data.{{ $key }}_score', 0); }">
                                                         </div>
-                                                        <div x-show="showWarning" x-transition.opacity style="display: none;" class="text-danger fw-bold mb-1 letter-spacing-tight" style="font-size: 0.7rem !important;">*Maksimal Skor 100</div>
+                                                        <div x-show="showWarning" x-transition.opacity style="display: none;" class="text-danger fw-bold mb-1 letter-spacing-tight" style="font-size: 0.75rem !important;">*Maksimal Skor 100</div>
                                                         <textarea wire:model.live="borang_data.{{ $key }}_notes" 
                                                                   class="form-control form-control-sm fs-6 py-2 bg-slate-50 border-slate-300 focus-ring hover-bg-slate-50" 
                                                                   rows="2" placeholder="Catatan per kriteria..."></textarea>

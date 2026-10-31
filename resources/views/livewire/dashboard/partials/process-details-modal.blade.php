@@ -253,35 +253,35 @@
                                                     <div class="mt-1 d-flex flex-wrap gap-1 align-items-center">
                                                         @foreach($allUploadedOutputs->take(3) as $out)
                                                             @if(!empty($out->video_url))
-                                                                <a href="{{ $out->video_url }}" target="_blank" class="badge bg-red-lt text-red text-decoration-none px-2 py-1" style="font-size: 0.7rem;" title="{{ $out->video_url }}">
+                                                                <a href="{{ $out->video_url }}" target="_blank" class="badge bg-red-lt text-red text-decoration-none px-2 py-1" style="font-size: 0.75rem;" title="{{ $out->video_url }}">
                                                                     {{ $out->platform ?: 'YouTube' }}
                                                                 </a>
                                                             @elseif(!empty($out->journal_url) || !empty($out->article_url))
-                                                                <a href="{{ $out->journal_url ?: $out->article_url }}" target="_blank" class="badge bg-blue-lt text-blue text-decoration-none px-2 py-1" style="font-size: 0.7rem;" title="{{ $out->article_title ?: ($out->journal_url ?: $out->article_url) }}">
+                                                                <a href="{{ $out->journal_url ?: $out->article_url }}" target="_blank" class="badge bg-blue-lt text-blue text-decoration-none px-2 py-1" style="font-size: 0.75rem;" title="{{ $out->article_title ?: ($out->journal_url ?: $out->article_url) }}">
                                                                     {{ \Illuminate\Support\Str::limit($out->journal_title ?: 'Publikasi', 14) }}
                                                                 </a>
                                                             @elseif(!empty($out->doi))
-                                                                <a href="https://doi.org/{{ $out->doi }}" target="_blank" class="badge bg-purple-lt text-purple text-decoration-none px-2 py-1" style="font-size: 0.7rem;">
+                                                                <a href="https://doi.org/{{ $out->doi }}" target="_blank" class="badge bg-purple-lt text-purple text-decoration-none px-2 py-1" style="font-size: 0.75rem;">
                                                                     DOI
                                                                 </a>
                                                             @elseif(!empty($out->registration_number))
-                                                                <span class="badge bg-indigo-lt text-indigo px-2 py-1" style="font-size: 0.7rem;" title="No. HKI: {{ $out->registration_number }}">
+                                                                <span class="badge bg-indigo-lt text-indigo px-2 py-1" style="font-size: 0.75rem;" title="No. HKI: {{ $out->registration_number }}">
                                                                     HKI
                                                                 </span>
                                                             @elseif(!empty($out->isbn))
-                                                                <span class="badge bg-teal-lt text-teal px-2 py-1" style="font-size: 0.7rem;" title="ISBN: {{ $out->isbn }}">
+                                                                <span class="badge bg-teal-lt text-teal px-2 py-1" style="font-size: 0.75rem;" title="ISBN: {{ $out->isbn }}">
                                                                     Buku
                                                                 </span>
                                                             @elseif(!empty($out->media_url))
-                                                                <a href="{{ $out->media_url }}" target="_blank" class="badge bg-azure-lt text-azure text-decoration-none px-2 py-1" style="font-size: 0.7rem;">
+                                                                <a href="{{ $out->media_url }}" target="_blank" class="badge bg-azure-lt text-azure text-decoration-none px-2 py-1" style="font-size: 0.75rem;">
                                                                     Media
                                                                 </a>
                                                             @elseif(!empty($out->document_file) || $out->media->isNotEmpty())
-                                                                <span class="badge bg-secondary-lt text-dark px-2 py-1" style="font-size: 0.7rem;">
+                                                                <span class="badge bg-secondary-lt text-dark px-2 py-1" style="font-size: 0.75rem;">
                                                                     Berkas
                                                                 </span>
                                                             @else
-                                                                <span class="badge bg-primary-lt px-2 py-1" style="font-size: 0.7rem;">
+                                                                <span class="badge bg-primary-lt px-2 py-1" style="font-size: 0.75rem;">
                                                                     Bukti Dilaporkan
                                                                 </span>
                                                             @endif
@@ -393,7 +393,7 @@
                                                     <span class="badge bg-secondary-lt fw-normal py-1 px-2 mb-1" style="font-size: 0.75rem;">Belum Ada Laporan</span>
                                                 @endif
                                                 <div class="mt-1">
-                                                    <a href="{{ $showRoute }}" target="_blank" class="text-muted small text-decoration-none" style="font-size: 0.7rem;" title="Buka Rincian Usulan Asli">
+                                                    <a href="{{ $showRoute }}" target="_blank" class="text-muted small text-decoration-none" style="font-size: 0.75rem;" title="Buka Rincian Usulan Asli">
                                                         Detail Usulan
                                                     </a>
                                                 </div>

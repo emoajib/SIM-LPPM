@@ -213,7 +213,7 @@
                                 <div class="fw-bold small text-reset">{{ $iku->code }}</div>
                                 <div class="text-muted" style="font-size: 0.75rem;">{{ $iku->name }}</div>
                                 @if($iku->description)
-                                    <div class="text-muted mt-1" style="font-size: 0.7rem;">{{ Str::limit($iku->description, 60) }}</div>
+                                    <div class="text-muted mt-1" style="font-size: 0.75rem;">{{ Str::limit($iku->description, 60) }}</div>
                                 @endif
                             </div>
                         </div>

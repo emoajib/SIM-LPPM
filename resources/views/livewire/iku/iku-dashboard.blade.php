@@ -47,7 +47,7 @@
                     <div class="card-body p-4">
                         <div class="d-flex justify-content-between align-items-start mb-4">
                             <div class="badge px-3 py-2 rounded-pill bg-soft-primary text-primary text-uppercase font-weight-bold"
-                                style="font-size: 0.7rem;">
+                                style="font-size: 0.75rem;">
                                 {{ $metric['code'] }}
                             </div>
                             <div class="d-flex align-items-center gap-2">
