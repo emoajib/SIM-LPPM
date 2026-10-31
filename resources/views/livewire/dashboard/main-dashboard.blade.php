@@ -49,6 +49,53 @@
                 </div>
             </div>
             @endif
+            {{-- Antrian Operasional (prioritas untuk kepala lppm) --}}
+            @if (($roleName ?? '') === 'kepala lppm')
+            <div class="col-12">
+                <div class="card border border-secondary-subtle shadow-sm rounded-3">
+                    <div class="card-header bg-white py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div>
+                            <h3 class="card-title fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                                <span class="badge bg-amber-lt text-amber p-1">Keputusan</span>
+                                <span>Antrian Keputusan</span>
+                            </h3>
+                            <div class="text-secondary small mt-0.5">Proses yang membutuhkan keputusan Anda</div>
+                        </div>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="row g-2">
+                            @php
+                                $kepalaQueue = [
+                                    ['label' => 'Persetujuan (Awal)', 'desc' => 'Keputusan awal proposal masuk', 'route' => 'kepala-lppm.initial-approval', 'icon' => 'shield-check', 'color' => 'primary'],
+                                    ['label' => 'Persetujuan (Akhir)', 'desc' => 'Keputusan akhir proposal', 'route' => 'kepala-lppm.final-decision', 'icon' => 'circle-check', 'color' => 'success'],
+                                    ['label' => 'Persetujuan Laporan', 'desc' => 'Persetujuan laporan akhir', 'route' => 'kepala-lppm.report-approval', 'icon' => 'clipboard-check', 'color' => 'azure'],
+                                    ['label' => 'Laporan Keuangan', 'desc' => 'Persetujuan laporan keuangan', 'route' => 'kepala-lppm.financial-approval', 'icon' => 'wallet', 'color' => 'green'],
+                                    ['label' => 'Capaian Monev', 'desc' => 'Dashboard capaian monev', 'route' => 'kepala-lppm.rektor.monev-dashboard', 'icon' => 'target-arrow', 'color' => 'cyan'],
+                                    ['label' => 'Rekap Monev', 'desc' => 'Rekapitulasi monev', 'route' => 'kepala-lppm.monev.recap', 'icon' => 'chart-bar', 'color' => 'purple'],
+                                ];
+                            @endphp
+                            @foreach ($kepalaQueue as $q)
+                                @if (Route::has($q['route']))
+                                <div class="col-12 col-sm-6 col-lg-4">
+                                    <a href="{{ route($q['route']) }}" class="card card-link card-link-pop h-100 border border-{{ $q['color'] }}-lt">
+                                        <div class="card-body p-3">
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <span class="badge bg-{{ $q['color'] }}-lt text-{{ $q['color'] }} p-1">
+                                                    @include('components.layouts.partials.menu.icon', ['name' => $q['icon'], 'class' => 'icon icon-1'])
+                                                </span>
+                                                <span class="fw-bold text-dark">{{ $q['label'] }}</span>
+                                            </div>
+                                            <div class="text-secondary small">{{ $q['desc'] }}</div>
+                                        </div>
+                                    </a>
+                                </div>
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
             {{-- Left / Main Column: Infographic & Proposal Table --}}
             <div class="col-12 col-lg-8 col-xl-9">
                 {{-- 1. Modern Infographic Component --}}
