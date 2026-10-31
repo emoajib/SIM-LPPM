@@ -146,6 +146,108 @@
                 </div>
             </div>
             @endif
+            {{-- Tugas Review (prioritas untuk reviewer) --}}
+            @if (($roleName ?? '') === 'reviewer')
+            <div class="col-12">
+                <div class="card border border-secondary-subtle shadow-sm rounded-3">
+                    <div class="card-header bg-white py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div>
+                            <h3 class="card-title fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                                <span class="badge bg-purple-lt text-purple p-1">Review</span>
+                                <span>Tugas Review & Tenggat</span>
+                            </h3>
+                            <div class="text-secondary small mt-0.5">Prioritas sebelum analisis & grafik</div>
+                        </div>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="row g-2">
+                            @php
+                                $reviewerTasks = [
+                                    ['label' => 'Review Penelitian', 'desc' => 'Tugas review usulan penelitian', 'route' => 'review.research', 'icon' => 'flask', 'color' => 'primary'],
+                                    ['label' => 'Review Pengabdian', 'desc' => 'Tugas review usulan pengabdian', 'route' => 'review.community-service', 'icon' => 'users-group', 'color' => 'azure'],
+                                    ['label' => 'Riwayat Review', 'desc' => 'Riwayat tugas review selesai', 'route' => 'review.review-history', 'icon' => 'history', 'color' => 'cyan'],
+                                    ['label' => 'Monev Laporan', 'desc' => 'Monev laporan yang ditugaskan', 'route' => 'review.monev', 'icon' => 'presentation-analytics', 'color' => 'green'],
+                                ];
+                            @endphp
+                            @foreach ($reviewerTasks as $q)
+                                @if (Route::has($q['route']))
+                                <div class="col-12 col-sm-6 col-lg-4">
+                                    <a href="{{ route($q['route']) }}" class="card card-link card-link-pop h-100 border border-{{ $q['color'] }}-lt">
+                                        <div class="card-body p-3">
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <span class="badge bg-{{ $q['color'] }}-lt text-{{ $q['color'] }} p-1">
+                                                    @include('components.layouts.partials.menu.icon', ['name' => $q['icon'], 'class' => 'icon icon-1'])
+                                                </span>
+                                                <span class="fw-bold text-dark">{{ $q['label'] }}</span>
+                                            </div>
+                                            <div class="text-secondary small">{{ $q['desc'] }}</div>
+                                        </div>
+                                    </a>
+                                </div>
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+            {{-- Capaian & Isu Lintas Unit (prioritas untuk rektor/dekan/kaprodi) --}}
+            @if (in_array($roleName ?? '', ['rektor', 'dekan', 'kaprodi']))
+            <div class="col-12">
+                <div class="card border border-secondary-subtle shadow-sm rounded-3">
+                    <div class="card-header bg-white py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div>
+                            <h3 class="card-title fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                                <span class="badge bg-indigo-lt text-indigo p-1">Capaian</span>
+                                <span>Capaian & Isu Lintas Unit</span>
+                            </h3>
+                            <div class="text-secondary small mt-0.5">Pemantauan terhadap target dan akses ke detail</div>
+                        </div>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="row g-2">
+                            @php
+                                $capaianTasks = [
+                                    ['label' => 'Monitoring Laporan', 'desc' => 'Pantau laporan lintas unit', 'route' => 'reports.monitoring', 'icon' => 'eye', 'color' => 'primary'],
+                                    ['label' => 'Laporan IKU', 'desc' => 'Capaian indikator kinerja utama', 'route' => 'reports.iku', 'icon' => 'award', 'color' => 'azure'],
+                                    ['label' => 'Laporan Penelitian', 'desc' => 'Rekap penelitian unit', 'route' => 'reports.research', 'icon' => 'flask', 'color' => 'cyan'],
+                                    ['label' => 'Laporan PKM', 'desc' => 'Rekap pengabdian unit', 'route' => 'reports.pkm', 'icon' => 'users-group', 'color' => 'green'],
+                                    ['label' => 'Laporan Monev', 'desc' => 'Monitoring & evaluasi', 'route' => 'reports.monev', 'icon' => 'presentation-analytics', 'color' => 'purple'],
+                                ];
+                                if (($roleName ?? '') === 'dekan') {
+                                    $capaianTasks[] = ['label' => 'Persetujuan Proposal', 'desc' => 'Persetujuan proposal fakultas', 'route' => 'dekan.proposals.index', 'icon' => 'shield-check', 'color' => 'teal'];
+                                    $capaianTasks[] = ['label' => 'Persetujuan Laporan', 'desc' => 'Persetujuan laporan fakultas', 'route' => 'dekan.reports.index', 'icon' => 'clipboard-check', 'color' => 'amber'];
+                                }
+                                if (($roleName ?? '') === 'kaprodi') {
+                                    $capaianTasks[] = ['label' => 'Monitoring Laporan', 'desc' => 'Monitoring laporan prodi', 'route' => 'kaprodi.report-approval', 'icon' => 'eye', 'color' => 'teal'];
+                                    $capaianTasks[] = ['label' => 'Persetujuan Proposal', 'desc' => 'Persetujuan proposal prodi', 'route' => 'kaprodi.proposals.index', 'icon' => 'shield-check', 'color' => 'amber'];
+                                }
+                                if (($roleName ?? '') === 'rektor') {
+                                    $capaianTasks[] = ['label' => 'Capaian Monev', 'desc' => 'Dashboard capaian monev', 'route' => 'kepala-lppm.rektor.monev-dashboard', 'icon' => 'target-arrow', 'color' => 'teal'];
+                                }
+                            @endphp
+                            @foreach ($capaianTasks as $q)
+                                @if (Route::has($q['route']))
+                                <div class="col-12 col-sm-6 col-lg-4">
+                                    <a href="{{ route($q['route']) }}" class="card card-link card-link-pop h-100 border border-{{ $q['color'] }}-lt">
+                                        <div class="card-body p-3">
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <span class="badge bg-{{ $q['color'] }}-lt text-{{ $q['color'] }} p-1">
+                                                    @include('components.layouts.partials.menu.icon', ['name' => $q['icon'], 'class' => 'icon icon-1'])
+                                                </span>
+                                                <span class="fw-bold text-dark">{{ $q['label'] }}</span>
+                                            </div>
+                                            <div class="text-secondary small">{{ $q['desc'] }}</div>
+                                        </div>
+                                    </a>
+                                </div>
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
             {{-- Left / Main Column: Infographic & Proposal Table --}}
             <div class="col-12 col-lg-8 col-xl-9">
                 {{-- 1. Modern Infographic Component --}}
