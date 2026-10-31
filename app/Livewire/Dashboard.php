@@ -50,17 +50,33 @@ class Dashboard extends Component
 
     protected function loadInfographicStats(): array
     {
-        return Cache::remember('dashboard_modern_infographic_stats', 60, function () {
+        return Cache::remember('dashboard_modern_infographic_stats_'.$this->user->id, 60, function () {
             try {
-                $totalUsulan = Proposal::where('detailable_type', 'App\Models\Research')->count();
-                $totalDidanai = Proposal::where('detailable_type', 'App\Models\Research')
-                    ->whereIn('status', ['approved', 'completed', 'reviewed'])
-                    ->count();
+                $user = $this->user;
+                $isLeader = $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'dekan']);
 
-                $totalPkm = Proposal::where('detailable_type', 'App\Models\CommunityService')->count();
-                $totalPkmDidanai = Proposal::where('detailable_type', 'App\Models\CommunityService')
-                    ->whereIn('status', ['approved', 'completed', 'reviewed'])
-                    ->count();
+                $baseQuery = Proposal::where('detailable_type', 'App\Models\Research');
+                if (! $isLeader) {
+                    $baseQuery->where(function ($q) use ($user) {
+                        $q->where('submitter_id', $user->id)
+                            ->orWhereHas('teamMembers', fn ($t) => $t->where('user_id', $user->id));
+                    });
+                }
+
+                $totalUsulan = (clone $baseQuery)->count();
+                $totalDidanai = (clone $baseQuery)->whereIn('status', ['approved', 'completed', 'reviewed'])->count();
+                $totalDeskReview = (clone $baseQuery)->whereIn('status', ['submitted', 'reviewed'])->count();
+
+                $basePkm = Proposal::where('detailable_type', 'App\Models\CommunityService');
+                if (! $isLeader) {
+                    $basePkm->where(function ($q) use ($user) {
+                        $q->where('submitter_id', $user->id)
+                            ->orWhereHas('teamMembers', fn ($t) => $t->where('user_id', $user->id));
+                    });
+                }
+
+                $totalPkm = (clone $basePkm)->count();
+                $totalPkmDidanai = (clone $basePkm)->whereIn('status', ['approved', 'completed', 'reviewed'])->count();
 
                 $totalLuaran = class_exists(MandatoryOutput::class)
                     ? MandatoryOutput::count()
@@ -68,12 +84,19 @@ class Dashboard extends Component
 
                 $totalDana = Proposal::query()
                     ->whereIn('status', ['approved', 'completed', 'reviewed'])
+                    ->when(! $isLeader, function ($q) use ($user) {
+                        $q->where(function ($sq) use ($user) {
+                            $sq->where('submitter_id', $user->id)
+                                ->orWhereHas('teamMembers', fn ($t) => $t->where('user_id', $user->id));
+                        });
+                    })
                     ->get()
                     ->sum(fn ($p) => $p->approved_budget_total);
 
                 return [
                     'total_usulan' => $totalUsulan,
                     'total_didanai' => $totalDidanai,
+                    'total_desk_review' => $totalDeskReview,
                     'total_pkm' => $totalPkm,
                     'total_pkm_didanai' => $totalPkmDidanai,
                     'total_luaran' => $totalLuaran,
@@ -83,9 +106,11 @@ class Dashboard extends Component
                 return [
                     'total_usulan' => 0,
                     'total_didanai' => 0,
+                    'total_desk_review' => 0,
                     'total_pkm' => 0,
                     'total_pkm_didanai' => 0,
                     'total_luaran' => 0,
+                    'total_dana_m' => 0,
                 ];
             }
         });
@@ -94,10 +119,21 @@ class Dashboard extends Component
     protected function loadTrendData(): array
     {
         try {
-            $rows = Proposal::query()
+            $user = $this->user;
+            $isLeader = $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'dekan']);
+
+            $query = Proposal::query()
                 ->select(['id', 'start_year', 'detailable_type', 'status', 'sbk_value'])
-                ->with('activeBudgetItems:id,proposal_id,total_price')
-                ->get();
+                ->with('activeBudgetItems:id,proposal_id,total_price');
+
+            if (! $isLeader) {
+                $query->where(function ($q) use ($user) {
+                    $q->where('submitter_id', $user->id)
+                        ->orWhereHas('teamMembers', fn ($t) => $t->where('user_id', $user->id));
+                });
+            }
+
+            $rows = $query->get();
 
             $years = range((int) date('Y') - 5, (int) date('Y'));
             $data = [];

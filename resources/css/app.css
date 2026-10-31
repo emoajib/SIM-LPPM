@@ -340,7 +340,28 @@ body.theme-modern .glow-cyan-text {
     text-shadow: none;
 }
 
-/* === Theme: Modern — site-wide overrides === */
+/* Dashboard year-selector dropdown: keep above cards (all themes) */
+.page-header,
+.page-header.d-print-none {
+  position: relative !important;
+  z-index: 1000 !important;
+  overflow: visible !important;
+}
+.page-body {
+  position: relative;
+  z-index: 1;
+}
+.dropdown-menu {
+  z-index: 9999 !important;
+  overflow: visible !important;
+}
+.card {
+  position: relative;
+  z-index: 1;
+}
+.card:hover {
+  z-index: 2;
+}
 body.theme-modern .navbar,
 body.theme-modern .navbar-collapse,
 body.theme-modern .page {
@@ -366,7 +387,8 @@ body.theme-modern .navbar .dropdown-menu.show {
 }
 body.theme-modern .page-header.d-print-none {
     position: relative;
-    z-index: 1;
+    z-index: 1000 !important;
+    overflow: visible !important;
 }
 body.theme-modern .navbar .navbar-brand span,
 body.theme-modern .navbar .nav-link {
@@ -421,3 +443,191 @@ body.theme-dark {
 body.theme-dark .card { background-color: #1e293b; color: #e2e8f0; border-color: #334155; }
 body.theme-dark .navbar { background-color: #1e293b; }
 body.theme-dark .text-secondary { color: #94a3b8 !important; }
+
+/* ============================================================
+   MODERN THEME — SPACING SYSTEM & FOCUS STATES
+   Konsistenkan padding/margin agar tidak ada elemen yang tumpang tindih
+   ============================================================ */
+body.theme-modern {
+  --sli-space-1: 0.25rem;   /* 4px */
+  --sli-space-2: 0.5rem;    /* 8px */
+  --sli-space-3: 0.75rem;   /* 12px */
+  --sli-space-4: 1rem;      /* 16px */
+  --sli-space-5: 1.25rem;   /* 20px */
+  --sli-space-6: 1.5rem;    /* 24px */
+  --sli-space-8: 2rem;      /* 32px */
+  --sli-radius-sm: 0.375rem;
+  --sli-radius-md: 0.5rem;
+  --sli-radius-lg: 0.75rem;
+  --sli-radius-xl: 1rem;
+  --sli-z-dropdown: 9999;
+  --sli-z-modal: 1050;
+  --sli-z-toast: 10000;
+  --sli-z-banner: 10;
+}
+
+/* Focus-visible untuk aksesibilitas keyboard — tidak ada elemen yang hilang saat di-tab */
+body.theme-modern :where(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid #0284c7;
+  outline-offset: 2px;
+}
+
+/* Prevent dropdown clipping by parent overflow */
+body.theme-modern .page,
+body.theme-modern .page-wrapper,
+body.theme-modern .page-body,
+body.theme-modern .page-header,
+body.theme-modern .container-xl,
+body.theme-modern .navbar,
+body.theme-modern .dropdown {
+  overflow: visible !important;
+}
+
+/* Ensure header creates stacking context above page content */
+body.theme-modern .page-header {
+  position: relative !important;
+  z-index: var(--sli-z-dropdown) !important;
+}
+
+body.theme-modern .dropdown {
+  position: relative !important;
+  z-index: var(--sli-z-dropdown) !important;
+}
+
+/* Ensure header creates proper stacking context for fixed dropdowns */
+body.theme-modern .navbar {
+  position: relative !important;
+  z-index: 9999 !important;
+}
+
+/* Dropdown menu — jangan tertutup oleh konten lain, tapi jangan tutup modal/toast */
+body.theme-modern .dropdown-menu {
+  z-index: var(--sli-z-dropdown) !important;
+  border: 1px solid rgba(56, 189, 248, 0.15);
+  box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.15);
+  overflow: visible !important;
+}
+
+/* Toast container — selalu di atas dropdown */
+.x-tabler.toast-container,
+.toast-container {
+  z-index: var(--sli-z-toast) !important;
+}
+
+/* Bulletin box — jangan overlap dengan header dropdown */
+body.theme-modern .sli-bulletin-box {
+  z-index: var(--sli-z-banner) !important;
+  position: relative !important;
+}
+
+/* Banner — pastikan tidak menutupi header dropdown */
+body.theme-modern .sli-banner {
+  z-index: var(--sli-z-banner) !important;
+  position: relative !important;
+}
+
+/* Ensure dropdowns from header appear above all page content */
+body.theme-modern .dropdown-menu.show {
+  z-index: var(--sli-z-dropdown) !important;
+}
+
+/* Modern banner (React) — beri ruang agar tidak menempel ke konten Blade di bawahnya */
+body.theme-modern #modern-root.mb-4 {
+  margin-bottom: var(--sli-space-6) !important;
+}
+
+/* Gauge disc — posisi absolut dalam kontainer relative, jangan tumpang tindih label di bawah */
+body.theme-modern .sli-gauge-disc {
+  position: absolute;
+  inset: 0.75rem;
+  z-index: var(--sli-z-banner);
+}
+
+/* Hex badge — sama, dalam kontainer relative */
+body.theme-modern .sli-hex-badge {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--sli-z-banner);
+}
+
+/* Bulletin box — backdrop-filter dengan fallback untuk browser lama */
+body.theme-modern .sli-bulletin-box {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+/* Stat cards — konsisten gap, tidak menumpuk */
+body.theme-modern .sli-stat-grid {
+  display: grid;
+  gap: var(--sli-space-3);
+}
+
+/* Main card — padding konsisten */
+body.theme-modern .sli-main-card {
+  padding: var(--sli-space-5) var(--sli-space-6);
+}
+
+/* KPI panel — margin bawah konsisten */
+body.theme-modern .sli-kpi-panel {
+  margin-bottom: var(--sli-space-5);
+}
+
+/* Capsules grid — gap konsisten */
+body.theme-modern .sli-capsules-grid {
+  gap: var(--sli-space-3);
+}
+
+/* Table — jangan terlalu padat, beri ruang bernapas */
+body.theme-modern .table {
+  font-size: 0.875rem;
+}
+body.theme-modern .table th,
+body.theme-modern .table td {
+  padding: var(--sli-space-3) var(--sli-space-4);
+}
+
+/* Button modern — konsisten padding dan radius */
+/* Fix: header dropdown above banner */
+.page-header { position: relative !important; z-index: 2147483646 !important; }
+.sli-banner { z-index: 0 !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+.dropdown-menu.show { z-index: 9999 !important; }
+
+body.theme-modern .btn-sli-primary {
+  display: inline-flex;
+  justify-content: center;
+  gap: var(--sli-space-2);
+  padding: var(--sli-space-3) var(--sli-space-5);
+  border-radius: var(--sli-radius-md);
+  font-weight: 700;
+  font-size: 0.875rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* ============================================================
+   FINAL FIX: dropdown header tidak boleh tertutup banner modern
+   Banner infographic tidak boleh membentuk stacking context di atas
+   header/dropdown. Dropdown header memakai position:fixed + z-index
+   maksimum agar selalu tampil di atas konten halaman.
+   ============================================================ */
+body.theme-modern .sli-banner,
+body.theme-modern .sli-banner-content,
+body.theme-modern .sli-bulletin-box {
+  z-index: 0 !important;
+}
+
+body.theme-modern .page-header,
+body.theme-modern .page-header .dropdown,
+body.theme-modern .navbar,
+body.theme-modern .navbar .dropdown {
+  z-index: 2147483647 !important;
+}
+
+body.theme-modern .dropdown-menu.show {
+  z-index: 2147483647 !important;
+}

@@ -11,6 +11,8 @@
     $fundingRate = $totalUsulan > 0 ? round(($totalDidanai / $totalUsulan) * 100, 1) : 0;
     $totalLuaran = $stats['total_luaran'] ?? 0;
     $totalDanaM = $stats['total_dana_m'] ?? 0;
+    $totalDeskReview = $stats['total_desk_review'] ?? 0;
+    $gaugeOffset1 = 314 - (314 * $fundingRate / 100);
 
     // Indonesian formatted date
     $days = ['Sunday' => 'Minggu', 'Monday' => 'Senin', 'Tuesday' => 'Selasa', 'Wednesday' => 'Rabu', 'Thursday' => 'Kamis', 'Friday' => 'Jumat', 'Saturday' => 'Sabtu'];
@@ -435,7 +437,7 @@
             <div>
                 <div class="sli-stat-val">{{ $totalLuaran }}</div>
                 <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">Luaran & Publikasi</div>
-                <div style="font-size: 0.75rem; opacity: 0.85;">Jurnal Sinta, HKI & BASTB</div>
+                <div style="font-size: 0.75rem; opacity: 0.85;">Luaran terdata (institusi)</div>
             </div>
             <div style="width: 2.5rem; height: 2.5rem; border-radius: 9999px; background: rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
                 🏆
@@ -500,7 +502,7 @@
                     <span style="width: 0.5rem; height: 0.5rem; border-radius: 9999px; background: #06b6d4; display: inline-block;"></span>
                     Indikator Capaian Kinerja Utama LPPM (KPI Gauge)
                 </span>
-                <span style="font-size: 0.7rem; font-family: monospace; color: #0369a1; background: #e0f2fe; border: 1px solid #bae6fd; padding: 0.15rem 0.5rem; border-radius: 9999px; font-weight: 700;">
+                <span style="font-size: 0.75rem; font-family: monospace; color: #0369a1; background: #e0f2fe; border: 1px solid #bae6fd; padding: 0.15rem 0.5rem; border-radius: 9999px; font-weight: 700;">
                     Tahun Berjalan {{ $year }}
                 </span>
             </div>
@@ -511,7 +513,7 @@
                     <div style="position: relative; width: 9rem; height: 9rem; display: flex; align-items: center; justify-content: center;">
                         <svg style="width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible;" viewBox="0 0 120 120">
                             <circle cx="60" cy="60" r="50" stroke="#e0f2fe" stroke-width="5" fill="none" opacity="0.6"/>
-                            <circle id="sli-gauge-circle-1" cx="60" cy="60" r="50" stroke="url(#cyanGaugeGrad1)" stroke-width="6" stroke-dasharray="314" stroke-dashoffset="63" stroke-linecap="round" fill="none" style="transition: stroke-dashoffset 0.8s ease;"/>
+                            <circle id="sli-gauge-circle-1" cx="60" cy="60" r="50" stroke="url(#cyanGaugeGrad1)" stroke-width="6" stroke-dasharray="314" stroke-dashoffset="{{ $gaugeOffset1 }}" stroke-linecap="round" fill="none" style="transition: stroke-dashoffset 0.8s ease;"/>
                             <defs>
                                 <linearGradient id="cyanGaugeGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
                                     <stop offset="0%" stop-color="#22d3ee" />
@@ -534,13 +536,13 @@
                         <h4 style="margin: 0; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; color: #0f172a; letter-spacing: 0.02em;">
                             Kelolosan Usulan
                         </h4>
-                        <p id="sli-gauge-sub-1" style="margin: 0.15rem 0 0 0; font-size: 0.7rem; color: #64748b; font-weight: 500;">
+                        <p id="sli-gauge-sub-1" style="margin: 0.15rem 0 0 0; font-size: 0.75rem; color: #64748b; font-weight: 500;">
                             {{ $totalDidanai }} dari {{ $totalUsulan }} proposal didanai
                         </p>
                     </div>
                 </div>
 
-                <!-- Gauge 2: Kemajuan Riset (72% / 50%) -->
+                <!-- Gauge 2: Kemajuan Riset (metrik belum tersedia) -->
                 <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
                     <div style="position: relative; width: 9rem; height: 9rem; display: flex; align-items: center; justify-content: center;">
                         <svg style="width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible;" viewBox="0 0 120 120">
@@ -556,7 +558,7 @@
 
                         <div class="sli-gauge-disc" style="background: linear-gradient(135deg, #38bdf8 0%, #2563eb 50%, #312e81 100%); box-shadow: inset 0 4px 8px rgba(255,255,255,0.4), 0 8px 20px rgba(37,99,235,0.35);">
                             <span style="font-size: 1.5rem; font-weight: 900; color: #ffffff; font-family: monospace; line-height: 1;">
-                                72%
+                                —
                             </span>
                             <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 800; color: #e0e7ff; letter-spacing: 0.05em; margin-top: 0.15rem;">
                                 Monev 70%
@@ -567,13 +569,13 @@
                         <h4 style="margin: 0; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; color: #0f172a; letter-spacing: 0.02em;">
                             Kemajuan Riset
                         </h4>
-                        <p style="margin: 0.15rem 0 0 0; font-size: 0.7rem; color: #64748b; font-weight: 500;">
-                            Laporan Antara & SPTB 70% diverifikasi
+                        <p style="margin: 0.15rem 0 0 0; font-size: 0.75rem; color: #64748b; font-weight: 500;">
+                            Data kemajuan belum tersedia
                         </p>
                     </div>
                 </div>
 
-                <!-- Gauge 3: Penyaluran Hibah (85% / 60%) -->
+                <!-- Gauge 3: Penyaluran Hibah (metrik belum tersedia) -->
                 <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
                     <div style="position: relative; width: 9rem; height: 9rem; display: flex; align-items: center; justify-content: center;">
                         <svg style="width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible;" viewBox="0 0 120 120">
@@ -589,7 +591,7 @@
 
                         <div class="sli-gauge-disc" style="background: linear-gradient(135deg, #06b6d4 0%, #0284c7 50%, #1e3a8a 100%); box-shadow: inset 0 4px 8px rgba(255,255,255,0.4), 0 8px 20px rgba(14,165,233,0.35);">
                             <span style="font-size: 1.5rem; font-weight: 900; color: #ffffff; font-family: monospace; line-height: 1;">
-                                85%
+                                —
                             </span>
                             <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 800; color: #cffafe; letter-spacing: 0.05em; margin-top: 0.15rem;">
                                 Realisasi
@@ -600,7 +602,7 @@
                         <h4 style="margin: 0; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; color: #0f172a; letter-spacing: 0.02em;">
                             Penyaluran Hibah
                         </h4>
-                        <p style="margin: 0.15rem 0 0 0; font-size: 0.7rem; color: #64748b; font-weight: 500;">
+                        <p style="margin: 0.15rem 0 0 0; font-size: 0.75rem; color: #64748b; font-weight: 500;">
                             Rp {{ $totalDanaM }} M dana penelitian terserap
                         </p>
                     </div>
@@ -619,7 +621,7 @@
                     <span style="position: absolute; color: #ffffff; font-family: monospace; font-weight: 900; font-size: 0.75rem;">01</span>
                 </div>
                 <div class="sli-capsule-body">
-                    <h5 style="margin: 0; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; color: #cffafe;">
+                    <h5 style="margin: 0; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; color: #cffafe;">
                         Tahap Pengajuan
                     </h5>
                     <div id="sli-cap-val-1" style="font-size: 1.35rem; font-weight: 900; font-family: monospace; margin: 0.25rem 0; color: #ffffff;">
@@ -640,11 +642,11 @@
                     <span style="position: absolute; color: #ffffff; font-family: monospace; font-weight: 900; font-size: 0.75rem;">02</span>
                 </div>
                 <div class="sli-capsule-body">
-                    <h5 style="margin: 0; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; color: #cffafe;">
+                    <h5 style="margin: 0; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; color: #cffafe;">
                         Desk Review
                     </h5>
                     <div id="sli-cap-val-2" style="font-size: 1.35rem; font-weight: 900; font-family: monospace; margin: 0.25rem 0; color: #ffffff;">
-                        {{ round($totalUsulan * 0.88) }} <span style="font-size: 0.75rem; font-weight: 400; color: #bae6fd;">Lolos</span>
+                        {{ $totalDeskReview }} <span style="font-size: 0.75rem; font-weight: 400; color: #bae6fd;">Lolos</span>
                     </div>
                     <p style="margin: 0; font-size: 0.75rem; color: rgba(255,255,255,0.85); line-height: 1.25;">
                         Penilaian reviewer & telaah etik riset
@@ -661,7 +663,7 @@
                     <span style="position: absolute; color: #ffffff; font-family: monospace; font-weight: 900; font-size: 0.75rem;">03</span>
                 </div>
                 <div class="sli-capsule-body">
-                    <h5 style="margin: 0; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; color: #cffafe;">
+                    <h5 style="margin: 0; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; color: #cffafe;">
                         Kontrak Didanai
                     </h5>
                     <div id="sli-cap-val-3" style="font-size: 1.35rem; font-weight: 900; font-family: monospace; margin: 0.25rem 0; color: #ffffff;">
@@ -682,11 +684,11 @@
                     <span style="position: absolute; color: #ffffff; font-family: monospace; font-weight: 900; font-size: 0.75rem;">04</span>
                 </div>
                 <div class="sli-capsule-body">
-                    <h5 style="margin: 0; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; color: #cffafe;">
+                    <h5 style="margin: 0; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; color: #cffafe;">
                         Monev & Luaran
                     </h5>
                     <div id="sli-cap-val-4" style="font-size: 1.35rem; font-weight: 900; font-family: monospace; margin: 0.25rem 0; color: #ffffff;">
-                        38 <span style="font-size: 0.75rem; font-weight: 400; color: #bae6fd;">BASTB</span>
+                        {{ $totalLuaran }} <span style="font-size: 0.75rem; font-weight: 400; color: #bae6fd;">BASTB</span>
                     </div>
                     <p style="margin: 0; font-size: 0.75rem; color: rgba(255,255,255,0.85); line-height: 1.25;">
                         Laporan akhir, SPTB 100% & artikel Sinta
@@ -707,7 +709,7 @@
                             Grafik Kapsul Usulan & Didanai
                         </h4>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.7rem;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.75rem;">
                         <span style="display: flex; align-items: center; gap: 0.25rem; font-weight: 700; color: #0891b2;">
                             <span style="width: 0.75rem; height: 0.75rem; border-radius: 9999px; background: #22d3ee;"></span> Usulan
                         </span>
@@ -761,16 +763,16 @@
             <div style="display: flex; align-items: center; gap: 0.75rem;">
                 <div style="width: 3rem; height: 3rem; border-radius: 0.75rem; background: linear-gradient(135deg, #06b6d4 0%, #1d4ed8 100%); color: #ffffff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: monospace; font-weight: 900; line-height: 1; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 2px 4px rgba(2, 132, 199, 0.2);">
                     <span style="font-size: 0.75rem; text-transform: uppercase; color: #cffafe;">TAHUN</span>
-                    <span id="sli-active-year" style="font-size: 1rem; font-weight: 900;">2026</span>
+                    <span id="sli-active-year" style="font-size: 1rem; font-weight: 900;">{{ $year }}</span>
                 </div>
                 <div>
                     <div style="font-weight: 800; font-size: 0.8rem; color: #0f172a; display: flex; align-items: center; gap: 0.5rem;">
-                        <span id="sli-inspect-title">Rincian Volume Usulan & Pendanaan 2026</span>
+                        <span id="sli-inspect-title">Rincian Volume Usulan & Pendanaan {{ $year }}</span>
                         <span id="sli-active-rate" style="font-size: 0.75rem; font-weight: 800; color: #0369a1; background: #e0f2fe; padding: 0.15rem 0.5rem; border-radius: 9999px; border: 1px solid #bae6fd;">
-                            Tingkat Kelolosan: 70.4%
+                            Tingkat Kelolosan: —
                         </span>
                     </div>
-                    <div style="font-size: 0.7rem; color: #64748b; margin-top: 0.15rem;">
+                    <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.15rem;">
                         Status: <strong id="sli-active-catatan" style="color: #1e293b;">Tahun Berjalan / Seleksi & Verifikasi Aktif</strong>
                     </div>
                 </div>
@@ -780,15 +782,15 @@
             <div style="display: flex; align-items: center; gap: 0.5rem; font-family: monospace;">
                 <div style="padding: 0.35rem 0.75rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.5rem; text-align: right; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
                     <div style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; font-family: sans-serif; font-weight: 700;">Usulan Masuk</div>
-                    <div id="sli-inspect-usulan" style="font-weight: 900; color: #0369a1; font-size: 0.85rem;">54 Proposal</div>
+                    <div id="sli-inspect-usulan" style="font-weight: 900; color: #0369a1; font-size: 0.85rem;">—</div>
                 </div>
                 <div style="padding: 0.35rem 0.75rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.5rem; text-align: right; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
                     <div style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; font-family: sans-serif; font-weight: 700;">Didanai LPPM</div>
-                    <div id="sli-inspect-didanai" style="font-weight: 900; color: #1d4ed8; font-size: 0.85rem;">38 Proposal</div>
+                    <div id="sli-inspect-didanai" style="font-weight: 900; color: #1d4ed8; font-size: 0.85rem;">—</div>
                 </div>
                 <div style="padding: 0.35rem 0.75rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.5rem; text-align: right; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
                     <div style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; font-family: sans-serif; font-weight: 700;">Total Dana</div>
-                    <div id="sli-inspect-dana" style="font-weight: 900; color: #0f172a; font-size: 0.85rem;">Rp 1.080 Jt</div>
+                    <div id="sli-inspect-dana" style="font-weight: 900; color: #0f172a; font-size: 0.85rem;">—</div>
                 </div>
             </div>
         </div>
@@ -802,7 +804,7 @@
 
             <div id="sli-table-container" style="display: none; margin-top: 0.75rem; overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 0.75rem;">
                 <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.75rem; color: #334155;">
-                    <thead style="background: #f8fafc; font-size: 0.7rem; font-weight: 800; color: #1e293b; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #e2e8f0;">
+                    <thead style="background: #f8fafc; font-size: 0.75rem; font-weight: 800; color: #1e293b; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #e2e8f0;">
                         <tr>
                             <th style="padding: 0.75rem 0.75rem;">Tahun Akademik</th>
                             <th style="padding: 0.75rem 0.75rem; text-align: right;">Usulan (Diunggah)</th>
@@ -853,7 +855,7 @@
                         <span id="sli-form-mode-title" style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #0f172a;">
                             Tambah Pengumuman / Jadwal Baru
                         </span>
-                        <button type="button" id="sli-btn-cancel-edit" onclick="sliCancelEdit()" style="display: none; font-size: 0.7rem; color: #0284c7; background: none; border: none; text-decoration: underline; cursor: pointer;">
+                        <button type="button" id="sli-btn-cancel-edit" onclick="sliCancelEdit()" style="display: none; font-size: 0.75rem; color: #0284c7; background: none; border: none; text-decoration: underline; cursor: pointer;">
                             Batal Edit
                         </button>
                     </div>
@@ -894,7 +896,7 @@
                         </div>
                         <div style="display: flex; align-items: center; gap: 0.4rem; padding-top: 1rem;">
                             <input type="checkbox" id="sli-input-important" style="width: 1rem; height: 1rem; cursor: pointer;">
-                            <label for="sli-input-important" style="font-size: 0.7rem; font-weight: 700; color: #334155; cursor: pointer;">
+                            <label for="sli-input-important" style="font-size: 0.75rem; font-weight: 700; color: #334155; cursor: pointer;">
                                 Tandai Prioritas Utama
                             </label>
                         </div>
@@ -913,7 +915,7 @@
                         <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #0f172a;">
                             Daftar Pengumuman & Jadwal Aktif
                         </span>
-                        <button type="button" onclick="sliResetBulletins()" style="font-size: 0.7rem; color: #0284c7; background: none; border: none; cursor: pointer; font-weight: 700;">
+                        <button type="button" onclick="sliResetBulletins()" style="font-size: 0.75rem; color: #0284c7; background: none; border: none; cursor: pointer; font-weight: 700;">
                             🔄 Reset Bawaan
                         </button>
                     </div>
@@ -1249,7 +1251,7 @@
                     <td style="padding: 0.5rem 0.75rem; text-align: right; color: #94a3b8;">${row.tidakDidanai}</td>
                     <td style="padding: 0.5rem 0.75rem; text-align: right; font-weight: 800; color: #0f172a;">${row.rate}%</td>
                     <td style="padding: 0.5rem 0.75rem; text-align: right; font-family: sans-serif;">Rp ${row.danaTotalJuta} Jt</td>
-                    <td style="padding: 0.5rem 0.75rem; font-family: sans-serif; font-size: 0.7rem; color: #64748b;">${row.catatan}</td>
+                    <td style="padding: 0.5rem 0.75rem; font-family: sans-serif; font-size: 0.75rem; color: #64748b;">${row.catatan}</td>
                 </tr>
             `;
         }).join('');
@@ -1263,7 +1265,7 @@
                 <td style="padding: 0.75rem 0.75rem; text-align: right; color: #64748b;">${totalTD}</td>
                 <td style="padding: 0.75rem 0.75rem; text-align: right;">${rateTotal}%</td>
                 <td style="padding: 0.75rem 0.75rem; text-align: right; font-family: sans-serif;">Rp ${(totalDana/1000).toFixed(2)} M</td>
-                <td style="padding: 0.75rem 0.75rem; font-family: sans-serif; font-size: 0.7rem; color: #475569;">Terverifikasi SIM LPPM ITSNU</td>
+                <td style="padding: 0.75rem 0.75rem; font-family: sans-serif; font-size: 0.75rem; color: #475569;">Terverifikasi SIM LPPM ITSNU</td>
             </tr>
         `;
 
@@ -1280,12 +1282,12 @@
                 <div style="padding: 0.75rem 0.75rem; border-bottom: 1px solid #f1f5f9; display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; ${isSelected ? 'background: #ecfeff;' : ''}">
                     <div style="min-width: 0;">
                         <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; margin-bottom: 0.15rem;">
-                            <span style="font-size: 0.6rem; font-weight: 800; text-transform: uppercase; padding: 0.1rem 0.35rem; border-radius: 0.25rem; background: #e2e8f0; color: #334155;">${b.badge}</span>
+                            <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; padding: 0.1rem 0.35rem; border-radius: 0.25rem; background: #e2e8f0; color: #334155;">${b.badge}</span>
                             <strong style="font-size: 0.75rem; color: #0f172a;">${b.title}</strong>
                             <span style="font-size: 0.75rem; color: #94a3b8; font-family: monospace;">(${b.date})</span>
                             ${isSelected ? '<span style="font-size: 0.75rem; font-weight: 900; background: #0891b2; color: #ffffff; padding: 0.1rem 0.3rem; border-radius: 0.2rem; text-transform: uppercase;">Tampil Sekarang</span>' : ''}
                         </div>
-                        <p style="margin: 0; font-size: 0.7rem; color: #475569; line-height: 1.3;">${b.content}</p>
+                        <p style="margin: 0; font-size: 0.75rem; color: #475569; line-height: 1.3;">${b.content}</p>
                     </div>
                     <div style="display: flex; align-items: center; gap: 0.25rem; shrink-0;">
                         <button type="button" onclick="sliGoToBulletin(${idx})" style="padding: 0.2rem 0.45rem; border-radius: 0.25rem; border: none; font-size: 0.75rem; font-weight: 700; cursor: pointer; ${isSelected ? 'background: #0891b2; color: #ffffff;' : 'background: #e2e8f0; color: #334155;'}">Pilih</button>
