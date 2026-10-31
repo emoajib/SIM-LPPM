@@ -2,6 +2,53 @@
     @if ($dashboardTheme === 'modern')
         {{-- ======================== TEMA MODERN (100% ADAPTASI GOOGLE AI STUDIO) ======================== --}}
         <div class="row row-cards g-3">
+            {{-- Antrian Operasional (prioritas untuk admin/superadmin) --}}
+            @if (in_array($roleName ?? '', ['admin lppm', 'superadmin']))
+            <div class="col-12">
+                <div class="card border border-secondary-subtle shadow-sm rounded-3">
+                    <div class="card-header bg-white py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div>
+                            <h3 class="card-title fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                                <span class="badge bg-rose-lt text-rose p-1">Antrian</span>
+                                <span>Antrian Operasional</span>
+                            </h3>
+                            <div class="text-secondary small mt-0.5">Pekerjaan yang perlu tindakan segera</div>
+                        </div>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="row g-2">
+                            @php
+                                $adminQueue = [
+                                    ['label' => 'Penugasan Reviewer', 'desc' => 'Tugaskan reviewer ke usulan yang menunggu', 'route' => 'admin-lppm.assign-reviewers', 'icon' => 'user-plus', 'color' => 'primary'],
+                                    ['label' => 'Monitoring Laporan', 'desc' => 'Pantau laporan akhir yang perlu tindakan', 'route' => 'admin-lppm.report-approval', 'icon' => 'eye', 'color' => 'azure'],
+                                    ['label' => 'Monev', 'desc' => 'Monitoring & evaluasi usulan berjalan', 'route' => 'admin-lppm.monev.index', 'icon' => 'presentation-analytics', 'color' => 'cyan'],
+                                    ['label' => 'Beban Kerja Reviewer', 'desc' => 'Pantau beban kerja reviewer', 'route' => 'admin-lppm.reviewer-workload', 'icon' => 'chart-pie', 'color' => 'purple'],
+                                    ['label' => 'Monitoring Review', 'desc' => 'Pantau proses review berjalan', 'route' => 'admin-lppm.review-monitoring', 'icon' => 'eye', 'color' => 'teal'],
+                                    ['label' => 'Log Notifikasi', 'desc' => 'Riwayat notifikasi sistem', 'route' => 'admin-lppm.notification-log', 'icon' => 'list', 'color' => 'secondary'],
+                                ];
+                            @endphp
+                            @foreach ($adminQueue as $q)
+                                @if (Route::has($q['route']))
+                                <div class="col-12 col-sm-6 col-lg-4">
+                                    <a href="{{ route($q['route']) }}" class="card card-link card-link-pop h-100 border border-{{ $q['color'] }}-lt">
+                                        <div class="card-body p-3">
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <span class="badge bg-{{ $q['color'] }}-lt text-{{ $q['color'] }} p-1">
+                                                    @include('components.layouts.partials.menu.icon', ['name' => $q['icon'], 'class' => 'icon icon-1'])
+                                                </span>
+                                                <span class="fw-bold text-dark">{{ $q['label'] }}</span>
+                                            </div>
+                                            <div class="text-secondary small">{{ $q['desc'] }}</div>
+                                        </div>
+                                    </a>
+                                </div>
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
             {{-- Left / Main Column: Infographic & Proposal Table --}}
             <div class="col-12 col-lg-8 col-xl-9">
                 {{-- 1. Modern Infographic Component --}}
