@@ -96,6 +96,56 @@
                 </div>
             </div>
             @endif
+            {{-- Tugas & Tindakan (prioritas untuk dosen) --}}
+            @if (($roleName ?? '') === 'dosen')
+            <div class="col-12">
+                <div class="card border border-secondary-subtle shadow-sm rounded-3">
+                    <div class="card-header bg-white py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div>
+                            <h3 class="card-title fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                                <span class="badge bg-cyan-lt text-cyan p-1">Tugas</span>
+                                <span>Tugas & Tindakan Berikutnya</span>
+                            </h3>
+                            <div class="text-secondary small mt-0.5">Status pengajuan, revisi, dan tenggat Anda</div>
+                        </div>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="row g-2">
+                            @php
+                                $dosenTasks = [
+                                    ['label' => 'Ajukan Usulan Baru', 'desc' => 'Buat usulan penelitian/pengabdian', 'route' => 'research.proposal.create', 'icon' => 'file-plus', 'color' => 'primary', 'fallback' => 'research/proposal/create'],
+                                    ['label' => 'Perbaikan Usulan', 'desc' => 'Revisi usulan yang diminta', 'route' => 'research.proposal-revision.index', 'icon' => 'file-pencil', 'color' => 'azure', 'fallback' => null],
+                                    ['label' => 'Laporan Akhir', 'desc' => 'Unggah laporan akhir usulan', 'route' => 'research.final-report.index', 'icon' => 'report', 'color' => 'cyan', 'fallback' => null],
+                                    ['label' => 'Realisasi Anggaran', 'desc' => 'Catat realisasi anggaran', 'route' => 'research.daily-note.index', 'icon' => 'wallet', 'color' => 'green', 'fallback' => null],
+                                    ['label' => 'Buat Surat', 'desc' => 'Surat tugas/izin', 'route' => 'dashboard.dosen.surat.dashboard', 'icon' => 'file-text', 'color' => 'purple', 'fallback' => 'surat'],
+                                    ['label' => 'Usulan Pengabdian', 'desc' => 'Usulan pengabdian masyarakat', 'route' => 'community-service.proposal.index', 'icon' => 'users-group', 'color' => 'teal', 'fallback' => null],
+                                ];
+                            @endphp
+                            @foreach ($dosenTasks as $q)
+                                @php
+                                    $href = Route::has($q['route']) ? route($q['route']) : (!empty($q['fallback']) ? url($q['fallback']) : null);
+                                @endphp
+                                @if ($href)
+                                <div class="col-12 col-sm-6 col-lg-4">
+                                    <a href="{{ $href }}" class="card card-link card-link-pop h-100 border border-{{ $q['color'] }}-lt">
+                                        <div class="card-body p-3">
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <span class="badge bg-{{ $q['color'] }}-lt text-{{ $q['color'] }} p-1">
+                                                    @include('components.layouts.partials.menu.icon', ['name' => $q['icon'], 'class' => 'icon icon-1'])
+                                                </span>
+                                                <span class="fw-bold text-dark">{{ $q['label'] }}</span>
+                                            </div>
+                                            <div class="text-secondary small">{{ $q['desc'] }}</div>
+                                        </div>
+                                    </a>
+                                </div>
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
             {{-- Left / Main Column: Infographic & Proposal Table --}}
             <div class="col-12 col-lg-8 col-xl-9">
                 {{-- 1. Modern Infographic Component --}}
