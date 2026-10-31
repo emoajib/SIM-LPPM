@@ -547,7 +547,7 @@
                     <div style="position: relative; width: 9rem; height: 9rem; display: flex; align-items: center; justify-content: center;">
                         <svg style="width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible;" viewBox="0 0 120 120">
                             <circle cx="60" cy="60" r="50" stroke="#e0f2fe" stroke-width="5" fill="none" opacity="0.6"/>
-                            <circle cx="60" cy="60" r="50" stroke="url(#cyanGaugeGrad2)" stroke-width="6" stroke-dasharray="314" stroke-dashoffset="88" stroke-linecap="round" fill="none"/>
+                            <circle cx="60" cy="60" r="50" stroke="url(#cyanGaugeGrad2)" stroke-width="6" stroke-dasharray="314" stroke-dashoffset="314" stroke-linecap="round" fill="none"/>
                             <defs>
                                 <linearGradient id="cyanGaugeGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
                                     <stop offset="0%" stop-color="#38bdf8" />
@@ -580,7 +580,7 @@
                     <div style="position: relative; width: 9rem; height: 9rem; display: flex; align-items: center; justify-content: center;">
                         <svg style="width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible;" viewBox="0 0 120 120">
                             <circle cx="60" cy="60" r="50" stroke="#e0f2fe" stroke-width="5" fill="none" opacity="0.6"/>
-                            <circle cx="60" cy="60" r="50" stroke="url(#cyanGaugeGrad3)" stroke-width="6" stroke-dasharray="314" stroke-dashoffset="47" stroke-linecap="round" fill="none"/>
+                            <circle cx="60" cy="60" r="50" stroke="url(#cyanGaugeGrad3)" stroke-width="6" stroke-dasharray="314" stroke-dashoffset="314" stroke-linecap="round" fill="none"/>
                             <defs>
                                 <linearGradient id="cyanGaugeGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
                                     <stop offset="0%" stop-color="#06b6d4" />
