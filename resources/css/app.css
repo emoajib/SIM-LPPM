@@ -374,8 +374,6 @@ body.theme-modern .container-xl {
 body.theme-modern .navbar .dropdown-menu,
 body.theme-modern .navbar .dropdown-menu.show {
     z-index: 2147483647 !important;
-    position: absolute !important;
-    overflow: visible !important;
 }
 body.theme-modern .navbar {
     background: linear-gradient(135deg, #11244e 0%, #1e3a6e 50%, #254b8c 100%) !important;
