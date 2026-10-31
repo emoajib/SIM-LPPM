@@ -394,6 +394,33 @@ body.theme-modern .page-wrapper .container-xl {
 body.theme-modern .page-wrapper {
     padding-top: 0.5rem;
 }
+/* Modern theme: audit spacing & typography — rapi konsisten */
+body.theme-modern .navbar .nav-link {
+    padding: 0.5rem 0.6rem;
+    font-size: 0.82rem;
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+}
+body.theme-modern .navbar .nav-link-title {
+    font-weight: 600;
+}
+body.theme-modern .card {
+    margin-bottom: 1rem;
+}
+body.theme-modern .card-header {
+    padding: 0.75rem 1rem;
+}
+body.theme-modern .card-body {
+    padding: 1rem;
+}
+body.theme-modern .page-body {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+body.theme-modern .container-xl {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
 /* Modern theme: emerald accent for active nav indicator */
 body.theme-modern .navbar .nav-link.active,
 body.theme-modern .navbar .nav-item.active > .nav-link {
