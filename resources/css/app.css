@@ -373,6 +373,24 @@ body.theme-modern .navbar {
     position: relative;
     z-index: 10000;
 }
+
+/* Modern theme: boxed unified layout (inspired by template) — tanpa Tailwind */
+body.theme-modern .page {
+    max-width: 1320px;
+    margin: 0 auto;
+}
+body.theme-modern .navbar-expand-md .container-xl,
+body.theme-modern .page-wrapper .container-xl {
+    max-width: 100%;
+}
+body.theme-modern .page-wrapper {
+    padding-top: 0.5rem;
+}
+/* Modern theme: emerald accent for active nav indicator */
+body.theme-modern .navbar .nav-link.active,
+body.theme-modern .navbar .nav-item.active > .nav-link {
+    border-bottom: 2px solid #34d399;
+}
 body.theme-modern .navbar-expand-md,
 body.theme-modern .navbar-expand-md .navbar {
     position: relative;
