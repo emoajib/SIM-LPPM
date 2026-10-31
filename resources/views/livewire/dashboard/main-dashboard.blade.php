@@ -1,36 +1,4 @@
 <div>
-    <!-- Dashboard Theme Switcher Toolbar -->
-    <div class="d-flex align-items-center justify-content-between mb-3 bg-white p-2 px-3 rounded-3 shadow-sm border border-secondary-subtle flex-wrap gap-2">
-        <div class="d-flex align-items-center gap-2">
-            <span class="text-secondary small fw-bold d-none d-sm-inline">Tampilan Dashboard:</span>
-            <div class="btn-group btn-group-sm" role="group" aria-label="Dashboard View Switcher">
-                <button type="button" 
-                    wire:click="setDashboardTheme('modern')"
-                    class="btn {{ $dashboardTheme === 'modern' ? 'btn-primary active fw-bold shadow-sm' : 'btn-outline-secondary' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                    </svg>
-                    Modern (3D Infografis)
-                </button>
-                <button type="button" 
-                    wire:click="setDashboardTheme('classic')"
-                    class="btn {{ $dashboardTheme === 'classic' ? 'btn-primary active fw-bold shadow-sm' : 'btn-outline-secondary' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
-                        <rect x="3" y="3" width="7" height="7"></rect>
-                        <rect x="14" y="3" width="7" height="7"></rect>
-                        <rect x="14" y="14" width="7" height="7"></rect>
-                        <rect x="3" y="14" width="7" height="7"></rect>
-                    </svg>
-                    Klasik (Standar Tabler)
-                </button>
-            </div>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-            <span class="badge bg-blue-lt fw-bold">LPPM ITSNU Pekalongan</span>
-            <span class="badge bg-secondary-lt d-none d-md-inline">Role: {{ format_role_name($roleName) }}</span>
-        </div>
-    </div>
-
     @if ($dashboardTheme === 'modern')
         {{-- ======================== TEMA MODERN (100% ADAPTASI GOOGLE AI STUDIO) ======================== --}}
         <div class="row row-cards g-3">
