@@ -364,7 +364,16 @@ body.theme-modern .glow-cyan-text {
 }
 body.theme-modern .navbar,
 body.theme-modern .navbar-collapse,
-body.theme-modern .page {
+body.theme-modern .page,
+body.theme-modern .page-wrapper,
+body.theme-modern .page-body,
+body.theme-modern .container-xl {
+    overflow: visible !important;
+}
+body.theme-modern .navbar .dropdown-menu,
+body.theme-modern .navbar .dropdown-menu.show {
+    z-index: 2147483647 !important;
+    position: absolute !important;
     overflow: visible !important;
 }
 body.theme-modern .navbar {
