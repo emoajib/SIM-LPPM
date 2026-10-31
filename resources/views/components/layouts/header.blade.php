@@ -247,7 +247,7 @@
                                                     data-bs-auto-close="{{ $menuItem['dropdown']['auto_close'] ?? 'outside' }}"
                                                     role="button" aria-expanded="false">
                                                     <span class="d-lg-inline-block nav-link-icon d-md-none">
-                                                        @if (!empty($menuItem['icon']) && session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')) === 'modern')
+                                                        @if (false)
                                                             @include(
                                                                 'components.layouts.partials.menu.icon',
                                                                 [
@@ -274,7 +274,7 @@
                                                     href="{{ $menuItem['href'] ?? '#' }}"
                                                     @unless (($menuItem['navigate'] ?? true) === false) wire:navigate.hover @endunless>
                                                     <span class="d-lg-inline-block nav-link-icon d-md-none">
-                                                        @if (!empty($menuItem['icon']) && session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')) === 'modern')
+                                                        @if (false)
                                                             @include(
                                                                 'components.layouts.partials.menu.icon',
                                                                 [
