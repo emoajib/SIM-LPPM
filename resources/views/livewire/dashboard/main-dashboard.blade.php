@@ -87,7 +87,7 @@
             </div>
 
             {{-- Right Column: Profil Dosen & Riwayat Tri Dharma (Matching Google AI Studio Sidebar) --}}
-            <div class="col-12 col-lg-4 col-xl-3">
+            <div class="col-12 col-lg-4 col-xl-3" style="position: sticky; top: 5rem; align-self: flex-start;">
                 {{-- Profil Dosen Card --}}
                 <div class="card border border-secondary-subtle shadow-sm rounded-3 mb-3">
                     <div class="card-body text-center p-3">
