@@ -42,12 +42,15 @@ export default function DashboardIndex() {
 
     const loadStats = async () => {
         try {
-            const res = await fetch(`/research/api/proposals?type=research`, { credentials: "same-origin" });
-            const json = await res.json();
-            const data = json.data || [];
+            const [resResearch, resCommunity] = await Promise.all([
+                fetch(`/research/api/proposals?type=research`, { credentials: "same-origin" }),
+                fetch(`/research/api/proposals?type=community-service`, { credentials: "same-origin" }),
+            ]);
+            const jsonResearch = await resResearch.json();
+            const jsonCommunity = await resCommunity.json();
             setStats({
-                penelitian: data.filter((p) => p.detailable_type === "App\\Models\\Research").length,
-                pengabdian: data.filter((p) => p.detailable_type === "App\\Models\\CommunityService").length,
+                penelitian: (jsonResearch.meta && jsonResearch.meta.total) || (jsonResearch.data || []).length,
+                pengabdian: (jsonCommunity.meta && jsonCommunity.meta.total) || (jsonCommunity.data || []).length,
                 surat: 0,
                 prototipe: 0,
             });

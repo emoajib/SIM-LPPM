@@ -1,6 +1,5 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import ModernBanner from "./modern/ModernBanner.jsx";
 import ProposalsIndex from "./modern/ProposalsIndex.jsx";
 import DashboardIndex from "./modern/DashboardIndex.jsx";
 import PengabdianIndex from "./modern/PengabdianIndex.jsx";
@@ -16,7 +15,7 @@ const PAGES = {
 function App() {
     const Comp = PAGES[PAGE];
     if (Comp) return <Comp />;
-    return <ModernBanner />;
+    return null;
 }
 
 const rootEl = document.getElementById("modern-root");

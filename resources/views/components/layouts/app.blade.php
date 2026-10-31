@@ -62,8 +62,7 @@
                             {{-- Modern theme: React (migrasi) — tanpa Blade content --}}
                             <div id="modern-root"></div>
                         @else
-                            {{-- Modern theme: React banner + Blade content (hybrid) --}}
-                            <div id="modern-root" class="mb-4"></div>
+                            {{-- Modern theme: Blade content (hybrid) — tanpa banner React --}}
                             {{ $slot }}
                         @endif
                     @else
@@ -76,8 +75,10 @@
         </div>
     </div>
     @if ($isModernTheme)
-        @viteReactRefresh
-        @vite('resources/js/modern.jsx')
+        @if ($modernPage)
+            @viteReactRefresh
+            @vite('resources/js/modern.jsx')
+        @endif
     @endif
 
     @stack('scripts')
