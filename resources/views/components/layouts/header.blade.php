@@ -237,7 +237,7 @@
                                             <li wire:key="menu-{{ $menuItem['title'] ?? $loop->index }}" class="nav-item dropdown{{ $isActive ? ' active' : '' }}">
                                                 <a class="nav-link dropdown-toggle{{ $isActive ? ' active' : '' }}"
                                                     href="#" data-bs-toggle="dropdown"
-                                                    data-bs-auto-close="{{ $menuItem['dropdown']['auto_close'] ?? 'outside' }}"
+                                                    data-bs-auto-close="{{ $menuItem['dropdown']['auto_close'] ?? 'true' }}"
                                                     role="button" aria-expanded="false">
                                                     <span class="d-lg-inline-block nav-link-icon d-md-none">
                                                         @if (!empty($menuItem['icon']) && session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')) === 'modern')
@@ -292,5 +292,14 @@
         </div>
     </header>
 </div>
+
+<script>
+document.addEventListener('click', function (e) {
+    var link = e.target && e.target.closest ? e.target.closest('.dropdown-menu a, .dropdown-menu button') : null;
+    if (link) {
+        document.querySelectorAll('.dropdown-menu.show').forEach(function (m) { m.classList.remove('show'); });
+    }
+});
+</script>
 
 <!-- END NAVBAR  -->
