@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\CommunityService;
 use App\Models\Proposal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,8 +17,8 @@ class ModernProposalController
         $year = $request->get('year', '');
         $type = $request->get('type', 'research');
 
-        $query = Proposal::with(['submitter.identity', 'focusArea', 'researchScheme'])
-            ->whereHas('detailable', fn ($q) => $q->where('detailable_type', $type === 'research' ? 'App\\Models\\Research' : 'App\\Models\\CommunityService'));
+        $query = Proposal::with(['submitter.identity', 'focusArea', 'researchScheme', 'communityServiceScheme'])
+            ->whereHas('detailable', fn ($q) => $q->where('detailable_type', $type === 'research' ? 'App\\Models\\Research' : CommunityService::class));
 
         if ($search) {
             $query->where('title', 'like', "%{$search}%");
@@ -29,11 +30,16 @@ class ModernProposalController
             $query->whereYear('created_at', $year);
         }
 
-        // Scope to user unless admin/leader
         if (! $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'dekan'])) {
             $query->where(function ($q) use ($user) {
                 $q->where('submitter_id', $user->id)
-                    ->orWhereHas('teamMembers', fn ($t) => $t->where('user_id', $user->id));
+                    ->orWhereHas('teamMembers', fn ($t) => $t->where('user_id', $user->id))
+                    ->orWhere(function ($q2) use ($user) {
+                        if ($user->activeHasRole('kaprodi') && $user->identity?->study_program_id) {
+                            $q2->whereHas('submitter.identity', fn ($si) => $si->where('study_program_id', $user->identity->study_program_id));
+                        }
+                    })
+                    ->orWhereHas('reviewers', fn ($r) => $r->where('user_id', $user->id));
             });
         }
 
@@ -50,7 +56,9 @@ class ModernProposalController
                 'status_label' => $p->status->label(),
                 'status_color' => $p->status->color(),
                 'created_at' => $p->created_at?->format('d M Y'),
-                'show_url' => route('research.proposal.show', $p),
+                'show_url' => $p->detailable_type === CommunityService::class
+                    ? route('community-service.proposal.show', $p)
+                    : route('research.proposal.show', $p),
             ]),
             'meta' => [
                 'current_page' => $proposals->currentPage(),
