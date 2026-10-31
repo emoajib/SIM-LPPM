@@ -186,7 +186,6 @@
                             ])
                             Settings
                         </a>
-                        @unless (request()->routeIs('dashboard'))
                         <div class="dropdown-divider"></div>
                         <div class="dropdown-header px-3 py-1 text-uppercase text-secondary fw-bold small">Tema Website</div>
                         <form method="POST" action="{{ route('theme.switch') }}" class="d-inline">
@@ -202,7 +201,6 @@
                                 <span class="badge bg-secondary-lt">{{ ($userActiveTheme ?? 'modern') === 'modern' ? '⚡ Modern' : '📄 Klasik' }}</span>
                             </button>
                         </form>
-                        @endunless
                         <div class="dropdown-divider"></div>
 
                         <form method="POST" action="{{ route('logout') }}">
