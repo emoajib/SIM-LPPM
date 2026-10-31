@@ -394,6 +394,23 @@ body.theme-modern .page-wrapper .container-xl {
 body.theme-modern .page-wrapper {
     padding-top: 0.5rem;
 }
+/* Modern theme: responsivitas — sidebar tidak sticky di mobile */
+@media (max-width: 991.98px) {
+    body.theme-modern .modern-sidebar {
+        position: static !important;
+        top: auto !important;
+    }
+}
+/* Modern theme: tabel horizontal scroll di mobile */
+@media (max-width: 767.98px) {
+    body.theme-modern .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    body.theme-modern .card {
+        margin-bottom: 0.75rem;
+    }
+}
 /* Modern theme: audit spacing & typography — rapi konsisten */
 body.theme-modern .navbar .nav-link {
     padding: 0.5rem 0.6rem;
