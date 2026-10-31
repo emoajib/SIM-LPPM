@@ -394,6 +394,32 @@ body.theme-modern .navbar .navbar-brand span,
 body.theme-modern .navbar .nav-link {
     color: #e2e8f0 !important;
 }
+/* Modern theme: clearer active menu indicator (not color only) */
+body.theme-modern .navbar .nav-link.active,
+body.theme-modern .navbar .nav-item.active > .nav-link {
+    border-bottom: 2px solid #93c5fd;
+    font-weight: 700;
+    position: relative;
+}
+body.theme-modern .navbar .nav-link:focus-visible {
+    outline: 2px solid #93c5fd;
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+}
+/* Modern theme: keep dropdowns inside viewport on small screens */
+body.theme-modern .navbar .dropdown-menu {
+    max-width: calc(100vw - 1rem);
+}
+/* Modern theme: responsive navbar — comfortable tap targets */
+@media (max-width: 767.98px) {
+    body.theme-modern .navbar .nav-link {
+        padding: 0.6rem 0.75rem;
+        min-height: 44px;
+    }
+    body.theme-modern .navbar .nav-link-title {
+        font-size: 0.95rem;
+    }
+}
 body.theme-modern .page-header {
     background: linear-gradient(135deg, rgba(30, 58, 110, 0.12) 0%, rgba(37, 75, 140, 0.04) 100%);
     border-bottom: 1px solid rgba(30, 58, 110, 0.15);

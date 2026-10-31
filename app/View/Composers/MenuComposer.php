@@ -18,7 +18,8 @@ class MenuComposer
     public function compose(View $view): void
     {
         $user = Auth::user();
-        $cacheKey = 'menu_items_'.($user ? $user->id : 'guest').'_'.(active_role() ?? 'none');
+        $isModern = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')) === 'modern';
+        $cacheKey = 'menu_items_'.($user ? $user->id : 'guest').'_'.(active_role() ?? 'none').'_'.($isModern ? 'modern' : 'classic');
 
         $items = Cache::remember($cacheKey, 60, function () use ($user) {
             return $this->menuItems($user);
@@ -557,6 +558,23 @@ class MenuComposer
             }
 
             $items = $newItems;
+        }
+
+        // Modern theme only: collapse secondary modules into a "Lainnya" dropdown
+        // so primary modules stay visible without long/deep dropdowns.
+        // Classic theme keeps the existing flat layout untouched.
+        $isModern = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')) === 'modern';
+        if ($isModern && count($items) > 8) {
+            $primary = array_slice($items, 0, 8);
+            $overflow = array_slice($items, 8);
+            if (! empty($overflow)) {
+                $primary[] = [
+                    'title' => 'Lainnya',
+                    'icon' => 'dots',
+                    'children' => $overflow,
+                ];
+            }
+            $items = $primary;
         }
 
         return array_values(array_filter(array_map(
