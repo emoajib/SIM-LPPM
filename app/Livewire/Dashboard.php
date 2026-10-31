@@ -341,7 +341,7 @@ class Dashboard extends Component
             $query = $this->applyProposalScope(
                 Proposal::with(['submitter', 'detailable']),
                 $this->user
-            )->latest()->take(6);
+            )->latest()->take(10);
 
             $items = $query->get();
 
