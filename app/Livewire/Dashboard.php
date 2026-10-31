@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\MandatoryOutput;
 use App\Models\Proposal;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Layout;
@@ -48,48 +49,90 @@ class Dashboard extends Component
         cookie()->queue(cookie('sim_lppm_app_theme', $this->dashboardTheme, 60 * 24 * 365));
     }
 
+    /**
+     * Role yang boleh melihat data seluruh institusi.
+     */
+    private const INSTITUTION_WIDE_ROLES = [
+        'superadmin',
+        'admin lppm',
+        'admin lppm saintek',
+        'admin lppm dekabita',
+        'kepala lppm',
+        'rektor',
+        'dekan',
+    ];
+
+    /**
+     * Terapkan scoping proposal sesuai role aktif pengguna.
+     *
+     * - Role institusi : tanpa filter (seluruh data).
+     * - Kaprodi        : proposal sendiri/tim + seluruh proposal program studinya.
+     * - Reviewer       : proposal yang ditugaskan untuk direview.
+     * - Dosen          : proposal sendiri atau sebagai anggota tim.
+     *
+     * @template TModel of \Illuminate\Database\Eloquent\Model
+     *
+     * @param  Builder<TModel>  $query
+     * @return Builder<TModel>
+     */
+    private function applyProposalScope($query, $user)
+    {
+        if ($user->activeHasAnyRole(self::INSTITUTION_WIDE_ROLES)) {
+            return $query;
+        }
+
+        $studyProgramId = $user->activeHasRole('kaprodi')
+            ? $user->identity?->study_program_id
+            : null;
+
+        return $query->where(function ($q) use ($user, $studyProgramId) {
+            $q->where('submitter_id', $user->id)
+                ->orWhereHas('teamMembers', fn ($t) => $t->where('user_id', $user->id))
+                ->orWhereHas('reviewers', fn ($r) => $r->where('user_id', $user->id));
+
+            if ($studyProgramId) {
+                $q->orWhereHas('submitter.identity', fn ($si) => $si->where('study_program_id', $studyProgramId));
+            }
+        });
+    }
+
     protected function loadInfographicStats(): array
     {
-        return Cache::remember('dashboard_modern_infographic_stats_'.$this->user->id, 60, function () {
+        return Cache::remember('dashboard_modern_infographic_stats_'.$this->user->id, 60, function (): array {
             try {
                 $user = $this->user;
-                $isLeader = $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'dekan']);
+                $isLeader = $user->activeHasAnyRole(self::INSTITUTION_WIDE_ROLES);
 
-                $baseQuery = Proposal::where('detailable_type', 'App\Models\Research');
-                if (! $isLeader) {
-                    $baseQuery->where(function ($q) use ($user) {
-                        $q->where('submitter_id', $user->id)
-                            ->orWhereHas('teamMembers', fn ($t) => $t->where('user_id', $user->id));
-                    });
-                }
+                $baseQuery = $this->applyProposalScope(
+                    Proposal::where('detailable_type', 'App\Models\Research'),
+                    $user
+                );
 
                 $totalUsulan = (clone $baseQuery)->count();
                 $totalDidanai = (clone $baseQuery)->whereIn('status', ['approved', 'completed', 'reviewed'])->count();
                 $totalDeskReview = (clone $baseQuery)->whereIn('status', ['submitted', 'reviewed'])->count();
 
-                $basePkm = Proposal::where('detailable_type', 'App\Models\CommunityService');
-                if (! $isLeader) {
-                    $basePkm->where(function ($q) use ($user) {
-                        $q->where('submitter_id', $user->id)
-                            ->orWhereHas('teamMembers', fn ($t) => $t->where('user_id', $user->id));
-                    });
-                }
+                $basePkm = $this->applyProposalScope(
+                    Proposal::where('detailable_type', 'App\Models\CommunityService'),
+                    $user
+                );
 
                 $totalPkm = (clone $basePkm)->count();
                 $totalPkmDidanai = (clone $basePkm)->whereIn('status', ['approved', 'completed', 'reviewed'])->count();
 
-                $totalLuaran = class_exists(MandatoryOutput::class)
-                    ? MandatoryOutput::count()
-                    : 0;
-
-                $totalDana = Proposal::query()
-                    ->whereIn('status', ['approved', 'completed', 'reviewed'])
-                    ->when(! $isLeader, function ($q) use ($user) {
-                        $q->where(function ($sq) use ($user) {
-                            $sq->where('submitter_id', $user->id)
-                                ->orWhereHas('teamMembers', fn ($t) => $t->where('user_id', $user->id));
+                $totalLuaran = 0;
+                if (class_exists(MandatoryOutput::class)) {
+                    $luaranQuery = MandatoryOutput::query();
+                    if (! $isLeader) {
+                        $luaranQuery->whereHas('proposalOutput.proposal', function ($pq) use ($user) {
+                            $this->applyProposalScope($pq, $user);
                         });
-                    })
+                    }
+                    $totalLuaran = $luaranQuery->count();
+                }
+
+                $totalDana = $this->applyProposalScope(Proposal::query(), $user)
+                    ->whereIn('status', ['approved', 'completed', 'reviewed'])
                     ->get()
                     ->sum(fn ($p) => $p->approved_budget_total);
 
@@ -120,18 +163,13 @@ class Dashboard extends Component
     {
         try {
             $user = $this->user;
-            $isLeader = $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'dekan']);
 
-            $query = Proposal::query()
-                ->select(['id', 'start_year', 'detailable_type', 'status', 'sbk_value'])
-                ->with('activeBudgetItems:id,proposal_id,total_price');
-
-            if (! $isLeader) {
-                $query->where(function ($q) use ($user) {
-                    $q->where('submitter_id', $user->id)
-                        ->orWhereHas('teamMembers', fn ($t) => $t->where('user_id', $user->id));
-                });
-            }
+            $query = $this->applyProposalScope(
+                Proposal::query()
+                    ->select(['id', 'start_year', 'detailable_type', 'status', 'sbk_value'])
+                    ->with('activeBudgetItems:id,proposal_id,total_price'),
+                $user
+            );
 
             $rows = $query->get();
 
@@ -165,13 +203,10 @@ class Dashboard extends Component
     protected function loadRecentProposals()
     {
         try {
-            $query = Proposal::with(['submitter', 'detailable'])
-                ->latest()
-                ->take(6);
-
-            if ($this->roleName === 'dosen') {
-                $query->where('submitter_id', Auth::id());
-            }
+            $query = $this->applyProposalScope(
+                Proposal::with(['submitter', 'detailable']),
+                $this->user
+            )->latest()->take(6);
 
             $items = $query->get();
 
