@@ -362,19 +362,10 @@ body.theme-modern .glow-cyan-text {
 .card:hover {
   z-index: 2;
 }
-body.theme-modern .navbar,
-body.theme-modern .navbar-collapse,
-body.theme-modern .page,
-body.theme-modern .page-wrapper,
-body.theme-modern .page-body,
-body.theme-modern .container-xl {
-    overflow: visible !important;
-}
+/* Modern theme: dropdown z-index tinggi (agar tidak tertutup banner/konten) */
 body.theme-modern .navbar .dropdown-menu,
 body.theme-modern .navbar .dropdown-menu.show {
     z-index: 2147483647 !important;
-    position: absolute !important;
-    overflow: visible !important;
 }
 body.theme-modern .navbar {
     background: linear-gradient(135deg, #11244e 0%, #1e3a6e 50%, #254b8c 100%) !important;
@@ -383,18 +374,6 @@ body.theme-modern .navbar {
     z-index: 10000;
 }
 
-/* Modern theme: boxed unified layout (inspired by template) — tanpa Tailwind */
-body.theme-modern .page {
-    max-width: 1320px;
-    margin: 0 auto;
-}
-body.theme-modern .navbar-expand-md .container-xl,
-body.theme-modern .page-wrapper .container-xl {
-    max-width: 100%;
-}
-body.theme-modern .page-wrapper {
-    padding-top: 0.5rem;
-}
 /* Modern theme: emerald accent for active nav indicator */
 body.theme-modern .navbar .nav-link.active,
 body.theme-modern .navbar .nav-item.active > .nav-link {
