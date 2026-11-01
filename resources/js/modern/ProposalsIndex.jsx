@@ -21,6 +21,7 @@ export default function ProposalsIndex() {
     const [status, setStatus] = useState("all");
     const [roleFilter, setRoleFilter] = useState("all");
     const [loading, setLoading] = useState(true);
+    const isDosen = (window.__USER_ROLES__ || []).includes("dosen");
     const [error, setError] = useState(null);
 
     const load = async () => {
@@ -111,6 +112,11 @@ export default function ProposalsIndex() {
                     >
                         Cari
                     </button>
+                    {isDosen && (
+                        <a href="/research/proposal/create" className="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-emerald-700 transition">
+                            + Buat Usulan
+                        </a>
+                    )}
                 </div>
 
                 {loading ? (

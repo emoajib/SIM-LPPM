@@ -79,6 +79,7 @@
                             $modernPage = $modernPageMap[request()->route()?->getName() ?? ''] ?? null;
                         @endphp
                         <script>window.__MODERN_PAGE__ = @json($modernPage);</script>
+                        <script>window.__USER_ROLES__ = @json(auth()->user()?->getRoleNames() ?? []);</script>
                         @if ($modernPage)
                             {{-- Modern theme: React (migrasi) — tanpa Blade content --}}
                             <div id="modern-root"></div>
