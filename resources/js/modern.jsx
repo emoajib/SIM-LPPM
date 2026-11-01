@@ -24,7 +24,15 @@ function App() {
     return null;
 }
 
-const rootEl = document.getElementById("modern-root");
-if (rootEl) {
-    createRoot(rootEl).render(<App />);
+function mountModern() {
+    const rootEl = document.getElementById("modern-root");
+    if (!rootEl) return;
+    // avoid double mount
+    if (rootEl._reactRoot) return;
+    const root = createRoot(rootEl);
+    rootEl._reactRoot = root;
+    root.render(<App />);
 }
+
+mountModern();
+document.addEventListener("livewire:navigated", mountModern);
