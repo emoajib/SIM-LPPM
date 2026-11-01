@@ -49,11 +49,6 @@ export default function ProposalsIndex() {
 
     return (
         <div className="space-y-4">
-            <div className="bg-gradient-to-r from-[#11244e] via-[#1e3a6e] to-[#254b8c] text-white rounded-xl p-5 shadow-md">
-                <h2 className="text-xl font-black tracking-tight">Daftar Penelitian</h2>
-
-            </div>
-
             <div className="bg-white border border-slate-200 rounded-xl shadow-sm px-4 pt-3">
                 <div className="flex gap-1 overflow-x-auto">
                     {tabs.map((t) => {
