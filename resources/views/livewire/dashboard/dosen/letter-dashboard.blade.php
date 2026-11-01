@@ -20,10 +20,22 @@
         .section-table.hidden { display: none; }
         .fab-hidden { display: none !important; }
         /* Mitigasi: tabs scroll horizontal di mobile */
-        .letter-tabs-scroll { max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        .letter-tabs-scroll { min-width: 0; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
         .letter-tabs-scroll::-webkit-scrollbar { display: none; }
-        .letter-tabs-scroll .nav-tabs { flex-wrap: nowrap !important; min-width: max-content; border-bottom: 1px solid #e2e8f0; }
+        .letter-tabs-scroll .nav-tabs { flex-wrap: nowrap !important; min-width: max-content; border-bottom: none; margin-bottom: 0; }
         .letter-tabs-scroll .nav-link { white-space: nowrap; padding: 0.5rem 0.85rem; }
+        /* cegah tabs mendorong lebar card */
+        .letter-card-header { overflow: hidden; }
+        /* search row spacing */
+        .letter-search-row { margin-top: 1rem; }
+        /* stabilkan kolom tabel kunci */
+        .letter-table th:nth-child(1) { width: 48px; }
+        .letter-table th:nth-child(5) { width: 110px; }
+        .letter-table th:nth-child(6) { width: 120px; }
+        /* FAB mobile */
+        @media (max-width: 576px) {
+            .btn-fab { bottom: 1rem; right: 1rem; width: 48px; height: 48px; }
+        }
         /* Mitigasi: sticky header tabel */
         .letter-table thead th { position: sticky; top: 0; z-index: 10; background: #fff; box-shadow: 0 1px 0 #e2e8f0; }
         /* Mitigasi: ruang agar FAB tidak menutupi paginasi */
@@ -34,7 +46,7 @@
     </style>
     {{-- Tabs + Table --}}
     <div class="card border-0 shadow-sm section-table @if($showForm) hidden @endif" id="sectionTable">
-        <div class="card-header bg-transparent border-0 pt-4 pb-0">
+        <div class="card-header bg-transparent border-0 pt-4 pb-0 letter-card-header">
             <div class="letter-tabs-scroll">
             <ul class="nav nav-tabs card-header-tabs">
                 @php
@@ -57,8 +69,8 @@
             </ul>
             </div>
 
-            <div class="row align-items-center mt-4">
-                <div class="col">
+            <div class="row align-items-center g-2 letter-search-row">
+                <div class="col" style="min-width: 0;">
                     <div class="input-icon">
                         <span class="input-icon-addon">
                             
