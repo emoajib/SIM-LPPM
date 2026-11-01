@@ -300,29 +300,5 @@
     </header>
 </div>
 
-<script>
-// Pastikan dropdown navbar (menu) tidak tertutup konten di bawahnya:
-// saat terbuka, posisikan fixed dengan z-index maksimum (seperti dropdown profil/role).
-document.addEventListener('shown.bs.dropdown', function (e) {
-    var toggle = e.target;
-    var dd = toggle && toggle.closest ? toggle.closest('.dropdown') : null;
-    var menu = dd ? dd.querySelector('.dropdown-menu') : null;
-    if (!menu || !dd || !dd.closest('.navbar')) return;
-    var r = toggle.getBoundingClientRect();
-    menu.style.position = 'fixed';
-    menu.style.top = (r.bottom + 4) + 'px';
-    menu.style.left = Math.max(8, r.left) + 'px';
-    menu.style.zIndex = '2147483647';
-});
-document.addEventListener('hidden.bs.dropdown', function (e) {
-    var toggle = e.target;
-    var dd = toggle && toggle.closest ? toggle.closest('.dropdown') : null;
-    var menu = dd ? dd.querySelector('.dropdown-menu') : null;
-    if (!menu || !dd || !dd.closest('.navbar')) return;
-    menu.style.position = '';
-    menu.style.top = '';
-    menu.style.left = '';
-});
-</script>
 
 <!-- END NAVBAR  -->
