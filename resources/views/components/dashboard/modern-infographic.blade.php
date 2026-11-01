@@ -161,7 +161,7 @@
             box-shadow: 0 6px 14px rgba(2, 132, 199, 0.25);
         }
         .sli-stat-val {
-            font-size: 1.6rem;
+            font-size: 1.3rem;
             font-weight: 900;
             line-height: 1;
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
