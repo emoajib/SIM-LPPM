@@ -6,6 +6,9 @@ import PengabdianIndex from "./modern/PengabdianIndex.jsx";
 import ResearchRevisionIndex from "./modern/ResearchRevisionIndex.jsx";
 import ResearchFinalReportIndex from "./modern/ResearchFinalReportIndex.jsx";
 import ResearchDailyNoteIndex from "./modern/ResearchDailyNoteIndex.jsx";
+import PengabdianRevisionIndex from "./modern/PengabdianRevisionIndex.jsx";
+import PengabdianFinalReportIndex from "./modern/PengabdianFinalReportIndex.jsx";
+import PengabdianDailyNoteIndex from "./modern/PengabdianDailyNoteIndex.jsx";
 
 const PAGE = window.__MODERN_PAGE__ || "banner";
 
@@ -16,6 +19,9 @@ const PAGES = {
     "research-revision-index": ResearchRevisionIndex,
     "research-final-report-index": ResearchFinalReportIndex,
     "research-daily-note-index": ResearchDailyNoteIndex,
+    "pengabdian-revision-index": PengabdianRevisionIndex,
+    "pengabdian-final-report-index": PengabdianFinalReportIndex,
+    "pengabdian-daily-note-index": PengabdianDailyNoteIndex,
 };
 
 function App() {
