@@ -16,6 +16,7 @@ class ModernProposalController
         $status = $request->get('status', 'all');
         $year = $request->get('year', '');
         $type = $request->get('type', 'research');
+        $roleFilter = $request->get('role', 'all');
 
         $query = Proposal::with(['submitter.identity', 'focusArea', 'researchScheme', 'communityServiceScheme'])
             ->whereHas('detailable', fn ($q) => $q->where('detailable_type', $type === 'research' ? 'App\\Models\\Research' : CommunityService::class));
@@ -31,15 +32,21 @@ class ModernProposalController
         }
 
         if (! $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'dekan'])) {
-            $query->where(function ($q) use ($user) {
-                $q->where('submitter_id', $user->id)
-                    ->orWhereHas('teamMembers', fn ($t) => $t->where('user_id', $user->id))
-                    ->orWhere(function ($q2) use ($user) {
-                        if ($user->activeHasRole('kaprodi') && $user->identity?->study_program_id) {
-                            $q2->whereHas('submitter.identity', fn ($si) => $si->where('study_program_id', $user->identity->study_program_id));
-                        }
-                    })
-                    ->orWhereHas('reviewers', fn ($r) => $r->where('user_id', $user->id));
+            $query->where(function ($q) use ($user, $roleFilter) {
+                if ($roleFilter === 'ketua') {
+                    $q->where('submitter_id', $user->id);
+                } elseif ($roleFilter === 'anggota') {
+                    $q->whereHas('teamMembers', fn ($t) => $t->where('user_id', $user->id));
+                } else {
+                    $q->where('submitter_id', $user->id)
+                        ->orWhereHas('teamMembers', fn ($t) => $t->where('user_id', $user->id))
+                        ->orWhere(function ($q2) use ($user) {
+                            if ($user->activeHasRole('kaprodi') && $user->identity?->study_program_id) {
+                                $q2->whereHas('submitter.identity', fn ($si) => $si->where('study_program_id', $user->identity->study_program_id));
+                            }
+                        })
+                        ->orWhereHas('reviewers', fn ($r) => $r->where('user_id', $user->id));
+                }
             });
         }
 

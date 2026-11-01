@@ -19,12 +19,13 @@ export default function PengabdianIndex() {
     const [meta, setMeta] = useState({ current_page: 1, last_page: 1, total: 0 });
     const [search, setSearch] = useState("");
     const [status, setStatus] = useState("all");
+    const [roleFilter, setRoleFilter] = useState("all");
     const [loading, setLoading] = useState(true);
 
     const load = async () => {
         setLoading(true);
         try {
-            const params = new URLSearchParams({ search, status, type: "community-service" });
+            const params = new URLSearchParams({ search, status, type: "community-service", role: roleFilter });
             const res = await fetch(`/research/api/proposals?${params.toString()}`, { credentials: "same-origin" });
             const json = await res.json();
             setProposals(json.data || []);
@@ -36,7 +37,7 @@ export default function PengabdianIndex() {
         }
     };
 
-    useEffect(() => { load(); }, []);
+    useEffect(() => { load(); }, [roleFilter]);
 
     return (
         <div className="space-y-4">
@@ -55,6 +56,15 @@ export default function PengabdianIndex() {
                         placeholder="Cari berdasarkan judul..."
                         className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
                     />
+                    <select
+                        value={roleFilter}
+                        onChange={(e) => setRoleFilter(e.target.value)}
+                        className="border border-slate-300 rounded-lg px-3 py-2 text-sm"
+                    >
+                        <option value="all">Semua Peran</option>
+                        <option value="ketua">Sebagai Ketua</option>
+                        <option value="anggota">Sebagai Anggota</option>
+                    </select>
                     <select
                         value={status}
                         onChange={(e) => setStatus(e.target.value)}
