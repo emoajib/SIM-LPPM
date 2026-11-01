@@ -19,10 +19,20 @@
         .section-table { display: block; }
         .section-table.hidden { display: none; }
         .fab-hidden { display: none !important; }
+        /* Mitigasi: tabs scroll horizontal di mobile */
+        .letter-tabs-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; white-space: nowrap; scrollbar-width: thin; }
+        .letter-tabs-scroll .nav-tabs { flex-wrap: nowrap; }
+        /* Mitigasi: sticky header tabel */
+        .letter-table thead th { position: sticky; top: 0; z-index: 5; background: #fff; }
+        /* Mitigasi: ruang agar FAB tidak menutupi paginasi */
+        .letter-table-wrap { padding-bottom: 5rem; }
+        /* Mitigasi: empty state */
+        .letter-empty { padding: 2rem 1rem; text-align: center; color: #64748b; }
     </style>
     {{-- Tabs + Table --}}
     <div class="card border-0 shadow-sm section-table @if($showForm) hidden @endif" id="sectionTable">
         <div class="card-header bg-transparent border-0 pt-4 pb-0">
+            <div class="letter-tabs-scroll">
             <ul class="nav nav-tabs card-header-tabs">
                 @php
                     $tabs = [
@@ -42,6 +52,7 @@
                 </li>
                 @endforeach
             </ul>
+            </div>
 
             <div class="row align-items-center mt-3">
                 <div class="col">
@@ -60,8 +71,8 @@
             </div>
         </div>
 
-        <div class="table-responsive mt-3">
-            <table class="table table-vcenter card-table table-hover">
+        <div class="table-responsive mt-3 letter-table-wrap">
+            <table class="table table-vcenter card-table table-hover letter-table">
                 <thead>
                     <tr>
                         <th>No</th>
@@ -129,7 +140,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="text-center py-5 text-muted">
+                        <td colspan="7" class="letter-empty">
                             
                             <div>Belum ada surat dengan status ini.</div>
                             <button class="btn btn-primary btn-sm mt-2" wire:click="showSectionForm">

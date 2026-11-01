@@ -28,6 +28,12 @@
 
 {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
 <div>
+    <style>
+        .letter-tabs-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; white-space: nowrap; scrollbar-width: thin; }
+        .letter-tabs-scroll .nav-tabs { flex-wrap: nowrap; }
+        .letter-table thead th { position: sticky; top: 0; z-index: 5; background: #fff; }
+        .letter-table-wrap { padding-bottom: 5rem; }
+    </style>
     <x-tabler.alert />
 
     {{-- Stats Cards --}}
@@ -101,6 +107,7 @@
         {{-- Card Header (Dynamic based on active tab for Livewire reactivity) --}}
         <div class="card-header bg-transparent border-0 pt-4 pb-0">
             <div class="d-flex justify-content-between align-items-center w-100 flex-wrap gap-3">
+                <div class="letter-tabs-scroll">
                 <ul class="nav nav-tabs card-header-tabs">
                     <li class="nav-item">
                         <a class="nav-link @if($activeTab === 'letters' && $statusFilter === 'all') active @endif" href="#" wire:click.prevent="setTab('letters', 'all')">
@@ -148,6 +155,7 @@
                         </a>
                     </li>
                 </ul>
+                </div>
 
                 {{-- Action Buttons inside Livewire DOM --}}
                 @if($activeTab === 'types')
@@ -202,8 +210,8 @@
             </div>
 
             {{-- Letters Table --}}
-            <div class="table-responsive mt-3">
-                <table class="table table-vcenter card-table table-hover">
+            <div class="table-responsive mt-3 letter-table-wrap">
+                <table class="table table-vcenter card-table table-hover letter-table">
                     <thead>
                         <tr>
                             <th>No</th>
@@ -278,8 +286,8 @@
 
         @elseif($activeTab === 'types')
             {{-- Types Table --}}
-            <div class="table-responsive mt-3">
-                <table class="table table-vcenter card-table table-hover">
+            <div class="table-responsive mt-3 letter-table-wrap">
+                <table class="table table-vcenter card-table table-hover letter-table">
                     <thead>
                         <tr>
                             <th>No.</th>
@@ -344,8 +352,8 @@
 
         @elseif($activeTab === 'categories')
             {{-- Categories Table --}}
-            <div class="table-responsive mt-3">
-                <table class="table table-vcenter card-table table-hover">
+            <div class="table-responsive mt-3 letter-table-wrap">
+                <table class="table table-vcenter card-table table-hover letter-table">
                     <thead>
                         <tr>
                             <th>No.</th>
