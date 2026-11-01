@@ -32,6 +32,8 @@ trait WithApproval
         ]);
 
         DB::transaction(function () use ($proposal) {
+            $proposal = Proposal::lockForUpdate()->findOrFail($proposal->id);
+
             $newStatus = match ($this->approvalDecision) {
                 'approved' => ProposalStatus::APPROVED,
                 'rejected' => ProposalStatus::REJECTED,
@@ -71,6 +73,8 @@ trait WithApproval
         ]);
 
         DB::transaction(function () use ($proposal) {
+            $proposal = Proposal::lockForUpdate()->findOrFail($proposal->id);
+
             $newStatus = match ($this->approvalDecision) {
                 'approved' => ProposalStatus::APPROVED,
                 'need_fix' => ProposalStatus::NEED_ASSIGNMENT,
