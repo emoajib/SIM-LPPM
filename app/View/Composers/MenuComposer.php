@@ -468,6 +468,20 @@ class MenuComposer
             ],
         ];
 
+        // Modern theme: jadikan Penelitian & Pengabdian link tunggal (seperti Surat),
+        // navigasi sub-fitur via tab in-page. Classic tetap dropdown.
+        if ($isModern) {
+            foreach ($items as &$__item) {
+                if (in_array($__item['title'] ?? '', ['Penelitian', 'Pengabdian'], true)) {
+                    $__item['route'] = $__item['title'] === 'Penelitian'
+                        ? 'research.proposal.index'
+                        : 'community-service.proposal.index';
+                    unset($__item['children']);
+                }
+            }
+            unset($__item);
+        }
+
         if ($activeRole === 'admin lppm') {
             $newItems = [];
             $collectedItems = [];

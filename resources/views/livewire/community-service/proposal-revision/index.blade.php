@@ -16,6 +16,7 @@
     @endif
 </x-slot:pageSubtitle>
 
+@include('components.partials.module-tabs', ['module'=>'community-service','active'=>'perbaikan'])
 <div>
     <x-tabler.alert />
 

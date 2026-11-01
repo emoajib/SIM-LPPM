@@ -4,6 +4,7 @@
     Kelola buku harian (logbook) aktivitas penelitian Anda.
 </x-slot:pageSubtitle>
 
+@include('components.partials.module-tabs', ['module'=>'research','active'=>'realisasi'])
 <div>
     <x-tabler.alert />
 

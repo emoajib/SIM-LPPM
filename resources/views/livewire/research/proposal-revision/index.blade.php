@@ -16,6 +16,7 @@
     @endif
 </x-slot:pageSubtitle>
 
+@include('components.partials.module-tabs', ['module'=>'research','active'=>'perbaikan'])
 <div>
     <x-tabler.alert />
 
