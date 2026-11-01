@@ -506,6 +506,42 @@
     </div>
     @endif
 
+    <!-- TUGAS ANDA (collapsible, modern) -->
+    <div x-data="{ open: true }" class="sli-main-card" style="margin: 1rem 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" @click="open = !open">
+            <div style="font-weight: 800; font-size: 0.9rem;">📋 Tugas Anda</div>
+            <span x-text="open ? '▲' : '▼'" style="font-size: 0.75rem; opacity: 0.7;"></span>
+        </div>
+        <div x-show="open" x-transition class="mt-3" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            @if (active_has_role('dosen'))
+                <a href="{{ route('research.proposal-revision.index') }}" class="btn btn-sm btn-outline-warning">Perbaikan Usulan</a>
+                <a href="{{ route('research.final-report.index') }}" class="btn btn-sm btn-outline-info">Laporan Akhir</a>
+                <a href="{{ route('research.daily-note.index') }}" class="btn btn-sm btn-outline-secondary">Realisasi Anggaran</a>
+            @endif
+            @if (active_has_role('admin lppm'))
+                <a href="{{ route('admin-lppm.report-approval') }}" class="btn btn-sm btn-outline-warning">Monitoring Laporan</a>
+                <a href="{{ route('admin-lppm.assign-reviewers') }}" class="btn btn-sm btn-outline-info">Penugasan Reviewer</a>
+            @endif
+            @if (active_has_role('kepala lppm'))
+                <a href="{{ route('kepala-lppm.initial-approval') }}" class="btn btn-sm btn-outline-warning">Persetujuan (Awal)</a>
+                <a href="{{ route('kepala-lppm.final-decision') }}" class="btn btn-sm btn-outline-info">Persetujuan (Akhir)</a>
+                <a href="{{ route('kepala-lppm.letter-approval') }}" class="btn btn-sm btn-outline-secondary">Persetujuan Surat</a>
+            @endif
+            @if (active_has_role('dekan'))
+                <a href="{{ route('dekan.proposals.index') }}" class="btn btn-sm btn-outline-warning">Persetujuan Proposal</a>
+                <a href="{{ route('dekan.reports.index') }}" class="btn btn-sm btn-outline-info">Persetujuan Laporan</a>
+            @endif
+            @if (active_has_role('kaprodi'))
+                <a href="{{ route('kaprodi.proposals.index') }}" class="btn btn-sm btn-outline-warning">Persetujuan Kaprodi</a>
+                <a href="{{ route('kaprodi.report-approval') }}" class="btn btn-sm btn-outline-info">Monitoring Laporan</a>
+            @endif
+            @if (active_has_role('reviewer'))
+                <a href="{{ route('review.research') }}" class="btn btn-sm btn-outline-warning">Review Penelitian</a>
+                <a href="{{ route('review.community-service') }}" class="btn btn-sm btn-outline-info">Review Pengabdian</a>
+            @endif
+        </div>
+    </div>
+
     <!-- 3. MAIN WHITE INFOGRAPHIC BOX (MATCHING EXACT UPLOADED IMAGE & AI STUDIO) -->
     <div class="sli-main-card">
         
