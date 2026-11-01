@@ -14,7 +14,7 @@
             data-bs-auto-close="{{ $item['toggle']['data-bs-auto-close'] ?? 'outside' }}"
             role="{{ $item['toggle']['role'] ?? 'button' }}"
             aria-expanded="{{ $item['toggle']['aria-expanded'] ?? 'false' }}">
-            {{ $item['label'] }}
+            {{ $item['label'] ?? $item['title'] ?? '' }}
         </a>
         <div class="dropdown-menu">
             @foreach ($item['children'] ?? [] as $child)
@@ -24,7 +24,7 @@
     </div>
 @else
     <a class="{{ $item['class'] ?? 'dropdown-item' }}{{ $isActive ? ' active' : '' }}" href="{{ $item['href'] ?? '#' }}"
-        @unless(($item['navigate'] ?? true) === false) wire:navigate.hover @endunless @foreach ($item['attributes'] ?? [] as $attribute => $value) {{ $attribute }}="{{ $value }}" @endforeach wire:key="menu-item-{{ $item['label'] ?? $loop->index }}">
+        @unless(($item['navigate'] ?? true) === false) wire:navigate.hover @endunless @foreach ($item['attributes'] ?? [] as $attribute => $value) {{ $attribute }}="{{ $value }}" @endforeach wire:key="menu-item-{{ $item['label'] ?? $item['title'] ?? $loop->index }}">
         @if (false)
             @include('components.layouts.partials.menu.icon', [
                 'name' => $item['prefix_icon'],
@@ -33,7 +33,7 @@
         @elseif (!empty($item['prefix_html']))
             {!! $item['prefix_html'] !!}
         @endif
-    {{ $item['label'] }}
+    {{ $item['label'] ?? $item['title'] ?? '' }}
         @if (!empty($item['badge']))
             <span class="{{ $item['badge']['class'] ?? '' }}">{{ $item['badge']['text'] ?? '' }}</span>
         @endif
