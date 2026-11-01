@@ -114,3 +114,6 @@ opencode.json
 /storage_*.zip
 .env.bak*
 modern-template-sim-lppm.zip
+
+# macOS
+.DS_Store
