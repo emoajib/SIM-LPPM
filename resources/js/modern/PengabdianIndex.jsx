@@ -31,10 +31,11 @@ export default function PengabdianIndex() {
             const res = await fetch(`/research/api/proposals?${params.toString()}`, { credentials: "same-origin", cache: "no-store" });
             if (!res.ok) throw new Error("HTTP " + res.status);
             const json = await res.json();
+            console.log("Pengabdian API:", res.status, json?.data?.length, json?.meta);
             setProposals(json.data || []);
             setMeta(json.meta || meta);
         } catch (e) {
-            console.error(e);
+            console.error("Pengabdian load error:", e);
             setError("Gagal memuat data. Silakan coba lagi.");
         } finally {
             setLoading(false);
