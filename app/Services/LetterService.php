@@ -350,23 +350,35 @@ class LetterService
                 'status' => $lockedLetter->signature_mode === SignatureMode::TTE ? LetterStatus::PUBLISHED->value : LetterStatus::READY_TO_PRINT->value,
             ]);
 
+            // Dispatch PDF generation to queue (non-blocking). Fallback to sync on failure.
             try {
-                return $this->generatePdf($lockedLetter);
-            } catch (\Exception $e) {
-                Log::error('PDF generation failed during letter approval', [
+                \App\Jobs\GenerateLetterPdfJob::dispatch($lockedLetter->id);
+
+                return $lockedLetter->file_path ?? '';
+            } catch (\Throwable $e) {
+                Log::warning('Queue dispatch failed, falling back to sync PDF generation', [
                     'letter_id' => $lockedLetter->id,
                     'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
                 ]);
 
-                $lockedLetter->update([
-                    'status' => LetterStatus::PENDING_APPROVAL->value,
-                    'letter_number' => null,
-                    'published_at' => null,
-                    'file_path' => null,
-                ]);
+                try {
+                    return $this->generatePdf($lockedLetter);
+                } catch (\Exception $ex) {
+                    Log::error('PDF generation failed during letter approval', [
+                        'letter_id' => $lockedLetter->id,
+                        'error' => $ex->getMessage(),
+                        'trace' => $ex->getTraceAsString(),
+                    ]);
 
-                throw $e;
+                    $lockedLetter->update([
+                        'status' => LetterStatus::PENDING_APPROVAL->value,
+                        'letter_number' => null,
+                        'published_at' => null,
+                        'file_path' => null,
+                    ]);
+
+                    throw $ex;
+                }
             }
         });
     }
