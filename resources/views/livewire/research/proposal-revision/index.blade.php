@@ -17,7 +17,9 @@
 </x-slot:pageSubtitle>
 
 <div>
-    @include('components.partials.module-tabs', ['module'=>'research','active'=>'perbaikan'])
+    @if (session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')) === 'modern')
+        @include('components.partials.module-tabs', ['module'=>'research','active'=>'perbaikan'])
+    @endif
     <x-tabler.alert />
 
     <div class="mb-3 row">

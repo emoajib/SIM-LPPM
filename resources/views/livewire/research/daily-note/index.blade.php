@@ -5,7 +5,9 @@
 </x-slot:pageSubtitle>
 
 <div>
-    @include('components.partials.module-tabs', ['module'=>'research','active'=>'realisasi'])
+    @if (session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')) === 'modern')
+        @include('components.partials.module-tabs', ['module'=>'research','active'=>'realisasi'])
+    @endif
     <x-tabler.alert />
 
     <!-- Role-based Tabs (only for regular dosen users) -->

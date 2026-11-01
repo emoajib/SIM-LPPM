@@ -6,7 +6,9 @@
 
 {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
 <div>
-    @include('components.partials.module-tabs', ['module'=>'research','active'=>'laporan'])
+    @if (session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')) === 'modern')
+        @include('components.partials.module-tabs', ['module'=>'research','active'=>'laporan'])
+    @endif
     <x-tabler.alert />
 
     <!-- Role-based Tabs (khusus peran dosen) -->
