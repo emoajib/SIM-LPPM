@@ -12,6 +12,9 @@
     $totalLuaran = $stats['total_luaran'] ?? 0;
     $totalDanaM = $stats['total_dana_m'] ?? 0;
     $totalDeskReview = $stats['total_desk_review'] ?? 0;
+    $totalRevisi = $stats['total_revisi'] ?? 0;
+    $totalLaporanAkhir = $stats['total_laporan_akhir'] ?? 0;
+    $totalRealisasi = $stats['total_realisasi'] ?? 0;
     $gaugeOffset1 = 314 - (314 * $fundingRate / 100);
 
     $academicYears = $stats['academic_years'] ?? [];
@@ -120,8 +123,7 @@
 
         .sli-bulletin-box {
             background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            /* backdrop-filter removed: creates stacking context that covers navbar dropdown */
             border: 1px solid rgba(255, 255, 255, 0.22);
             border-radius: 0.75rem;
             padding: 0.75rem 0.9rem;
@@ -647,13 +649,13 @@
                 </div>
                 <div class="sli-capsule-body">
                     <h5 style="margin: 0; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; color: #cffafe;">
-                        Tahap Pengajuan
+                        Usulan
                     </h5>
                     <div id="sli-cap-val-1" style="font-size: 1.35rem; font-weight: 900; font-family: monospace; margin: 0.25rem 0; color: #ffffff;">
                         {{ $totalUsulan }} <span style="font-size: 0.75rem; font-weight: 400; color: #bae6fd;">Judul</span>
                     </div>
                     <p style="margin: 0; font-size: 0.75rem; color: rgba(255,255,255,0.85); line-height: 1.25;">
-                        Proposal baru masuk & surat bebas plagiat
+                        Proposal baru masuk
                     </p>
                 </div>
             </div>
@@ -668,13 +670,13 @@
                 </div>
                 <div class="sli-capsule-body">
                     <h5 style="margin: 0; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; color: #cffafe;">
-                        Desk Review
+                        Perbaikan Usulan
                     </h5>
                     <div id="sli-cap-val-2" style="font-size: 1.35rem; font-weight: 900; font-family: monospace; margin: 0.25rem 0; color: #ffffff;">
-                        {{ $totalDeskReview }} <span style="font-size: 0.75rem; font-weight: 400; color: #bae6fd;">Lolos</span>
+                        {{ $totalRevisi }} <span style="font-size: 0.75rem; font-weight: 400; color: #bae6fd;">Revisi</span>
                     </div>
                     <p style="margin: 0; font-size: 0.75rem; color: rgba(255,255,255,0.85); line-height: 1.25;">
-                        Penilaian reviewer & telaah etik riset
+                        Revisi usulan yang diminta
                     </p>
                 </div>
             </div>
@@ -689,13 +691,13 @@
                 </div>
                 <div class="sli-capsule-body">
                     <h5 style="margin: 0; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; color: #cffafe;">
-                        Kontrak Didanai
+                        Laporan Akhir
                     </h5>
                     <div id="sli-cap-val-3" style="font-size: 1.35rem; font-weight: 900; font-family: monospace; margin: 0.25rem 0; color: #ffffff;">
-                        {{ $totalDidanai }} <span style="font-size: 0.75rem; font-weight: 400; color: #bae6fd;">SK</span>
+                        {{ $totalLaporanAkhir }} <span style="font-size: 0.75rem; font-weight: 400; color: #bae6fd;">Laporan</span>
                     </div>
                     <p style="margin: 0; font-size: 0.75rem; color: rgba(255,255,255,0.85); line-height: 1.25;">
-                        Surat tugas, SPK bermaterai & termin dana
+                        Laporan akhir usulan
                     </p>
                 </div>
             </div>
@@ -710,13 +712,13 @@
                 </div>
                 <div class="sli-capsule-body">
                     <h5 style="margin: 0; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; color: #cffafe;">
-                        Monev & Luaran
+                        Realisasi Anggaran
                     </h5>
                     <div id="sli-cap-val-4" style="font-size: 1.35rem; font-weight: 900; font-family: monospace; margin: 0.25rem 0; color: #ffffff;">
-                        {{ $totalLuaran }} <span style="font-size: 0.75rem; font-weight: 400; color: #bae6fd;">BASTB</span>
+                        {{ $totalRealisasi }} <span style="font-size: 0.75rem; font-weight: 400; color: #bae6fd;">Catatan</span>
                     </div>
                     <p style="margin: 0; font-size: 0.75rem; color: rgba(255,255,255,0.85); line-height: 1.25;">
-                        Laporan akhir, SPTB 100% & artikel Sinta
+                        Catatan realisasi anggaran
                     </p>
                 </div>
             </div>
@@ -1515,9 +1517,9 @@
         setText('sli-trend-badge', 'Akumulasi: ' + rate + '% Lolos');
 
         setValueUnit('sli-cap-val-1', usulan, 'Judul');
-        setValueUnit('sli-cap-val-2', deskReview, 'Lolos');
-        setValueUnit('sli-cap-val-3', didanai, 'SK');
-        setValueUnit('sli-cap-val-4', luaran, 'BASTB');
+        setValueUnit('sli-cap-val-2', Number(data.revisi) || 0, 'Revisi');
+        setValueUnit('sli-cap-val-3', Number(data.laporan) || 0, 'Laporan');
+        setValueUnit('sli-cap-val-4', Number(data.realisasi) || 0, 'Catatan');
     }
 
     window.sliSetScheme = function(scheme) {

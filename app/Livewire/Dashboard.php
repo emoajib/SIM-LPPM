@@ -2,7 +2,9 @@
 
 namespace App\Livewire;
 
+use App\Models\DailyNote;
 use App\Models\MandatoryOutput;
+use App\Models\ProgressReport;
 use App\Models\Proposal;
 use App\Models\ReviewLog;
 use App\Support\AcademicPeriod;
@@ -138,6 +140,19 @@ class Dashboard extends Component
                 ->pluck('total', 'proposal_id');
         }
 
+        $finalReportCounts = ProgressReport::query()
+            ->whereIn('proposal_id', $proposalIds)
+            ->where('reporting_period', 'final')
+            ->selectRaw('proposal_id, count(*) as total')
+            ->groupBy('proposal_id')
+            ->pluck('total', 'proposal_id');
+
+        $dailyNoteCounts = DailyNote::query()
+            ->whereIn('proposal_id', $proposalIds)
+            ->selectRaw('proposal_id, count(*) as total')
+            ->groupBy('proposal_id')
+            ->pluck('total', 'proposal_id');
+
         $statusDidanai = ['approved', 'completed', 'reviewed'];
         $rows = [];
 
@@ -160,15 +175,28 @@ class Dashboard extends Component
                 'review_penelitian' => 0,
                 'dana_penelitian' => 0.0,
                 'luaran_penelitian' => 0,
+                'revisi_penelitian' => 0,
+                'laporan_penelitian' => 0,
+                'realisasi_penelitian' => 0,
                 'usulan_pengabdian' => 0,
                 'didanai_pengabdian' => 0,
                 'review_pengabdian' => 0,
                 'dana_pengabdian' => 0.0,
                 'luaran_pengabdian' => 0,
+                'revisi_pengabdian' => 0,
+                'laporan_pengabdian' => 0,
+                'realisasi_pengabdian' => 0,
             ];
 
             $rows[$periodKey]['usulan_'.$schemeKey] += 1;
             $rows[$periodKey]['luaran_'.$schemeKey] += (int) ($luaranCounts[$proposal->id] ?? 0);
+
+            $statusValue = $proposal->status instanceof \BackedEnum ? $proposal->status->value : (string) $proposal->status;
+            if (in_array($statusValue, ['revision_needed', 'revision_submitted'], true)) {
+                $rows[$periodKey]['revisi_'.$schemeKey] += 1;
+            }
+            $rows[$periodKey]['laporan_'.$schemeKey] += (int) ($finalReportCounts[$proposal->id] ?? 0);
+            $rows[$periodKey]['realisasi_'.$schemeKey] += (int) ($dailyNoteCounts[$proposal->id] ?? 0);
 
             if (isset($reviewedIds[$proposal->id])) {
                 $rows[$periodKey]['review_'.$schemeKey] += 1;
@@ -205,6 +233,9 @@ class Dashboard extends Component
         $didanai = 0;
         $review = 0;
         $luaran = 0;
+        $revisi = 0;
+        $laporan = 0;
+        $realisasi = 0;
         $dana = 0.0;
 
         foreach ($periods as $row) {
@@ -213,6 +244,9 @@ class Dashboard extends Component
                 $didanai += $row['didanai_'.$suffix];
                 $review += $row['review_'.$suffix];
                 $luaran += $row['luaran_'.$suffix];
+                $revisi += $row['revisi_'.$suffix];
+                $laporan += $row['laporan_'.$suffix];
+                $realisasi += $row['realisasi_'.$suffix];
                 $dana += $row['dana_'.$suffix];
             }
         }
@@ -223,6 +257,9 @@ class Dashboard extends Component
             'desk_review' => $review,
             'dana_m' => round($dana / 1000000, 1),
             'luaran' => $luaran,
+            'revisi' => $revisi,
+            'laporan' => $laporan,
+            'realisasi' => $realisasi,
         ];
     }
 
@@ -252,6 +289,9 @@ class Dashboard extends Component
                     'total_pkm_didanai' => $scheme['pengabdian']['didanai'],
                     'total_luaran' => $scheme['all']['luaran'],
                     'total_dana_m' => $scheme['all']['dana_m'],
+                    'total_revisi' => $scheme['all']['revisi'],
+                    'total_laporan_akhir' => $scheme['all']['laporan'],
+                    'total_realisasi' => $scheme['all']['realisasi'],
                     'scheme' => $scheme,
                     'periods' => $periods,
                     'academic_years' => $academicYears,
@@ -267,6 +307,9 @@ class Dashboard extends Component
                     'desk_review' => 0,
                     'dana_m' => 0,
                     'luaran' => 0,
+                    'revisi' => 0,
+                    'laporan' => 0,
+                    'realisasi' => 0,
                 ];
 
                 return [
