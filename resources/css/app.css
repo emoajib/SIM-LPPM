@@ -447,7 +447,7 @@ body.theme-modern .navbar .nav-item.active > .nav-link {
 body.theme-modern .navbar-expand-md,
 body.theme-modern .navbar-expand-md .navbar {
     position: relative;
-    z-index: 1;
+    z-index: 10000;
 }
 body.theme-modern .navbar .dropdown-menu {
     z-index: 2147483647 !important;
