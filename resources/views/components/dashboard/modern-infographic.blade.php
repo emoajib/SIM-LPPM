@@ -456,6 +456,15 @@
         </div>
     </div>
 
+    @if (active_has_role('dosen'))
+    <!-- QUICK ACTIONS (modern) -->
+    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 1rem 0;">
+        <a href="{{ route('research.proposal.create') }}" class="btn btn-primary btn-sm">+ Buat Usulan Penelitian</a>
+        <a href="{{ route('community-service.proposal.create') }}" class="btn btn-outline-primary btn-sm">+ Buat Usulan Pengabdian</a>
+        <a href="{{ route('dashboard.dosen.surat.dashboard') }}" class="btn btn-outline-secondary btn-sm">📄 Dashboard Surat</a>
+    </div>
+    @endif
+
     <!-- 3. MAIN WHITE INFOGRAPHIC BOX (MATCHING EXACT UPLOADED IMAGE & AI STUDIO) -->
     <div class="sli-main-card">
         
