@@ -160,7 +160,7 @@
             box-shadow: 0 6px 14px rgba(2, 132, 199, 0.25);
         }
         .sli-stat-val {
-            font-size: 1.85rem;
+            font-size: 1.6rem;
             font-weight: 900;
             line-height: 1;
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -434,7 +434,7 @@
 
         <div class="sli-stat-card" style="background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);">
             <div>
-                <div class="sli-stat-val" id="sli-stat-dana">Rp {{ $totalDanaM }} Jt</div>
+                <div class="sli-stat-val" id="sli-stat-dana" style="font-size: 1.4rem;">Rp {{ $totalDanaM }} Jt</div>
                 <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">Realisasi Anggaran</div>
                 <div style="font-size: 0.75rem; opacity: 0.85;">Terserap Hibah LPPM</div>
             </div>
