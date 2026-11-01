@@ -115,7 +115,11 @@ export default function PengabdianIndex() {
                 </div>
 
                 {loading ? (
-                    <div className="text-center py-8 text-slate-500">Memuat...</div>
+                    <div className="animate-pulse space-y-2 py-4">
+                        {[1,2,3,4,5].map((i) => (
+                            <div key={i} className="h-10 bg-slate-100 rounded-lg" />
+                        ))}
+                    </div>
                 ) : error ? (
                     <div className="text-center py-8 text-red-500">
                         <div className="text-3xl mb-2">⚠️</div>

@@ -45,7 +45,7 @@ export default function ResearchDailyNoteIndex() {
                     <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} onKeyDown={(e) => e.key === "Enter" && load()} placeholder="Cari berdasarkan judul..." className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]" />
                     <button onClick={load} className="bg-[#1e3a6e] text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#254b8c] transition">Cari</button>
                 </div>
-                {loading ? <div className="text-center py-8 text-slate-500">Memuat...</div> :
+                {loading ? (<div className="animate-pulse space-y-2 py-4">{[1,2,3,4,5].map((i)=>(<div key={i} className="h-10 bg-slate-100 rounded-lg" />))}</div>) :
                 proposals.length === 0 ? <div className="text-center py-8 text-slate-500"><div className="text-3xl mb-2">📓</div><div className="font-semibold">Belum ada realisasi anggaran.</div></div> :
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">

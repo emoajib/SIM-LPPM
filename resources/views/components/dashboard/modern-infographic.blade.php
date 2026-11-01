@@ -411,7 +411,7 @@
 
     <!-- 2. QUICK STATS CARDS (4 CARDS) -->
     <div class="sli-stat-grid">
-        <div class="sli-stat-card" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+        <div class="sli-stat-card" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);" title="Total usulan penelitian & pengabdian yang masuk (sesuai filter)">
             <div>
                 <div class="sli-stat-val" id="sli-stat-usulan">{{ $totalUsulan }}</div>
                 <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">Total Usulan Masuk</div>
@@ -422,7 +422,7 @@
             </div>
         </div>
 
-        <div class="sli-stat-card" style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);">
+        <div class="sli-stat-card" style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);" title="Jumlah proposal yang didanai (status approved/completed)">
             <div>
                 <div class="sli-stat-val" id="sli-stat-didanai">{{ $totalDidanai }}</div>
                 <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">Proposal Didanai</div>
@@ -433,7 +433,7 @@
             </div>
         </div>
 
-        <div class="sli-stat-card" style="background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);">
+        <div class="sli-stat-card" style="background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);" title="Total dana terserap (Hibah LPPM)">
             <div>
                 <div class="sli-stat-val" id="sli-stat-dana" style="font-size: 1.0rem; white-space: nowrap;">Rp {{ number_format($totalDana, 0, ',', '.') }}</div>
                 <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">Realisasi Anggaran</div>
@@ -444,7 +444,7 @@
             </div>
         </div>
 
-        <div class="sli-stat-card" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%);">
+        <div class="sli-stat-card" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%);" title="Jumlah luaran & publikasi terdata (institusi)">
             <div>
                 <div class="sli-stat-val" id="sli-stat-luaran">{{ $totalLuaran }}</div>
                 <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">Luaran & Publikasi</div>
