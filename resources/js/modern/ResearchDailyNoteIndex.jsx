@@ -5,6 +5,7 @@ export default function ResearchDailyNoteIndex() {
     const [meta, setMeta] = useState({ current_page: 1, last_page: 1, total: 0 });
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     const tabs = [
         { label: "Usulan", href: "/research" },
@@ -16,9 +17,11 @@ export default function ResearchDailyNoteIndex() {
 
     const load = async () => {
         setLoading(true);
+        setError(null);
         try {
-            const params = new URLSearchParams({ search, type: "research", submodule: "daily-note" });
-            const res = await fetch(`/research/api/proposals?${params.toString()}`, { credentials: "same-origin" });
+            const params = new URLSearchParams({ search, type: "research", submodule: "daily-note", _: Date.now() });
+            const res = await fetch(`/research/api/proposals?${params.toString()}`, { credentials: "same-origin", cache: "no-store" });
+            if (!res.ok) throw new Error("HTTP " + res.status);
             const json = await res.json();
             setProposals(json.data || []);
             setMeta(json.meta || meta);

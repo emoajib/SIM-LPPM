@@ -10,6 +10,7 @@ export default function ResearchRevisionIndex() {
     const [meta, setMeta] = useState({ current_page: 1, last_page: 1, total: 0 });
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     const tabs = [
         { label: "Usulan", href: "/research" },
@@ -21,14 +22,17 @@ export default function ResearchRevisionIndex() {
 
     const load = async () => {
         setLoading(true);
+        setError(null);
         try {
-            const params = new URLSearchParams({ search, type: "research", submodule: "revision" });
-            const res = await fetch(`/research/api/proposals?${params.toString()}`, { credentials: "same-origin" });
+            const params = new URLSearchParams({ search, type: "research", submodule: "revision", _: Date.now() });
+            const res = await fetch(`/research/api/proposals?${params.toString()}`, { credentials: "same-origin", cache: "no-store" });
+            if (!res.ok) throw new Error("HTTP " + res.status);
             const json = await res.json();
             setProposals(json.data || []);
             setMeta(json.meta || meta);
         } catch (e) {
             console.error(e);
+            setError("Gagal memuat data. Silakan coba lagi.");
         } finally {
             setLoading(false);
         }
@@ -63,6 +67,12 @@ export default function ResearchRevisionIndex() {
 
                 {loading ? (
                     <div className="text-center py-8 text-slate-500">Memuat...</div>
+                ) : error ? (
+                    <div className="text-center py-8 text-red-500">
+                        <div className="text-3xl mb-2">⚠️</div>
+                        <div className="font-semibold">{error}</div>
+                        <button onClick={load} className="mt-3 bg-[#1e3a6e] text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#254b8c] transition">Coba lagi</button>
+                    </div>
                 ) : proposals.length === 0 ? (
                     <div className="text-center py-8 text-slate-500">
                         <div className="text-3xl mb-2">📋</div>
