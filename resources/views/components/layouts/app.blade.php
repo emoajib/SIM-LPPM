@@ -34,8 +34,15 @@
         @include('components.layouts.header')
         @endpersist
         <div class="page-wrapper">
+            @php
+                $modernPageMapEarly = [
+                    'research.proposal.index' => 'proposals-index',
+                    'community-service.proposal.index' => 'pengabdian-index',
+                ];
+                $modernPageEarly = $modernPageMapEarly[request()->route()?->getName() ?? ''] ?? null;
+            @endphp
             <!-- BEGIN PAGE HEADER -->
-            @if (isset($pageTitle))
+            @if (isset($pageTitle) && !$modernPageEarly)
                 <x-page-header :title="$pageTitle" :subtitle="$pageSubtitle ?? null">
                     {{ $pageHeader ?? '' }}
                     @isset($pageActions)
