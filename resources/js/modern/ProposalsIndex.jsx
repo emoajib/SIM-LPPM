@@ -39,11 +39,40 @@ export default function ProposalsIndex() {
 
     useEffect(() => { load(); }, [roleFilter]);
 
+    const tabs = [
+        { label: "Usulan", href: "/research" },
+        { label: "Perbaikan Usulan", href: "/research/proposal-revision" },
+        { label: "Laporan Akhir", href: "/research/final-report" },
+        { label: "Realisasi Anggaran", href: "/research/daily-note" },
+    ];
+    const currentPath = window.location.pathname.replace(/\/$/, "");
+
     return (
         <div className="space-y-4">
             <div className="bg-gradient-to-r from-[#11244e] via-[#1e3a6e] to-[#254b8c] text-white rounded-xl p-5 shadow-md">
                 <h2 className="text-xl font-black tracking-tight">Daftar Penelitian</h2>
 
+            </div>
+
+            <div className="bg-white border border-slate-200 rounded-xl shadow-sm px-4 pt-3">
+                <div className="flex gap-1 overflow-x-auto">
+                    {tabs.map((t) => {
+                        const active = currentPath === t.href || currentPath.startsWith(t.href + "/");
+                        return (
+                            <a
+                                key={t.href}
+                                href={t.href}
+                                className={`px-4 py-2 text-sm font-bold whitespace-nowrap border-b-2 transition ${
+                                    active
+                                        ? "border-[#1e3a6e] text-[#1e3a6e]"
+                                        : "border-transparent text-slate-500 hover:text-slate-700"
+                                }`}
+                            >
+                                {t.label}
+                            </a>
+                        );
+                    })}
+                </div>
             </div>
 
             <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4">
@@ -88,11 +117,15 @@ export default function ProposalsIndex() {
                 {loading ? (
                     <div className="text-center py-8 text-slate-500">Memuat...</div>
                 ) : proposals.length === 0 ? (
-                    <div className="text-center py-8 text-slate-500">Tidak ada data penelitian.</div>
+                    <div className="text-center py-8 text-slate-500">
+                        <div className="text-3xl mb-2">📋</div>
+                        <div className="font-semibold">Tidak ada data penelitian.</div>
+                        <div className="text-xs mt-1">Belum ada usulan yang tercatat.</div>
+                    </div>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm">
-                            <thead className="bg-slate-50 text-slate-600 text-xs uppercase">
+                            <thead className="bg-slate-50 text-slate-600 text-xs uppercase sticky top-0 z-10">
                                 <tr>
                                     <th className="text-left px-3 py-2">Judul</th>
                                     <th className="text-left px-3 py-2">Author</th>
