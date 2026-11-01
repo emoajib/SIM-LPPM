@@ -334,6 +334,17 @@ body.theme-modern .btn-primary {
     background: linear-gradient(135deg, #1e3a6e 0%, #254b8c 100%);
     border: none;
     box-shadow: 0 4px 14px rgba(30, 58, 110, 0.35);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+body.theme-modern .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(30, 58, 110, 0.45);
+}
+body.theme-modern .sli-stat-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+body.theme-modern .sli-stat-card:hover {
+    transform: translateY(-4px) scale(1.01);
 }
 body.theme-modern .glow-cyan-text {
     color: #1e3a6e;
