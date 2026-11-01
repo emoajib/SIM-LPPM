@@ -470,7 +470,8 @@ class MenuComposer
 
         // Modern theme: jadikan Penelitian & Pengabdian link tunggal (seperti Surat),
         // navigasi sub-fitur via tab in-page. Classic tetap dropdown.
-        if ($isModern) {
+        $isModernHere = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')) === 'modern';
+        if ($isModernHere) {
             foreach ($items as &$__item) {
                 if (in_array($__item['title'] ?? '', ['Penelitian', 'Pengabdian'], true)) {
                     $__item['route'] = $__item['title'] === 'Penelitian'
