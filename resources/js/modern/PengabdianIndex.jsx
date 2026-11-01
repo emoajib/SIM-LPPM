@@ -29,7 +29,7 @@ export default function PengabdianIndex() {
         setError(null);
         try {
             const params = new URLSearchParams({ search, status, type: "community-service", role: roleFilter, _: Date.now() });
-            const res = await fetch(`/research/api/proposals?${params.toString()}`, { credentials: "same-origin", cache: "no-store" });
+            const res = await fetch(`/research/api/v1/proposals?${params.toString()}`, { credentials: "same-origin", cache: "no-store" });
             if (!res.ok) throw new Error("HTTP " + res.status);
             const json = await res.json();
             console.log("Pengabdian API:", res.status, json?.data?.length, json?.meta);

@@ -20,7 +20,7 @@ export default function PengabdianDailyNoteIndex() {
         setError(null);
         try {
             const params = new URLSearchParams({ search, type: "community-service", submodule: "daily-note", _: Date.now() });
-            const res = await fetch(`/research/api/proposals?${params.toString()}`, { credentials: "same-origin", cache: "no-store" });
+            const res = await fetch(`/research/api/v1/proposals?${params.toString()}`, { credentials: "same-origin", cache: "no-store" });
             if (!res.ok) throw new Error("HTTP " + res.status);
             const json = await res.json();
             setProposals(json.data || []);

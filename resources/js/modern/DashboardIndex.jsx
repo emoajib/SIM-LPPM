@@ -43,8 +43,8 @@ export default function DashboardIndex() {
     const loadStats = async () => {
         try {
             const [resResearch, resCommunity] = await Promise.all([
-                fetch(`/research/api/proposals?type=research`, { credentials: "same-origin" }),
-                fetch(`/research/api/proposals?type=community-service`, { credentials: "same-origin" }),
+                fetch(`/research/api/v1/proposals?type=research`, { credentials: "same-origin" }),
+                fetch(`/research/api/v1/proposals?type=community-service`, { credentials: "same-origin" }),
             ]);
             const jsonResearch = await resResearch.json();
             const jsonCommunity = await resCommunity.json();
@@ -63,7 +63,7 @@ export default function DashboardIndex() {
         setLoading(true);
         try {
             const params = new URLSearchParams({ search, status, type: "research" });
-            const res = await fetch(`/research/api/proposals?${params.toString()}`, { credentials: "same-origin" });
+            const res = await fetch(`/research/api/v1/proposals?${params.toString()}`, { credentials: "same-origin" });
             const json = await res.json();
             setProposals(json.data || []);
             setMeta(json.meta || meta);

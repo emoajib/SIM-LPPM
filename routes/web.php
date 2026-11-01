@@ -190,6 +190,11 @@ Route::middleware(['auth'])->group(function () {
             ->middleware('throttle:60,1')
             ->name('proposal.api');
 
+        // v1 (recommended)
+        Route::get('api/v1/proposals', [ModernProposalController::class, 'index'])
+            ->middleware('throttle:60,1')
+            ->name('proposal.api.v1');
+
         // Only dosen can create proposals
         Route::get('proposal/create', Create::class)
             ->middleware('role:dosen')
