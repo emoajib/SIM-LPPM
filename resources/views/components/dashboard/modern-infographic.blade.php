@@ -435,7 +435,7 @@
 
         <div class="sli-stat-card" style="background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);">
             <div>
-                <div class="sli-stat-val" id="sli-stat-dana" style="font-size: 1.2rem;">Rp {{ number_format($totalDana, 0, ',', '.') }}</div>
+                <div class="sli-stat-val" id="sli-stat-dana" style="font-size: 1.0rem; white-space: nowrap;">Rp {{ number_format($totalDana, 0, ',', '.') }}</div>
                 <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">Realisasi Anggaran</div>
                 <div style="font-size: 0.75rem; opacity: 0.85;">Terserap Hibah LPPM</div>
             </div>
