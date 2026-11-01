@@ -118,6 +118,25 @@ class MenuComposer
                     ],
                 ],
             ],
+            // Persuratan - dipromosikan ke menu primer (sejajar Dashboard/Panduan/Penelitian/Pengabdian)
+            ...($letteringActive ? [[
+                'title' => 'Surat',
+                'icon' => 'file-text',
+                'route' => 'dashboard.dosen.surat.dashboard',
+                'roles' => ['dosen'],
+            ]] : []),
+            ...($letteringActive ? [[
+                'title' => 'Persetujuan Surat',
+                'icon' => 'file-text',
+                'route' => 'kepala-lppm.letter-approval',
+                'roles' => ['kepala lppm'],
+            ]] : []),
+            ...($letteringActive ? [[
+                'title' => 'Surat',
+                'icon' => 'file-text',
+                'route' => 'admin-lppm.letters.dashboard',
+                'roles' => ['admin lppm'],
+            ]] : []),
             ...($kaprodiValidationActive ? [[
                 'title' => 'Persetujuan Kaprodi',
                 'icon' => 'shield-check',
@@ -192,27 +211,6 @@ class MenuComposer
                 'route' => 'kepala-lppm.financial-approval',
                 'roles' => ['kepala lppm', 'admin lppm'],
             ],
-            ...($letteringActive ? [[
-                'title' => 'Persetujuan Surat',
-                'icon' => 'file-text',
-                'route' => 'kepala-lppm.letter-approval',
-                'roles' => ['kepala lppm'],
-            ]] : []),
-            // Dosen - Persuratan
-            ...($letteringActive ? [[
-                'title' => 'Surat',
-                'icon' => 'file-text',
-                'route' => 'dashboard.dosen.surat.dashboard',
-                'roles' => ['dosen'],
-            ]] : []),
-            // Admin LPPM - Persuratan
-            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
-            ...($letteringActive ? [[
-                'title' => 'Surat',
-                'icon' => 'file-text',
-                'route' => 'admin-lppm.letters.dashboard',
-                'roles' => ['admin lppm'],
-            ]] : []),
             // Admin LPPM - Reviewer Management Group
             [
                 'title' => 'Reviewer',
