@@ -579,10 +579,10 @@ body.theme-modern .dropdown {
   overflow: visible !important;
 }
 
-/* Ensure header creates stacking context above page content */
+/* Page header (banner) stays below navbar dropdowns */
 body.theme-modern .page-header {
   position: relative !important;
-  z-index: var(--sli-z-dropdown) !important;
+  z-index: 1 !important;
 }
 
 body.theme-modern .dropdown {
