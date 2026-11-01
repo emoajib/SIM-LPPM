@@ -187,6 +187,7 @@ Route::middleware(['auth'])->group(function () {
 
         // Modern theme (React) data endpoint
         Route::get('api/proposals', [ModernProposalController::class, 'index'])
+            ->middleware('throttle:60,1')
             ->name('proposal.api');
 
         // Only dosen can create proposals
