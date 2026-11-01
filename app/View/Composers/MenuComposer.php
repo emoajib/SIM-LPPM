@@ -558,27 +558,39 @@ class MenuComposer
             $items = $newItems;
         }
 
+        // Format (role-filter + href resolution) FIRST, so overflow is computed
+        // on the items actually visible to this user (avoids empty "Lainnya").
+        $formatted = array_values(array_filter(array_map(
+            fn (array $item) => $this->formatItem($item, $user),
+            $items,
+        )));
+
         // Modern theme only: collapse secondary modules into a "Lainnya" dropdown
         // so primary modules stay visible without long/deep dropdowns.
         // Classic theme keeps the existing flat layout untouched.
         $isModern = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')) === 'modern';
-        if ($isModern && count($items) > 8) {
-            $primary = array_slice($items, 0, 8);
-            $overflow = array_slice($items, 8);
+        if ($isModern && count($formatted) > 8) {
+            $primary = array_slice($formatted, 0, 8);
+            $overflow = array_slice($formatted, 8);
             if (! empty($overflow)) {
                 $primary[] = [
+                    'type' => 'dropdown',
                     'title' => 'Lainnya',
+                    'href' => '#',
                     'icon' => 'dots',
+                    'active' => false,
+                    'navigate' => true,
+                    'dropdown' => [
+                        'auto_close' => 'outside',
+                        'items' => $overflow,
+                    ],
                     'children' => $overflow,
                 ];
             }
-            $items = $primary;
+            $formatted = $primary;
         }
 
-        return array_values(array_filter(array_map(
-            fn (array $item) => $this->formatItem($item, $user),
-            $items,
-        )));
+        return $formatted;
     }
 
     protected function formatItem(array $item, ?User $user): ?array
