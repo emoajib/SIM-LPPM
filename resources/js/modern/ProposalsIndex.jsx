@@ -54,6 +54,10 @@ export default function ProposalsIndex() {
 
     return (
         <div className="space-y-4">
+            <div className="text-xs text-slate-500 mb-2">
+                <a href="/dashboard" className="hover:underline">Dashboard</a> <span className="mx-1">/</span> <span className="font-semibold text-slate-700">Penelitian</span>
+            </div>
+
             <div className="bg-white border border-slate-200 rounded-xl shadow-sm px-4 pt-3">
                 <div className="flex gap-1 overflow-x-auto">
                     {tabs.map((t) => {
