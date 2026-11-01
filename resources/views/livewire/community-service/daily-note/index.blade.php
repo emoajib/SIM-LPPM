@@ -4,8 +4,8 @@
     Kelola buku harian (logbook) aktivitas pengabdian masyarakat Anda.
 </x-slot:pageSubtitle>
 
-@include('components.partials.module-tabs', ['module'=>'community-service','active'=>'realisasi'])
 <div>
+    @include('components.partials.module-tabs', ['module'=>'community-service','active'=>'realisasi'])
     <x-tabler.alert />
 
     <!-- Role-based Tabs -->

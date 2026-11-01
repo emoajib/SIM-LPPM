@@ -5,8 +5,8 @@
 </x-slot:pageSubtitle>
 
 {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
-@include('components.partials.module-tabs', ['module'=>'research','active'=>'laporan'])
 <div>
+    @include('components.partials.module-tabs', ['module'=>'research','active'=>'laporan'])
     <x-tabler.alert />
 
     <!-- Role-based Tabs (khusus peran dosen) -->
