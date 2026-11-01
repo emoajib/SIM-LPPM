@@ -71,6 +71,7 @@
                         @php
                             $modernPageMap = [
                                 'research.proposal.index' => 'proposals-index',
+                                'research.proposal-revision.index' => 'research-revision-index',
                                 'community-service.proposal.index' => 'pengabdian-index',
                             ];
                             $modernPage = $modernPageMap[request()->route()?->getName() ?? ''] ?? null;
