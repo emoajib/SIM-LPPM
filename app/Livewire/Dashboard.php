@@ -255,6 +255,7 @@ class Dashboard extends Component
             'usulan' => $usulan,
             'didanai' => $didanai,
             'desk_review' => $review,
+            'dana' => $dana,
             'dana_m' => round($dana / 1000000, 1),
             'luaran' => $luaran,
             'revisi' => $revisi,
@@ -288,6 +289,7 @@ class Dashboard extends Component
                     'total_pkm' => $scheme['pengabdian']['usulan'],
                     'total_pkm_didanai' => $scheme['pengabdian']['didanai'],
                     'total_luaran' => $scheme['all']['luaran'],
+                    'total_dana' => $scheme['all']['dana'],
                     'total_dana_m' => $scheme['all']['dana_m'],
                     'total_revisi' => $scheme['all']['revisi'],
                     'total_laporan_akhir' => $scheme['all']['laporan'],
@@ -319,6 +321,7 @@ class Dashboard extends Component
                     'total_pkm' => 0,
                     'total_pkm_didanai' => 0,
                     'total_luaran' => 0,
+                    'total_dana' => 0,
                     'total_dana_m' => 0,
                     'scheme' => [
                         'all' => $emptyScheme,

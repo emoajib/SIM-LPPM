@@ -11,6 +11,7 @@
     $fundingRate = $totalUsulan > 0 ? round(($totalDidanai / $totalUsulan) * 100, 1) : 0;
     $totalLuaran = $stats['total_luaran'] ?? 0;
     $totalDanaM = $stats['total_dana_m'] ?? 0;
+    $totalDana = $stats['total_dana'] ?? 0;
     $totalDeskReview = $stats['total_desk_review'] ?? 0;
     $totalRevisi = $stats['total_revisi'] ?? 0;
     $totalLaporanAkhir = $stats['total_laporan_akhir'] ?? 0;
@@ -434,7 +435,7 @@
 
         <div class="sli-stat-card" style="background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);">
             <div>
-                <div class="sli-stat-val" id="sli-stat-dana" style="font-size: 1.4rem;">Rp {{ $totalDanaM }} Jt</div>
+                <div class="sli-stat-val" id="sli-stat-dana" style="font-size: 1.2rem;">Rp {{ number_format($totalDana, 0, ',', '.') }}</div>
                 <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">Realisasi Anggaran</div>
                 <div style="font-size: 0.75rem; opacity: 0.85;">Terserap Hibah LPPM</div>
             </div>
@@ -1454,6 +1455,10 @@
         const n = Number(value) || 0;
         return 'Rp ' + n.toFixed(1).replace(/\.0$/, '') + ' Jt';
     }
+    function formatRupiah(value) {
+        const n = Math.round(Number(value) || 0);
+        return 'Rp ' + n.toLocaleString('id-ID');
+    }
 
     function updateKpiForScheme() {
         const rows = getFilteredPeriods();
@@ -1495,7 +1500,7 @@
         setText('sli-stat-usulan', usulan);
         setText('sli-stat-didanai', didanai);
         setText('sli-stat-rate', rate + '% Rasio Lolos Seleksi');
-        setText('sli-stat-dana', formatDanaJuta(dana / 1000000));
+        setText('sli-stat-dana', formatRupiah(dana));
         setText('sli-stat-luaran', luaran);
         setText('sli-stat-scope', currentSchemeLabel() + ' · ' + currentPeriodLabel());
         setText('sli-kpi-period', (currentAcademicYear === 'all' && currentSemester === 'all') ? 'Semua Periode' : currentPeriodLabel());
