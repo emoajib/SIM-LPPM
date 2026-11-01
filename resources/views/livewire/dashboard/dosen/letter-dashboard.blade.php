@@ -20,14 +20,17 @@
         .section-table.hidden { display: none; }
         .fab-hidden { display: none !important; }
         /* Mitigasi: tabs scroll horizontal di mobile */
-        .letter-tabs-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; white-space: nowrap; scrollbar-width: thin; }
-        .letter-tabs-scroll .nav-tabs { flex-wrap: nowrap; }
+        .letter-tabs-scroll { max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        .letter-tabs-scroll::-webkit-scrollbar { display: none; }
+        .letter-tabs-scroll .nav-tabs { flex-wrap: nowrap !important; min-width: max-content; border-bottom: 1px solid #e2e8f0; }
+        .letter-tabs-scroll .nav-link { white-space: nowrap; padding: 0.5rem 0.85rem; }
         /* Mitigasi: sticky header tabel */
-        .letter-table thead th { position: sticky; top: 0; z-index: 5; background: #fff; }
+        .letter-table thead th { position: sticky; top: 0; z-index: 10; background: #fff; box-shadow: 0 1px 0 #e2e8f0; }
         /* Mitigasi: ruang agar FAB tidak menutupi paginasi */
         .letter-table-wrap { padding-bottom: 5rem; }
         /* Mitigasi: empty state */
-        .letter-empty { padding: 2rem 1rem; text-align: center; color: #64748b; }
+        .letter-empty { padding: 3rem 1rem; text-align: center; color: #64748b; }
+        .letter-empty svg { width: 48px; height: 48px; margin-bottom: 0.75rem; opacity: 0.5; }
     </style>
     {{-- Tabs + Table --}}
     <div class="card border-0 shadow-sm section-table @if($showForm) hidden @endif" id="sectionTable">
@@ -54,7 +57,7 @@
             </ul>
             </div>
 
-            <div class="row align-items-center mt-3">
+            <div class="row align-items-center mt-4">
                 <div class="col">
                     <div class="input-icon">
                         <span class="input-icon-addon">
@@ -141,9 +144,10 @@
                     @empty
                     <tr>
                         <td colspan="7" class="letter-empty">
-                            
-                            <div>Belum ada surat dengan status ini.</div>
-                            <button class="btn btn-primary btn-sm mt-2" wire:click="showSectionForm">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            <div class="fw-semibold mb-1">Belum ada surat dengan status ini.</div>
+                            <div class="small mb-3">Ajukan surat baru untuk memulai.</div>
+                            <button class="btn btn-primary btn-sm" wire:click="showSectionForm">
                                  Ajukan Surat Baru
                             </button>
                         </td>
@@ -158,9 +162,11 @@
     </div>
 
     {{-- FAB --}}
+    @if($letters->count())
     <button class="btn btn-primary btn-fab shadow-lg @if($showForm) fab-hidden @endif" id="fabAjukan" title="Ajukan Surat Baru" wire:click="showSectionForm">
         
     </button>
+    @endif
 
     {{-- Form --}}
     <div class="card border-0 shadow-sm section-form @if($showForm) active @endif" id="sectionForm">
