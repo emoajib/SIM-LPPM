@@ -40,9 +40,20 @@
                     'community-service.proposal.index' => 'pengabdian-index',
                 ];
                 $modernPageEarly = $modernPageMapEarly[request()->route()?->getName() ?? ''] ?? null;
+                // Modern theme: sembunyikan page header di halaman sub-modul Penelitian/Pengabdian
+                // (tab in-page sudah menjadi navigasi konteks)
+                $hideHeaderRoutes = [
+                    'research.proposal-revision.index',
+                    'research.final-report.index',
+                    'research.daily-note.index',
+                    'community-service.proposal-revision.index',
+                    'community-service.final-report.index',
+                    'community-service.daily-note.index',
+                ];
+                $hideHeaderModern = $isModernTheme && in_array(request()->route()?->getName() ?? '', $hideHeaderRoutes, true);
             @endphp
             <!-- BEGIN PAGE HEADER -->
-            @if (isset($pageTitle) && !$modernPageEarly)
+            @if (isset($pageTitle) && !$modernPageEarly && !$hideHeaderModern)
                 <x-page-header :title="$pageTitle" :subtitle="$pageSubtitle ?? null">
                     {{ $pageHeader ?? '' }}
                     @isset($pageActions)
