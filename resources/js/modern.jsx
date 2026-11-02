@@ -33,12 +33,19 @@ function App() {
 function mountModern() {
     const rootEl = document.getElementById("modern-root");
     if (!rootEl) return;
-    // avoid double mount
-    if (rootEl._reactRoot) return;
+    console.log("mountModern", window.__MODERN_PAGE__, rootEl);
+    // avoid double mount on same element
+    if (rootEl._reactRoot) {
+        rootEl._reactRoot.render(<App />);
+        return;
+    }
     const root = createRoot(rootEl);
     rootEl._reactRoot = root;
     root.render(<App />);
 }
 
 mountModern();
-document.addEventListener("livewire:navigated", mountModern);
+document.addEventListener("livewire:navigated", () => {
+    console.log("livewire:navigated fired", window.__MODERN_PAGE__);
+    mountModern();
+});
