@@ -216,7 +216,7 @@
                             <td>
                                 <div class="fw-medium">{{ $proposal->submitter?->name ?? '-' }}</div>
                                 <div class="text-secondary small">
-                                    NIDN: {{ $proposal->submitter?->identity?->nidn ?? $proposal->submitter?->identity?->identity_id ?? '-' }}
+                                    NIDN: {{ $proposal->submitter?->identity?->identity_id ?? '-' }}
                                 </div>
                                 <div class="text-muted small">
                                     {{ $proposal->submitter?->identity?->studyProgram?->name ?? $proposal->submitter?->identity?->faculty?->name ?? '-' }}

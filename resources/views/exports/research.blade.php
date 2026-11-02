@@ -55,7 +55,7 @@
                 <td style="border: 1px solid #000000; font-weight: bold; vertical-align: top;">{{ $proposal->title }}</td>
                 <td style="border: 1px solid #000000; vertical-align: top;">
                     {{ $proposal->submitter?->name ?? '-' }}
-                    @if($proposal->submitter?->identity?->nidn) (NIDN: {{ $proposal->submitter->identity->nidn }}) @endif
+                    @if($proposal->submitter?->identity?->identity_id) (NIDN: {{ $proposal->submitter->identity->identity_id }}) @endif
                 </td>
                 <td style="border: 1px solid #000000; vertical-align: top;">
                     {{ $proposal->submitter?->identity?->faculty?->name ?? '-' }} /

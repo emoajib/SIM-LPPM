@@ -359,7 +359,7 @@
                                                 </div>
                                                 <div class="text-muted small">
                                                     {{ $proposal->submitter->name }}
-                                                    ({{ $proposal->submitter->identity?->nidn ?? '-' }})
+                                                    ({{ $proposal->submitter->identity?->identity_id ?? '-' }})
                                                 </div>
                                             </div>
                                         </div>

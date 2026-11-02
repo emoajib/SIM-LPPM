@@ -40,7 +40,7 @@
                                     @php
                                         $title = $prop->title ?? 'Judul Usulan Penelitian';
                                         $submitterName = $prop->submitter?->name ?? $user->name ?? 'MUJIBUL HAKIM';
-                                        $nidn = $prop->submitter?->identity?->nidn ?? $user->identity?->nidn ?? '0608068901';
+                                        $nidn = $prop->submitter?->identity?->identity_id ?? $user->identity?->identity_id ?? '0608068901';
                                         $cat = $prop->category_label ?? ($prop->detailable_type === 'App\Models\CommunityService' ? 'Pengabdian Masyarakat' : 'Penelitian Terapan');
                                         $focus = $prop->focus_label ?? ($prop->focusArea?->name ?? 'Sosial Humaniora');
                                         $year = $prop->year ?? ($prop->created_at ? $prop->created_at->format('Y') : date('Y'));
@@ -106,7 +106,7 @@
                             <x-user-avatar :user="$user" size="avatar-xl" class="shadow-sm" />
                         </div>
                         <h4 class="card-title fw-bold text-dark mb-0">{{ $user->name ?? 'Pengguna' }}</h4>
-                        <div class="text-secondary small">NIDN: {{ $user->identity?->nidn ?? '-' }}</div>
+                        <div class="text-secondary small">NIDN: {{ $user->identity?->identity_id ?? '-' }}</div>
                         <div class="badge bg-green-lt mt-1">{{ format_role_name($roleName) }}</div>
 
                         <div class="text-muted small mt-2 pt-2 border-top border-secondary-subtle text-start">

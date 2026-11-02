@@ -12,7 +12,7 @@
                 <x-user-avatar :user="$user" size="avatar-md" class="shadow-sm" />
                 <div class="min-w-0">
                     <h6 class="fw-bold mb-0 text-uppercase small text-truncate">{{ $user->name ?? 'Pengguna' }}</h6>
-                    <div class="text-muted" style="font-size:10px; white-space:pre-line;">{{ $user->identity?->nidn ?? '-' }} · {{ $user->identity?->functional_position ?? '-' }}</div>
+                    <div class="text-muted" style="font-size:10px; white-space:pre-line;">{{ $user->identity?->identity_id ?? '-' }} · {{ $user->identity?->functional_position ?? '-' }}</div>
                     <span class="badge bg-success-lt text-success mt-1" style="font-size:9px;">Aktif</span>
                 </div>
             </div>
