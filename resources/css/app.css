@@ -346,6 +346,18 @@ body.theme-modern .sli-stat-card {
 body.theme-modern .sli-stat-card:hover {
     transform: translateY(-4px) scale(1.01);
 }
+
+/* Tab transition (modern) */
+body.theme-modern .modern-tab {
+    transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+body.theme-modern .modern-tab-content {
+    animation: fadeIn 0.25s ease;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 body.theme-modern .glow-cyan-text {
     color: #1e3a6e;
     text-shadow: none;

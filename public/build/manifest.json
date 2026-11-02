@@ -68,7 +68,7 @@
     "src": "node_modules/@tabler/icons-webfont/dist/fonts/tabler-icons.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app-DTYlEUYx.css",
+    "file": "assets/app-Co2gTZPK.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "names": [
@@ -85,7 +85,7 @@
     ]
   },
   "resources/js/modern.jsx": {
-    "file": "assets/modern-BEZXcQWH.js",
+    "file": "assets/modern-DROmT8wV.js",
     "name": "modern",
     "src": "resources/js/modern.jsx",
     "isEntry": true

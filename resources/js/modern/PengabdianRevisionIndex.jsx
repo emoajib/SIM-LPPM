@@ -43,14 +43,14 @@ export default function PengabdianRevisionIndex() {
     return (
         <div className="space-y-4">
             <div className="bg-white border border-slate-200 rounded-xl shadow-sm px-4 pt-3">
-                <div className="flex gap-1 overflow-x-auto">
+                <div className="flex gap-1 overflow-x-auto modern-tab">
                     {tabs.map((t) => {
                         const active = currentPath === t.href || currentPath.startsWith(t.href + "/");
                         return <a key={t.href} href={t.href} className={`px-4 py-2 text-sm font-bold whitespace-nowrap border-b-2 transition ${active ? "border-[#1e3a6e] text-[#1e3a6e]" : "border-transparent text-slate-500 hover:text-slate-700"}`}>{t.label}</a>;
                     })}
                 </div>
             </div>
-            <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4">
+            <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 modern-tab-content">
                 <div className="flex flex-col md:flex-row gap-3 mb-4">
                     <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} onKeyDown={(e) => e.key === "Enter" && load()} placeholder="Cari berdasarkan judul..." className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]" />
                     <button onClick={load} className="bg-[#1e3a6e] text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#254b8c] transition">Cari</button>
