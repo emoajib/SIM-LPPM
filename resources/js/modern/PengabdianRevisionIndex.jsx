@@ -20,6 +20,7 @@ export default function PengabdianRevisionIndex() {
         ...(isVerifier ? [{ label: "Verifikasi Luaran", href: "/iku/verification" }] : []),
     ];
     const currentPath = window.location.pathname.replace(/\/$/, "");
+    const [showVerif, setShowVerif] = useState(false);
     const isVerifier = (window.__USER_ROLES__ || []).some((r) => ["admin lppm","kepala lppm","rektor"].includes(r));
 
     const load = async () => {
@@ -52,6 +53,13 @@ export default function PengabdianRevisionIndex() {
                     })}
                 </div>
             </div>
+            {showVerif && (
+                <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-2 modern-tab-content">
+                    <iframe src="/iku/verification" className="w-full" style={{ height: "70vh", border: "none" }} title="Verifikasi Luaran" />
+                </div>
+            )}
+
+            {!showVerif && (
             <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 modern-tab-content">
                 <div className="flex flex-col md:flex-row gap-3 mb-4">
                     <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} onKeyDown={(e) => e.key === "Enter" && load()} placeholder="Cari berdasarkan judul..." className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]" />
@@ -85,6 +93,7 @@ export default function PengabdianRevisionIndex() {
                 )}
                 {meta.last_page > 1 && <div className="mt-4 text-xs text-slate-500">Halaman {meta.current_page} dari {meta.last_page} · Total {meta.total}</div>}
             </div>
+            )}
         </div>
     );
 }

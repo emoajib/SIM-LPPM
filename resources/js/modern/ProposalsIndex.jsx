@@ -23,6 +23,7 @@ export default function ProposalsIndex() {
     const [loading, setLoading] = useState(true);
     const isDosen = (window.__USER_ROLES__ || []).includes("dosen");
     const isVerifier = (window.__USER_ROLES__ || []).some((r) => ["admin lppm", "kepala lppm", "rektor"].includes(r));
+    const [showVerif, setShowVerif] = useState(false);
     const [error, setError] = useState(null);
 
     const load = async () => {
@@ -63,11 +64,13 @@ export default function ProposalsIndex() {
             <div className="bg-white border border-slate-200 rounded-xl shadow-sm px-4 pt-3">
                 <div className="flex gap-1 overflow-x-auto modern-tab">
                     {tabs.map((t) => {
-                        const active = currentPath === t.href || currentPath.startsWith(t.href + "/");
+                        const isVerif = t.label === "Verifikasi Luaran";
+                        const active = isVerif ? showVerif : (currentPath === t.href || currentPath.startsWith(t.href + "/"));
                         return (
                             <a
                                 key={t.href}
-                                href={t.href}
+                                href={isVerif ? "#" : t.href}
+                                onClick={isVerif ? (e) => { e.preventDefault(); setShowVerif((v) => !v); } : undefined}
                                 className={`px-4 py-2 text-sm font-bold whitespace-nowrap border-b-2 transition ${
                                     active
                                         ? "border-[#1e3a6e] text-[#1e3a6e]"
@@ -81,6 +84,13 @@ export default function ProposalsIndex() {
                 </div>
             </div>
 
+            {showVerif && (
+                <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-2 modern-tab-content">
+                    <iframe src="/iku/verification" className="w-full" style={{ height: "70vh", border: "none" }} title="Verifikasi Luaran" />
+                </div>
+            )}
+
+            {!showVerif && (
             <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 modern-tab-content">
                 <div className="flex flex-col md:flex-row gap-3 mb-4">
                     <input
@@ -189,6 +199,7 @@ export default function ProposalsIndex() {
                     </div>
                 )}
             </div>
+            )}
         </div>
     );
 }
