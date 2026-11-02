@@ -33,7 +33,6 @@ export default function PengabdianIndex() {
             const res = await fetch(`/research/api/v1/proposals?${params.toString()}`, { credentials: "same-origin", cache: "no-store" });
             if (!res.ok) throw new Error("HTTP " + res.status);
             const json = await res.json();
-            console.log("Pengabdian API:", res.status, json?.data?.length, json?.meta);
             setProposals(json.data || []);
             setMeta(json.meta || meta);
         } catch (e) {

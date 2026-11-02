@@ -35,13 +35,18 @@
         @endpersist
         <div class="page-wrapper">
             @php
-                $modernPageMapEarly = [
+                $modernPageMap = [
                     'research.proposal.index' => 'proposals-index',
+                    'research.proposal-revision.index' => 'research-revision-index',
+                    'research.final-report.index' => 'research-final-report-index',
+                    'research.daily-note.index' => 'research-daily-note-index',
                     'community-service.proposal.index' => 'pengabdian-index',
+                    'community-service.proposal-revision.index' => 'pengabdian-revision-index',
+                    'community-service.final-report.index' => 'pengabdian-final-report-index',
+                    'community-service.daily-note.index' => 'pengabdian-daily-note-index',
                 ];
-                $modernPageEarly = $modernPageMapEarly[request()->route()?->getName() ?? ''] ?? null;
-                // Modern theme: sembunyikan page header di halaman sub-modul Penelitian/Pengabdian
-                // (tab in-page sudah menjadi navigasi konteks)
+                $modernPage = $modernPageMap[request()->route()?->getName() ?? ''] ?? null;
+                $modernPageEarly = $modernPage; // alias for header hiding
                 $hideHeaderRoutes = [
                     'research.proposal-revision.index',
                     'research.final-report.index',
@@ -69,16 +74,7 @@
                 <div class="container-xl">
                     @if ($isModernTheme)
                         @php
-                            $modernPageMap = [
-                                'research.proposal.index' => 'proposals-index',
-                                'research.proposal-revision.index' => 'research-revision-index',
-                                'research.final-report.index' => 'research-final-report-index',
-                                'research.daily-note.index' => 'research-daily-note-index',
-                                'community-service.proposal.index' => 'pengabdian-index',
-                                'community-service.proposal-revision.index' => 'pengabdian-revision-index',
-                                'community-service.final-report.index' => 'pengabdian-final-report-index',
-                                'community-service.daily-note.index' => 'pengabdian-daily-note-index',
-                            ];
+                            // reuse map computed earlier (single source)
                             $modernPage = $modernPageMap[request()->route()?->getName() ?? ''] ?? null;
                         @endphp
                         <script>window.__MODERN_PAGE__ = @json($modernPage);</script>
