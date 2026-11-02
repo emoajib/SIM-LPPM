@@ -23,7 +23,6 @@ export default function ProposalsIndex() {
     const [loading, setLoading] = useState(true);
     const isDosen = (window.__USER_ROLES__ || []).includes("dosen");
     const isVerifier = (window.__USER_ROLES__ || []).some((r) => ["admin lppm", "kepala lppm", "rektor"].includes(r));
-    const [showVerif, setShowVerif] = useState(false);
     const [error, setError] = useState(null);
 
     const load = async () => {
@@ -84,13 +83,6 @@ export default function ProposalsIndex() {
                 </div>
             </div>
 
-            {showVerif && (
-                <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-2 modern-tab-content">
-                    <iframe src="/iku/verification" className="w-full" style={{ height: "70vh", border: "none" }} title="Verifikasi Luaran" />
-                </div>
-            )}
-
-            {!showVerif && (
             <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 modern-tab-content">
                 <div className="flex flex-col md:flex-row gap-3 mb-4">
                     <input
@@ -199,7 +191,6 @@ export default function ProposalsIndex() {
                     </div>
                 )}
             </div>
-            )}
         </div>
     );
 }
