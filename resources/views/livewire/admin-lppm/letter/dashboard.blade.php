@@ -29,10 +29,22 @@
 {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
 <div>
     <style>
-        .letter-tabs-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; white-space: nowrap; scrollbar-width: thin; }
-        .letter-tabs-scroll .nav-tabs { flex-wrap: nowrap; }
-        .letter-table thead th { position: sticky; top: 0; z-index: 5; background: #fff; }
+        /* Mitigasi: tabs scroll horizontal di mobile */
+        .letter-tabs-scroll { min-width: 0; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        .letter-tabs-scroll::-webkit-scrollbar { display: none; }
+        .letter-tabs-scroll .nav-tabs { flex-wrap: nowrap !important; min-width: max-content; border-bottom: none; margin-bottom: 0; }
+        .letter-tabs-scroll .nav-link { white-space: nowrap; padding: 0.5rem 0.85rem; }
+        /* cegah tabs mendorong lebar card */
+        .letter-card-header { overflow: hidden; }
+        /* search row spacing */
+        .letter-search-row { margin-top: 1rem; }
+        /* Mitigasi: sticky header tabel */
+        .letter-table thead th { position: sticky; top: 0; z-index: 10; background: #fff; box-shadow: 0 1px 0 #e2e8f0; }
+        /* Mitigasi: ruang agar pagination tidak tertutup */
         .letter-table-wrap { padding-bottom: 5rem; }
+        /* Mitigasi: empty state */
+        .letter-empty { padding: 3rem 1rem; text-align: center; color: #64748b; }
+        .letter-empty svg { width: 48px; height: 48px; margin-bottom: 0.75rem; opacity: 0.5; }
     </style>
     <x-tabler.alert />
 
@@ -105,7 +117,7 @@
     {{-- Main Container Card --}}
     <div class="card border-0 shadow-sm">
         {{-- Card Header (Dynamic based on active tab for Livewire reactivity) --}}
-        <div class="card-header bg-transparent border-0 pt-4 pb-0">
+        <div class="card-header bg-transparent border-0 pt-4 pb-0 letter-card-header">
             <div class="d-flex justify-content-between align-items-center w-100 flex-wrap gap-3">
                 <div class="letter-tabs-scroll">
                 <ul class="nav nav-tabs card-header-tabs">
