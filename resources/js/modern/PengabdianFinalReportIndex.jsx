@@ -7,6 +7,8 @@ export default function PengabdianFinalReportIndex() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const isVerifier = (window.__USER_ROLES__ || []).some((r) => ["admin lppm","kepala lppm","rektor"].includes(r));
+
     const tabs = [
         { label: "Usulan", href: "/community-service" },
         { label: "Perbaikan Usulan", href: "/community-service/proposal-revision" },
@@ -15,7 +17,6 @@ export default function PengabdianFinalReportIndex() {
         ...(isVerifier ? [{ label: "Verifikasi Luaran", href: "/iku/verification" }] : []),
     ];
     const currentPath = window.location.pathname.replace(/\/$/, "");
-    const isVerifier = (window.__USER_ROLES__ || []).some((r) => ["admin lppm","kepala lppm","rektor"].includes(r));
 
     const load = async () => {
         setLoading(true);

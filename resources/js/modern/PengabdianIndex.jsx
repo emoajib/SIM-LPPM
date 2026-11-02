@@ -24,6 +24,7 @@ export default function PengabdianIndex() {
     const isDosen = (window.__USER_ROLES__ || []).includes("dosen");
     const isVerifier = (window.__USER_ROLES__ || []).some((r) => ["admin lppm", "kepala lppm", "rektor"].includes(r));
     const [error, setError] = useState(null);
+    const [showVerif, setShowVerif] = useState(false);
 
     const load = async () => {
         setLoading(true);

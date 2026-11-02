@@ -1574,6 +1574,24 @@
 
         const rate = usulan > 0 ? ((didanai / usulan) * 100).toFixed(1) : '0.0';
 
+        // Hitung revisi, laporan, realisasi berdasarkan currentScheme (sama dengan getProcessedData)
+        let revisi = 0, laporan = 0, realisasi = 0;
+        rows.forEach(row => {
+            if (currentScheme === 'penelitian') {
+                revisi += row.revisi_penelitian;
+                laporan += row.laporan_penelitian;
+                realisasi += row.realisasi_penelitian;
+            } else if (currentScheme === 'pengabdian') {
+                revisi += row.revisi_pengabdian;
+                laporan += row.laporan_pengabdian;
+                realisasi += row.realisasi_pengabdian;
+            } else {
+                revisi += row.revisi_penelitian + row.revisi_pengabdian;
+                laporan += row.laporan_penelitian + row.laporan_pengabdian;
+                realisasi += row.realisasi_penelitian + row.realisasi_pengabdian;
+            }
+        });
+
         const setText = (id, text) => {
             const el = document.getElementById(id);
             if (el) el.innerText = text;
@@ -1608,9 +1626,9 @@
         setText('sli-trend-badge', 'Akumulasi: ' + rate + '% Lolos');
 
         setValueUnit('sli-cap-val-1', usulan, 'Judul');
-        setValueUnit('sli-cap-val-2', Number(data.revisi) || 0, 'Revisi');
-        setValueUnit('sli-cap-val-3', Number(data.laporan) || 0, 'Laporan');
-        setValueUnit('sli-cap-val-4', Number(data.realisasi) || 0, 'Catatan');
+        setValueUnit('sli-cap-val-2', revisi, 'Revisi');
+        setValueUnit('sli-cap-val-3', laporan, 'Laporan');
+        setValueUnit('sli-cap-val-4', realisasi, 'Catatan');
     }
 
     window.sliSetScheme = function(scheme) {
