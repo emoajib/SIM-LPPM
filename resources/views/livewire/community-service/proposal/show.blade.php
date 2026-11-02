@@ -1,6 +1,12 @@
 <x-slot:title>{{ $proposal->title }}</x-slot:title>
 <x-slot:pageTitle>{{ $proposal->title }}</x-slot:pageTitle>
 <x-slot:pageSubtitle>Detail Proposal Pengabdian Masyarakat</x-slot:pageSubtitle>
+
+@include('components.partials.breadcrumb', ['items' => [
+    ['label' => 'Dashboard', 'href' => route('dashboard')],
+    ['label' => 'Pengabdian', 'href' => route('community-service.proposal.index')],
+    ['label' => 'Detail Proposal'],
+]])
 <x-slot:pageActions>
     <div class="btn-list">
         @if (url()->previous() && url()->previous() !== url()->current())
