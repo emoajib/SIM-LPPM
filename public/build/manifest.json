@@ -1,4 +1,8 @@
 {
+  "__commonjsHelpers-CqkleIqs.js": {
+    "file": "assets/_commonjsHelpers-CqkleIqs.js",
+    "name": "_commonjsHelpers"
+  },
   "node_modules/@fontsource/inter/files/inter-cyrillic-400-normal.woff": {
     "file": "assets/inter-cyrillic-400-normal-HOLc17fK.woff",
     "src": "node_modules/@fontsource/inter/files/inter-cyrillic-400-normal.woff"
@@ -76,19 +80,23 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-DsQR-_e5.js",
+    "file": "assets/app-B4UXgNIK.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "imports": [
+      "__commonjsHelpers-CqkleIqs.js",
       "resources/js/theme-config.js"
     ]
   },
   "resources/js/modern.jsx": {
-    "file": "assets/modern-CmTJBs-R.js",
+    "file": "assets/modern-DDOiN7Lg.js",
     "name": "modern",
     "src": "resources/js/modern.jsx",
-    "isEntry": true
+    "isEntry": true,
+    "imports": [
+      "__commonjsHelpers-CqkleIqs.js"
+    ]
   },
   "resources/js/theme-config.js": {
     "file": "assets/theme-config-_-7EvQW4.js",

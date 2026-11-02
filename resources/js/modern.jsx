@@ -10,8 +10,6 @@ import PengabdianRevisionIndex from "./modern/PengabdianRevisionIndex.jsx";
 import PengabdianFinalReportIndex from "./modern/PengabdianFinalReportIndex.jsx";
 import PengabdianDailyNoteIndex from "./modern/PengabdianDailyNoteIndex.jsx";
 
-const PAGE = window.__MODERN_PAGE__ || "banner";
-
 const PAGES = {
     "proposals-index": ProposalsIndex,
     "dashboard-index": DashboardIndex,
@@ -24,28 +22,20 @@ const PAGES = {
     "pengabdian-daily-note-index": PengabdianDailyNoteIndex,
 };
 
-function App() {
-    const Comp = PAGES[PAGE];
-    if (Comp) return <Comp />;
-    return null;
-}
-
-function mountModern() {
+function mount() {
+    const PAGE = window.__MODERN_PAGE__ || "banner";
     const rootEl = document.getElementById("modern-root");
     if (!rootEl) return;
-    console.log("mountModern", window.__MODERN_PAGE__, rootEl);
-    // avoid double mount on same element
-    if (rootEl._reactRoot) {
-        rootEl._reactRoot.render(<App />);
+    const Comp = PAGES[PAGE];
+    if (!Comp) {
+        rootEl.innerHTML = "<div style='padding:2rem;text-align:center;color:#64748b'>Halaman modern tidak tersedia: " + PAGE + "</div>";
         return;
     }
-    const root = createRoot(rootEl);
-    rootEl._reactRoot = root;
-    root.render(<App />);
+    createRoot(rootEl).render(React.createElement(Comp));
 }
 
-mountModern();
-document.addEventListener("livewire:navigated", () => {
-    console.log("livewire:navigated fired", window.__MODERN_PAGE__);
-    mountModern();
-});
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", mount);
+} else {
+    mount();
+}
