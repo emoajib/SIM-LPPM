@@ -12,8 +12,10 @@ export default function PengabdianDailyNoteIndex() {
         { label: "Perbaikan Usulan", href: "/community-service/proposal-revision" },
         { label: "Laporan Akhir", href: "/community-service/final-report" },
         { label: "Realisasi Anggaran", href: "/community-service/daily-note" },
+        ...(isVerifier ? [{ label: "Verifikasi Luaran", href: "/iku/verification" }] : []),
     ];
     const currentPath = window.location.pathname.replace(/\/$/, "");
+    const isVerifier = (window.__USER_ROLES__ || []).some((r) => ["admin lppm","kepala lppm","rektor"].includes(r));
 
     const load = async () => {
         setLoading(true);

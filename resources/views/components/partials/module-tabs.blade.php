@@ -8,6 +8,10 @@
         'laporan' => ['label' => 'Laporan Akhir', 'href' => $base.'/final-report'],
         'realisasi' => ['label' => 'Realisasi Anggaran', 'href' => $base.'/daily-note'],
     ];
+
+    if (active_has_any_role(['admin lppm', 'kepala lppm', 'rektor'])) {
+        $tabs['verifikasi'] = ['label' => 'Verifikasi Luaran', 'href' => '/iku/verification'];
+    }
 @endphp
 
 <div class="card border-0 shadow-sm mb-3">

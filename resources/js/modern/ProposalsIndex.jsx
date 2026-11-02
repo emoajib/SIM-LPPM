@@ -22,6 +22,7 @@ export default function ProposalsIndex() {
     const [roleFilter, setRoleFilter] = useState("all");
     const [loading, setLoading] = useState(true);
     const isDosen = (window.__USER_ROLES__ || []).includes("dosen");
+    const isVerifier = (window.__USER_ROLES__ || []).some((r) => ["admin lppm", "kepala lppm", "rektor"].includes(r));
     const [error, setError] = useState(null);
 
     const load = async () => {
@@ -49,6 +50,7 @@ export default function ProposalsIndex() {
         { label: "Perbaikan Usulan", href: "/research/proposal-revision" },
         { label: "Laporan Akhir", href: "/research/final-report" },
         { label: "Realisasi Anggaran", href: "/research/daily-note" },
+        ...(isVerifier ? [{ label: "Verifikasi Luaran", href: "/iku/verification" }] : []),
     ];
     const currentPath = window.location.pathname.replace(/\/$/, "");
 

@@ -479,6 +479,13 @@ class MenuComposer
                         : 'community-service.proposal.index';
                     unset($__item['children']);
                 }
+                // Pindahkan "Verifikasi Luaran" ke tab in-page (bukan duplikasi di menu)
+                if (($__item['title'] ?? '') === 'IKU & Luaran' && isset($__item['children'])) {
+                    $__item['children'] = array_values(array_filter(
+                        $__item['children'],
+                        fn ($c) => ($c['title'] ?? '') !== 'Verifikasi Luaran'
+                    ));
+                }
             }
             unset($__item);
         }
