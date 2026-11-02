@@ -2,11 +2,6 @@
 <x-slot:pageTitle>{{ $proposal->title }}</x-slot:pageTitle>
 <x-slot:pageSubtitle>Detail Proposal Penelitian</x-slot:pageSubtitle>
 
-@include('components.partials.breadcrumb', ['items' => [
-    ['label' => 'Dashboard', 'href' => route('dashboard')],
-    ['label' => 'Penelitian', 'href' => route('research.proposal.index')],
-    ['label' => 'Detail Proposal'],
-]])
 <x-slot:pageActions>
     <div class="btn-list">
         @if (url()->previous() && url()->previous() !== url()->current())
@@ -60,6 +55,13 @@
 </x-slot:pageActions>
 
 <div class="row" x-data="{ currentStep: {{ active_has_role('reviewer') ? 5 : 1 }} }">
+    <div class="col-md-12">
+        @include('components.partials.breadcrumb', ['items' => [
+            ['label' => 'Dashboard', 'href' => route('dashboard')],
+            ['label' => 'Penelitian', 'href' => route('research.proposal.index')],
+            ['label' => 'Detail Proposal'],
+        ]])
+    </div>
     <div class="col-md-12">
         <x-tabler.alert />
     </div>
