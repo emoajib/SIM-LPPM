@@ -473,6 +473,10 @@ class MenuComposer
         $isModernHere = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')) === 'modern';
         if ($isModernHere) {
             foreach ($items as &$__item) {
+                // Force full page load for React modern pages (avoid wire:navigate blank)
+                if (in_array($__item['title'] ?? '', ['Penelitian', 'Pengabdian', 'Surat', 'Dashboard'], true)) {
+                    $__item['navigate'] = false;
+                }
                 if (in_array($__item['title'] ?? '', ['Penelitian', 'Pengabdian'], true)) {
                     $__item['route'] = $__item['title'] === 'Penelitian'
                         ? 'research.proposal.index'
