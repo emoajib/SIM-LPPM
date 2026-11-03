@@ -477,11 +477,11 @@ class MenuComposer
                 if (in_array($__item['title'], ['Penelitian', 'Pengabdian', 'Surat', 'Dashboard'], true)) {
                     $__item['navigate'] = false;
                 }
-                if (isset($__item['children']) && is_array($__item['children'])) {
-                    foreach ($__item['children'] as &$__child) {
-                        $__child['navigate'] = false;
-                    }
-                    unset($__child);
+                if (in_array($__item['title'], ['Penelitian', 'Pengabdian'], true)) {
+                    $__item['route'] = $__item['title'] === 'Penelitian'
+                        ? 'research.proposal.index'
+                        : 'community-service.proposal.index';
+                    unset($__item['children']);
                 }
                 // Pindahkan "Verifikasi Luaran" ke tab in-page (bukan duplikasi di menu)
                 if (($__item['title'] ?? '') === 'IKU & Luaran' && isset($__item['children'])) {
