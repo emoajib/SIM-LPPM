@@ -1,4 +1,11 @@
 import React, { useEffect, useState } from "react";
+import Card from "./components/Card.jsx";
+import Button from "./components/Button.jsx";
+import Badge from "./components/Badge.jsx";
+import EmptyState from "./components/EmptyState.jsx";
+import Skeleton from "./components/Skeleton.jsx";
+import Modal from "./components/Modal.jsx";
+import Pagination from "./components/Pagination.jsx";
 
 const STATUS_COLORS = {
     draft: "bg-gray-100 text-gray-700",
@@ -168,23 +175,11 @@ export default function ProposalsIndex() {
                 </div>
 
                 {loading ? (
-                    <div className="animate-pulse space-y-2 py-4">
-                        {[1,2,3,4,5].map((i) => (
-                            <div key={i} className="h-10 bg-slate-100 rounded-lg" />
-                        ))}
-                    </div>
+                    <Skeleton lines={5} className="h-10" />
                 ) : error ? (
-                    <div className="text-center py-8 text-red-500">
-                        <div className="text-3xl mb-2">⚠️</div>
-                        <div className="font-semibold">{error}</div>
-                        <button onClick={load} className="mt-3 bg-[#1e3a6e] text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#254b8c] transition">Coba lagi</button>
-                    </div>
+                    <EmptyState icon="ti ti-alert-triangle" title="Gagal memuat data" description={error} action={<Button onClick={load}>Coba lagi</Button>} />
                 ) : proposals.length === 0 ? (
-                    <div className="text-center py-8 text-slate-500">
-                        <div className="text-3xl mb-2">📋</div>
-                        <div className="font-semibold">Tidak ada data penelitian.</div>
-                        <div className="text-xs mt-1">Belum ada usulan yang tercatat.</div>
-                    </div>
+                    <EmptyState icon="ti ti-clipboard-off" title="Tidak ada data penelitian" description="Belum ada usulan yang tercatat." />
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm">
@@ -225,54 +220,26 @@ export default function ProposalsIndex() {
                         </table>
                     </div>
                 )}
-                {meta.last_page > 1 && (
-                    <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
-                        <div>Halaman {meta.current_page} dari {meta.last_page} · Total {meta.total}</div>
-                        <div className="flex gap-2">
-                            <button
-                                disabled={meta.current_page <= 1}
-                                onClick={() => load(meta.current_page - 1)}
-                                className="px-3 py-1 rounded-lg border border-slate-300 disabled:opacity-40 hover:bg-slate-50"
-                            >
-                                Prev
-                            </button>
-                            <button
-                                disabled={meta.current_page >= meta.last_page}
-                                onClick={() => load(meta.current_page + 1)}
-                                className="px-3 py-1 rounded-lg border border-slate-300 disabled:opacity-40 hover:bg-slate-50"
-                            >
-                                Next
-                            </button>
-                        </div>
-                    </div>
-                )}
+                <Pagination meta={meta} onPage={(p) => load(p)} />
 
-                {showElig && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setShowElig(false)}>
-                        <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
-                            <h3 className="font-bold text-slate-800 mb-3">Info Eligibilitas</h3>
-                            {!elig ? (
-                                <div className="text-slate-500">Memuat...</div>
-                            ) : (
-                                <div className="space-y-2 text-sm">
-                                    <div className={`font-bold ${elig.eligible ? "text-emerald-600" : "text-red-600"}`}>
-                                        {elig.eligible ? "Memenuhi Syarat" : "Tidak Memenuhi Syarat"}
-                                    </div>
-                                    {Array.isArray(elig.reasons) && elig.reasons.length > 0 && (
-                                        <ul className="list-disc pl-5 text-slate-600">
-                                            {elig.reasons.map((r, i) => <li key={i}>{r}</li>)}
-                                        </ul>
-                                    )}
-                                    <div className="text-slate-500">Jadwal buka: {elig.schedule_open ? "Ya" : "Tidak"}</div>
-                                    <div className="text-slate-500">Bisa ajukan: {elig.can_create ? "Ya" : "Tidak"}</div>
-                                </div>
-                            )}
-                            <div className="mt-4 text-right">
-                                <button onClick={() => setShowElig(false)} className="px-4 py-2 rounded-lg bg-[#1e3a6e] text-white text-sm font-bold">Tutup</button>
+                <Modal open={showElig} onClose={() => setShowElig(false)} title="Info Eligibilitas">
+                    {!elig ? (
+                        <div className="text-slate-500">Memuat...</div>
+                    ) : (
+                        <div className="space-y-2 text-sm">
+                            <div className={`font-bold ${elig.eligible ? "text-emerald-600" : "text-red-600"}`}>
+                                {elig.eligible ? "Memenuhi Syarat" : "Tidak Memenuhi Syarat"}
                             </div>
+                            {Array.isArray(elig.reasons) && elig.reasons.length > 0 && (
+                                <ul className="list-disc pl-5 text-slate-600">
+                                    {elig.reasons.map((r, i) => <li key={i}>{r}</li>)}
+                                </ul>
+                            )}
+                            <div className="text-slate-500">Jadwal buka: {elig.schedule_open ? "Ya" : "Tidak"}</div>
+                            <div className="text-slate-500">Bisa ajukan: {elig.can_create ? "Ya" : "Tidak"}</div>
                         </div>
-                    </div>
-                )}
+                    )}
+                </Modal>
             </div>
         </div>
     );
