@@ -1,4 +1,9 @@
 import React, { useEffect, useState } from "react";
+import Card from "./components/Card.jsx";
+import Button from "./components/Button.jsx";
+import EmptyState from "./components/EmptyState.jsx";
+import Skeleton from "./components/Skeleton.jsx";
+import Badge from "./components/Badge.jsx";
 
 const STATUS_COLORS = {
     draft: "bg-gray-100 text-gray-700",
@@ -146,6 +151,18 @@ export default function DashboardIndex() {
                 </div>
             </div>
 
+            {/* Quick actions */}
+            {((window.__USER_ROLES__ || []).includes("dosen")) && (
+                <div className="flex flex-wrap gap-2">
+                    <a href="/research/proposal/create" className="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-emerald-700 transition">
+                        + Buat Usulan Penelitian
+                    </a>
+                    <a href="/community-service/proposal/create" className="bg-cyan-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-cyan-700 transition">
+                        + Buat Usulan Pengabdian
+                    </a>
+                </div>
+            )}
+
             {/* Proposals table */}
             <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 modern-tab-content">
                 <div className="flex flex-col md:flex-row gap-3 mb-4 items-end">
@@ -178,12 +195,9 @@ export default function DashboardIndex() {
                 </div>
 
                 {loading ? (
-                    <div className="text-center py-8 text-slate-500">Memuat...</div>
+                    <Skeleton lines={5} className="h-10" />
                 ) : proposals.length === 0 ? (
-                    <div className="text-center py-8 text-slate-500">
-                        <div className="text-[24px] mb-2">📭</div>
-                        Tidak ada data usulan.
-                    </div>
+                    <EmptyState icon="ti ti-clipboard-off" title="Tidak ada data usulan" description="Belum ada usulan yang tercatat." />
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm">
