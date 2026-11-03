@@ -30,7 +30,7 @@
         $isModernTheme = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')) === 'modern';
     @endphp
     <div class="page">
-        @persist('header')
+        @persist('header-'.(request()->route()?->getName() ?? 'home'))
         @include('components.layouts.header')
         @endpersist
         <div class="page-wrapper">

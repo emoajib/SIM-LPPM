@@ -31,3 +31,12 @@ it('research index returns 200 in modern theme', function () {
         ->get(route('research.proposal.index'))
         ->assertStatus(200);
 });
+
+it('navbar menu not empty for dosen on research page', function () {
+    $user = User::factory()->create();
+    $user->assignRole('dosen');
+    $response = $this->actingAs($user)->withSession(['active_role' => 'dosen', 'sim_lppm_app_theme' => 'modern'])
+        ->get(route('research.proposal.index'));
+    $response->assertStatus(200);
+    $response->assertSee('Dashboard');
+});

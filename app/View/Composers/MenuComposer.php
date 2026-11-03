@@ -591,30 +591,26 @@ class MenuComposer
             $items,
         )));
 
+        // Fallback: pastikan navbar tidak pernah kosong
+        if (empty($formatted)) {
+            Log::warning('MenuComposer: empty menu for user', ['user_id' => $user?->id]);
+            $formatted = [[
+                'type' => 'link',
+                'title' => 'Dashboard',
+                'href' => url('/dashboard'),
+                'icon' => 'home',
+                'active' => false,
+                'navigate' => true,
+            ]];
+        }
+
         // Modern theme only: collapse secondary modules into a "Lainnya" dropdown
         // so primary modules stay visible without long/deep dropdowns.
         // Classic theme keeps the existing flat layout untouched.
+        // Modern collapse to "Lainnya" dinonaktifkan agar semua menu tetap terlihat
+        // (menghindari menu hilang). $isModern tetap dihitung untuk kompatibilitas.
         $isModern = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')) === 'modern';
-        if (false && $isModern && count($formatted) > 8) {
-            $primary = array_slice($formatted, 0, 8);
-            $overflow = array_slice($formatted, 8);
-            if (! empty($overflow)) {
-                $primary[] = [
-                    'type' => 'dropdown',
-                    'title' => 'Lainnya',
-                    'href' => '#',
-                    'icon' => 'dots',
-                    'active' => false,
-                    'navigate' => true,
-                    'dropdown' => [
-                        'auto_close' => 'outside',
-                        'items' => $overflow,
-                    ],
-                    'children' => $overflow,
-                ];
-            }
-            $formatted = $primary;
-        }
+        unset($isModern);
 
         return $formatted;
     }

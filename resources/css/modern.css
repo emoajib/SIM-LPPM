@@ -53,6 +53,9 @@
   background-size: 200% 100%;
 }
 
+/* Safety net: pastikan navbar menu tetap tampil di tema modern */
+.theme-modern .navbar-nav { display: flex !important; }
+
 /* Focus ring modern */
 .modern-focus:focus-visible {
   outline: 2px solid var(--color-primary);

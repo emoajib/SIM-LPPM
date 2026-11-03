@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class ThemeSwitcherController extends Controller
 {
@@ -18,6 +20,11 @@ class ThemeSwitcherController extends Controller
 
         session(['sim_lppm_app_theme' => $theme]);
         session(['sim_lppm_dashboard_theme' => $theme]);
+
+        // Invalidate menu cache agar tidak stale setelah switch tema
+        if (Auth::check()) {
+            Cache::forget('menu_items_'.Auth::id().'_'.(active_role() ?? 'none').'_'.($theme === 'modern' ? 'classic' : 'modern'));
+        }
 
         cookie()->queue(cookie('sim_lppm_app_theme', $theme, 60 * 24 * 365));
         cookie()->queue(cookie('sim_lppm_dashboard_theme', $theme, 60 * 24 * 365));
