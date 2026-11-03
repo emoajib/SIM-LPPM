@@ -1,3 +1,4 @@
+import "../css/modern.css";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import ProposalsIndex from "./modern/ProposalsIndex.jsx";

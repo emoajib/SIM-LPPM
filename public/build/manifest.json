@@ -79,6 +79,14 @@
       "app.css"
     ]
   },
+  "resources/css/modern.css": {
+    "file": "assets/modern-DqrevNEB.css",
+    "src": "resources/css/modern.css",
+    "isEntry": true,
+    "names": [
+      "modern.css"
+    ]
+  },
   "resources/js/app.js": {
     "file": "assets/app-B4UXgNIK.js",
     "name": "app",
@@ -90,12 +98,15 @@
     ]
   },
   "resources/js/modern.jsx": {
-    "file": "assets/modern-B6Hf-vAg.js",
+    "file": "assets/modern-B2a6tflj.js",
     "name": "modern",
     "src": "resources/js/modern.jsx",
     "isEntry": true,
     "imports": [
       "__commonjsHelpers-CqkleIqs.js"
+    ],
+    "css": [
+      "assets/modern-DqrevNEB.css"
     ]
   },
   "resources/js/theme-config.js": {
