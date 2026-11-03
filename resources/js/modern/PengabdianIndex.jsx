@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import CountdownTimer from "./components/CountdownTimer.jsx";
 
 const STATUS_COLORS = {
     draft: "bg-gray-100 text-gray-700",
@@ -103,6 +104,10 @@ export default function PengabdianIndex() {
                     })}
                 </div>
             </div>
+
+            {elig && elig.schedule_start && elig.schedule_end && (
+                <CountdownTimer start={elig.schedule_start} end={elig.schedule_end} />
+            )}
 
             <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 modern-tab-content">
                 <div className="flex flex-col md:flex-row gap-3 mb-4">

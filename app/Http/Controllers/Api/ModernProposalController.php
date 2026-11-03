@@ -117,6 +117,8 @@ class ModernProposalController
             'eligible' => $eligibility['eligible'] ?? true,
             'reasons' => $eligibility['reasons'] ?? [],
             'schedule_open' => $isWithinSchedule,
+            'schedule_start' => $startDate,
+            'schedule_end' => $endDate,
             'schemes' => $type === 'research' ? ($scheduleInfo['research_schemes'] ?? []) : ($scheduleInfo['pkm_schemes'] ?? []),
             'can_create' => $canCreate['can_create'] ?? false,
             'quota_tooltip' => $canCreate['quota_info'] ?? null,
