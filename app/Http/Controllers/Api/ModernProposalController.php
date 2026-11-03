@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\CommunityService;
 use App\Models\Proposal;
+use App\Services\EligibilityService;
+use App\Services\LecturerEligibilityService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -72,6 +74,39 @@ class ModernProposalController
                 'last_page' => $proposals->lastPage(),
                 'total' => $proposals->total(),
             ],
+        ]);
+    }
+
+    public function eligibility(Request $request)
+    {
+        $user = Auth::user();
+        $type = $request->get('type', 'research');
+        $svc = app(LecturerEligibilityService::class);
+        $eligibility = ['eligible' => true, 'reasons' => []];
+        $scheduleInfo = ['research_open' => false, 'research_schemes' => [], 'pkm_open' => false, 'pkm_schemes' => []];
+        if ($user && $user->activeHasRole('dosen')) {
+            $eligibility = $svc->checkEligibility($user, $type);
+            $scheduleInfo = $svc->getScheduleStatus($user);
+        }
+        $eligibilityService = app(EligibilityService::class);
+        $canCreate = [];
+        try {
+            $canCreate = $eligibilityService->canCreateProposal($user, $type);
+        } catch (\Throwable $e) {
+            $canCreate = ['can_create' => false];
+        }
+        $isWithinSchedule = false;
+        $startDate = \App\Models\Setting::where('key', ($type === 'research' ? 'research' : 'community_service').'_proposal_start_date')->value('value');
+        $endDate = \App\Models\Setting::where('key', ($type === 'research' ? 'research' : 'community_service').'_proposal_end_date')->value('value');
+        $isWithinSchedule = LecturerEligibilityService::isWithinSchedule($startDate, $endDate);
+
+        return response()->json([
+            'eligible' => $eligibility['eligible'] ?? true,
+            'reasons' => $eligibility['reasons'] ?? [],
+            'schedule_open' => $isWithinSchedule,
+            'schemes' => $type === 'research' ? ($scheduleInfo['research_schemes'] ?? []) : ($scheduleInfo['pkm_schemes'] ?? []),
+            'can_create' => $canCreate['can_create'] ?? false,
+            'quota_tooltip' => $canCreate['quota_info'] ?? null,
         ]);
     }
 }

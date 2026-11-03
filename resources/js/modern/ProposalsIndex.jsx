@@ -17,6 +17,7 @@ const STATUS_COLORS = {
 export default function ProposalsIndex() {
     const [proposals, setProposals] = useState([]);
     const [meta, setMeta] = useState({ current_page: 1, last_page: 1, total: 0 });
+    const [page, setPage] = useState(1);
     const [search, setSearch] = useState("");
     const [status, setStatus] = useState("all");
     const [roleFilter, setRoleFilter] = useState("all");
@@ -25,17 +26,20 @@ export default function ProposalsIndex() {
     const isVerifier = (window.__USER_ROLES__ || []).some((r) => ["admin lppm", "kepala lppm", "rektor"].includes(r));
     const [error, setError] = useState(null);
     const [showVerif, setShowVerif] = useState(false);
+    const [showElig, setShowElig] = useState(false);
+    const [elig, setElig] = useState(null);
 
-    const load = async () => {
+    const load = async (p = page) => {
         setLoading(true);
         setError(null);
         try {
-            const params = new URLSearchParams({ search, status, type: "research", role: roleFilter, _: Date.now() });
+            const params = new URLSearchParams({ search, status, type: "research", role: roleFilter, page: p, _: Date.now() });
             const res = await fetch(`/research/api/v1/proposals?${params.toString()}`, { credentials: "same-origin", cache: "no-store" });
             if (!res.ok) throw new Error("HTTP " + res.status);
             const json = await res.json();
             setProposals(json.data || []);
             setMeta(json.meta || meta);
+            setPage(p);
         } catch (e) {
             console.error(e);
             setError("Gagal memuat data. Silakan coba lagi.");
@@ -44,7 +48,15 @@ export default function ProposalsIndex() {
         }
     };
 
-    useEffect(() => { load(); }, [roleFilter]);
+    useEffect(() => { load(1); }, [roleFilter]);
+
+    const loadEligibility = async () => {
+        try {
+            const res = await fetch(`/research/api/v1/eligibility?type=research`, { credentials: "same-origin", cache: "no-store" });
+            if (res.ok) setElig(await res.json());
+        } catch (e) { console.error(e); }
+        setShowElig(true);
+    };
 
     const tabs = [
         { label: "Usulan", href: "/research" },
@@ -122,9 +134,14 @@ export default function ProposalsIndex() {
                         Cari
                     </button>
                     {isDosen && (
-                        <a href="/research/proposal/create" className="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-emerald-700 transition">
-                            + Buat Usulan
-                        </a>
+                        <>
+                            <button onClick={loadEligibility} className="bg-slate-100 text-slate-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-200 transition">
+                                Info Eligibilitas
+                            </button>
+                            <a href="/research/proposal/create" className="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-emerald-700 transition">
+                                + Buat Usulan
+                            </a>
+                        </>
                     )}
                 </div>
 
@@ -187,8 +204,51 @@ export default function ProposalsIndex() {
                     </div>
                 )}
                 {meta.last_page > 1 && (
-                    <div className="mt-4 text-xs text-slate-500">
-                        Halaman {meta.current_page} dari {meta.last_page} · Total {meta.total}
+                    <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
+                        <div>Halaman {meta.current_page} dari {meta.last_page} · Total {meta.total}</div>
+                        <div className="flex gap-2">
+                            <button
+                                disabled={meta.current_page <= 1}
+                                onClick={() => load(meta.current_page - 1)}
+                                className="px-3 py-1 rounded-lg border border-slate-300 disabled:opacity-40 hover:bg-slate-50"
+                            >
+                                Prev
+                            </button>
+                            <button
+                                disabled={meta.current_page >= meta.last_page}
+                                onClick={() => load(meta.current_page + 1)}
+                                className="px-3 py-1 rounded-lg border border-slate-300 disabled:opacity-40 hover:bg-slate-50"
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {showElig && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setShowElig(false)}>
+                        <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+                            <h3 className="font-bold text-slate-800 mb-3">Info Eligibilitas</h3>
+                            {!elig ? (
+                                <div className="text-slate-500">Memuat...</div>
+                            ) : (
+                                <div className="space-y-2 text-sm">
+                                    <div className={`font-bold ${elig.eligible ? "text-emerald-600" : "text-red-600"}`}>
+                                        {elig.eligible ? "Memenuhi Syarat" : "Tidak Memenuhi Syarat"}
+                                    </div>
+                                    {Array.isArray(elig.reasons) && elig.reasons.length > 0 && (
+                                        <ul className="list-disc pl-5 text-slate-600">
+                                            {elig.reasons.map((r, i) => <li key={i}>{r}</li>)}
+                                        </ul>
+                                    )}
+                                    <div className="text-slate-500">Jadwal buka: {elig.schedule_open ? "Ya" : "Tidak"}</div>
+                                    <div className="text-slate-500">Bisa ajukan: {elig.can_create ? "Ya" : "Tidak"}</div>
+                                </div>
+                            )}
+                            <div className="mt-4 text-right">
+                                <button onClick={() => setShowElig(false)} className="px-4 py-2 rounded-lg bg-[#1e3a6e] text-white text-sm font-bold">Tutup</button>
+                            </div>
+                        </div>
                     </div>
                 )}
             </div>
