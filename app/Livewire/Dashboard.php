@@ -191,7 +191,7 @@ class Dashboard extends Component
             $rows[$periodKey]['usulan_'.$schemeKey] += 1;
             $rows[$periodKey]['luaran_'.$schemeKey] += (int) ($luaranCounts[$proposal->id] ?? 0);
 
-            $statusValue = $proposal->status instanceof \BackedEnum ? $proposal->status->value : (string) $proposal->status;
+            $statusValue = $proposal->status->value;
             if (in_array($statusValue, ['revision_needed', 'revision_submitted'], true)) {
                 $rows[$periodKey]['revisi_'.$schemeKey] += 1;
             }
@@ -225,7 +225,7 @@ class Dashboard extends Component
      *
      * @param  array<int, array<string, mixed>>  $periods
      * @param  array<int, string>  $suffixes
-     * @return array{usulan: int, didanai: int, desk_review: int, dana_m: float, luaran: int}
+     * @return array{usulan: int, didanai: int, desk_review: int, dana: float, dana_m: float, luaran: int, revisi: int, laporan: int, realisasi: int}
      */
     private function sumPeriodRows(array $periods, array $suffixes): array
     {

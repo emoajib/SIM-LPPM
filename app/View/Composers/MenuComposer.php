@@ -468,16 +468,16 @@ class MenuComposer
             ],
         ];
 
-        // Modern theme: jadikan Penelitian & Pengabdian link tunggal (seperti Surat),
-        // navigasi sub-fitur via tab in-page. Classic tetap dropdown.
+        // Modern theme: pastikan child item navigasi React menggunakan full page load (navigate => false)
+        // agar komponen React SPA ter-mount dengan sempurna saat diakses dari navbar dropdown.
         $isModernHere = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')) === 'modern';
         if ($isModernHere) {
             foreach ($items as &$__item) {
                 // Force full page load for React modern pages (avoid wire:navigate blank)
-                if (in_array($__item['title'] ?? '', ['Penelitian', 'Pengabdian', 'Surat', 'Dashboard'], true)) {
+                if (in_array($__item['title'], ['Penelitian', 'Pengabdian', 'Surat', 'Dashboard'], true)) {
                     $__item['navigate'] = false;
                 }
-                if (in_array($__item['title'] ?? '', ['Penelitian', 'Pengabdian'], true)) {
+                if (in_array($__item['title'], ['Penelitian', 'Pengabdian'], true)) {
                     $__item['route'] = $__item['title'] === 'Penelitian'
                         ? 'research.proposal.index'
                         : 'community-service.proposal.index';

@@ -30,7 +30,7 @@ export default function Pagination({ meta, onPage }) {
                         <button
                             key={p}
                             onClick={() => onPage(p)}
-                            className={`px-3 py-1.5 rounded-lg border transition ${p === cur ? "bg-indigo-600 text-white border-indigo-600" : "border-slate-300 hover:bg-slate-50"}`}
+                            className={`px-3 py-1.5 rounded-lg border transition ${p === cur ? "bg-[#1e3a6e] text-white border-[#1e3a6e] dark:bg-[#254b8c] dark:border-[#254b8c]" : "border-slate-300 hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-slate-700 dark:text-slate-200"}`}
                         >
                             {p}
                         </button>

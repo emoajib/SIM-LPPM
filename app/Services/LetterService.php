@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\LetterStatus;
 use App\Enums\SignatureMode;
+use App\Jobs\GenerateLetterPdfJob;
 use App\Models\Letter;
 use App\Models\LetterType;
 use App\Models\Proposal;
@@ -352,7 +353,7 @@ class LetterService
 
             // Dispatch PDF generation to queue (non-blocking). Fallback to sync on failure.
             try {
-                \App\Jobs\GenerateLetterPdfJob::dispatch($lockedLetter->id);
+                GenerateLetterPdfJob::dispatch($lockedLetter->id);
 
                 return $lockedLetter->file_path ?? '';
             } catch (\Throwable $e) {

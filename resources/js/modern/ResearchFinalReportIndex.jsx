@@ -1,7 +1,11 @@
+// Vetted by AI - Manual Review Required by Senior Engineer/Manager
 import React, { useEffect, useState } from "react";
-import Skeleton from "./components/Skeleton.jsx";
-import EmptyState from "./components/EmptyState.jsx";
+import Button from "./components/Button.jsx";
 import Pagination from "./components/Pagination.jsx";
+import ModuleTabNav from "./components/ModuleTabNav.jsx";
+import ModernPageCard from "./components/ModernPageCard.jsx";
+import ModernTable from "./components/ModernTable.jsx";
+import { STATUS_COLORS } from "./constants/themeColors.js";
 
 export default function ResearchFinalReportIndex() {
     const [proposals, setProposals] = useState([]);
@@ -10,14 +14,14 @@ export default function ResearchFinalReportIndex() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const isVerifier = (window.__USER_ROLES__ || []).some((r) => ["admin lppm","kepala lppm","rektor"].includes(r));
+    const isVerifier = (window.__USER_ROLES__ || []).some((r) => ["admin lppm", "kepala lppm", "rektor"].includes(r));
 
     const tabs = [
-        { label: "Usulan", href: "/research" },
-        { label: "Perbaikan Usulan", href: "/research/proposal-revision" },
-        { label: "Laporan Akhir", href: "/research/final-report" },
-        { label: "Realisasi Anggaran", href: "/research/daily-note" },
-        ...(isVerifier ? [{ label: "Verifikasi Luaran", href: "/iku/verification" }] : []),
+        { label: "Usulan", href: "/research", icon: "📋" },
+        { label: "Perbaikan Usulan", href: "/research/proposal-revision", icon: "✏️" },
+        { label: "Laporan Akhir", href: "/research/final-report", icon: "📑" },
+        { label: "Realisasi Anggaran", href: "/research/daily-note", icon: "💰" },
+        ...(isVerifier ? [{ label: "Verifikasi Luaran", href: "/iku/verification", icon: "🛡️" }] : []),
     ];
     const currentPath = window.location.pathname.replace(/\/$/, "");
 
@@ -31,48 +35,104 @@ export default function ResearchFinalReportIndex() {
             const json = await res.json();
             setProposals(json.data || []);
             setMeta(json.meta || meta);
-        } catch (e) { console.error(e); }
-        finally { setLoading(false); }
+        } catch (e) {
+            console.error(e);
+            setError("Gagal memuat data. Silakan coba lagi.");
+        } finally {
+            setLoading(false);
+        }
     };
+
     useEffect(() => { load(1); }, []);
+
+    const columns = [
+        {
+            key: "title",
+            label: "Judul",
+            render: (p) => (
+                <div className="font-bold text-slate-800 dark:text-slate-100 group-hover:text-[#1e3a6e] dark:group-hover:text-cyan-400 transition-colors">
+                    {p.title}
+                </div>
+            ),
+        },
+        {
+            key: "submitter",
+            label: "Author",
+            render: (p) => (
+                <div>
+                    <div className="font-medium text-slate-700 dark:text-slate-200">{p.submitter}</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400">{p.identity_id}</div>
+                </div>
+            ),
+        },
+        {
+            key: "status",
+            label: "Status",
+            render: (p) => (
+                <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold border ${STATUS_COLORS[p.status] || "bg-emerald-100 text-emerald-800"}`}>
+                    {p.status_label}
+                </span>
+            ),
+        },
+        {
+            key: "created_at",
+            label: "Tanggal",
+            cellClassName: "text-slate-500 dark:text-slate-400 whitespace-nowrap",
+        },
+        {
+            key: "actions",
+            label: "Aksi",
+            align: "center",
+            render: (p) => (
+                <a
+                    href={p.show_url}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold text-[#1e3a6e] dark:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition-colors"
+                >
+                    Lihat &rarr;
+                </a>
+            ),
+        },
+    ];
 
     return (
         <div className="space-y-4">
-            <div className="bg-white border border-slate-200 rounded-xl shadow-sm px-4 pt-3">
-                <div className="flex gap-1 overflow-x-auto modern-tab">
-                    {tabs.map((t) => {
-                        const active = currentPath === t.href || currentPath.startsWith(t.href + "/");
-                        return <a key={t.href} href={t.href} className={`px-4 py-2 text-sm font-bold whitespace-nowrap border-b-2 transition ${active ? "border-[#1e3a6e] text-[#1e3a6e]" : "border-transparent text-slate-500 hover:text-slate-700"}`}>{t.label}</a>;
-                    })}
-                </div>
-            </div>
-            <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 modern-tab-content">
+            <nav aria-label="Breadcrumb" className="text-xs text-slate-500 dark:text-slate-400 mb-1">
+                <a href="/dashboard" className="hover:underline">Dashboard</a>
+                <span className="mx-1.5 opacity-60">/</span>
+                <span className="font-semibold text-slate-700 dark:text-slate-200">Laporan Akhir Penelitian</span>
+            </nav>
+
+            <ModuleTabNav tabs={tabs} currentPath={currentPath} />
+
+            <ModernPageCard>
                 <div className="flex flex-col md:flex-row gap-3 mb-4">
-                    <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} onKeyDown={(e) => e.key === "Enter" && load()} placeholder="Cari berdasarkan judul..." className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]" />
-                    <button onClick={() => load(1)} className="bg-[#1e3a6e] text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#254b8c] transition">Cari</button>
+                    <input
+                        type="text"
+                        value={search}
+                        aria-label="Cari laporan akhir penelitian"
+                        onChange={(e) => setSearch(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && load(1)}
+                        placeholder="Cari berdasarkan judul..."
+                        className="flex-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                    />
+                    <Button onClick={() => load(1)} variant="primary" size="md">
+                        Cari
+                    </Button>
                 </div>
-                {loading ? (<Skeleton lines={5} className="h-10" />) :
-                proposals.length === 0 ? <EmptyState icon="ti ti-report" title="Belum ada laporan akhir" description="Belum ada data." /> :
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                        <thead className="bg-slate-50 text-slate-600 text-xs uppercase sticky top-0 z-10">
-                            <tr><th className="text-left px-3 py-2">Judul</th><th className="text-left px-3 py-2">Author</th><th className="text-left px-3 py-2">Status</th><th className="text-left px-3 py-2">Tanggal</th><th className="text-left px-3 py-2">Aksi</th></tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                            {proposals.map((p) => (
-                                <tr key={p.id} className="hover:bg-slate-50">
-                                    <td className="px-3 py-2"><div className="font-bold text-slate-800">{p.title}</div></td>
-                                    <td className="px-3 py-2"><div>{p.submitter}</div><div className="text-xs text-slate-500">{p.identity_id}</div></td>
-                                    <td className="px-3 py-2"><span className="inline-block px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">{p.status_label}</span></td>
-                                    <td className="px-3 py-2 text-slate-500 whitespace-nowrap">{p.created_at}</td>
-                                    <td className="px-3 py-2"><a href={p.show_url} className="text-[#1e3a6e] font-bold text-xs hover:underline">Lihat</a></td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>}
-                {meta.last_page > 1 && <Pagination meta={meta} onPage={(p) => load(p)} />}
-            </div>
+
+                <ModernTable
+                    columns={columns}
+                    data={proposals}
+                    loading={loading}
+                    emptyIcon={error ? "ti ti-alert-triangle" : "ti ti-file-text"}
+                    emptyTitle={error ? "Gagal memuat data" : "Belum ada laporan akhir"}
+                    emptyDescription={error || "Belum ada laporan akhir penelitian yang diajukan."}
+                    emptyAction={error ? <Button onClick={() => load(1)}>Coba Lagi</Button> : null}
+                    ariaLabel="Daftar Laporan Akhir Penelitian"
+                />
+
+                <Pagination meta={meta} onPage={(p) => load(p)} />
+            </ModernPageCard>
         </div>
     );
 }

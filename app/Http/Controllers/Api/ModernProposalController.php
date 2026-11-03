@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\CommunityService;
 use App\Models\Proposal;
+use App\Models\Setting;
 use App\Services\EligibilityService;
 use App\Services\LecturerEligibilityService;
 use Illuminate\Http\Request;
@@ -46,6 +47,7 @@ class ModernProposalController
             $query->where(function ($q) use ($user, $roleFilter, $isReviewerOnly) {
                 if ($isReviewerOnly) {
                     $q->whereHas('reviewers', fn ($r) => $r->where('user_id', $user->id));
+
                     return;
                 }
                 if ($roleFilter === 'ketua') {
@@ -109,8 +111,8 @@ class ModernProposalController
             $canCreate = ['can_create' => false];
         }
         $isWithinSchedule = false;
-        $startDate = \App\Models\Setting::where('key', ($type === 'research' ? 'research' : 'community_service').'_proposal_start_date')->value('value');
-        $endDate = \App\Models\Setting::where('key', ($type === 'research' ? 'research' : 'community_service').'_proposal_end_date')->value('value');
+        $startDate = Setting::where('key', ($type === 'research' ? 'research' : 'community_service').'_proposal_start_date')->value('value');
+        $endDate = Setting::where('key', ($type === 'research' ? 'research' : 'community_service').'_proposal_end_date')->value('value');
         $isWithinSchedule = LecturerEligibilityService::isWithinSchedule($startDate, $endDate);
 
         return response()->json([

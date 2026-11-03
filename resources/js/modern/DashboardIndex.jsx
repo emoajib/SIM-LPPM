@@ -1,34 +1,25 @@
+// Vetted by AI - Manual Review Required by Senior Engineer/Manager
 import React, { useEffect, useState } from "react";
-import Card from "./components/Card.jsx";
 import Button from "./components/Button.jsx";
-import EmptyState from "./components/EmptyState.jsx";
-import Skeleton from "./components/Skeleton.jsx";
-import Badge from "./components/Badge.jsx";
-
-const STATUS_COLORS = {
-    draft: "bg-gray-100 text-gray-700",
-    submitted: "bg-blue-100 text-blue-700",
-    approved: "bg-emerald-100 text-emerald-700",
-    rejected: "bg-red-100 text-red-700",
-    completed: "bg-slate-100 text-slate-700",
-    revision_needed: "bg-amber-100 text-amber-700",
-};
+import ModernPageCard from "./components/ModernPageCard.jsx";
+import ModernTable from "./components/ModernTable.jsx";
+import { STATUS_COLORS } from "./constants/themeColors.js";
 
 const NAV_ITEMS = [
-    { key: "dashboard", label: "Dashboard" },
-    { key: "penelitian", label: "Penelitian" },
-    { key: "pengabdian", label: "Pengabdian" },
-    { key: "kontrak", label: "Kontrak" },
-    { key: "surat", label: "Surat" },
-    { key: "prototipe", label: "Prototipe" },
-    { key: "kki", label: "Kekayaan Intelektual" },
+    { key: "dashboard", label: "Dashboard", icon: "📊" },
+    { key: "penelitian", label: "Penelitian", href: "/research", icon: "🔬" },
+    { key: "pengabdian", label: "Pengabdian", href: "/community-service", icon: "🤝" },
+    { key: "kontrak", label: "Kontrak", href: "/research/contract", icon: "📝" },
+    { key: "surat", label: "Surat", href: "/dashboard/dosen/surat/dashboard", icon: "✉️" },
+    { key: "prototipe", label: "Prototipe", href: "/prototype", icon: "📦" },
+    { key: "kki", label: "Kekayaan Intelektual", href: "/kki", icon: "💡" },
 ];
 
-const STAT_COLORS = [
-    "bg-[#fb7185]",
-    "bg-[#06b6d4]",
-    "bg-[#fbbf24]",
-    "bg-[#10b981]",
+const STAT_GRADIENTS = [
+    "bg-gradient-to-br from-[#fb7185] to-[#e11d48]",
+    "bg-gradient-to-br from-[#06b6d4] to-[#0284c7]",
+    "bg-gradient-to-br from-[#fbbf24] to-[#d97706]",
+    "bg-gradient-to-br from-[#10b981] to-[#059669]",
 ];
 
 export default function DashboardIndex() {
@@ -86,166 +77,232 @@ export default function DashboardIndex() {
 
     const total = stats.penelitian + stats.pengabdian + stats.surat + stats.prototipe;
 
+    const columns = [
+        {
+            key: "title",
+            label: "Judul",
+            render: (p) => (
+                <div>
+                    <div className="font-bold text-slate-800 dark:text-slate-100 group-hover:text-[#1e3a6e] dark:group-hover:text-cyan-400 transition-colors">
+                        {p.title}
+                    </div>
+                    {p.focus_area && (
+                        <span className="inline-block mt-1 text-[10px] bg-slate-100 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full border border-slate-200/50 dark:border-slate-600">
+                            {p.focus_area}
+                        </span>
+                    )}
+                </div>
+            ),
+        },
+        {
+            key: "submitter",
+            label: "Pengusul",
+            render: (p) => (
+                <div>
+                    <div className="font-medium text-slate-700 dark:text-slate-200">{p.submitter}</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400">{p.identity_id}</div>
+                </div>
+            ),
+        },
+        {
+            key: "category",
+            label: "Kategori",
+            render: (p) => (
+                <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">
+                    {p.detailable_type === "App\\Models\\CommunityService" ? "Pengabdian" : "Penelitian"}
+                </span>
+            ),
+        },
+        {
+            key: "status",
+            label: "Status",
+            render: (p) => (
+                <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold border ${STATUS_COLORS[p.status] || "bg-gray-100 text-gray-700"}`}>
+                    {p.status_label}
+                </span>
+            ),
+        },
+        {
+            key: "created_at",
+            label: "Tanggal",
+            cellClassName: "text-slate-500 dark:text-slate-400 whitespace-nowrap",
+        },
+        {
+            key: "actions",
+            label: "Aksi",
+            align: "center",
+            render: (p) => (
+                <a
+                    href={p.show_url}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold text-[#1e3a6e] dark:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition-colors"
+                >
+                    Lihat &rarr;
+                </a>
+            ),
+        },
+    ];
+
     return (
         <div className="space-y-4">
-            <div className="bg-gradient-to-r from-[#11244e] via-[#1e3a6e] to-[#254b8c] text-white rounded-xl p-5 shadow-md">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                    <div>
-                        <div className="text-[10px] font-black uppercase tracking-widest text-blue-200">Tema Modern · React + Tailwind</div>
-                        <h2 className="text-xl font-black tracking-tight mt-0.5">Dashboard LPPM</h2>
-                        <p className="text-[11px] text-blue-100 font-medium mt-1">Ringkasan usulan penelitian dan pengabdian masyarakat.</p>
+            <div className="bg-gradient-to-r from-[#11244e] via-[#1e3a6e] to-[#254b8c] text-white rounded-xl p-5 shadow-md relative overflow-hidden">
+                <div className="relative z-10">
+                    <div className="text-[10px] font-black uppercase tracking-widest text-cyan-200">
+                        SIM-LPPM ITSNU Pekalongan
                     </div>
-                    <div className="hidden md:flex gap-2">
-                        <span className="bg-white/15 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">React 19</span>
-                        <span className="bg-white/15 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">Tailwind 4</span>
-                        <span className="bg-emerald-400/30 text-emerald-100 border border-emerald-400/40 text-[10px] font-bold px-2.5 py-1 rounded-full">Vite 7</span>
-                    </div>
+                    <h2 className="text-xl font-black tracking-tight mt-0.5">Dashboard Eksekutif Riset</h2>
+                    <p className="text-[11px] text-blue-100 font-medium mt-1">
+                        Monitoring ringkasan usulan penelitian, pengabdian masyarakat, dan kinerja luaran.
+                    </p>
                 </div>
+                <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-white/5 rounded-full blur-xl pointer-events-none" />
             </div>
 
             {/* Stats cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
                 {[
-                    { key: "penelitian", label: "Penelitian", value: stats.penelitian, color: STAT_COLORS[0], icon: "🔍", sub: "Didanai oleh Simlitabmas/ITSNU" },
-                    { key: "pengabdian", label: "Pengabdian", value: stats.pengabdian, color: STAT_COLORS[1], icon: "🤝", sub: "Didanai oleh Simlitabmas/ITSNU" },
-                    { key: "surat", label: "Surat", value: stats.surat, color: STAT_COLORS[2], icon: "✉️", sub: "Surat Tugas & Izin Penelitian/Abdimas" },
-                    { key: "prototipe", label: "Prototipe", value: stats.prototipe, color: STAT_COLORS[3], icon: "📦", sub: "Didanai oleh Simlitabmas/ITSNU" },
+                    { key: "penelitian", label: "Penelitian", value: stats.penelitian, color: STAT_GRADIENTS[0], icon: "🔍", sub: "Didanai oleh Simlitabmas/ITSNU" },
+                    { key: "pengabdian", label: "Pengabdian", value: stats.pengabdian, color: STAT_GRADIENTS[1], icon: "🤝", sub: "Didanai oleh Simlitabmas/ITSNU" },
+                    { key: "surat", label: "Surat", value: stats.surat, color: STAT_GRADIENTS[2], icon: "✉️", sub: "Surat Tugas & Izin Penelitian/Abdimas" },
+                    { key: "prototipe", label: "Prototipe", value: stats.prototipe, color: STAT_GRADIENTS[3], icon: "📦", sub: "Didanai oleh Simlitabmas/ITSNU" },
                 ].map((s) => (
-                    <div key={s.key} className={`rounded-xl p-4 shadow-sm border border-slate-200 ${s.color} text-white`}>
+                    <div
+                        key={s.key}
+                        className={`rounded-xl p-4 shadow-sm border border-white/20 ${s.color} text-white transition-all duration-200 hover:-translate-y-1 hover:shadow-lg`}
+                    >
                         <div className="flex items-center justify-between">
                             <div>
-                                <div className="text-[10px] font-black opacity-80">{s.label}</div>
+                                <div className="text-[10px] font-black opacity-80 uppercase tracking-wider">{s.label}</div>
                                 <div className="text-2xl font-black mt-1">{s.value}</div>
                                 <div className="text-[10px] opacity-90 mt-1">{s.sub}</div>
                             </div>
-                            <div className="text-[24px]">{s.icon}</div>
+                            <div className="text-[28px] opacity-90">{s.icon}</div>
                         </div>
                     </div>
                 ))}
-                <div className="rounded-xl p-4 shadow-sm border border-slate-200 bg-white text-slate-800">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <div className="text-[10px] font-black opacity-60 uppercase">Total Usulan</div>
-                            <div className="text-2xl font-black mt-1 text-[#1e3a6e]">{total}</div>
-                            <div className="text-[10px] text-slate-500 mt-1">Semua jenis usulan</div>
-                        </div>
-                        <div className="text-[24px]">📊</div>
+            </div>
+
+            {/* Total Summary Mini Banner */}
+            <div className="rounded-xl p-4 shadow-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 flex items-center justify-between transition-colors">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-[#1e3a6e]/10 dark:bg-cyan-500/20 text-[#1e3a6e] dark:text-cyan-400 flex items-center justify-center text-xl">
+                        📈
                     </div>
+                    <div>
+                        <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Keseluruhan Usulan</div>
+                        <div className="text-lg font-black text-[#1e3a6e] dark:text-cyan-400">{total} Judul Terdata</div>
+                    </div>
+                </div>
+                <div className="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">
+                    Semua skema Tri Dharma Perguruan Tinggi
                 </div>
             </div>
 
-            {/* Horizontal navigation (zip pattern) */}
-            <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-3">
-                <div className="overflow-x-auto no-scrollbar mb-2">
+            {/* Horizontal navigation */}
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm p-2 transition-colors">
+                <div className="overflow-x-auto no-scrollbar">
                     <div className="flex gap-1 min-w-max">
-                        {NAV_ITEMS.map((item) => (
-                            <button
-                                key={item.key}
-                                onClick={() => setActiveNav(item.key)}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition ${activeNav === item.key ? "bg-[#1e3a6e] text-white shadow-sm" : "text-slate-600 hover:bg-slate-50"}`}
-                            >
-                                {item.label}
-                            </button>
-                        ))}
+                        {NAV_ITEMS.map((item) => {
+                            const isCurrent = activeNav === item.key;
+                            return item.href ? (
+                                <a
+                                    key={item.key}
+                                    href={item.href}
+                                    className="px-3.5 py-2 rounded-lg text-sm font-medium whitespace-nowrap text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition-colors inline-flex items-center gap-1.5"
+                                >
+                                    <span>{item.icon}</span>
+                                    <span>{item.label}</span>
+                                </a>
+                            ) : (
+                                <button
+                                    key={item.key}
+                                    onClick={() => setActiveNav(item.key)}
+                                    className={`px-3.5 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition inline-flex items-center gap-1.5 ${
+                                        isCurrent
+                                            ? "bg-[#1e3a6e] dark:bg-cyan-600 text-white shadow-sm"
+                                            : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/60"
+                                    }`}
+                                >
+                                    <span>{item.icon}</span>
+                                    <span>{item.label}</span>
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
 
-            {/* Quick actions */}
+            {/* Quick actions for Dosen */}
             {((window.__USER_ROLES__ || []).includes("dosen")) && (
-                <div className="flex flex-wrap gap-2">
-                    <a href="/research/proposal/create" className="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-emerald-700 transition">
-                        + Buat Usulan Penelitian
+                <div className="flex flex-wrap gap-2.5">
+                    <a
+                        href="/research/proposal/create"
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition inline-flex items-center gap-1.5"
+                    >
+                        <span>+</span>
+                        <span>Buat Usulan Penelitian</span>
                     </a>
-                    <a href="/community-service/proposal/create" className="bg-cyan-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-cyan-700 transition">
-                        + Buat Usulan Pengabdian
+                    <a
+                        href="/community-service/proposal/create"
+                        className="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition inline-flex items-center gap-1.5"
+                    >
+                        <span>+</span>
+                        <span>Buat Usulan Pengabdian</span>
                     </a>
                 </div>
             )}
 
             {/* Proposals table */}
-            <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 modern-tab-content">
+            <ModernPageCard>
                 <div className="flex flex-col md:flex-row gap-3 mb-4 items-end">
-                    <input
-                        type="text"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && loadProposals()}
-                        placeholder="Cari berdasarkan judul..."
-                        className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
-                    />
-                    <select
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value)}
-                        className="border border-slate-300 rounded-lg px-3 py-2 text-sm"
-                    >
-                        <option value="all">Semua Status</option>
-                        <option value="draft">Draft</option>
-                        <option value="submitted">Diajukan</option>
-                        <option value="approved">Disetujui</option>
-                        <option value="rejected">Ditolak</option>
-                        <option value="completed">Selesai</option>
-                    </select>
-                    <button
-                        onClick={loadProposals}
-                        className="bg-[#1e3a6e] text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#254b8c] transition"
-                    >
+                    <div className="flex-1 w-full">
+                        <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Pencarian Judul</label>
+                        <input
+                            type="text"
+                            value={search}
+                            aria-label="Cari judul proposal di dashboard"
+                            onChange={(e) => setSearch(e.target.value)}
+                            onKeyDown={(e) => e.key === "Enter" && loadProposals()}
+                            placeholder="Ketik judul usulan lalu tekan enter..."
+                            className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                        />
+                    </div>
+                    <div className="w-full md:w-48">
+                        <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Status Usulan</label>
+                        <select
+                            value={status}
+                            aria-label="Filter status proposal di dashboard"
+                            onChange={(e) => setStatus(e.target.value)}
+                            className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                        >
+                            <option value="all">Semua Status</option>
+                            <option value="draft">Draft</option>
+                            <option value="submitted">Diajukan</option>
+                            <option value="approved">Disetujui</option>
+                            <option value="rejected">Ditolak</option>
+                            <option value="completed">Selesai</option>
+                        </select>
+                    </div>
+                    <Button onClick={loadProposals} variant="primary" size="md">
                         Cari
-                    </button>
+                    </Button>
                 </div>
 
-                {loading ? (
-                    <Skeleton lines={5} className="h-10" />
-                ) : proposals.length === 0 ? (
-                    <EmptyState icon="ti ti-clipboard-off" title="Tidak ada data usulan" description="Belum ada usulan yang tercatat." />
-                ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                            <thead className="bg-slate-50 text-slate-600 text-xs uppercase">
-                                <tr>
-                                    <th className="text-left px-3 py-2">Judul</th>
-                                    <th className="text-left px-3 py-2">Pengusul</th>
-                                    <th className="text-left px-3 py-2">Kategori</th>
-                                    <th className="text-left px-3 py-2">Status</th>
-                                    <th className="text-left px-3 py-2">Tanggal</th>
-                                    <th className="text-left px-3 py-2">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-100">
-                                {proposals.map((p) => (
-                                    <tr key={p.id} className="hover:bg-slate-50">
-                                        <td className="px-3 py-2">
-                                            <div className="font-bold text-slate-800">{p.title}</div>
-                                            {p.focus_area && (
-                                                <span className="inline-block mt-1 text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">{p.focus_area}</span>
-                                            )}
-                                        </td>
-                                        <td className="px-3 py-2">
-                                            <div>{p.submitter}</div>
-                                            <div className="text-xs text-slate-500">{p.identity_id}</div>
-                                        </td>
-                                        <td className="px-3 py-2 text-slate-600 text-sm">{p.detailable_type === "App\\Models\\CommunityService" ? "Pengabdian" : "Penelitian"}</td>
-                                        <td className="px-3 py-2">
-                                            <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-bold ${STATUS_COLORS[p.status] || "bg-gray-100 text-gray-700"}`}>
-                                                {p.status_label}
-                                            </span>
-                                        </td>
-                                        <td className="px-3 py-2 text-slate-500">{p.created_at}</td>
-                                        <td className="px-3 py-2">
-                                            <a href={p.show_url} className="text-[#1e3a6e] font-bold text-xs hover:underline">Lihat</a>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
+                <ModernTable
+                    columns={columns}
+                    data={proposals}
+                    loading={loading}
+                    emptyIcon="ti ti-clipboard-off"
+                    emptyTitle="Tidak ada data usulan"
+                    emptyDescription="Belum ada usulan penelitian yang tercatat."
+                    ariaLabel="Tabel Usulan Terkini"
+                />
+
                 {meta.last_page > 1 && (
-                    <div className="mt-4 text-xs text-slate-500">
-                        Halaman {meta.current_page} dari {meta.last_page} · Total {meta.total}
+                    <div className="mt-4 text-xs text-slate-500 dark:text-slate-400">
+                        Halaman {meta.current_page} dari {meta.last_page} · Total {meta.total} usulan
                     </div>
                 )}
-            </div>
+            </ModernPageCard>
         </div>
     );
 }

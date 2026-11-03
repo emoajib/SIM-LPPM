@@ -456,7 +456,7 @@
         </div>
     </div>
 
-    <!-- QUICK ACTIONS (modern, role-aware) -->
+    <!-- QUICK ACTIONS & TUGAS ANDA (Konsisten, Bebas Tombol Dobel) -->
     @if (active_has_role('dosen'))
     <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 1rem 0;">
         <a href="{{ route('research.proposal.create') }}" class="btn btn-primary btn-sm">+ Buat Usulan Penelitian</a>
@@ -465,79 +465,46 @@
     </div>
     @endif
 
-    @if (active_has_role('admin lppm'))
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 1rem 0;">
-        <a href="{{ route('admin-lppm.letters.dashboard') }}" class="btn btn-primary btn-sm">📄 Dashboard Surat</a>
-        <a href="{{ route('admin-lppm.report-approval') }}" class="btn btn-outline-primary btn-sm">📊 Monitoring Laporan</a>
-        <a href="{{ route('admin-lppm.assign-reviewers') }}" class="btn btn-outline-secondary btn-sm">👥 Penugasan Reviewer</a>
-        <a href="{{ route('settings.master-data') }}" class="btn btn-outline-secondary btn-sm">⚙️ Master Data</a>
-    </div>
-    @endif
-
-    @if (active_has_role('kepala lppm'))
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 1rem 0;">
-        <a href="{{ route('kepala-lppm.initial-approval') }}" class="btn btn-primary btn-sm">✅ Persetujuan (Awal)</a>
-        <a href="{{ route('kepala-lppm.final-decision') }}" class="btn btn-outline-primary btn-sm">✔️ Persetujuan (Akhir)</a>
-        <a href="{{ route('kepala-lppm.report-approval') }}" class="btn btn-outline-secondary btn-sm">📊 Persetujuan Laporan</a>
-        <a href="{{ route('kepala-lppm.letter-approval') }}" class="btn btn-outline-secondary btn-sm">📄 Persetujuan Surat</a>
-    </div>
-    @endif
-
-    @if (active_has_role('dekan'))
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 1rem 0;">
-        <a href="{{ route('dekan.proposals.index') }}" class="btn btn-primary btn-sm">✅ Persetujuan Proposal</a>
-        <a href="{{ route('dekan.reports.index') }}" class="btn btn-outline-primary btn-sm">📊 Persetujuan Laporan</a>
-        <a href="{{ route('dekan.approval-history') }}" class="btn btn-outline-secondary btn-sm">📜 Riwayat Persetujuan</a>
-    </div>
-    @endif
-
-    @if (active_has_role('kaprodi'))
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 1rem 0;">
-        <a href="{{ route('kaprodi.proposals.index') }}" class="btn btn-primary btn-sm">✅ Persetujuan Kaprodi</a>
-        <a href="{{ route('kaprodi.report-approval') }}" class="btn btn-outline-primary btn-sm">📊 Monitoring Laporan</a>
-    </div>
-    @endif
-
-    @if (active_has_role('reviewer'))
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 1rem 0;">
-        <a href="{{ route('review.research') }}" class="btn btn-primary btn-sm">🔬 Review Penelitian</a>
-        <a href="{{ route('review.community-service') }}" class="btn btn-outline-primary btn-sm">🤝 Review Pengabdian</a>
-        <a href="{{ route('review.review-history') }}" class="btn btn-outline-secondary btn-sm">📜 Riwayat Review</a>
-    </div>
-    @endif
-
-    <!-- TUGAS ANDA (collapsible, modern) -->
+    <!-- TUGAS ANDA (Alur Kerja Terpadu per Peran) -->
     <div x-data="{ open: true }" class="sli-main-card" style="margin: 1rem 0;">
         <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" @click="open = !open">
-            <div style="font-weight: 800; font-size: 0.9rem;">📋 Tugas Anda</div>
+            <div style="font-weight: 800; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span>📋</span>
+                <span>Tugas & Persetujuan Anda</span>
+            </div>
             <span x-text="open ? '▲' : '▼'" style="font-size: 0.75rem; opacity: 0.7;"></span>
         </div>
         <div x-show="open" x-transition class="mt-3" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
             @if (active_has_role('dosen'))
-                <a href="{{ route('research.proposal-revision.index') }}" class="btn btn-sm btn-outline-warning">Perbaikan Usulan</a>
-                <a href="{{ route('research.final-report.index') }}" class="btn btn-sm btn-outline-info">Laporan Akhir</a>
-                <a href="{{ route('research.daily-note.index') }}" class="btn btn-sm btn-outline-secondary">Realisasi Anggaran</a>
+                <a href="{{ route('research.proposal-revision.index') }}" class="btn btn-sm btn-outline-warning">✏️ Perbaikan Usulan</a>
+                <a href="{{ route('research.final-report.index') }}" class="btn btn-sm btn-outline-info">📑 Laporan Akhir</a>
+                <a href="{{ route('research.daily-note.index') }}" class="btn btn-sm btn-outline-secondary">💰 Realisasi Anggaran</a>
             @endif
             @if (active_has_role('admin lppm'))
-                <a href="{{ route('admin-lppm.report-approval') }}" class="btn btn-sm btn-outline-warning">Monitoring Laporan</a>
-                <a href="{{ route('admin-lppm.assign-reviewers') }}" class="btn btn-sm btn-outline-info">Penugasan Reviewer</a>
+                <a href="{{ route('admin-lppm.letters.dashboard') }}" class="btn btn-sm btn-primary">📄 Dashboard Surat</a>
+                <a href="{{ route('admin-lppm.report-approval') }}" class="btn btn-sm btn-outline-warning">📊 Monitoring Laporan</a>
+                <a href="{{ route('admin-lppm.assign-reviewers') }}" class="btn btn-sm btn-outline-info">👥 Penugasan Reviewer</a>
+                <a href="{{ route('settings.master-data') }}" class="btn btn-sm btn-outline-secondary">⚙️ Master Data</a>
             @endif
             @if (active_has_role('kepala lppm'))
-                <a href="{{ route('kepala-lppm.initial-approval') }}" class="btn btn-sm btn-outline-warning">Persetujuan (Awal)</a>
-                <a href="{{ route('kepala-lppm.final-decision') }}" class="btn btn-sm btn-outline-info">Persetujuan (Akhir)</a>
-                <a href="{{ route('kepala-lppm.letter-approval') }}" class="btn btn-sm btn-outline-secondary">Persetujuan Surat</a>
+                <a href="{{ route('kepala-lppm.initial-approval') }}" class="btn btn-sm btn-outline-warning">✅ Persetujuan (Awal)</a>
+                <a href="{{ route('kepala-lppm.final-decision') }}" class="btn btn-sm btn-outline-info">✔️ Persetujuan (Akhir)</a>
+                <a href="{{ route('kepala-lppm.report-approval') }}" class="btn btn-sm btn-outline-secondary">📊 Persetujuan Laporan</a>
+                <a href="{{ route('kepala-lppm.letter-approval') }}" class="btn btn-sm btn-outline-primary">📄 Persetujuan Surat</a>
             @endif
             @if (active_has_role('dekan'))
-                <a href="{{ route('dekan.proposals.index') }}" class="btn btn-sm btn-outline-warning">Persetujuan Proposal</a>
-                <a href="{{ route('dekan.reports.index') }}" class="btn btn-sm btn-outline-info">Persetujuan Laporan</a>
+                <a href="{{ route('dekan.proposals.index') }}" class="btn btn-sm btn-outline-warning">✅ Persetujuan Proposal</a>
+                <a href="{{ route('dekan.reports.index') }}" class="btn btn-sm btn-outline-info">📊 Persetujuan Laporan</a>
+                <a href="{{ route('dekan.approval-history') }}" class="btn btn-sm btn-outline-secondary">📜 Riwayat Persetujuan</a>
             @endif
             @if (active_has_role('kaprodi'))
-                <a href="{{ route('kaprodi.proposals.index') }}" class="btn btn-sm btn-outline-warning">Persetujuan Kaprodi</a>
-                <a href="{{ route('kaprodi.report-approval') }}" class="btn btn-sm btn-outline-info">Monitoring Laporan</a>
+                <a href="{{ route('kaprodi.proposals.index') }}" class="btn btn-sm btn-outline-warning">✅ Persetujuan Kaprodi</a>
+                <a href="{{ route('kaprodi.report-approval') }}" class="btn btn-sm btn-outline-info">📊 Monitoring Laporan</a>
             @endif
             @if (active_has_role('reviewer'))
-                <a href="{{ route('review.research') }}" class="btn btn-sm btn-outline-warning">Review Penelitian</a>
-                <a href="{{ route('review.community-service') }}" class="btn btn-sm btn-outline-info">Review Pengabdian</a>
+                <a href="{{ route('review.research') }}" class="btn btn-sm btn-outline-warning">🔬 Review Penelitian</a>
+                <a href="{{ route('review.community-service') }}" class="btn btn-sm btn-outline-info">🤝 Review Pengabdian</a>
+                <a href="{{ route('review.review-history') }}" class="btn btn-sm btn-outline-secondary">📜 Riwayat Review</a>
             @endif
         </div>
     </div>
