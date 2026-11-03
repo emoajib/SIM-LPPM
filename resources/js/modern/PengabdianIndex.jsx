@@ -50,6 +50,14 @@ export default function PengabdianIndex() {
 
     useEffect(() => { load(1); }, [roleFilter]);
 
+    useEffect(() => {
+        if (!isDosen) return;
+        fetch(`/research/api/v1/eligibility?type=community_service`, { credentials: "same-origin", cache: "no-store" })
+            .then((r) => r.ok ? r.json() : null)
+            .then((j) => { if (j) setElig(j); })
+            .catch(() => {});
+    }, []);
+
     const loadEligibility = async () => {
         try {
             const res = await fetch(`/research/api/v1/eligibility?type=community_service`, { credentials: "same-origin", cache: "no-store" });
@@ -138,9 +146,23 @@ export default function PengabdianIndex() {
                             <button onClick={loadEligibility} className="bg-slate-100 text-slate-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-200 transition">
                                 Info Eligibilitas
                             </button>
-                            <a href="/community-service/proposal/create" className="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-emerald-700 transition">
-                                + Buat Usulan
-                            </a>
+                            {elig && elig.schedule_open ? (
+                                elig.eligible && Array.isArray(elig.schemes) && elig.schemes.length > 0 ? (
+                                    elig.can_create ? (
+                                        <a href="/community-service/proposal/create" className="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-emerald-700 transition">
+                                            + Buat Usulan
+                                        </a>
+                                    ) : (
+                                        <button type="button" disabled title="Kuota terbatas" className="bg-slate-300 text-slate-600 px-4 py-2 rounded-lg text-sm font-bold cursor-not-allowed">
+                                            Kuota Terbatas
+                                        </button>
+                                    )
+                                ) : (
+                                    <button type="button" disabled title={(Array.isArray(elig.reasons) && elig.reasons.length ? elig.reasons.join(" ") : "Anda tidak memenuhi syarat untuk skema pengabdian manapun.")} className="bg-slate-300 text-slate-600 px-4 py-2 rounded-lg text-sm font-bold cursor-not-allowed">
+                                        Usulan Dikunci
+                                    </button>
+                                )
+                            ) : null}
                         </>
                     )}
                 </div>
