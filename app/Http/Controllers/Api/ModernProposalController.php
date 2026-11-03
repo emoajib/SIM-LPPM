@@ -33,7 +33,15 @@ class ModernProposalController
             $query->whereYear('created_at', $year);
         }
 
-        if (! $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'dekan'])) {
+        if ($user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor'])) {
+            // global access
+        } elseif ($user->activeHasRole('dekan')) {
+            if ($user->identity?->faculty_id) {
+                $query->whereHas('submitter.identity', fn ($si) => $si->where('faculty_id', $user->identity->faculty_id));
+            } else {
+                $query->whereRaw('1=0');
+            }
+        } else {
             $query->where(function ($q) use ($user, $roleFilter) {
                 if ($roleFilter === 'ketua') {
                     $q->where('submitter_id', $user->id);
