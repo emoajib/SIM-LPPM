@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from "react";
+import Skeleton from "./components/Skeleton.jsx";
+import EmptyState from "./components/EmptyState.jsx";
+import Pagination from "./components/Pagination.jsx";
 
 const STATUS_COLORS = {
     revision_needed: "bg-amber-100 text-amber-700",
@@ -23,11 +26,11 @@ export default function ResearchRevisionIndex() {
     ];
     const currentPath = window.location.pathname.replace(/\/$/, "");
 
-    const load = async () => {
+    const load = async (p = 1) => {
         setLoading(true);
         setError(null);
         try {
-            const params = new URLSearchParams({ search, type: "research", submodule: "revision", _: Date.now() });
+            const params = new URLSearchParams({ search, type: "research", submodule: "revision", page: p, _: Date.now() });
             const res = await fetch(`/research/api/v1/proposals?${params.toString()}`, { credentials: "same-origin", cache: "no-store" });
             if (!res.ok) throw new Error("HTTP " + res.status);
             const json = await res.json();
@@ -41,7 +44,7 @@ export default function ResearchRevisionIndex() {
         }
     };
 
-    useEffect(() => { load(); }, []);
+    useEffect(() => { load(1); }, []);
 
     return (
         <div className="space-y-4">
@@ -65,22 +68,15 @@ export default function ResearchRevisionIndex() {
                         onKeyDown={(e) => e.key === "Enter" && load()}
                         placeholder="Cari berdasarkan judul..."
                         className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]" />
-                    <button onClick={load} className="bg-[#1e3a6e] text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#254b8c] transition">Cari</button>
+                    <button onClick={() => load(1)} className="bg-[#1e3a6e] text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#254b8c] transition">Cari</button>
                 </div>
 
                 {loading ? (
-                    <div className="text-center py-8 text-slate-500">Memuat...</div>
+                    <Skeleton lines={5} className="h-10" />
                 ) : error ? (
-                    <div className="text-center py-8 text-red-500">
-                        <div className="text-3xl mb-2">⚠️</div>
-                        <div className="font-semibold">{error}</div>
-                        <button onClick={load} className="mt-3 bg-[#1e3a6e] text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#254b8c] transition">Coba lagi</button>
-                    </div>
+                    <EmptyState icon="ti ti-alert-triangle" title="Gagal memuat data" description={error} action={<button onClick={() => load(1)} className="mt-3 bg-[#1e3a6e] text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#254b8c] transition">Coba lagi</button>} />
                 ) : proposals.length === 0 ? (
-                    <div className="text-center py-8 text-slate-500">
-                        <div className="text-3xl mb-2">📋</div>
-                        <div className="font-semibold">Tidak ada proposal perlu diperbaiki.</div>
-                    </div>
+                    <EmptyState icon="ti ti-clipboard-off" title="Tidak ada proposal perlu diperbaiki" description="Belum ada data." />
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm">
@@ -109,9 +105,7 @@ export default function ResearchRevisionIndex() {
                         </table>
                     </div>
                 )}
-                {meta.last_page > 1 && (
-                    <div className="mt-4 text-xs text-slate-500">Halaman {meta.current_page} dari {meta.last_page} · Total {meta.total}</div>
-                )}
+                <Pagination meta={meta} onPage={(p) => load(p)} />
             </div>
         </div>
     );

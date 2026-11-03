@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from "react";
+import Skeleton from "./components/Skeleton.jsx";
+import EmptyState from "./components/EmptyState.jsx";
+import Pagination from "./components/Pagination.jsx";
 
 export default function PengabdianDailyNoteIndex() {
     const [proposals, setProposals] = useState([]);
@@ -18,11 +21,11 @@ export default function PengabdianDailyNoteIndex() {
     ];
     const currentPath = window.location.pathname.replace(/\/$/, "");
 
-    const load = async () => {
+    const load = async (p = 1) => {
         setLoading(true);
         setError(null);
         try {
-            const params = new URLSearchParams({ search, type: "community-service", submodule: "daily-note", _: Date.now() });
+            const params = new URLSearchParams({ search, type: "community-service", submodule: "daily-note", page: p, _: Date.now() });
             const res = await fetch(`/research/api/v1/proposals?${params.toString()}`, { credentials: "same-origin", cache: "no-store" });
             if (!res.ok) throw new Error("HTTP " + res.status);
             const json = await res.json();
@@ -35,7 +38,7 @@ export default function PengabdianDailyNoteIndex() {
             setLoading(false);
         }
     };
-    useEffect(() => { load(); }, []);
+    useEffect(() => { load(1); }, []);
 
     return (
         <div className="space-y-4">
@@ -50,14 +53,14 @@ export default function PengabdianDailyNoteIndex() {
             <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 modern-tab-content">
                 <div className="flex flex-col md:flex-row gap-3 mb-4">
                     <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} onKeyDown={(e) => e.key === "Enter" && load()} placeholder="Cari berdasarkan judul..." className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]" />
-                    <button onClick={load} className="bg-[#1e3a6e] text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#254b8c] transition">Cari</button>
+                    <button onClick={() => load(1)} className="bg-[#1e3a6e] text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#254b8c] transition">Cari</button>
                 </div>
                 {loading ? (
                     <div className="animate-pulse space-y-2 py-4">{[1,2,3,4,5].map((i) => <div key={i} className="h-10 bg-slate-100 rounded-lg" />)}</div>
                 ) : error ? (
-                    <div className="text-center py-8 text-red-500"><div className="text-3xl mb-2">⚠️</div><div className="font-semibold">{error}</div><button onClick={load} className="mt-3 bg-[#1e3a6e] text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#254b8c] transition">Coba lagi</button></div>
+                    <div className="text-center py-8 text-red-500"><div className="text-3xl mb-2">⚠️</div><div className="font-semibold">{error}</div><button onClick={() => load(1)} className="mt-3 bg-[#1e3a6e] text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#254b8c] transition">Coba lagi</button></div>
                 ) : proposals.length === 0 ? (
-                    <div className="text-center py-8 text-slate-500"><div className="text-3xl mb-2">📓</div><div className="font-semibold">Belum ada realisasi anggaran.</div></div>
+                    <EmptyState icon="ti ti-wallet" title="Belum ada realisasi anggaran" description="Belum ada data." />
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm">
@@ -78,7 +81,7 @@ export default function PengabdianDailyNoteIndex() {
                         </table>
                     </div>
                 )}
-                {meta.last_page > 1 && <div className="mt-4 text-xs text-slate-500">Halaman {meta.current_page} dari {meta.last_page} · Total {meta.total}</div>}
+                {meta.last_page > 1 && <Pagination meta={meta} onPage={(p) => load(p)} />}
             </div>
         </div>
     );
