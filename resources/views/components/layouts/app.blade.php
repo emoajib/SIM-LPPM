@@ -36,11 +36,9 @@
         <div class="page-wrapper">
             @php
                 $modernPageMap = [
-                    'research.proposal.index' => 'proposals-index',
                     'research.proposal-revision.index' => 'research-revision-index',
                     'research.final-report.index' => 'research-final-report-index',
                     'research.daily-note.index' => 'research-daily-note-index',
-                    'community-service.proposal.index' => 'pengabdian-index',
                     'community-service.proposal-revision.index' => 'pengabdian-revision-index',
                     'community-service.final-report.index' => 'pengabdian-final-report-index',
                     'community-service.daily-note.index' => 'pengabdian-daily-note-index',
