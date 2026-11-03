@@ -15,6 +15,7 @@ use App\Models\ResearchScheme;
 use App\Models\Setting;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Service to check if a lecturer is eligible to submit a new proposal.
@@ -100,6 +101,18 @@ class LecturerEligibilityService
      * @return array ['eligible' => bool, 'reasons' => array, 'period' => array]
      */
     public function checkEligibility(User $user, ?string $type = null): array
+    {
+        $type = self::normalizeType($type);
+
+        // Cache hasil eligibility (60s) agar modal tidak membebani setiap request
+        $cacheKey = 'eligibility_'.$user->id.'_'.($type ?? 'all');
+
+        return Cache::remember($cacheKey, 60, function () use ($user, $type) {
+            return $this->computeEligibility($user, $type);
+        });
+    }
+
+    protected function computeEligibility(User $user, ?string $type = null): array
     {
         $type = self::normalizeType($type);
         $now = Carbon::now(self::SCHEDULE_TIMEZONE);

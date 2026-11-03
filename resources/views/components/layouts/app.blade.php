@@ -80,12 +80,7 @@
                         <script>window.__MODERN_PAGE__ = @json($modernPage);</script>
                         <script>window.__USER_ROLES__ = @json(auth()->user()?->getRoleNames() ?? []);</script>
                         @if ($modernPage)
-                            {{-- Modern theme: React (migrasi) — Blade pageActions (eligible button + modal) tetap dirender --}}
-                            @isset($pageActions)
-                                <div class="mb-3 d-flex justify-content-end">
-                                    {{ $pageActions }}
-                                </div>
-                            @endisset
+                            {{-- Modern theme: React (migrasi) — eligible button ada di React (cepat, via API) --}}
                             <div id="modern-root"></div>
                         @else
                             {{-- Modern theme: Blade content (hybrid) — tanpa banner React --}}
