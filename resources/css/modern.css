@@ -1,5 +1,24 @@
-@import "tailwindcss";
+@import "tailwindcss/theme" layer(theme);
+@import "tailwindcss/utilities" layer(utilities);
 @custom-variant dark (&:where(.theme-dark, .theme-dark *));
+
+/* Scoped Preflight — hanya untuk #modern-root, tidak menyentuh navbar Tabler */
+#modern-root, #modern-root * { box-sizing: border-box; }
+#modern-root { margin: 0; }
+#modern-root img, #modern-root svg, #modern-root video,
+#modern-root canvas, #modern-root audio, #modern-root iframe, #modern-root embed, #modern-root object {
+    display: block; max-width: 100%;
+}
+#modern-root button, #modern-root input, #modern-root optgroup,
+#modern-root select, #modern-root textarea {
+    font: inherit; color: inherit; margin: 0; padding: 0;
+    background-color: transparent; border: 0;
+}
+#modern-root table { border-collapse: collapse; }
+#modern-root h1, #modern-root h2, #modern-root h3, #modern-root h4,
+#modern-root h5, #modern-root h6 { font-size: inherit; font-weight: inherit; }
+#modern-root p { margin: 0; }
+#modern-root ul, #modern-root ol { list-style: none; margin: 0; padding: 0; }
 
 /* Modern theme design tokens — SIM-LPPM Navy System */
 :root {
