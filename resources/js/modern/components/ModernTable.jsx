@@ -11,7 +11,7 @@ export default function ModernTable({
     columns = [],
     data = [],
     loading = false,
-    emptyIcon = "ti ti-inbox",
+    emptyIcon = "ti ti-folder-open",
     emptyTitle = "Tidak ada data",
     emptyDescription = "Belum ada item yang dapat ditampilkan.",
     emptyAction = null,

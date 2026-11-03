@@ -124,7 +124,7 @@ export default function ResearchFinalReportIndex() {
                     columns={columns}
                     data={proposals}
                     loading={loading}
-                    emptyIcon={error ? "ti ti-alert-triangle" : "ti ti-file-text"}
+                    emptyIcon={error ? "ti ti-alert-triangle" : "ti ti-file-analytics"}
                     emptyTitle={error ? "Gagal memuat data" : "Belum ada laporan akhir"}
                     emptyDescription={error || "Belum ada laporan akhir penelitian yang diajukan."}
                     emptyAction={error ? <Button onClick={() => load(1)}>Coba Lagi</Button> : null}

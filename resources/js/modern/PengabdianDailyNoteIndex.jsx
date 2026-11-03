@@ -124,7 +124,7 @@ export default function PengabdianDailyNoteIndex() {
                     columns={columns}
                     data={proposals}
                     loading={loading}
-                    emptyIcon={error ? "ti ti-alert-triangle" : "ti ti-wallet"}
+                    emptyIcon={error ? "ti ti-alert-triangle" : "ti ti-receipt"}
                     emptyTitle={error ? "Gagal memuat data" : "Belum ada catatan realisasi anggaran"}
                     emptyDescription={error || "Belum ada catatan harian kegiatan atau belanja dana pengabdian."}
                     emptyAction={error ? <Button onClick={() => load(1)}>Coba Lagi</Button> : null}

@@ -207,7 +207,7 @@ export default function ProposalsIndex() {
                     columns={columns}
                     data={proposals}
                     loading={loading}
-                    emptyIcon={error ? "ti ti-alert-triangle" : "ti ti-clipboard-off"}
+                    emptyIcon={error ? "ti ti-alert-triangle" : "ti ti-certificate"}
                     emptyTitle={error ? "Gagal memuat data" : "Tidak ada data penelitian"}
                     emptyDescription={error || "Belum ada usulan yang tercatat pada sistem."}
                     emptyAction={error ? <Button onClick={() => load(1)}>Coba Lagi</Button> : null}

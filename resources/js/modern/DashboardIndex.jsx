@@ -291,7 +291,7 @@ export default function DashboardIndex() {
                     columns={columns}
                     data={proposals}
                     loading={loading}
-                    emptyIcon="ti ti-clipboard-off"
+                    emptyIcon="ti ti-certificate"
                     emptyTitle="Tidak ada data usulan"
                     emptyDescription="Belum ada usulan penelitian yang tercatat."
                     ariaLabel="Tabel Usulan Terkini"

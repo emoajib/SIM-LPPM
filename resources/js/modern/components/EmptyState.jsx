@@ -1,7 +1,7 @@
 import React from "react";
 
 // Vetted by AI - Manual Review Required by Senior Engineer/Manager
-export default function EmptyState({ icon = "ti ti-inbox", title = "Tidak ada data", description = "", action = null }) {
+export default function EmptyState({ icon = "ti ti-folder-open", title = "Tidak ada data", description = "", action = null }) {
     return (
         <div className="text-center py-12 px-4">
             <div className="text-5xl mb-3 opacity-60"><i className={icon} /></div>
