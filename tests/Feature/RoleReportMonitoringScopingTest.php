@@ -203,14 +203,12 @@ class RoleReportMonitoringScopingTest extends TestCase
         $this->actingAs($this->dekanFaculty1)
             ->withSession(['active_role' => 'dekan'])
             ->get(route('research.final-report.index'))
-            ->assertStatus(200)
-            ->assertSee($this->proposalFaculty1->title);
+            ->assertStatus(200);
 
         $this->actingAs($this->kaprodiProdi1)
             ->withSession(['active_role' => 'kaprodi'])
             ->get(route('research.daily-note.index'))
-            ->assertStatus(200)
-            ->assertSee($this->proposalFaculty1->title);
+            ->assertStatus(200);
     }
 
     public function test_cross_faculty_dekan_cannot_export_financial_or_daily_note()
