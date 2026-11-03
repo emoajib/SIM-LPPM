@@ -595,7 +595,7 @@ class MenuComposer
         // so primary modules stay visible without long/deep dropdowns.
         // Classic theme keeps the existing flat layout untouched.
         $isModern = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')) === 'modern';
-        if ($isModern && count($formatted) > 8) {
+        if (false && $isModern && count($formatted) > 8) {
             $primary = array_slice($formatted, 0, 8);
             $overflow = array_slice($formatted, 8);
             if (! empty($overflow)) {
