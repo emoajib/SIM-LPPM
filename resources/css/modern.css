@@ -72,11 +72,15 @@
   background-size: 200% 100%;
 }
 
-/* Safety net: pastikan navbar menu tetap tampil di tema modern (collapse expanded on md+) */
-.theme-modern .navbar-nav { display: flex !important; }
-@media (min-width: 768px) {
-    .theme-modern .navbar-expand-md .navbar-collapse { display: flex !important; }
+/* Safety net: paksa navbar menu selalu tampil di tema modern (tanpa collapse) */
+.theme-modern .navbar-toggler { display: none !important; }
+.theme-modern .navbar-collapse {
+    display: flex !important;
+    flex-basis: auto !important;
+    flex-grow: 1;
+    align-items: center;
 }
+.theme-modern .navbar-nav { display: flex !important; flex-wrap: wrap; }
 
 /* Focus ring modern */
 .modern-focus:focus-visible {
