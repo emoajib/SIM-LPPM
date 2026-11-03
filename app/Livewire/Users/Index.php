@@ -10,6 +10,9 @@ use App\Models\StudyProgram;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
@@ -533,12 +536,28 @@ class Index extends Component
             return;
         }
 
-        $newPassword = 'password'; // Standard default
+        // Generate a strong random password (not a predictable default)
+        $newPassword = Str::random(12);
 
         $user->update([
             'password' => Hash::make($newPassword),
         ]);
 
-        $this->toastSuccess(__("Password untuk {$user->name} telah direset menjadi: 'password'"));
+        // Kirim password baru ke email user (domain: namalengkapdosen@itsnupekalongan.ac.id)
+        try {
+            Mail::raw(
+                "Password akun SIM LPPM Anda telah direset oleh admin.\n\n".
+                "Password baru: {$newPassword}\n\n".
+                "Segera ganti password setelah login.\n",
+                function ($message) use ($user) {
+                    $message->to($user->email)
+                        ->subject('Reset Password SIM LPPM - ITSNU Pekalongan');
+                }
+            );
+        } catch (\Throwable $e) {
+            Log::warning('Gagal kirim email reset password: '.$e->getMessage());
+        }
+
+        $this->toastSuccess(__("Password untuk {$user->name} telah direset dan dikirim ke email ({$user->email})."));
     }
 }
