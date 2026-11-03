@@ -30,7 +30,7 @@
         $isModernTheme = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')) === 'modern';
     @endphp
     <div class="page">
-        @persist('header-'.(request()->route()?->getName() ?? 'home'))
+        @persist('header')
         @include('components.layouts.header')
         @endpersist
         <div class="page-wrapper">
@@ -80,8 +80,10 @@
                         <script>window.__MODERN_PAGE__ = @json($modernPage);</script>
                         <script>window.__USER_ROLES__ = @json(auth()->user()?->getRoleNames() ?? []);</script>
                         @if ($modernPage)
-                            {{-- Modern theme: React (migrasi) — eligible button ada di React (cepat, via API) --}}
+                            {{-- Modern theme: React (migrasi) --}}
                             <div id="modern-root"></div>
+                            {{-- Fallback Blade content jika React gagal mount --}}
+                            <noscript>{{ $slot }}</noscript>
                         @else
                             {{-- Modern theme: Blade content (hybrid) — tanpa banner React --}}
                             {{ $slot }}
