@@ -203,18 +203,28 @@ export default function ProposalsIndex() {
                     )}
                 </div>
 
-                <ModernTable
-                    columns={columns}
-                    data={proposals}
-                    loading={loading}
-                    emptyIcon={error ? "ti ti-alert-triangle" : "ti ti-certificate"}
-                    emptyTitle={error ? "Gagal memuat data" : "Tidak ada data penelitian"}
-                    emptyDescription={error || "Belum ada usulan yang tercatat pada sistem."}
-                    emptyAction={error ? <Button onClick={() => load(1)}>Coba Lagi</Button> : null}
-                    ariaLabel="Daftar Usulan Penelitian"
-                />
+                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <ModernTable
+                            columns={columns}
+                            data={proposals}
+                            loading={loading}
+                            emptyIcon={error ? "ti ti-alert-triangle" : "ti ti-certificate"}
+                            emptyTitle={error ? "Gagal memuat data" : "Tidak ada data penelitian"}
+                            emptyDescription={error || "Belum ada usulan yang tercatat pada sistem."}
+                            emptyAction={error ? <Button onClick={() => load(1)}>Coba Lagi</Button> : null}
+                            ariaLabel="Daftar Usulan Penelitian"
+                        />
+                    </div>
+                </div>
 
                 <Pagination meta={meta} onPage={(p) => load(p)} />
+
+                {isDosen && elig && elig.can_create && (
+                    <a href="/research/proposal/create" className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center shadow-lg text-2xl z-50 transition" title="Buat Usulan Penelitian">
+                        +
+                    </a>
+                )}
 
                 <Modal open={showElig} onClose={() => setShowElig(false)} title="Info Eligibilitas Peneliti">
                     {!elig ? (
