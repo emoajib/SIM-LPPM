@@ -226,7 +226,7 @@
         </div>
     </header>
     <header class="navbar-expand-md">
-        <div class="collapse navbar-collapse" id="navbar-menu">
+        <div class="collapse navbar-collapse" id="navbar-menu" style="display: flex !important;">
             <div class="navbar">
                 <div class="container-xl">
                     <div class="flex-column flex-fill flex-md-row align-items-center row">
