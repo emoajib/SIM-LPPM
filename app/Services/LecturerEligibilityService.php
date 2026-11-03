@@ -344,6 +344,15 @@ class LecturerEligibilityService
      */
     public function getScheduleStatus(?User $user = null): array
     {
+        $cacheKey = 'schedule_status_'.($user?->id ?? 'guest');
+
+        return Cache::remember($cacheKey, 60, function () use ($user) {
+            return $this->computeScheduleStatus($user);
+        });
+    }
+
+    protected function computeScheduleStatus(?User $user = null): array
+    {
         $resStart = Setting::where('key', 'research_proposal_start_date')->value('value');
         $resEnd = Setting::where('key', 'research_proposal_end_date')->value('value');
         $pkmStart = Setting::where('key', 'community_service_proposal_start_date')->value('value');
