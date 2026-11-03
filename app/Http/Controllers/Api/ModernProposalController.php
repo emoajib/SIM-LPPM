@@ -42,7 +42,12 @@ class ModernProposalController
                 $query->whereRaw('1=0');
             }
         } else {
-            $query->where(function ($q) use ($user, $roleFilter) {
+            $isReviewerOnly = $user->activeHasRole('reviewer') && ! $user->activeHasAnyRole(['dosen', 'kaprodi', 'dekan']);
+            $query->where(function ($q) use ($user, $roleFilter, $isReviewerOnly) {
+                if ($isReviewerOnly) {
+                    $q->whereHas('reviewers', fn ($r) => $r->where('user_id', $user->id));
+                    return;
+                }
                 if ($roleFilter === 'ketua') {
                     $q->where('submitter_id', $user->id);
                 } elseif ($roleFilter === 'anggota') {
