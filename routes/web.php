@@ -406,7 +406,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('accreditation.hub');
 
     Route::get('/iku/verification', IkuVerification::class)
-        ->middleware(['role:admin lppm|rektor|kepala lppm'])
+        ->middleware(['role:admin lppm|rektor|kepala lppm|dosen'])
         ->name('accreditation.verification');
 
     // Dekan Routes

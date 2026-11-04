@@ -3,16 +3,20 @@
 namespace App\Livewire\Iku;
 
 use App\Enums\PolicyInvolvementStatus;
+use App\Livewire\Concerns\HasToast;
 use App\Models\AdditionalOutput;
 use App\Models\MandatoryOutput;
 use App\Models\PolicyInvolvement;
+use App\Models\StudyProgram;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class IkuVerification extends Component
 {
+    use HasToast;
     use WithPagination;
 
     public string $search = '';
@@ -109,17 +113,118 @@ class IkuVerification extends Component
         }
     }
 
+    /**
+     * Update status output oleh dosen (status_type & author_status).
+     */
+    public function updateStatus(string $id, string $modelType, string $statusType, string $authorStatus): void
+    {
+        $user = Auth::user();
+
+        if (! $user->activeHasRole('dosen')) {
+            $this->toastError('Anda tidak memiliki kewenangan untuk mengubah status luaran.');
+
+            return;
+        }
+
+        $model = match ($modelType) {
+            'mandatory' => MandatoryOutput::find($id),
+            'additional' => AdditionalOutput::find($id),
+            default => null,
+        };
+
+        if (! $model) {
+            $this->toastError('Data tidak ditemukan.');
+
+            return;
+        }
+
+        // Dosen hanya bisa update output miliknya sendiri
+        $proposal = $model->progressReport?->proposal;
+        if ($proposal?->submitter_id !== $user->id && ! $proposal?->teamMembers()->where('user_id', $user->id)->exists()) {
+            $this->toastError('Anda tidak memiliki akses untuk mengubah luaran ini.');
+
+            return;
+        }
+
+        // Blokir update jika sudah verified
+        if ($model->is_verified) {
+            $this->toastError('Output sudah diverifikasi, tidak bisa diubah.');
+
+            return;
+        }
+
+        $update = [];
+        if ($statusType) {
+            $update['status_type'] = $statusType;
+        }
+        if ($authorStatus) {
+            $update['author_status'] = $authorStatus;
+        }
+
+        if (! empty($update)) {
+            $model->update($update);
+        }
+
+        $this->toastSuccess('Status luaran berhasil diperbarui.');
+    }
+
     public function render()
     {
-        $mandatory = MandatoryOutput::with(['progressReport.proposal.submitter', 'proposalOutput'])
+        $user = Auth::user();
+
+        $mandatoryQuery = MandatoryOutput::with(['progressReport.proposal.submitter', 'proposalOutput'])
             ->when($this->status === 'unverified', fn ($q) => $q->where('is_verified', false))
             ->when($this->status === 'verified', fn ($q) => $q->where('is_verified', true))
             ->when($this->search, function ($q) {
                 $q->where('journal_title', 'like', "%{$this->search}%")
                     ->orWhere('article_title', 'like', "%{$this->search}%")
                     ->orWhereHas('progressReport.proposal', fn ($pq) => $pq->where('title', 'like', "%{$this->search}%"));
-            })
-            ->get()
+            });
+
+        $additionalQuery = AdditionalOutput::with(['progressReport.proposal.submitter', 'proposalOutput'])
+            ->when($this->status === 'unverified', fn ($q) => $q->where('is_verified', false))
+            ->when($this->status === 'verified', fn ($q) => $q->where('is_verified', true))
+            ->when($this->search, function ($q) {
+                $q->where('journal_title', 'like', "%{$this->search}%")
+                    ->orWhere('book_title', 'like', "%{$this->search}%")
+                    ->orWhereHas('progressReport.proposal', fn ($pq) => $pq->where('title', 'like', "%{$this->search}%"));
+            });
+
+        // Role-based filtering
+        if ($user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'superadmin'])) {
+            // global access
+        } elseif ($user->activeHasRole('dekan')) {
+            if ($user->identity?->faculty_id) {
+                $mandatoryQuery->whereHas('progressReport.proposal.submitter.identity', fn ($si) => $si->where('faculty_id', $user->identity->faculty_id));
+                $additionalQuery->whereHas('progressReport.proposal.submitter.identity', fn ($si) => $si->where('faculty_id', $user->identity->faculty_id));
+            } else {
+                $mandatoryQuery->whereRaw('1=0');
+                $additionalQuery->whereRaw('1=0');
+            }
+        } elseif ($user->activeHasRole('kaprodi')) {
+            $kaprodiProdiId = StudyProgram::where('kaprodi_user_id', $user->id)->value('id') ?? $user->identity?->study_program_id;
+            if ($kaprodiProdiId) {
+                $mandatoryQuery->whereHas('progressReport.proposal.submitter.identity', fn ($si) => $si->where('study_program_id', $kaprodiProdiId));
+                $additionalQuery->whereHas('progressReport.proposal.submitter.identity', fn ($si) => $si->where('study_program_id', $kaprodiProdiId));
+            } else {
+                $mandatoryQuery->whereRaw('1=0');
+                $additionalQuery->whereRaw('1=0');
+            }
+        } elseif ($user->activeHasRole('dosen')) {
+            $mandatoryQuery->whereHas('progressReport.proposal', function ($q) use ($user) {
+                $q->where('submitter_id', $user->id)
+                    ->orWhereHas('teamMembers', fn ($t) => $t->where('user_id', $user->id));
+            });
+            $additionalQuery->whereHas('progressReport.proposal', function ($q) use ($user) {
+                $q->where('submitter_id', $user->id)
+                    ->orWhereHas('teamMembers', fn ($t) => $t->where('user_id', $user->id));
+            });
+        } else {
+            $mandatoryQuery->whereRaw('1=0');
+            $additionalQuery->whereRaw('1=0');
+        }
+
+        $mandatory = $mandatoryQuery->get()
             ->map(function (MandatoryOutput $item) {
                 $item->model_type = 'mandatory';
                 $item->is_verified_status = $item->is_verified;
@@ -130,15 +235,7 @@ class IkuVerification extends Component
                 return $item;
             });
 
-        $additional = AdditionalOutput::with(['progressReport.proposal.submitter', 'proposalOutput'])
-            ->when($this->status === 'unverified', fn ($q) => $q->where('is_verified', false))
-            ->when($this->status === 'verified', fn ($q) => $q->where('is_verified', true))
-            ->when($this->search, function ($q) {
-                $q->where('journal_title', 'like', "%{$this->search}%")
-                    ->orWhere('book_title', 'like', "%{$this->search}%")
-                    ->orWhereHas('progressReport.proposal', fn ($pq) => $pq->where('title', 'like', "%{$this->search}%"));
-            })
-            ->get()
+        $additional = $additionalQuery->get()
             ->map(function (AdditionalOutput $item) {
                 $item->model_type = 'additional';
                 $item->is_verified_status = $item->is_verified;
