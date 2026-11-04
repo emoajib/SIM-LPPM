@@ -10,7 +10,7 @@
         'realisasi' => ['label' => 'Realisasi Anggaran', 'href' => $base.'/daily-note',            'icon' => '💰'],
     ];
 
-    if (active_has_any_role(['admin lppm', 'kepala lppm', 'rektor'])) {
+    if (active_has_any_role(['admin lppm', 'kepala lppm', 'rektor', 'dosen'])) {
         $tabs['verifikasi'] = ['label' => 'Verifikasi Luaran', 'href' => '/iku/verification', 'icon' => '🛡️'];
     }
 @endphp
