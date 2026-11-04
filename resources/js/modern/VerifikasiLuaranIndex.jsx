@@ -303,7 +303,7 @@ export default function VerifikasiLuaranIndex() {
             label: "Aksi",
             align: "center",
             render: (p) => {
-                const isOwner = isDosen && p.submitter_id && String(p.submitter_id) === String(window.__USER_ID__ || "");
+                const isOwner = isDosen && (String(p.submitter_id) === String(window.__USER_ID__ || "") || p.is_team_member);
                 return (
                     <div className="flex items-center gap-1">
                         {isVerifier && (

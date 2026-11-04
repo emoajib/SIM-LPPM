@@ -24,7 +24,7 @@ class VerifikasiLuaranController
         $isVerifier = $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor']);
         $isDosen = $user->activeHasRole('dosen');
 
-        $detailableType = $module === 'community-service' ? 'App\Models\CommunityService' : 'App\Models\Research';
+        $detailableType = in_array($module, ['community-service', 'communityService', 'community_service']) ? 'App\\Models\\CommunityService' : 'App\\Models\\Research';
 
         $mandatoryQuery = MandatoryOutput::with([
             'progressReport.proposal.submitter.identity',
@@ -96,8 +96,8 @@ class VerifikasiLuaranController
             $mandatoryQuery->whereRaw('1=0');
         }
 
-        $mandatory = $mandatoryQuery->get()->map(fn ($item) => $this->formatOutputItem($item, 'mandatory'));
-        $additional = $additionalQuery->get()->map(fn ($item) => $this->formatOutputItem($item, 'additional'));
+        $mandatory = $mandatoryQuery->get()->map(fn ($item) => $this->formatOutputItem($item, 'mandatory', $user));
+        $additional = $additionalQuery->get()->map(fn ($item) => $this->formatOutputItem($item, 'additional', $user));
 
         $combined = $mandatory->concat($additional)->sortByDesc('created_at');
 
@@ -144,7 +144,7 @@ class VerifikasiLuaranController
 
         return response()->json([
             'message' => 'Data berhasil diverifikasi.',
-            'data' => $this->formatOutputItem($model->fresh(), $modelType),
+            'data' => $this->formatOutputItem($model->fresh(), $modelType, $user),
         ]);
     }
 
@@ -174,7 +174,7 @@ class VerifikasiLuaranController
 
         return response()->json([
             'message' => 'Verifikasi dibatalkan.',
-            'data' => $this->formatOutputItem($model->fresh(), $modelType),
+            'data' => $this->formatOutputItem($model->fresh(), $modelType, $user),
         ]);
     }
 
@@ -204,7 +204,7 @@ class VerifikasiLuaranController
 
         return response()->json([
             'message' => 'Peringkat diperbarui.',
-            'data' => $this->formatOutputItem($model->fresh(), $request->model_type),
+            'data' => $this->formatOutputItem($model->fresh(), $request->model_type, $user),
         ]);
     }
 
@@ -250,7 +250,7 @@ class VerifikasiLuaranController
 
         return response()->json([
             'message' => 'Status output diperbarui.',
-            'data' => $this->formatOutputItem($model->fresh(), $request->model_type),
+            'data' => $this->formatOutputItem($model->fresh(), $request->model_type, $user),
         ]);
     }
 
@@ -306,11 +306,11 @@ class VerifikasiLuaranController
 
         return response()->json([
             'message' => 'Bukti luaran berhasil diperbarui.',
-            'data' => $this->formatOutputItem($model->fresh(), $request->model_type),
+            'data' => $this->formatOutputItem($model->fresh(), $request->model_type, $user),
         ]);
     }
 
-    private function formatOutputItem($item, string $modelType): array
+    private function formatOutputItem($item, string $modelType, $user = null): array
     {
         $proposal = $item->progressReport?->proposal;
 
@@ -327,6 +327,7 @@ class VerifikasiLuaranController
             'rank' => $item->rank,
             'submitter_name' => $proposal->submitter->name ?? 'Unknown',
             'submitter_id' => $proposal?->submitter_id,
+            'is_team_member' => $user ? ($proposal?->teamMembers()->where('user_id', $user->id)->exists() ?? false) : false,
             'proposal_title' => $proposal->title ?? 'Unknown',
             'document_url' => $item->document_file ? asset('storage/'.$item->document_file) : null,
             'article_url' => $item->article_url,
