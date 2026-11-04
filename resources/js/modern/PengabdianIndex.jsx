@@ -17,6 +17,14 @@ export default function PengabdianIndex() {
     const [status, setStatus] = useState("all");
     const [roleFilter, setRoleFilter] = useState("all");
     const [loading, setLoading] = useState(true);
+    const [filtersMeta, setFiltersMeta] = useState({ years: [], schemes: [], statuses: [], faculties: [], study_programs: [] });
+
+    useEffect(() => {
+        fetch(`/research/api/v1/filters?type=community_service`, { credentials: "same-origin", cache: "no-store" })
+            .then((r) => r.json())
+            .then((d) => setFiltersMeta(d))
+            .catch(() => {});
+    }, []);
     const isDosen = (window.__USER_ROLES__ || []).includes("dosen");
     const isVerifier = (window.__USER_ROLES__ || []).some((r) => ["admin lppm", "kepala lppm", "rektor"].includes(r));
     const [error, setError] = useState(null);
@@ -168,11 +176,9 @@ export default function PengabdianIndex() {
                         className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
                     >
                         <option value="all">Semua Status</option>
-                        <option value="draft">Draft</option>
-                        <option value="submitted">Diajukan</option>
-                        <option value="approved">Disetujui</option>
-                        <option value="rejected">Ditolak</option>
-                        <option value="completed">Selesai</option>
+                        {Array.isArray(filtersMeta.statuses) && filtersMeta.statuses.map((s) => (
+                            <option key={s.value} value={s.value}>{s.label}</option>
+                        ))}
                     </select>
                     <Button onClick={() => load(1)} variant="primary" size="md">
                         Cari
