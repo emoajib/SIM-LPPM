@@ -2,6 +2,7 @@
 
 use App\Exports\UsersTemplateExport;
 use App\Http\Controllers\AdminLppm\ManualBookUploadController;
+use App\Http\Controllers\Api\DailyNoteController;
 use App\Http\Controllers\Api\ModernProposalController;
 use App\Http\Controllers\Api\VerifikasiLuaranController;
 use App\Http\Controllers\Auth\MathCaptchaController;
@@ -86,6 +87,7 @@ use App\Livewire\Users\Import;
 use App\Livewire\Users\Index as UsersIndex;
 use App\Livewire\Users\Show as UsersShow;
 use App\Models\Letter;
+use App\Models\Proposal;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -221,6 +223,23 @@ Route::middleware(['auth'])->group(function () {
             ->middleware('throttle:60,1')
             ->name('verifikasi-luaran.status');
 
+        // Daily Note API (Realisasi Anggaran)
+        Route::get('api/v1/daily-notes', [DailyNoteController::class, 'index'])
+            ->middleware('throttle:60,1')
+            ->name('daily-notes.index');
+        Route::post('api/v1/daily-notes', [DailyNoteController::class, 'store'])
+            ->middleware('throttle:60,1')
+            ->name('daily-notes.store');
+        Route::put('api/v1/daily-notes/{id}', [DailyNoteController::class, 'update'])
+            ->middleware('throttle:60,1')
+            ->name('daily-notes.update');
+        Route::delete('api/v1/daily-notes/{id}', [DailyNoteController::class, 'destroy'])
+            ->middleware('throttle:60,1')
+            ->name('daily-notes.destroy');
+        Route::delete('api/v1/daily-notes/{id}/evidence/{mediaId}', [DailyNoteController::class, 'deleteEvidence'])
+            ->middleware('throttle:60,1')
+            ->name('daily-notes.evidence.destroy');
+
         // Modern theme page for Verifikasi Luaran
         Route::get('verifikasi-luaran', function () {
             return view('modern.verifikasi-luaran', [
@@ -228,6 +247,22 @@ Route::middleware(['auth'])->group(function () {
                 'pageSubtitle' => 'Pemantauan dan verifikasi target output penelitian & pengabdian',
             ]);
         })->name('verifikasi-luaran.page');
+
+        // Modern theme page for Daily Note (Realisasi Anggaran)
+        Route::get('daily-note/{proposal}/modern', function (Proposal $proposal) {
+            $user = auth()->user();
+            $canManage = $proposal->submitter_id === $user->id ||
+                $proposal->teamMembers()->where('user_id', $user->id)->exists();
+            $isEditable = ! $proposal->logbook_approved_at;
+
+            return view('modern.daily-note', [
+                'title' => 'Realisasi Anggaran',
+                'pageSubtitle' => 'Catatan harian aktivitas dan pengeluaran dana kegiatan',
+                'proposal' => $proposal,
+                'canManage' => $canManage,
+                'isEditable' => $isEditable,
+            ]);
+        })->middleware(['auth'])->name('daily-note.modern');
 
         // Only dosen can create proposals
         Route::get('proposal/create', Create::class)
