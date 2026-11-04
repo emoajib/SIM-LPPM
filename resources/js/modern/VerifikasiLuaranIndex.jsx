@@ -61,8 +61,9 @@ export default function VerifikasiLuaranIndex() {
     });
 
     const userRoles = window.__USER_ROLES__ || [];
-    const isVerifier = userRoles.some((r) => VERIFIER_ROLES.includes(r));
-    const isDosen = userRoles.includes("dosen");
+    const activeRole = window.__ACTIVE_ROLE__ || "";
+    const isVerifier = VERIFIER_ROLES.includes(activeRole);
+    const isDosen = activeRole === "dosen";
 
     const isCommunityService = window.location.pathname.includes("community-service");
     const module = isCommunityService ? "communityService" : "research";
@@ -226,6 +227,10 @@ export default function VerifikasiLuaranIndex() {
             document_file: "",
         });
         setShowDetailModal(true);
+    };
+
+    const canEditDetail = (p) => {
+        return isDosen && (String(p.submitter_id) === String(window.__USER_ID__ || "") || p.is_team_member) && !p.is_verified;
     };
 
     const handleUpdateDetail = async () => {
@@ -462,7 +467,7 @@ export default function VerifikasiLuaranIndex() {
                                     variant="ghost"
                                     size="sm"
                                 >
-                                    📝 Detail
+                                    ✏️ Edit Detail
                                 </Button>
                                 <Button
                                     onClick={() => openEvidenceModal(p)}
@@ -479,6 +484,18 @@ export default function VerifikasiLuaranIndex() {
                                     size="sm"
                                 >
                                     Simpan
+                                </Button>
+                            </>
+                        )}
+                        {isVerifier && (
+                            <>
+                                <Button
+                                    onClick={() => openDetailModal(p)}
+                                    variant="ghost"
+                                    size="sm"
+                                    disabled={!p.is_verified}
+                                >
+                                    📋 Lihat Detail
                                 </Button>
                             </>
                         )}
@@ -625,6 +642,7 @@ export default function VerifikasiLuaranIndex() {
                             </button>
                         </div>
                         <form onSubmit={handleUpdateDetail} className="space-y-4">
+                            <fieldset disabled={!canEditDetail(detailTarget)}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {/* Status & Author */}
                                 <div className="flex flex-col gap-1">
@@ -924,13 +942,16 @@ export default function VerifikasiLuaranIndex() {
                                     />
                                 </div>
                             </div>
+                            </fieldset>
                             <div className="flex justify-end gap-2 pt-4">
                                 <Button type="button" variant="ghost" onClick={() => setShowDetailModal(false)}>
-                                    Batal
+                                    Tutup
                                 </Button>
-                                <Button type="submit" variant="primary">
-                                    Simpan Detail
-                                </Button>
+                                {isDosen && canEditDetail(detailTarget) && (
+                                    <Button type="submit" variant="primary">
+                                        Simpan Detail
+                                    </Button>
+                                )}
                             </div>
                         </form>
                     </div>

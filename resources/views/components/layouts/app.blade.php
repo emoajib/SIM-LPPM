@@ -81,6 +81,7 @@
                         @endphp
                         <script>window.__MODERN_PAGE__ = @json($modernPage);</script>
                         <script>window.__USER_ROLES__ = @json(auth()->user()?->getRoleNames() ?? []);</script>
+                        <script>window.__ACTIVE_ROLE__ = @json(session('active_role', ''));</script>
                         @if ($modernPage)
                             {{-- Modern theme: React (migrasi) --}}
                             <div id="modern-root"></div>

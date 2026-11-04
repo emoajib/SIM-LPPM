@@ -14,5 +14,8 @@
 @endpushOnce
 
 @pushOnce('scripts')
+    <script>
+        window.__USER_ID__ = '{{ auth()->id() }}';
+    </script>
     @vite('resources/js/modern.jsx')
 @endpushOnce
