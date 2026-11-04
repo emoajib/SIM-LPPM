@@ -45,6 +45,7 @@
                     'research.verifikasi-luaran.page' => 'verifikasi-luaran-index',
                     'community-service.verifikasi-luaran.page' => 'verifikasi-luaran-index',
                     'research.daily-note.modern' => 'daily-note-index',
+                    'proposal.show.modern' => 'proposal-show-index',
                 ];
                 $modernPage = $modernPageMap[request()->route()?->getName() ?? ''] ?? null;
                 $modernPageEarly = $modernPage; // alias for header hiding
