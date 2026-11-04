@@ -21,6 +21,7 @@ function formatRupiah(value) {
 
 export default function DailyNoteIndex() {
     const [proposal, setProposal] = useState(null);
+    const [module, setModule] = useState("research");
     const [budgetGroups, setBudgetGroups] = useState([]);
     const [notes, setNotes] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -47,8 +48,7 @@ export default function DailyNoteIndex() {
     const isEditable = window.__IS_EDITABLE__ === "true";
 
     const tabs = [
-        ...MODULE_TABS.research,
-        ...MODULE_TABS.communityService,
+        ...(MODULE_TABS[module] || MODULE_TABS.research),
         ...(isVerifier ? [VERIFIER_TAB] : []),
     ];
     const currentPath = window.location.pathname.replace(/\/$/, "");
@@ -65,6 +65,11 @@ export default function DailyNoteIndex() {
             if (!res.ok) throw new Error("HTTP " + res.status);
             const json = await res.json();
             setProposal(json.proposal);
+            if (json.proposal?.detailable_type?.includes("CommunityService")) {
+                setModule("communityService");
+            } else {
+                setModule("research");
+            }
             setBudgetGroups(json.budget_groups || []);
             setNotes(json.notes || []);
         } catch (e) {

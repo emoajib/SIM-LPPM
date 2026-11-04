@@ -37,26 +37,35 @@ class DailyNoteController
             ->get()
             ->map(fn ($note) => $this->formatNote($note));
 
+        $budgetTotal = (float) $proposal->activeBudgetItems()->sum('total_price');
+        if ($budgetTotal <= 0 && isset($proposal->approved_budget_snapshot['total'])) {
+            $budgetTotal = (float) $proposal->approved_budget_snapshot['total'];
+        }
+
+        $budgetGroups = collect($proposal->approved_budget_snapshot['groups'] ?? []);
+        if ($budgetGroups->isEmpty()) {
+            $budgetGroups = $proposal->activeBudgetItems()
+                ->selectRaw('budget_group_id, sum(total_price) as total')
+                ->groupBy('budget_group_id')
+                ->pluck('total', 'budget_group_id');
+        }
+
         return response()->json([
             'proposal' => [
                 'id' => $proposal->id,
                 'title' => $proposal->title,
                 'status' => $proposal->status->value,
                 'status_label' => $proposal->status->label(),
-                'total_proposed_budget' => (float) $proposal->activeBudgetItems()->sum('total_price'),
+                'detailable_type' => $proposal->detailable_type,
+                'total_proposed_budget' => $budgetTotal,
                 'total_actual' => (float) $proposal->dailyNotes->sum('amount'),
             ],
-            'budget_groups' => $proposal->activeBudgetItems()
-                ->pluck('budget_group_id')
-                ->unique()
-                ->map(function ($bgId) use ($proposal) {
+            'budget_groups' => $budgetGroups
+                ->map(function ($allocated, $bgId) use ($proposal) {
                     $bg = BudgetGroup::find($bgId);
                     if (! $bg) {
                         return null;
                     }
-                    $allocated = (float) $proposal->activeBudgetItems()
-                        ->where('budget_group_id', $bgId)
-                        ->sum('total_price');
                     $used = (float) $proposal->dailyNotes()
                         ->where('budget_group_id', $bgId)
                         ->sum('amount');
@@ -65,9 +74,9 @@ class DailyNoteController
                         'id' => $bg->id,
                         'code' => $bg->code,
                         'name' => $bg->name,
-                        'allocated' => $allocated,
+                        'allocated' => (float) $allocated,
                         'used' => $used,
-                        'remaining' => $allocated - $used,
+                        'remaining' => (float) $allocated - $used,
                     ];
                 })
                 ->filter()
