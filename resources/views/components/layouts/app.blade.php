@@ -83,13 +83,13 @@
                             {{-- Modern theme: React (migrasi) --}}
                             <div id="modern-root"></div>
                             {{-- Fallback Blade content jika React gagal mount --}}
-                            <noscript>{{ $slot }}</noscript>
+                            <noscript>{{ $slot ?? "" }}</noscript>
                         @else
                             {{-- Modern theme: Blade content (hybrid) — tanpa banner React --}}
-                            {{ $slot }}
+                            {{ $slot ?? "" }}
                         @endif
                     @else
-                        {{ $slot }}
+                        {{ $slot ?? "" }}
                     @endif
                 </div>
             </div>
