@@ -65,8 +65,8 @@
     </div>
 </x-slot:pageActions>
 
-
 <div>
+    @include('components.partials.module-tabs', ['module'=>'research','active'=>'usulan'])
     <x-tabler.alert />
 
     @php

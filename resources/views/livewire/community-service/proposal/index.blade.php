@@ -65,6 +65,7 @@
 </x-slot:pageActions>
 
 <div>
+    @include('components.partials.module-tabs', ['module'=>'community-service','active'=>'usulan'])
     <x-tabler.alert />
 
     @php
