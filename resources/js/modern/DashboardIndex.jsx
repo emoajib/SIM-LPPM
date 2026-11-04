@@ -33,8 +33,12 @@ export default function DashboardIndex() {
     const [meta, setMeta] = useState({ current_page: 1, last_page: 1, total: 0 });
     const [search, setSearch] = useState("");
     const [status, setStatus] = useState("all");
+    const [typeFilter, setTypeFilter] = useState("all");
     const [loading, setLoading] = useState(true);
     const [activeNav, setActiveNav] = useState("dashboard");
+
+    const activeRole = window.__ACTIVE_ROLE__ || "";
+    const isDosen = activeRole === "dosen";
 
     const loadStats = async () => {
         try {
@@ -58,7 +62,9 @@ export default function DashboardIndex() {
     const loadProposals = async () => {
         setLoading(true);
         try {
-            const params = new URLSearchParams({ search, status, type: "research" });
+            const params = new URLSearchParams({ search, status, page: 1 });
+            if (typeFilter !== "all") params.set("type", typeFilter);
+            else params.set("type", "research");
             const res = await fetch(`/research/api/v1/proposals?${params.toString()}`, { credentials: "same-origin" });
             const json = await res.json();
             setProposals(json.data || []);
@@ -74,6 +80,10 @@ export default function DashboardIndex() {
         loadStats();
         loadProposals();
     }, []);
+
+    useEffect(() => {
+        loadProposals();
+    }, [typeFilter]);
 
     const total = stats.penelitian + stats.pengabdian + stats.surat + stats.prototipe;
 
@@ -232,7 +242,7 @@ export default function DashboardIndex() {
             </div>
 
             {/* Quick actions for Dosen */}
-            {((window.__USER_ROLES__ || []).includes("dosen")) && (
+            {isDosen && (
                 <div className="flex flex-wrap gap-2.5">
                     <a
                         href="/research/proposal/create"
@@ -265,6 +275,19 @@ export default function DashboardIndex() {
                             placeholder="Ketik judul usulan lalu tekan enter..."
                             className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
                         />
+                    </div>
+                    <div className="w-full md:w-40">
+                        <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Tipe Usulan</label>
+                        <select
+                            value={typeFilter}
+                            aria-label="Filter tipe proposal di dashboard"
+                            onChange={(e) => setTypeFilter(e.target.value)}
+                            className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                        >
+                            <option value="all">Semua Tipe</option>
+                            <option value="research">Penelitian</option>
+                            <option value="community-service">Pengabdian</option>
+                        </select>
                     </div>
                     <div className="w-full md:w-48">
                         <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Status Usulan</label>
