@@ -45,3 +45,33 @@ export const STATUS_COLORS = {
     rejected: "bg-rose-100 text-rose-800 border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800",
 };
 
+/**
+ * Single Source of Truth for module tab navigation (Modern Theme).
+ * Defines the 5-stage "Alur Manajemen Penelitian & Pengabdian" tabs.
+ * Base tabs are shared across all pages; the Verifier tab is added conditionally.
+ */
+export const MODULE_TABS = {
+    research: [
+        { label: "Usulan", href: "/research", icon: "📋" },
+        { label: "Perbaikan Usulan", href: "/research/proposal-revision", icon: "✏️" },
+        { label: "Laporan Akhir", href: "/research/final-report", icon: "📑" },
+        { label: "Realisasi Anggaran", href: "/research/daily-note", icon: "💰" },
+    ],
+    communityService: [
+        { label: "Usulan", href: "/community-service", icon: "🤝" },
+        { label: "Perbaikan Usulan", href: "/community-service/proposal-revision", icon: "✏️" },
+        { label: "Laporan Akhir", href: "/community-service/final-report", icon: "📑" },
+        { label: "Realisasi Anggaran", href: "/community-service/daily-note", icon: "💰" },
+    ],
+};
+
+/**
+ * Verifier-only tab for output verification (MandatoryOutput / AdditionalOutput).
+ * Only rendered when the current user is a verifier (admin lppm / kepala lppm / rektor).
+ */
+export const VERIFIER_TAB = {
+    label: "Verifikasi Luaran",
+    href: "/iku/verification",
+    icon: "🛡️",
+};
+

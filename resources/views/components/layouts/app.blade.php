@@ -42,6 +42,7 @@
                     'community-service.proposal-revision.index' => 'pengabdian-revision-index',
                     'community-service.final-report.index' => 'pengabdian-final-report-index',
                     'community-service.daily-note.index' => 'pengabdian-daily-note-index',
+                    'research.verifikasi-luaran.page' => 'verifikasi-luaran-index',
                 ];
                 $modernPage = $modernPageMap[request()->route()?->getName() ?? ''] ?? null;
                 $modernPageEarly = $modernPage; // alias for header hiding

@@ -7,7 +7,7 @@ import CountdownTimer from "./components/CountdownTimer.jsx";
 import ModuleTabNav from "./components/ModuleTabNav.jsx";
 import ModernPageCard from "./components/ModernPageCard.jsx";
 import ModernTable from "./components/ModernTable.jsx";
-import { STATUS_COLORS } from "./constants/themeColors.js";
+import { STATUS_COLORS, MODULE_TABS, VERIFIER_TAB } from "./constants/themeColors.js";
 
 export default function ProposalsIndex() {
     const [proposals, setProposals] = useState([]);
@@ -32,7 +32,6 @@ export default function ProposalsIndex() {
     const isDosen = (window.__USER_ROLES__ || []).includes("dosen");
     const isVerifier = (window.__USER_ROLES__ || []).some((r) => ["admin lppm", "kepala lppm", "rektor"].includes(r));
     const [error, setError] = useState(null);
-    const [showVerif, setShowVerif] = useState(false);
     const [showElig, setShowElig] = useState(false);
     const [elig, setElig] = useState(null);
 
@@ -78,11 +77,8 @@ export default function ProposalsIndex() {
     };
 
     const tabs = [
-        { label: "Usulan", href: "/research", icon: "📋" },
-        { label: "Perbaikan Usulan", href: "/research/proposal-revision", icon: "✏️" },
-        { label: "Laporan Akhir", href: "/research/final-report", icon: "📑" },
-        { label: "Realisasi Anggaran", href: "/research/daily-note", icon: "💰" },
-        ...(isVerifier ? [{ label: "Verifikasi Luaran", href: "#", icon: "🛡️", isActive: showVerif, onClick: () => setShowVerif((v) => !v) }] : []),
+        ...MODULE_TABS.research,
+        ...(isVerifier ? [VERIFIER_TAB] : []),
     ];
     const currentPath = window.location.pathname.replace(/\/$/, "");
 

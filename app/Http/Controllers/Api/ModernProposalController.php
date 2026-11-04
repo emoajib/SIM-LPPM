@@ -29,8 +29,15 @@ class ModernProposalController
         $facultyId = $request->get('faculty_id');
         $studyProgramId = $request->get('study_program_id');
         $schemeId = $request->get('scheme_id');
+        $submodule = $request->get('submodule', '');
 
-        $query = Proposal::with(['submitter.identity', 'focusArea', 'researchScheme', 'communityServiceScheme'])
+        $queryRelations = ['submitter.identity', 'focusArea', 'researchScheme', 'communityServiceScheme'];
+        if ($submodule === 'daily-note') {
+            $queryRelations[] = 'budgetItems';
+            $queryRelations[] = 'dailyNotes';
+        }
+
+        $query = Proposal::with($queryRelations)
             ->where('detailable_type', $type === 'research' ? 'App\\Models\\Research' : CommunityService::class);
 
         if ($search) {
@@ -54,6 +61,24 @@ class ModernProposalController
         }
         if ($year) {
             $query->whereYear('created_at', $year);
+        }
+
+        // Submodule-specific filtering (Perbaikan Usulan, Laporan Akhir, Realisasi Anggaran)
+        if ($submodule === 'revision') {
+            $query->with(['reviewers' => function ($q) {
+                $q->whereIn('status', ['completed', 'pending']);
+            }]);
+            $query->where(function ($q) {
+                $q->whereIn('status', [ProposalStatus::REVISION_NEEDED->value, ProposalStatus::REVISION_SUBMITTED->value])
+                    ->orWhereHas('reviewers', function ($rq) {
+                        $rq->whereIn('status', ['completed', 'pending']);
+                    });
+            });
+        } elseif ($submodule === 'final-report') {
+            $query->where('status', ProposalStatus::COMPLETED->value);
+        } elseif ($submodule === 'daily-note') {
+            $query->where('status', ProposalStatus::COMPLETED->value)
+                ->has('dailyNotes');
         }
 
         if ($user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor'])) {
@@ -108,6 +133,12 @@ class ModernProposalController
                 'show_url' => $p->detailable_type === CommunityService::class
                     ? route('community-service.proposal.show', $p)
                     : route('research.proposal.show', $p),
+                'budget_total' => $submodule === 'daily-note'
+                    ? (float) $p->budgetItems->where('is_active', true)->sum('total_price')
+                    : null,
+                'actual_total' => $submodule === 'daily-note'
+                    ? (float) $p->dailyNotes->sum('amount')
+                    : null,
             ]),
             'meta' => [
                 'current_page' => $proposals->currentPage(),

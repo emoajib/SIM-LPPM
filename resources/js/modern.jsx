@@ -10,6 +10,7 @@ import ResearchDailyNoteIndex from "./modern/ResearchDailyNoteIndex.jsx";
 import PengabdianRevisionIndex from "./modern/PengabdianRevisionIndex.jsx";
 import PengabdianFinalReportIndex from "./modern/PengabdianFinalReportIndex.jsx";
 import PengabdianDailyNoteIndex from "./modern/PengabdianDailyNoteIndex.jsx";
+import VerifikasiLuaranIndex from "./modern/VerifikasiLuaranIndex.jsx";
 
 const PAGES = {
     "proposals-index": ProposalsIndex,
@@ -21,6 +22,7 @@ const PAGES = {
     "pengabdian-revision-index": PengabdianRevisionIndex,
     "pengabdian-final-report-index": PengabdianFinalReportIndex,
     "pengabdian-daily-note-index": PengabdianDailyNoteIndex,
+    "verifikasi-luaran-index": VerifikasiLuaranIndex,
 };
 
 function mount() {

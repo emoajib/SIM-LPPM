@@ -3,6 +3,7 @@
 use App\Exports\UsersTemplateExport;
 use App\Http\Controllers\AdminLppm\ManualBookUploadController;
 use App\Http\Controllers\Api\ModernProposalController;
+use App\Http\Controllers\Api\VerifikasiLuaranController;
 use App\Http\Controllers\Auth\MathCaptchaController;
 use App\Http\Controllers\DailyNoteExportController;
 use App\Http\Controllers\DocumentSignatureVerificationController;
@@ -202,6 +203,31 @@ Route::middleware(['auth'])->group(function () {
         Route::get('api/v1/filters', [ModernProposalController::class, 'availableFilters'])
             ->middleware('throttle:60,1')
             ->name('proposal.filters.v1');
+
+        // Output verification (Verifikasi Luaran) API for Modern Theme
+        Route::get('api/v1/verifikasi-luaran', [VerifikasiLuaranController::class, 'index'])
+            ->middleware('throttle:60,1')
+            ->name('verifikasi-luaran.index');
+        Route::post('api/v1/verifikasi-luaran/{id}/verify', [VerifikasiLuaranController::class, 'verify'])
+            ->middleware('throttle:60,1')
+            ->name('verifikasi-luaran.verify');
+        Route::post('api/v1/verifikasi-luaran/{id}/unverify', [VerifikasiLuaranController::class, 'unverify'])
+            ->middleware('throttle:60,1')
+            ->name('verifikasi-luaran.unverify');
+        Route::post('api/v1/verifikasi-luaran/{id}/rank', [VerifikasiLuaranController::class, 'updateRank'])
+            ->middleware('throttle:60,1')
+            ->name('verifikasi-luaran.rank');
+        Route::post('api/v1/verifikasi-luaran/{id}/status', [VerifikasiLuaranController::class, 'updateStatus'])
+            ->middleware('throttle:60,1')
+            ->name('verifikasi-luaran.status');
+
+        // Modern theme page for Verifikasi Luaran
+        Route::get('verifikasi-luaran', function () {
+            return view('modern.verifikasi-luaran', [
+                'title' => 'Verifikasi Luaran IKU',
+                'pageSubtitle' => 'Pemantauan dan verifikasi target output penelitian & pengabdian',
+            ]);
+        })->name('verifikasi-luaran.page');
 
         // Only dosen can create proposals
         Route::get('proposal/create', Create::class)
