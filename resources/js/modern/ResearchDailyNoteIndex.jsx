@@ -14,6 +14,7 @@ export default function ResearchDailyNoteIndex() {
             emptyDescription="Belum ada catatan harian kegiatan atau belanja dana riset."
             ariaLabel="Daftar Realisasi Anggaran Penelitian"
             isRealisasi
+            actionUrlFn={(p) => `/research/daily-note/${p.id}/modern`}
         />
     );
 }

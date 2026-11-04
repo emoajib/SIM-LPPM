@@ -88,6 +88,7 @@ use App\Livewire\Users\Index as UsersIndex;
 use App\Livewire\Users\Show as UsersShow;
 use App\Models\Letter;
 use App\Models\Proposal;
+use App\Models\StudyProgram;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -251,6 +252,18 @@ Route::middleware(['auth'])->group(function () {
         // Modern theme page for Daily Note (Realisasi Anggaran)
         Route::get('daily-note/{proposal}/modern', function (Proposal $proposal) {
             $user = auth()->user();
+            if (! $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'superadmin', 'dekan', 'kaprodi', 'dosen', 'reviewer'])) {
+                abort(403);
+            }
+            if ($user->activeHasRole('dekan') && $user->identity?->faculty_id !== $proposal->submitter->identity?->faculty_id) {
+                abort(403);
+            }
+            if ($user->activeHasRole('kaprodi')) {
+                $kaprodiProdiId = StudyProgram::where('kaprodi_user_id', $user->id)->value('id') ?? $user->identity?->study_program_id;
+                if ($kaprodiProdiId !== $proposal->submitter->identity?->study_program_id) {
+                    abort(403);
+                }
+            }
             $canManage = $proposal->submitter_id === $user->id ||
                 $proposal->teamMembers()->where('user_id', $user->id)->exists();
             $isEditable = ! $proposal->logbook_approved_at;

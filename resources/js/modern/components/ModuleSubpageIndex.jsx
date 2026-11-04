@@ -34,6 +34,7 @@ function formatRupiah(value) {
  * @param {string} emptyDescription - Empty state description
  * @param {string} ariaLabel - ModernTable ariaLabel
  * @param {boolean} isRealisasi - When true, shows Budget (RAB) vs Actual columns for Realisasi Anggaran
+ * @param {function} [actionUrlFn] - Optional function to compute the "Lihat" action URL per proposal
  */
 export default function ModuleSubpageIndex({
     module,
@@ -46,6 +47,7 @@ export default function ModuleSubpageIndex({
     emptyDescription,
     ariaLabel,
     isRealisasi = false,
+    actionUrlFn = null,
 }) {
     const [proposals, setProposals] = useState([]);
     const [meta, setMeta] = useState({ current_page: 1, last_page: 1, total: 0 });
@@ -127,7 +129,7 @@ export default function ModuleSubpageIndex({
             align: "center",
             render: (p) => (
                 <a
-                    href={p.show_url}
+                    href={actionUrlFn ? actionUrlFn(p) : p.show_url}
                     className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold text-[#1e3a6e] dark:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition-colors"
                 >
                     Lihat &rarr;
