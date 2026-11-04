@@ -307,7 +307,9 @@ class ProposalService
         match ($role) {
             'submitter', 'ketua' => $query->where('submitter_id', $userId),
             'team_member', 'anggota' => $query->whereHas('teamMembers', function ($q) use ($userId) {
-                $q->where('user_id', $userId);
+                // Ketua juga tercatat di pivot (role = 'ketua'); tanpa filter role,
+                // usulan sendiri ikut muncul saat memilih "Sebagai Anggota".
+                $q->where('user_id', $userId)->where('proposal_user.role', 'anggota');
             }),
             'reviewer' => $query->whereHas('reviewers', function ($q) use ($userId) {
                 $q->where('user_id', $userId);

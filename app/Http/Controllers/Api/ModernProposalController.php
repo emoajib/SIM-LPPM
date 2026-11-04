@@ -75,7 +75,10 @@ class ModernProposalController
                 if ($roleFilter === 'ketua') {
                     $q->where('submitter_id', $user->id);
                 } elseif ($roleFilter === 'anggota') {
-                    $q->whereHas('teamMembers', fn ($t) => $t->where('user_id', $user->id));
+                    // Ketua juga tersimpan di pivot proposal_user (role = 'ketua'),
+                    // jadi WAJIB filter role agar usulan sendiri tidak ikut tampil.
+                    $q->whereHas('teamMembers', fn ($t) => $t->where('user_id', $user->id)
+                        ->where('proposal_user.role', 'anggota'));
                 } else {
                     $q->where('submitter_id', $user->id)
                         ->orWhereHas('teamMembers', fn ($t) => $t->where('user_id', $user->id))

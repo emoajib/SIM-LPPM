@@ -186,6 +186,30 @@ class ModernProposalControllerTest extends TestCase
             ->assertJsonCount(0, 'data');
     }
 
+    public function test_role_filter_anggota_excludes_own_proposals()
+    {
+        // Usulan sebagai ketua (submitter) — juga tercatat di pivot dengan role ketua.
+        $asKetua = $this->createProposal(['submitter_id' => $this->user->id]);
+        $asKetua->teamMembers()->attach($this->user->id, ['role' => 'ketua', 'status' => 'accepted']);
+
+        // Usulan orang lain di mana user ini anggota.
+        $ketuaLain = User::factory()->create();
+        $asAnggota = $this->createProposal(['submitter_id' => $ketuaLain->id]);
+        $asAnggota->teamMembers()->attach($this->user->id, ['role' => 'anggota', 'status' => 'accepted']);
+
+        $this->actingAs($this->user)
+            ->getJson(route('research.proposal.api', ['role' => 'anggota']))
+            ->assertStatus(200)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $asAnggota->id);
+
+        $this->actingAs($this->user)
+            ->getJson(route('research.proposal.api', ['role' => 'ketua']))
+            ->assertStatus(200)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $asKetua->id);
+    }
+
     public function test_unauthenticated_user_cannot_access_api()
     {
         $response = $this->getJson(route('research.proposal.api'));
