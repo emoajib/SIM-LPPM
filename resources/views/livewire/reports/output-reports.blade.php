@@ -179,6 +179,26 @@
                     </div>
                 </div>
             </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="subheader">{{ __('Terverifikasi') }}</div>
+                        </div>
+                        <div class="h1 mb-0 text-success">{{ $statistics['verified'] ?? 0 }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="subheader">{{ __('Belum Terverifikasi') }}</div>
+                        </div>
+                        <div class="h1 mb-0 text-danger">{{ $statistics['unverified'] ?? 0 }}</div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Main Card -->
@@ -220,6 +240,13 @@
                             <option value="all">Semua Jenis</option>
                             <option value="mandatory">Wajib</option>
                             <option value="additional">Tambahan</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select wire:model.live="verificationFilter" class="form-select">
+                            <option value="all">Semua Verifikasi</option>
+                            <option value="verified">Terverifikasi</option>
+                            <option value="unverified">Belum Terverifikasi</option>
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -343,6 +370,11 @@
                                                             {{ ucfirst((string) ($output->status_type ?? 'Draft')) }}
                                                         </x-tabler.badge>
                                                     </td>
+                                                    <td>
+                                                        <x-tabler.badge :color="$output->is_verified ? 'success' : 'danger'">
+                                                            {{ $output->is_verified ? 'Terverifikasi' : 'Belum' }}
+                                                        </x-tabler.badge>
+                                                    </td>
                                                     <td class="small text-secondary">
                                                         {{ $output->created_at->format('d/m/Y') }}
                                                     </td>
@@ -393,6 +425,11 @@
                                                     <td>
                                                         <x-tabler.badge :color="$output->status === 'published' ? 'success' : 'warning'">
                                                             {{ ucfirst((string) ($output->status ?? 'Draft')) }}
+                                                        </x-tabler.badge>
+                                                    </td>
+                                                    <td>
+                                                        <x-tabler.badge :color="$output->is_verified ? 'success' : 'danger'">
+                                                            {{ $output->is_verified ? 'Terverifikasi' : 'Belum' }}
                                                         </x-tabler.badge>
                                                     </td>
                                                     <td class="small text-secondary">
@@ -449,6 +486,29 @@
                             <x-tabler.badge :color="$mandatoryOutput->status_type === 'published' ? 'success' : 'warning'">
                                 {{ ucfirst((string) ($mandatoryOutput->status_type ?? 'Draft')) }}
                             </x-tabler.badge>
+                        </div>
+                    </div>
+
+                    <!-- Verification Status -->
+                    <div class="col-md-6">
+                        <label class="form-label">Status Verifikasi</label>
+                        <div class="d-flex align-items-center gap-2">
+                            <x-tabler.badge :color="$mandatoryOutput->is_verified ? 'success' : 'danger'">
+                                {{ $mandatoryOutput->is_verified ? 'Terverifikasi' : 'Belum Terverifikasi' }}
+                            </x-tabler.badge>
+                            @if (active_has_any_role(['admin lppm', 'kepala lppm', 'rektor', 'superadmin']))
+                                @if ($mandatoryOutput->is_verified)
+                                    <button type="button" wire:click="unverifyMandatoryOutput('{{ $mandatoryOutput->id }}')"
+                                        wire:loading.attr="disabled" class="btn btn-sm btn-outline-danger">
+                                        Batalkan Verifikasi
+                                    </button>
+                                @else
+                                    <button type="button" wire:click="verifyMandatoryOutput('{{ $mandatoryOutput->id }}')"
+                                        wire:loading.attr="disabled" class="btn btn-sm btn-outline-success">
+                                        Verifikasi
+                                    </button>
+                                @endif
+                            @endif
                         </div>
                     </div>
 
@@ -573,6 +633,29 @@
                             <x-tabler.badge :color="$additionalOutput->status === 'published' ? 'success' : 'warning'">
                                 {{ ucfirst((string) ($additionalOutput->status ?? 'Draft')) }}
                             </x-tabler.badge>
+                        </div>
+                    </div>
+
+                    <!-- Verification Status -->
+                    <div class="col-md-6">
+                        <label class="form-label">Status Verifikasi</label>
+                        <div class="d-flex align-items-center gap-2">
+                            <x-tabler.badge :color="$additionalOutput->is_verified ? 'success' : 'danger'">
+                                {{ $additionalOutput->is_verified ? 'Terverifikasi' : 'Belum Terverifikasi' }}
+                            </x-tabler.badge>
+                            @if (active_has_any_role(['admin lppm', 'kepala lppm', 'rektor', 'superadmin']))
+                                @if ($additionalOutput->is_verified)
+                                    <button type="button" wire:click="unverifyAdditionalOutput('{{ $additionalOutput->id }}')"
+                                        wire:loading.attr="disabled" class="btn btn-sm btn-outline-danger">
+                                        Batalkan Verifikasi
+                                    </button>
+                                @else
+                                    <button type="button" wire:click="verifyAdditionalOutput('{{ $additionalOutput->id }}')"
+                                        wire:loading.attr="disabled" class="btn btn-sm btn-outline-success">
+                                        Verifikasi
+                                    </button>
+                                @endif
+                            @endif
                         </div>
                     </div>
 

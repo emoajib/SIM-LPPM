@@ -114,9 +114,22 @@ class OutputReports extends Component
     public string $outputType = 'all';
 
     /**
+     * Verification filter (all, verified, unverified)
+     */
+    public string $verificationFilter = 'all';
+
+    /**
      * Reset pagination when output type filter changes
      */
     public function updatingOutputType(): void
+    {
+        $this->resetPage();
+    }
+
+    /**
+     * Reset pagination when verification filter changes
+     */
+    public function updatingVerificationFilter(): void
     {
         $this->resetPage();
     }
@@ -144,6 +157,7 @@ class OutputReports extends Component
             'scheme' => $this->selectedScheme,
             'faculty' => $this->selectedFaculty,
             'outputType' => $this->outputType,
+            'verificationFilter' => $this->verificationFilter,
         ]));
     }
 
@@ -157,6 +171,7 @@ class OutputReports extends Component
             'scheme' => $this->selectedScheme,
             'faculty' => $this->selectedFaculty,
             'outputType' => $this->outputType,
+            'verificationFilter' => $this->verificationFilter,
             'preview' => true,
         ]));
     }
@@ -171,6 +186,7 @@ class OutputReports extends Component
             'scheme' => $this->selectedScheme,
             'faculty' => $this->selectedFaculty,
             'outputType' => $this->outputType,
+            'verificationFilter' => $this->verificationFilter,
         ]));
     }
 
@@ -220,6 +236,19 @@ class OutputReports extends Component
             $query->whereHas('progressReports.mandatoryOutputs');
         } elseif ($this->outputType === 'additional') {
             $query->whereHas('progressReports.additionalOutputs');
+        }
+
+        // Filter by verification status
+        if ($this->verificationFilter === 'verified') {
+            $query->where(function (Builder $q) {
+                $q->whereHas('progressReports.mandatoryOutputs', fn (Builder $mo) => $mo->where('is_verified', true))
+                    ->orWhereHas('progressReports.additionalOutputs', fn (Builder $ao) => $ao->where('is_verified', true));
+            });
+        } elseif ($this->verificationFilter === 'unverified') {
+            $query->where(function (Builder $q) {
+                $q->whereHas('progressReports.mandatoryOutputs', fn (Builder $mo) => $mo->where('is_verified', false))
+                    ->orWhereHas('progressReports.additionalOutputs', fn (Builder $ao) => $ao->where('is_verified', false));
+            });
         }
 
         return $query->latest();
@@ -289,6 +318,23 @@ class OutputReports extends Component
             })
             ->count();
 
+        $verifiedMandatory = MandatoryOutput::query()
+            ->where('is_verified', true)
+            ->whereHas('progressReport.proposal', function (Builder $query) use ($detailableType) {
+                $query->where('detailable_type', $detailableType);
+            })
+            ->count();
+
+        $verifiedAdditional = AdditionalOutput::query()
+            ->where('is_verified', true)
+            ->whereHas('progressReport.proposal', function (Builder $query) use ($detailableType) {
+                $query->where('detailable_type', $detailableType);
+            })
+            ->count();
+
+        $unverifiedMandatory = $mandatoryCount - $verifiedMandatory;
+        $unverifiedAdditional = $additionalCount - $verifiedAdditional;
+
         $totalProposals = Proposal::query()
             ->where('detailable_type', $detailableType)
             ->forAcademicYear($this->period)
@@ -303,6 +349,8 @@ class OutputReports extends Component
             'additional' => $additionalCount,
             'total' => $mandatoryCount + $additionalCount,
             'proposals' => $totalProposals,
+            'verified' => $verifiedMandatory + $verifiedAdditional,
+            'unverified' => $unverifiedMandatory + $unverifiedAdditional,
         ];
     }
 
@@ -384,8 +432,8 @@ class OutputReports extends Component
      */
     public function verifyMandatoryOutput(string $id): void
     {
-        // Hanya Admin LPPM yang bisa verifikasi
-        if (! Auth::user()?->activeHasAnyRole(['admin lppm', 'superadmin'])) {
+        // Admin LPPM, Kepala LPPM, Rektor bisa verifikasi
+        if (! Auth::user()?->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'superadmin'])) {
             $this->toastError('Anda tidak memiliki kewenangan untuk memverifikasi luaran.');
 
             return;
@@ -406,7 +454,7 @@ class OutputReports extends Component
      */
     public function unverifyMandatoryOutput(string $id): void
     {
-        if (! Auth::user()?->activeHasAnyRole(['admin lppm', 'superadmin'])) {
+        if (! Auth::user()?->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'superadmin'])) {
             $this->toastError('Anda tidak memiliki kewenangan untuk membatalkan verifikasi luaran.');
 
             return;
@@ -427,7 +475,7 @@ class OutputReports extends Component
      */
     public function verifyAdditionalOutput(string $id): void
     {
-        if (! Auth::user()?->activeHasAnyRole(['admin lppm', 'superadmin'])) {
+        if (! Auth::user()?->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'superadmin'])) {
             $this->toastError('Anda tidak memiliki kewenangan untuk memverifikasi luaran.');
 
             return;
@@ -448,7 +496,7 @@ class OutputReports extends Component
      */
     public function unverifyAdditionalOutput(string $id): void
     {
-        if (! Auth::user()?->activeHasAnyRole(['admin lppm', 'superadmin'])) {
+        if (! Auth::user()?->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'superadmin'])) {
             $this->toastError('Anda tidak memiliki kewenangan untuk membatalkan verifikasi luaran.');
 
             return;

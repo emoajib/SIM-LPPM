@@ -36,6 +36,8 @@
                         @if($output->article_title) | Judul: {{ $output->article_title }} @endif
                         @php $link = $output->article_url ?? ($output->journal_url ?? ($output->media_url ?? ($output->video_url ?? ($output->url ?? null)))); @endphp
                         @if($link) | URL: {{ $link }} @endif
+                        | Verifikasi: {{ $output->is_verified ? 'Terverifikasi' : 'Belum' }}
+                        @if($output->is_verified && $output->verified_at) | Tgl Verifikasi: {{ $output->verified_at->format('d/m/Y') }} @endif
                     </td>
                 </tr>
                 @endif
@@ -56,6 +58,8 @@
                         @if($output->journal_title) | Jurnal: {{ $output->journal_title }} @endif
                         @php $linkAdd = $output->book_url ?? ($output->journal_url ?? ($output->media_url ?? ($output->video_url ?? ($output->url ?? null)))); @endphp
                         @if($linkAdd) | URL: {{ $linkAdd }} @endif
+                        | Verifikasi: {{ $output->is_verified ? 'Terverifikasi' : 'Belum' }}
+                        @if($output->is_verified && $output->verified_at) | Tgl Verifikasi: {{ $output->verified_at->format('d/m/Y') }} @endif
                     </td>
                 </tr>
                 @endif
