@@ -13,14 +13,6 @@
     </style>
 @endpushOnce
 
-@section('content')
-    <div id="modern-root"
-         data-proposal-id="{{ $proposal->id }}"
-         data-can-manage="{{ $canManage ? 'true' : 'false' }}"
-         data-is-editable="{{ $isEditable ? 'true' : 'false' }}"
-         data-user-id="{{ auth()->id() }}"></div>
-@endsection
-
 @pushOnce('scripts')
     <script>
         window.__PROPOSAL_ID__ = '{{ $proposal->id }}';
