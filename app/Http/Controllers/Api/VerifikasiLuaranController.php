@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\AdditionalOutput;
 use App\Models\MandatoryOutput;
 use App\Models\StudyProgram;
+use App\Services\ImageCompressionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -28,11 +29,13 @@ class VerifikasiLuaranController
         $mandatoryQuery = MandatoryOutput::with([
             'progressReport.proposal.submitter.identity',
             'proposalOutput',
+            'media',
         ])->whereHas('progressReport.proposal', fn ($q) => $q->where('detailable_type', $detailableType));
 
         $additionalQuery = AdditionalOutput::with([
             'progressReport.proposal.submitter.identity',
             'proposalOutput',
+            'media',
         ])->whereHas('progressReport.proposal', fn ($q) => $q->where('detailable_type', $detailableType));
 
         // Role-based filtering
@@ -184,7 +187,7 @@ class VerifikasiLuaranController
 
         $request->validate([
             'model_type' => 'required|in:mandatory,additional',
-            'rank' => 'required|string|max:255',
+            'rank' => 'nullable|string|in:S1,S2,S3,S4,S5,S6,Q1,Q2,Q3,Q4',
         ]);
 
         $model = match ($request->model_type) {
@@ -251,6 +254,62 @@ class VerifikasiLuaranController
         ]);
     }
 
+    public function updateEvidence(Request $request, string $id)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'model_type' => 'required|in:mandatory,additional',
+            'file' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120',
+            'url' => 'nullable|url|max:500',
+        ]);
+
+        $model = match ($request->model_type) {
+            'mandatory' => MandatoryOutput::find($id),
+            'additional' => AdditionalOutput::find($id),
+            default => null,
+        };
+
+        if (! $model) {
+            return response()->json(['message' => 'Data tidak ditemukan'], 404);
+        }
+
+        // Dosen hanya bisa upload bukti untuk output miliknya sendiri
+        $proposal = $model->progressReport?->proposal;
+        if ($user->activeHasRole('dosen') && $proposal?->submitter_id !== $user->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        // Blokir upload jika sudah verified (kecuali unverify dulu)
+        if ($model->is_verified && $user->activeHasRole('dosen')) {
+            return response()->json(['message' => 'Output sudah diverifikasi, tidak bisa diubah.'], 403);
+        }
+
+        $update = [];
+        if ($request->has('url')) {
+            $update['article_url'] = $request->url;
+        }
+
+        if ($request->hasFile('file')) {
+            $compressionService = app(ImageCompressionService::class);
+            $filePath = $compressionService->compressIfImage($request->file('file'));
+            $model->addMedia($filePath)
+                ->usingName($request->file('file')->getClientOriginalName())
+                ->usingFileName($request->file('file')->getClientOriginalName())
+                ->toMediaCollection('evidence');
+            $update['document_file'] = $request->file('file')->getClientOriginalName();
+        }
+
+        if (! empty($update)) {
+            $model->update($update);
+        }
+
+        return response()->json([
+            'message' => 'Bukti luaran berhasil diperbarui.',
+            'data' => $this->formatOutputItem($model->fresh(), $request->model_type),
+        ]);
+    }
+
     private function formatOutputItem($item, string $modelType): array
     {
         $proposal = $item->progressReport?->proposal;
@@ -270,6 +329,17 @@ class VerifikasiLuaranController
             'submitter_id' => $proposal?->submitter_id,
             'proposal_title' => $proposal->title ?? 'Unknown',
             'document_url' => $item->document_file ? asset('storage/'.$item->document_file) : null,
+            'article_url' => $item->article_url,
+            'journal_url' => $item->journal_url,
+            'media_url' => $item->media_url,
+            'video_url' => $item->video_url,
+            'evidence' => $item->getMedia('evidence')->map(function ($m) {
+                return [
+                    'id' => $m->id,
+                    'name' => $m->file_name,
+                    'url' => $m->getUrl(),
+                ];
+            }),
             'created_at' => $item->created_at?->format('d M Y'),
         ];
     }

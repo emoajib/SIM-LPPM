@@ -224,6 +224,10 @@ Route::middleware(['auth'])->group(function () {
             ->middleware('throttle:60,1')
             ->name('verifikasi-luaran.status');
 
+        Route::post('api/v1/verifikasi-luaran/{id}/evidence', [VerifikasiLuaranController::class, 'updateEvidence'])
+            ->middleware('throttle:60,1')
+            ->name('verifikasi-luaran.evidence');
+
         // Daily Note API (Realisasi Anggaran)
         Route::get('api/v1/daily-notes', [DailyNoteController::class, 'index'])
             ->middleware('throttle:60,1')
@@ -346,6 +350,10 @@ Route::middleware(['auth'])->group(function () {
         Route::post('api/v1/verifikasi-luaran/{id}/status', [VerifikasiLuaranController::class, 'updateStatus'])
             ->middleware('throttle:60,1')
             ->name('verifikasi-luaran.status');
+
+        Route::post('api/v1/verifikasi-luaran/{id}/evidence', [VerifikasiLuaranController::class, 'updateEvidence'])
+            ->middleware('throttle:60,1')
+            ->name('verifikasi-luaran.evidence');
 
         // Laporan Kemajuan dihilangkan berdasarkan arahan simplifikasi
         // Route::get('progress-report', App\Livewire\CommunityService\ProgressReport\Index::class)->name('progress-report.index');

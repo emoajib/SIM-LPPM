@@ -18,6 +18,10 @@ export default function VerifikasiLuaranIndex() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [toast, setToast] = useState(null);
+    const [showEvidenceModal, setShowEvidenceModal] = useState(false);
+    const [evidenceTarget, setEvidenceTarget] = useState(null);
+    const [evidenceUrl, setEvidenceUrl] = useState("");
+    const [evidenceFile, setEvidenceFile] = useState(null);
 
     const userRoles = window.__USER_ROLES__ || [];
     const isVerifier = userRoles.some((r) => VERIFIER_ROLES.includes(r));
@@ -140,6 +144,42 @@ export default function VerifikasiLuaranIndex() {
         }
     };
 
+    const openEvidenceModal = (output) => {
+        setEvidenceTarget(output);
+        setEvidenceUrl(output.article_url || output.journal_url || output.media_url || output.video_url || "");
+        setEvidenceFile(null);
+        setShowEvidenceModal(true);
+    };
+
+    const handleUploadEvidence = async (e) => {
+        e.preventDefault();
+        if (!evidenceTarget) return;
+        const formData = new FormData();
+        formData.append("model_type", evidenceTarget.model_type);
+        if (evidenceUrl) formData.append("url", evidenceUrl);
+        if (evidenceFile) formData.append("file", evidenceFile);
+
+        try {
+            const res = await fetch(`${apiBase}/api/v1/verifikasi-luaran/${evidenceTarget.id}/evidence`, {
+                method: "POST",
+                credentials: "same-origin",
+                headers: {
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.content ?? "",
+                },
+                body: formData,
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.message || "Gagal mengunggah bukti");
+            }
+            showToast("success", "Bukti luaran berhasil diperbarui.");
+            setShowEvidenceModal(false);
+            load(1);
+        } catch (e) {
+            showToast("error", e.message);
+        }
+    };
+
     const columns = [
         {
             key: "display_title",
@@ -237,6 +277,28 @@ export default function VerifikasiLuaranIndex() {
             ),
         },
         {
+            key: "evidence",
+            label: "Bukti",
+            cellClassName: "text-center whitespace-nowrap",
+            render: (p) => (
+                <div className="flex flex-col gap-1">
+                    {p.evidence && p.evidence.length > 0 && p.evidence.map((f) => (
+                        <a key={f.id} href={f.url} target="_blank" rel="noopener noreferrer" className="text-xs text-[#1e3a6e] dark:text-cyan-400 hover:underline">
+                            📎 {f.name}
+                        </a>
+                    ))}
+                    {p.article_url && (
+                        <a href={p.article_url} target="_blank" rel="noopener noreferrer" className="text-xs text-[#1e3a6e] dark:text-cyan-400 hover:underline">
+                            🔗 URL
+                        </a>
+                    )}
+                    {(!p.evidence || p.evidence.length === 0) && !p.article_url && (
+                        <span className="text-xs text-slate-400">-</span>
+                    )}
+                </div>
+            ),
+        },
+        {
             key: "actions",
             label: "Aksi",
             align: "center",
@@ -262,28 +324,44 @@ export default function VerifikasiLuaranIndex() {
                                 >
                                     Batal
                                 </Button>
-                                <input
-                                    type="text"
+                                <select
                                     value={p.rank || ""}
-                                    placeholder="Rank"
-                                    onChange={(e) => {
-                                        // Debounced via blur
-                                    }}
-                                    onBlur={(e) => handleUpdateRank(p.id, p.model_type, e.target.value)}
-                                    className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] w-16"
-                                />
+                                    onChange={(e) => handleUpdateRank(p.id, p.model_type, e.target.value)}
+                                    className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] w-24"
+                                >
+                                    <option value="">- Rank -</option>
+                                    <optgroup label="SINTA">
+                                        {["S1", "S2", "S3", "S4", "S5", "S6"].map((r) => (
+                                            <option key={r} value={r}>{r}</option>
+                                        ))}
+                                    </optgroup>
+                                    <optgroup label="SCOPUS">
+                                        {["Q1", "Q2", "Q3", "Q4"].map((r) => (
+                                            <option key={r} value={r}>{r}</option>
+                                        ))}
+                                    </optgroup>
+                                </select>
                             </>
                         )}
                         {isDosen && isOwner && !isVerifier && (
-                            <Button
-                                onClick={() => {
-                                    handleUpdateStatus(p.id, p.model_type, p.status_type, p.author_status);
-                                }}
-                                variant="secondary"
-                                size="sm"
-                            >
-                                Simpan
-                            </Button>
+                            <>
+                                <Button
+                                    onClick={() => openEvidenceModal(p)}
+                                    variant="ghost"
+                                    size="sm"
+                                >
+                                    📎 Bukti
+                                </Button>
+                                <Button
+                                    onClick={() => {
+                                        handleUpdateStatus(p.id, p.model_type, p.status_type, p.author_status);
+                                    }}
+                                    variant="secondary"
+                                    size="sm"
+                                >
+                                    Simpan
+                                </Button>
+                            </>
                         )}
                     </div>
                 );
@@ -370,6 +448,46 @@ export default function VerifikasiLuaranIndex() {
 
                 <Pagination meta={meta} onPage={(p) => load(p)} />
             </ModernPageCard>
+
+            {/* Evidence Upload Modal */}
+            {showEvidenceModal && evidenceTarget && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl p-6 w-full max-w-md mx-4">
+                        <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4">
+                            Upload Bukti Luaran
+                        </h3>
+                        <form onSubmit={handleUploadEvidence} className="space-y-4">
+                            <div className="flex flex-col gap-1">
+                                <label className="text-sm font-medium text-slate-700 dark:text-slate-200">URL Bukti</label>
+                                <input
+                                    type="url"
+                                    value={evidenceUrl}
+                                    onChange={(e) => setEvidenceUrl(e.target.value)}
+                                    placeholder="https://..."
+                                    className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                />
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <label className="text-sm font-medium text-slate-700 dark:text-slate-200">File Bukti (PDF/JPG/PNG, max 5MB)</label>
+                                <input
+                                    type="file"
+                                    onChange={(e) => setEvidenceFile(e.target.files?.[0] || null)}
+                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                    className="block w-full text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 dark:file:bg-emerald-900/50 dark:file:text-emerald-300"
+                                />
+                            </div>
+                            <div className="flex justify-end gap-2 pt-2">
+                                <Button type="button" variant="ghost" onClick={() => setShowEvidenceModal(false)}>
+                                    Batal
+                                </Button>
+                                <Button type="submit" variant="primary">
+                                    Upload
+                                </Button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
