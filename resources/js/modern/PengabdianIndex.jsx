@@ -7,7 +7,7 @@ import CountdownTimer from "./components/CountdownTimer.jsx";
 import ModuleTabNav from "./components/ModuleTabNav.jsx";
 import ModernPageCard from "./components/ModernPageCard.jsx";
 import ModernTable from "./components/ModernTable.jsx";
-import { STATUS_COLORS, MODULE_TABS, VERIFIER_TAB } from "./constants/themeColors.js";
+import { STATUS_COLORS, MODULE_TABS, getVerifierTab } from "./constants/themeColors.js";
 
 export default function PengabdianIndex() {
     const [proposals, setProposals] = useState([]);
@@ -78,7 +78,7 @@ export default function PengabdianIndex() {
 
     const tabs = [
         ...MODULE_TABS.communityService,
-        ...(isVerifier ? [VERIFIER_TAB] : []),
+        ...(isVerifier ? [getVerifierTab("communityService")] : []),
     ];
     const currentPath = window.location.pathname.replace(/\/$/, "");
 

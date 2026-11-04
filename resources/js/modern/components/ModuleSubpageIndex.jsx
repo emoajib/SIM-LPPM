@@ -5,7 +5,7 @@ import Pagination from "./Pagination.jsx";
 import ModuleTabNav from "./ModuleTabNav.jsx";
 import ModernPageCard from "./ModernPageCard.jsx";
 import ModernTable from "./ModernTable.jsx";
-import { STATUS_COLORS, MODULE_TABS, VERIFIER_TAB } from "../constants/themeColors.js";
+import { STATUS_COLORS, MODULE_TABS, getVerifierTab } from "../constants/themeColors.js";
 
 /**
  * Format angka ke Rupiah Indonesia.
@@ -60,7 +60,7 @@ export default function ModuleSubpageIndex({
 
     const tabs = [
         ...MODULE_TABS[module],
-        ...(isVerifier ? [VERIFIER_TAB] : []),
+        ...(isVerifier ? [getVerifierTab(module)] : []),
     ];
     const currentPath = window.location.pathname.replace(/\/$/, "");
 

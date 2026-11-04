@@ -5,7 +5,7 @@ import Modal from "./components/Modal.jsx";
 import ModuleTabNav from "./components/ModuleTabNav.jsx";
 import ModernPageCard from "./components/ModernPageCard.jsx";
 import ModernTable from "./components/ModernTable.jsx";
-import { MODULE_TABS, VERIFIER_TAB } from "./constants/themeColors.js";
+import { MODULE_TABS, getVerifierTab } from "./constants/themeColors.js";
 
 const VERIFIER_ROLES = ["admin lppm", "kepala lppm", "rektor"];
 
@@ -49,7 +49,7 @@ export default function DailyNoteIndex() {
 
     const tabs = [
         ...(MODULE_TABS[module] || MODULE_TABS.research),
-        ...(isVerifier ? [VERIFIER_TAB] : []),
+        ...(isVerifier ? [getVerifierTab(module)] : []),
     ];
     const currentPath = window.location.pathname.replace(/\/$/, "");
 

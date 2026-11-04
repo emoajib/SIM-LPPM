@@ -69,9 +69,15 @@ export const MODULE_TABS = {
  * Verifier-only tab for output verification (MandatoryOutput / AdditionalOutput).
  * Only rendered when the current user is a verifier (admin lppm / kepala lppm / rektor).
  */
-export const VERIFIER_TAB = {
-    label: "Verifikasi Luaran",
-    href: "/iku/verification",
-    icon: "🛡️",
-};
+export function getVerifierTab(module = "research") {
+    const base = module === "communityService" ? "/community-service" : "/research";
+    return {
+        label: "Verifikasi Luaran",
+        href: `${base}/verifikasi-luaran`,
+        icon: "🛡️",
+    };
+}
+
+// Backward-compatible constant (defaults to research)
+export const VERIFIER_TAB = getVerifierTab("research");
 

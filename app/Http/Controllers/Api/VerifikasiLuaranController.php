@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\AdditionalOutput;
 use App\Models\MandatoryOutput;
+use App\Models\StudyProgram;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,26 +16,51 @@ class VerifikasiLuaranController
         $search = $request->get('search', '');
         $status = $request->get('status', 'all'); // all, verified, unverified
         $type = $request->get('type', 'all'); // all, mandatory, additional
-        $roleFilter = $request->get('role', 'all'); // all, dosen, verifier
+        $module = $request->get('module', 'research'); // research, community-service
         $page = $request->get('page', 1);
         $perPage = $request->get('per_page', 15);
 
         $isVerifier = $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor']);
         $isDosen = $user->activeHasRole('dosen');
 
+        $detailableType = $module === 'community-service' ? 'App\Models\CommunityService' : 'App\Models\Research';
+
         $mandatoryQuery = MandatoryOutput::with([
             'progressReport.proposal.submitter.identity',
             'proposalOutput',
-        ]);
+        ])->whereHas('progressReport.proposal', fn ($q) => $q->where('detailable_type', $detailableType));
+
         $additionalQuery = AdditionalOutput::with([
             'progressReport.proposal.submitter.identity',
             'proposalOutput',
-        ]);
+        ])->whereHas('progressReport.proposal', fn ($q) => $q->where('detailable_type', $detailableType));
 
-        // Dosen hanya melihat output milik proposalnya sendiri
-        if ($isDosen && ! $isVerifier) {
+        // Role-based filtering
+        if ($user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'superadmin'])) {
+            // global access
+        } elseif ($user->activeHasRole('dekan')) {
+            if ($user->identity?->faculty_id) {
+                $mandatoryQuery->whereHas('progressReport.proposal.submitter.identity', fn ($si) => $si->where('faculty_id', $user->identity->faculty_id));
+                $additionalQuery->whereHas('progressReport.proposal.submitter.identity', fn ($si) => $si->where('faculty_id', $user->identity->faculty_id));
+            } else {
+                $mandatoryQuery->whereRaw('1=0');
+                $additionalQuery->whereRaw('1=0');
+            }
+        } elseif ($user->activeHasRole('kaprodi')) {
+            $kaprodiProdiId = StudyProgram::where('kaprodi_user_id', $user->id)->value('id') ?? $user->identity?->study_program_id;
+            if ($kaprodiProdiId) {
+                $mandatoryQuery->whereHas('progressReport.proposal.submitter.identity', fn ($si) => $si->where('study_program_id', $kaprodiProdiId));
+                $additionalQuery->whereHas('progressReport.proposal.submitter.identity', fn ($si) => $si->where('study_program_id', $kaprodiProdiId));
+            } else {
+                $mandatoryQuery->whereRaw('1=0');
+                $additionalQuery->whereRaw('1=0');
+            }
+        } elseif ($isDosen) {
             $mandatoryQuery->whereHas('progressReport.proposal', fn ($q) => $q->where('submitter_id', $user->id));
             $additionalQuery->whereHas('progressReport.proposal', fn ($q) => $q->where('submitter_id', $user->id));
+        } else {
+            $mandatoryQuery->whereRaw('1=0');
+            $additionalQuery->whereRaw('1=0');
         }
 
         // Filter pencarian

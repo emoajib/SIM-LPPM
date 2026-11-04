@@ -5,7 +5,7 @@ import Pagination from "./components/Pagination.jsx";
 import ModuleTabNav from "./components/ModuleTabNav.jsx";
 import ModernPageCard from "./components/ModernPageCard.jsx";
 import ModernTable from "./components/ModernTable.jsx";
-import { MODULE_TABS, VERIFIER_TAB } from "./constants/themeColors.js";
+import { MODULE_TABS, getVerifierTab } from "./constants/themeColors.js";
 
 const VERIFIER_ROLES = ["admin lppm", "kepala lppm", "rektor"];
 
@@ -23,10 +23,13 @@ export default function VerifikasiLuaranIndex() {
     const isVerifier = userRoles.some((r) => VERIFIER_ROLES.includes(r));
     const isDosen = userRoles.includes("dosen");
 
+    const isCommunityService = window.location.pathname.includes("community-service");
+    const module = isCommunityService ? "communityService" : "research";
+    const apiBase = isCommunityService ? "/community-service" : "/research";
+
     const tabs = [
-        ...MODULE_TABS.research,
-        ...MODULE_TABS.communityService,
-        ...(isVerifier ? [VERIFIER_TAB] : []),
+        ...MODULE_TABS[module],
+        ...(isVerifier ? [getVerifierTab(module)] : []),
     ];
     const currentPath = window.location.pathname.replace(/\/$/, "");
 
@@ -34,8 +37,8 @@ export default function VerifikasiLuaranIndex() {
         setLoading(true);
         setError(null);
         try {
-            const params = new URLSearchParams({ search, status, type, page: p });
-            const res = await fetch(`/research/api/v1/verifikasi-luaran?${params.toString()}`, {
+            const params = new URLSearchParams({ search, status, type, page: p, module });
+            const res = await fetch(`${apiBase}/api/v1/verifikasi-luaran?${params.toString()}`, {
                 credentials: "same-origin",
                 cache: "no-store",
             });
@@ -62,7 +65,7 @@ export default function VerifikasiLuaranIndex() {
 
     const handleVerify = async (id, modelType) => {
         try {
-            const res = await fetch(`/research/api/v1/verifikasi-luaran/${id}/verify`, {
+            const res = await fetch(`${apiBase}/api/v1/verifikasi-luaran/${id}/verify`, {
                 method: "POST",
                 credentials: "same-origin",
                 headers: {
@@ -82,7 +85,7 @@ export default function VerifikasiLuaranIndex() {
     const handleUnverify = async (id, modelType) => {
         if (!window.confirm("Batalkan verifikasi data ini?")) return;
         try {
-            const res = await fetch(`/research/api/v1/verifikasi-luaran/${id}/unverify`, {
+            const res = await fetch(`${apiBase}/api/v1/verifikasi-luaran/${id}/unverify`, {
                 method: "POST",
                 credentials: "same-origin",
                 headers: {
@@ -101,7 +104,7 @@ export default function VerifikasiLuaranIndex() {
 
     const handleUpdateRank = async (id, modelType, rank) => {
         try {
-            const res = await fetch(`/research/api/v1/verifikasi-luaran/${id}/rank`, {
+            const res = await fetch(`${apiBase}/api/v1/verifikasi-luaran/${id}/rank`, {
                 method: "POST",
                 credentials: "same-origin",
                 headers: {
@@ -120,7 +123,7 @@ export default function VerifikasiLuaranIndex() {
 
     const handleUpdateStatus = async (id, modelType, statusType, authorStatus) => {
         try {
-            const res = await fetch(`/research/api/v1/verifikasi-luaran/${id}/status`, {
+            const res = await fetch(`${apiBase}/api/v1/verifikasi-luaran/${id}/status`, {
                 method: "POST",
                 credentials: "same-origin",
                 headers: {

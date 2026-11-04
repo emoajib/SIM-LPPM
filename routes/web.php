@@ -241,7 +241,7 @@ Route::middleware(['auth'])->group(function () {
             ->middleware('throttle:60,1')
             ->name('daily-notes.evidence.destroy');
 
-        // Modern theme page for Verifikasi Luaran
+        // Modern theme page for Verifikasi Luaran (Research)
         Route::get('verifikasi-luaran', function () {
             return view('modern.verifikasi-luaran', [
                 'title' => 'Verifikasi Luaran IKU',
@@ -321,6 +321,31 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('proposal-revision', App\Livewire\CommunityService\ProposalRevision\Index::class)->name('proposal-revision.index');
         Route::get('proposal-revision/{proposal}', App\Livewire\CommunityService\ProposalRevision\Show::class)->name('proposal-revision.show');
+
+        // Modern theme page for Verifikasi Luaran (Community Service)
+        Route::get('verifikasi-luaran', function () {
+            return view('modern.verifikasi-luaran-pkm', [
+                'title' => 'Verifikasi Luaran IKU',
+                'pageSubtitle' => 'Pemantauan dan verifikasi target output pengabdian masyarakat',
+            ]);
+        })->name('verifikasi-luaran.page');
+
+        // Verifikasi Luaran API (Community Service)
+        Route::get('api/v1/verifikasi-luaran', [VerifikasiLuaranController::class, 'index'])
+            ->middleware('throttle:60,1')
+            ->name('verifikasi-luaran.index');
+        Route::post('api/v1/verifikasi-luaran/{id}/verify', [VerifikasiLuaranController::class, 'verify'])
+            ->middleware('throttle:60,1')
+            ->name('verifikasi-luaran.verify');
+        Route::post('api/v1/verifikasi-luaran/{id}/unverify', [VerifikasiLuaranController::class, 'unverify'])
+            ->middleware('throttle:60,1')
+            ->name('verifikasi-luaran.unverify');
+        Route::post('api/v1/verifikasi-luaran/{id}/rank', [VerifikasiLuaranController::class, 'updateRank'])
+            ->middleware('throttle:60,1')
+            ->name('verifikasi-luaran.rank');
+        Route::post('api/v1/verifikasi-luaran/{id}/status', [VerifikasiLuaranController::class, 'updateStatus'])
+            ->middleware('throttle:60,1')
+            ->name('verifikasi-luaran.status');
 
         // Laporan Kemajuan dihilangkan berdasarkan arahan simplifikasi
         // Route::get('progress-report', App\Livewire\CommunityService\ProgressReport\Index::class)->name('progress-report.index');
