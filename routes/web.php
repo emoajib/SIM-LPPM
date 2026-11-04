@@ -232,6 +232,10 @@ Route::middleware(['auth'])->group(function () {
             ->middleware('throttle:60,1')
             ->name('verifikasi-luaran.evidence');
 
+        Route::post('api/v1/verifikasi-luaran/{id}/detail', [VerifikasiLuaranController::class, 'updateDetail'])
+            ->middleware('throttle:60,1')
+            ->name('verifikasi-luaran.detail');
+
         // Daily Note API (Realisasi Anggaran)
         Route::get('api/v1/daily-notes', [DailyNoteController::class, 'index'])
             ->middleware('throttle:60,1')

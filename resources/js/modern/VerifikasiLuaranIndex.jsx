@@ -22,6 +22,43 @@ export default function VerifikasiLuaranIndex() {
     const [evidenceTarget, setEvidenceTarget] = useState(null);
     const [evidenceUrl, setEvidenceUrl] = useState("");
     const [evidenceFile, setEvidenceFile] = useState(null);
+    const [showDetailModal, setShowDetailModal] = useState(false);
+    const [detailTarget, setDetailTarget] = useState(null);
+    const [detailForm, setDetailForm] = useState({
+        status_type: "",
+        author_status: "",
+        journal_title: "",
+        article_title: "",
+        book_title: "",
+        issn: "",
+        eissn: "",
+        indexing_body: "",
+        journal_url: "",
+        publication_year: "",
+        volume: "",
+        issue_number: "",
+        page_start: "",
+        page_end: "",
+        article_url: "",
+        doi: "",
+        book_url: "",
+        publisher: "",
+        isbn: "",
+        total_pages: "",
+        hki_type: "",
+        registration_number: "",
+        inventors: "",
+        product_name: "",
+        description: "",
+        readiness_level: "",
+        implementation_location: "",
+        media_name: "",
+        media_url: "",
+        publication_date: "",
+        video_url: "",
+        platform: "",
+        document_file: "",
+    });
 
     const userRoles = window.__USER_ROLES__ || [];
     const isVerifier = userRoles.some((r) => VERIFIER_ROLES.includes(r));
@@ -149,6 +186,81 @@ export default function VerifikasiLuaranIndex() {
         setEvidenceUrl(output.article_url || output.journal_url || output.media_url || output.video_url || "");
         setEvidenceFile(null);
         setShowEvidenceModal(true);
+    };
+
+    const openDetailModal = (output) => {
+        setDetailTarget(output);
+        setDetailForm({
+            status_type: output.status_type || "",
+            author_status: output.author_status || "",
+            journal_title: output.journal_title || "",
+            article_title: output.article_title || "",
+            book_title: output.book_title || "",
+            issn: output.issn || "",
+            eissn: output.eissn || "",
+            indexing_body: output.indexing_body || "",
+            journal_url: output.journal_url || "",
+            publication_year: output.publication_year || "",
+            volume: output.volume || "",
+            issue_number: output.issue_number || "",
+            page_start: output.page_start || "",
+            page_end: output.page_end || "",
+            article_url: output.article_url || "",
+            doi: output.doi || "",
+            book_url: output.book_url || "",
+            publisher: output.publisher || "",
+            isbn: output.isbn || "",
+            total_pages: output.total_pages || "",
+            hki_type: output.hki_type || "",
+            registration_number: output.registration_number || "",
+            inventors: output.inventors || "",
+            product_name: output.product_name || "",
+            description: output.description || "",
+            readiness_level: output.readiness_level || "",
+            implementation_location: output.implementation_location || "",
+            media_name: output.media_name || "",
+            media_url: output.media_url || "",
+            publication_date: output.publication_date || "",
+            video_url: output.video_url || "",
+            platform: output.platform || "",
+            document_file: "",
+        });
+        setShowDetailModal(true);
+    };
+
+    const handleUpdateDetail = async () => {
+        if (!detailTarget) return;
+        const formData = new FormData();
+        formData.append("model_type", detailTarget.model_type);
+        // Only send non-empty fields
+        Object.entries(detailForm).forEach(([key, value]) => {
+            if (value !== "" && value !== null && value !== undefined) {
+                formData.append(key, value);
+            }
+        });
+        if (detailForm.document_file) {
+            formData.append("document_file", detailForm.document_file);
+        }
+
+        try {
+            const res = await fetch(`${apiBase}/api/v1/verifikasi-luaran/${detailTarget.id}/detail`, {
+                method: "POST",
+                credentials: "same-origin",
+                headers: {
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.content ?? "",
+                },
+                body: formData,
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.message || "Gagal memperbarui detail output");
+            }
+            showToast("success", "Detail output berhasil diperbarui.");
+            setShowDetailModal(false);
+            load(1);
+        } catch (e) {
+            showToast("error", e.message);
+        }
     };
 
     const handleUploadEvidence = async (e) => {
@@ -346,6 +458,13 @@ export default function VerifikasiLuaranIndex() {
                         {isDosen && isOwner && !isVerifier && (
                             <>
                                 <Button
+                                    onClick={() => openDetailModal(p)}
+                                    variant="ghost"
+                                    size="sm"
+                                >
+                                    📝 Detail
+                                </Button>
+                                <Button
                                     onClick={() => openEvidenceModal(p)}
                                     variant="ghost"
                                     size="sm"
@@ -482,6 +601,335 @@ export default function VerifikasiLuaranIndex() {
                                 </Button>
                                 <Button type="submit" variant="primary">
                                     Upload
+                                </Button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Detail Output Modal */}
+            {showDetailModal && detailTarget && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl p-6 w-full max-w-2xl mx-4 max-h-[80vh] overflow-y-auto">
+                        <div className="flex justify-between items-start mb-4">
+                            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">
+                                Detail Output Luaran
+                            </h3>
+                            <button
+                                type="button"
+                                onClick={() => setShowDetailModal(false)}
+                                className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        <form onSubmit={handleUpdateDetail} className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* Status & Author */}
+                                <div className="flex flex-col gap-1">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Status Penulis</label>
+                                    <select
+                                        value={detailForm.status_type}
+                                        onChange={(e) => setDetailForm({ ...detailForm, status_type: e.target.value })}
+                                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                    >
+                                        <option value="">Pilih Status</option>
+                                        <option value="draft">Draft</option>
+                                        <option value="submitted">Diajukan</option>
+                                        <option value="published">Diterbitkan</option>
+                                        <option value="accepted">Diterima</option>
+                                        <option value="under_review">Under Review</option>
+                                        <option value="rejected">Ditolak</option>
+                                    </select>
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Posisi Penulis</label>
+                                    <select
+                                        value={detailForm.author_status}
+                                        onChange={(e) => setDetailForm({ ...detailForm, author_status: e.target.value })}
+                                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                    >
+                                        <option value="">Pilih Posisi</option>
+                                        <option value="first_author">First Author</option>
+                                        <option value="co_author">Co-Author</option>
+                                        <option value="corresponding_author">Corresponding Author</option>
+                                    </select>
+                                </div>
+
+                                {/* Judul Output */}
+                                <div className="md:col-span-2 flex flex-col gap-1">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Judul Output</label>
+                                    <input
+                                        type="text"
+                                        value={detailForm.journal_title || detailForm.article_title || detailForm.book_title || detailForm.product_name || ""}
+                                        onChange={(e) =>
+                                            setDetailForm({ ...detailForm, journal_title: e.target.value })
+                                        }
+                                        placeholder="Judul jurnal, artikel, buku, atau produk"
+                                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                    />
+                                </div>
+
+                                {/* Jurnal fields */}
+                                <div className="md:col-span-2 flex flex-col gap-1">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Judul Jurnal</label>
+                                    <input
+                                        type="text"
+                                        value={detailForm.journal_title}
+                                        onChange={(e) => setDetailForm({ ...detailForm, journal_title: e.target.value })}
+                                        placeholder="Nama jurnal"
+                                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                    />
+                                </div>
+                                <div className="md:col-span-2 flex flex-col gap-1">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-200">ISSN</label>
+                                    <input
+                                        type="text"
+                                        value={detailForm.issn}
+                                        onChange={(e) => setDetailForm({ ...detailForm, issn: e.target.value })}
+                                        placeholder="ISSN"
+                                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                    />
+                                </div>
+                                <div className="md:col-span-2 flex flex-col gap-1">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-200">EISSN</label>
+                                    <input
+                                        type="text"
+                                        value={detailForm.eissn}
+                                        onChange={(e) => setDetailForm({ ...detailForm, eissn: e.target.value })}
+                                        placeholder="EISSN"
+                                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                    />
+                                </div>
+                                <div className="md:col-span-2 flex flex-col gap-1">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Judul Artikel</label>
+                                    <input
+                                        type="text"
+                                        value={detailForm.article_title}
+                                        onChange={(e) => setDetailForm({ ...detailForm, article_title: e.target.value })}
+                                        placeholder="Judul artikel"
+                                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                    />
+                                </div>
+                                <div className="md:col-span-2 flex flex-col gap-1">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Volume</label>
+                                    <input
+                                        type="text"
+                                        value={detailForm.volume}
+                                        onChange={(e) => setDetailForm({ ...detailForm, volume: e.target.value })}
+                                        placeholder="Volume"
+                                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                    />
+                                </div>
+                                <div className="md:col-span-2 flex flex-col gap-1">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Issue Number</label>
+                                    <input
+                                        type="text"
+                                        value={detailForm.issue_number}
+                                        onChange={(e) => setDetailForm({ ...detailForm, issue_number: e.target.value })}
+                                        placeholder="Issue Number"
+                                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                    />
+                                </div>
+                                <div className="md:col-span-2 flex flex-col gap-1">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Page Start</label>
+                                    <input
+                                        type="text"
+                                        value={detailForm.page_start}
+                                        onChange={(e) => setDetailForm({ ...detailForm, page_start: e.target.value })}
+                                        placeholder="Halaman awal"
+                                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                    />
+                                </div>
+                                <div className="md:col-span-2 flex flex-col gap-1">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Page End</label>
+                                    <input
+                                        type="text"
+                                        value={detailForm.page_end}
+                                        onChange={(e) => setDetailForm({ ...detailForm, page_end: e.target.value })}
+                                        placeholder="Halaman akhir"
+                                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                    />
+                                </div>
+
+                                {/* Buku fields */}
+                                <div className="md:col-span-2 flex flex-col gap-1">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Judul Buku</label>
+                                    <input
+                                        type="text"
+                                        value={detailForm.book_title}
+                                        onChange={(e) => setDetailForm({ ...detailForm, book_title: e.target.value })}
+                                        placeholder="Judul buku"
+                                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                    />
+                                </div>
+                                <div className="md:col-span-2 flex flex-col gap-1">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-200">ISBN</label>
+                                    <input
+                                        type="text"
+                                        value={detailForm.isbn}
+                                        onChange={(e) => setDetailForm({ ...detailForm, isbn: e.target.value })}
+                                        placeholder="ISBN"
+                                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                    />
+                                </div>
+                                <div className="md:col-span-2 flex flex-col gap-1">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Penerbit</label>
+                                    <input
+                                        type="text"
+                                        value={detailForm.publisher}
+                                        onChange={(e) => setDetailForm({ ...detailForm, publisher: e.target.value })}
+                                        placeholder="Nama penerbit"
+                                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                    />
+                                </div>
+                                <div className="md:col-span-2 flex flex-col gap-1">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Total Halaman</label>
+                                    <input
+                                        type="number"
+                                        value={detailForm.total_pages}
+                                        onChange={(e) => setDetailForm({ ...detailForm, total_pages: e.target.value })}
+                                        placeholder="Total halaman"
+                                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                    />
+                                </div>
+
+                                {/* HKI fields */}
+                                <div className="md:col-span-2 flex flex-col gap-1">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Jenis HKI</label>
+                                    <input
+                                        type="text"
+                                        value={detailForm.hki_type}
+                                        onChange={(e) => setDetailForm({ ...detailForm, hki_type: e.target.value })}
+                                        placeholder="Jenis HKI (Patent, Merek, dll.)"
+                                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                    />
+                                </div>
+                                <div className="md:col-span-2 flex flex-col gap-1">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Nomor Registrasi</label>
+                                    <input
+                                        type="text"
+                                        value={detailForm.registration_number}
+                                        onChange={(e) => setDetailForm({ ...detailForm, registration_number: e.target.value })}
+                                        placeholder="Nomor registrasi HKI"
+                                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                    />
+                                </div>
+                                <div className="md:col-span-2 flex flex-col gap-1">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Inventors</label>
+                                    <input
+                                        type="text"
+                                        value={detailForm.inventors}
+                                        onChange={(e) => setDetailForm({ ...detailForm, inventors: e.target.value })}
+                                        placeholder="Nama para pencipta"
+                                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                    />
+                                </div>
+
+                                {/* Product fields */}
+                                <div className="md:col-span-2 flex flex-col gap-1">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Nama Produk</label>
+                                    <input
+                                        type="text"
+                                        value={detailForm.product_name}
+                                        onChange={(e) => setDetailForm({ ...detailForm, product_name: e.target.value })}
+                                        placeholder="Nama produk"
+                                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                    />
+                                </div>
+                                <div className="md:col-span-2 flex flex-col gap-1">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Deskripsi</label>
+                                    <textarea
+                                        value={detailForm.description}
+                                        onChange={(e) => setDetailForm({ ...detailForm, description: e.target.value })}
+                                        rows={2}
+                                        placeholder="Deskripsi produk"
+                                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                    />
+                                </div>
+                                <div className="md:col-span-2 flex flex-col gap-1">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Tingkat Kesiapan (TRL)</label>
+                                    <input
+                                        type="text"
+                                        value={detailForm.readiness_level}
+                                        onChange={(e) => setDetailForm({ ...detailForm, readiness_level: e.target.value })}
+                                        placeholder="Contoh: TRL 1-9"
+                                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                    />
+                                </div>
+                                <div className="md:col-span-2 flex flex-col gap-1">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Lokasi Implementasi</label>
+                                    <input
+                                        type="text"
+                                        value={detailForm.implementation_location}
+                                        onChange={(e) => setDetailForm({ ...detailForm, implementation_location: e.target.value })}
+                                        placeholder="Lokasi implementasi"
+                                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                    />
+                                </div>
+
+                                {/* Media fields */}
+                                <div className="md:col-span-2 flex flex-col gap-1">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Nama Media</label>
+                                    <input
+                                        type="text"
+                                        value={detailForm.media_name}
+                                        onChange={(e) => setDetailForm({ ...detailForm, media_name: e.target.value })}
+                                        placeholder="Nama media"
+                                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                    />
+                                </div>
+                                <div className="md:col-span-2 flex flex-col gap-1">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-200">URL Media</label>
+                                    <input
+                                        type="url"
+                                        value={detailForm.media_url}
+                                        onChange={(e) => setDetailForm({ ...detailForm, media_url: e.target.value })}
+                                        placeholder="URL media"
+                                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                    />
+                                </div>
+
+                                {/* Video fields */}
+                                <div className="md:col-span-2 flex flex-col gap-1">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-200">URL Video</label>
+                                    <input
+                                        type="url"
+                                        value={detailForm.video_url}
+                                        onChange={(e) => setDetailForm({ ...detailForm, video_url: e.target.value })}
+                                        placeholder="URL video"
+                                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                    />
+                                </div>
+                                <div className="md:col-span-2 flex flex-col gap-1">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Platform</label>
+                                    <input
+                                        type="text"
+                                        value={detailForm.platform}
+                                        onChange={(e) => setDetailForm({ ...detailForm, platform: e.target.value })}
+                                        placeholder="Platform video"
+                                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                    />
+                                </div>
+
+                                {/* Tanggal terbit */}
+                                <div className="md:col-span-2 flex flex-col gap-1">
+                                    <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Tanggal Terbit</label>
+                                    <input
+                                        type="date"
+                                        value={detailForm.publication_date}
+                                        onChange={(e) => setDetailForm({ ...detailForm, publication_date: e.target.value })}
+                                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex justify-end gap-2 pt-4">
+                                <Button type="button" variant="ghost" onClick={() => setShowDetailModal(false)}>
+                                    Batal
+                                </Button>
+                                <Button type="submit" variant="primary">
+                                    Simpan Detail
                                 </Button>
                             </div>
                         </form>

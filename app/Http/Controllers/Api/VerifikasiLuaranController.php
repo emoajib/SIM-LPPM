@@ -310,6 +310,202 @@ class VerifikasiLuaranController
         ]);
     }
 
+    public function updateDetail(Request $request, string $id)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'model_type' => 'required|in:mandatory,additional',
+            'category' => 'nullable|string|max:255',
+            'type' => 'nullable|string|max:255',
+            'status_type' => 'nullable|string|in:draft,submitted,published,accepted,under_review,rejected',
+            'author_status' => 'nullable|string|in:first_author,co_author,corresponding_author',
+            'journal_title' => 'nullable|string|max:255',
+            'article_title' => 'nullable|string|max:255',
+            'book_title' => 'nullable|string|max:255',
+            'issn' => 'nullable|string|max:50',
+            'eissn' => 'nullable|string|max:50',
+            'indexing_body' => 'nullable|string|max:100',
+            'volume' => 'nullable|string|max:50',
+            'issue_number' => 'nullable|string|max:50',
+            'page_start' => 'nullable|string|max:50',
+            'page_end' => 'nullable|string|max:50',
+            'article_url' => 'nullable|url|max:500',
+            'doi' => 'nullable|string|max:255',
+            'publication_year' => 'nullable|integer|between:1900,2100',
+            'publication_date' => 'nullable|date',
+            'publisher' => 'nullable|string|max:255',
+            'publisher_url' => 'nullable|url|max:500',
+            'product_name' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:1000',
+            'readiness_level' => 'nullable|string|max:100',
+            'implementation_location' => 'nullable|string|max:255',
+            'media_name' => 'nullable|string|max:255',
+            'media_url' => 'nullable|url|max:500',
+            'video_url' => 'nullable|url|max:500',
+            'platform' => 'nullable|string|max:255',
+            'document_file' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120',
+        ]);
+
+        $model = match ($request->model_type) {
+            'mandatory' => MandatoryOutput::find($id),
+            'additional' => AdditionalOutput::find($id),
+            default => null,
+        };
+
+        if (! $model) {
+            return response()->json(['message' => 'Data tidak ditemukan'], 404);
+        }
+
+        // Dosen hanya bisa mengedit output miliknya sendiri
+        $proposal = $model->progressReport?->proposal;
+        if ($user->activeHasRole('dosen') && $proposal?->submitter_id !== $user->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        // Blokir edit jika sudah verified (kecuali unverify dulu)
+        if ($model->is_verified && $user->activeHasRole('dosen')) {
+            return response()->json(['message' => 'Output sudah diverifikasi, tidak bisa diubah.'], 403);
+        }
+
+        $update = [];
+
+        // Status dan author status
+        if ($request->has('status_type')) {
+            $update['status_type'] = $request->status_type;
+        }
+        if ($request->has('author_status')) {
+            $update['author_status'] = $request->author_status;
+        }
+
+        // Journal fields (MandatoryOutput & AdditionalOutput)
+        if ($request->has('journal_title')) {
+            $update['journal_title'] = $request->journal_title;
+        }
+        if ($request->has('issn')) {
+            $update['issn'] = $request->issn;
+        }
+        if ($request->has('eissn')) {
+            $update['eissn'] = $request->eissn;
+        }
+        if ($request->has('indexing_body')) {
+            $update['indexing_body'] = $request->indexing_body;
+        }
+        if ($request->has('journal_url')) {
+            $update['journal_url'] = $request->journal_url;
+        }
+        if ($request->has('article_title')) {
+            $update['article_title'] = $request->article_title;
+        }
+        if ($request->has('publication_year')) {
+            $update['publication_year'] = $request->publication_year;
+        }
+        if ($request->has('volume')) {
+            $update['volume'] = $request->volume;
+        }
+        if ($request->has('issue_number')) {
+            $update['issue_number'] = $request->issue_number;
+        }
+        if ($request->has('page_start')) {
+            $update['page_start'] = $request->page_start;
+        }
+        if ($request->has('page_end')) {
+            $update['page_end'] = $request->page_end;
+        }
+        if ($request->has('article_url')) {
+            $update['article_url'] = $request->article_url;
+        }
+        if ($request->has('doi')) {
+            $update['doi'] = $request->doi;
+        }
+
+        // Book fields
+        if ($request->has('book_title')) {
+            $update['book_title'] = $request->book_title;
+        }
+        if ($request->has('publisher')) {
+            $update['publisher'] = $request->publisher;
+        }
+        if ($request->has('isbn')) {
+            $update['isbn'] = $request->isbn;
+        }
+        if ($request->has('publisher_url')) {
+            $update['publisher_url'] = $request->publisher_url;
+        }
+        if ($request->has('book_url')) {
+            $update['book_url'] = $request->book_url;
+        }
+        if ($request->has('total_pages')) {
+            $update['total_pages'] = $request->total_pages;
+        }
+
+        // HKI fields
+        if ($request->has('hki_type')) {
+            $update['hki_type'] = $request->hki_type;
+        }
+        if ($request->has('registration_number')) {
+            $update['registration_number'] = $request->registration_number;
+        }
+        if ($request->has('inventors')) {
+            $update['inventors'] = $request->inventors;
+        }
+
+        // Product fields
+        if ($request->has('product_name')) {
+            $update['product_name'] = $request->product_name;
+        }
+        if ($request->has('description')) {
+            $update['description'] = $request->description;
+        }
+        if ($request->has('readiness_level')) {
+            $update['readiness_level'] = $request->readiness_level;
+        }
+        if ($request->has('implementation_location')) {
+            $update['implementation_location'] = $request->implementation_location;
+        }
+
+        // Media fields
+        if ($request->has('media_name')) {
+            $update['media_name'] = $request->media_name;
+        }
+        if ($request->has('media_url')) {
+            $update['media_url'] = $request->media_url;
+        }
+
+        // Video fields
+        if ($request->has('video_url')) {
+            $update['video_url'] = $request->video_url;
+        }
+        if ($request->has('platform')) {
+            $update['platform'] = $request->platform;
+        }
+
+        // Publication date
+        if ($request->has('publication_date')) {
+            $update['publication_date'] = $request->publication_date;
+        }
+
+        // Document file upload
+        if ($request->hasFile('document_file')) {
+            $compressionService = app(ImageCompressionService::class);
+            $filePath = $compressionService->compressIfImage($request->file('document_file'));
+            $model->addMedia($filePath)
+                ->usingName($request->file('document_file')->getClientOriginalName())
+                ->usingFileName($request->file('document_file')->getClientOriginalName())
+                ->toMediaCollection('evidence');
+            $update['document_file'] = $request->file('document_file')->getClientOriginalName();
+        }
+
+        if (! empty($update)) {
+            $model->update($update);
+        }
+
+        return response()->json([
+            'message' => 'Detail output berhasil diperbarui.',
+            'data' => $this->formatOutputItem($model->fresh(), $request->model_type, $user),
+        ]);
+    }
+
     private function formatOutputItem($item, string $modelType, $user = null): array
     {
         $proposal = $item->progressReport?->proposal;
