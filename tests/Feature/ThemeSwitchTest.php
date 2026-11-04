@@ -24,6 +24,21 @@ it('research index returns 200 in classic theme', function () {
         ->assertStatus(200);
 });
 
+it('classic theme keeps the tabler navbar and does not load the modern bundle', function () {
+    $user = User::factory()->create();
+    $user->assignRole('dosen');
+
+    $response = $this->actingAs($user)
+        ->withSession(['active_role' => 'dosen', 'sim_lppm_app_theme' => 'classic'])
+        ->get(route('research.proposal.index'));
+
+    $response->assertStatus(200);
+    $response->assertSee('id="navbar-menu"', false);
+    $response->assertSee('class="collapse navbar-collapse"', false);
+    $response->assertDontSee('theme-modern', false);
+    $response->assertDontSee('modern.jsx', false);
+});
+
 it('research index returns 200 in modern theme', function () {
     $user = User::factory()->create();
     $user->assignRole('dosen');
