@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\ProposalStatus;
 use App\Models\CommunityService;
+use App\Models\CommunityServiceScheme;
+use App\Models\Faculty;
 use App\Models\Proposal;
+use App\Models\ResearchScheme;
 use App\Models\Setting;
+use App\Models\StudyProgram;
 use App\Services\EligibilityService;
 use App\Services\LecturerEligibilityService;
 use Illuminate\Http\Request;
@@ -20,12 +25,24 @@ class ModernProposalController
         $year = $request->get('year', '');
         $type = $request->get('type', 'research');
         $roleFilter = $request->get('role', 'all');
+        $facultyId = $request->get('faculty_id');
+        $studyProgramId = $request->get('study_program_id');
 
         $query = Proposal::with(['submitter.identity', 'focusArea', 'researchScheme', 'communityServiceScheme'])
-            ->whereHas('detailable', fn ($q) => $q->where('detailable_type', $type === 'research' ? 'App\\Models\\Research' : CommunityService::class));
+            ->where('detailable_type', $type === 'research' ? 'App\\Models\\Research' : CommunityService::class);
 
         if ($search) {
-            $query->where('title', 'like', "%{$search}%");
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhereHas('submitter', fn ($s) => $s->where('name', 'like', "%{$search}%"))
+                    ->orWhereHas('submitter.identity', fn ($i) => $i->where('identity_id', 'like', "%{$search}%"));
+            });
+        }
+        if ($facultyId) {
+            $query->whereHas('submitter.identity', fn ($si) => $si->where('faculty_id', $facultyId));
+        }
+        if ($studyProgramId) {
+            $query->whereHas('submitter.identity', fn ($si) => $si->where('study_program_id', $studyProgramId));
         }
         if ($status && $status !== 'all') {
             $query->where('status', $status);
@@ -89,6 +106,49 @@ class ModernProposalController
                 'last_page' => $proposals->lastPage(),
                 'total' => $proposals->total(),
             ],
+        ]);
+    }
+
+    public function availableFilters(Request $request)
+    {
+        $user = Auth::user();
+        $type = $request->get('type', 'research');
+
+        $years = Proposal::where('detailable_type', $type === 'research' ? 'App\\Models\\Research' : CommunityService::class)
+            ->selectRaw('DISTINCT EXTRACT(YEAR FROM created_at) as y')
+            ->orderByDesc('y')
+            ->pluck('y')
+            ->filter()
+            ->values();
+
+        $schemes = $type === 'research'
+            ? ResearchScheme::select('id', 'name')->get()
+            : CommunityServiceScheme::select('id', 'name')->get();
+
+        $statuses = collect(ProposalStatus::cases())->map(fn ($s) => [
+            'value' => $s->value,
+            'label' => $s->label(),
+        ]);
+
+        $faculties = [];
+        $studyPrograms = [];
+        if ($user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'dekan'])) {
+            $faculties = Faculty::select('id', 'name')->orderBy('name')->get();
+            if ($user->activeHasRole('dekan') && $user->identity?->faculty_id) {
+                $studyPrograms = StudyProgram::where('faculty_id', $user->identity->faculty_id)->select('id', 'name')->orderBy('name')->get();
+            } else {
+                $studyPrograms = StudyProgram::select('id', 'name', 'faculty_id')->orderBy('name')->get();
+            }
+        } elseif ($user->activeHasRole('kaprodi') && $user->identity?->study_program_id) {
+            $studyPrograms = StudyProgram::where('id', $user->identity->study_program_id)->select('id', 'name')->get();
+        }
+
+        return response()->json([
+            'years' => $years,
+            'schemes' => $schemes,
+            'statuses' => $statuses,
+            'faculties' => $faculties,
+            'study_programs' => $studyPrograms,
         ]);
     }
 
