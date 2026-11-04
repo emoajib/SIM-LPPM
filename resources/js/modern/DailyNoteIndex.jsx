@@ -341,11 +341,29 @@ export default function DailyNoteIndex() {
                             Catat aktivitas harian dan pengeluaran dana. Unggah bukti transaksi (nota, kuitansi, invoice) untuk setiap entri yang membutuhkan biaya.
                         </p>
                     </div>
-                    {canManage && isEditable && (
-                        <Button onClick={() => openForm("add")} variant="primary">
-                            + Tambah Entri
-                        </Button>
-                    )}
+                    <div className="flex items-center gap-2">
+                        <a
+                            href={`/financial-reports/${window.__PROPOSAL_ID__}/export-pdf?preview=1`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-bold text-[#1e3a6e] dark:text-cyan-400 border border-[#1e3a6e]/30 dark:border-cyan-500/30 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition"
+                        >
+                            👁️ Preview PDF
+                        </a>
+                        <a
+                            href={`/financial-reports/${window.__PROPOSAL_ID__}/export-pdf?download=true`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition"
+                        >
+                            ⬇️ Download PDF
+                        </a>
+                        {canManage && isEditable && (
+                            <Button onClick={() => openForm("add")} variant="primary">
+                                + Tambah Entri
+                            </Button>
+                        )}
+                    </div>
                 </div>
 
                 <ModernTable
