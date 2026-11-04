@@ -772,6 +772,14 @@ body.theme-modern .dropdown-menu.show {
   z-index: 2147483647 !important;
 }
 
+/* Modern theme: jumlah item navbar banyak (12+) sedangkan Tabler memakai
+   flex-direction: row tanpa wrap → item terakhir ("Laporan") terpotong dan
+   memicu scroll horizontal. Izinkan wrap supaya semua item terlihat.
+   Diletakkan di app.css (bukan modern.css) karena halaman Blade modern
+   tidak memuat modern.css. */
+body.theme-modern .navbar-expand-md .navbar-nav { flex-wrap: wrap; column-gap: .25rem; }
+body.theme-modern .navbar-expand-md .navbar-nav .nav-link { white-space: nowrap; }
+
 /* Dark mode (modern theme) */
 body.theme-modern.theme-dark {
     --tblr-body-bg: #0f172a;

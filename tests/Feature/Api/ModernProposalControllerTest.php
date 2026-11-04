@@ -164,11 +164,25 @@ class ModernProposalControllerTest extends TestCase
 
     public function test_type_filter_community_service()
     {
-        $this->createProposal(['detailable_type' => CommunityService::class]);
+        $communityService = CommunityService::factory()->create();
 
-        $response = $this->actingAs($this->user)->getJson(route('research.proposal.api', ['type' => 'community-service']));
+        $proposal = $this->createProposal([
+            'detailable_id' => $communityService->id,
+            'detailable_type' => CommunityService::class,
+            'research_scheme_id' => null,
+        ]);
 
-        $response->assertStatus(200)
+        // Filter pengabdian → proposal pengabdian muncul.
+        $this->actingAs($this->user)
+            ->getJson(route('research.proposal.api', ['type' => 'community-service']))
+            ->assertStatus(200)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $proposal->id);
+
+        // Filter penelitian → proposal pengabdian tidak boleh muncul.
+        $this->actingAs($this->user)
+            ->getJson(route('research.proposal.api', ['type' => 'research']))
+            ->assertStatus(200)
             ->assertJsonCount(0, 'data');
     }
 
@@ -177,5 +191,52 @@ class ModernProposalControllerTest extends TestCase
         $response = $this->getJson(route('research.proposal.api'));
 
         $response->assertStatus(401);
+    }
+
+    public function test_available_filters_returns_real_metadata_for_research()
+    {
+        $this->createProposal();
+
+        $response = $this->actingAs($this->user)
+            ->getJson(route('research.proposal.filters.v1', ['type' => 'research']));
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'years',
+                'schemes' => [['id', 'name']],
+                'statuses' => [['value', 'label']],
+                'faculties',
+                'study_programs',
+            ]);
+
+        // Tahun diambil dari data real, bukan hardcoded.
+        $this->assertContains((int) now()->year, $response->json('years'));
+
+        // Status berasal dari enum ProposalStatus (bukan daftar hardcoded di JS).
+        $values = collect($response->json('statuses'))->pluck('value')->all();
+        $this->assertContains(ProposalStatus::DRAFT->value, $values);
+        $this->assertContains(ProposalStatus::COMPLETED->value, $values);
+    }
+
+    public function test_available_filters_hides_faculty_and_prodi_for_regular_dosen()
+    {
+        $response = $this->actingAs($this->user)
+            ->getJson(route('research.proposal.filters.v1', ['type' => 'research']));
+
+        $response->assertStatus(200)
+            ->assertJsonCount(0, 'faculties')
+            ->assertJsonCount(0, 'study_programs');
+    }
+
+    public function test_available_filters_exposes_faculties_for_admin_lppm()
+    {
+        $this->user->assignRole('admin lppm');
+
+        $response = $this->actingAs($this->user)
+            ->withSession(['active_role' => 'admin lppm'])
+            ->getJson(route('research.proposal.filters.v1', ['type' => 'research']));
+
+        $response->assertStatus(200);
+        $this->assertNotEmpty($response->json('faculties'));
     }
 }

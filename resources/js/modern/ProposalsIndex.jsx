@@ -16,6 +16,10 @@ export default function ProposalsIndex() {
     const [search, setSearch] = useState("");
     const [status, setStatus] = useState("all");
     const [roleFilter, setRoleFilter] = useState("all");
+    const [year, setYear] = useState("");
+    const [schemeId, setSchemeId] = useState("");
+    const [facultyId, setFacultyId] = useState("");
+    const [studyProgramId, setStudyProgramId] = useState("");
     const [loading, setLoading] = useState(true);
     const [filtersMeta, setFiltersMeta] = useState({ years: [], schemes: [], statuses: [], faculties: [], study_programs: [] });
 
@@ -37,6 +41,10 @@ export default function ProposalsIndex() {
         setError(null);
         try {
             const params = new URLSearchParams({ search, status, type: "research", role: roleFilter, page: p, _: Date.now() });
+            if (year) params.set("year", year);
+            if (schemeId) params.set("scheme_id", schemeId);
+            if (facultyId) params.set("faculty_id", facultyId);
+            if (studyProgramId) params.set("study_program_id", studyProgramId);
             const res = await fetch(`/research/api/v1/proposals?${params.toString()}`, { credentials: "same-origin", cache: "no-store" });
             if (!res.ok) throw new Error("HTTP " + res.status);
             const json = await res.json();
@@ -51,7 +59,7 @@ export default function ProposalsIndex() {
         }
     };
 
-    useEffect(() => { load(1); }, [roleFilter]);
+    useEffect(() => { load(1); }, [roleFilter, status, year, schemeId, facultyId, studyProgramId]);
 
     useEffect(() => {
         if (!isDosen) return;
@@ -136,12 +144,6 @@ export default function ProposalsIndex() {
 
     return (
         <div className="space-y-4">
-            <nav aria-label="Breadcrumb" className="text-xs text-slate-500 dark:text-slate-400 mb-1">
-                <a href="/dashboard" className="hover:underline">Dashboard</a>
-                <span className="mx-1.5 opacity-60">/</span>
-                <span className="font-semibold text-slate-700 dark:text-slate-200">Penelitian</span>
-            </nav>
-
             <ModuleTabNav tabs={tabs} currentPath={currentPath} />
 
             {elig && elig.schedule_start && elig.schedule_end && (
@@ -149,7 +151,7 @@ export default function ProposalsIndex() {
             )}
 
             <ModernPageCard>
-                <div className="flex flex-col md:flex-row gap-3 mb-4">
+                <div className="flex flex-col md:flex-row md:flex-wrap items-center gap-3 mb-4">
                     <input
                         type="text"
                         value={search}
@@ -180,8 +182,75 @@ export default function ProposalsIndex() {
                             <option key={s.value} value={s.value}>{s.label}</option>
                         ))}
                     </select>
+                    {Array.isArray(filtersMeta.years) && filtersMeta.years.length > 0 && (
+                        <select
+                            value={year}
+                            aria-label="Filter berdasarkan tahun"
+                            onChange={(e) => setYear(e.target.value)}
+                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                        >
+                            <option value="">Semua Tahun</option>
+                            {filtersMeta.years.map((y) => (
+                                <option key={y} value={y}>{y}</option>
+                            ))}
+                        </select>
+                    )}
+                    {Array.isArray(filtersMeta.schemes) && filtersMeta.schemes.length > 0 && (
+                        <select
+                            value={schemeId}
+                            aria-label="Filter berdasarkan skema"
+                            onChange={(e) => setSchemeId(e.target.value)}
+                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                        >
+                            <option value="">Semua Skema</option>
+                            {filtersMeta.schemes.map((s) => (
+                                <option key={s.id} value={s.id}>{s.name}</option>
+                            ))}
+                        </select>
+                    )}
+                    {Array.isArray(filtersMeta.faculties) && filtersMeta.faculties.length > 0 && (
+                        <select
+                            value={facultyId}
+                            aria-label="Filter berdasarkan fakultas"
+                            onChange={(e) => setFacultyId(e.target.value)}
+                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                        >
+                            <option value="">Semua Fakultas</option>
+                            {filtersMeta.faculties.map((f) => (
+                                <option key={f.id} value={f.id}>{f.name}</option>
+                            ))}
+                        </select>
+                    )}
+                    {Array.isArray(filtersMeta.study_programs) && filtersMeta.study_programs.length > 0 && (
+                        <select
+                            value={studyProgramId}
+                            aria-label="Filter berdasarkan program studi"
+                            onChange={(e) => setStudyProgramId(e.target.value)}
+                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                        >
+                            <option value="">Semua Prodi</option>
+                            {filtersMeta.study_programs.map((p) => (
+                                <option key={p.id} value={p.id}>{p.name}</option>
+                            ))}
+                        </select>
+                    )}
                     <Button onClick={() => load(1)} variant="primary" size="md">
                         Cari
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="md"
+                        onClick={() => {
+                            setSearch("");
+                            setStatus("all");
+                            setRoleFilter("all");
+                            setYear("");
+                            setSchemeId("");
+                            setFacultyId("");
+                            setStudyProgramId("");
+                        }}
+                    >
+                        Reset
                     </Button>
                     {isDosen && (
                         <>

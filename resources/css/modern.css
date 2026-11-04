@@ -1,24 +1,32 @@
+/* Urutan layer WAJIB dideklarasikan sebelum import agar `base` < `utilities`.
+   Tanpa ini, reset di bawah (unlayered/ID) mengalahkan utility Tailwind
+   sehingga tombol React kehilangan background (mis. tombol "Cari" transparan). */
+@layer theme, base, components, utilities;
+
 @import "tailwindcss/theme" layer(theme);
 @import "tailwindcss/utilities" layer(utilities);
 @custom-variant dark (&:where(.theme-dark, .theme-dark *));
 
-/* Scoped Preflight — hanya untuk #modern-root, tidak menyentuh navbar Tabler */
-#modern-root, #modern-root * { box-sizing: border-box; }
-#modern-root { margin: 0; }
-#modern-root img, #modern-root svg, #modern-root video,
-#modern-root canvas, #modern-root audio, #modern-root iframe, #modern-root embed, #modern-root object {
-    display: block; max-width: 100%;
+/* Scoped Preflight — hanya untuk #modern-root, tidak menyentuh navbar Tabler.
+   Ditaruh di layer(base) supaya utility Tailwind tetap menang. */
+@layer base {
+    #modern-root, #modern-root * { box-sizing: border-box; }
+    #modern-root { margin: 0; }
+    #modern-root img, #modern-root svg, #modern-root video,
+    #modern-root canvas, #modern-root audio, #modern-root iframe, #modern-root embed, #modern-root object {
+        display: block; max-width: 100%;
+    }
+    #modern-root button, #modern-root input, #modern-root optgroup,
+    #modern-root select, #modern-root textarea {
+        font: inherit; color: inherit; margin: 0; padding: 0;
+        background-color: transparent; border: 0;
+    }
+    #modern-root table { border-collapse: collapse; }
+    #modern-root h1, #modern-root h2, #modern-root h3, #modern-root h4,
+    #modern-root h5, #modern-root h6 { font-size: inherit; font-weight: inherit; }
+    #modern-root p { margin: 0; }
+    #modern-root ul, #modern-root ol { list-style: none; margin: 0; padding: 0; }
 }
-#modern-root button, #modern-root input, #modern-root optgroup,
-#modern-root select, #modern-root textarea {
-    font: inherit; color: inherit; margin: 0; padding: 0;
-    background-color: transparent; border: 0;
-}
-#modern-root table { border-collapse: collapse; }
-#modern-root h1, #modern-root h2, #modern-root h3, #modern-root h4,
-#modern-root h5, #modern-root h6 { font-size: inherit; font-weight: inherit; }
-#modern-root p { margin: 0; }
-#modern-root ul, #modern-root ol { list-style: none; margin: 0; padding: 0; }
 
 /* Modern theme design tokens — SIM-LPPM Navy System */
 :root {
@@ -72,15 +80,12 @@
   background-size: 200% 100%;
 }
 
-/* Safety net: paksa navbar menu selalu tampil di tema modern (tanpa collapse) */
-.theme-modern .navbar-toggler { display: none !important; }
-.theme-modern .navbar-collapse {
-    display: flex !important;
-    flex-basis: auto !important;
-    flex-grow: 1;
-    align-items: center;
-}
-.theme-modern .navbar-nav { display: flex !important; flex-wrap: wrap; }
+/* FIX ROOT CAUSE: utility Tailwind `.collapse` (visibility: collapse) bertabrakan
+   dengan komponen `.collapse` Bootstrap/Tabler yang dipakai navbar & alert.
+   Akibatnya menu navbar "ada di DOM" (tinggi 89px) tapi TIDAK TERLIHAT.
+   Utility `collapse` tidak dipakai di UI modern, jadi netralkan (unlayered
+   agar menang atas @layer utilities). */
+.collapse { visibility: visible; }
 
 /* Focus ring modern */
 .modern-focus:focus-visible {

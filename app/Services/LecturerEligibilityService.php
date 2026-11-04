@@ -344,7 +344,7 @@ class LecturerEligibilityService
      */
     public function getScheduleStatus(?User $user = null): array
     {
-        $cacheKey = 'schedule_status_'.($user?->id ?? 'guest');
+        $cacheKey = 'schedule_status_'.($user instanceof User ? $user->id : 'guest');
 
         return Cache::remember($cacheKey, 60, function () use ($user) {
             return $this->computeScheduleStatus($user);

@@ -7,6 +7,7 @@ use App\Models\CommunityService;
 use App\Models\CommunityServiceScheme;
 use App\Models\Faculty;
 use App\Models\Proposal;
+use App\Models\Research;
 use App\Models\ResearchScheme;
 use App\Models\Setting;
 use App\Models\StudyProgram;
@@ -27,6 +28,7 @@ class ModernProposalController
         $roleFilter = $request->get('role', 'all');
         $facultyId = $request->get('faculty_id');
         $studyProgramId = $request->get('study_program_id');
+        $schemeId = $request->get('scheme_id');
 
         $query = Proposal::with(['submitter.identity', 'focusArea', 'researchScheme', 'communityServiceScheme'])
             ->where('detailable_type', $type === 'research' ? 'App\\Models\\Research' : CommunityService::class);
@@ -43,6 +45,9 @@ class ModernProposalController
         }
         if ($studyProgramId) {
             $query->whereHas('submitter.identity', fn ($si) => $si->where('study_program_id', $studyProgramId));
+        }
+        if ($schemeId) {
+            $query->where($type === 'research' ? 'research_scheme_id' : 'community_service_scheme_id', $schemeId);
         }
         if ($status && $status !== 'all') {
             $query->where('status', $status);
@@ -114,11 +119,12 @@ class ModernProposalController
         $user = Auth::user();
         $type = $request->get('type', 'research');
 
-        $years = Proposal::where('detailable_type', $type === 'research' ? 'App\\Models\\Research' : CommunityService::class)
-            ->selectRaw('DISTINCT EXTRACT(YEAR FROM created_at) as y')
-            ->orderByDesc('y')
-            ->pluck('y')
+        $years = Proposal::where('detailable_type', $type === 'research' ? Research::class : CommunityService::class)
+            ->pluck('created_at')
+            ->map(fn ($date) => $date?->year)
             ->filter()
+            ->unique()
+            ->sortDesc()
             ->values();
 
         $schemes = $type === 'research'

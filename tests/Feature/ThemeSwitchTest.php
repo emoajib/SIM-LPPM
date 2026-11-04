@@ -6,7 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-beforeEach(fn () => $this->seed(\Database\Seeders\RoleSeeder::class));
+beforeEach(fn () => $this->seed(RoleSeeder::class));
 
 it('theme switch endpoint toggles and redirects', function () {
     $user = User::factory()->create();
