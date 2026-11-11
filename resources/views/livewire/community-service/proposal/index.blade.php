@@ -38,18 +38,18 @@
             @endphp
 
             @if ($canCreate)
-                <a href="{{ route('community-service.proposal.create') }}" wire:navigate.hover class="btn btn-primary">
-                    
+                <a href="{{ route('community-service.proposal.create') }}" wire:navigate.hover class="btn btn-primary d-flex align-items-center gap-2">
+                    <i class="ti ti-plus me-1" aria-hidden="true"></i>
                     Usulan Pengabdian Baru
                 </a>
             @elseif ($isQuotaFull)
-                <button type="button" class="btn btn-secondary" disabled title="{{ $this->quotaTooltip }}">
-                    
+                <button type="button" class="btn btn-secondary d-flex align-items-center gap-2" disabled title="{{ $this->quotaTooltip }}">
+                    <i class="ti ti-info me-1" aria-hidden="true"></i>
                     Kuota Terbatas
                 </button>
             @else
-                <button class="btn btn-secondary" disabled title="{{ $lockReason }}">
-                    
+                <button class="btn btn-secondary d-flex align-items-center gap-2" disabled title="{{ $lockReason }}">
+                    <i class="ti ti-lock me-1" aria-hidden="true"></i>
                     Usulan Dikunci
                 </button>
             @endif
@@ -413,8 +413,8 @@
                             <td>
                                 <div class="flex-nowrap btn-list">
                                     <a href="{{ route('community-service.proposal.show', $proposal) }}"
-                                        class="btn btn-icon btn-ghost-primary" wire:navigate.hover title="Lihat" aria-label="Lihat detail proposal">
-                                        
+                                        class="btn btn-icon btn-ghost-primary d-flex align-items-center justify-center" wire:navigate.hover title="Lihat" aria-label="Lihat detail proposal">
+                                        <i class="ti ti-eye" aria-hidden="true"></i>
                                     </a>
                                 </div>
                             </td>

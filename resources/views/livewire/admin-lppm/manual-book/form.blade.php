@@ -81,10 +81,10 @@
                                 <p class="mb-1 small">{{ $existingFile['name'] }}</p>
                                 <p class="text-muted small">{{ number_format($existingFile['size'] / 1024, 1) }} KB</p>
                                 <div class="d-flex gap-2">
-                                    <a href="{{ $existingFile['url'] }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                    <a href="{{ $existingFile['url'] }}" class="btn btn-sm btn-outline-primary d-flex align-items-center gap-2" target="_blank">
                                         <i class="icon ti ti-download"></i> Download
                                     </a>
-                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                    <button type="button" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-2"
                                         wire:click="removeFile" wire:confirm="Hapus file ini?">
                                         <i class="icon ti ti-trash"></i> Hapus
                                     </button>
@@ -110,11 +110,12 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-primary d-flex align-items-center gap-2">
                                 <i class="icon ti ti-device-floppy me-1"></i>
                                 {{ $isEdit ? 'Simpan Perubahan' : 'Buat Manual Book' }}
                             </button>
-                            <a href="{{ route('admin-lppm.manual-books.admin.index') }}" class="btn btn-outline-secondary" wire:navigate>
+                            <a href="{{ route('admin-lppm.manual-books.admin.index') }}" class="btn btn-outline-secondary d-flex align-items-center gap-2" wire:navigate>
+                                <i class="ti ti-x me-1" aria-hidden="true"></i>
                                 Batal
                             </a>
                         </div>

@@ -43,19 +43,19 @@
                     </p>
                 @endif
                 <div class="gap-2 btn-list">
-                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#approvalModal"
+                    <button type="button" class="btn btn-success d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#approvalModal"
                         wire:click="$set('approvalDecision', 'approved')" @if($isApprovalDisabled) disabled @endif>
-                        
+                        <i class="ti ti-check me-1" aria-hidden="true"></i>
                         Setujui Proposal
                     </button>
-                    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#approvalModal"
+                    <button type="button" class="btn btn-warning d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#approvalModal"
                         wire:click="$set('approvalDecision', 'need_fix')">
-                        
+                        <i class="ti ti-pencil me-1" aria-hidden="true"></i>
                         Perlu Perbaikan
                     </button>
-                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#approvalModal"
+                    <button type="button" class="btn btn-danger d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#approvalModal"
                         wire:click="$set('approvalDecision', 'rejected')">
-                        
+                        <i class="ti ti-trash me-1" aria-hidden="true"></i>
                         Tolak Proposal
                     </button>
                 </div>
@@ -106,12 +106,12 @@
                     @endphp
                     @if ($currentMember && $currentMember->pivot->status === 'pending')
                         <div class="d-flex gap-2 mb-3">
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                            <button type="button" class="btn btn-success d-flex align-items-center gap-2" data-bs-toggle="modal"
                                 data-bs-target="#acceptMemberModal">
                                 
                                 Terima Undangan
                             </button>
-                            <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                            <button type="button" class="btn btn-danger d-flex align-items-center gap-2" data-bs-toggle="modal"
                                 data-bs-target="#rejectMemberModal">
                                 
                                 Tolak Undangan
@@ -120,9 +120,10 @@
                     @endif
 
                     @if ($this->canDelete)
-                        <button type="button" class="btn-outline-danger btn" data-bs-toggle="modal"
+                        <button type="button" class="btn-outline-danger btn d-flex align-items-center gap-2" data-bs-toggle="modal"
                             data-bs-target="#deleteModal">
                             <x-lucide-trash-2 class="icon" />
+                            <i class="ti ti-trash me-1" aria-hidden="true"></i>
                             Hapus
                         </button>
                     @endif

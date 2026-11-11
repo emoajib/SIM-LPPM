@@ -24,7 +24,7 @@
                             @if($book['hasFile'])
                                 @php $isImage = $book['mimeType'] && str_starts_with($book['mimeType'], 'image/'); @endphp
                                 @if($isImage)
-                                    <a href="{{ $book['downloadUrl'] }}" class="btn btn-primary w-100 mb-1" target="_blank">
+                                    <a href="{{ $book['downloadUrl'] }}" class="btn btn-primary w-100 mb-1 d-flex align-items-center gap-2" target="_blank">
                                         @include('components.layouts.partials.menu.icon', ['name' => 'download', 'class' => 'icon me-1']) Unduh
                                     </a>
                                     <p class="text-muted small mb-2 text-center">
@@ -33,10 +33,10 @@
                                     <img src="{{ $book['downloadUrl'] }}?view=1" class="img-fluid rounded" style="max-height:300px">
                                 @else
                                     <div class="d-flex gap-2">
-                                        <a href="{{ $book['downloadUrl'] }}?view=1" class="btn btn-outline-primary w-50" target="_blank">
+                                        <a href="{{ $book['downloadUrl'] }}?view=1" class="btn btn-outline-primary w-50 d-flex align-items-center gap-2" target="_blank">
                                             @include('components.layouts.partials.menu.icon', ['name' => 'eye', 'class' => 'icon me-1']) Lihat
                                         </a>
-                                        <a href="{{ $book['downloadUrl'] }}" class="btn btn-primary w-50" target="_blank">
+                                        <a href="{{ $book['downloadUrl'] }}" class="btn btn-primary w-50 d-flex align-items-center gap-2" target="_blank">
                                             @include('components.layouts.partials.menu.icon', ['name' => 'download', 'class' => 'icon me-1']) Unduh
                                         </a>
                                     </div>

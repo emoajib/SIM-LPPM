@@ -3,9 +3,9 @@
     <div class="card">
         <div class="d-flex align-items-center justify-content-between card-header">
             <h3 class="card-title">SDG</h3>
-            <button type="button" class="btn btn-primary" wire:click='create' data-bs-toggle="modal"
+            <button type="button" class="btn btn-primary d-flex align-items-center gap-2" wire:click='create' data-bs-toggle="modal"
                 data-bs-target="#modal-sdg">
-                
+                <i class="ti ti-plus me-1" aria-hidden="true"></i>
                 Tambah SDG
             </button>
         </div>
@@ -27,12 +27,15 @@
                             <td class="text-muted text-wrap">{{ $item->description ?: '-' }}</td>
                             <td class="text-end">
                                 <div class="btn-list justify-content-end">
-                                    <button type="button" class="btn-outline-warning btn btn-sm"
+                                    <button type="button" class="btn-outline-warning btn btn-sm d-flex align-items-center gap-2"
                                         wire:click="edit('{{ $item->id }}')">
+                                        <i class="ti ti-pencil me-1" aria-hidden="true"></i>
                                         Edit
                                     </button>
-                                    <button type="button" class="btn-outline-danger btn btn-sm"
-                                        wire:click="confirmDelete('{{ $item->id }}')" wire:loading.attr="disabled">
+                                    <button type="button" class="btn-outline-danger btn btn-sm d-flex align-items-center gap-2"
+                                        wire:click="confirmDelete('{{ $item->
+id }}')" wire:loading.attr="disabled">
+                                        <i class="ti ti-trash me-1" aria-hidden="true"></i>
                                         Hapus
                                     </button>
                                 </div>
@@ -49,7 +52,8 @@
 
     <x-tabler.modal-confirmation wire:key="modal-confirm-delete-sdg" id="modal-confirm-delete-sdg"
         title="Konfirmasi Hapus" message="Apakah Anda yakin ingin menghapus {{ $deleteItemName ?? '' }}?"
-        confirm-text="Ya, Hapus" cancel-text="Batal" component-id="{{ $this->getId() }}"
+        confirm-text="Ya, Hapus" cancel-text="Batal" component-id="{{ $this->
+getId() }}"
         on-confirm="handleConfirmDeleteAction" />
 
     <x-tabler.modal wire:key="modal-sdg" id="modal-sdg" :title="$modalTitle" onHide="resetForm"
@@ -74,9 +78,11 @@
             </form>
         </x-slot:body>
         <x-slot:footer>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-            <button type="submit" form="form-sdg" class="btn btn-primary" wire:loading.class="btn-loading"
-                wire:target="save">Simpan</button>
+            <button type="button" class="btn btn-secondary d-flex align-items-center gap-2" data-bs-dismiss="modal"><i class="ti ti-x me-1" aria-hidden="true"></i>
+Batal</button>
+            <button type="submit" form="form-sdg" class="btn btn-primary d-flex align-items-center gap-2" wire:loading.class="btn-loading d-flex align-items-center gap-2"
+                wire:target="save"><i class="ti ti-save me-1" aria-hidden="true"></i>
+        Simpan</button>
         </x-slot:footer>
     </x-tabler.modal>
 

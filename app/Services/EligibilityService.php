@@ -382,11 +382,11 @@ class EligibilityService
             'ineligible_by_reason' => [
                 'SINTA Score' => 0,
                 'Scopus H-Index' => 0,
-                'Functional Position' => 0,
+                'Posisi Fungsional' => 0,
                 'Scopus Documents' => 0,
                 'Scopus Citations' => 0,
-                'Education Level' => 0,
-                'Affiliation Score' => 0,
+                'Tingkat Pendidikan' => 0,
+                'Skor Afiliasi' => 0,
             ],
         ];
 
@@ -397,7 +397,7 @@ class EligibilityService
                 $breakdown['eligible']++;
             } else {
                 foreach ($status['failed_checks'] as $failedCheck) {
-                    $breakdown['ineligible_by_reason'][$failedCheck['name']]++;
+                    $breakdown['ineligible_by_reason'][$failedCheck['name']] = ($breakdown['ineligible_by_reason'][$failedCheck['name']] ?? 0) + 1;
                 }
             }
         }

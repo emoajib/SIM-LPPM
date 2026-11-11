@@ -47,7 +47,8 @@
     </div>
 
     <div class="mb-3" x-data="{ show: false }">
-        <label class="form-label">Konfirmasi Kata Sandi</label>
+        <label class="form-label"><i class="ti ti-check me-1" aria-hidden="true"></i>
+Konfirmasi Kata Sandi</label>
         <div class="input-group input-group-flat">
             <input :type="show ? 'text' : 'password'" class="form-control @error('password_confirmation') is-invalid @enderror"
                 wire:model="password_confirmation" placeholder="Konfirmasi kata sandi baru"
@@ -72,11 +73,14 @@
 
     <div class="bg-transparent mt-auto card-footer">
         <div class="justify-content-end btn-list">
-            <button type="button" class="btn" wire:click="resetForm">
+            <button type="button" class="btn d-flex align-items-center gap-2" wire:click="resetForm">
+                <i class="ti ti-x me-1" aria-hidden="true"></i>
                 Batal
             </button>
-            <button type="submit" class="btn btn-primary" wire:click="updatePassword" wire:loading.attr="disabled">
-                <span wire:loading.remove>Simpan Kata Sandi</span>
+            <button type="submit" class="btn btn-primary d-flex align-items-center gap-2" wire:click="updatePassword" wire:loading.attr="disabled">
+                <i class="ti ti-save me-1" aria-hidden="true"></i>
+                <span wire:loading.remove><i class="ti ti-save me-1" aria-hidden="true"></i>
+Simpan Kata Sandi</span>
                 <span wire:loading>Menyimpan...</span>
             </button>
         </div>

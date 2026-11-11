@@ -25,12 +25,14 @@ class ActiveRoleMiddleware
             $activeRole = session('active_role');
             $roleNames = $user->getRoleNames();
 
-            // If no active role set, use the first role
+            // If no active role set, prefer 'dosen' when the user has it
+            // (so a dosen who is also admin/leader defaults to the dosen view),
+            // otherwise fall back to the first role.
             if (! $activeRole || ! $roleNames->contains($activeRole)) {
-                $firstRole = $roleNames->first();
+                $preferred = $roleNames->contains('dosen') ? 'dosen' : $roleNames->first();
 
-                if ($firstRole) {
-                    session(['active_role' => $firstRole]);
+                if ($preferred) {
+                    session(['active_role' => $preferred]);
                 }
             }
         }

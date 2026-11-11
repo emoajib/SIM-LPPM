@@ -2,7 +2,7 @@
     <div class="card">
         <div class="d-flex align-items-center justify-content-between card-header">
             <h3 class="card-title">Manual Book</h3>
-            <button type="button" class="btn btn-primary" wire:click='create'>
+            <button type="button" class="btn btn-primary d-flex align-items-center gap-2" wire:click='create'>
                 @include('components.layouts.partials.menu.icon', ['name' => 'plus', 'class' => 'icon'])
                 Tambah Manual Book
             </button>
@@ -41,7 +41,7 @@
                                 @endif
                             </td>
                             <td>
-                                    <button class="btn btn-sm {{ $item->status === 'active' ? 'btn-success' : 'btn-secondary' }}"
+                                    <button class="btn btn-sm d-flex align-items-center gap-2 {{ $item->status === 'active' ? 'btn-success' : 'btn-secondary' }} d-flex align-items-center gap-2"
                                         wire:click="toggleStatus('{{ $item->id }}')"
                                         wire:confirm="Ubah status manual book ini?">
                                         @if($item->status === 'active')
@@ -54,12 +54,13 @@
                             </td>
                             <td>
                                 <div class="btn-list">
-                                    <button type="button" class="btn-outline-warning btn btn-sm"
+                                    <button type="button" class="btn-outline-warning btn btn-sm d-flex align-items-center gap-2"
                                         wire:click="edit('{{ $item->id }}')">
                                         @include('components.layouts.partials.menu.icon', ['name' => 'edit', 'class' => 'icon me-1'])Edit
                                     </button>
-                                    <button type="button" class="btn-outline-danger btn btn-sm"
-                                        wire:click="confirmDelete('{{ $item->id }}')" wire:loading.attr="disabled">
+                                    <button type="button" class="btn-outline-danger btn btn-sm d-flex align-items-center gap-2"
+                                        wire:click="confirmDelete('{{ $item->
+id }}')" wire:loading.attr="disabled">
                                         @include('components.layouts.partials.menu.icon', ['name' => 'trash', 'class' => 'icon me-1'])Hapus
                                     </button>
                                 </div>
@@ -76,7 +77,8 @@
 
     <x-tabler.modal-confirmation wire:key="modal-confirm-delete-manual-book" id="modal-confirm-delete-manual-book"
         title="Konfirmasi Hapus" message="Apakah Anda yakin ingin menghapus {{ $deleteItemName ?? '' }}?"
-        confirm-text="Ya, Hapus" cancel-text="Batal" component-id="{{ $this->getId() }}"
+        confirm-text="Ya, Hapus" cancel-text="Batal" component-id="{{ $this->
+getId() }}"
         on-confirm="handleConfirmDeleteAction" />
 
     <x-tabler.modal wire:key="modal-manual-book" id="modal-manual-book" :title="$modalTitle" onHide="resetForm"
@@ -154,7 +156,7 @@
                                         ({{ number_format($existingFile['size'] / 1024, 1) }} KB)
                                     </span>
                                 </div>
-                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                <button type="button" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-2"
                                     wire:click="removeFile" wire:confirm="Hapus file ini?">
                                     @include('components.layouts.partials.menu.icon', ['name' => 'trash', 'class' => 'icon'])
                                 </button>
@@ -173,9 +175,11 @@
             </form>
         </x-slot:body>
         <x-slot:footer>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-            <button type="submit" form="form-manual-book" class="btn btn-primary" wire:loading.class="btn-loading"
-                wire:target="save">Simpan</button>
+            <button type="button" class="btn btn-secondary d-flex align-items-center gap-2" data-bs-dismiss="modal"><i class="ti ti-x me-1" aria-hidden="true"></i>
+Batal</button>
+            <button type="submit" form="form-manual-book" class="btn btn-primary" wire:loading.class="btn-loading d-flex align-items-center gap-2"
+                wire:target="save"><i class="ti ti-save me-1" aria-hidden="true"></i>
+Simpan</button>
         </x-slot:footer>
     </x-tabler.modal>
 </div>

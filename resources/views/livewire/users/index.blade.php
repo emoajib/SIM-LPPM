@@ -3,7 +3,7 @@
     <x-slot:pageTitle>Daftar Pengguna</x-slot:pageTitle>
     <x-slot:pageSubtitle>Kelola pengguna dalam sistem.</x-slot:pageSubtitle>
     <x-slot:pageActions>
-        <a href="{{ route('users.sync-sinta') }}" class="btn btn-outline-primary me-2" wire:navigate.hover>
+        <a href="{{ route('users.sync-sinta') }}" class="btn btn-outline-primary me-2 d-flex align-items-center gap-2" wire:navigate.hover>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                 class="icon icon-tabler icons-tabler-outline icon-tabler-refresh">
@@ -13,7 +13,7 @@
             </svg>
             {{ __('Sync SINTA') }}
         </a>
-        <a href="{{ route('users.import') }}" class="btn btn-success me-2" wire:navigate.hover>
+        <a href="{{ route('users.import') }}" class="btn btn-success me-2 d-flex align-items-center gap-2" wire:navigate.hover>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
                 <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"></path>
@@ -22,7 +22,7 @@
             </svg>
             {{ __('Import Excel') }}
         </a>
-        <a href="{{ route('users.create') }}" class="btn btn-primary me-2" wire:navigate.hover>
+        <a href="{{ route('users.create') }}" class="btn btn-primary me-2 d-flex align-items-center gap-2" wire:navigate.hover>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
                 <path d="M12 5v14"></path>
@@ -31,7 +31,7 @@
             {{ __('Tambah Pengguna') }}
         </a>
         @if(auth()->user()->hasAnyRole(['superadmin', 'admin lppm']))
-            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#reset-password-modal">
+            <button class="btn btn-danger d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#reset-password-modal">
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-key" width="24" height="24"
                     viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
                     stroke-linejoin="round">
@@ -261,7 +261,7 @@
             {{-- Reset Button --}}
             @if($institution !== 'all' || $faculty !== 'all' || $prodi !== 'all' || $identityType !== 'all' || $search !== '' || $role !== 'all' || $status !== 'all' || $sort !== 'latest')
                 <div class="mt-3">
-                    <button type="button" class="btn btn-sm btn-outline-secondary" wire:click="resetAllFilters">
+                    <button type="button" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2" wire:click="resetAllFilters">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-inline me-1" width="24" height="24"
                             viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
                             stroke-linecap="round" stroke-linejoin="round">
@@ -358,7 +358,7 @@
                             </td>
                             <td class="text-end">
                                 <div class="dropdown">
-                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle align-text-top"
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle align-text-top d-flex align-items-center gap-2"
                                         data-bs-toggle="dropdown" aria-expanded="false">
                                         {{ __('Tindakan') }}
                                     </button>
@@ -392,7 +392,8 @@
                                         @if(auth()->user()->hasAnyRole(['superadmin', 'admin lppm']))
                                             <div class="dropdown-divider"></div>
                                             <button class="dropdown-item" type="button"
-                                                wire:click.prevent="resetUserPassword('{{ $user->id }}')"
+                                                wire:click.prevent="resetUserPassword('{{ $user->
+id }}')"
                                                 wire:confirm="{{ __("Apakah Anda yakin ingin mereset password {$user->name} menjadi 'password'?") }}">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
                                                     class="icon icon-tabler icon-tabler-key me-2 text-warning" width="24"
@@ -457,8 +458,9 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Reset Password Massal</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <h5 class="modal-title"><i class="ti ti-refresh me-1" aria-hidden="true"></i>
+Reset Password Massal</h5>
+                        <button type="button" class="btn-close d-flex align-items-center gap-2" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class="alert alert-danger mb-3">
@@ -486,7 +488,7 @@
                                 <input type="text" class="form-control @error('massResetPassword') is-invalid @enderror"
                                     wire:model="massResetPassword" placeholder="Masukkan password baru">
                                 <span class="input-group-text">
-                                    <button type="button" class="btn btn-link link-secondary p-0"
+                                    <button type="button" class="btn btn-link link-secondary p-0 d-flex align-items-center gap-2"
                                         @click="$wire.set('massResetPassword', Math.random().toString(36).slice(-8))"
                                         title="Generate Random Password">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-wand"
@@ -510,12 +512,14 @@
                         </div>
 
                         <div class="d-flex justify-content-end mt-4">
-                            <button type="button" class="btn btn-ghost-secondary me-2"
-                                data-bs-dismiss="modal">Batal</button>
-                            <button type="button" class="btn btn-danger" wire:click="resetPasswordsForRole"
+                            <button type="button" class="btn btn-ghost-secondary me-2 d-flex align-items-center gap-2"
+                                data-bs-dismiss="modal"><i class="ti ti-x me-1" aria-hidden="true"></i>
+Batal</button>
+                            <button type="button" class="btn btn-danger d-flex align-items-center gap-2" wire:click="resetPasswordsForRole"
                                 wire:loading.attr="disabled"
                                 wire:confirm="Apakah Anda yakin ingin mereset password untuk SEMUA pengguna dengan role tersebut?">
-                                <span wire:loading.remove wire:target="resetPasswordsForRole">Reset Password</span>
+                                <span wire:loading.remove wire:target="resetPasswordsForRole"><i class="ti ti-refresh me-1" aria-hidden="true"></i>
+Reset Password</span>
                                 <span wire:loading wire:target="resetPasswordsForRole">Memproses...</span>
                             </button>
                         </div>
@@ -534,8 +538,9 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Hapus Pengguna</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <h5 class="modal-title"><i class="ti ti-trash me-1" aria-hidden="true"></i>
+Hapus Pengguna</h5>
+                        <button type="button" class="btn-close d-flex align-items-center gap-2" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class="alert alert-danger">
@@ -544,10 +549,13 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-ghost-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="button" class="btn btn-danger" wire:click="deleteUser" wire:loading.attr="disabled">
-                            <span wire:loading.remove wire:target="deleteUser">Hapus</span>
-                            <span wire:loading wire:target="deleteUser">Memproses...</span>
+                        <button type="button" class="btn btn-ghost-secondary d-flex align-items-center gap-2" data-bs-dismiss="modal"><i class="ti ti-x me-1" aria-hidden="true"></i>
+Batal</button>
+                        <button type="button" class="btn btn-danger d-flex align-items-center gap-2" wire:click="deleteUser" wire:loading.attr="disabled">
+                            <span wire:loading.remove wire:target="deleteUser"><i class="ti ti-trash me-1" aria-hidden="true"></i>
+Hapus</span>
+                            <span wire:loading wire:target="deleteUser"><i class="ti ti-user me-1" aria-hidden="true"></i>
+Memproses...</span>
                         </button>
                     </div>
                 </div>

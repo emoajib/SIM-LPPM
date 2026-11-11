@@ -21,12 +21,12 @@
                 </div>
             </div>
         </div>
-        <button type="button" class="btn-close" data-bs-toggle="collapse" data-bs-target="#finalDecisionInfo"
+        <button type="button" class="btn-close d-flex align-items-center gap-2" data-bs-toggle="collapse" data-bs-target="#finalDecisionInfo"
             aria-label="Close"></button>
     </div>
 
     <div class="mb-3">
-        <button class="btn btn-ghost-info btn-sm" type="button" data-bs-toggle="collapse"
+        <button class="btn btn-ghost-info btn-sm d-flex align-items-center gap-2" type="button" data-bs-toggle="collapse"
             data-bs-target="#finalDecisionInfo" aria-expanded="false" aria-controls="finalDecisionInfo">
             
             Informasi Pengambilan Keputusan
@@ -165,8 +165,8 @@
                         </div>
 
                         <div class="col-md-2 d-flex align-items-end">
-                            <button type="button" class="btn-outline-secondary w-100 btn" wire:click="resetFilters">
-                                
+                            <button type="button" class="btn-outline-secondary w-100 btn d-flex align-items-center gap-2" wire:click="resetFilters">
+                                <i class="ti ti-refresh me-1" aria-hidden="true"></i>
                                 Reset
                             </button>
                         </div>
@@ -241,13 +241,13 @@
                                 <div class="btn-list flex-nowrap">
                                     @if ($proposal->detailable_type === 'App\Models\Research')
                                         <a href="{{ route('research.proposal.show', $proposal) }}"
-                                            class="btn btn-sm btn-primary" wire:navigate.hover>
+                                            class="btn btn-sm btn-primary d-flex align-items-center gap-2" wire:navigate.hover>
                                             
                                             Lihat & Proses
                                         </a>
                                     @else
                                         <a href="{{ route('community-service.proposal.show', $proposal) }}"
-                                            class="btn btn-sm btn-primary" wire:navigate.hover>
+                                            class="btn btn-sm btn-primary d-flex align-items-center gap-2" wire:navigate.hover>
                                             
                                             Lihat & Proses
                                         </a>

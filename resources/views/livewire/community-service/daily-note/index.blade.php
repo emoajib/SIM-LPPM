@@ -52,8 +52,8 @@
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <button type="button" class="btn btn-outline-secondary w-100" wire:click="resetFilters">
-                                
+                            <button type="button" class="btn btn-outline-secondary w-100 d-flex align-items-center gap-2" wire:click="resetFilters">
+                                <i class="ti ti-refresh me-1" aria-hidden="true"></i>
                                 Reset
                             </button>
                         </div>
@@ -85,7 +85,8 @@
                             $notesCount = $proposal->dailyNotes->count();
                             $pctUsed = $totalBudget > 0 ? round(($usedBudget / $totalBudget) * 100, 1) : 0;
                             $hasScannedFile = $proposal->hasMedia('logbook_approval_file');
-                            $isApproved = $proposal->logbook_approved_at !== null;
+                            $isApproved = $proposal->
+logbook_approved_at !== null;
                             $isSigned = $proposal->logbook_signed_at !== null;
                             $latestNote = $proposal->dailyNotes->sortByDesc('activity_date')->first();
                         @endphp
@@ -146,7 +147,7 @@
                             </td>
                             <td>
                                 <a href="{{ route('community-service.daily-note.show', $proposal) }}"
-                                    class="btn btn-primary btn-sm" wire:navigate.hover>
+                                    class="btn btn-primary btn-sm d-flex align-items-center gap-2" wire:navigate.hover>
                                     
                                     Buka Logbook
                                 </a>

@@ -7,7 +7,7 @@ import ModernPageCard from "./components/ModernPageCard.jsx";
 import ModernTable from "./components/ModernTable.jsx";
 import { MODULE_TABS, getVerifierTab } from "./constants/themeColors.js";
 
-const VERIFIER_ROLES = ["admin lppm", "kepala lppm", "rektor"];
+const VERIFIER_ROLES = ["admin lppm", "kepala lppm", "rektor", "dosen"];
 
 function formatRupiah(value) {
     const num = value == null ? 0 : Number(value);

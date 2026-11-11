@@ -171,11 +171,13 @@
 
                 {{-- Action Buttons inside Livewire DOM --}}
                 @if($activeTab === 'types')
-                    <button class="btn btn-primary btn-sm shadow-sm" wire:click="openCreateModal">
+                    <button class="btn btn-primary btn-sm shadow-sm d-flex align-items-center gap-2" wire:click="openCreateModal">
+                        <i class="ti ti-plus me-1" aria-hidden="true"></i>
                          Tambah Jenis Surat
                     </button>
                 @elseif($activeTab === 'categories')
-                    <button class="btn btn-primary btn-sm shadow-sm" wire:click="openCreateCategoryModal">
+                    <button class="btn btn-primary btn-sm shadow-sm d-flex align-items-center gap-2" wire:click="openCreateCategoryModal">
+                        <i class="ti ti-plus me-1" aria-hidden="true"></i>
                          Tambah Kategori
                     </button>
                 @endif
@@ -214,8 +216,8 @@
                         <input type="date" class="form-control" wire:model.live="dateTo">
                     </div>
                     <div class="col-md-1 col-sm-12">
-                        <button type="button" class="btn btn-outline-secondary w-100" wire:click="resetFilters" title="Reset Filters">
-                            
+                        <button type="button" class="btn btn-outline-secondary w-100 d-flex align-items-center gap-2" wire:click="resetFilters" title="Reset Filters">
+                            <i class="ti ti-refresh me-1" aria-hidden="true"></i>
                         </button>
                     </div>
                 </div>
@@ -272,12 +274,14 @@
                             <td>
                                 <div class="btn-list flex-nowrap">
                                     @if($letter->file_path)
-                                    <a href="{{ route('letter.view', $letter->id) }}" target="_blank" class="btn btn-outline-info btn-sm" title="Lihat PDF">
-                                        
+                                    <a href="{{ route('letter.view', $letter->
+id) }}" target="_blank" class="btn btn-outline-info btn-sm d-flex align-items-center gap-2" title="Lihat PDF">
+                                        <i class="ti ti-file me-1" aria-hidden="true"></i>
                                     </a>
                                     @endif
-                                    <a href="{{ route('letter.download', $letter->id) }}" target="_blank" class="btn btn-outline-info btn-sm" title="Unduh PDF">
-                                        
+                                    <a href="{{ route('letter.download', $letter->
+id) }}" target="_blank" class="btn btn-outline-info btn-sm d-flex align-items-center gap-2" title="Unduh PDF">
+                                        <i class="ti ti-download me-1" aria-hidden="true"></i>
                                     </a>
                                 </div>
                             </td>
@@ -339,11 +343,13 @@
                             <td>{{ $type->letters_count }}</td>
                             <td>
                                 <div class="btn-list flex-nowrap">
-                                    <button class="btn btn-outline-primary btn-sm shadow-sm" wire:click="openEditModal('{{ $type->id }}')">
-                                        
+                                    <button class="btn btn-outline-primary btn-sm shadow-sm d-flex align-items-center gap-2" wire:click="openEditModal('{{ $type->
+id }}')">
+                                        <i class="ti ti-pencil me-1" aria-hidden="true"></i>
                                     </button>
-                                    <button class="btn btn-outline-danger btn-sm shadow-sm" wire:click="confirmDelete('{{ $type->id }}')" {{ $type->letters_count > 0 ? 'disabled' : '' }}>
-                                        
+                                    <button class="btn btn-outline-danger btn-sm shadow-sm d-flex align-items-center gap-2" wire:click="confirmDelete('{{ $type->
+id }}')" {{ $type->letters_count > 0 ? 'disabled' : '' }}>
+                                        <i class="ti ti-trash me-1" aria-hidden="true"></i>
                                     </button>
                                 </div>
                             </td>
@@ -384,11 +390,13 @@
                             <td><span class="badge bg-secondary-lt">{{ $cat->letter_types_count }}</span></td>
                             <td>
                                 <div class="btn-list flex-nowrap">
-                                    <button class="btn btn-outline-primary btn-sm shadow-sm" wire:click="openEditCategoryModal('{{ $cat->id }}')">
-                                        
+                                    <button class="btn btn-outline-primary btn-sm shadow-sm d-flex align-items-center gap-2" wire:click="openEditCategoryModal('{{ $cat->
+id }}')">
+                                        <i class="ti ti-pencil me-1" aria-hidden="true"></i>
                                     </button>
-                                    <button class="btn btn-outline-danger btn-sm shadow-sm" wire:click="confirmDeleteCategory('{{ $cat->id }}')" {{ $cat->letter_types_count > 0 ? 'disabled' : '' }}>
-                                        
+                                    <button class="btn btn-outline-danger btn-sm shadow-sm d-flex align-items-center gap-2" wire:click="confirmDeleteCategory('{{ $cat->
+id }}')" {{ $cat->letter_types_count > 0 ? 'disabled' : '' }}>
+                                        <i class="ti ti-trash me-1" aria-hidden="true"></i>
                                     </button>
                                 </div>
                             </td>
@@ -417,7 +425,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">{{ $editMode ? 'Edit' : 'Tambah' }} Jenis Surat</h5>
-                    <button type="button" class="btn-close" wire:click="closeTypeModal"></button>
+                    <button type="button" class="btn-close d-flex align-items-center gap-2" wire:click="closeTypeModal"></button>
                 </div>
                 <div class="modal-body">
                     <form wire:submit="save">
@@ -450,7 +458,8 @@
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Template View</label>
+                                <label class="form-label"><i class="ti ti-eye me-1" aria-hidden="true"></i>
+Template View</label>
                                 <input type="text" class="form-control" wire:model="templateView" placeholder="pdf.letters.surat-tugas">
                             </div>
                         </div>
@@ -461,7 +470,8 @@
                                 <label class="form-label required">Format Nomor Surat Otomatis</label>
                                 <input type="text" class="form-control font-monospace" wire:model="numberingFormat" required>
                                 <div class="form-text">
-                                    <strong>Preview:</strong> 
+                                    <strong><i class="ti ti-eye me-1" aria-hidden="true"></i>
+Preview:</strong> 
                                     @php
                                         $preview = str_replace(
                                             ['{NOMOR}', '{CODE}', '{BULAN-ROMAWI}', '{TAHUN}'],
@@ -498,8 +508,9 @@
                         </div>
 
                         <div class="d-flex justify-content-end gap-2">
-                            <button type="button" class="btn btn-link" wire:click="closeTypeModal">Batal</button>
-                            <button type="submit" class="btn btn-primary shadow-sm">
+                            <button type="button" class="btn btn-link d-flex align-items-center gap-2" wire:click="closeTypeModal"><i class="ti ti-x me-1" aria-hidden="true"></i>
+Batal</button>
+                            <button type="submit" class="btn btn-primary shadow-sm d-flex align-items-center gap-2">
                                  {{ $editMode ? 'Simpan Perubahan' : 'Tambah' }}
                             </button>
                         </div>
@@ -521,12 +532,15 @@
                 <div class="modal-status bg-danger"></div>
                 <div class="modal-body text-center py-4">
                     
-                    <h3>Hapus Jenis Surat?</h3>
+                    <h3><i class="ti ti-trash me-1" aria-hidden="true"></i>
+Hapus Jenis Surat?</h3>
                     <p class="text-muted">Yakin ingin menghapus <strong>{{ $deletingLetterType?->name }} ({{ $deletingLetterType?->code }})</strong>?</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-link" wire:click="closeDeleteModal">Batal</button>
-                    <button type="button" class="btn btn-danger shadow-sm" wire:click="delete">
+                    <button type="button" class="btn btn-link d-flex align-items-center gap-2" wire:click="closeDeleteModal"><i class="ti ti-trash me-1" aria-hidden="true"></i>
+Batal</button>
+                    <button type="button" class="btn btn-danger shadow-sm d-flex align-items-center gap-2" wire:click="delete">
+                         <i class="ti ti-trash me-1" aria-hidden="true"></i>
                          Hapus
                     </button>
                 </div>
@@ -545,7 +559,7 @@
             <div class="modal-content shadow-sm">
                 <div class="modal-header">
                     <h5 class="modal-title">{{ $categoryEditMode ? 'Edit' : 'Tambah' }} Kategori Surat</h5>
-                    <button type="button" class="btn-close" wire:click="closeCategoryModal"></button>
+                    <button type="button" class="btn-close d-flex align-items-center gap-2" wire:click="closeCategoryModal"></button>
                 </div>
                 <div class="modal-body">
                     <form wire:submit.prevent="saveCategory">
@@ -558,8 +572,9 @@
                         </div>
 
                         <div class="d-flex justify-content-end gap-2">
-                            <button type="button" class="btn btn-link" wire:click="closeCategoryModal">Batal</button>
-                            <button type="submit" class="btn btn-primary shadow-sm">
+                            <button type="button" class="btn btn-link d-flex align-items-center gap-2" wire:click="closeCategoryModal"><i class="ti ti-x me-1" aria-hidden="true"></i>
+Batal</button>
+                            <button type="submit" class="btn btn-primary shadow-sm d-flex align-items-center gap-2">
                                  {{ $categoryEditMode ? 'Simpan' : 'Tambah' }}
                             </button>
                         </div>
@@ -581,12 +596,15 @@
                 <div class="modal-status bg-danger"></div>
                 <div class="modal-body text-center py-4">
                     
-                    <h3>Hapus Kategori Surat?</h3>
+                    <h3><i class="ti ti-trash me-1" aria-hidden="true"></i>
+Hapus Kategori Surat?</h3>
                     <p class="text-muted">Yakin ingin menghapus kategori <strong>{{ $deletingCategory?->name }}</strong>?</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-link" wire:click="closeDeleteCategoryModal">Batal</button>
-                    <button type="button" class="btn btn-danger shadow-sm" wire:click="deleteCategory">
+                    <button type="button" class="btn btn-link d-flex align-items-center gap-2" wire:click="closeDeleteCategoryModal"><i class="ti ti-trash me-1" aria-hidden="true"></i>
+Batal</button>
+                    <button type="button" class="btn btn-danger shadow-sm d-flex align-items-center gap-2" wire:click="deleteCategory">
+                         <i class="ti ti-trash me-1" aria-hidden="true"></i>
                          Hapus
                     </button>
                 </div>

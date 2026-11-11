@@ -44,21 +44,22 @@
                                 </td>
                                 <td class="text-end align-middle">
                                     @if($editingIndex === $index)
-                                        <button type="button" wire:click="saveEditingMember" class="btn btn-sm btn-success"
+                                        <button type="button" wire:click="saveEditingMember" class="btn btn-sm btn-success d-flex align-items-center gap-2"
                                             title="Simpan">
                                             
                                         </button>
                                         <button type="button" wire:click="cancelEditingMember"
-                                            class="btn btn-sm btn-outline-secondary" title="Batal">
+                                            class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2" title="Batal">
                                             
                                         </button>
                                     @else
                                         <button type="button" wire:click="startEditingMember({{ $index }})"
-                                            class="btn-outline-primary btn btn-sm me-1" title="Edit Tugas">
+                                            class="btn-outline-primary btn btn-sm me-1 d-flex align-items-center gap-2" title="Edit Tugas">
+                                             <i class="ti ti-pencil me-1" aria-hidden="true"></i>
                                              Edit
                                         </button>
                                         <button type="button" wire:click="openDeleteModal({{ $index }})"
-                                            class="btn-outline-danger btn btn-sm" title="Hapus">
+                                            class="btn-outline-danger btn btn-sm d-flex align-items-center gap-2" title="Hapus">
                                             <x-lucide-trash-2 class="icon" />
                                         </button>
                                     @endif
@@ -72,7 +73,7 @@
     @endif
 
     <!-- Add Button -->
-    <button type="button" class="btn btn-primary" wire:click="openAddModal" data-bs-toggle="modal"
+    <button type="button" class="btn btn-primary d-flex align-items-center gap-2" wire:click="openAddModal" data-bs-toggle="modal"
         data-bs-target="#modal-add-member">
         
         Tambah Anggota
@@ -91,7 +92,7 @@
                 <div class="d-flex justify-content-between align-items-end mb-2">
                     <label class="form-label mb-0" for="member_nidn">NIDN / NIP / NIM <span
                             class="text-danger">*</span></label>
-                    <button type="button" class="btn btn-ghost-primary btn-sm" wire:click="toggleManual">
+                    <button type="button" class="btn btn-ghost-primary btn-sm d-flex align-items-center gap-2" wire:click="toggleManual">
                         
                         {{ $isManual ? 'Kembali ke Cari' : 'Input Manual (Dosen/Eksternal/Mahasiswa)' }}
                     </button>
@@ -101,7 +102,7 @@
                     <div class="input-group">
                         <input id="member_nidn" type="text" class="form-control @error('member_nidn') is-invalid @enderror"
                             wire:model.live="member_nidn" placeholder="Masukkan NIDN, NIP, atau NIM">
-                        <button class="btn-outline-primary btn" type="button" wire:click="checkMember" id="button-addon2">
+                        <button class="btn-outline-primary btn d-flex align-items-center gap-2" type="button" wire:click="checkMember" id="button-addon2">
                             
                             Cek
                         </button>
@@ -216,11 +217,12 @@
         </x-slot:body>
 
         <x-slot:footer>
-            <button type="button" class="btn-outline-secondary btn" data-bs-dismiss="modal">
+            <button type="button" class="btn-outline-secondary btn d-flex align-items-center gap-2" data-bs-dismiss="modal">
+                <i class="ti ti-x me-1" aria-hidden="true"></i>
                 Batal
             </button>
-            <button type="button" wire:click="addMember" class="btn btn-primary" {{ !$memberFound ? 'disabled' : '' }}>
-                
+            <button type="button" wire:click="addMember" class="btn btn-primary d-flex align-items-center gap-2" {{ !$memberFound ? 'disabled' : '' }}>
+                <i class="ti ti-plus me-1" aria-hidden="true"></i>
                 Tambah
             </button>
         </x-slot:footer>
@@ -231,13 +233,15 @@
     @if (!empty($members))
         @foreach ($members as $index => $member)
             @teleport('body')
-            <x-tabler.modal id="modal-confirm-delete-{{ $index }}" title="Konfirmasi Hapus" component-id="{{ $this->getId() }}">
+            <x-tabler.modal id="modal-confirm-delete-{{ $index }}" title="Konfirmasi Hapus" component-id="{{ $this->
+getId() }}">
                 <x-slot:body>
                     <div class="text-center">
                         <div class="mb-3">
                             
                         </div>
-                        <h3 class="mb-2">Hapus Anggota?</h3>
+                        <h3 class="mb-2"><i class="ti ti-trash me-1" aria-hidden="true"></i>
+Hapus Anggota?</h3>
                         <p class="text-muted">
                             Apakah Anda yakin ingin menghapus <strong>{{ $member['name'] }}</strong> dari daftar
                             {{ strtolower($memberLabel) }}?
@@ -249,10 +253,11 @@
                 </x-slot:body>
 
                 <x-slot:footer>
-                    <button type="button" class="btn-outline-secondary btn" data-bs-dismiss="modal">
+                    <button type="button" class="btn-outline-secondary btn d-flex align-items-center gap-2" data-bs-dismiss="modal">
+                        <i class="ti ti-x me-1" aria-hidden="true"></i>
                         Batal
                     </button>
-                    <button type="button" wire:click="removeMember({{ $index }})" class="btn btn-danger"
+                    <button type="button" wire:click="removeMember({{ $index }})" class="btn btn-danger d-flex align-items-center gap-2"
                         data-bs-dismiss="modal">
                         <x-lucide-trash-2 class="icon" />
                         Ya, Hapus

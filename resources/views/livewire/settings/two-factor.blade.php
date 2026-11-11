@@ -29,8 +29,10 @@
 
             <div class="bg-transparent mt-auto card-footer">
                 <div class="btn-list">
-                    <button type="button" class="btn btn-danger" wire:click="disable" wire:loading.attr="disabled">
-                        <span wire:loading.remove>Nonaktifkan 2FA</span>
+                    <button type="button" class="btn btn-danger d-flex align-items-center gap-2" wire:click="disable" wire:loading.attr="disabled">
+                        <i class="ti ti-toggle-off me-1" aria-hidden="true"></i>
+                        <span wire:loading.remove><i class="ti ti-toggle-off me-1" aria-hidden="true"></i>
+Nonaktifkan 2FA</span>
                         <span wire:loading>Menonaktifkan...</span>
                     </button>
                 </div>
@@ -79,16 +81,20 @@
                         <div class="bg-primary mx-auto mb-3 text-white avatar">
                             
                         </div>
-                        <h4 class="card-title">3. Verifikasi</h4>
-                        <p class="text-muted">Masukkan kode dari aplikasi untuk mengaktifkan 2FA</p>
+                        <h4 class="card-title"><i class="ti ti-check me-1" aria-hidden="true"></i>
+3. Verifikasi</h4>
+                        <p class="text-muted"><i class="ti ti-login me-1" aria-hidden="true"></i>
+Masukkan kode dari aplikasi untuk mengaktifkan 2FA</p>
                     </div>
                 </div>
             </div>
 
             <div class="bg-transparent mt-auto card-footer">
                 <div class="btn-list">
-                    <button type="button" class="btn btn-primary" wire:click="enable" wire:loading.attr="disabled">
-                        <span wire:loading.remove>Aktifkan 2FA</span>
+                    <button type="button" class="btn btn-primary d-flex align-items-center gap-2" wire:click="enable" wire:loading.attr="disabled">
+                        <i class="ti ti-toggle-on me-1" aria-hidden="true"></i>
+                        <span wire:loading.remove><i class="ti ti-toggle-on me-1" aria-hidden="true"></i>
+Aktifkan 2FA</span>
                         <span wire:loading>Memproses...</span>
                     </button>
                 </div>
@@ -103,7 +109,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">{{ $modalConfig['title'] }}</h5>
-                        <button type="button" class="btn-close" wire:click="closeModal"></button>
+                        <button type="button" class="btn-close d-flex align-items-center gap-2" wire:click="closeModal"></button>
                     </div>
                     <div class="modal-body">
                         <!-- Content akan diisi oleh komponen children -->

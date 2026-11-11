@@ -7,7 +7,8 @@
     'wireIgnore' => true,
     'zoomable' => true,
     'downloadable' => false,
-    'downloadText' => 'Download',
+    'downloadText' =>
+ 'Download',
     'closable' => true,
     'showCounter' => true,
 ])
@@ -46,19 +47,19 @@
                 @if($zoomable || $downloadable)
                     <div class="image-actions d-flex gap-2">
                         @if($zoomable)
-                            <button type="button" class="btn btn-sm btn-light" title="Perkecil" aria-label="Perkecil" @click="zoomOut">
+                            <button type="button" class="btn btn-sm btn-light d-flex align-items-center gap-2" title="Perkecil" aria-label="Perkecil" @click="zoomOut">
                                 
                             </button>
-                            <button type="button" class="btn btn-sm btn-light" title="Reset zoom" aria-label="Reset zoom" @click="resetZoom">
+                            <button type="button" class="btn btn-sm btn-light d-flex align-items-center gap-2" title="Reset zoom" aria-label="Reset zoom" @click="resetZoom">
                                 100%
                             </button>
-                            <button type="button" class="btn btn-sm btn-light" title="Perbesar" aria-label="Perbesar" @click="zoomIn">
+                            <button type="button" class="btn btn-sm btn-light d-flex align-items-center gap-2" title="Perbesar" aria-label="Perbesar" @click="zoomIn">
                                 
                             </button>
                         @endif
 
                         @if($downloadable)
-                            <button type="button" class="btn btn-sm btn-light" @click="downloadImage">
+                            <button type="button" class="btn btn-sm btn-light d-flex align-items-center gap-2" @click="downloadImage">
                                 
                                 {{ $downloadText }}
                             </button>

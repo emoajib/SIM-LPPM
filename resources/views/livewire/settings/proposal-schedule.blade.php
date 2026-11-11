@@ -195,7 +195,10 @@
                                 </div>
                             </div>
                             <div class="card-footer text-end">
-                                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                                <button type="submit" class="btn btn-primary d-flex align-items-center gap-2">
+                                    <i class="ti ti-save me-1" aria-hidden="true"></i>
+                                    Simpan Perubahan
+                                </button>
                             </div>
                         </div>
                     </form>

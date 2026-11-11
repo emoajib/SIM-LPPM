@@ -79,8 +79,9 @@
                     </div>
                 </div>
                 <div class="col-auto">
-                    <button class="btn btn-primary btn-sm" wire:click="showSectionForm">
-                         Ajukan Surat
+                    <button class="btn btn-primary btn-sm d-flex align-items-center gap-2" wire:click="showSectionForm">
+                        <i class="ti ti-plus me-1" aria-hidden="true"></i>
+                        Ajukan Surat
                     </button>
                 </div>
             </div>
@@ -129,25 +130,29 @@
                         <td>
                             <div class="btn-list flex-nowrap">
                                 @if(in_array($letter->status?->value, ['published', 'ready_to_print']) && $letter->file_path)
-                                <a href="{{ route('letter.view', $letter->id) }}" target="_blank" class="btn btn-outline-info btn-sm" title="Lihat PDF">
-                                    
+                                <a href="{{ route('letter.view', $letter->
+id) }}" target="_blank" class="btn btn-outline-info btn-sm d-flex align-items-center gap-2" title="Lihat PDF">
+                                    <i class="ti ti-file me-1" aria-hidden="true"></i>
                                 </a>
-                                <a href="{{ route('letter.download', $letter->id) }}" target="_blank" class="btn btn-outline-info btn-sm" title="Unduh PDF">
-                                    
+                                <a href="{{ route('letter.download', $letter->
+id) }}" target="_blank" class="btn btn-outline-info btn-sm d-flex align-items-center gap-2" title="Unduh PDF">
+                                    <i class="ti ti-download me-1" aria-hidden="true"></i>
                                 </a>
                                 @elseif(in_array($letter->status?->value, ['published', 'ready_to_print']))
                                 <span class="text-muted small">PDF belum tersedia</span>
                                 @endif
 
                                 @if($letter->status?->value === 'pending_approval')
-                                <button class="btn btn-outline-danger btn-sm" wire:click="cancel('{{ $letter->id }}')" wire:confirm="Yakin ingin membatalkan surat ini?">
-                                    
+                                <button class="btn btn-outline-danger btn-sm d-flex align-items-center gap-2" wire:click="cancel('{{ $letter->id }}')" wire:confirm="Yakin ingin membatalkan surat ini?">
+                                    <i class="ti ti-trash me-1" aria-hidden="true"></i>
                                 </button>
                                 @endif
 
                                 @if($letter->status?->value === 'rejected')
-                                <button class="btn btn-outline-primary btn-sm" wire:click="openResubmitModal('{{ $letter->id }}')">
-                                     Ajukan Ulang
+                                <button class="btn btn-outline-primary btn-sm d-flex align-items-center gap-2" wire:click="openResubmitModal('{{ $letter->id }}')">
+                                    <i class="ti ti-rotate me-1" aria-hidden="true"></i>
+                                    <i class="ti ti-rotate me-1" aria-hidden="true"></i>
+                                    Ajukan Ulang
                                 </button>
                                 @endif
                             </div>
@@ -158,9 +163,11 @@
                         <td colspan="7" class="letter-empty">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                             <div class="fw-semibold mb-1">Belum ada surat dengan status ini.</div>
-                            <div class="small mb-3">Ajukan surat baru untuk memulai.</div>
-                            <button class="btn btn-primary btn-sm" wire:click="showSectionForm">
-                                 Ajukan Surat Baru
+                            <div class="small mb-3"><i class="ti ti-plus me-1" aria-hidden="true"></i>
+Ajukan surat baru untuk memulai.</div>
+                            <button class="btn btn-primary btn-sm d-flex align-items-center gap-2" wire:click="showSectionForm">
+                                <i class="ti ti-plus me-1" aria-hidden="true"></i>
+                                Ajukan Surat Baru
                             </button>
                         </td>
                     </tr>
@@ -175,7 +182,8 @@
 
     {{-- FAB --}}
     @if($letters->count())
-    <button class="btn btn-primary btn-fab shadow-lg @if($showForm) fab-hidden @endif" id="fabAjukan" title="Ajukan Surat Baru" wire:click="showSectionForm">
+    <button class="btn btn-primary btn-fab shadow-lg d-flex align-items-center gap-2 @if($showForm) fab-hidden @endif d-flex align-items-center gap-2" id="fabAjukan" title="Ajukan Surat Baru" wire:click="showSectionForm"><i class="ti ti-plus me-1" aria-hidden="true"></i>
+
         
     </button>
     @endif
@@ -183,8 +191,10 @@
     {{-- Form --}}
     <div class="card border-0 shadow-sm section-form @if($showForm) active @endif" id="sectionForm">
         <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center py-3">
-            <h5 class="card-title mb-0"> Ajukan Surat Baru</h5>
-            <button class="btn btn-outline-secondary btn-sm" wire:click="showSectionTable">
+            <h5 class="card-title mb-0"> <i class="ti ti-plus me-1" aria-hidden="true"></i>
+ Ajukan Surat Baru</h5>
+            <button class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2" wire:click="showSectionTable">
+                 <i class="ti ti-arrow-left me-1" aria-hidden="true"></i>
                  Kembali
             </button>
         </div>
@@ -315,7 +325,7 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" wire:click="removeTeamMember({{ $index }})" title="Tutup" aria-label="Tutup">
+                                        <button type="button" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-2" wire:click="removeTeamMember({{ $index }})" title="Tutup" aria-label="Tutup">
                                             
                                         </button>
                                     </td>
@@ -330,8 +340,9 @@
                 </div>
 
                 <div class="d-flex justify-content-end gap-2">
-                    <button type="button" class="btn btn-link" onclick="showSectionTable()">Batal</button>
-                    <button type="submit" class="btn btn-primary px-4" wire:loading.attr="disabled">
+                    <button type="button" class="btn btn-link d-flex align-items-center gap-2" onclick="showSectionTable()"><i class="ti ti-x me-1" aria-hidden="true"></i>
+Batal</button>
+                    <button type="submit" class="btn btn-primary px-4 d-flex align-items-center gap-2" wire:loading.attr="disabled">
                          Kirim ke Kepala LPPM
                     </button>
                 </div>
@@ -346,8 +357,9 @@
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Ajukan Ulang Surat</h5>
-                    <button type="button" class="btn-close" wire:click="closeResubmitModal"></button>
+                    <h5 class="modal-title"><i class="ti ti-plus me-1" aria-hidden="true"></i>
+Ajukan Ulang Surat</h5>
+                    <button type="button" class="btn-close d-flex align-items-center gap-2" wire:click="closeResubmitModal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
@@ -383,8 +395,9 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-link" wire:click="closeResubmitModal">Batal</button>
-                    <button type="button" class="btn btn-primary" wire:click="confirmResubmit">
+                    <button type="button" class="btn btn-link d-flex align-items-center gap-2" wire:click="closeResubmitModal"><i class="ti ti-x me-1" aria-hidden="true"></i>
+Batal</button>
+                    <button type="button" class="btn btn-primary d-flex align-items-center gap-2" wire:click="confirmResubmit">
                          Kirim Ulang
                     </button>
                 </div>

@@ -38,7 +38,8 @@
                     <input type="password" class="form-control" wire:model="mailPassword" placeholder="kosongkan jika tidak diubah">
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label">From Address</label>
+                    <label class="form-label"><i class="ti ti-plus me-1" aria-hidden="true"></i>
+From Address</label>
                     <input type="email" class="form-control" wire:model="mailFromAddress">
                     @error('mailFromAddress') <span class="text-danger small">{{ $message }}</span> @enderror
                 </div>
@@ -54,7 +55,8 @@
     <div class="card mb-3">
         <div class="card-header"><h3 class="card-title">WhatsApp</h3></div>
         <div class="card-body">
-            <p class="text-muted small mb-3">Dapatkan API URL & Key dari provider WA gateway (mis. Fonnte/Wablas). Sender ID = nomor WA pengirim terdaftar. Pastikan nomor tidak spam untuk hindari banned.</p>
+            <p class="text-muted small mb-3"><i class="ti ti-send me-1" aria-hidden="true"></i>
+Dapatkan API URL & Key dari provider WA gateway (mis. Fonnte/Wablas). Sender ID = nomor WA pengirim terdaftar. Pastikan nomor tidak spam untuk hindari banned.</p>
             <div class="row g-3">
                 <div class="col-md-6">
                     <label class="form-label">API URL</label>
@@ -65,7 +67,8 @@
                     <input type="password" class="form-control" wire:model="waApiKey" placeholder="kosongkan jika tidak diubah">
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label">Sender ID</label>
+                    <label class="form-label"><i class="ti ti-send me-1" aria-hidden="true"></i>
+Sender ID</label>
                     <input type="text" class="form-control" wire:model="waSenderId">
                 </div>
             </div>
@@ -73,19 +76,26 @@
     </div>
 
     <div class="mb-3">
-        <button class="btn btn-primary" wire:click="save">Simpan Konfigurasi</button>
+        <button class="btn btn-primary d-flex align-items-center gap-2" wire:click="save">
+            <i class="ti ti-save me-1" aria-hidden="true"></i>
+            Simpan Konfigurasi
+        </button>
     </div>
 
     <div class="card">
         <div class="card-header"><h3 class="card-title">Test Email</h3></div>
         <div class="card-body">
-            <p class="text-muted small mb-2">Masukkan email tujuan untuk menguji pengiriman. Pastikan konfigurasi SMTP sudah disimpan terlebih dahulu. Gunakan email aktif (Gmail/ac.id) untuk verifikasi.</p>
+            <p class="text-muted small mb-2"><i class="ti ti-login me-1" aria-hidden="true"></i>
+Masukkan email tujuan untuk menguji pengiriman. Pastikan konfigurasi SMTP sudah disimpan terlebih dahulu. Gunakan email aktif (Gmail/ac.id) untuk verifikasi.</p>
             <div class="row g-2">
                 <div class="col-md-8">
                     <input type="email" class="form-control" wire:model="testEmail" placeholder="email tujuan test">
                 </div>
                 <div class="col-md-4">
-                    <button class="btn btn-outline-primary w-100" wire:click="sendTest">Kirim Test</button>
+                    <button class="btn btn-outline-primary w-100 d-flex align-items-center gap-2" wire:click="sendTest">
+                        <i class="ti ti-send me-1" aria-hidden="true"></i>
+                        Kirim Test
+                    </button>
                 </div>
             </div>
         </div>
@@ -93,13 +103,17 @@
     <div class="card mt-3">
         <div class="card-header"><h3 class="card-title">Test WhatsApp</h3></div>
         <div class="card-body">
-            <p class="text-muted small mb-2">Masukkan nomor WhatsApp tujuan (format internasional, mis. 628xxx). Pastikan API URL & Key sudah diisi.</p>
+            <p class="text-muted small mb-2"><i class="ti ti-login me-1" aria-hidden="true"></i>
+Masukkan nomor WhatsApp tujuan (format internasional, mis. 628xxx). Pastikan API URL & Key sudah diisi.</p>
             <div class="row g-2">
                 <div class="col-md-8">
                     <input type="text" class="form-control" wire:model="testPhone" placeholder="628xxxxxxxxxx">
                 </div>
                 <div class="col-md-4">
-                    <button class="btn btn-outline-success w-100" wire:click="sendTestWa">Kirim Test</button>
+                    <button class="btn btn-outline-success w-100 d-flex align-items-center gap-2" wire:click="sendTestWa">
+                        <i class="ti ti-phone me-1" aria-hidden="true"></i>
+                        Kirim Test
+                    </button>
                 </div>
             </div>
         </div>

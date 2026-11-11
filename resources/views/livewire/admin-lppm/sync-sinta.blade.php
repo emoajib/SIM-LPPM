@@ -28,7 +28,8 @@
                             accept=".xlsx,.xls">
                         <div class="form-text mt-1">
                             
-                            Unduh file dari: SINTA Operator &rarr; <strong>Author Verification</strong> &rarr; <strong>Export Author</strong>
+                            Unduh file dari: SINTA Operator &rarr; <strong><i class="ti ti-download me-1" aria-hidden="true"></i>
+Author Verification</strong> &rarr; <strong>Export Author</strong>
                         </div>
                         @error('file')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -56,17 +57,20 @@
                         <div class="d-flex">
                             <div class="me-2"></div>
                             <div class="small text-secondary">
-                                <strong>Perhatian:</strong> Proses ini akan <strong>menimpa</strong> data profil dosen yang sudah ada (nama, gelar, prodi, skor SINTA). Pastikan file yang diunggah adalah export terbaru dari SINTA sebelum melanjutkan.
+                                <strong><i class="ti ti-eye me-1" aria-hidden="true"></i>
+Perhatian:</strong> <i class="ti ti-eye me-1" aria-hidden="true"></i>
+ Proses ini akan <strong><i class="ti ti-eye me-1" aria-hidden="true"></i>
+menimpa</strong> data profil dosen yang sudah ada (nama, gelar, prodi, skor SINTA). Pastikan file yang diunggah adalah export terbaru dari SINTA sebelum melanjutkan.
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="card-footer bg-transparent d-flex justify-content-between align-items-center">
-                    <a href="{{ route('users.index') }}" class="btn btn-link link-secondary">
+                    <a href="{{ route('users.index') }}" class="btn btn-link link-secondary d-flex align-items-center gap-2">
                          Kembali ke Daftar Pengguna
                     </a>
-                    <button type="submit" class="btn btn-primary px-4" wire:loading.attr="disabled">
+                    <button type="submit" class="btn btn-primary px-4 d-flex align-items-center gap-2" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="import">
                              Mulai Sinkronisasi
                         </span>

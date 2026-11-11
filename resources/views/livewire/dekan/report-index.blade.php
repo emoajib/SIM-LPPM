@@ -56,7 +56,7 @@
                         </div>
 
                         <div class="col-md-1">
-                            <button type="button" class="btn btn-outline-secondary w-100" wire:click="resetFilters" title="Reset Filter">
+                            <button type="button" class="btn btn-outline-secondary w-100 d-flex align-items-center gap-2" wire:click="resetFilters" title="Reset Filter">
                                 
                             </button>
                         </div>
@@ -129,7 +129,7 @@
                                         ? route('research.final-report.show', $report->proposal)
                                         : route('community-service.final-report.show', $report->proposal);
                                 @endphp
-                                <a href="{{ $showRoute }}" class="btn btn-sm btn-primary" wire:navigate.hover>
+                                <a href="{{ $showRoute }}" class="btn btn-sm btn-primary d-flex align-items-center gap-2" wire:navigate.hover>
                                     
                                     Tinjau
                                 </a>

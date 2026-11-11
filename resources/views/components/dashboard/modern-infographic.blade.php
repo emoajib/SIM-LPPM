@@ -414,7 +414,8 @@
         <div class="sli-stat-card" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);" title="Total usulan penelitian & pengabdian yang masuk (sesuai filter)">
             <div>
                 <div class="sli-stat-val" id="sli-stat-usulan">{{ $totalUsulan }}</div>
-                <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">Total Usulan Masuk</div>
+                <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;"><i class="ti ti-login me-1" aria-hidden="true"></i>
+Total Usulan Masuk</div>
                 <div id="sli-stat-scope" style="font-size: 0.75rem; opacity: 0.85;">Penelitian & Pengabdian</div>
             </div>
             <div style="width: 2.5rem; height: 2.5rem; border-radius: 9999px; background: rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
@@ -459,9 +460,11 @@
     <!-- QUICK ACTIONS & TUGAS ANDA (Konsisten, Bebas Tombol Dobel) -->
     @if (active_has_role('dosen'))
     <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 1rem 0;">
-        <a href="{{ route('research.proposal.create') }}" class="btn btn-primary btn-sm">+ Buat Usulan Penelitian</a>
-        <a href="{{ route('community-service.proposal.create') }}" class="btn btn-outline-primary btn-sm">+ Buat Usulan Pengabdian</a>
-        <a href="{{ route('dashboard.dosen.surat.dashboard') }}" class="btn btn-outline-secondary btn-sm">📄 Dashboard Surat</a>
+        <a href="{{ route('research.proposal.create') }}" class="btn btn-primary btn-sm d-flex align-items-center gap-2"><i class="ti ti-plus me-1" aria-hidden="true"></i>
++ Buat Usulan Penelitian</a>
+        <a href="{{ route('community-service.proposal.create') }}" class="btn btn-outline-primary btn-sm d-flex align-items-center gap-2"><i class="ti ti-plus me-1" aria-hidden="true"></i>
++ Buat Usulan Pengabdian</a>
+        <a href="{{ route('dashboard.dosen.surat.dashboard') }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2">📄 Dashboard Surat</a>
     </div>
     @endif
 
@@ -476,35 +479,35 @@
         </div>
         <div x-show="open" x-transition class="mt-3" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
             @if (active_has_role('dosen'))
-                <a href="{{ route('research.proposal-revision.index') }}" class="btn btn-sm btn-outline-warning">✏️ Perbaikan Usulan</a>
-                <a href="{{ route('research.final-report.index') }}" class="btn btn-sm btn-outline-info">📑 Laporan Akhir</a>
-                <a href="{{ route('research.daily-note.index') }}" class="btn btn-sm btn-outline-secondary">💰 Realisasi Anggaran</a>
+                <a href="{{ route('research.proposal-revision.index') }}" class="btn btn-sm btn-outline-warning d-flex align-items-center gap-2">✏️ Perbaikan Usulan</a>
+                <a href="{{ route('research.final-report.index') }}" class="btn btn-sm btn-outline-info d-flex align-items-center gap-2">📑 Laporan Akhir</a>
+                <a href="{{ route('research.daily-note.index') }}" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2">💰 Realisasi Anggaran</a>
             @endif
             @if (active_has_role('admin lppm'))
-                <a href="{{ route('admin-lppm.letters.dashboard') }}" class="btn btn-sm btn-primary">📄 Dashboard Surat</a>
-                <a href="{{ route('admin-lppm.report-approval') }}" class="btn btn-sm btn-outline-warning">📊 Monitoring Laporan</a>
-                <a href="{{ route('admin-lppm.assign-reviewers') }}" class="btn btn-sm btn-outline-info">👥 Penugasan Reviewer</a>
-                <a href="{{ route('settings.master-data') }}" class="btn btn-sm btn-outline-secondary">⚙️ Master Data</a>
+                <a href="{{ route('admin-lppm.letters.dashboard') }}" class="btn btn-sm btn-primary d-flex align-items-center gap-2">📄 Dashboard Surat</a>
+                <a href="{{ route('admin-lppm.report-approval') }}" class="btn btn-sm btn-outline-warning d-flex align-items-center gap-2">📊 Monitoring Laporan</a>
+                <a href="{{ route('admin-lppm.assign-reviewers') }}" class="btn btn-sm btn-outline-info d-flex align-items-center gap-2">👥 Penugasan Reviewer</a>
+                <a href="{{ route('settings.master-data') }}" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2">⚙️ Master Data</a>
             @endif
             @if (active_has_role('kepala lppm'))
-                <a href="{{ route('kepala-lppm.initial-approval') }}" class="btn btn-sm btn-outline-warning">✅ Persetujuan (Awal)</a>
-                <a href="{{ route('kepala-lppm.final-decision') }}" class="btn btn-sm btn-outline-info">✔️ Persetujuan (Akhir)</a>
-                <a href="{{ route('kepala-lppm.report-approval') }}" class="btn btn-sm btn-outline-secondary">📊 Persetujuan Laporan</a>
-                <a href="{{ route('kepala-lppm.letter-approval') }}" class="btn btn-sm btn-outline-primary">📄 Persetujuan Surat</a>
+                <a href="{{ route('kepala-lppm.initial-approval') }}" class="btn btn-sm btn-outline-warning d-flex align-items-center gap-2">✅ Persetujuan (Awal)</a>
+                <a href="{{ route('kepala-lppm.final-decision') }}" class="btn btn-sm btn-outline-info d-flex align-items-center gap-2">✔️ Persetujuan (Akhir)</a>
+                <a href="{{ route('kepala-lppm.report-approval') }}" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2">📊 Persetujuan Laporan</a>
+                <a href="{{ route('kepala-lppm.letter-approval') }}" class="btn btn-sm btn-outline-primary d-flex align-items-center gap-2">📄 Persetujuan Surat</a>
             @endif
             @if (active_has_role('dekan'))
-                <a href="{{ route('dekan.proposals.index') }}" class="btn btn-sm btn-outline-warning">✅ Persetujuan Proposal</a>
-                <a href="{{ route('dekan.reports.index') }}" class="btn btn-sm btn-outline-info">📊 Persetujuan Laporan</a>
-                <a href="{{ route('dekan.approval-history') }}" class="btn btn-sm btn-outline-secondary">📜 Riwayat Persetujuan</a>
+                <a href="{{ route('dekan.proposals.index') }}" class="btn btn-sm btn-outline-warning d-flex align-items-center gap-2">✅ Persetujuan Proposal</a>
+                <a href="{{ route('dekan.reports.index') }}" class="btn btn-sm btn-outline-info d-flex align-items-center gap-2">📊 Persetujuan Laporan</a>
+                <a href="{{ route('dekan.approval-history') }}" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2">📜 Riwayat Persetujuan</a>
             @endif
             @if (active_has_role('kaprodi'))
-                <a href="{{ route('kaprodi.proposals.index') }}" class="btn btn-sm btn-outline-warning">✅ Persetujuan Kaprodi</a>
-                <a href="{{ route('kaprodi.report-approval') }}" class="btn btn-sm btn-outline-info">📊 Monitoring Laporan</a>
+                <a href="{{ route('kaprodi.proposals.index') }}" class="btn btn-sm btn-outline-warning d-flex align-items-center gap-2">✅ Persetujuan Kaprodi</a>
+                <a href="{{ route('kaprodi.report-approval') }}" class="btn btn-sm btn-outline-info d-flex align-items-center gap-2">📊 Monitoring Laporan</a>
             @endif
             @if (active_has_role('reviewer'))
-                <a href="{{ route('review.research') }}" class="btn btn-sm btn-outline-warning">🔬 Review Penelitian</a>
-                <a href="{{ route('review.community-service') }}" class="btn btn-sm btn-outline-info">🤝 Review Pengabdian</a>
-                <a href="{{ route('review.review-history') }}" class="btn btn-sm btn-outline-secondary">📜 Riwayat Review</a>
+                <a href="{{ route('review.research') }}" class="btn btn-sm btn-outline-warning d-flex align-items-center gap-2">🔬 Review Penelitian</a>
+                <a href="{{ route('review.community-service') }}" class="btn btn-sm btn-outline-info d-flex align-items-center gap-2">🤝 Review Pengabdian</a>
+                <a href="{{ route('review.review-history') }}" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2">📜 Riwayat Review</a>
             @endif
         </div>
     </div>
@@ -854,7 +857,8 @@
                         </span>
                     </div>
                     <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.15rem;">
-                        Status: <strong id="sli-active-catatan" style="color: #1e293b;">Tahun Berjalan / Seleksi & Verifikasi Aktif</strong>
+                        Status: <strong id="sli-active-catatan" style="color: #1e293b;"><i class="ti ti-check me-1" aria-hidden="true"></i>
+Tahun Berjalan / Seleksi & Verifikasi Aktif</strong>
                     </div>
                 </div>
             </div>
@@ -862,7 +866,8 @@
             <!-- Quick Metrics for Active Year -->
             <div style="display: flex; align-items: center; gap: 0.5rem; font-family: monospace;">
                 <div style="padding: 0.35rem 0.75rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.5rem; text-align: right; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
-                    <div style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; font-family: sans-serif; font-weight: 700;">Usulan Masuk</div>
+                    <div style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; font-family: sans-serif; font-weight: 700;"><i class="ti ti-login me-1" aria-hidden="true"></i>
+Usulan Masuk</div>
                     <div id="sli-inspect-usulan" style="font-weight: 900; color: #0369a1; font-size: 0.85rem;">—</div>
                 </div>
                 <div style="padding: 0.35rem 0.75rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.5rem; text-align: right; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
@@ -1476,8 +1481,10 @@
                     </div>
                     <div style="display: flex; align-items: center; gap: 0.25rem; shrink-0;">
                         <button type="button" onclick="sliGoToBulletin(${idx})" style="padding: 0.2rem 0.45rem; border-radius: 0.25rem; border: none; font-size: 0.75rem; font-weight: 700; cursor: pointer; ${isSelected ? 'background: #0891b2; color: #ffffff;' : 'background: #e2e8f0; color: #334155;'}">Pilih</button>
-                        <button type="button" onclick="sliStartEdit('${b.id}')" style="padding: 0.2rem 0.35rem; background: none; border: none; font-size: 0.75rem; cursor: pointer;">✏️</button>
-                        <button type="button" onclick="sliDeleteBulletin('${b.id}')" style="padding: 0.2rem 0.35rem; background: none; border: none; font-size: 0.75rem; cursor: pointer; color: #e11d48;">🗑️</button>
+                        <button type="button" onclick="sliStartEdit('${b.id}')" style="padding: 0.2rem 0.35rem; background: none; border: none; font-size: 0.75rem; cursor: pointer;"><i class="ti ti-pencil me-1" aria-hidden="true"></i>
+✏️</button>
+                        <button type="button" onclick="sliDeleteBulletin('${b.id}')" style="padding: 0.2rem 0.35rem; background: none; border: none; font-size: 0.75rem; cursor: pointer; color: #e11d48;"><i class="ti ti-trash me-1" aria-hidden="true"></i>
+🗑️</button>
                     </div>
                 </div>
             `;

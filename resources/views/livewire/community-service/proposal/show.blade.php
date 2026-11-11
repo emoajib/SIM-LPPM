@@ -6,44 +6,47 @@
     <div class="btn-list">
         @if (url()->previous() && url()->previous() !== url()->current())
             <a href="{{ url()->previous() }}" class="btn-outline-secondary btn" wire:navigate.hover>
-                
+                <i class="ti ti-arrow-left me-1" aria-hidden="true"></i>
                 Kembali
             </a>
         @elseif (active_has_role('reviewer'))
-            <a href="{{ route('review.community-service') }}" class="btn-outline-secondary btn" wire:navigate.hover>
-                
+            <a href="{{ route('review.community-service') }}" class="btn-outline-secondary btn d-flex align-items-center gap-2" wire:navigate.hover>
+                <i class="ti ti-arrow-left me-1" aria-hidden="true"></i>
                 Kembali
             </a>
         @else
-            <a href="{{ route('community-service.proposal.index') }}" class="btn-outline-secondary btn" wire:navigate.hover>
-                
+            <a href="{{ route('community-service.proposal.index') }}" class="btn-outline-secondary btn d-flex align-items-center gap-2" wire:navigate.hover>
+                <i class="ti ti-arrow-left me-1" aria-hidden="true"></i>
                 Kembali
             </a>
         @endif
         @if ($this->canEdit)
-            <a href="{{ $this->getEditRoute($proposal->id) }}" wire:navigate.hover class="btn btn-primary">
-                
+            <a href="{{ $this->
+getEditRoute($proposal->id) }}" wire:navigate.hover class="btn btn-primary d-flex align-items-center gap-2">
+                <i class="ti ti-pencil me-1" aria-hidden="true"></i>
+                <i class="ti ti-pencil me-1" aria-hidden="true"></i>
                 Edit
             </a>
         @elseif ($proposal->status === \App\Enums\ProposalStatus::DRAFT && $proposal->submitter_id === auth()->id() && !$this->isScheduleOpen)
-            <button type="button" class="btn btn-secondary" disabled title="Periode pengajuan ditutup">
-                
+            <button type="button" class="btn btn-secondary d-flex align-items-center gap-2" disabled title="Periode pengajuan ditutup">
+                <i class="ti ti-pencil me-1" aria-hidden="true"></i>
                 Edit (Ditutup)
             </button>
         @endif
         @if ($this->canDelete)
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                <x-lucide-trash-2 class="icon" />
+            <button type="button" class="btn btn-danger d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                <i class="ti ti-trash me-1" aria-hidden="true"></i>
+                <i class="ti ti-trash me-1" aria-hidden="true"></i>
                 Hapus
             </button>
         @endif
-        <a href="{{ route('proposals.preview-pdf', $proposal) }}" target="_blank" class="btn btn-outline-info">
-            
+        <a href="{{ route('proposals.preview-pdf', $proposal) }}" target="_blank" class="btn btn-outline-info d-flex align-items-center gap-2">
+            <i class="ti ti-file me-1" aria-hidden="true"></i>
             Pratinjau Proposal
         </a>
         <a data-navigate-ignore="true" href="{{ route('proposals.export-pdf', $proposal) }}" target="_blank"
-            class="btn-outline-primary btn">
-            
+            class="btn-outline-primary btn d-flex align-items-center gap-2">
+            <i class="ti ti-download me-1" aria-hidden="true"></i>
             Unduh Proposal (PDF)
         </a>
     </div>
@@ -87,8 +90,9 @@
                             @error('contractDate') <small class="text-danger">{{ $message }}</small> @enderror
                         </div>
                         <div class="col-md-2">
-                            <button type="button" wire:click="saveContract" wire:loading.attr="disabled" class="btn btn-info w-100">
-                                <span wire:loading.remove wire:target="saveContract"> Simpan</span>
+                            <button type="button" wire:click="saveContract" wire:loading.attr="disabled" class="btn btn-info w-100 d-flex align-items-center gap-2">
+                                <span wire:loading.remove wire:target="saveContract"> <i class="ti ti-save me-1" aria-hidden="true"></i>
+ Simpan</span>
                                 <span wire:loading wire:target="saveContract"><span class="spinner-border spinner-border-sm"></span></span>
                             </button>
                         </div>
@@ -117,7 +121,7 @@
                         </div>
                     </div>
                 </div>
-                <a class="btn-close" data-bs-dismiss="alert" aria-label="Close"></a>
+                <a class="btn-close d-flex align-items-center gap-2" data-bs-dismiss="alert" aria-label="Close"></a>
             </div>
         </div>
     @endif
@@ -225,14 +229,14 @@
         <!-- Navigation Buttons -->
         <div class="mt-4">
             <div class="d-flex justify-content-between">
-                <button type="button" class="btn" @click="currentStep--" x-show="currentStep > 1">
-                    
+                <button type="button" class="btn d-flex align-items-center gap-2" @click="currentStep--" x-show="currentStep > 1">
+                    <i class="ti ti-arrow-left me-1" aria-hidden="true"></i>
                     Kembali
                 </button>
                 <div x-show="currentStep === 1"></div>
-                <button type="button" class="btn btn-primary" @click="currentStep++" x-show="currentStep < 5">
+                <button type="button" class="btn btn-primary d-flex align-items-center gap-2" @click="currentStep++" x-show="currentStep < 5">
+                    <i class="ti ti-arrow-right me-1" aria-hidden="true"></i>
                     Selanjutnya
-                    
                 </button>
             </div>
         </div>

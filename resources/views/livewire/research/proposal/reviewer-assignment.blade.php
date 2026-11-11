@@ -1,6 +1,6 @@
 <div>
     <!-- Add Button -->
-    <button type="button" class="mb-3 btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-assign-reviewer">
+    <button type="button" class="mb-3 btn btn-primary d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modal-assign-reviewer">
         
         Tugaskan Reviewer
     </button>
@@ -34,10 +34,11 @@
             </x-slot:body>
 
             <x-slot:footer>
-                <button type="button" class="btn-outline-secondary btn" data-bs-dismiss="modal">
+                <button type="button" class="btn-outline-secondary btn d-flex align-items-center gap-2" data-bs-dismiss="modal">
+                    <i class="ti ti-x me-1" aria-hidden="true"></i>
                     Batal
                 </button>
-                <button type="submit" form="reviewer-assignment-form" class="btn btn-primary" wire:loading.attr="disabled"
+                <button type="submit" form="reviewer-assignment-form" class="btn btn-primary d-flex align-items-center gap-2" wire:loading.attr="disabled"
                     data-bs-dismiss="modal">
                     
                     <span wire:loading.remove>Tugaskan</span>
@@ -108,7 +109,8 @@
             <x-slot:body>
                 <div class="py-4 text-center">
                     
-                    <h3>Hapus Reviewer?</h3>
+                    <h3><i class="ti ti-trash me-1" aria-hidden="true"></i>
+Hapus Reviewer?</h3>
                     <div class="text-secondary">
                         Apakah Anda yakin ingin menghapus reviewer dari proposal ini?
                     </div>
@@ -116,11 +118,12 @@
             </x-slot:body>
 
             <x-slot:footer>
-                <button type="button" class="btn-outline-secondary btn" data-bs-dismiss="modal">
+                <button type="button" class="btn-outline-secondary btn d-flex align-items-center gap-2" data-bs-dismiss="modal">
+                    <i class="ti ti-x me-1" aria-hidden="true"></i>
                     Batal
                 </button>
                 <button type="button" wire:click="removeReviewer('{{ $confirmingRemoveReviewerId }}')"
-                    class="btn btn-danger" data-bs-dismiss="modal">
+                    class="btn btn-danger d-flex align-items-center gap-2" data-bs-dismiss="modal">
                     Ya, Hapus Reviewer
                 </button>
             </x-slot:footer>

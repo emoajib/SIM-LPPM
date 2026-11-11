@@ -75,7 +75,8 @@
                     </div>
 
                     <div class="form-footer">
-                        <button type="submit" class="w-100 btn btn-primary">
+                        <button type="submit" class="w-100 btn btn-primary d-flex align-items-center gap-2 justify-content-center d-flex align-items-center gap-2">
+                            <i class="ti ti-key me-1" aria-hidden="true"></i>
                             {{ __('Reset kata sandi') }}
                         </button>
                     </div>

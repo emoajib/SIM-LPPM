@@ -1,6 +1,8 @@
 <div>
-    <x-slot:title>Edit Pengguna</x-slot:title>
-    <x-slot:pageTitle>Edit Pengguna</x-slot:pageTitle>
+    <x-slot:title><i class="ti ti-pencil me-1" aria-hidden="true"></i>
+Edit Pengguna</x-slot:title>
+    <x-slot:pageTitle><i class="ti ti-pencil me-1" aria-hidden="true"></i>
+Edit Pengguna</x-slot:pageTitle>
     <x-slot:pageSubtitle>Perbarui profil pengguna dan penetapan peran.</x-slot:pageSubtitle>
     <x-slot:pageActions>
         <a href="{{ route('users.show', $this->user) }}" class="btn-outline-secondary btn" wire:navigate.hover>
@@ -81,7 +83,7 @@
                     <h4 class="card-title text-secondary">Manajemen Password</h4>
                     <div class="alert alert-info d-flex align-items-center justify-content-between">
                         <div>Kosongkan jika tidak ingin mengubah password pengguna.</div>
-                        <button type="button" class="btn btn-sm btn-outline-primary" wire:click="generatePassword">
+                        <button type="button" class="btn btn-sm btn-outline-primary d-flex align-items-center gap-2" wire:click="generatePassword">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-wand" width="24"
                                 height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
                                 stroke-linecap="round" stroke-linejoin="round">
@@ -135,7 +137,8 @@
 
                 <div class="col-md-6">
                     <div class="mb-3" x-data="{ show: false }">
-                        <label class="form-label">Konfirmasi Password</label>
+                        <label class="form-label"><i class="ti ti-check me-1" aria-hidden="true"></i>
+Konfirmasi Password</label>
                         <div class="input-group input-group-flat">
                             <input :type="show ? 'text' : 'password'" class="form-control"
                                 wire:model="password_confirmation" autocomplete="new-password"
@@ -476,7 +479,8 @@
 
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label class="d-block form-label">Verifikasi email</label>
+                        <label class="d-block form-label"><i class="ti ti-check me-1" aria-hidden="true"></i>
+Verifikasi email</label>
                         <label class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" wire:model="emailVerified">
                             <span class="form-check-label">Tandai email sebagai terverifikasi</span>
@@ -494,14 +498,16 @@
         <div class="d-flex align-items-center justify-content-between card-footer" x-data="{ show: false }"
             x-on:user-updated.window="console.log('updated');show = true; setTimeout(() => show = false, 5000);">
             <a href="{{ route('users.show', $this->user) }}" class="btn btn-link" wire:navigate.hover>
+                <i class="ti ti-x me-1" aria-hidden="true"></i>
                 Batal
             </a>
             <div x-show="show" class="text-green fw-bold">
                 
                 Pengguna telah diperbarui.
             </div>
-            <button type="submit" class="btn btn-primary" wire:loading.attr="disabled">
-                <span wire:loading.remove>Simpan perubahan</span>
+            <button type="submit" class="btn btn-primary d-flex align-items-center gap-2" wire:loading.attr="disabled">
+                <span wire:loading.remove><i class="ti ti-save me-1" aria-hidden="true"></i>
+Simpan perubahan</span>
                 <span wire:loading>Menyimpan...</span>
             </button>
         </div>

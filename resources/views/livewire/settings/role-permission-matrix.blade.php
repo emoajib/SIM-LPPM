@@ -12,12 +12,13 @@
                     Matriks Akses Modul (RBAC)
                 </h3>
                 <div class="card-actions d-flex gap-2">
-                    <button wire:click="resetMatrix" class="btn btn-outline-secondary btn-sm" wire:loading.attr="disabled">
-                        
+                    <button wire:click="resetMatrix" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2" wire:loading.attr="disabled">
+                        <i class="ti ti-rotate me-1" aria-hidden="true"></i>
+                        <i class="ti ti-refresh me-1" aria-hidden="true"></i>
                         Reset
                     </button>
-                    <button wire:click="save" class="btn btn-primary btn-sm" wire:loading.attr="disabled">
-                        
+                    <button wire:click="save" class="btn btn-primary btn-sm d-flex align-items-center gap-2" wire:loading.attr="disabled">
+                        <i class="ti ti-save me-1" aria-hidden="true"></i>
                         Simpan Perubahan
                         <span wire:loading wire:target="save" class="spinner-border spinner-border-sm ms-2" role="status"></span>
                     </button>
@@ -33,7 +34,8 @@
                             <h4 class="alert-title">Sistem Konfigurasi Keamanan</h4>
                             <div class="text-muted">
                                 Sesuaikan hak akses setiap peran terhadap modul sistem. 
-                                <strong>PENTING:</strong> Klik tombol <strong>Simpan Perubahan</strong> untuk menerapkan setelan ke database. 
+                                <strong><i class="ti ti-save me-1" aria-hidden="true"></i>
+PENTING:</strong> Klik tombol <strong>Simpan Perubahan</strong> untuk menerapkan setelan ke database. 
                                 Pengaturan tidak akan berubah sampai Anda menyimpannya.
                             </div>
                         </div>

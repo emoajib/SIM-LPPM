@@ -80,8 +80,8 @@
                                             @if ($media)
                                                 <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
                                                     download="{{ $media->file_name ?? $media->name ?? 'download' }}"
-                                                    target="_blank" class="btn btn-sm btn-primary">
-                                                    
+                                                    target="_blank" class="btn btn-sm btn-primary d-flex align-items-center gap-2">
+                                                    <i class="ti ti-download me-1" aria-hidden="true"></i>
                                                     Unduh
                                                 </a>
                                             @endif

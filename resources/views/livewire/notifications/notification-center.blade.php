@@ -38,9 +38,10 @@
                                          Ketua: {{ $invitation->submitter->name }}
                                     </div>
                                 </div>
-                                <a href="{{ route($route, $invitation) }}" class="btn btn-primary btn-sm rounded-pill px-3"
+                                <a href="{{ route($route, $invitation) }}" class="btn btn-primary btn-sm rounded-pill px-3 d-flex align-items-center gap-2"
                                     wire:navigate.hover>
-                                    Konfirmasi 
+                                    <i class="ti ti-check me-1" aria-hidden="true"></i>
+                                    Konfirmasi
                                 </a>
                             </div>
                         @endforeach
@@ -56,7 +57,7 @@
                 <h3 class="card-title">Notifikasi</h3>
                 <div class="d-flex gap-2">
                     @if ($unreadCount > 0)
-                        <button wire:click="markAllAsRead" class="btn-outline-primary btn btn-sm">
+                        <button wire:click="markAllAsRead" class="btn-outline-primary btn btn-sm d-flex align-items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round" class="me-1">

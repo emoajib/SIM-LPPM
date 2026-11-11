@@ -53,7 +53,8 @@
                 <div class="col-md-2 d-flex align-items-end">
                     <button
                         wire:click="$set('search', ''); $set('type', 'all'); $set('status', 'all'); $set('year', 'all');"
-                        class="btn btn-outline-secondary w-100">
+                        class="btn btn-outline-secondary w-100 d-flex align-items-center gap-2">
+                        <i class="ti ti-refresh me-1" aria-hidden="true"></i>
                         Reset
                     </button>
                 </div>
@@ -152,7 +153,7 @@
                                     @endphp
 
                                     @if($route)
-                                        <a href="{{ route($route, $params) }}" class="btn btn-icon btn-white"
+                                        <a href="{{ route($route, $params) }}" class="btn btn-icon btn-white d-flex align-items-center gap-2"
                                             title="Lihat Detail & Filter" data-bs-toggle="tooltip" aria-label="Lihat Detail & Filter">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
                                                 viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
@@ -210,7 +211,7 @@
                                         
                                         @if($excelRoute)
                                             <a href="{{ route($excelRoute, $params) }}"
-                                                class="btn btn-success btn-sm shadow-sm" title="Unduh Excel"
+                                                class="btn btn-success btn-sm shadow-sm d-flex align-items-center gap-2" title="Unduh Excel"
                                                 data-bs-toggle="tooltip" data-navigate-ignore="true">
                                                 
                                                 Unduh Excel

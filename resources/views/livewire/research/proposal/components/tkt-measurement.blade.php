@@ -132,8 +132,9 @@
             </x-slot:body>
 
             <x-slot:footer>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <button type="button" class="btn btn-primary" wire:click="save" data-bs-dismiss="modal">
+                <button type="button" class="btn btn-secondary d-flex align-items-center gap-2" data-bs-dismiss="modal"><i class="ti ti-x me-1" aria-hidden="true"></i>
+Batal</button>
+                <button type="button" class="btn btn-primary d-flex align-items-center gap-2" wire:click="save" data-bs-dismiss="modal">
                     Simpan Hasil Pengukuran
                 </button>
             </x-slot:footer>

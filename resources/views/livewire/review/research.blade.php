@@ -18,11 +18,11 @@
                 </div>
             </div>
         </div>
-        <button type="button" class="btn-close" data-bs-toggle="collapse" data-bs-target="#researchReviewInfo" aria-label="Close"></button>
+        <button type="button" class="btn-close d-flex align-items-center gap-2" data-bs-toggle="collapse" data-bs-target="#researchReviewInfo" aria-label="Close"></button>
     </div>
 
     <div class="mb-3">
-        <button class="btn btn-ghost-info btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#researchReviewInfo" aria-expanded="false" aria-controls="researchReviewInfo">
+        <button class="btn btn-ghost-info btn-sm d-flex align-items-center gap-2" type="button" data-bs-toggle="collapse" data-bs-target="#researchReviewInfo" aria-expanded="false" aria-controls="researchReviewInfo">
             
             Informasi Daftar Review
         </button>
@@ -129,7 +129,7 @@
             </div>
             @if (!empty($search) || !empty($selectedYear) || $statusFilter !== 'all')
                 <div class="mt-3">
-                    <button type="button" class="btn btn-ghost-secondary btn-sm" wire:click="resetFilters">
+                    <button type="button" class="btn btn-ghost-secondary btn-sm d-flex align-items-center gap-2" wire:click="resetFilters">
                         
                         Reset Filter
                     </button>
@@ -210,7 +210,7 @@
                             </td>
                             <td>
                                 <a href="{{ route('research.proposal.show', $proposal) }}"
-                                    class="btn btn-primary btn-sm px-3 shadow-sm" wire:navigate.hover>
+                                    class="btn btn-primary btn-sm px-3 shadow-sm d-flex align-items-center gap-2" wire:navigate.hover>
                                     <x-lucide-edit-3 class="icon me-1" />
                                     Review
                                 </a>

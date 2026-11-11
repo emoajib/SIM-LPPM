@@ -39,18 +39,18 @@
             @endphp
 
             @if ($canCreate)
-                <a href="{{ route('research.proposal.create') }}" wire:navigate.hover class="btn btn-primary">
-                    
+                <a href="{{ route('research.proposal.create') }}" wire:navigate.hover class="btn btn-primary d-flex align-items-center gap-2">
+                    <i class="ti ti-plus me-1" aria-hidden="true"></i>
                     Usulan Penelitian Baru
                 </a>
             @elseif ($isQuotaFull)
-                <button type="button" class="btn btn-secondary" disabled title="{{ $this->quotaTooltip }}">
-                    
+                <button type="button" class="btn btn-secondary d-flex align-items-center gap-2" disabled title="{{ $this->quotaTooltip }}">
+                    <i class="ti ti-info me-1" aria-hidden="true"></i>
                     Kuota Terbatas
                 </button>
             @else
-                <button class="btn btn-secondary" disabled title="{{ $lockReason }}">
-                    
+                <button class="btn btn-secondary d-flex align-items-center gap-2" disabled title="{{ $lockReason }}">
+                    <i class="ti ti-lock me-1" aria-hidden="true"></i>
                     Usulan Dikunci
                 </button>
             @endif

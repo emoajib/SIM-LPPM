@@ -20,11 +20,13 @@
                 @endif
 
                 <div class="d-flex flex-column gap-3">
-                    <button wire:click="sendVerification" class="w-100 btn btn-primary">
+                    <button wire:click="sendVerification" class="w-100 btn btn-primary d-flex align-items-center gap-2 justify-content-center d-flex align-items-center gap-2">
+                        <i class="ti ti-mail me-1" aria-hidden="true"></i>
                         {{ __('Kirim ulang email verifikasi') }}
                     </button>
 
-                    <a wire:click="logout" class="text-secondary text-center btn btn-link">
+                    <a wire:click="logout" class="text-secondary text-center btn btn-link d-flex align-items-center gap-2 justify-content-center d-flex align-items-center gap-2">
+                        <i class="ti ti-logout me-1" aria-hidden="true"></i>
                         {{ __('Keluar') }}
                     </a>
                 </div>

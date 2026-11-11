@@ -3,13 +3,15 @@
     'title' => 'Confirm Action',
     'message' => 'Are you sure you want to proceed?',
     'confirmText' => 'Confirm',
-    'cancelText' => 'Cancel',
+    'cancelText' =>
+ 'Cancel',
     'variant' => 'danger', // danger, warning, info, primary
     'icon' => null, // icon name (e.g., 'trash', 'alert-triangle')
     'wireIgnore' => true,
     'componentId' => null,
     'onConfirm' => null,
-    'onCancel' => null,
+    'onCancel' =>
+ null,
 ])
 
 @php
@@ -56,10 +58,10 @@
     </x-slot>
 
     <x-slot name="footer">
-        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+        <button type="button" class="btn btn-light d-flex align-items-center gap-2" data-bs-dismiss="modal">
             {{ $cancelText }}
         </button>
-        <button type="button" class="btn btn-{{ $variant }}" data-bs-dismiss="modal"
+        <button type="button" class="btn btn-{{ $variant }} d-flex align-items-center gap-2" data-bs-dismiss="modal"
             @if ($onConfirm) wire:click="{{ $onConfirm }}" @endif>
             {{ $confirmText }}
         </button>

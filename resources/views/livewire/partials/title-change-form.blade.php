@@ -74,10 +74,10 @@
                     @enderror
                 </div>
                 <div class="d-flex gap-2">
-                    <button type="button" wire:click="approveTitleChange" wire:loading.attr="disabled" class="btn btn-success btn-sm">
+                    <button type="button" wire:click="approveTitleChange" wire:loading.attr="disabled" class="btn btn-success btn-sm d-flex align-items-center gap-2">
                          Setujui Perubahan Judul
                     </button>
-                    <button type="button" wire:click="rejectTitleChange" wire:loading.attr="disabled" class="btn btn-outline-danger btn-sm">
+                    <button type="button" wire:click="rejectTitleChange" wire:loading.attr="disabled" class="btn btn-outline-danger btn-sm d-flex align-items-center gap-2">
                          Tolak Pengajuan
                     </button>
                 </div>
@@ -114,11 +114,11 @@
                     </div>
 
                     <div class="d-flex gap-2">
-                        <button type="button" wire:click="saveTitleChangeRequest" wire:loading.attr="disabled" class="btn btn-primary btn-sm">
+                        <button type="button" wire:click="saveTitleChangeRequest" wire:loading.attr="disabled" class="btn btn-primary btn-sm d-flex align-items-center gap-2">
                              Kirim Pengajuan Perubahan Judul
                         </button>
                         @if ($progressReport && $progressReport->title_change_status === 'pending')
-                            <button type="button" wire:click="cancelTitleChangeRequest" wire:loading.attr="disabled" class="btn btn-outline-secondary btn-sm">
+                            <button type="button" wire:click="cancelTitleChangeRequest" wire:loading.attr="disabled" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2">
                                 Batalkan Pengajuan
                             </button>
                         @endif

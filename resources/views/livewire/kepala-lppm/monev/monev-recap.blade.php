@@ -16,7 +16,7 @@
                     </div>
                 </div>
                 <div class="col-auto ms-auto">
-                    <button class="btn btn-teal shadow-sm" wire:click="approveAll"
+                    <button class="btn btn-teal shadow-sm d-flex align-items-center gap-2" wire:click="approveAll"
                         onclick="confirm('Setujui semua hasil monev yang telah difinalisasi LPPM?') || event.stopImmediatePropagation()">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
                         Setujui Semua
@@ -79,7 +79,7 @@
                         </div>
                         <div class="btn-list">
                             @if(active_role_is('kepala lppm') && (!$institutionalReport || in_array($institutionalReport->status, [\App\Enums\InstitutionalReportStatus::DRAFT, \App\Enums\InstitutionalReportStatus::REJECTED])))
-                                <button class="btn btn-primary shadow-sm" wire:click="reportToRektor"
+                                <button class="btn btn-primary shadow-sm d-flex align-items-center gap-2" wire:click="reportToRektor"
                                     wire:loading.attr="disabled"
                                     onclick="confirm('Apakah Anda yakin ingin melaporkan hasil monev periode ini ke Rektor?') || event.stopImmediatePropagation()">
                                     
@@ -88,12 +88,12 @@
                             @endif
 
                             @if(active_role_is('rektor') && ($institutionalReport?->status === \App\Enums\InstitutionalReportStatus::SUBMITTED))
-                                <button class="btn btn-outline-danger shadow-sm" data-bs-toggle="modal"
+                                <button class="btn btn-outline-danger shadow-sm d-flex align-items-center gap-2" data-bs-toggle="modal"
                                     data-bs-target="#modal-reject-institutional">
                                     
                                     Minta Perbaikan
                                 </button>
-                                <button class="btn btn-success shadow-sm" wire:click="approveInstitutionalReport('monev', {{ $this->institutionalYear() }})"
+                                <button class="btn btn-success shadow-sm d-flex align-items-center gap-2" wire:click="approveInstitutionalReport('monev', {{ $this->institutionalYear() }})"
                                     wire:loading.attr="disabled">
                                     
                                     Setujui & Tanda Tangani
@@ -179,7 +179,8 @@
                                         @elseif($review->finalized_by_lppm_at)
                                             <span class="badge bg-warning-lt">Menunggu Approval</span>
                                         @else
-                                            <span class="badge bg-secondary-lt">Proses LPPM</span>
+                                            <span class="badge bg-secondary-lt"><i class="ti ti-eye me-1" aria-hidden="true"></i>
+Proses LPPM</span>
                                         @endif
                                     </td>
                                     <td>
@@ -190,7 +191,7 @@
                                     </td>
                                     <td>
                                         @if(!$review->approved_by_kepala_at)
-                                            <button class="btn btn-sm btn-success font-weight-bold" wire:confirm="Anda yakin mengesahkan BA Monev ini? Barcode TTD Anda akan digenerate otomatis." wire:click="approveReview('{{ $review->id }}')" 
+                                            <button class="btn btn-sm btn-success font-weight-bold d-flex align-items-center gap-2" wire:confirm="Anda yakin mengesahkan BA Monev ini? Barcode TTD Anda akan digenerate otomatis." wire:click="approveReview('{{ $review->id }}')" 
                                                 title="Sahkan Monev">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-sm" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
                                                 Sahkan (TTD)
@@ -226,7 +227,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Alasan Penolakan / Permintaan Perbaikan</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close d-flex align-items-center gap-2" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div>
@@ -237,9 +238,10 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-link link-secondary me-auto"
-                            data-bs-dismiss="modal">Batal</button>
-                        <button type="button" class="btn btn-danger shadow-sm"
+                        <button type="button" class="btn btn-link link-secondary me-auto d-flex align-items-center gap-2"
+                            data-bs-dismiss="modal"><i class="ti ti-x me-1" aria-hidden="true"></i>
+Batal</button>
+                        <button type="button" class="btn btn-danger shadow-sm d-flex align-items-center gap-2"
                             wire:click="rejectInstitutionalReport('monev', '{{ $this->institutionalYear() }}')">
                             Simpan & Tolak
                         </button>

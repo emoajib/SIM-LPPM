@@ -15,15 +15,17 @@
                 <div class="text-secondary">
                     Halaman ini menampilkan usulan dari fakultas Anda yang memerlukan validasi awal. 
                     Tugas Anda adalah memastikan kesesuaian tim dan substansi awal sebelum diteruskan ke LPPM. 
-                    Klik <strong>Lihat & Proses</strong> untuk meninjau dan memberikan keputusan.
+                    Klik <strong><i class="ti ti-eye me-1" aria-hidden="true"></i>
+Lihat & Proses</strong> <i class="ti ti-eye me-1" aria-hidden="true"></i>
+ untuk meninjau dan memberikan keputusan.
                 </div>
             </div>
         </div>
-        <button type="button" class="btn-close" data-bs-toggle="collapse" data-bs-target="#dekanIndexInfo" aria-label="Close"></button>
+        <button type="button" class="btn-close d-flex align-items-center gap-2" data-bs-toggle="collapse" data-bs-target="#dekanIndexInfo" aria-label="Close"></button>
     </div>
 
     <div class="mb-3">
-        <button class="btn btn-ghost-info btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#dekanIndexInfo" aria-expanded="false" aria-controls="dekanIndexInfo">
+        <button class="btn btn-ghost-info btn-sm d-flex align-items-center gap-2" type="button" data-bs-toggle="collapse" data-bs-target="#dekanIndexInfo" aria-expanded="false" aria-controls="dekanIndexInfo">
             
             Panduan Validasi
         </button>
@@ -130,8 +132,8 @@
 
                         <!-- Reset Button -->
                         <div class="col-md-2">
-                            <button type="button" class="btn btn-outline-secondary w-100" wire:click="resetFilters">
-                                
+                            <button type="button" class="btn btn-outline-secondary w-100 d-flex align-items-center gap-2" wire:click="resetFilters">
+                                <i class="ti ti-refresh me-1" aria-hidden="true"></i>
                                 Reset
                             </button>
                         </div>
@@ -213,13 +215,13 @@
                                 <div class="flex-nowrap btn-list">
                                     @if ($proposal->detailable_type === 'App\Models\Research')
                                         <a href="{{ route('research.proposal.show', $proposal) }}"
-                                            class="btn btn-sm btn-primary" wire:navigate.hover>
+                                            class="btn btn-sm btn-primary d-flex align-items-center gap-2" wire:navigate.hover>
                                             
                                             Lihat & Proses
                                         </a>
                                     @else
                                         <a href="{{ route('community-service.proposal.show', $proposal) }}"
-                                            class="btn btn-sm btn-primary" wire:navigate.hover>
+                                            class="btn btn-sm btn-primary d-flex align-items-center gap-2" wire:navigate.hover>
                                             
                                             Lihat & Proses
                                         </a>

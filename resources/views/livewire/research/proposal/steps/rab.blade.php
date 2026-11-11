@@ -23,7 +23,7 @@
                 
                 <h3 class="card-title mb-0">Rencana Anggaran Biaya (RAB)</h3>
             </div>
-            <button type="button" wire:click="addBudgetItem" class="btn btn-primary btn-sm">
+            <button type="button" wire:click="addBudgetItem" class="btn btn-primary btn-sm d-flex align-items-center gap-2">
                 
                 Tambah Item
             </button>
@@ -288,7 +288,7 @@
                                 </td>
                                 <td>
                                     <button type="button" wire:click="removeBudgetItem({{ $index }})"
-                                        class="btn btn-sm btn-danger" title="Hapus" aria-label="Hapus">
+                                        class="btn btn-sm btn-danger d-flex align-items-center gap-2" title="Hapus" aria-label="Hapus">
                                         <x-lucide-trash-2 class="icon" />
                                     </button>
                                 </td>
@@ -321,11 +321,11 @@
                 </h3>
             </div>
             <div class="d-flex gap-2">
-                <button type="button" wire:click="initDefaultSchedule" class="btn btn-outline-secondary btn-sm"
+                <button type="button" wire:click="initDefaultSchedule" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2"
                     wire:confirm="Muat ulang template jadwal default?">
                      Template Default
                 </button>
-                <button type="button" wire:click="addScheduleItem" class="btn btn-primary btn-sm">
+                <button type="button" wire:click="addScheduleItem" class="btn btn-primary btn-sm d-flex align-items-center gap-2">
                      Tambah Baris
                 </button>
             </div>
@@ -335,7 +335,7 @@
             <div class="text-center text-muted py-4 border rounded-2">
                 
                 <p class="mb-2">Belum ada jadwal kegiatan.</p>
-                <button type="button" wire:click="initDefaultSchedule" class="btn btn-sm btn-outline-primary">
+                <button type="button" wire:click="initDefaultSchedule" class="btn btn-sm btn-outline-primary d-flex align-items-center gap-2">
                     <x-lucide-wand-2 class="icon icon-sm me-1" /> Generate Template Otomatis
                 </button>
             </div>
@@ -388,7 +388,7 @@
                                 </td>
                                 <td class="text-center">
                                     <button type="button" wire:click="removeScheduleItem({{ $sIdx }})"
-                                        class="btn btn-ghost-danger btn-sm btn-icon" title="Hapus Baris" aria-label="Hapus Baris">
+                                        class="btn btn-ghost-danger btn-sm btn-icon d-flex align-items-center gap-2" title="Hapus Baris" aria-label="Hapus Baris">
                                         <x-lucide-trash-2 class="icon icon-sm" />
                                     </button>
                                 </td>

@@ -41,8 +41,10 @@
             <div class="alert alert-info d-flex align-items-center" role="alert">
                 
                 <div>
-                    Unggah dokumen <strong>DOC/DOCX/PDF</strong> maksimum 10&nbsp;MB untuk masing‑masing template.
-                    Klik tombol <strong>"Unduh"</strong> untuk mengunduh template yang sedang aktif.
+                    Unggah dokumen <strong><i class="ti ti-upload me-1" aria-hidden="true"></i>
+DOC/DOCX/PDF</strong> maksimum 10&nbsp;MB untuk masing‑masing template.
+                    Klik tombol <strong><i class="ti ti-download me-1" aria-hidden="true"></i>
+"Unduh"</strong> untuk mengunduh template yang sedang aktif.
                 </div>
             </div>
 
@@ -102,7 +104,9 @@
                                             name="template_file"
                                             accept=".doc,.docx,.pdf"
                                         >
-                                        <button type="submit" class="btn btn-primary">
+                                        <button type="submit" class="btn btn-primary d-flex align-items-center gap-2">
+                                            <i class="ti ti-upload me-1" aria-hidden="true"></i>
+                                             <i class="ti ti-upload me-1" aria-hidden="true"></i>
                                              Unggah
                                         </button>
                                     </div>
@@ -125,11 +129,13 @@
                                         </div>
                                         <a
                                             href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $template['media']]) }}"
-                                            class="btn btn-outline-primary btn-sm ms-2"
+                                            class="btn btn-outline-primary btn-sm ms-2 d-flex align-items-center gap-2"
                                             data-navigate-ignore="true"
                                             target="_blank"
                                             download="{{ $template['media']->file_name }}"
                                         >
+                                             <i class="ti ti-download me-1" aria-hidden="true"></i>
+                                             <i class="ti ti-download me-1" aria-hidden="true"></i>
                                              Unduh
                                         </a>
                                     </div>
@@ -194,7 +200,8 @@
                                                     name="template_file"
                                                     accept=".doc,.docx,.pdf"
                                                 >
-                                                <button type="submit" class="btn btn-primary">
+                                                <button type="submit" class="btn btn-primary d-flex align-items-center gap-2">
+                                                     <i class="ti ti-upload me-1" aria-hidden="true"></i>
                                                      Unggah
                                                 </button>
                                             </div>
@@ -215,11 +222,13 @@
                                                 </div>
                                                 <a
                                                     href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $template['media']]) }}"
-                                                    class="btn btn-outline-primary btn-sm ms-2"
+                                                    class="btn btn-outline-primary btn-sm ms-2 d-flex align-items-center gap-2"
                                                     data-navigate-ignore="true"
                                                     target="_blank"
                                                     download="{{ $template['media']->file_name }}"
                                                 >
+                                                     <i class="ti ti-download me-1" aria-hidden="true"></i>
+                                                     <i class="ti ti-download me-1" aria-hidden="true"></i>
                                                      Unduh
                                                 </a>
                                             </div>
@@ -283,7 +292,7 @@
                             </div>
                         </div>
                         <div class="text-end">
-                            <button type="submit" class="btn btn-success">
+                            <button type="submit" class="btn btn-success d-flex align-items-center gap-2">
                                  Simpan Konfigurasi
                             </button>
                         </div>
@@ -313,7 +322,8 @@
                                             name="template_file"
                                             accept=".doc,.docx,.pdf"
                                         >
-                                        <button type="submit" class="btn btn-azure">
+                                        <button type="submit" class="btn btn-azure d-flex align-items-center gap-2">
+                                            <i class="ti ti-save me-1" aria-hidden="true"></i>
                                             Simpan
                                         </button>
                                     </div>
@@ -330,6 +340,8 @@
                                         <a href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $this->proposalApprovalPageTemplateMedia]) }}"
                                             class="btn btn-outline-primary btn-sm" data-navigate-ignore="true" target="_blank"
                                             download="{{ $this->proposalApprovalPageTemplateMedia->file_name }}">
+                                             <i class="ti ti-download me-1" aria-hidden="true"></i>
+                                             <i class="ti ti-download me-1" aria-hidden="true"></i>
                                              Unduh
                                         </a>
                                     </div>
@@ -363,7 +375,8 @@
                                             name="template_file"
                                             accept=".doc,.docx,.pdf"
                                         >
-                                        <button type="submit" class="btn btn-azure">
+                                        <button type="submit" class="btn btn-azure d-flex align-items-center gap-2">
+                                            <i class="ti ti-save me-1" aria-hidden="true"></i>
                                             Simpan
                                         </button>
                                     </div>
@@ -380,6 +393,8 @@
                                         <a href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $this->reportApprovalPageTemplateMedia]) }}"
                                             class="btn btn-outline-primary btn-sm" data-navigate-ignore="true" target="_blank"
                                             download="{{ $this->reportApprovalPageTemplateMedia->file_name }}">
+                                             <i class="ti ti-download me-1" aria-hidden="true"></i>
+                                             <i class="ti ti-download me-1" aria-hidden="true"></i>
                                              Unduh
                                         </a>
                                     </div>
@@ -434,7 +449,8 @@
                                     action="{{ route('settings.proposal-template.upload', $template['type']) }}"
                                 >
                                     @csrf
-                                    <label class="form-label">Unggah Template Baru</label>
+                                    <label class="form-label"><i class="ti ti-upload me-1" aria-hidden="true"></i>
+Unggah Template Baru</label>
                                     <div class="input-group">
                                         <input
                                             type="file"
@@ -442,7 +458,9 @@
                                             name="template_file"
                                             accept=".doc,.docx,.pdf"
                                         >
-                                        <button type="submit" class="btn btn-primary">
+                                        <button type="submit" class="btn btn-primary d-flex align-items-center gap-2">
+                                            <i class="ti ti-upload me-1" aria-hidden="true"></i>
+                                             <i class="ti ti-upload me-1" aria-hidden="true"></i>
                                              Unggah
                                         </button>
                                     </div>
@@ -465,6 +483,8 @@
                                             target="_blank"
                                             download="{{ $template['media']->file_name }}"
                                         >
+                                             <i class="ti ti-download me-1" aria-hidden="true"></i>
+                                             <i class="ti ti-download me-1" aria-hidden="true"></i>
                                              Unduh
                                         </a>
                                     </div>

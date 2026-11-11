@@ -87,8 +87,12 @@
 
                         <div class="form-footer">
                             <div class="flex-nowrap btn-list">
-                                <a href="{{ route('login') }}" class="w-100 btn btn-3">{{ __('Cancel') }}</a>
-                                <button type="submit" class="w-100 btn btn-primary btn-3">
+                                <a href="{{ route('login') }}" class="w-100 btn btn-3 d-flex align-items-center gap-2 justify-content-center d-flex align-items-center gap-2">
+                                    <i class="ti ti-logout me-1" aria-hidden="true"></i>
+                                    {{ __('Cancel') }}
+                                </a>
+                                <button type="submit" class="w-100 btn btn-primary btn-3 d-flex align-items-center gap-2 justify-content-center d-flex align-items-center gap-2">
+                                    <i class="ti ti-check me-1" aria-hidden="true"></i>
                                     <span x-show="!showRecoveryInput">{{ __('Verify') }}</span>
                                     <span x-show="showRecoveryInput">{{ __('Continue') }}</span>
                                 </button>

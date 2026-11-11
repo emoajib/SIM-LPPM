@@ -3,7 +3,7 @@
     <x-slot:pageTitle>Import Pengguna</x-slot:pageTitle>
     <x-slot:pageSubtitle>Import data pengguna dari file Excel.</x-slot:pageSubtitle>
     <x-slot:pageActions>
-        <a href="{{ route('users.index') }}" class="btn btn-secondary" wire:navigate.hover>
+        <a href="{{ route('users.index') }}" class="btn btn-secondary d-flex align-items-center gap-2" wire:navigate.hover>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
                 <path d="M9 11l-4 4l4 4m-4 -4h11a4 4 0 0 0 0 -8h-1"></path>
@@ -32,7 +32,7 @@
                     </div>
                 </div>
                 <div class="col-md-6 d-flex align-items-center">
-                    <a href="{{ route('users.import-template') }}" class="btn btn-outline-primary"
+                    <a href="{{ route('users.import-template') }}" class="btn btn-outline-primary d-flex align-items-center gap-2"
                         data-navigate-ignore="true">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -109,7 +109,7 @@
                     </div>
 
                     <div class="d-flex justify-content-end mt-3">
-                        <button wire:click="import" class="btn btn-primary" @if (!empty($validationErrors) || empty($parsedData)) disabled @endif wire:loading.attr="disabled" wire:target="import">
+                        <button wire:click="import" class="btn btn-primary d-flex align-items-center gap-2" @if (!empty($validationErrors) || empty($parsedData)) disabled @endif wire:loading.attr="disabled" wire:target="import">
                             <span wire:loading wire:target="import" class="spinner-border spinner-border-sm me-2"
                                 role="status"></span>
                             <svg wire:loading.remove wire:target="import" xmlns="http://www.w3.org/2000/svg" width="24"

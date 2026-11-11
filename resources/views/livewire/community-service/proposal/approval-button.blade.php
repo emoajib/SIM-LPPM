@@ -1,12 +1,12 @@
 <div>
     @if ($this->canApprove)
         <div class="btn-list">
-            <button wire:click="approve" class="btn btn-success" wire:confirm="Setujui proposal ini?">
-                
+            <button wire:click="approve" class="btn btn-success d-flex align-items-center gap-2" wire:confirm="Setujui proposal ini?">
+                <i class="ti ti-check me-1" aria-hidden="true"></i>
                 Setujui Proposal
             </button>
-            <button wire:click="reject" class="btn btn-danger" wire:confirm="Tolak proposal ini?">
-                
+            <button wire:click="reject" class="btn btn-danger d-flex align-items-center gap-2" wire:confirm="Tolak proposal ini?">
+                <i class="ti ti-trash me-1" aria-hidden="true"></i>
                 Tolak Proposal
             </button>
         </div>

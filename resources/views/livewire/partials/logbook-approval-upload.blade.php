@@ -22,12 +22,14 @@
         </div>
         <div class="card-body">
             <p class="text-secondary small mb-3">
-                Unduh dokumen LPJ / lembar pengesahan di bawah ini untuk dibubuhi <strong>tanda tangan basah Ketua Pengusul dan tanda tangan serta cap basah Kepala LPPM</strong>. Setelah selesai ditandatangani, scan dokumen pengesahan dalam format PDF dan unggah kembali pada Langkah 2.
+                Unduh dokumen LPJ / lembar pengesahan di bawah ini untuk dibubuhi <strong><i class="ti ti-download me-1" aria-hidden="true"></i>
+tanda tangan basah Ketua Pengusul dan tanda tangan serta cap basah Kepala LPPM</strong>. Setelah selesai ditandatangani, scan dokumen pengesahan dalam format PDF dan unggah kembali pada Langkah 2.
             </p>
 
             <div class="row g-3 align-items-center">
                 <div class="col-md-5">
-                    <label class="form-label font-weight-bold small mb-1">Langkah 1: Unduh Lembar Pengesahan LPJ</label>
+                    <label class="form-label font-weight-bold small mb-1"><i class="ti ti-download me-1" aria-hidden="true"></i>
+Langkah 1: Unduh Lembar Pengesahan LPJ</label>
                     <div class="d-flex flex-column gap-2">
                         <a data-navigate-ignore="true" href="{{ route('financial-reports.approval-template', ['proposal' => $proposal, 'download' => 'true']) }}" target="_blank" class="btn btn-outline-primary btn-sm w-100">
                              Unduh Template Pengesahan Saja (TTD Basah)
@@ -42,7 +44,8 @@
                 </div>
 
                 <div class="col-md-7 border-start-md">
-                    <label class="form-label font-weight-bold small mb-1">Langkah 2: Unggah Scan Lembar Basah (PDF, Maks. 10MB)</label>
+                    <label class="form-label font-weight-bold small mb-1"><i class="ti ti-upload me-1" aria-hidden="true"></i>
+Langkah 2: Unggah Scan Lembar Basah (PDF, Maks. 10MB)</label>
                     @if ($proposal->hasMedia('logbook_approval_file'))
                         @php $media = $proposal->getFirstMedia('logbook_approval_file'); @endphp
                         <div class="alert alert-success d-flex align-items-center justify-content-between p-2 mb-0">
@@ -55,15 +58,16 @@
                             </div>
                             <div class="btn-group btn-group-sm flex-shrink-0">
                                 <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(10), ['media' => $media]) }}" target="_blank" class="btn btn-sm btn-primary">
+                                     <i class="ti ti-eye me-1" aria-hidden="true"></i>
                                      Lihat
                                 </a>
                                 @if ($this->canApprove($proposal) && ! $proposal->logbook_approved_at)
-                                    <button type="button" wire:click="verifyLogbookApprovalFile" class="btn btn-sm btn-success" wire:confirm="Apakah Anda sebagai Kepala LPPM memvalidasi dan mengesahkan berkas lembar pengesahan basah ini?">
+                                    <button type="button" wire:click="verifyLogbookApprovalFile" class="btn btn-sm btn-success d-flex align-items-center gap-2" wire:confirm="Apakah Anda sebagai Kepala LPPM memvalidasi dan mengesahkan berkas lembar pengesahan basah ini?">
                                          Sahkan LPJ
                                     </button>
                                 @endif
                                 @if ($this->canManage($proposal) && ! $proposal->logbook_approved_at)
-                                    <button type="button" wire:click="removeLogbookApprovalFile" class="btn btn-sm btn-danger" wire:confirm="Yakin ingin menghapus berkas lembar pengesahan ini?">
+                                    <button type="button" wire:click="removeLogbookApprovalFile" class="btn btn-sm btn-danger d-flex align-items-center gap-2" wire:confirm="Yakin ingin menghapus berkas lembar pengesahan ini?">
                                         <x-lucide-trash-2 class="icon icon-sm" /> Hapus
                                     </button>
                                 @endif
@@ -77,8 +81,9 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <button type="submit" wire:loading.attr="disabled" class="btn btn-primary btn-sm flex-shrink-0">
-                                <span wire:loading.remove wire:target="logbookApprovalFile,saveLogbookApprovalFile"> Unggah</span>
+                            <button type="submit" wire:loading.attr="disabled" class="btn btn-primary btn-sm flex-shrink-0 d-flex align-items-center gap-2">
+                                <span wire:loading.remove wire:target="logbookApprovalFile,saveLogbookApprovalFile"> <i class="ti ti-upload me-1" aria-hidden="true"></i>
+ Unggah</span>
                                 <span wire:loading wire:target="logbookApprovalFile,saveLogbookApprovalFile"><span class="spinner-border spinner-border-sm me-1"></span> Mengunggah...</span>
                             </button>
                         </form>

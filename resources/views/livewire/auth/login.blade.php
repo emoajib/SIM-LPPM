@@ -20,7 +20,7 @@
                             <div class="alert alert-danger alert-dismissible d-flex align-items-center py-2 px-3 mb-4" role="alert">
                                 
                                 <span>{{ $message }}</span>
-                                <button type="button" class="btn-close btn-close-sm ms-auto" data-bs-dismiss="alert"></button>
+                                <button type="button" class="btn-close btn-close-sm ms-auto d-flex align-items-center gap-2" data-bs-dismiss="alert"></button>
                             </div>
                         @enderror
 
@@ -107,9 +107,11 @@
                             @else
                                 <div class="mb-4 bg-light p-3 rounded-3 border-dashed border-2">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <label class="form-label fw-bold text-dark mb-0" for="math_answer">Verifikasi Keamanan</label>
-                                        <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none"
+                                        <label class="form-label fw-bold text-dark mb-0" for="math_answer"><i class="ti ti-check me-1" aria-hidden="true"></i>
+Verifikasi Keamanan</label>
+                                        <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none d-flex align-items-center gap-1 d-flex align-items-center gap-2"
                                             wire:click="refreshCaptcha" wire:loading.attr="disabled">
+                                            <i class="ti ti-refresh me-1" aria-hidden="true"></i>
                                             Ganti soal
                                         </button>
                                     </div>
@@ -163,9 +165,11 @@
                             </div>
 
                             <div class="form-footer mt-4">
-                                <button type="submit" class="btn btn-success w-100 py-2 rounded-pill fw-bold shadow-sm" wire:loading.attr="disabled">
+                                <button type="submit" class="btn btn-success w-100 py-2 rounded-pill fw-bold shadow-sm d-flex align-items-center gap-2 justify-content-center d-flex align-items-center gap-2" wire:loading.attr="disabled">
                                     <span wire:loading class="spinner-border spinner-border-sm me-2" role="status"></span>
-                                    <span wire:loading.remove>Masuk ke Dashboard</span>
+                                    <i class="ti ti-login me-1" aria-hidden="true"></i>
+                                    <span wire:loading.remove><i class="ti ti-login me-1" aria-hidden="true"></i>
+Masuk ke Dashboard</span>
                                 </button>
                             </div>
                         </form>
@@ -174,14 +178,16 @@
                 
                 @if(app()->environment('local'))
                     <div class="mt-4 pt-4 border-top">
-                        <p class="text-center text-secondary small fw-bold mb-3">🔧 Developer Quick Login (Local Only)</p>
+                        <p class="text-center text-secondary small fw-bold mb-3"><i class="ti ti-login me-1" aria-hidden="true"></i>
+🔧 Developer Quick Login (Local Only)</p>
                         <div class="d-flex flex-wrap gap-2 justify-content-center">
                             @php
                                 $devRoles = \Spatie\Permission\Models\Role::where('guard_name', 'web')->pluck('name')->toArray();
                             @endphp
                             @foreach($devRoles as $role)
                                 <button type="button" wire:click="devLogin('{{ $role }}')" 
-                                    class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                                    class="btn btn-outline-secondary btn-sm rounded-pill px-3 d-flex align-items-center gap-2">
+                                    <i class="ti ti-user me-1" aria-hidden="true"></i>
                                     {{ ucfirst($role) }}
                                 </button>
                             @endforeach

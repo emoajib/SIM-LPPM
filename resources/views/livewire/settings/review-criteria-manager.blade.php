@@ -13,8 +13,8 @@
             <div class="card">
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h3 class="card-title">Penelitian</h3>
-                    <button class="btn btn-sm btn-primary" wire:click="openCreate('research')">
-                        
+                    <button class="btn btn-sm btn-primary d-flex align-items-center gap-2" wire:click="openCreate('research')">
+                        <i class="ti ti-plus me-1" aria-hidden="true"></i>
                         Tambah Kriteria
                     </button>
                 </div>
@@ -46,11 +46,11 @@
                                     </td>
                                     <td>
                                         <div class="btn-list gap-1">
-                                            <button class="btn btn-icon btn-ghost-primary" aria-label="Edit kriteria"
+                                            <button class="btn btn-icon btn-ghost-primary d-flex align-items-center gap-2" aria-label="Edit kriteria"
                                                 wire:click="edit({{ $criteria->id }})">
-                                                
+                                                <i class="ti ti-pencil me-1" aria-hidden="true"></i>
                                             </button>
-                                            <button class="btn btn-icon btn-ghost-danger" aria-label="Hapus kriteria"
+                                            <button class="btn btn-icon btn-ghost-danger d-flex align-items-center gap-2" aria-label="Hapus kriteria"
                                                 wire:click="delete({{ $criteria->id }})"
                                                 onclick="return confirm('Apakah Anda yakin ingin menghapus kriteria ini?')">
                                                 <x-lucide-trash-2 class="icon" />
@@ -76,8 +76,8 @@
             <div class="card">
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h3 class="card-title">Pengabdian Masyarakat (PkM)</h3>
-                    <button class="btn btn-sm btn-primary" wire:click="openCreate('community_service')">
-                        
+                    <button class="btn btn-sm btn-primary d-flex align-items-center gap-2" wire:click="openCreate('community_service')">
+                        <i class="ti ti-plus me-1" aria-hidden="true"></i>
                         Tambah Kriteria
                     </button>
                 </div>
@@ -109,11 +109,11 @@
                                     </td>
                                     <td>
                                         <div class="btn-list gap-1">
-                                            <button class="btn btn-icon btn-ghost-primary" aria-label="Edit kriteria"
+                                            <button class="btn btn-icon btn-ghost-primary d-flex align-items-center gap-2" aria-label="Edit kriteria"
                                                 wire:click="edit({{ $criteria->id }})">
-                                                
+                                                <i class="ti ti-pencil me-1" aria-hidden="true"></i>
                                             </button>
-                                            <button class="btn btn-icon btn-ghost-danger" aria-label="Hapus kriteria"
+                                            <button class="btn btn-icon btn-ghost-danger d-flex align-items-center gap-2" aria-label="Hapus kriteria"
                                                 wire:click="delete({{ $criteria->id }})"
                                                 onclick="return confirm('Apakah Anda yakin ingin menghapus kriteria ini?')">
                                                 <x-lucide-trash-2 class="icon" />
@@ -145,7 +145,7 @@
                 <div class="card-status-start bg-blue"></div>
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h3 class="card-title">Monev Penelitian</h3>
-                    <button class="btn btn-sm btn-primary" wire:click="openCreate('monev_research')">
+                    <button class="btn btn-sm btn-primary d-flex align-items-center gap-2" wire:click="openCreate('monev_research')">
                         
                         Tambah Kriteria
                     </button>
@@ -178,11 +178,11 @@
                                     </td>
                                     <td>
                                         <div class="btn-list gap-1">
-                                            <button class="btn btn-icon btn-ghost-primary" aria-label="Edit kriteria"
+                                            <button class="btn btn-icon btn-ghost-primary d-flex align-items-center gap-2" aria-label="Edit kriteria"
                                                 wire:click="edit({{ $criteria->id }})">
-                                                
+                                                <i class="ti ti-pencil me-1" aria-hidden="true"></i>
                                             </button>
-                                            <button class="btn btn-icon btn-ghost-danger" aria-label="Hapus kriteria"
+                                            <button class="btn btn-icon btn-ghost-danger d-flex align-items-center gap-2" aria-label="Hapus kriteria"
                                                 wire:click="delete({{ $criteria->id }})"
                                                 onclick="return confirm('Apakah Anda yakin ingin menghapus kriteria ini?')">
                                                 <x-lucide-trash-2 class="icon" />
@@ -209,7 +209,7 @@
                 <div class="card-status-start bg-green"></div>
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h3 class="card-title">Monev Pengabdian Masyarakat (PkM)</h3>
-                    <button class="btn btn-sm btn-primary" wire:click="openCreate('monev_community_service')">
+                    <button class="btn btn-sm btn-primary d-flex align-items-center gap-2" wire:click="openCreate('monev_community_service')">
                         
                         Tambah Kriteria
                     </button>
@@ -242,11 +242,11 @@
                                     </td>
                                     <td>
                                         <div class="btn-list gap-1">
-                                            <button class="btn btn-icon btn-ghost-primary" aria-label="Edit kriteria"
+                                            <button class="btn btn-icon btn-ghost-primary d-flex align-items-center gap-2" aria-label="Edit kriteria"
                                                 wire:click="edit({{ $criteria->id }})">
-                                                
+                                                <i class="ti ti-pencil me-1" aria-hidden="true"></i>
                                             </button>
-                                            <button class="btn btn-icon btn-ghost-danger" aria-label="Hapus kriteria"
+                                            <button class="btn btn-icon btn-ghost-danger d-flex align-items-center gap-2" aria-label="Hapus kriteria"
                                                 wire:click="delete({{ $criteria->id }})"
                                                 onclick="return confirm('Apakah Anda yakin ingin menghapus kriteria ini?')">
                                                 <x-lucide-trash-2 class="icon" />
@@ -274,8 +274,9 @@
             <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Edit Kriteria Penilaian</h5>
-                        <button type="button" class="btn-close" wire:click="cancelEdit"></button>
+                        <h5 class="modal-title"><i class="ti ti-pencil me-1" aria-hidden="true"></i>
+Edit Kriteria Penilaian</h5>
+                        <button type="button" class="btn-close d-flex align-items-center gap-2" wire:click="cancelEdit"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
@@ -308,10 +309,11 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-link link-secondary" wire:click="cancelEdit">
+                        <button type="button" class="btn btn-link link-secondary d-flex align-items-center gap-2" wire:click="cancelEdit">
+                            <i class="ti ti-x me-1" aria-hidden="true"></i>
                             Batal
                         </button>
-                        <button type="button" class="ms-auto btn btn-primary" wire:click="save">
+                        <button type="button" class="ms-auto btn btn-primary d-flex align-items-center gap-2" wire:click="save">
                             Simpan Perubahan
                         </button>
                     </div>
@@ -326,8 +328,9 @@
             <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Tambah Kriteria Penilaian</h5>
-                        <button type="button" class="btn-close" wire:click="cancelCreate"></button>
+                        <h5 class="modal-title"><i class="ti ti-plus me-1" aria-hidden="true"></i>
+Tambah Kriteria Penilaian</h5>
+                        <button type="button" class="btn-close d-flex align-items-center gap-2" wire:click="cancelCreate"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
@@ -375,10 +378,11 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-link link-secondary" wire:click="cancelCreate">
+                        <button type="button" class="btn btn-link link-secondary d-flex align-items-center gap-2" wire:click="cancelCreate">
+                            <i class="ti ti-x me-1" aria-hidden="true"></i>
                             Batal
                         </button>
-                        <button type="button" class="ms-auto btn btn-primary" wire:click="createCriteria">
+                        <button type="button" class="ms-auto btn btn-primary d-flex align-items-center gap-2" wire:click="createCriteria">
                             Tambah Kriteria
                         </button>
                     </div>

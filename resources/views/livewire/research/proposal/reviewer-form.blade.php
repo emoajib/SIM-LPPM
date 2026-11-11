@@ -6,7 +6,7 @@
                 
                 <div>{{ session('success') }}</div>
             </div>
-            <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+            <a class="btn-close d-flex align-items-center gap-2" data-bs-dismiss="alert" aria-label="close"></a>
         </div>
     @endif
 
@@ -358,7 +358,7 @@
                     <div class="card-actions">
                         @if ($this->needsAction)
                             <button type="button"
-                                class="btn {{ $this->showForm ? 'btn-secondary' : 'btn-primary' }} btn-pill shadow-sm"
+                                class="btn {{ $this->showForm ? 'btn-secondary' : 'btn-primary' }} btn-pill shadow-sm d-flex align-items-center gap-2"
                                 wire:click="toggleForm">
                                 @if ($this->showForm)
                                     
@@ -370,7 +370,7 @@
                             </button>
                         @elseif ($this->canEditReview)
                             <button type="button"
-                                class="btn {{ $this->showForm ? 'btn-outline-secondary' : 'btn-outline-primary' }} btn-sm"
+                                class="btn {{ $this->showForm ? 'btn-outline-secondary' : 'btn-outline-primary' }} btn-sm d-flex align-items-center gap-2"
                                 wire:click="toggleForm">
                                 <x-lucide-edit-3 class="me-1 icon" />
                                 {{ $this->showForm ? 'Tutup Form' : 'Ubah Review' }}
@@ -575,12 +575,13 @@
                                     Review Anda akan dapat dilihat oleh Admin dan Kepala LPPM.
                                 </div>
                                 <div class="btn-list">
-                                    <button type="button" class="btn btn-link link-secondary"
-                                        wire:click="toggleForm">Batal</button>
-                                    <button type="submit" class="shadow-sm px-4 btn btn-primary"
+                                    <button type="button" class="btn btn-link link-secondary d-flex align-items-center gap-2"
+                                        wire:click="toggleForm"><i class="ti ti-x me-1" aria-hidden="true"></i>
+Batal</button>
+                                    <button type="submit" class="shadow-sm px-4 btn btn-primary d-flex align-items-center gap-2"
                                         wire:loading.attr="disabled">
                                         <span wire:loading class="me-2 spinner-border spinner-border-sm"></span>
-                                        
+                                        <i class="ti ti-save me-1" aria-hidden="true"></i>
                                         {{ $this->hasReviewed ? 'Simpan Perubahan' : 'Kirim Review Sekarang' }}
                                     </button>
                                 </div>

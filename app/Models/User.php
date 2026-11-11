@@ -258,7 +258,14 @@ class User extends Authenticatable implements HasMedia
      */
     public function activeHasRole(string $role): bool
     {
-        return $this->activeRole() === $role;
+        $active = $this->activeRole();
+
+        if ($active === $role) {
+            return true;
+        }
+
+        // Superadmin mewarisi hak admin LPPM (selaras dengan Gate::before di AppServiceProvider)
+        return $active === 'superadmin' && $role === 'admin lppm';
     }
 
     /**

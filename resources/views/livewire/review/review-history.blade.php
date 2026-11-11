@@ -17,11 +17,11 @@
                 </div>
             </div>
         </div>
-        <button type="button" class="btn-close" data-bs-toggle="collapse" data-bs-target="#reviewHistoryInfo" aria-label="Close"></button>
+        <button type="button" class="btn-close d-flex align-items-center gap-2" data-bs-toggle="collapse" data-bs-target="#reviewHistoryInfo" aria-label="Close"></button>
     </div>
 
     <div class="mb-3">
-        <button class="btn btn-ghost-info btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#reviewHistoryInfo" aria-expanded="false" aria-controls="reviewHistoryInfo">
+        <button class="btn btn-ghost-info btn-sm d-flex align-items-center gap-2" type="button" data-bs-toggle="collapse" data-bs-target="#reviewHistoryInfo" aria-expanded="false" aria-controls="reviewHistoryInfo">
             
             Informasi Siklus Review
         </button>
@@ -139,8 +139,8 @@
                     </select>
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
-                    <button type="button" class="btn btn-outline-secondary w-100" wire:click="resetFilters">
-                        
+                    <button type="button" class="btn btn-outline-secondary w-100 d-flex align-items-center gap-2" wire:click="resetFilters">
+                        <i class="ti ti-refresh me-1" aria-hidden="true"></i>
                         Reset
                     </button>
                 </div>

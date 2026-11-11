@@ -3,7 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Verifikasi Dokumen</title>
+    <title><i class="ti ti-check me-1" aria-hidden="true"></i>
+Verifikasi Dokumen</title>
     <style>
         body { font-family: Arial, Helvetica, sans-serif; margin: 0; padding: 24px; background: #f6f7fb; color: #111827; }
         .card { max-width: 760px; margin: 0 auto; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 18px 18px; }
@@ -26,7 +27,8 @@
 </head>
 <body>
     <div class="card">
-        <h1 class="title">Verifikasi Dokumen</h1>
+        <h1 class="title"><i class="ti ti-check me-1" aria-hidden="true"></i>
+Verifikasi Dokumen</h1>
         <p class="subtitle">Dokumen ini diverifikasi melalui QR pada PDF.</p>
 
         @php
@@ -108,8 +110,8 @@
         </div>
 
         <div class="actions">
-            <a class="btn btn-primary" href="{{ url('/reports') }}">Buka Monitoring Laporan</a>
-            <a class="btn" href="{{ url('/') }}">Beranda</a>
+            <a class="btn btn-primary d-flex align-items-center gap-2" href="{{ url('/reports') }}">Buka Monitoring Laporan</a>
+            <a class="btn d-flex align-items-center gap-2" href="{{ url('/') }}">Beranda</a>
         </div>
 
         <div class="muted">

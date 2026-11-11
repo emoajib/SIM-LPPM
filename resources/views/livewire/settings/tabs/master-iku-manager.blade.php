@@ -6,8 +6,8 @@
                 <h3 class="card-title font-weight-bold">Pengaturan Master IKU</h3>
                 <div class="text-muted small">Kelola target dan rumus pencapaian IKU</div>
             </div>
-            <button class="btn btn-primary btn-sm rounded-pill shadow-sm" wire:click="create">
-                
+            <button class="btn btn-primary btn-sm rounded-pill shadow-sm d-flex align-items-center gap-2" wire:click="create">
+                <i class="ti ti-plus me-1" aria-hidden="true"></i>
                 Tambah IKU
             </button>
         </div>
@@ -61,9 +61,10 @@
                                 </div>
                             </td>
                             <td>
-                                <button type="button" class="btn btn-outline-primary btn-sm rounded-pill"
+                                <button type="button" class="btn btn-outline-primary btn-sm rounded-pill d-flex align-items-center gap-2"
                                     wire:click="edit({{ $item->id }})">
-                                    
+                                    <i class="ti ti-pencil me-1" aria-hidden="true"></i>
+                                    <i class="ti ti-pencil me-1" aria-hidden="true"></i>
                                     Atur
                                 </button>
                             </td>
@@ -131,7 +132,8 @@
                                     </h6>
                                     <div class="form-check form-switch px-0">
                                         <input class="form-check-input" type="checkbox" wire:model.live="is_manual">
-                                        <span class="form-check-label small">Aktifkan Input Manual</span>
+                                        <span class="form-check-label small"><i class="ti ti-toggle-on me-1" aria-hidden="true"></i>
+Aktifkan Input Manual</span>
                                     </div>
                                 </div>
                                 <p class="text-muted small mb-3">Jika diaktifkan, sistem akan mengabaikan rumus otomatis
@@ -161,9 +163,16 @@
             </form>
         </x-slot:body>
         <x-slot:footer>
-            <button type="button" class="btn btn-secondary shadow-none" data-bs-dismiss="modal">Batal</button>
-            <button type="submit" form="form-master-iku" class="btn btn-primary shadow-sm"
-                wire:loading.class="btn-loading" wire:target="save">Simpan Perubahan</button>
+            <button type="button" class="btn btn-secondary shadow-none d-flex align-items-center gap-2" data-bs-dismiss="modal">
+                <i class="ti ti-x me-1" aria-hidden="true"></i>
+                <i class="ti ti-x me-1" aria-hidden="true"></i>
+                Batal
+            </button>
+            <button type="submit" form="form-master-iku" class="btn btn-primary shadow-sm d-flex align-items-center gap-2"
+                wire:loading.class="btn-loading d-flex align-items-center gap-2" wire:target="save">
+                <i class="ti ti-save me-1" aria-hidden="true"></i>
+                Simpan Perubahan
+            </button>
         </x-slot:footer>
     </x-tabler.modal>
 

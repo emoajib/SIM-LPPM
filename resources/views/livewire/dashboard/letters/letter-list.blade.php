@@ -35,7 +35,8 @@
                         </td>
                         <td>
                             @if(in_array($letter->status?->value, ['published', 'ready_to_print']))
-                            <a href="{{ route('letter.download', $letter->id) }}" target="_blank" class="btn btn-sm btn-ghost-primary">
+                            <a href="{{ route('letter.download', $letter->id) }}" target="_blank" class="btn btn-sm btn-ghost-primary d-flex align-items-center gap-2">
+                                <i class="ti ti-download me-1" aria-hidden="true"></i>
                                  Unduh PDF
                             </a>
                             @endif

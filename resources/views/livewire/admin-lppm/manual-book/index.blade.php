@@ -42,10 +42,10 @@
                         <div class="mt-auto">
                             @if($media)
                                 <div class="d-flex gap-2">
-                                    <a href="{{ route('media.download', $media) }}?view=1" class="btn btn-outline-primary w-50" target="_blank">
+                                    <a href="{{ route('media.download', $media) }}?view=1" class="btn btn-outline-primary w-50 d-flex align-items-center gap-2" target="_blank">
                                         @include('components.layouts.partials.menu.icon', ['name' => 'eye', 'class' => 'icon me-1']) Lihat
                                     </a>
-                                    <a href="{{ route('media.download', $media) }}" class="btn btn-primary w-50" target="_blank">
+                                    <a href="{{ route('media.download', $media) }}" class="btn btn-primary w-50 d-flex align-items-center gap-2" target="_blank">
                                         @include('components.layouts.partials.menu.icon', ['name' => 'download', 'class' => 'icon me-1']) Unduh
                                     </a>
                                 </div>

@@ -57,7 +57,8 @@
                     <!-- Theme Switcher (single toggle) -->
                     <div class="nav-item d-none d-md-flex me-2">
                         @php $isModern = session('sim_lppm_app_theme','modern') === 'modern'; @endphp
-                        <a href="{{ route('theme.switch', $isModern ? 'classic' : 'modern') }}" class="btn btn-sm {{ $isModern ? 'btn-primary' : 'btn-outline-secondary' }}" title="Ganti tema">
+                        <a href="{{ route('theme.switch', ['theme' => $isModern ? 'classic' : 'modern']) }}" class="btn btn-sm d-flex align-items-center gap-2 {{ $isModern ? 'btn-primary' : 'btn-outline-secondary' }}" title="Ganti tema">
+                            <i class="ti ti-layout me-1" aria-hidden="true"></i>
                             {{ $isModern ? 'Klasik' : 'Modern' }}
                         </a>
                     </div>

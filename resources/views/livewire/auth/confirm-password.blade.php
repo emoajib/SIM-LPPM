@@ -37,7 +37,8 @@
                     </div>
 
                     <div class="form-footer">
-                        <button type="submit" class="w-100 btn btn-primary" data-test="confirm-password-button">
+                        <button type="submit" class="w-100 btn btn-primary d-flex align-items-center gap-2 justify-content-center d-flex align-items-center gap-2" data-test="confirm-password-button">
+                            <i class="ti ti-check me-1" aria-hidden="true"></i>
                             {{ __('Konfirmasi') }}
                         </button>
                     </div>

@@ -13,19 +13,19 @@
         </div>
 
         <div class="btn-list">
-            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#finalDecisionModal"
+            <button type="button" class="btn btn-success d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#finalDecisionModal"
                 wire:click="$set('decision', 'completed')">
-                
+                <i class="ti ti-check me-1" aria-hidden="true"></i>
                 Setujui Proposal
             </button>
-            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#finalDecisionModal"
+            <button type="button" class="btn btn-warning d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#finalDecisionModal"
                 wire:click="$set('decision', 'revision_needed')">
                 
                 Minta Perbaikan Lanjutan
             </button>
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#finalDecisionModal"
+            <button type="button" class="btn btn-danger d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#finalDecisionModal"
                 wire:click="$set('decision', 'rejected')">
-                
+                <i class="ti ti-trash me-1" aria-hidden="true"></i>
                 Tolak Proposal
             </button>
         </div>
@@ -43,7 +43,8 @@
                     @if ($decision === 'completed')
                         <div class="mb-3 text-center">
                             
-                            <h3>Setujui Proposal?</h3>
+                            <h3><i class="ti ti-check me-1" aria-hidden="true"></i>
+Setujui Proposal?</h3>
                             <div class="text-secondary">
                                 Proposal akan disetujui dan statusnya akan berubah menjadi <strong>Selesai</strong>.
                             </div>
@@ -51,7 +52,8 @@
                     @elseif ($decision === 'rejected')
                         <div class="mb-3 text-center">
                             
-                            <h3>Tolak Proposal?</h3>
+                            <h3><i class="ti ti-trash me-1" aria-hidden="true"></i>
+Tolak Proposal?</h3>
                             <div class="text-secondary">
                                 Proposal akan <strong>ditolak secara permanen</strong>. Tindakan ini tidak dapat dibatalkan.
                             </div>
@@ -95,7 +97,8 @@
                 <div class="w-100">
                     <div class="row">
                         <div class="col">
-                            <button type="button" class="w-100 btn btn-white" data-bs-toggle="modal">
+                            <button type="button" class="w-100 btn btn-white d-flex align-items-center gap-2" data-bs-toggle="modal">
+                                <i class="ti ti-x me-1" aria-hidden="true"></i>
                                 Batal
                             </button>
                         </div>
@@ -108,7 +111,7 @@
                                 };
                             @endphp
                             <button type="button" wire:click="processDecision"
-                                class="w-100 btn {{ $btnClass }}"
+                                class="w-100 btn {{ $btnClass }} d-flex align-items-center gap-2"
                                 data-bs-dismiss="modal">
                                 @if ($decision === 'completed')
                                     

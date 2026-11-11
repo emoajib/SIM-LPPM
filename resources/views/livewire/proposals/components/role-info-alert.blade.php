@@ -41,10 +41,10 @@
             @endif
         </div>
     </div>
-    <button type="button" class="btn-close" data-bs-toggle="collapse" data-bs-target="#roleInfoAlert" aria-label="Close"></button>
+    <button type="button" class="btn-close d-flex align-items-center gap-2" data-bs-toggle="collapse" data-bs-target="#roleInfoAlert" aria-label="Close"></button>
 </div>
 <div class="mb-3">
-    <button class="btn btn-ghost-info btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#roleInfoAlert" aria-expanded="false" aria-controls="roleInfoAlert">
+    <button class="btn btn-ghost-info btn-sm d-flex align-items-center gap-2" type="button" data-bs-toggle="collapse" data-bs-target="#roleInfoAlert" aria-expanded="false" aria-controls="roleInfoAlert">
         
         @if($role === 'reviewer') Petunjuk Review @else Bantuan Role @endif
     </button>

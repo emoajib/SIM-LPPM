@@ -3,9 +3,9 @@
     <div class="card">
         <div class="d-flex align-items-center justify-content-between card-header">
             <h3 class="card-title">Program Studi</h3>
-            <button type="button" class="btn btn-primary" wire:click='create' data-bs-toggle="modal"
+            <button type="button" class="btn btn-primary d-flex align-items-center gap-2" wire:click='create' data-bs-toggle="modal"
                 data-bs-target="#modal-study-program">
-                
+                <i class="ti ti-plus me-1" aria-hidden="true"></i>
                 Tambah Program Studi
             </button>
         </div>
@@ -62,17 +62,20 @@
                             <td>
                                 <div class="btn-list">
                                     @if($item->roadmap_status === 'submitted' && active_has_any_role(['dekan', 'admin lppm', 'superadmin']))
-                                        <button type="button" class="btn btn-sm btn-success"
+                                        <button type="button" class="btn btn-sm btn-success d-flex align-items-center gap-2"
                                             wire:click="$set('validatingProgramId', '{{ $item->id }}'); $dispatch('open-modal', { modalId: 'modal-roadmap-validation' })">
                                              Validasi
                                         </button>
                                     @endif
-                                    <button type="button" class="btn-outline-warning btn btn-sm"
+                                    <button type="button" class="btn-outline-warning btn btn-sm d-flex align-items-center gap-2"
                                         wire:click="edit('{{ $item->id }}')">
+                                        <i class="ti ti-pencil me-1" aria-hidden="true"></i>
                                         Edit
                                     </button>
-                                    <button type="button" class="btn-outline-danger btn btn-sm"
-                                        wire:click="confirmDelete('{{ $item->id }}')" wire:loading.attr="disabled">
+                                    <button type="button" class="btn-outline-danger btn btn-sm d-flex align-items-center gap-2"
+                                        wire:click="confirmDelete('{{ $item->
+id }}')" wire:loading.attr="disabled">
+                                        <i class="ti ti-trash me-1" aria-hidden="true"></i>
                                         Hapus
                                     </button>
                                 </div>
@@ -89,7 +92,8 @@
 
     <x-tabler.modal-confirmation wire:key="modal-confirm-delete-study-program" id="modal-confirm-delete-study-program"
         title="Konfirmasi Hapus" message="Apakah Anda yakin ingin menghapus {{ $deleteItemName ?? '' }}?"
-        confirm-text="Ya, Hapus" cancel-text="Batal" component-id="{{ $this->getId() }}"
+        confirm-text="Ya, Hapus" cancel-text="Batal" component-id="{{ $this->
+getId() }}"
         on-confirm="handleConfirmDeleteAction" />
 
     <x-tabler.modal wire:key="modal-roadmap-validation" id="modal-roadmap-validation"
@@ -103,13 +107,16 @@
             </div>
         </x-slot:body>
         <x-slot:footer>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-            <button type="button" class="btn btn-danger" wire:click="rejectRoadmap('{{ $validatingProgramId }}')"
+            <button type="button" class="btn btn-secondary d-flex align-items-center gap-2" data-bs-dismiss="modal"><i class="ti ti-x me-1" aria-hidden="true"></i>
+Batal</button>
+            <button type="button" class="btn btn-danger d-flex align-items-center gap-2" wire:click="rejectRoadmap('{{ $validatingProgramId }}')"
                 wire:loading.attr="disabled">
+                 <i class="ti ti-trash me-1" aria-hidden="true"></i>
                  Tolak
             </button>
-            <button type="button" class="btn btn-success" wire:click="approveRoadmap('{{ $validatingProgramId }}')"
+            <button type="button" class="btn btn-success d-flex align-items-center gap-2" wire:click="approveRoadmap('{{ $validatingProgramId }}')"
                 wire:loading.attr="disabled">
+                 <i class="ti ti-check me-1" aria-hidden="true"></i>
                  Setujui
             </button>
         </x-slot:footer>
@@ -248,14 +255,15 @@
                                             </div>
                                         </div>
                                         <div class="mt-2 text-end">
-                                            <button type="button" class="btn btn-sm btn-danger" wire:click="$set('researchRoadmap.priorities.{{ $index }}', null)">Hapus</button>
+                                            <button type="button" class="btn btn-sm btn-danger d-flex align-items-center gap-2" wire:click="$set('researchRoadmap.priorities.{{ $index }}', null)"><i class="ti ti-trash me-1" aria-hidden="true"></i>
+Hapus</button>
                                         </div>
                                     </div>
                                 </div>
                             @empty
                                 <div class="text-center text-secondary py-3">Belum ada prioritas tahunan. Klik tombol di bawah untuk menambahkan.</div>
                             @endforelse
-                            <button type="button" class="btn btn-sm btn-primary" wire:click="$push('researchRoadmap.priorities', { year: {{ now()->year }}, themes: '', tkt_focus: '', funding: '', cpl_alignment: '' })">
+                            <button type="button" class="btn btn-sm btn-primary d-flex align-items-center gap-2" wire:click="$push('researchRoadmap.priorities', { year: {{ now()->year }}, themes: '', tkt_focus: '', funding: '', cpl_alignment: '' })">
                                  Tambah Prioritas
                             </button>
                         </div>
@@ -274,9 +282,11 @@
             </form>
         </x-slot:body>
         <x-slot:footer>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-            <button type="submit" form="form-study-program" class="btn btn-primary" wire:loading.class="btn-loading"
-                wire:target="save">Simpan</button>
+            <button type="button" class="btn btn-secondary d-flex align-items-center gap-2" data-bs-dismiss="modal"><i class="ti ti-x me-1" aria-hidden="true"></i>
+Batal</button>
+            <button type="submit" form="form-study-program" class="btn btn-primary d-flex align-items-center gap-2" wire:loading.class="btn-loading d-flex align-items-center gap-2"
+                wire:target="save"><i class="ti ti-save me-1" aria-hidden="true"></i>
+        Simpan</button>
         </x-slot:footer>
     </x-tabler.modal>
 </div>

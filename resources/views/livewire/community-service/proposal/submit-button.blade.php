@@ -8,9 +8,9 @@
             : 'Apakah Anda yakin ingin mengajukan proposal ini? Setelah diajukan, proposal tidak dapat diubah.';
     @endphp
     
-    <button type="button" class="mb-3 w-full btn btn-success @if(!$this->canSubmit) disabled @endif"
+    <button type="button" class="mb-3 w-full btn btn-success d-flex align-items-center gap-2 justify-content-center @if(!$this->canSubmit) disabled @endif"
         @if($this->canSubmit) wire:click="confirmSubmit" @endif>
-        
+        <i class="ti ti-send me-1" aria-hidden="true"></i>
         {{ $buttonText }}
     </button>
 
@@ -30,13 +30,15 @@
                 <div class="w-100">
                     <div class="row">
                         <div class="col">
-                            <button type="button" class="w-100 btn btn-light" data-bs-dismiss="modal">
+                            <button type="button" class="w-100 btn btn-light d-flex align-items-center gap-2 justify-content-center" data-bs-dismiss="modal">
+                                <i class="ti ti-x me-1" aria-hidden="true"></i>
                                 Batalkan
                             </button>
                         </div>
                         <div class="col">
-                            <button type="button" wire:click="submit" class="w-100 btn btn-success"
+                            <button type="button" wire:click="submit" class="w-100 btn btn-success d-flex align-items-center gap-2 justify-content-center"
                                 data-bs-dismiss="modal">
+                                <i class="ti ti-check me-1" aria-hidden="true"></i>
                                 Ya, {{ $buttonText }}
                             </button>
                         </div>

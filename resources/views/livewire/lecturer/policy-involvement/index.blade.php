@@ -3,7 +3,7 @@
         subtitle="{{ $isAdmin ? 'Verifikasi dan kelola rekognisi pakar serta keterlibatan kebijakan.' : 'Kelola keterlibatan Anda dalam penyusunan kebijakan dan rekognisi pakar.' }}">
         <x-slot:actions>
             @if(!$isAdmin)
-                <button class="btn btn-primary" wire:click="openModal">
+                <button class="btn btn-primary d-flex align-items-center gap-2" wire:click="openModal">
                      Tambah Rekognisi
                 </button>
             @endif
@@ -33,8 +33,8 @@
                                 <tr>
                                     @if($isAdmin)
                                         <td>
-                                            <div class="font-weight-medium">{{ $item->user->name }}</div>
-                                            <div class="text-muted small">{{ $item->user->identity?->identity_id }}</div>
+                                            <div class="font-weight-medium">{{ $item->user?->name ?? 'Pengguna dihapus' }}</div>
+                                            <div class="text-muted small">{{ $item->user?->identity?->identity_id }}</div>
                                         </td>
                                     @endif
                                     <td>
@@ -68,29 +68,33 @@
 
                                             @if($isAdmin)
                                                 @if($item->status !== 'verified')
-                                                    <button class="btn btn-icon btn-ghost-success"
-                                                        wire:click="verify('{{ $item->id }}')" title="Verifikasi">
+                                                    <button class="btn btn-icon btn-ghost-success d-flex align-items-center gap-2"
+                                                        wire:click="verify('{{ $item->
+id }}')" title="Verifikasi">
                                                         
                                                     </button>
                                                 @endif
                                                 @if($item->status !== 'rejected')
-                                                    <button class="btn btn-icon btn-ghost-danger"
-                                                        wire:click="reject('{{ $item->id }}')" title="Tolak">
+                                                    <button class="btn btn-icon btn-ghost-danger d-flex align-items-center gap-2"
+                                                        wire:click="reject('{{ $item->
+id }}')" title="Tolak">
                                                         
                                                     </button>
                                                 @endif
                                             @endif
 
                                             @if(!$isAdmin || $item->user_id === auth()->id())
-                                                <button class="btn btn-icon btn-ghost-primary"
-                                                    wire:click="openModal('{{ $item->id }}')" title="Edit">
+                                                <button class="btn btn-icon btn-ghost-primary d-flex align-items-center gap-2"
+                                                    wire:click="openModal('{{ $item->
+id }}')" title="Edit">
                                                     
                                                 </button>
                                             @endif
 
-                                            <button class="btn btn-icon btn-ghost-danger"
+                                            <button class="btn btn-icon btn-ghost-danger d-flex align-items-center gap-2"
                                                 onclick="confirm('Apakah Anda yakin ingin menghapus data ini?') || event.stopImmediatePropagation()"
-                                                wire:click="delete('{{ $item->id }}')" title="Hapus">
+                                                wire:click="delete('{{ $item->
+id }}')" title="Hapus">
                                                 
                                             </button>
                                         </div>
@@ -122,7 +126,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">{{ $editingId ? 'Edit Rekognisi' : 'Tambah Rekognisi' }}</h5>
-                    <button type="button" class="btn-close" wire:click="$set('showModal', false)"
+                    <button type="button" class="btn-close d-flex align-items-center gap-2" wire:click="$set('showModal', false)"
                         aria-label="Close"></button>
                 </div>
                 <form wire:submit.prevent="save">
@@ -184,7 +188,8 @@
                             </div>
                             <div class="col-lg-12">
                                 <div class="mb-3">
-                                    <label class="form-label">Unggah SK / Surat Tugas <span
+                                    <label class="form-label"><i class="ti ti-upload me-1" aria-hidden="true"></i>
+Unggah SK / Surat Tugas <span
                                             class="text-muted">(PDF/Gambar, Max 2MB)</span></label>
                                     <input type="file" class="form-control @error('document') is-invalid @enderror"
                                         wire:model="document">
@@ -196,9 +201,9 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-link link-secondary" wire:click="$set('showModal', false)">
+                        <button type="button" class="btn btn-link link-secondary d-flex align-items-center gap-2" wire:click="$set('showModal', false)">
                             Batal </button>
-                        <button type="submit" class="btn btn-primary ms-auto" wire:loading.attr="disabled">
+                        <button type="submit" class="btn btn-primary ms-auto d-flex align-items-center gap-2" wire:loading.attr="disabled">
                             
                             {{ $editingId ? 'Simpan Perubahan' : 'Simpan Rekognisi' }}
                         </button>

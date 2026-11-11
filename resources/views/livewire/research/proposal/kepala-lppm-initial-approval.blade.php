@@ -14,7 +14,7 @@
         </div>
 
         <div class="btn-list">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#initialApprovalModal">
+            <button type="button" class="btn btn-primary d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#initialApprovalModal">
                 
                 Setujui & Lanjutkan ke Reviewer
             </button>
@@ -29,7 +29,8 @@
             <x-slot:body>
                 <div class="py-3 text-center">
                     
-                    <h3>Setujui Proposal?</h3>
+                    <h3><i class="ti ti-check me-1" aria-hidden="true"></i>
+Setujui Proposal?</h3>
                     <div class="mt-2 text-secondary">
                         Dengan menyetujui proposal ini, Admin LPPM akan dapat menugaskan reviewer untuk melakukan penilaian.
                     </div>
@@ -48,12 +49,13 @@
                 <div class="w-100">
                     <div class="row">
                         <div class="col">
-                            <button type="button" class="w-100 btn btn-white" data-bs-dismiss="modal">
+                            <button type="button" class="w-100 btn btn-white d-flex align-items-center gap-2" data-bs-dismiss="modal">
+                                <i class="ti ti-x me-1" aria-hidden="true"></i>
                                 Batal
                             </button>
                         </div>
                         <div class="col">
-                            <button type="button" wire:click="approve" class="w-100 btn btn-primary"
+                            <button type="button" wire:click="approve" class="w-100 btn btn-primary d-flex align-items-center gap-2"
                                 data-bs-dismiss="modal">
                                 
                                 Ya, Setujui

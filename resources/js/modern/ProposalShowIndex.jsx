@@ -18,7 +18,7 @@ export default function ProposalShowIndex() {
     const [error, setError] = useState(null);
 
     const userRoles = window.__USER_ROLES__ || [];
-    const isVerifier = userRoles.some((r) => ["admin lppm", "kepala lppm", "rektor"].includes(r));
+    const isVerifier = userRoles.some((r) => ["admin lppm", "kepala lppm", "rektor", "dosen"].includes(r));
     const isResearch = window.location.pathname.includes("/research/");
     const module = isResearch ? "research" : "communityService";
 

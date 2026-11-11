@@ -6,7 +6,8 @@
                 <x-slot:body>
                     <div class="py-1 text-center">
                         
-                        <h3 class="mt-2">Hapus Proposal?</h3>
+                        <h3 class="mt-2"><i class="ti ti-trash me-1" aria-hidden="true"></i>
+Hapus Proposal?</h3>
                         <div class="text-secondary">
                             Apakah Anda yakin ingin menghapus proposal ini? Tindakan ini tidak dapat dibatalkan.
                         </div>
@@ -14,10 +15,11 @@
                 </x-slot:body>
 
                 <x-slot:footer>
-                    <button type="button" class="btn-outline-secondary btn" data-bs-dismiss="modal">
+                    <button type="button" class="btn-outline-secondary btn d-flex align-items-center gap-2" data-bs-dismiss="modal">
+                        <i class="ti ti-x me-1" aria-hidden="true"></i>
                         Batal
                     </button>
-                    <button type="button" wire:click="delete" class="btn btn-danger" data-bs-dismiss="modal">
+                    <button type="button" wire:click="delete" class="btn btn-danger d-flex align-items-center gap-2" data-bs-dismiss="modal">
                         Ya, Hapus Proposal
                     </button>
                 </x-slot:footer>
@@ -39,10 +41,11 @@
             </x-slot:body>
 
             <x-slot:footer>
-                <button type="button" class="btn-outline-secondary btn" data-bs-dismiss="modal">
+                <button type="button" class="btn-outline-secondary btn d-flex align-items-center gap-2" data-bs-dismiss="modal">
+                    <i class="ti ti-x me-1" aria-hidden="true"></i>
                     Batal
                 </button>
-                <button type="button" wire:click="acceptMember" class="btn btn-success" data-bs-dismiss="modal"
+                <button type="button" wire:click="acceptMember" class="btn btn-success d-flex align-items-center gap-2" data-bs-dismiss="modal"
                     onclick="setTimeout(() => window.location.reload(), 3000)">
                     Ya, Terima
                 </button>
@@ -56,7 +59,8 @@
             <x-slot:body>
                 <div class="py-1 text-center">
                         
-                        <h3 class="mt-2">Tolak Undangan?</h3>
+                        <h3 class="mt-2"><i class="ti ti-trash me-1" aria-hidden="true"></i>
+Tolak Undangan?</h3>
                         <div class="text-secondary">
                             Apakah Anda yakin ingin menolak undangan sebagai anggota tim proposal ini?
                         </div>
@@ -64,10 +68,11 @@
             </x-slot:body>
 
             <x-slot:footer>
-                <button type="button" class="btn-outline-secondary btn" data-bs-dismiss="modal">
+                <button type="button" class="btn-outline-secondary btn d-flex align-items-center gap-2" data-bs-dismiss="modal">
+                    <i class="ti ti-x me-1" aria-hidden="true"></i>
                     Batal
                 </button>
-                <button type="button" wire:click="rejectMember" class="btn btn-danger" data-bs-dismiss="modal"
+                <button type="button" wire:click="rejectMember" class="btn btn-danger d-flex align-items-center gap-2" data-bs-dismiss="modal"
                     onclick="setTimeout(() => window.location.reload(), 3000)">
                     Ya, Tolak
                 </button>
@@ -83,13 +88,15 @@
                     <div class="mb-3 text-center">
                         @if ($approvalDecision === 'approved')
                             
-                            <h3>Setujui Proposal?</h3>
+                            <h3><i class="ti ti-check me-1" aria-hidden="true"></i>
+Setujui Proposal?</h3>
                         @elseif($approvalDecision === 'need_fix')
                             
                             <h3>Perlu Perbaikan?</h3>
                         @elseif($approvalDecision === 'rejected')
                             
-                            <h3>Tolak Proposal?</h3>
+                            <h3><i class="ti ti-trash me-1" aria-hidden="true"></i>
+Tolak Proposal?</h3>
                         @endif
                         <div class="text-secondary">
                             Apakah Anda yakin dengan keputusan ini?
@@ -104,10 +111,11 @@
             </x-slot:body>
 
             <x-slot:footer>
-                <button type="button" class="btn-outline-secondary btn" data-bs-dismiss="modal">
+                <button type="button" class="btn-outline-secondary btn d-flex align-items-center gap-2" data-bs-dismiss="modal">
+                    <i class="ti ti-x me-1" aria-hidden="true"></i>
                     Batal
                 </button>
-                <button type="button" wire:click="submitDekanDecision" class="btn btn-primary" data-bs-dismiss="modal">
+                <button type="button" wire:click="submitDekanDecision" class="btn btn-primary d-flex align-items-center gap-2" data-bs-dismiss="modal">
                     Ya, Konfirmasi
                 </button>
             </x-slot:footer>

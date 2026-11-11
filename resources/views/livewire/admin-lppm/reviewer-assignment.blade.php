@@ -20,11 +20,11 @@
                 </div>
             </div>
         </div>
-        <button type="button" class="btn-close" data-bs-toggle="collapse" data-bs-target="#reviewerAssignmentInfo" aria-label="Close"></button>
+        <button type="button" class="btn-close d-flex align-items-center gap-2" data-bs-toggle="collapse" data-bs-target="#reviewerAssignmentInfo" aria-label="Close"></button>
     </div>
 
     <div class="mb-3">
-        <button class="btn btn-ghost-info btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#reviewerAssignmentInfo" aria-expanded="false" aria-controls="reviewerAssignmentInfo">
+        <button class="btn btn-ghost-info btn-sm d-flex align-items-center gap-2" type="button" data-bs-toggle="collapse" data-bs-target="#reviewerAssignmentInfo" aria-expanded="false" aria-controls="reviewerAssignmentInfo">
             
             Panduan Penugasan
         </button>
@@ -177,8 +177,8 @@
 
                         <!-- Reset Button -->
                         <div class="col-md-2">
-                            <button type="button" class="btn-outline-secondary w-100 btn" wire:click="resetFilters">
-                                
+                            <button type="button" class="btn-outline-secondary w-100 btn d-flex align-items-center gap-2" wire:click="resetFilters">
+                                <i class="ti ti-refresh me-1" aria-hidden="true"></i>
                                 Reset
                             </button>
                         </div>
@@ -317,10 +317,11 @@
             </x-slot:body>
 
             <x-slot:footer>
-                <button type="button" class="btn-outline-secondary btn" data-bs-dismiss="modal">
+                <button type="button" class="btn-outline-secondary btn d-flex align-items-center gap-2" data-bs-dismiss="modal">
+                    <i class="ti ti-x me-1" aria-hidden="true"></i>
                     Batal
                 </button>
-                <button type="submit" form="admin-reviewer-assignment-form" class="btn btn-primary" wire:loading.attr="disabled"
+                <button type="submit" form="admin-reviewer-assignment-form" class="btn btn-primary d-flex align-items-center gap-2" wire:loading.attr="disabled"
                     data-bs-dismiss="modal">
                     
                     <span wire:loading.remove>Tugaskan</span>

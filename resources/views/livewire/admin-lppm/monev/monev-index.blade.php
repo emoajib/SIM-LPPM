@@ -36,10 +36,11 @@
                         <div class="badge bg-warning-lt py-2 px-3 me-2 border border-warning shadow-sm d-flex align-items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-sm me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" /><path d="M12 9h.01" /><path d="M11 12h1v4h1" /></svg>
                             <span>{{ $this->pendingRektorCount }} Laporan belum dikirim ke Rektor</span>
-                            <button class="btn btn-xs btn-warning border-0 ms-3 fw-bold" 
+                            <button class="btn btn-xs btn-warning border-0 ms-3 fw-bold d-flex align-items-center gap-2" 
                                 wire:click="sendReminderToKepala" 
                                 wire:loading.attr="disabled">
-                                <span wire:loading.remove wire:target="sendReminderToKepala">Kirim Pengingat</span>
+                                <span wire:loading.remove wire:target="sendReminderToKepala"><i class="ti ti-send me-1" aria-hidden="true"></i>
+Kirim Pengingat</span>
                                 <span wire:loading wire:target="sendReminderToKepala">Mengirim...</span>
                             </button>
                         </div>
@@ -174,13 +175,14 @@
                             <td>
                                 <div class="btn-list flex-nowrap">
                                     @if($review && $review->reviewed_at && !$review->finalized_by_lppm_at)
-                                        <button class="btn btn-sm btn-primary font-weight-bold" 
+                                        <button class="btn btn-sm btn-primary font-weight-bold d-flex align-items-center gap-2" 
                                             wire:confirm="Verifikasi hasil Monev ini? QR Code TTD Anda akan digenerate." 
                                             wire:click="finalizeReview('{{ $review->id }}')">
+                                            <i class="ti ti-check me-1" aria-hidden="true"></i>
                                             Verifikasi
                                         </button>
                                     @endif
-                                    <button class="btn btn-sm btn-outline-primary"
+                                    <button class="btn btn-sm btn-outline-primary d-flex align-items-center gap-2"
                                         wire:click="selectProposal('{{ $proposal->id }}')">
                                         Detail & Monev
                                     </button>
@@ -209,7 +211,7 @@
                 @if ($selectedProposal)
                     <div class="modal-header">
                         <h5 class="modal-title">Daftar Monev: {{ $selectedProposal->submitter->name }}</h5>
-                        <button type="button" class="btn-close" wire:click="$set('showListModal', false)"
+                        <button type="button" class="btn-close d-flex align-items-center gap-2" wire:click="$set('showListModal', false)"
                             aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -227,8 +229,9 @@
                                                     </option>
                                                 @endforeach
                                             </select>
-                                            <button class="btn btn-primary" wire:click="assignReviewer"
+                                            <button class="btn btn-primary d-flex align-items-center gap-2" wire:click="assignReviewer"
                                                 wire:loading.attr="disabled">
+                                                <i class="ti ti-save me-1" aria-hidden="true"></i>
                                                 Simpan
                                             </button>
                                         </div>
@@ -247,7 +250,8 @@
                                                     @if($activeMonevReview->reviewed_at)
                                                         @if($activeMonevReview->finalized_by_lppm_at)
                                                             <div class="btn-list">
-                                                                <button class="btn btn-sm btn-danger font-weight-bold" wire:confirm="Batalkan verifikasi? BA akan ditarik kembali." wire:click="unfinalizeReview('{{ $activeMonevReview->id }}')">
+                                                                <button class="btn btn-sm btn-danger font-weight-bold d-flex align-items-center gap-2" wire:confirm="Batalkan verifikasi? BA akan ditarik kembali." wire:click="unfinalizeReview('{{ $activeMonevReview->
+id }}')">
                                                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-sm" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 14l-4 -4l4 -4" /><path d="M5 10h11a4 4 0 1 1 0 8h-1" /></svg>
                                                                     Batalkan Verifikasi
                                                                 </button>
@@ -262,11 +266,12 @@
                                                             </div>
                                                         @else
                                                             <div class="btn-list">
-                                                                <button class="btn btn-sm btn-danger font-weight-bold" wire:confirm="Kembalikan hasil ini ke Reviewer? Status 'Selesai Review' akan dibatalkan." wire:click="unfinalizeReview('{{ $activeMonevReview->id }}')">
+                                                                <button class="btn btn-sm btn-danger font-weight-bold d-flex align-items-center gap-2" wire:confirm="Kembalikan hasil ini ke Reviewer? Status 'Selesai Review' akan dibatalkan." wire:click="unfinalizeReview('{{ $activeMonevReview->
+id }}')">
                                                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-sm" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 14l-4 -4l4 -4" /><path d="M5 10h11a4 4 0 1 1 0 8h-1" /></svg>
                                                                     Kembalikan ke Reviewer
                                                                 </button>
-                                                                <button class="btn btn-sm btn-primary font-weight-bold" wire:confirm="Anda yakin memverifikasi hasil Monev ini? QR Code Tanda Tangan Anda akan digenerate otomatis ke dalam BA." wire:click="finalizeReview('{{ $activeMonevReview->id }}')">
+                                                                <button class="btn btn-sm btn-primary font-weight-bold d-flex align-items-center gap-2" wire:confirm="Anda yakin memverifikasi hasil Monev ini? QR Code Tanda Tangan Anda akan digenerate otomatis ke dalam BA." wire:click="finalizeReview('{{ $activeMonevReview->id }}')">
                                                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-sm" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
                                                                     Verifikasi (TTD)
                                                                 </button>
@@ -346,7 +351,7 @@
 
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h3 class="card-title mb-0">Riwayat Pelaksanaan</h3>
-                            <button class="btn btn-primary btn-sm" wire:click="addMonev" wire:loading.attr="disabled">
+                            <button class="btn btn-primary btn-sm d-flex align-items-center gap-2" wire:click="addMonev" wire:loading.attr="disabled">
                                 <span wire:loading.remove wire:target="addMonev">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
                                         viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
@@ -410,7 +415,7 @@
                                             </td>
                                             <td>
                                                 <div class="btn-list flex-nowrap">
-                                                    <button class="btn btn-icon btn-sm btn-outline-primary" aria-label="Edit monev"
+                                                    <button class="btn btn-icon btn-sm btn-outline-primary d-flex align-items-center gap-2" aria-label="Edit monev"
                                                         wire:click="editMonev('{{ $monev->id }}')">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24"
                                                             height="24" viewBox="0 0 24 24" stroke-width="2"
@@ -425,7 +430,7 @@
                                                             <line x1="16" y1="5" x2="19" y2="8"></line>
                                                         </svg>
                                                     </button>
-                                                    <button class="btn btn-icon btn-sm btn-outline-danger" aria-label="Hapus monev"
+                                                    <button class="btn btn-icon btn-sm btn-outline-danger d-flex align-items-center gap-2" aria-label="Hapus monev"
                                                         wire:confirm="Hapus data monev ini?"
                                                         wire:click="deleteMonev('{{ $monev->id }}')">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24"
@@ -454,8 +459,9 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary"
-                            wire:click="$set('showListModal', false)">Tutup</button>
+                        <button type="button" class="btn btn-secondary d-flex align-items-center gap-2"
+                            wire:click="$set('showListModal', false)"><i class="ti ti-x me-1" aria-hidden="true"></i>
+Tutup</button>
                     </div>
                 @endif
             </div>
@@ -469,7 +475,7 @@
             <div class="modal-content border-primary shadow">
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title">{{ $selectedMonev ? 'Edit' : 'Tambah' }} Data Monev</h5>
-                    <button type="button" class="btn-close btn-close-white" wire:click="$set('showFormModal', false)"
+                    <button type="button" class="btn-close btn-close-white d-flex align-items-center gap-2" wire:click="$set('showFormModal', false)"
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -503,7 +509,9 @@
                         <div class="d-flex align-items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-sm me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 9h.01" /><path d="M11 12h1v4h1" /><path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z" /></svg>
                             <div class="small">
-                                <strong>Catatan:</strong> Dokumen formal (BA ber-TTD) akan digenerate **otomatis** oleh sistem setelah verifikasi. Unggahan di bawah bersifat **opsional** jika Anda memiliki dokumen fisik tambahan.
+                                <strong><i class="ti ti-upload me-1" aria-hidden="true"></i>
+Catatan:</strong> <i class="ti ti-upload me-1" aria-hidden="true"></i>
+ Dokumen formal (BA ber-TTD) akan digenerate **otomatis** oleh sistem setelah verifikasi. Unggahan di bawah bersifat **opsional** jika Anda memiliki dokumen fisik tambahan.
                             </div>
                         </div>
                     </div>
@@ -524,7 +532,8 @@
                             @php $media = $selectedMonev->getFirstMedia('berita_acara'); @endphp
                             <div class="mt-1 small text-success">Sudah diunggah: <a
                                     href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                                    target="_blank">Lihat</a></div>
+                                    target="_blank"><i class="ti ti-eye me-1" aria-hidden="true"></i>
+Lihat</a></div>
                         @endif
                         @error('berita_acara') <span class="text-danger small">{{ $message }}</span> @enderror
                     </div>
@@ -544,7 +553,8 @@
                             @php $media = $selectedMonev->getFirstMedia('borang'); @endphp
                             <div class="mt-1 small text-success">Sudah diunggah: <a
                                     href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                                    target="_blank">Lihat</a></div>
+                                    target="_blank"><i class="ti ti-eye me-1" aria-hidden="true"></i>
+Lihat</a></div>
                         @endif
                         @error('borang') <span class="text-danger small">{{ $message }}</span> @enderror
                     </div>
@@ -564,17 +574,20 @@
                             @php $media = $selectedMonev->getFirstMedia('rekap_penilaian'); @endphp
                             <div class="mt-1 small text-success">Sudah diunggah: <a
                                     href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                                    target="_blank">Lihat</a></div>
+                                    target="_blank"><i class="ti ti-eye me-1" aria-hidden="true"></i>
+Lihat</a></div>
                         @endif
                         @error('rekap_penilaian') <span class="text-danger small">{{ $message }}</span> @enderror
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-link link-secondary"
-                        wire:click="$set('showFormModal', false)">Batal</button>
-                    <button type="button" class="btn btn-primary ms-auto" wire:click="saveMonev"
+                    <button type="button" class="btn btn-link link-secondary d-flex align-items-center gap-2"
+                        wire:click="$set('showFormModal', false)"><i class="ti ti-x me-1" aria-hidden="true"></i>
+Batal</button>
+                    <button type="button" class="btn btn-primary ms-auto d-flex align-items-center gap-2" wire:click="saveMonev"
                         wire:loading.attr="disabled" wire:target="saveMonev, berita_acara, borang, rekap_penilaian">
-                        <span wire:loading.remove wire:target="saveMonev">Simpan Monev</span>
+                        <span wire:loading.remove wire:target="saveMonev"><i class="ti ti-save me-1" aria-hidden="true"></i>
+Simpan Monev</span>
                         <span wire:loading wire:target="saveMonev">Menyimpan...</span>
                         <span wire:loading wire:target="berita_acara, borang, rekap_penilaian">Mengunggah file...</span>
                     </button>

@@ -1,9 +1,10 @@
 <div x-data="{}" @scroll-to-top.window="window.scrollTo({ top: 0, behavior: 'smooth' })">
     <x-slot:title>Detail Pengguna</x-slot:title>
     <x-slot:pageTitle>Detail Pengguna</x-slot:pageTitle>
-    <x-slot:pageSubtitle>Lihat profil lengkap pengguna dan metadata.</x-slot:pageSubtitle>
+    <x-slot:pageSubtitle><i class="ti ti-eye me-1" aria-hidden="true"></i>
+Lihat profil lengkap pengguna dan metadata.</x-slot:pageSubtitle>
     <x-slot:pageActions>
-        <a href="{{ route('users.edit', $user) }}" class="btn btn-primary" wire:navigate.hover>
+        <a href="{{ route('users.edit', $user) }}" class="btn btn-primary d-flex align-items-center gap-2" wire:navigate.hover>
             Ubah pengguna
         </a>
     </x-slot:pageActions>
@@ -28,7 +29,8 @@
                         @if ($user->hasVerifiedEmail())
                             <x-tabler.badge color="green">Email terverifikasi</x-tabler.badge>
                         @else
-                            <x-tabler.badge color="yellow">Verifikasi menunggu</x-tabler.badge>
+                            <x-tabler.badge color="yellow"><i class="ti ti-check me-1" aria-hidden="true"></i>
+Verifikasi menunggu</x-tabler.badge>
                         @endif
                     </div>
                 </div>
@@ -123,7 +125,8 @@
 
             <div class="mt-3 card">
                 <div class="card-header">
-                    <h3 class="card-title">Profil Akademik & SINTA</h3>
+                    <h3 class="card-title"><i class="ti ti-user me-1" aria-hidden="true"></i>
+Profil Akademik & SINTA</h3>
                 </div>
                 <div class="card-body">
                     <div class="row row-cards">

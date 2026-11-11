@@ -134,7 +134,7 @@
                                                         </select>
                                                     </td>
                                                     <td>
-                                                        <button type="button" class="btn btn-sm btn-outline-danger" wire:click="removeTeamMember({{ $index }})" title="Tutup" aria-label="Tutup">
+                                                        <button type="button" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-2" wire:click="removeTeamMember({{ $index }})" title="Tutup" aria-label="Tutup">
                                                             
                                                         </button>
                                                     </td>
@@ -150,8 +150,10 @@
 
                                 {{-- Submit --}}
                                 <div class="d-flex justify-content-end gap-2">
-                                    <a href="{{ route('dashboard.dosen.surat.dashboard') }}" class="btn btn-link">Batal</a>
-                                    <button type="submit" class="btn btn-primary px-4" wire:loading.attr="disabled">
+                                    <a href="{{ route('dashboard.dosen.surat.dashboard') }}" class="btn btn-link d-flex align-items-center gap-2"><i class="ti ti-x me-1" aria-hidden="true"></i>
+                                        Batal</a>
+                                    <button type="submit" class="btn btn-primary px-4 d-flex align-items-center gap-2" wire:loading.attr="disabled">
+                                        <i class="ti ti-send me-1" aria-hidden="true"></i>
                                          Kirim ke Kepala LPPM
                                     </button>
                                 </div>

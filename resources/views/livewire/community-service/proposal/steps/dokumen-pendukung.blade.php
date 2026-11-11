@@ -21,7 +21,7 @@
                     </small>
                 @endif
                 <div class="mt-3">
-                    <button type="button" wire:click="downloadProposalApprovalPageTemplate" class="btn btn-outline-primary btn-sm">
+                    <button type="button" wire:click="downloadProposalApprovalPageTemplate" class="btn btn-outline-primary btn-sm d-flex align-items-center gap-2">
                         
                         Unduh Template Halaman Persetujuan
                     </button>
@@ -75,11 +75,11 @@
                 <h3 class="mb-0 card-title">Mitra Kerjasama</h3>
             </div>
             <div class="d-flex align-items-center">
-                <button type="button" wire:click="downloadPartnerCommitmentTemplate" class="btn btn-link btn-sm me-2 text-decoration-none">
+                <button type="button" wire:click="downloadPartnerCommitmentTemplate" class="btn btn-link btn-sm me-2 text-decoration-none d-flex align-items-center gap-2">
                     
                     Unduh Template Surat Kesanggupan
                 </button>
-                <button type="button" class="btn btn-primary btn-sm" wire:click="$dispatch('open-modal', {modalId: 'modal-partner'})">
+                <button type="button" class="btn btn-primary btn-sm d-flex align-items-center gap-2" wire:click="$dispatch('open-modal', {modalId: 'modal-partner'})">
                     
                     Tambah Mitra
                 </button>
@@ -193,7 +193,7 @@
                                                 <a href="{{ $partner->getCommitmentUrlForProposal($this->form->proposal?->id) }}"
                                                    target="_blank"
                                                    class="btn btn-sm btn-outline-success" title="Lihat Surat Kesediaan">
-                                                    
+                                                    <i class="ti ti-eye me-1" aria-hidden="true"></i>
                                                     Lihat
                                                 </a>
                                             @else
@@ -231,13 +231,13 @@
                                                 <button type="button"
                                                     x-on:click="$refs.fileInput.click()"
                                                     x-show="!uploading"
-                                                    class="btn btn-sm btn-outline-secondary"
+                                                    class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2"
                                                     title="Upload Surat Kesediaan">
                                                     
                                                 </button>
                                                 <button type="button"
                                                     x-show="uploading"
-                                                    class="btn btn-sm btn-outline-secondary disabled"
+                                                    class="btn btn-sm btn-outline-secondary disabled d-flex align-items-center gap-2"
                                                     disabled>
                                                     <span class="spinner-border spinner-border-sm me-1" role="status"></span>
                                                     <span x-text="Math.round(progress) + '%'"></span>
@@ -334,7 +334,8 @@
                 <div class="text-center text-muted py-4">
                     
                     <div>Tidak ada mitra yang cocok.</div>
-                    <small>Coba gunakan tab "Buat Mitra Baru" untuk menambahkan mitra baru.</small>
+                    <small><i class="ti ti-plus me-1" aria-hidden="true"></i>
+Coba gunakan tab "Buat Mitra Baru" untuk menambahkan mitra baru.</small>
                 </div>
             @endforelse
         </div>
@@ -425,8 +426,9 @@
     </div>
 
     <x-slot:footer>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-        <button type="button" wire:click="saveNewPartner" class="btn btn-primary"
+        <button type="button" class="btn btn-secondary d-flex align-items-center gap-2" data-bs-dismiss="modal"><i class="ti ti-x me-1" aria-hidden="true"></i>
+Tutup</button>
+        <button type="button" wire:click="saveNewPartner" class="btn btn-primary d-flex align-items-center gap-2"
             x-show="partnerMode === 'new'">
             <span wire:loading.remove>
                 
@@ -474,9 +476,10 @@
     </div>
 
     <x-slot:footer>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-secondary d-flex align-items-center gap-2" data-bs-dismiss="modal"><i class="ti ti-x me-1" aria-hidden="true"></i>
+Batal</button>
         <button type="button" wire:click="uploadCommitmentLetter" class="btn btn-success"
-            wire:loading.class="btn-loading" wire:target="uploadCommitmentLetter">
+            wire:loading.class="btn-loading d-flex align-items-center gap-2" wire:target="uploadCommitmentLetter">
             <span wire:loading.remove>
                 
                 Upload Surat Kesediaan

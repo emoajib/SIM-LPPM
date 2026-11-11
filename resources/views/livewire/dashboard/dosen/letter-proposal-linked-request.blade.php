@@ -4,8 +4,10 @@
             <h5 class="card-title mb-0">
                  Buat Surat dari Proposal
             </h5>
-            <a href="{{ route('dashboard.dosen.surat.dashboard') }}" class="btn btn-outline-secondary btn-sm" wire:navigate.hover>
-                 Kembali
+            <a href="{{ route('dashboard.dosen.surat.dashboard') }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2" wire:navigate.hover>
+                <i class="ti ti-arrow-left me-1" aria-hidden="true"></i>
+                <i class="ti ti-arrow-left me-1" aria-hidden="true"></i>
+                Kembali
             </a>
         </div>
         <div class="card-body p-4">
@@ -132,7 +134,7 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" wire:click="removeTeamMember({{ $index }})" title="Tutup" aria-label="Tutup">
+                                        <button type="button" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-2" wire:click="removeTeamMember({{ $index }})" title="Tutup" aria-label="Tutup">
                                             
                                         </button>
                                     </td>
@@ -145,8 +147,10 @@
                 </div>
 
                 <div class="d-flex justify-content-end gap-2">
-                    <a href="{{ route('dashboard.dosen.surat.dashboard') }}" class="btn btn-link" wire:navigate.hover>Batal</a>
-                    <button type="submit" class="btn btn-primary px-4">
+                    <a href="{{ route('dashboard.dosen.surat.dashboard') }}" class="btn btn-link d-flex align-items-center gap-2" wire:navigate.hover><i class="ti ti-x me-1" aria-hidden="true"></i>
+                    Batal</a>
+                    <button type="submit" class="btn btn-primary px-4 d-flex align-items-center gap-2">
+                        <i class="ti ti-send me-1" aria-hidden="true"></i>
                          Kirim ke Kepala LPPM
                     </button>
                 </div>

@@ -1,9 +1,12 @@
 <div>
-    <x-slot:title>Tambah Pengguna</x-slot:title>
-    <x-slot:pageTitle>Tambah Pengguna Baru</x-slot:pageTitle>
-    <x-slot:pageSubtitle>Tambahkan pengguna baru ke sistem dengan informasi lengkap.</x-slot:pageSubtitle>
+    <x-slot:title><i class="ti ti-plus me-1" aria-hidden="true"></i>
+Tambah Pengguna</x-slot:title>
+    <x-slot:pageTitle><i class="ti ti-plus me-1" aria-hidden="true"></i>
+Tambah Pengguna Baru</x-slot:pageTitle>
+    <x-slot:pageSubtitle><i class="ti ti-plus me-1" aria-hidden="true"></i>
+Tambahkan pengguna baru ke sistem dengan informasi lengkap.</x-slot:pageSubtitle>
     <x-slot:pageActions>
-        <a href="{{ route('users.index') }}" class="btn-outline-secondary btn" wire:navigate.hover>
+        <a href="{{ route('users.index') }}" class="btn-outline-secondary btn d-flex align-items-center gap-2" wire:navigate.hover>
             Kembali ke daftar pengguna
         </a>
     </x-slot:pageActions>
@@ -82,7 +85,7 @@
                             <input id="create-password" x-bind:type="show ? 'text' : 'password'"
                                 class="form-control @error('password') is-invalid @enderror" wire:model="password"
                                 autocomplete="new-password" placeholder="Masukkan kata sandi yang kuat" required>
-                            <button type="button" class="btn btn-outline-secondary" @click="show = !show">
+                            <button type="button" class="btn btn-outline-secondary d-flex align-items-center gap-2" @click="show = !show">
                                 <i x-show="!show" class="ti ti-eye"></i>
                                 <i x-show="show" class="ti ti-eye-off"></i>
                             </button>
@@ -96,14 +99,15 @@
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label class="form-label" for="create-password-confirmation">
-                            Konfirmasi kata sandi <span class="text-danger">*</span>
+                            Konfirmasi kata sandi <span class="text-danger"><i class="ti ti-check me-1" aria-hidden="true"></i>
+*</span>
                         </label>
                         <div class="input-group" x-data="{ show: false }">
                             <input id="create-password-confirmation" x-bind:type="show ? 'text' : 'password'"
                                 class="form-control @error('password_confirmation') is-invalid @enderror"
                                 wire:model="password_confirmation" autocomplete="new-password"
                                 placeholder="Ulangi kata sandi" required>
-                            <button type="button" class="btn btn-outline-secondary" @click="show = !show">
+                            <button type="button" class="btn btn-outline-secondary d-flex align-items-center gap-2" @click="show = !show">
                                 <i x-show="!show" class="ti ti-eye"></i>
                                 <i x-show="show" class="ti ti-eye-off"></i>
                             </button>
@@ -369,11 +373,13 @@
         </div>
 
         <div class="d-flex align-items-center justify-content-between card-footer">
-            <a href="{{ route('users.index') }}" class="btn btn-link">
+            <a href="{{ route('users.index') }}" class="btn btn-link d-flex align-items-center gap-2">
+                <i class="ti ti-x me-1" aria-hidden="true"></i>
                 Batal
             </a>
-            <button type="submit" class="btn btn-primary" wire:loading.attr="disabled">
-                <span wire:loading.remove>Buat pengguna</span>
+            <button type="submit" class="btn btn-primary d-flex align-items-center gap-2" wire:loading.attr="disabled">
+                <span wire:loading.remove><i class="ti ti-plus me-1" aria-hidden="true"></i>
+Buat pengguna</span>
                 <span wire:loading>Membuat...</span>
             </button>
         </div>

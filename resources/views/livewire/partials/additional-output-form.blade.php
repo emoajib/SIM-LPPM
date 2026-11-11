@@ -25,7 +25,8 @@
             <option value="submitted">Submitted</option>
             <option value="under_review">Under Review</option>
             <option value="accepted">Accepted</option>
-            <option value="published">Published</option>
+            <option value="published"><i class="ti ti-check me-1" aria-hidden="true"></i>
+Published</option>
             <option value="rejected">Rejected</option>
         </select>
         @error("form.additionalOutputs.{$id}.status")
@@ -97,7 +98,8 @@
                             <strong>{{ $media->name }}</strong> <small class="text-muted">({{ number_format($media->size / 1024, 2) }} KB)</small>
                         </div>
                         <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                            target="_blank" class="btn btn-sm btn-primary"> Download</a>
+                            target="_blank" class="btn btn-sm btn-primary d-flex align-items-center gap-2"> <i class="ti ti-download me-1" aria-hidden="true"></i>
+ Download</a>
                     </div>
                 </div>
             @endif
@@ -139,7 +141,8 @@
                             <strong>{{ $media->name }}</strong> <small class="text-muted">({{ number_format($media->size / 1024, 2) }} KB)</small>
                         </div>
                         <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                            target="_blank" class="btn btn-sm btn-primary"> Download</a>
+                            target="_blank" class="btn btn-sm btn-primary d-flex align-items-center gap-2"> <i class="ti ti-download me-1" aria-hidden="true"></i>
+ Download</a>
                     </div>
                 </div>
             @endif
@@ -198,7 +201,8 @@
                         
                         <div class="flex-fill"><small class="text-muted">File yang sudah diunggah:</small><br><strong>{{ $media->name }}</strong></div>
                         <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                            target="_blank" class="btn btn-sm btn-primary"> Download</a>
+                            target="_blank" class="btn btn-sm btn-primary d-flex align-items-center gap-2"> <i class="ti ti-download me-1" aria-hidden="true"></i>
+ Download</a>
                     </div>
                 </div>
             @endif
@@ -217,7 +221,8 @@
                         
                         <div class="flex-fill"><small class="text-muted">File yang sudah diunggah:</small><br><strong>{{ $media->name }}</strong></div>
                         <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                            target="_blank" class="btn btn-sm btn-primary"> Download</a>
+                            target="_blank" class="btn btn-sm btn-primary d-flex align-items-center gap-2"> <i class="ti ti-download me-1" aria-hidden="true"></i>
+ Download</a>
                     </div>
                 </div>
             @endif
@@ -260,7 +265,8 @@
                         
                         <div class="flex-fill"><small class="text-muted">File yang sudah diunggah:</small><br><strong>{{ $media->name }}</strong></div>
                         <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                            target="_blank" class="btn btn-sm btn-primary"> Download</a>
+                            target="_blank" class="btn btn-sm btn-primary d-flex align-items-center gap-2"> <i class="ti ti-download me-1" aria-hidden="true"></i>
+ Download</a>
                     </div>
                 </div>
             @endif
@@ -279,7 +285,8 @@
                         
                         <div class="flex-fill"><small class="text-muted">File yang sudah diunggah:</small><br><strong>{{ $media->name }}</strong></div>
                         <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                            target="_blank" class="btn btn-sm btn-primary"> Download</a>
+                            target="_blank" class="btn btn-sm btn-primary d-flex align-items-center gap-2"> <i class="ti ti-download me-1" aria-hidden="true"></i>
+ Download</a>
                     </div>
                 </div>
             @endif
@@ -338,7 +345,8 @@
                         
                         <div class="flex-fill"><small class="text-muted">File yang sudah diunggah:</small><br><strong>{{ $media->name }}</strong></div>
                         <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                            target="_blank" class="btn btn-sm btn-primary"> Download</a>
+                            target="_blank" class="btn btn-sm btn-primary d-flex align-items-center gap-2"> <i class="ti ti-download me-1" aria-hidden="true"></i>
+ Download</a>
                     </div>
                 </div>
             @endif
@@ -357,7 +365,8 @@
                         
                         <div class="flex-fill"><small class="text-muted">File yang sudah diunggah:</small><br><strong>{{ $media->name }}</strong></div>
                         <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
-                            target="_blank" class="btn btn-sm btn-primary"> Download</a>
+                            target="_blank" class="btn btn-sm btn-primary d-flex align-items-center gap-2"> <i class="ti ti-download me-1" aria-hidden="true"></i>
+ Download</a>
                     </div>
                 </div>
             @endif

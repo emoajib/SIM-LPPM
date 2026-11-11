@@ -70,11 +70,11 @@
         @if ($currentUserInvited)
             <div class="card-footer">
                 <div class="btn-list">
-                    <button wire:click="acceptInvitation" class="btn btn-success">
+                    <button wire:click="acceptInvitation" class="btn btn-success d-flex align-items-center gap-2">
                         
                         Terima Undangan
                     </button>
-                    <button wire:click="rejectInvitation" class="btn btn-danger">
+                    <button wire:click="rejectInvitation" class="btn btn-danger d-flex align-items-center gap-2">
                         
                         Tolak Undangan
                     </button>

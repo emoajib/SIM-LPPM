@@ -89,6 +89,12 @@ class MenuComposer
                         'icon' => 'wallet',
                         'route' => 'research.daily-note.index',
                     ],
+                    [
+                        'title' => 'Verifikasi Luaran',
+                        'icon' => 'checkbox',
+                        'route' => 'accreditation.verification',
+                        'roles' => ['admin lppm', 'kepala lppm', 'rektor', 'dosen', 'superadmin'],
+                    ],
                 ],
             ],
             [
@@ -115,6 +121,12 @@ class MenuComposer
                         'title' => 'Realisasi Anggaran',
                         'icon' => 'wallet',
                         'route' => 'community-service.daily-note.index',
+                    ],
+                    [
+                        'title' => 'Verifikasi Luaran',
+                        'icon' => 'checkbox',
+                        'route' => 'accreditation.verification',
+                        'roles' => ['admin lppm', 'kepala lppm', 'rektor', 'dosen', 'superadmin'],
                     ],
                 ],
             ],
@@ -474,17 +486,18 @@ class MenuComposer
         if ($isModernHere) {
             foreach ($items as &$__item) {
                 // Force full page load for React modern pages (avoid wire:navigate blank)
-                if (in_array($__item['title'], ['Penelitian', 'Pengabdian', 'Surat', 'Dashboard'], true)) {
+                $itemTitle = (string) ($__item['title'] ?? '');
+                if (in_array($itemTitle, ['Penelitian', 'Pengabdian', 'Surat', 'Dashboard'], true)) {
                     $__item['navigate'] = false;
                 }
-                if (in_array($__item['title'], ['Penelitian', 'Pengabdian'], true)) {
-                    $__item['route'] = $__item['title'] === 'Penelitian'
+                if (in_array($itemTitle, ['Penelitian', 'Pengabdian'], true)) {
+                    $__item['route'] = $itemTitle === 'Penelitian'
                         ? 'research.proposal.index'
                         : 'community-service.proposal.index';
                     unset($__item['children']);
                 }
                 // Pindahkan "Verifikasi Luaran" ke tab in-page (bukan duplikasi di menu)
-                if (($__item['title'] ?? '') === 'IKU & Luaran' && isset($__item['children'])) {
+                if ($itemTitle === 'IKU & Luaran') {
                     $__item['children'] = array_values(array_filter(
                         $__item['children'],
                         fn ($c) => ($c['title'] ?? '') !== 'Verifikasi Luaran'
@@ -529,7 +542,7 @@ class MenuComposer
                 } elseif (in_array($item['title'], ['Pengaturan', 'Kelola Peta Jalan'])) {
                     if ($item['title'] === 'Pengaturan') {
                         foreach ($item['children'] as $child) {
-                            if ($child['title'] === 'Pengguna' && isset($child['children'])) {
+                            if ($child['title'] === 'Pengguna' && count($child['children']) > 0) {
                                 foreach ($child['children'] as $subChild) {
                                     $sistemPengaturan['children'][] = $subChild;
                                 }

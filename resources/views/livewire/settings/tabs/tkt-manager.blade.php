@@ -14,10 +14,10 @@
                 <div class="card-header">
                     <h4 class="card-title mb-0">Kategori TKT</h4>
                     <div class="card-actions">
-                        <button type="button" class="btn btn-primary btn-sm" wire:click="startAddCategory"
+                        class="btn btn-primary btn-sm d-flex align-items-center gap-2" wire:click="startAddCategory"
                             title="Tambah Kategori">
-                            
-                        </button>
+<i class="ti ti-plus me-1" aria-hidden="true"></i>
+</button>
                     </div>
                 </div>
                 <div class="card-body p-2">
@@ -45,12 +45,12 @@
                                 @enderror
                             </div>
                             <div class="btn-list">
-                                <button type="button" class="btn btn-success btn-sm" wire:click="saveNewCategory" wire:loading.class="btn-loading" wire:target="saveNewCategory" title="Simpan" aria-label="Simpan">
-                                    
-                                </button>
-                                <button type="button" class="btn btn-secondary btn-sm" wire:click="cancelAddCategory" title="Batal" aria-label="Batal">
-                                    
-                                </button>
+                                class="btn-loading d-flex align-items-center gap-2" wire:target="saveNewCategory" title="Simpan" aria-label="Simpan">
+<i class="ti ti-save me-1" aria-hidden="true"></i>
+</button>
+                                class="btn btn-secondary btn-sm d-flex align-items-center gap-2" wire:click="cancelAddCategory" title="Batal" aria-label="Batal">
+<i class="ti ti-x me-1" aria-hidden="true"></i>
+</button>
                             </div>
                         </div>
                     @endif
@@ -77,12 +77,12 @@
                                                 wire:keydown.escape="cancelEditCategory"
                                                 autofocus
                                                 style="font-size: 0.85rem;">
-                                            <button type="button" class="btn btn-success btn-sm p-1" wire:click="saveCategory" wire:loading.class="btn-loading" wire:target="saveCategory" title="Simpan" aria-label="Simpan">
-                                                
-                                            </button>
-                                            <button type="button" class="btn btn-secondary btn-sm p-1" wire:click="cancelEditCategory" title="Batal" aria-label="Batal">
-                                                
-                                            </button>
+                                            class="btn-loading d-flex align-items-center gap-2" wire:target="saveCategory" title="Simpan" aria-label="Simpan">
+<i class="ti ti-save me-1" aria-hidden="true"></i>
+</button>
+                                            class="btn btn-secondary btn-sm p-1 d-flex align-items-center gap-2" wire:click="cancelEditCategory" title="Batal" aria-label="Batal">
+<i class="ti ti-x me-1" aria-hidden="true"></i>
+</button>
                                         </div>
                                     @else
                                         {{-- Expand/Collapse Icon --}}
@@ -105,11 +105,11 @@
 
                                         {{-- Action Buttons --}}
                                         <div class="btn-group ms-1" wire:click.stop>
-                                            <button type="button" class="btn btn-ghost-primary btn-sm p-1"
+                                            class="btn btn-ghost-primary btn-sm p-1 d-flex align-items-center gap-2"
                                                 wire:click="startEditCategory('{{ $type }}')" title="Rename">
                                                 
                                             </button>
-                                            <button type="button" class="btn btn-ghost-danger btn-sm p-1"
+                                            class="btn btn-ghost-danger btn-sm p-1 d-flex align-items-center gap-2"
                                                 wire:click="confirmDeleteCategory('{{ $type }}')"
                                                 wire:loading.attr="disabled"
                                                 title="Hapus">
@@ -175,8 +175,9 @@
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <label class="form-label mb-0 fw-semibold">Pengaturan Level & Deskripsi</label>
                                 @if (!$editingLevelDesc)
-                                    <button type="button" class="btn btn-ghost-primary btn-sm"
+                                    class="btn btn-ghost-primary btn-sm d-flex align-items-center gap-2"
                                         wire:click="startEditLevelDesc">
+                                         <i class="ti ti-pencil me-1" aria-hidden="true"></i>
                                          Edit
                                     </button>
                                 @endif
@@ -203,11 +204,13 @@
                                     </div>
 
                                     <div class="mt-2 btn-list">
-                                        <button type="button" class="btn btn-primary btn-sm" wire:click="saveLevelDesc" wire:loading.class="btn-loading" wire:target="saveLevelDesc">
+                                        class="btn-loading d-flex align-items-center gap-2" wire:target="saveLevelDesc">
+                                             <i class="ti ti-save me-1" aria-hidden="true"></i>
                                              Simpan
                                         </button>
-                                        <button type="button" class="btn btn-secondary btn-sm"
+                                        class="btn btn-secondary btn-sm d-flex align-items-center gap-2"
                                             wire:click="cancelEditLevelDesc">
+                                            <i class="ti ti-x me-1" aria-hidden="true"></i>
                                             Batal
                                         </button>
                                     </div>
@@ -242,7 +245,7 @@
                                     </span>
                                 </label>
                                 @if (!$addingIndicator)
-                                    <button type="button" class="btn btn-primary btn-sm" wire:click="startAddIndicator">
+                                    class="btn btn-primary btn-sm d-flex align-items-center gap-2" wire:click="startAddIndicator">
                                          Tambah Indikator
                                     </button>
                                 @endif
@@ -273,11 +276,13 @@
                                         </div>
                                     </div>
                                     <div class="mt-2 btn-list">
-                                        <button type="button" class="btn btn-success btn-sm" wire:click="saveNewIndicator" wire:loading.class="btn-loading" wire:target="saveNewIndicator">
+                                        class="btn-loading d-flex align-items-center gap-2" wire:target="saveNewIndicator">
+                                             <i class="ti ti-save me-1" aria-hidden="true"></i>
                                              Simpan
                                         </button>
-                                        <button type="button" class="btn btn-secondary btn-sm"
+                                        class="btn btn-secondary btn-sm d-flex align-items-center gap-2"
                                             wire:click="cancelAddIndicator">
+                                            <i class="ti ti-x me-1" aria-hidden="true"></i>
                                             Batal
                                         </button>
                                     </div>
@@ -316,11 +321,10 @@
                                                     </td>
                                                     <td>
                                                         <div class="btn-list flex-nowrap">
-                                                            <button type="button" class="btn btn-success btn-sm p-1"
-                                                                wire:click="saveIndicator" wire:loading.class="btn-loading" wire:target="saveIndicator" title="Simpan">
+                                                            class="btn-loading d-flex align-items-center gap-2" wire:target="saveIndicator" title="Simpan">
                                                                 
                                                             </button>
-                                                            <button type="button" class="btn btn-secondary btn-sm p-1"
+                                                            class="btn btn-secondary btn-sm p-1 d-flex align-items-center gap-2"
                                                                 wire:click="cancelEditIndicator" title="Batal">
                                                                 
                                                             </button>
@@ -336,13 +340,15 @@
                                                     <td>{{ $indicator->indicator }}</td>
                                                     <td>
                                                         <div class="btn-list flex-nowrap">
-                                                            <button type="button" class="btn btn-ghost-primary btn-sm p-1"
-                                                                wire:click="startEditIndicator({{ $indicator->id }})"
+                                                            class="btn btn-ghost-primary btn-sm p-1 d-flex align-items-center gap-2"
+                                                                wire:click="startEditIndicator({{ $indicator->
+id }})"
                                                                 title="Edit">
                                                                 
                                                             </button>
-                                                             <button type="button" class="btn btn-ghost-danger btn-sm p-1"
-                                                                wire:click="confirmDeleteIndicator({{ $indicator->id }}, '{{ $indicator->indicator }}')"
+                                                             class="btn btn-ghost-danger btn-sm p-1 d-flex align-items-center gap-2"
+                                                                wire:click="confirmDeleteIndicator({{ $indicator->
+id }}, '{{ $indicator->indicator }}')"
                                                                 wire:loading.attr="disabled"
                                                                 title="Hapus">
                                                                 <x-lucide-trash-2 class="icon" />
@@ -356,7 +362,7 @@
                                                 <td colspan="3" class="text-muted text-center py-4">
                                                     
                                                     <div>Belum ada indikator untuk level ini</div>
-                                                    <button type="button" class="btn btn-primary btn-sm mt-2"
+                                                    class="btn btn-primary btn-sm mt-2 d-flex align-items-center gap-2"
                                                         wire:click="startAddIndicator">
                                                          Tambah Indikator Pertama
                                                     </button>
@@ -383,7 +389,7 @@
                             </p>
                             @if ($this->types->isEmpty())
                                 <div class="empty-action">
-                                    <button type="button" class="btn btn-primary" wire:click="startAddCategory">
+                                    class="btn btn-primary d-flex align-items-center gap-2" wire:click="startAddCategory">
                                          Tambah Kategori TKT Pertama
                                     </button>
                                 </div>
@@ -436,10 +442,12 @@
 @teleport('body')
 <x-tabler.modal-confirmation wire:key="modal-confirm-delete-tkt-category" id="modal-confirm-delete-tkt-category" title="Konfirmasi Hapus Kategori"
         message="Apakah Anda yakin ingin menghapus kategori {{ $deleteType ?? '' }} beserta semua level dan indikatornya?"
-        confirm-text="Ya, Hapus" cancel-text="Batal" component-id="{{ $this->getId() }}"
+        confirm-text="Ya, Hapus" cancel-text="Batal" component-id="{{ $this->
+getId() }}"
         on-confirm="handleConfirmDeleteCategory" />
 <x-tabler.modal-confirmation wire:key="modal-confirm-delete-tkt-indicator" id="modal-confirm-delete-tkt-indicator" title="Konfirmasi Hapus Indikator"
         message="Apakah Anda yakin ingin menghapus indikator ini?" confirm-text="Ya, Hapus" cancel-text="Batal"
-        component-id="{{ $this->getId() }}" on-confirm="handleConfirmDeleteIndicator" />
+        component-id="{{ $this->
+getId() }}" on-confirm="handleConfirmDeleteIndicator" />
 @endteleport
 </div>

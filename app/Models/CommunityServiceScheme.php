@@ -14,6 +14,7 @@ class CommunityServiceScheme extends Model
         'name',
         'strata',
         'eligibility_rules',
+        'is_active',
     ];
 
     /**
@@ -25,6 +26,7 @@ class CommunityServiceScheme extends Model
     {
         return [
             'eligibility_rules' => 'array',
+            'is_active' => 'boolean',
         ];
     }
 

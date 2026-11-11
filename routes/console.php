@@ -32,3 +32,10 @@ Schedule::command('reports:send-weekly-summary')
     ->onOneServer()
     ->withoutOverlapping()
     ->description('Send weekly summary reports to role-specific users');
+
+// Prune Telescope entries older than 48 hours to prevent DB bloat
+Schedule::command('telescope:prune --hours=48')
+    ->daily()
+    ->onOneServer()
+    ->withoutOverlapping()
+    ->description('Prune Telescope entries older than 48 hours');

@@ -41,7 +41,7 @@
                         </div>
 
                         <div class="col-md-1">
-                            <button type="button" class="btn btn-outline-secondary w-100" wire:click="resetFilters" title="Reset Filter">
+                            <button type="button" class="btn btn-outline-secondary w-100 d-flex align-items-center gap-2" wire:click="resetFilters" title="Reset Filter">
                                 
                             </button>
                         </div>
@@ -99,6 +99,7 @@
                                 @if($log->proposal)
                                     <a href="{{ $log->proposal->detailable_type === 'App\Models\Research' ? route('research.proposal.show', $log->proposal) : route('community-service.proposal.show', $log->proposal) }}" 
                                         class="btn btn-sm btn-ghost-primary" wire:navigate.hover>
+                                        <i class="ti ti-eye me-1" aria-hidden="true"></i>
                                         Lihat
                                     </a>
                                 @endif

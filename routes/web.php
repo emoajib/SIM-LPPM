@@ -470,11 +470,11 @@ Route::middleware(['auth'])->group(function () {
 
     // Admin LPPM - Persuratan Routes
     // Vetted by AI - Manual Review Required by Senior Engineer/Manager
-    Route::middleware(['auth', 'role:admin lppm', 'letter.active'])->prefix('admin-lppm/persuratan')->name('admin-lppm.letters.')->group(function () {
+    Route::middleware(['auth', 'role:admin lppm|superadmin', 'letter.active'])->prefix('admin-lppm/persuratan')->name('admin-lppm.letters.')->group(function () {
         Route::get('/', App\Livewire\AdminLppm\Letter\Dashboard::class)->name('dashboard');
     });
 
-    Route::middleware(['auth', 'role:admin lppm', 'letter.active'])->prefix('admin-lppm/persuratan/jenis')->name('admin-lppm.letter-types.')->group(function () {
+    Route::middleware(['auth', 'role:admin lppm|superadmin', 'letter.active'])->prefix('admin-lppm/persuratan/jenis')->name('admin-lppm.letter-types.')->group(function () {
         Route::post('/{letterType}/upload-template', [LetterTypeController::class, 'uploadTemplate'])->name('upload-template');
         Route::get('/{letterType}/download-template', [LetterTypeController::class, 'downloadTemplate'])->name('download-template');
         Route::delete('/{letterType}/delete-template', [LetterTypeController::class, 'deleteTemplate'])->name('delete-template');

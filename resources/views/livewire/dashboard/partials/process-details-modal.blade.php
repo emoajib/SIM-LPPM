@@ -16,7 +16,7 @@
                             {{ $this->processModalDescription }}
                         </div>
                     </div>
-                    <button type="button" class="btn-close ms-auto" wire:click="closeProcessModal" aria-label="Close"></button>
+                    <button type="button" class="btn-close ms-auto d-flex align-items-center gap-2" wire:click="closeProcessModal" aria-label="Close"></button>
                 </div>
 
                 <!-- Modal Sub-header (Filter & Search) -->
@@ -25,13 +25,13 @@
                         <!-- Type Filter Pills -->
                         <div class="col-12 col-md-auto">
                             <div class="btn-group btn-group-sm w-100" role="group">
-                                <button type="button" class="btn {{ $processTypeFilter === 'all' ? 'btn-primary' : 'btn-outline-secondary bg-white' }}" wire:click="$set('processTypeFilter', 'all')">
+                                <button type="button" class="btn {{ $processTypeFilter === 'all' ? 'btn-primary' : 'btn-outline-secondary bg-white' }} d-flex align-items-center gap-2" wire:click="$set('processTypeFilter', 'all')">
                                     Semua Jenis
                                 </button>
-                                <button type="button" class="btn {{ $processTypeFilter === 'research' ? 'btn-primary' : 'btn-outline-secondary bg-white' }}" wire:click="$set('processTypeFilter', 'research')">
+                                <button type="button" class="btn {{ $processTypeFilter === 'research' ? 'btn-primary' : 'btn-outline-secondary bg-white' }} d-flex align-items-center gap-2" wire:click="$set('processTypeFilter', 'research')">
                                     Penelitian
                                 </button>
-                                <button type="button" class="btn {{ $processTypeFilter === 'community_service' ? 'btn-primary' : 'btn-outline-secondary bg-white' }}" wire:click="$set('processTypeFilter', 'community_service')">
+                                <button type="button" class="btn {{ $processTypeFilter === 'community_service' ? 'btn-primary' : 'btn-outline-secondary bg-white' }} d-flex align-items-center gap-2" wire:click="$set('processTypeFilter', 'community_service')">
                                     Pengabdian (PKM)
                                 </button>
                             </div>
@@ -364,7 +364,7 @@
                                                 <div class="small text-muted mb-1" style="font-size: 0.75rem;">
                                                     {{ $item->reviewers->count() }} Reviewer Terdaftar
                                                 </div>
-                                                <a href="{{ $showRoute }}" target="_blank" class="btn btn-outline-warning btn-sm py-0 px-2" style="font-size: 0.75rem;">
+                                                <a href="{{ $showRoute }}" target="_blank" class="btn btn-outline-warning btn-sm py-0 px-2 d-flex align-items-center gap-2" style="font-size: 0.75rem;">
                                                     Buka Usulan
                                                 </a>
 
@@ -372,7 +372,7 @@
                                                 <div class="small text-muted mb-1" style="font-size: 0.75rem;">
                                                     Tahun Akademik: {{ $item->academic_year ?? $item->start_year }}
                                                 </div>
-                                                <a href="{{ $showRoute }}" target="_blank" class="btn btn-outline-info btn-sm py-0 px-2" style="font-size: 0.75rem;">
+                                                <a href="{{ $showRoute }}" target="_blank" class="btn btn-outline-info btn-sm py-0 px-2 d-flex align-items-center gap-2" style="font-size: 0.75rem;">
                                                     Buka Usulan
                                                 </a>
 
@@ -386,7 +386,7 @@
                                                     {{ $totalAchieved }} Bukti di Laporan
                                                 </div>
                                                 @if($canOpenFinalReport)
-                                                    <a href="{{ $finalReportRoute }}" target="_blank" class="btn btn-outline-primary btn-sm py-0 px-2" style="font-size: 0.75rem;" title="Buka Laporan Akhir & Bukti Luaran">
+                                                    <a href="{{ $finalReportRoute }}" target="_blank" class="btn btn-outline-primary btn-sm py-0 px-2 d-flex align-items-center gap-2" style="font-size: 0.75rem;" title="Buka Laporan Akhir & Bukti Luaran">
                                                         Buka Laporan
                                                     </a>
                                                 @else
@@ -411,7 +411,7 @@
                                                             ? route('research.daily-note.show', $item->id)
                                                             : route('community-service.daily-note.show', $item->id);
                                                     @endphp
-                                                    <a href="{{ $dailyNoteRoute }}" target="_blank" class="btn btn-outline-indigo btn-sm py-0 px-2" style="font-size: 0.75rem;">
+                                                    <a href="{{ $dailyNoteRoute }}" target="_blank" class="btn btn-outline-indigo btn-sm py-0 px-2 d-flex align-items-center gap-2" style="font-size: 0.75rem;">
                                                         Buka Logbook
                                                     </a>
                                                 </div>
@@ -426,12 +426,12 @@
                                                             ? route('research.final-report.show', $item->id)
                                                             : route('community-service.final-report.show', $item->id);
                                                     @endphp
-                                                    <a href="{{ $finalReportRoute }}" target="_blank" class="btn btn-outline-success btn-sm py-0 px-2" style="font-size: 0.75rem;">
+                                                    <a href="{{ $finalReportRoute }}" target="_blank" class="btn btn-outline-success btn-sm py-0 px-2 d-flex align-items-center gap-2" style="font-size: 0.75rem;">
                                                         Buka Laporan
                                                     </a>
                                                 @else
                                                     <span class="text-muted small d-block">Belum ada berkas</span>
-                                                    <a href="{{ $showRoute }}" target="_blank" class="btn btn-outline-secondary btn-sm py-0 px-2 mt-1" style="font-size: 0.75rem;">
+                                                    <a href="{{ $showRoute }}" target="_blank" class="btn btn-outline-secondary btn-sm py-0 px-2 mt-1 d-flex align-items-center gap-2" style="font-size: 0.75rem;">
                                                         Detail Usulan
                                                     </a>
                                                 @endif
@@ -445,7 +445,7 @@
                                                         ? route('research.proposal-revision.show', $item->id)
                                                         : route('community-service.proposal-revision.show', $item->id);
                                                 @endphp
-                                                <a href="{{ $revisionRoute }}" target="_blank" class="btn btn-outline-warning btn-sm py-0 px-2" style="font-size: 0.75rem;">
+                                                <a href="{{ $revisionRoute }}" target="_blank" class="btn btn-outline-warning btn-sm py-0 px-2 d-flex align-items-center gap-2" style="font-size: 0.75rem;">
                                                     Buka Revisi
                                                 </a>
 
@@ -453,7 +453,7 @@
                                                 <div class="small text-muted mb-1" style="font-size: 0.75rem;">
                                                     Diajukan: {{ $item->created_at->format('d/m/Y') }}
                                                 </div>
-                                                <a href="{{ $showRoute }}" target="_blank" class="btn btn-outline-primary btn-sm py-0 px-2" style="font-size: 0.75rem;">
+                                                <a href="{{ $showRoute }}" target="_blank" class="btn btn-outline-primary btn-sm py-0 px-2 d-flex align-items-center gap-2" style="font-size: 0.75rem;">
                                                     Buka Proposal
                                                 </a>
                                             @endif
@@ -478,7 +478,8 @@
                     <div class="text-muted small">
                         Menampilkan <strong>{{ $this->processModalData->count() }}</strong> usulan penelitian & PKM
                     </div>
-                    <button type="button" class="btn btn-secondary btn-sm px-4" wire:click="closeProcessModal">
+                    <button type="button" class="btn btn-secondary btn-sm px-4 d-flex align-items-center gap-2" wire:click="closeProcessModal">
+                        <i class="ti ti-x me-1" aria-hidden="true"></i>
                         Tutup
                     </button>
                 </div>

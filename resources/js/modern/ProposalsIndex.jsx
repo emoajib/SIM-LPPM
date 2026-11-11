@@ -4,10 +4,10 @@ import Button from "./components/Button.jsx";
 import Modal from "./components/Modal.jsx";
 import Pagination from "./components/Pagination.jsx";
 import CountdownTimer from "./components/CountdownTimer.jsx";
-import ModuleTabNav from "./components/ModuleTabNav.jsx";
 import ModernPageCard from "./components/ModernPageCard.jsx";
 import ModernTable from "./components/ModernTable.jsx";
 import { STATUS_COLORS, MODULE_TABS, getVerifierTab } from "./constants/themeColors.js";
+import ModuleTabNav from "./components/ModuleTabNav.jsx";
 
 export default function ProposalsIndex() {
     const [proposals, setProposals] = useState([]);
@@ -30,7 +30,7 @@ export default function ProposalsIndex() {
             .catch(() => {});
     }, []);
     const isDosen = (window.__USER_ROLES__ || []).includes("dosen");
-    const isVerifier = (window.__USER_ROLES__ || []).some((r) => ["admin lppm", "kepala lppm", "rektor"].includes(r));
+    const isVerifier = (window.__USER_ROLES__ || []).some((r) => ["admin lppm", "kepala lppm", "rektor", "dosen"].includes(r));
     const [error, setError] = useState(null);
     const [showElig, setShowElig] = useState(false);
     const [elig, setElig] = useState(null);
@@ -230,7 +230,8 @@ export default function ProposalsIndex() {
                             ))}
                         </select>
                     )}
-                    <Button onClick={() => load(1)} variant="primary" size="md">
+                    <Button onClick={() => load(1)} variant="primary" size="md" className="flex items-center gap-2">
+                        <i className="ti ti-search me-1" aria-hidden="true"></i>
                         Cari
                     </Button>
                     <Button
@@ -245,7 +246,9 @@ export default function ProposalsIndex() {
                             setFacultyId("");
                             setStudyProgramId("");
                         }}
+                        className="flex items-center gap-2"
                     >
+                        <i className="ti ti-x me-1" aria-hidden="true"></i>
                         Reset
                     </Button>
                     {isDosen && (

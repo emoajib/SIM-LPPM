@@ -64,7 +64,7 @@
                         </select>
                     </div>
                     <div class="col-auto ms-auto">
-                        <button class="btn btn-icon btn-white shadow-sm" wire:click="resetFilters" title="Reset Filter" aria-label="Reset Filter">
+                        <button class="btn btn-icon btn-white shadow-sm d-flex align-items-center gap-2" wire:click="resetFilters" title="Reset Filter" aria-label="Reset Filter">
                             
                         </button>
                     </div>
@@ -113,7 +113,8 @@
                             <th class="text-center">Skor</th>
                             <th class="text-center">Rekomendasi</th>
                             <th class="text-center">TTD Reviewer</th>
-                            <th class="text-center">Verifikasi LPPM</th>
+                            <th class="text-center"><i class="ti ti-check me-1" aria-hidden="true"></i>
+Verifikasi LPPM</th>
                             <th class="text-center">Sahkan Kepala</th>
                             <th class="w-1">Aksi</th>
                         </tr>
@@ -209,7 +210,7 @@
                                             
                                         </a>
                                     @else
-                                        <button class="btn btn-sm btn-icon btn-outline-secondary" disabled title="Belum direview" aria-label="Belum direview">
+                                        <button class="btn btn-sm btn-icon btn-outline-secondary d-flex align-items-center gap-2" disabled title="Belum direview" aria-label="Belum direview">
                                             
                                         </button>
                                     @endif

@@ -77,7 +77,8 @@
                     </select>
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
-                    <button class="btn btn-outline-secondary w-100" wire:click="resetFilters">
+                    <button class="btn btn-outline-secondary w-100 d-flex align-items-center gap-2" wire:click="resetFilters">
+                         <i class="ti ti-refresh me-1" aria-hidden="true"></i>
                          Reset
                     </button>
                 </div>

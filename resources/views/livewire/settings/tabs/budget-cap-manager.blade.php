@@ -3,9 +3,9 @@
     <div class="card">
         <div class="d-flex align-items-center justify-content-between card-header">
             <h3 class="card-title">Pengaturan Anggaran Tahunan</h3>
-            <button type="button" class="btn btn-primary" wire:click='create' data-bs-toggle="modal"
+            <button type="button" class="btn btn-primary d-flex align-items-center gap-2" wire:click='create' data-bs-toggle="modal"
                 data-bs-target="#modal-budget-cap">
-                
+                <i class="ti ti-plus me-1" aria-hidden="true"></i>
                 Tambah Pengaturan Anggaran
             </button>
         </div>
@@ -72,12 +72,17 @@
                             </td>
                             <td>
                                 <div class="btn-list">
-                                    <button type="button" class="btn-outline-warning btn btn-sm"
+                                    <button type="button" class="btn-outline-warning btn btn-sm d-flex align-items-center gap-2"
                                         wire:click="edit('{{ $item->id }}')">
+                                        <i class="ti ti-pencil me-1" aria-hidden="true"></i>
+                                        <i class="ti ti-pencil me-1" aria-hidden="true"></i>
                                         Edit
                                     </button>
-                                    <button type="button" class="btn-outline-danger btn btn-sm"
-                                        wire:click="confirmDelete('{{ $item->id }}')" wire:loading.attr="disabled">
+                                    <button type="button" class="btn-outline-danger btn btn-sm d-flex align-items-center gap-2"
+                                        wire:click="confirmDelete('{{ $item->
+id }}')" wire:loading.attr="disabled">
+                                        <i class="ti ti-trash me-1" aria-hidden="true"></i>
+                                        <i class="ti ti-trash me-1" aria-hidden="true"></i>
                                         Hapus
                                     </button>
                                 </div>
@@ -109,7 +114,8 @@
     <x-tabler.modal-confirmation wire:key="modal-confirm-delete-budget-cap" id="modal-confirm-delete-budget-cap"
         title="Konfirmasi Hapus"
         message="Apakah Anda yakin ingin menghapus pengaturan anggaran untuk {{ $deleteItemYear ?? '' }}?"
-        confirm-text="Ya, Hapus" cancel-text="Batal" component-id="{{ $this->getId() }}"
+        confirm-text="Ya, Hapus" cancel-text="Batal" component-id="{{ $this->
+getId() }}"
         on-confirm="handleConfirmDeleteAction" />
     <x-tabler.modal wire:key="modal-budget-cap" id="modal-budget-cap" :title="$modalTitle" onHide="resetForm"
         component-id="{{ $this->getId() }}">
@@ -202,7 +208,8 @@
                     <div class="form-check form-switch">
                         <input type="checkbox" wire:model="enforce_percentage" class="form-check-input" id="enforce_percentage">
                         <label class="form-check-label" for="enforce_percentage">
-                            <strong>Aktifkan Validasi Persentase</strong>
+                            <strong><i class="ti ti-toggle-on me-1" aria-hidden="true"></i>
+Aktifkan Validasi Persentase</strong>
                         </label>
                     </div>
                     <small class="form-hint text-warning">
@@ -212,9 +219,11 @@
             </form>
         </x-slot:body>
         <x-slot:footer>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-            <button type="submit" form="form-budget-cap" class="btn btn-primary" wire:loading.class="btn-loading"
-                wire:target="save">Simpan</button>
+            <button type="button" class="btn btn-secondary d-flex align-items-center gap-2" data-bs-dismiss="modal"><i class="ti ti-x me-1" aria-hidden="true"></i>
+Batal</button>
+            <button type="submit" form="form-budget-cap" class="btn btn-primary" wire:loading.class="btn-loading d-flex align-items-center gap-2"
+                wire:target="save"><i class="ti ti-save me-1" aria-hidden="true"></i>
+Simpan</button>
         </x-slot:footer>
     </x-tabler.modal>
 

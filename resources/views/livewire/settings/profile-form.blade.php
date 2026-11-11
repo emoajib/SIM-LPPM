@@ -16,15 +16,19 @@
         <div class="col-auto">
             <input type="file" class="d-none" wire:model="photo" x-ref="photo" accept="image/*">
 
-            <button type="button" class="btn btn-primary" x-on:click.prevent="$refs.photo.click()" wire:loading.attr="disabled" wire:target="photo">
-                <span wire:loading.remove wire:target="photo">Ubah Foto</span>
+            <button type="button" class="btn btn-primary d-flex align-items-center gap-2" x-on:click.prevent="$refs.photo.click()" wire:loading.attr="disabled" wire:target="photo">
+                <i class="ti ti-image me-1" aria-hidden="true"></i>
+                <span wire:loading.remove wire:target="photo"><i class="ti ti-pencil me-1" aria-hidden="true"></i>
+Ubah Foto</span>
                 <span wire:loading wire:target="photo">Mengunggah...</span>
             </button>
         </div>
         @if (auth()->user()->getFirstMedia('avatar') || auth()->user()->identity?->profile_picture)
             <div class="col-auto">
-                <button type="button" class="btn btn-ghost-danger" wire:click="removeAvatar"
+                <button type="button" class="btn btn-ghost-danger d-flex align-items-center gap-2" wire:click="removeAvatar"
                     wire:confirm="Apakah Anda yakin ingin menghapus foto profil?">
+                    <i class="ti ti-trash me-1" aria-hidden="true"></i>
+                    <i class="ti ti-trash me-1" aria-hidden="true"></i>
                     Hapus Foto
                 </button>
             </div>
@@ -278,7 +282,7 @@
                         <h4 class="alert-title">Email belum diverifikasi</h4>
                         <div class="text-muted">
                             Alamat email Anda belum diverifikasi.
-                            <button type="button" class="ms-1 p-0 btn btn-link"
+                            <button type="button" class="ms-1 p-0 btn btn-link d-flex align-items-center gap-2"
                                 wire:click.prevent="resendVerificationNotification">
                                 Klik di sini untuk mengirim ulang email verifikasi.
                             </button>
@@ -307,12 +311,15 @@ Tautan verifikasi baru telah dikirim ke alamat email Anda.
 
     <div class="bg-transparent mt-auto card-footer">
         <div class="justify-content-end btn-list">
-            <button type="button" class="btn" wire:click="resetForm">
+            <button type="button" class="btn d-flex align-items-center gap-2" wire:click="resetForm">
+                <i class="ti ti-x me-1" aria-hidden="true"></i>
                 Batal
             </button>
-            <button type="submit" class="btn btn-primary" wire:click="updateProfileInformation"
+            <button type="submit" class="btn btn-primary d-flex align-items-center gap-2" wire:click="updateProfileInformation"
                 wire:loading.attr="disabled" wire:target="updateProfileInformation, photo">
-                <span wire:loading.remove>Simpan Perubahan</span>
+                <i class="ti ti-save me-1" aria-hidden="true"></i>
+                <span wire:loading.remove><i class="ti ti-save me-1" aria-hidden="true"></i>
+Simpan Perubahan</span>
                 <span wire:loading>Menyimpan...</span>
             </button>
         </div>

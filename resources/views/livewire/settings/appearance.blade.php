@@ -144,7 +144,8 @@
     <!-- Upload Logo -->
     <div class="mt-5 mb-4 border-top pt-4 border-muted">
         <h3 class="card-title">Pengaturan Logo Dashboard</h3>
-        <p class="form-hint">Ubah logo yang ditampilkan pada navbar aplikasi Anda.</p>
+        <p class="form-hint"><i class="ti ti-pencil me-1" aria-hidden="true"></i>
+Ubah logo yang ditampilkan pada navbar aplikasi Anda.</p>
         <form wire:submit="saveLogo" enctype="multipart/form-data">
             <div class="row align-items-center">
                 <div class="col-auto">
@@ -170,7 +171,8 @@
             @endif
 
             <div class="mt-3">
-                <button type="submit" class="btn btn-primary" wire:loading.attr="disabled" wire:target="saveLogo, logo">
+                <button type="submit" class="btn btn-primary d-flex align-items-center gap-2" wire:loading.attr="disabled" wire:target="saveLogo, logo">
+                    <i class="ti ti-save me-1" aria-hidden="true"></i>
                     Simpan Logo
                 </button>
             </div>
@@ -180,7 +182,8 @@
     <!-- Teks Aplikasi/Brand -->
     <div class="mt-5 mb-4 border-top pt-4 border-muted">
         <h3 class="card-title">Pengaturan Nama Aplikasi</h3>
-        <p class="form-hint">Ubah nama sistem atau instansi yang ditampilkan di sebelah logo pada atas menu aplikasi
+        <p class="form-hint"><i class="ti ti-pencil me-1" aria-hidden="true"></i>
+Ubah nama sistem atau instansi yang ditampilkan di sebelah logo pada atas menu aplikasi
             Anda.</p>
         <form wire:submit="saveSettings">
             <div class="mb-3">
@@ -189,7 +192,8 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Judul Halaman Login</label>
+                <label class="form-label"><i class="ti ti-login me-1" aria-hidden="true"></i>
+Judul Halaman Login</label>
                 <input type="text" class="form-control" wire:model="loginTitle"
                     placeholder="Contoh: Masuk ke Akun Anda">
                 <p class="form-hint">Teks ini akan ditampilkan sebagai judul utama pada halaman login.</p>
@@ -202,7 +206,8 @@
             @endif
 
             <div class="mt-3">
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary d-flex align-items-center gap-2">
+                    <i class="ti ti-save me-1" aria-hidden="true"></i>
                     Simpan Nama Aplikasi
                 </button>
             </div>
@@ -211,11 +216,12 @@
 
     <div class="bg-transparent mt-auto card-footer">
         <div class="justify-content-end btn-list">
-            <button type="button" class="btn" @click="resetTheme()">
+            <button type="button" class="btn d-flex align-items-center gap-2" @click="resetTheme()">
                 
                 Reset Perubahan Tema
             </button>
-            <button type="button" class="btn btn-primary" @click="saveTheme()">
+            <button type="button" class="btn btn-primary d-flex align-items-center gap-2" @click="saveTheme()">
+                <i class="ti ti-save me-1" aria-hidden="true"></i>
                 Simpan Preferensi Tema
             </button>
         </div>

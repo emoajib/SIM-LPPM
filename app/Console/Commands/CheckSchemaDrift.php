@@ -284,8 +284,8 @@ class CheckSchemaDrift extends Command
         foreach ($migrationFiles as $file) {
             $content = file_get_contents($file);
 
-            if (preg_match_all('/Schema::table\\(\\s*[\'"]([^\'"\\s]+)[\'"]/i', $content, $matches)) {
-                $tables = array_merge($tables, $matches[1]);
+            if (preg_match_all('/Schema::(create|table)\\(\\s*[\'"]([^\'"\\s]+)[\'"]/i', $content, $matches)) {
+                $tables = array_merge($tables, $matches[2]);
             }
         }
 
@@ -301,8 +301,8 @@ class CheckSchemaDrift extends Command
         foreach ($files as $file) {
             $content = file_get_contents($file);
 
-            if (preg_match_all('/Schema::table\\(\\s*[\'"]([^\'"\\s]+)[\'"]/i', $content, $matches)) {
-                $tables = array_merge($tables, $matches[1]);
+            if (preg_match_all('/Schema::(create|table)\\(\\s*[\'"]([^\'"\\s]+)[\'"]/i', $content, $matches)) {
+                $tables = array_merge($tables, $matches[2]);
             }
         }
 

@@ -14,9 +14,8 @@
                 <div class="card-header">
                     <h4 class="mb-0 card-title">Hierarki Cluster</h4>
                     <div class="card-actions">
-                        <button type="button" class="btn btn-primary btn-sm" wire:click="startAddCluster(null)"
-                            title="Tambah Level 1">
-                            
+                        class="btn btn-primary btn-sm d-flex align-items-center gap-2" wire:click="startAddCluster(null)"
+                            title="Tambah Level 1"><i class="ti ti-plus me-1" aria-hidden="true"></i>
                         </button>
                     </div>
                 </div>
@@ -61,12 +60,9 @@
                                 </label>
                             </div>
                             <div class="btn-list">
-                                <button type="button" class="btn btn-success btn-sm" wire:click="saveNewCluster"
-                                    wire:loading.class="btn-loading" wire:target="saveNewCluster" title="Simpan" aria-label="Simpan">
-                                    
+                                class="btn-loading d-flex align-items-center gap-2" wire:target="saveNewCluster" title="Simpan" aria-label="Simpan"><i class="ti ti-save me-1" aria-hidden="true"></i>
                                 </button>
-                                <button type="button" class="btn btn-secondary btn-sm" wire:click="cancelAddCluster" title="Batal" aria-label="Batal">
-                                    
+                                class="btn btn-secondary btn-sm d-flex align-items-center gap-2" wire:click="cancelAddCluster" title="Batal" aria-label="Batal"><i class="ti ti-x me-1" aria-hidden="true"></i>
                                 </button>
                             </div>
                         </div>
@@ -90,15 +86,14 @@
                                                     wire:model="clusterNameInput" wire:keydown.enter="saveCluster"
                                                     wire:keydown.escape="cancelEditCluster" autofocus
                                                     style="font-size: 0.85rem;">
-                                                <button type="button" class="p-1 btn btn-success btn-sm"
-                                                    wire:click="saveCluster" wire:loading.class="btn-loading"
+                                                class="btn-loading d-flex align-items-center gap-2"
                                                     wire:target="saveCluster" title="Simpan" aria-label="Simpan">
-                                                    
-                                                </button>
-                                                <button type="button" class="p-1 btn btn-secondary btn-sm"
+<i class="ti ti-save me-1" aria-hidden="true"></i>
+</button>
+                                                class="p-1 btn btn-secondary btn-sm d-flex align-items-center gap-2"
                                                     wire:click="cancelEditCluster" title="Batal" aria-label="Batal">
-                                                    
-                                                </button>
+<i class="ti ti-x me-1" aria-hidden="true"></i>
+</button>
                                             </div>
                                             <div class="d-flex gap-2 mt-1">
                                                 <label class="form-check form-switch mb-0">
@@ -136,17 +131,20 @@
 
                                         {{-- Action Buttons --}}
                                         <div class="btn-group ms-1" wire:click.stop>
-                                            <button type="button" class="p-1 btn btn-ghost-success btn-sm"
-                                                wire:click="startAddCluster({{ $level1->id }})"
+                                            class="p-1 btn btn-ghost-success btn-sm d-flex align-items-center gap-2"
+                                                wire:click="startAddCluster({{ $level1->
+id }})"
                                                 title="Tambah Sub-Cluster">
                                                 
                                             </button>
-                                            <button type="button" class="p-1 btn btn-ghost-primary btn-sm"
-                                                wire:click="startEditCluster({{ $level1->id }})" title="Rename">
+                                            class="p-1 btn btn-ghost-primary btn-sm d-flex align-items-center gap-2"
+                                                wire:click="startEditCluster({{ $level1->
+id }})" title="Rename">
                                                 
                                             </button>
-                                            <button type="button" class="p-1 btn btn-ghost-danger btn-sm"
-                                                wire:click="confirmDelete({{ $level1->id }})"
+                                            class="p-1 btn btn-ghost-danger btn-sm d-flex align-items-center gap-2"
+                                                wire:click="confirmDelete({{ $level1->
+id }})"
                                                 wire:loading.attr="disabled" title="Hapus">
                                                 <x-lucide-trash-2 class="icon" style="width: 12px; height: 12px;" />
                                             </button>
@@ -175,15 +173,14 @@
                                                                     wire:keydown.enter="saveCluster"
                                                                     wire:keydown.escape="cancelEditCluster" autofocus
                                                                     style="font-size: 0.75rem;">
-                                                                <button type="button" class="p-1 btn btn-success btn-sm"
+                                                                class="p-1 btn btn-success btn-sm d-flex align-items-center gap-2"
                                                                     wire:click="saveCluster" title="Simpan" aria-label="Simpan">
-                                                                    
-                                                                </button>
-                                                                <button type="button"
-                                                                    class="p-1 btn btn-secondary btn-sm"
+<i class="ti ti-save me-1" aria-hidden="true"></i>
+</button>
+                                                                class="p-1 btn btn-secondary btn-sm d-flex align-items-center gap-2"
                                                                     wire:click="cancelEditCluster" title="Batal" aria-label="Batal">
-                                                                    
-                                                                </button>
+<i class="ti ti-x me-1" aria-hidden="true"></i>
+</button>
                                                             </div>
                                                             <div class="d-flex gap-2 mt-1">
                                                                 <label class="form-check form-switch mb-0">
@@ -222,21 +219,21 @@
 
                                                         {{-- Action Buttons --}}
                                                         <div class="btn-group ms-1" wire:click.stop>
-                                                            <button type="button"
-                                                                class="p-1 btn btn-ghost-success btn-sm"
-                                                                wire:click="startAddCluster({{ $level2->id }})"
+                                                            class="p-1 btn btn-ghost-success btn-sm d-flex align-items-center gap-2"
+                                                                wire:click="startAddCluster({{ $level2->
+id }})"
                                                                 title="Tambah Sub-Cluster">
                                                                 
                                                             </button>
-                                                            <button type="button"
-                                                                class="p-1 btn btn-ghost-primary btn-sm"
-                                                                wire:click="startEditCluster({{ $level2->id }})"
+                                                            class="p-1 btn btn-ghost-primary btn-sm d-flex align-items-center gap-2"
+                                                                wire:click="startEditCluster({{ $level2->
+id }})"
                                                                 title="Rename">
                                                                 
                                                             </button>
-                                                            <button type="button"
-                                                                class="p-1 btn btn-ghost-danger btn-sm"
-                                                                wire:click="confirmDelete({{ $level2->id }})"
+                                                            class="p-1 btn btn-ghost-danger btn-sm d-flex align-items-center gap-2"
+                                                                wire:click="confirmDelete({{ $level2->
+id }})"
                                                                 wire:loading.attr="disabled" title="Hapus">
                                                                 <x-lucide-trash-2 class="icon"
                                                                     style="width: 10px; height: 10px;" />
@@ -265,16 +262,14 @@
                                                                                 wire:keydown.enter="saveCluster"
                                                                                 wire:keydown.escape="cancelEditCluster"
                                                                                 autofocus style="font-size: 0.75rem;">
-                                                                            <button type="button"
-                                                                                class="p-1 btn btn-success btn-sm"
+                                                                            class="p-1 btn btn-success btn-sm d-flex align-items-center gap-2"
                                                                                 wire:click="saveCluster" title="Simpan" aria-label="Simpan">
-                                                                                
-                                                                            </button>
-                                                                            <button type="button"
-                                                                                class="p-1 btn btn-secondary btn-sm"
+<i class="ti ti-save me-1" aria-hidden="true"></i>
+</button>
+                                                                            class="p-1 btn btn-secondary btn-sm d-flex align-items-center gap-2"
                                                                                 wire:click="cancelEditCluster" title="Batal" aria-label="Batal">
-                                                                                
-                                                                            </button>
+<i class="ti ti-x me-1" aria-hidden="true"></i>
+</button>
                                                                         </div>
                                                                         <div class="d-flex gap-2 mt-1">
                                                                             <label class="form-check form-switch mb-0">
@@ -300,15 +295,15 @@
 
                                                                     {{-- Action Buttons --}}
                                                                     <div class="btn-group ms-1" wire:click.stop>
-                                                                        <button type="button"
-                                                                            class="p-1 btn btn-ghost-primary btn-sm"
-                                                                            wire:click="startEditCluster({{ $level3->id }})"
+                                                                        class="p-1 btn btn-ghost-primary btn-sm d-flex align-items-center gap-2"
+                                                                            wire:click="startEditCluster({{ $level3->
+id }})"
                                                                             title="Rename">
                                                                             
                                                                         </button>
-                                                                        <button type="button"
-                                                                            class="p-1 btn btn-ghost-danger btn-sm"
-                                                                            wire:click="confirmDelete({{ $level3->id }})"
+                                                                        class="p-1 btn btn-ghost-danger btn-sm d-flex align-items-center gap-2"
+                                                                            wire:click="confirmDelete({{ $level3->
+id }})"
                                                                             wire:loading.attr="disabled"
                                                                             title="Hapus">
                                                                             <x-lucide-trash-2 class="icon"
@@ -404,8 +399,8 @@
                                             {{ $this->selectedCluster->children->count() }}
                                         </span>
                                     </label>
-                                    <button type="button" class="btn btn-primary btn-sm"
-                                        wire:click="startAddCluster({{ $this->selectedCluster->id }})">
+                                    class="btn btn-primary btn-sm d-flex align-items-center gap-2"
+                                        wire:click="startAddCluster({{ $this->selectedCluster->id }})"><i class="ti ti-plus me-1" aria-hidden="true"></i>
                                          Tambah Sub-Cluster
                                     </button>
                                 </div>
@@ -441,15 +436,14 @@
                                                     </td>
                                                     <td>
                                                         <div class="flex-nowrap btn-list" wire:click.stop>
-                                                            <button type="button"
-                                                                class="p-1 btn btn-ghost-primary btn-sm"
-                                                                wire:click="startEditCluster({{ $child->id }})"
-                                                                title="Edit">
-                                                                
+                                                            class="p-1 btn btn-ghost-primary btn-sm d-flex align-items-center gap-2"
+                                                                wire:click="startEditCluster({{ $child->
+id }})"
+                                                                title="Edit"><i class="ti ti-pencil me-1" aria-hidden="true"></i>
                                                             </button>
-                                                            <button type="button"
-                                                                class="p-1 btn btn-ghost-danger btn-sm"
-                                                                wire:click="confirmDelete({{ $child->id }})"
+                                                            class="p-1 btn btn-ghost-danger btn-sm d-flex align-items-center gap-2"
+                                                                wire:click="confirmDelete({{ $child->
+id }})"
                                                                 wire:loading.attr="disabled" title="Hapus">
                                                                 <x-lucide-trash-2 class="icon" />
                                                             </button>
@@ -461,8 +455,8 @@
                                                     <td colspan="3" class="py-4 text-muted text-center">
                                                         
                                                         <div>Belum ada sub-cluster</div>
-                                                        <button type="button" class="mt-2 btn btn-primary btn-sm"
-                                                            wire:click="startAddCluster({{ $this->selectedCluster->id }})">
+                                                        class="mt-2 btn btn-primary btn-sm d-flex align-items-center gap-2"
+                                                            wire:click="startAddCluster({{ $this->selectedCluster->id }})"><i class="ti ti-plus me-1" aria-hidden="true"></i>
                                                              Tambah Sub-Cluster
                                                             Pertama
                                                         </button>
@@ -495,8 +489,8 @@
                             </p>
                             @if ($this->level1Clusters->isEmpty())
                                 <div class="empty-action">
-                                    <button type="button" class="btn btn-primary"
-                                        wire:click="startAddCluster(null)">
+                                    class="btn btn-primary d-flex align-items-center gap-2"
+                                        wire:click="startAddCluster(null)"><i class="ti ti-plus me-1" aria-hidden="true"></i>
                                          Tambah Cluster Level 1 Pertama
                                     </button>
                                 </div>
@@ -554,7 +548,8 @@
         <x-tabler.modal-confirmation wire:key="modal-confirm-delete-science-cluster"
             id="modal-confirm-delete-science-cluster" title="Konfirmasi Hapus"
             message="Apakah Anda yakin ingin menghapus {{ $deleteItemName ?? '' }}? Tindakan ini akan menghapus semua sub-cluster di bawahnya."
-            confirm-text="Ya, Hapus" cancel-text="Batal" component-id="{{ $this->getId() }}"
+            confirm-text="Ya, Hapus" cancel-text="Batal" component-id="{{ $this->
+getId() }}"
             on-confirm="handleConfirmDeleteAction" />
     @endteleport
 </div>

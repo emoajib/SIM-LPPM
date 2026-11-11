@@ -8,12 +8,12 @@
                 
                 <span class="d-none d-md-inline">{{ __('Tinjau PDF') }}</span>
             </a>
-            <a href="{{ route('reports.pkm.excel', $exportParams) }}" class="btn btn-outline-success shadow-sm"
+            <a href="{{ route('reports.pkm.excel', $exportParams) }}" class="btn btn-outline-success shadow-sm d-flex align-items-center gap-2"
                 data-navigate-ignore="true" title="Unduh Excel">
                 
                 <span class="d-none d-md-inline">{{ __('Unduh Excel') }}</span>
             </a>
-            <a href="{{ route('reports.pkm.pdf', $exportParams) }}" class="btn btn-outline-danger shadow-sm"
+            <a href="{{ route('reports.pkm.pdf', $exportParams) }}" class="btn btn-outline-danger shadow-sm d-flex align-items-center gap-2"
                 data-navigate-ignore="true" title="Unduh PDF">
                 
                 <span class="d-none d-md-inline">{{ __('Unduh PDF') }}</span>

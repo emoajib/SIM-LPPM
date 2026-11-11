@@ -4,7 +4,7 @@
     <x-slot:pageSubtitle>Pengelolaan nomor dan tanggal kontrak perjanjian penugasan penelitian & pengabdian</x-slot:pageSubtitle>
     <x-slot:pageActions>
         <div class="dropdown">
-            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <button type="button" class="btn btn-primary dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown" aria-expanded="false">
                 <x-lucide-wand-2 class="icon me-1" />
                 Generate Nomor Massal
                 @if(count($selectedProposals) > 0)
@@ -94,11 +94,12 @@
                 <span><strong>{{ count($selectedProposals) }}</strong> usulan telah dipilih untuk tindakan massal.</span>
             </div>
             <div class="d-flex gap-2">
-                <button type="button" wire:click="openBatchModal('all')" class="btn btn-sm btn-primary">
+                <button type="button" wire:click="openBatchModal('all')" class="btn btn-sm btn-primary d-flex align-items-center gap-2">
                     <x-lucide-wand-2 class="icon me-1" />
                     Generate Nomor Kontrak ({{ count($selectedProposals) }})
                 </button>
-                <button type="button" wire:click="$set('selectedProposals', [])" class="btn btn-sm btn-outline-secondary">
+                <button type="button" wire:click="$set('selectedProposals', [])" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2">
+                    <i class="ti ti-x me-1" aria-hidden="true"></i>
                     Batal Pilih
                 </button>
             </div>
@@ -222,14 +223,17 @@
                             </td>
                             <td class="text-center">
                                 <div class="btn-group">
-                                    <button type="button" wire:click="openEdit('{{ $proposal->id }}')" class="btn btn-sm btn-outline-primary" title="Edit Nomor Kontrak">
-                                        
+                                    <button type="button" wire:click="openEdit('{{ $proposal->
+id }}')" class="btn btn-sm btn-outline-primary d-flex align-items-center gap-2" title="Edit Nomor Kontrak">
+                                        <i class="ti ti-pencil me-1" aria-hidden="true"></i>
                                     </button>
-                                    <a data-navigate-ignore="true" href="{{ route('reports.export-pdf', ['proposal' => $proposal, 'type' => 'final', 'preview' => 1]) }}" target="_blank" class="btn btn-sm btn-outline-secondary" title="Pratinjau Cover & Laporan Akhir">
-                                        
+                                    <a data-navigate-ignore="true" href="{{ route('reports.export-pdf', ['proposal' =>
+ $proposal, 'type' => 'final', 'preview' => 1]) }}" target="_blank" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2" title="Pratinjau Cover & Laporan Akhir">
+                                        <i class="ti ti-file me-1" aria-hidden="true"></i>
                                     </a>
-                                    <a data-navigate-ignore="true" href="{{ route('financial-reports.export-pdf', ['proposal' => $proposal, 'preview' => 1]) }}" target="_blank" class="btn btn-sm btn-outline-success" title="Pratinjau Laporan Keuangan (LPJ)">
-                                        
+                                    <a data-navigate-ignore="true" href="{{ route('financial-reports.export-pdf', ['proposal' =>
+ $proposal, 'preview' => 1]) }}" target="_blank" class="btn btn-sm btn-outline-success d-flex align-items-center gap-2" title="Pratinjau Laporan Keuangan (LPJ)">
+                                        <i class="ti ti-file me-1" aria-hidden="true"></i>
                                     </a>
                                 </div>
                             </td>
@@ -264,7 +268,7 @@
                             
                             Edit Nomor Kontrak Usulan
                         </h5>
-                        <button type="button" wire:click="$set('showEditModal', false)" class="btn-close" aria-label="Close"></button>
+                        <button type="button" wire:click="$set('showEditModal', false)" class="btn-close d-flex align-items-center gap-2" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
@@ -284,9 +288,11 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" wire:click="$set('showEditModal', false)" class="btn btn-link link-secondary">Batal</button>
-                        <button type="button" wire:click="saveSingle" wire:loading.attr="disabled" class="btn btn-primary">
-                            <span wire:loading.remove wire:target="saveSingle"> Simpan Nomor Kontrak</span>
+                        <button type="button" wire:click="$set('showEditModal', false)" class="btn btn-link link-secondary d-flex align-items-center gap-2"><i class="ti ti-pencil me-1" aria-hidden="true"></i>
+Batal</button>
+                        <button type="button" wire:click="saveSingle" wire:loading.attr="disabled" class="btn btn-primary d-flex align-items-center gap-2">
+                            <span wire:loading.remove wire:target="saveSingle"> <i class="ti ti-save me-1" aria-hidden="true"></i>
+ Simpan Nomor Kontrak</span>
                             <span wire:loading wire:target="saveSingle"><span class="spinner-border spinner-border-sm"></span> Menyimpan...</span>
                         </button>
                     </div>
@@ -305,22 +311,22 @@
                             <x-lucide-wand-2 class="icon me-1" />
                             Generate Nomor Kontrak Massal
                         </h5>
-                        <button type="button" wire:click="$set('showBatchModal', false)" class="btn-close" aria-label="Close"></button>
+                        <button type="button" wire:click="$set('showBatchModal', false)" class="btn-close d-flex align-items-center gap-2" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <!-- Jenis Usulan Selection Tabs -->
                         <div class="mb-3">
                             <label class="form-label required">Kategori Usulan yang Digenerate</label>
                             <div class="btn-group w-100" role="group">
-                                <button type="button" wire:click="setBatchScopeType('research')" class="btn {{ $batchScopeType === 'research' ? 'btn-primary' : 'btn-outline-primary' }}">
+                                <button type="button" wire:click="setBatchScopeType('research')" class="btn {{ $batchScopeType === 'research' ? 'btn-primary' : 'btn-outline-primary' }} d-flex align-items-center gap-2">
                                     
                                     1. Khusus Penelitian (KTR-L)
                                 </button>
-                                <button type="button" wire:click="setBatchScopeType('community-service')" class="btn {{ $batchScopeType === 'community-service' ? 'btn-success' : 'btn-outline-success' }}">
+                                <button type="button" wire:click="setBatchScopeType('community-service')" class="btn {{ $batchScopeType === 'community-service' ? 'btn-success' : 'btn-outline-success' }} d-flex align-items-center gap-2">
                                     
                                     2. Khusus Pengabdian (KTR-PKM)
                                 </button>
-                                <button type="button" wire:click="setBatchScopeType('all')" class="btn {{ $batchScopeType === 'all' ? 'btn-secondary' : 'btn-outline-secondary' }}">
+                                <button type="button" wire:click="setBatchScopeType('all')" class="btn {{ $batchScopeType === 'all' ? 'btn-secondary' : 'btn-outline-secondary' }} d-flex align-items-center gap-2">
                                     
                                     Semua Jenis (L & PKM)
                                 </button>
@@ -394,8 +400,9 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" wire:click="$set('showBatchModal', false)" class="btn btn-link link-secondary">Batal</button>
-                        <button type="button" wire:click="generateBatch" wire:loading.attr="disabled" class="btn btn-primary">
+                        <button type="button" wire:click="$set('showBatchModal', false)" class="btn btn-link link-secondary d-flex align-items-center gap-2"><i class="ti ti-x me-1" aria-hidden="true"></i>
+Batal</button>
+                        <button type="button" wire:click="generateBatch" wire:loading.attr="disabled" class="btn btn-primary d-flex align-items-center gap-2">
                             <span wire:loading.remove wire:target="generateBatch"> Terapkan Penomoran Massal</span>
                             <span wire:loading wire:target="generateBatch"><span class="spinner-border spinner-border-sm"></span> Memproses...</span>
                         </button>

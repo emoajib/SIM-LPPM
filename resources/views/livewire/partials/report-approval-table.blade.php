@@ -62,7 +62,7 @@
                                         ? route('research.proposal.show', $proposal)
                                         : route('community-service.proposal.show', $proposal);
                                 @endphp
-                                <a href="{{ $proposalRoute }}" class="btn btn-sm btn-outline-warning" wire:navigate.hover>
+                                <a href="{{ $proposalRoute }}" class="btn btn-sm btn-outline-warning d-flex align-items-center gap-2" wire:navigate.hover>
                                      Detail
                                 </a>
                             </td>
@@ -140,7 +140,7 @@
                                         ? route('research.final-report.show', $report->proposal)
                                         : route('community-service.final-report.show', $report->proposal);
                                 @endphp
-                                <a href="{{ $showRoute }}" class="btn btn-sm btn-primary" wire:navigate.hover>
+                                <a href="{{ $showRoute }}" class="btn btn-sm btn-primary d-flex align-items-center gap-2" wire:navigate.hover>
                                      Tinjau
                                 </a>
                             </td>

@@ -4,7 +4,7 @@
         <h3 class="card-title">Amandemen RAB</h3>
         <div class="card-actions">
             @if ($canManage && ! $pendingExists && ! $proposal->logbook_approved_at)
-                <button type="button" wire:click="openRequestModal" class="btn btn-sm btn-outline-primary">
+                <button type="button" wire:click="openRequestModal" class="btn btn-sm btn-outline-primary d-flex align-items-center gap-2">
                      Ajukan Amandemen
                 </button>
             @endif
@@ -42,14 +42,17 @@
                                             @if ($canManage && $amendment->status->value === 'pending')
                                                 <button type="button" wire:click="cancelAmendment('{{ $amendment->id }}')"
                                                     wire:confirm="Batalkan pengajuan amandemen ini?"
-                                                    class="btn btn-sm btn-outline-danger" title="Batalkan pengajuan">Batal</button>
+                                                    class="btn btn-sm btn-outline-danger" title="Batalkan pengajuan"><i class="ti ti-x me-1" aria-hidden="true"></i>
+Batal</button>
                                             @endif
                                             @if ($canDecide && $amendment->status->value === 'pending')
                                                 <button type="button" wire:click="approveAmendment('{{ $amendment->id }}')"
                                                     wire:confirm="Setujui amandemen ini? RAB aktif akan diperbarui."
-                                                    class="btn btn-sm btn-success">Setujui</button>
+                                                    class="btn btn-sm btn-success"><i class="ti ti-check me-1" aria-hidden="true"></i>
+Setujui</button>
                                                 <button type="button" wire:click="rejectAmendment('{{ $amendment->id }}')"
-                                                    class="btn btn-sm btn-danger">Tolak</button>
+                                                    class="btn btn-sm btn-danger"><i class="ti ti-trash me-1" aria-hidden="true"></i>
+Tolak</button>
                                             @endif
                                         </div>
                                     </td>
@@ -73,7 +76,8 @@
 @teleport('body')
 <x-tabler.modal id="budget-amendment-modal" title="Ajukan Amandemen RAB" wire:ignore.self size="xl">
     <x-slot:body>
-        <div class="alert alert-info small">Ubah salinan RAB di bawah. Versi aktif TIDAK berubah sampai amandemen disetujui LPPM. Total usulan tetap dibatasi pagu skema.</div>
+        <div class="alert alert-info small"><i class="ti ti-pencil me-1" aria-hidden="true"></i>
+Ubah salinan RAB di bawah. Versi aktif TIDAK berubah sampai amandemen disetujui LPPM. Total usulan tetap dibatasi pagu skema.</div>
         @error('amendment')<div class="alert alert-danger small">{{ $message }}</div>@enderror
         @error('items')<div class="alert alert-danger small">{{ $message }}</div>@enderror
         @foreach ($items as $index => $row)
@@ -101,11 +105,12 @@
                     <input type="number" min="0" step="0.01" wire:model="items.{{ $index }}.unit_price" class="form-control form-control-sm">
                 </div>
                 <div class="col-md-1 text-end">
-                    <button type="button" wire:click="removeItemRow({{ $index }})" class="btn btn-sm btn-outline-danger" title="Hapus baris"><x-lucide-trash-2 class="icon icon-sm" /></button>
+                    <button type="button" wire:click="removeItemRow({{ $index }})" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-2" title="Hapus baris"><x-lucide-trash-2 class="icon icon-sm" /></button>
                 </div>
             </div>
         @endforeach
-        <button type="button" wire:click="addItemRow" class="btn btn-sm btn-outline-primary"> Tambah Baris</button>
+        <button type="button" wire:click="addItemRow" class="btn btn-sm btn-outline-primary d-flex align-items-center gap-2"> <i class="ti ti-plus me-1" aria-hidden="true"></i>
+ Tambah Baris</button>
         <div class="mt-3">
             <label class="form-label required">Alasan Amandemen (min. 10 karakter)</label>
             <textarea wire:model="reason" rows="3" class="form-control @error('reason') is-invalid @enderror"></textarea>
@@ -113,8 +118,10 @@
         </div>
     </x-slot:body>
     <x-slot:footer>
-        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Tutup</button>
-        <button type="button" wire:click="submitRequest" class="btn btn-primary" wire:loading.attr="disabled">Ajukan</button>
+        <button type="button" class="btn btn-light d-flex align-items-center gap-2" data-bs-dismiss="modal"><i class="ti ti-x me-1" aria-hidden="true"></i>
+Tutup</button>
+        <button type="button" wire:click="submitRequest" class="btn btn-primary d-flex align-items-center gap-2" wire:loading.attr="disabled"><i class="ti ti-plus me-1" aria-hidden="true"></i>
+Ajukan</button>
     </x-slot:footer>
 </x-tabler.modal>
 @endteleport

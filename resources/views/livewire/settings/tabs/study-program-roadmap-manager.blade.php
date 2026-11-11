@@ -4,9 +4,9 @@
         <div class="d-flex align-items-center justify-content-between card-header">
             <h3 class="card-title">Peta Jalan Program Studi</h3>
             @if($canMutate)
-            <button type="button" class="btn btn-primary" wire:click='create' data-bs-toggle="modal"
+            <button type="button" class="btn btn-primary d-flex align-items-center gap-2" wire:click='create' data-bs-toggle="modal"
                 data-bs-target="#modal-study-program-roadmap">
-                
+                <i class="ti ti-plus me-1" aria-hidden="true"></i>
                 Tambah Peta Jalan
             </button>
             @endif
@@ -48,17 +48,21 @@
                             <td>
                                 @if($canMutate)
                                 <div class="btn-list flex-nowrap">
-                                    <button type="button" class="btn-outline-warning btn btn-sm"
+                                    <button type="button" class="btn-outline-warning btn btn-sm d-flex align-items-center gap-2"
                                         wire:click="edit('{{ $item->id }}')">
+                                        <i class="ti ti-pencil me-1" aria-hidden="true"></i>
                                         Edit
                                     </button>
-                                    <button type="button" class="btn-outline-danger btn btn-sm"
-                                        wire:click="confirmDelete('{{ $item->id }}')" wire:loading.attr="disabled">
+                                    <button type="button" class="btn-outline-danger btn btn-sm d-flex align-items-center gap-2"
+                                        wire:click="confirmDelete('{{ $item->
+id }}')" wire:loading.attr="disabled">
+                                        <i class="ti ti-trash me-1" aria-hidden="true"></i>
                                         Hapus
                                     </button>
                                 </div>
                                 @else
-                                <span class="text-muted small">Lihat Saja</span>
+                                <span class="text-muted small"><i class="ti ti-eye me-1" aria-hidden="true"></i>
+Lihat Saja</span>
                                 @endif
                             </td>
                         </tr>
@@ -74,7 +78,8 @@
     @if($canMutate)
     <x-tabler.modal-confirmation wire:key="modal-confirm-delete-study-program-roadmap" id="modal-confirm-delete-study-program-roadmap"
         title="Konfirmasi Hapus" message="Apakah Anda yakin ingin menghapus Peta Jalan: {{ $deleteItemName ?? '' }}?"
-        confirm-text="Ya, Hapus" cancel-text="Batal" component-id="{{ $this->getId() }}"
+        confirm-text="Ya, Hapus" cancel-text="Batal" component-id="{{ $this->
+getId() }}"
         on-confirm="handleConfirmDeleteAction" />
 
     <x-tabler.modal wire:key="modal-study-program-roadmap" id="modal-study-program-roadmap" :title="$modalTitle" onHide="resetForm"
@@ -146,7 +151,8 @@
 
                 <div class="mb-3">
                     <label class="form-label">Pohon Riset (Research Tree)</label>
-                    <div class="text-muted small mb-1">Masukkan setiap sub-bidang / topik di baris baru (tekan Enter).</div>
+                    <div class="text-muted small mb-1"><i class="ti ti-login me-1" aria-hidden="true"></i>
+Masukkan setiap sub-bidang / topik di baris baru (tekan Enter).</div>
                     <textarea wire:model="researchTreeInput" class="form-control" rows="4" placeholder="- Data Mining...&#10;- Software Engineering..."></textarea>
                     @error('researchTreeInput')
                         <div class="d-block invalid-feedback">{{ $message }}</div>
@@ -191,9 +197,11 @@
             </form>
         </x-slot:body>
         <x-slot:footer>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-            <button type="submit" form="form-study-program-roadmap" class="btn btn-primary" wire:loading.class="btn-loading"
-                wire:target="save">Simpan</button>
+            <button type="button" class="btn btn-secondary d-flex align-items-center gap-2" data-bs-dismiss="modal"><i class="ti ti-x me-1" aria-hidden="true"></i>
+Batal</button>
+            <button type="submit" form="form-study-program-roadmap" class="btn btn-primary d-flex align-items-center gap-2" wire:loading.class="btn-loading d-flex align-items-center gap-2"
+                wire:target="save"><i class="ti ti-save me-1" aria-hidden="true"></i>
+        Simpan</button>
         </x-slot:footer>
     </x-tabler.modal>
     @endif

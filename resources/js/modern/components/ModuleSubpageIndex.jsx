@@ -55,7 +55,7 @@ export default function ModuleSubpageIndex({
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const isVerifier = (window.__USER_ROLES__ || []).some((r) => ["admin lppm", "kepala lppm", "rektor"].includes(r));
+    const isVerifier = (window.__USER_ROLES__ || []).some((r) => ["admin lppm", "kepala lppm", "rektor", "dosen"].includes(r));
     const type = module === "research" ? "research" : "community-service";
 
     const tabs = [

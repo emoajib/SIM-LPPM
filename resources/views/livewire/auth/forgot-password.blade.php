@@ -24,8 +24,9 @@
                 </div>
 
                 <div class="form-footer">
-                    <button type="submit" class="w-100 btn btn-primary btn-lg fw-bold shadow-sm" wire:loading.attr="disabled">
+                    <button type="submit" class="w-100 btn btn-primary btn-lg fw-bold shadow-sm d-flex align-items-center gap-2 justify-content-center d-flex align-items-center gap-2" wire:loading.attr="disabled">
                         <span wire:loading class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        <i class="ti ti-send me-1" aria-hidden="true"></i>
                         <span wire:loading.remove>{{ __('Kirim tautan reset kata sandi') }}</span>
                         <span wire:loading>{{ __('Memproses...') }}</span>
                     </button>

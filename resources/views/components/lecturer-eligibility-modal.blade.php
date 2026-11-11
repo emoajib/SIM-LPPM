@@ -126,7 +126,7 @@
                         
                         Info Eligibilitas
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close d-flex align-items-center gap-2" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body bg-light">
                     <!-- Status Kelayakan per tipe -->
@@ -323,7 +323,8 @@
                                         <div class="accordion-body pt-0 bg-white rounded-bottom">
                                             <!-- User Current Profile -->
                                             <div class="p-3 bg-info-lt rounded mb-3">
-                                                <div class="fw-bold text-info mb-2"> Profil
+                                                <div class="fw-bold text-info mb-2"> <i class="ti ti-user me-1" aria-hidden="true"></i>
+ Profil
                                                     Anda:</div>
                                                 <div class="row">
                                                     <div class="col-6">
@@ -339,7 +340,8 @@
                                                 </div>
                                             </div>
 
-                                            <p class="mb-2 pt-1 text-info fw-bold">Persyaratan Skema Berdasarkan Profil Anda:</p>
+                                            <p class="mb-2 pt-1 text-info fw-bold"><i class="ti ti-user me-1" aria-hidden="true"></i>
+Persyaratan Skema Berdasarkan Profil Anda:</p>
 
                                             @if(!empty($allResearchSchemeRequirements))
                                                  <div class="mb-3">
@@ -404,7 +406,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Tutup</button>
+                            <button type="button" class="btn btn-primary d-flex align-items-center gap-2" data-bs-dismiss="modal"><i class="ti ti-x me-1" aria-hidden="true"></i>
+Tutup</button>
                         </div>
                     </div>
                 </div>

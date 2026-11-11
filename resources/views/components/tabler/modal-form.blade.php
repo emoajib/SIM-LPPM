@@ -4,14 +4,17 @@
     'action' => null,
     'method' => 'POST',
     'submitText' => 'Save',
-    'cancelText' => 'Cancel',
+    'cancelText' =>
+ 'Cancel',
     'wireIgnore' => true,
     'componentId' => null,
     'onSubmit' => null,
-    'onCancel' => null,
+    'onCancel' =>
+ null,
     'size' => 'lg', // sm, md, lg, xl
     'scrollable' => true,
-    'showCloseButton' => true,
+    'showCloseButton' =>
+ true,
 ])
 
 @php
@@ -50,13 +53,13 @@
     @if ($submitText || $cancelText)
         <x-slot name="footer">
             @if ($cancelText)
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                <button type="button" class="btn btn-light d-flex align-items-center gap-2" data-bs-dismiss="modal">
                     {{ $cancelText }}
                 </button>
             @endif
 
             @if ($submitText)
-                <button type="button" class="btn btn-primary"
+                <button type="button" class="btn btn-primary d-flex align-items-center gap-2"
                     @if ($action) x-on:click="submitForm"
                     @elseif($onSubmit && $componentId)
                         x-on:click="

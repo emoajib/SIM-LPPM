@@ -81,7 +81,7 @@
                     <div class="text-center card-footer">
                         <div class="row g-2">
                             <div class="col-12">
-                                <button wire:click="markAllAsRead" class="w-100 btn btn-ghost-primary">
+                                <button wire:click="markAllAsRead" class="w-100 btn btn-ghost-primary d-flex align-items-center gap-2">
                                     Tandai Semua Dibaca
                                 </button>
                             </div>
@@ -102,7 +102,7 @@
                             <p class="empty-title">Tidak ada notifikasi baru</p>
                             <p class="empty-subtitle">Semua pekerjaan Anda sudah up to date!</p>
                             <div class="empty-action">
-                                <a href="{{ route('notifications') }}" class="btn-outline-primary btn">
+                                <a href="{{ route('notifications') }}" class="btn-outline-primary btn d-flex align-items-center gap-2">
                                     Semua Notifikasi
                                 </a>
                             </div>

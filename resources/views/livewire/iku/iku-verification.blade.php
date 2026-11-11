@@ -2,12 +2,13 @@
     <x-slot:header>
         <div class="row align-items-center">
             <div class="col">
-                <h2 class="h4 font-weight-bold mb-0 text-primary">Pusat Verifikasi IKU</h2>
+                <h2 class="h4 font-weight-bold mb-0 text-primary"><i class="ti ti-check me-1" aria-hidden="true"></i>
+Pusat Verifikasi IKU</h2>
                 <p class="text-muted mb-0">Validasi luaran penelitian & PKM untuk perhitungan IKU PT</p>
             </div>
             <div class="col-auto">
                 <div class="btn-list">
-                    <a href="{{ route('accreditation.hub') }}" class="btn btn-outline-primary" wire:navigate>
+                    <a href="{{ route('accreditation.hub') }}" class="btn btn-outline-primary d-flex align-items-center gap-2" wire:navigate>
                         
                         Dashboard IKU
                     </a>
@@ -42,7 +43,8 @@
                         </div>
                         <div class="col-md-3">
                             <select wire:model.live="status" class="form-select">
-                                <option value="all">Semua Status Verifikasi</option>
+                                <option value="all"><i class="ti ti-check me-1" aria-hidden="true"></i>
+Semua Status Verifikasi</option>
                                 <option value="unverified">Belum Diverifikasi</option>
                                 <option value="verified">Sudah Terverifikasi</option>
                             </select>
@@ -157,7 +159,8 @@
                                                 Terverifikasi
                                             </span>
                                             <div class="mt-1 small text-muted" style="font-size: 10px;">
-                                                Oleh: {{ \App\Models\User::find($output->verified_by)?->name ?? 'System' }}
+                                                Oleh: {{ \App\Models\User::find($output->
+verified_by)?->name ?? 'System' }}
                                             </div>
                                         @else
                                             <span class="badge bg-warning-lt px-3 py-1">
@@ -166,6 +169,12 @@
                                         @endif
                                     </td>
                                     <td class="px-4 text-end">
+                                        @if($output->model_type !== 'policy')
+                                            <button type="button" class="btn btn-sm btn-ghost-info me-1 d-flex align-items-center gap-2"
+                                                onclick="openEvidenceModal('{{ $output->id }}', '{{ $output->model_type }}', '{{ str_contains($output->progressReport?->proposal?->detailable_type ?? '', 'CommunityService') ? 'community-service' : 'research' }}')">
+                                                Upload Bukti
+                                            </button>
+                                        @endif
                                         @if($output->is_verified_status)
                                             <button wire:click="unverify('{{ $output->id }}', '{{ $output->model_type }}')"
                                                 class="btn btn-sm btn-ghost-danger">
@@ -174,6 +183,7 @@
                                         @else
                                             <button wire:click="verify('{{ $output->id }}', '{{ $output->model_type }}')"
                                                 class="btn btn-sm btn-primary px-3 shadow-sm" style="border-radius: 8px;">
+                                                <i class="ti ti-check me-1" aria-hidden="true"></i>
                                                 Verifikasi
                                             </button>
                                         @endif
@@ -200,6 +210,79 @@
             </div>
         </div>
     </div>
+
+    <!-- Upload Bukti Modal (klasik theme parity dengan modern) -->
+    <div class="modal fade" id="evidenceModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload Bukti Luaran</h5>
+                    <button type="button" class="btn-close d-flex align-items-center gap-2" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="ev-id">
+                    <input type="hidden" id="ev-type">
+                    <input type="hidden" id="ev-module">
+                    <div class="mb-3">
+                        <label class="form-label">URL Dokumen (opsional)</label>
+                        <input type="url" id="ev-url" class="form-control" placeholder="https://...">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">File (PDF/Gambar, maks 5MB)</label>
+                        <input type="file" id="ev-file" class="form-control" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                    </div>
+                    <div id="ev-msg" class="small"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary d-flex align-items-center gap-2" data-bs-dismiss="modal"><i class="ti ti-x me-1" aria-hidden="true"></i>
+Batal</button>
+                    <button type="button" class="btn btn-primary d-flex align-items-center gap-2" onclick="submitEvidence()"><i class="ti ti-upload me-1" aria-hidden="true"></i>
+Unggah</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openEvidenceModal(id, type, module) {
+            document.getElementById('ev-id').value = id;
+            document.getElementById('ev-type').value = type;
+            document.getElementById('ev-module').value = module;
+            document.getElementById('ev-url').value = '';
+            document.getElementById('ev-file').value = '';
+            document.getElementById('ev-msg').innerText = '';
+            var m = new bootstrap.Modal(document.getElementById('evidenceModal'));
+            m.show();
+        }
+        async function submitEvidence() {
+            const id = document.getElementById('ev-id').value;
+            const type = document.getElementById('ev-type').value;
+            const module = document.getElementById('ev-module').value;
+            const url = document.getElementById('ev-url').value;
+            const file = document.getElementById('ev-file').files[0];
+            const msg = document.getElementById('ev-msg');
+            const fd = new FormData();
+            fd.append('model_type', type);
+            if (url) fd.append('url', url);
+            if (file) fd.append('file', file);
+            try {
+                const res = await fetch(`/${module}/api/v1/verifikasi-luaran/${id}/evidence`, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '' },
+                    body: fd,
+                });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) throw new Error(data.message || 'Gagal mengunggah bukti');
+                msg.className = 'small text-success';
+                msg.innerText = data.message || 'Bukti berhasil diunggah.';
+                setTimeout(() => location.reload(), 800);
+            } catch (e) {
+                msg.className = 'small text-danger';
+                msg.innerText = e.message;
+            }
+        }
+    </script>
 
     <style>
         .font-weight-bold {

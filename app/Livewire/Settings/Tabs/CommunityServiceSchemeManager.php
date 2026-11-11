@@ -50,6 +50,8 @@ class CommunityServiceSchemeManager extends Component
 
     public bool $require_cross_prodi = false;
 
+    public bool $is_active = true;
+
     public ?int $min_cross_prodi_members = null;
 
     public string $pending_report_block_role = 'none';
@@ -86,6 +88,7 @@ class CommunityServiceSchemeManager extends Component
 
         $data = [
             'name' => $this->name,
+            'is_active' => $this->is_active,
             'strata' => $this->strata,
             'eligibility_rules' => [
                 'allowed_functional_positions' => $this->allowed_functional_positions,
@@ -124,6 +127,7 @@ class CommunityServiceSchemeManager extends Component
     {
         $this->editingId = $communityServiceScheme->id;
         $this->name = $communityServiceScheme->name;
+        $this->is_active = (bool) $communityServiceScheme->is_active;
         $this->strata = $communityServiceScheme->strata;
         /** @var array<string, mixed> $rules */
         $rules = is_array($communityServiceScheme->eligibility_rules)
@@ -176,6 +180,7 @@ class CommunityServiceSchemeManager extends Component
             'max_members',
             'require_cross_prodi',
             'min_cross_prodi_members',
+            'is_active',
         ]);
         $this->pending_report_block_role = 'none';
         $this->resetValidation();

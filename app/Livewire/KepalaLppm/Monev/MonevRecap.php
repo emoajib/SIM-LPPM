@@ -109,6 +109,7 @@ class MonevRecap extends Component
         return AcademicPeriod::startYear($this->academicYear) ?? (int) date('Y');
     }
 
+    #[Computed]
     public function academicYears()
     {
         $periods = Proposal::query()

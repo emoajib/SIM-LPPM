@@ -86,7 +86,8 @@
                             </span>
                         </div>
                         <div class="col">
-                            <div class="font-weight-medium text-info">Dalam Proses</div>
+                            <div class="font-weight-medium text-info"><i class="ti ti-eye me-1" aria-hidden="true"></i>
+Dalam Proses</div>
                             <div class="text-secondary small">{{ $this->statistics['in_review'] }} Menunggu Approval</div>
                         </div>
                     </div>
@@ -167,7 +168,7 @@
 
                         <!-- Reset Button -->
                         <div class="col-md-1 text-end">
-                            <button type="button" class="btn btn-icon btn-outline-secondary w-100" wire:click="resetFilters" title="Reset Semua Filter" aria-label="Reset Semua Filter">
+                            <button type="button" class="btn btn-icon btn-outline-secondary w-100 d-flex align-items-center gap-2" wire:click="resetFilters" title="Reset Semua Filter" aria-label="Reset Semua Filter">
                                 
                             </button>
                         </div>
@@ -249,7 +250,7 @@
                                     $hasFinal = (bool) ($proposal->latestFinalReport ?? $proposal->progressReports->where('reporting_period', 'final')->first());
                                 @endphp
                                 <a href="{{ route('research.final-report.show', $proposal) }}"
-                                    class="btn {{ $hasFinal ? 'btn-primary' : 'btn-outline-warning' }} btn-sm" wire:navigate.hover>
+                                    class="btn {{ $hasFinal ? 'btn-primary' : 'btn-outline-warning' }} btn-sm d-flex align-items-center gap-2" wire:navigate.hover>
                                     
                                     {{ $hasFinal ? 'Lihat Laporan' : 'Buat Laporan' }}
                                 </a>
@@ -264,7 +265,7 @@
                                 <p class="text-secondary mb-1">
                                     Tidak ada data laporan akhir penelitian yang sesuai filter.
                                 </p>
-                                <button type="button" class="btn btn-sm btn-outline-secondary mt-2" wire:click="resetFilters">
+                                <button type="button" class="btn btn-sm btn-outline-secondary mt-2 d-flex align-items-center gap-2" wire:click="resetFilters">
                                      Reset Filter
                                 </button>
                             </td>

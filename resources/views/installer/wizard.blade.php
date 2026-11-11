@@ -120,7 +120,7 @@
                             @endif
 
                             <div class="d-flex justify-content-between">
-                                <button type="button" class="btn" wire:click="checkEnvironment"
+                                <button type="button" class="btn d-flex align-items-center gap-2" wire:click="checkEnvironment"
                                     wire:loading.attr="disabled">
                                     <span wire:loading.remove wire:target="checkEnvironment">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="24"
@@ -138,7 +138,7 @@
                                     </span>
                                 </button>
                                 @if ($environmentPassed)
-                                    <button type="button" class="btn btn-primary" wire:click="nextStep">
+                                    <button type="button" class="btn btn-primary d-flex align-items-center gap-2" wire:click="nextStep">
                                         Lanjutkan
                                         <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24"
                                             height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
@@ -150,7 +150,7 @@
                                         </svg>
                                     </button>
                                 @else
-                                    <button type="button" class="btn btn-primary" disabled>
+                                    <button type="button" class="btn btn-primary d-flex align-items-center gap-2" disabled>
                                         Lanjutkan
                                         <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24"
                                             height="24" viewBox="0 0 24 24" stroke-width="2"
@@ -167,7 +167,8 @@
                         @elseif ($currentStep === 2)
                             {{-- Step 2: Database Configuration --}}
                             <h2 class="card-title mb-1">Konfigurasi Database</h2>
-                            <p class="text-secondary mb-4">Masukkan kredensial database MariaDB/MySQL Anda</p>
+                            <p class="text-secondary mb-4"><i class="ti ti-login me-1" aria-hidden="true"></i>
+Masukkan kredensial database MariaDB/MySQL Anda</p>
 
                             <div class="row mb-3">
                                 <div class="col-md-8">
@@ -202,7 +203,8 @@
 
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label class="form-label required">Username</label>
+                                    <label class="form-label required"><i class="ti ti-user me-1" aria-hidden="true"></i>
+Username</label>
                                     <input type="text"
                                         class="form-control @error('databaseForm.username') is-invalid @enderror"
                                         wire:model="databaseForm.username" placeholder="root">
@@ -234,12 +236,13 @@
                                 <label class="form-check">
                                     <input type="checkbox" class="form-check-input"
                                         wire:model="databaseForm.createDatabase">
-                                    <span class="form-check-label">Buat database jika belum ada</span>
+                                    <span class="form-check-label"><i class="ti ti-plus me-1" aria-hidden="true"></i>
+Buat database jika belum ada</span>
                                 </label>
                             </div>
 
                             <div class="d-flex justify-content-between">
-                                <button class="btn btn-ghost-secondary" wire:click="previousStep">
+                                <button class="btn btn-ghost-secondary d-flex align-items-center gap-2" wire:click="previousStep">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="24"
                                         height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
                                         fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -248,10 +251,11 @@
                                         <path d="M5 12l6 6" />
                                         <path d="M5 12l6 -6" />
                                     </svg>
+                                    <i class="ti ti-arrow-left me-1" aria-hidden="true"></i>
                                     Kembali
                                 </button>
                                 <div class="btn-list">
-                                    <button class="btn" wire:click="testDatabaseConnection"
+                                    <button class="btn d-flex align-items-center gap-2" wire:click="testDatabaseConnection"
                                         wire:loading.attr="disabled">
                                         <span wire:loading.remove wire:target="testDatabaseConnection">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="24"
@@ -273,7 +277,7 @@
                                             Testing...
                                         </span>
                                     </button>
-                                    <button class="btn btn-primary" wire:click="nextStep">
+                                    <button class="btn btn-primary d-flex align-items-center gap-2" wire:click="nextStep">
                                         Lanjutkan
                                         <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24"
                                             height="24" viewBox="0 0 24 24" stroke-width="2"
@@ -290,7 +294,8 @@
                         @elseif ($currentStep === 3)
                             {{-- Step 3: Environment Configuration --}}
                             <h2 class="card-title mb-1">Konfigurasi Environment</h2>
-                            <p class="text-secondary mb-4">Atur pengaturan aplikasi, session, cache, dan email</p>
+                            <p class="text-secondary mb-4"><i class="ti ti-slider me-1" aria-hidden="true"></i>
+Atur pengaturan aplikasi, session, cache, dan email</p>
 
                             {{-- Application Settings --}}
                             <div class="mb-4">
@@ -346,7 +351,8 @@
                                     <label class="form-check">
                                         <input type="checkbox" class="form-check-input"
                                             wire:model="environmentForm.appDebug">
-                                        <span class="form-check-label">Aktifkan Mode Debug (tidak disarankan untuk production)</span>
+                                        <span class="form-check-label"><i class="ti ti-toggle-on me-1" aria-hidden="true"></i>
+Aktifkan Mode Debug (tidak disarankan untuk production)</span>
                                     </label>
                                 </div>
                             </div>
@@ -448,7 +454,8 @@
 
                                     <div class="row mb-3">
                                         <div class="col-md-6">
-                                            <label class="form-label">SMTP Username</label>
+                                            <label class="form-label"><i class="ti ti-user me-1" aria-hidden="true"></i>
+SMTP Username</label>
                                             <input type="text"
                                                 class="form-control @error('environmentForm.mailUsername') is-invalid @enderror"
                                                 wire:model="environmentForm.mailUsername" placeholder="user@example.com">
@@ -567,7 +574,7 @@
                             </div>
 
                             <div class="d-flex justify-content-between">
-                                <button class="btn btn-ghost-secondary" wire:click="previousStep">
+                                <button class="btn btn-ghost-secondary d-flex align-items-center gap-2" wire:click="previousStep">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="24"
                                         height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
                                         fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -576,9 +583,10 @@
                                         <path d="M5 12l6 6" />
                                         <path d="M5 12l6 -6" />
                                     </svg>
+                                    <i class="ti ti-arrow-left me-1" aria-hidden="true"></i>
                                     Kembali
                                 </button>
-                                <button class="btn btn-primary" wire:click="nextStep">
+                                <button class="btn btn-primary d-flex align-items-center gap-2" wire:click="nextStep">
                                     Lanjutkan
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24"
                                         height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
@@ -649,7 +657,7 @@
                             <div class="mb-4">
                                 <div class="d-flex align-items-center justify-content-between mb-3">
                                     <label class="form-label mb-0">Fakultas</label>
-                                    <button type="button" class="btn-outline-primary btn btn-sm"
+                                    <button type="button" class="btn-outline-primary btn btn-sm d-flex align-items-center gap-2"
                                         wire:click="addFaculty">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24"
                                             height="24" viewBox="0 0 24 24" stroke-width="2"
@@ -680,7 +688,7 @@
                                         </div>
                                         @if (count($institutionForm->faculties) > 1)
                                             <div class="col-auto">
-                                                <button type="button" class="btn btn-ghost-danger btn-icon"
+                                                <button type="button" class="btn btn-ghost-danger btn-icon d-flex align-items-center gap-2"
                                                     wire:click="removeFaculty({{ $index }})" title="Toggle" aria-label="Toggle">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon"
                                                         width="24" height="24" viewBox="0 0 24 24"
@@ -701,7 +709,7 @@
                             </div>
 
                             <div class="d-flex justify-content-between">
-                                <button class="btn btn-ghost-secondary" wire:click="previousStep">
+                                <button class="btn btn-ghost-secondary d-flex align-items-center gap-2" wire:click="previousStep">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="24"
                                         height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
                                         fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -710,9 +718,10 @@
                                         <path d="M5 12l6 6" />
                                         <path d="M5 12l6 -6" />
                                     </svg>
+                                    <i class="ti ti-arrow-left me-1" aria-hidden="true"></i>
                                     Kembali
                                 </button>
-                                <button class="btn btn-primary" wire:click="nextStep">
+                                <button class="btn btn-primary d-flex align-items-center gap-2" wire:click="nextStep">
                                     Lanjutkan
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24"
                                         height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
@@ -727,7 +736,8 @@
                         @elseif ($currentStep === 5)
                             {{-- Step 5: Admin Account --}}
                             <h2 class="card-title mb-1">Akun Administrator</h2>
-                            <p class="text-secondary mb-4">Buat akun administrator utama</p>
+                            <p class="text-secondary mb-4"><i class="ti ti-plus me-1" aria-hidden="true"></i>
+Buat akun administrator utama</p>
 
                             <div class="mb-3">
                                 <label class="form-label required">Nama Lengkap</label>
@@ -771,7 +781,8 @@
                             </div>
 
                             <div class="mb-4">
-                                <label class="form-label required">Konfirmasi Password</label>
+                                <label class="form-label required"><i class="ti ti-check me-1" aria-hidden="true"></i>
+Konfirmasi Password</label>
                                 <div class="input-group input-group-flat" x-data="{ show: false }">
                                     <input :type="show ? 'text' : 'password'"
                                         class="form-control @error('adminForm.adminPasswordConfirmation') is-invalid @enderror"
@@ -790,7 +801,7 @@
                             </div>
 
                             <div class="d-flex justify-content-between">
-                                <button class="btn btn-ghost-secondary" wire:click="previousStep">
+                                <button class="btn btn-ghost-secondary d-flex align-items-center gap-2" wire:click="previousStep">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="24"
                                         height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
                                         fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -799,9 +810,10 @@
                                         <path d="M5 12l6 6" />
                                         <path d="M5 12l6 -6" />
                                     </svg>
+                                    <i class="ti ti-arrow-left me-1" aria-hidden="true"></i>
                                     Kembali
                                 </button>
-                                <button class="btn btn-primary" wire:click="nextStep">
+                                <button class="btn btn-primary d-flex align-items-center gap-2" wire:click="nextStep">
                                     Lanjutkan
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon ms-1" width="24"
                                         height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
@@ -902,7 +914,7 @@
                                     </div>
                                 </div>
 
-                                <button class="w-100 btn btn-primary" wire:click="startInstallation"
+                                <button class="w-100 btn btn-primary d-flex align-items-center gap-2" wire:click="startInstallation"
                                     wire:loading.attr="disabled">
                                     <span wire:loading.remove wire:target="startInstallation">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24"
@@ -926,10 +938,16 @@
                                 {{-- Installation Steps Progress --}}
                                 @php
                                     $installSteps = [
-                                        ['key' => 'backup_env', 'label' => 'Backup konfigurasi', 'threshold' => 5],
+                                        ['key' =>
+ 'backup_env', 'label' =>
+ 'Backup konfigurasi', 'threshold' =>
+ 5],
                                         ['key' => 'write_env', 'label' => 'Menulis file environment', 'threshold' => 10],
                                         ['key' => 'clear_config', 'label' => 'Membersihkan cache', 'threshold' => 12],
-                                        ['key' => 'generate_key', 'label' => 'Generate application key', 'threshold' => 17],
+                                        ['key' =>
+ 'generate_key', 'label' =>
+ 'Generate application key', 'threshold' =>
+ 17],
                                         ['key' => 'run_migrations', 'label' => 'Menjalankan migrasi database', 'threshold' => 67],
                                         ['key' => 'run_seeders', 'label' => 'Mengisi data awal', 'threshold' => 92],
                                         ['key' => 'create_admin', 'label' => 'Membuat akun admin', 'threshold' => 97],
@@ -1021,7 +1039,7 @@
                                     </div>
 
                                     {{-- Retry Button --}}
-                                    <button class="w-100 btn btn-warning mb-3" wire:click="retryInstallation"
+                                    <button class="w-100 btn btn-warning mb-3 d-flex align-items-center gap-2" wire:click="retryInstallation"
                                         wire:loading.attr="disabled">
                                         <span wire:loading.remove wire:target="retryInstallation">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24"
@@ -1076,7 +1094,7 @@
                                     </div>
                                 </div>
 
-                                <a href="{{ route('login') }}" class="w-100 btn btn-success">
+                                <a href="{{ route('login') }}" class="w-100 btn btn-success d-flex align-items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24"
                                         height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
                                         fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -1092,7 +1110,7 @@
 
                             @if (!$installationProgress['complete'])
                                 <div class="d-flex justify-content-between mt-4">
-                                    <button class="btn btn-ghost-secondary" wire:click="previousStep"
+                                    <button class="btn btn-ghost-secondary d-flex align-items-center gap-2" wire:click="previousStep"
                                         @disabled($isInstalling)>
                                         <svg xmlns="http://www.w3.org/2000/svg" class="icon me-1" width="24"
                                             height="24" viewBox="0 0 24 24" stroke-width="2"
@@ -1103,6 +1121,7 @@
                                             <path d="M5 12l6 6" />
                                             <path d="M5 12l6 -6" />
                                         </svg>
+                                        <i class="ti ti-arrow-left me-1" aria-hidden="true"></i>
                                         Kembali
                                     </button>
                                 </div>
@@ -1145,7 +1164,7 @@
                     </template>
                 </span>
                 <strong class="me-auto" x-text="type === 'success' ? 'Berhasil' : 'Gagal'"></strong>
-                <button type="button" class="btn-close ms-2" @click="show = false"></button>
+                <button type="button" class="btn-close ms-2 d-flex align-items-center gap-2" @click="show = false"></button>
             </div>
             <div class="toast-body" x-text="message"></div>
         </div>

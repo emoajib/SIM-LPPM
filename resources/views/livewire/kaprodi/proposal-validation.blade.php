@@ -19,11 +19,11 @@
                 </div>
             </div>
         </div>
-        <button type="button" class="btn-close" data-bs-toggle="collapse" data-bs-target="#kaprodiIndexInfo" aria-label="Close"></button>
+        <button type="button" class="btn-close d-flex align-items-center gap-2" data-bs-toggle="collapse" data-bs-target="#kaprodiIndexInfo" aria-label="Close"></button>
     </div>
 
     <div class="mb-3">
-        <button class="btn btn-ghost-info btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#kaprodiIndexInfo" aria-expanded="false" aria-controls="kaprodiIndexInfo">
+        <button class="btn btn-ghost-info btn-sm d-flex align-items-center gap-2" type="button" data-bs-toggle="collapse" data-bs-target="#kaprodiIndexInfo" aria-expanded="false" aria-controls="kaprodiIndexInfo">
             
             Panduan Validasi
         </button>
@@ -120,7 +120,7 @@
 
                         <!-- Reset Button -->
                         <div class="col-md-1">
-                            <button type="button" class="btn btn-outline-secondary w-100" wire:click="resetFilters" title="Reset Filter">
+                            <button type="button" class="btn btn-outline-secondary w-100 d-flex align-items-center gap-2" wire:click="resetFilters" title="Reset Filter">
                                 
                             </button>
                         </div>
@@ -193,14 +193,14 @@
                                 <div class="flex-nowrap btn-list">
                                     @if ($proposal->detailable_type === 'App\Models\Research')
                                         <a href="{{ route('research.proposal.show', $proposal) }}"
-                                            class="btn btn-sm btn-outline-secondary" wire:navigate.hover>
-                                            
+                                            class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2" wire:navigate.hover>
+                                            <i class="ti ti-eye me-1" aria-hidden="true"></i>
                                             Lihat
                                         </a>
                                     @else
                                         <a href="{{ route('community-service.proposal.show', $proposal) }}"
-                                            class="btn btn-sm btn-outline-secondary" wire:navigate.hover>
-                                            
+                                            class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2" wire:navigate.hover>
+                                            <i class="ti ti-eye me-1" aria-hidden="true"></i>
                                             Lihat
                                         </a>
                                     @endif

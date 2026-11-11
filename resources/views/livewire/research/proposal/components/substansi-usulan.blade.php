@@ -34,8 +34,8 @@
                                 <small class="ms-2 text-muted">({{ $media->human_readable_size }})</small>
                             </div>
                             <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}" target="_blank"
-                                class="btn-outline-primary btn btn-sm">
-                                
+                                class="btn-outline-primary btn btn-sm d-flex align-items-center gap-2">
+                                <i class="ti ti-download me-1" aria-hidden="true"></i>
                                 Download
                             </a>
                         </div>
@@ -100,10 +100,12 @@
     {{-- Section 2.3.2: Luaran Tambahan --}}
     <div class="mb-3 card">
         <div class="card-header">
-            <h3 class="card-title">2.3.2 Luaran Tambahan</h3>
+            <h3 class="card-title"><i class="ti ti-plus me-1" aria-hidden="true"></i>
+2.3.2 Luaran Tambahan</h3>
         </div>
         @php
-            $additionalOutputs = $proposal->outputs->where('category', 'Tambahan');
+            $additionalOutputs = $proposal->
+outputs->where('category', 'Tambahan');
         @endphp
         @if ($additionalOutputs->isEmpty())
             <div class="card-body">

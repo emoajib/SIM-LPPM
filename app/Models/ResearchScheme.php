@@ -22,6 +22,7 @@ class ResearchScheme extends Model
         'min_tkt',
         'max_tkt',
         'description',
+        'is_active',
         'eligibility_rules',
     ];
 
@@ -34,6 +35,7 @@ class ResearchScheme extends Model
     {
         return [
             'eligibility_rules' => 'array',
+            'is_active' => 'boolean',
         ];
     }
 

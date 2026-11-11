@@ -50,11 +50,13 @@
                 <div class="col-auto">
                     <div class="btn-list">
                         @if(count($selectedIds) > 0)
-                        <button class="btn btn-success btn-sm" wire:click="batchApprove">
-                             Setujui ({{ count($selectedIds) }})
+                        <button class="btn btn-success btn-sm d-flex align-items-center gap-2" wire:click="batchApprove">
+                            <i class="ti ti-check me-1" aria-hidden="true"></i>
+                            Setujui ({{ count($selectedIds) }})
                         </button>
-                        <button class="btn btn-danger btn-sm" wire:click="batchReject">
-                             Tolak ({{ count($selectedIds) }})
+                        <button class="btn btn-danger btn-sm d-flex align-items-center gap-2" wire:click="batchReject">
+                            <i class="ti ti-trash me-1" aria-hidden="true"></i>
+                            Tolak ({{ count($selectedIds) }})
                         </button>
                         @endif
                     </div>
@@ -119,17 +121,21 @@
                         <td>
 <div class="btn-list flex-nowrap">
                                 @if($letter->status?->value === 'pending_approval')
-                                <button class="btn btn-primary btn-sm shadow-sm" wire:click="preview('{{ $letter->id }}')">
-                                     Proses
+                                <button class="btn btn-primary btn-sm shadow-sm d-flex align-items-center gap-2" wire:click="preview('{{ $letter->id }}')">
+                                    <i class="ti ti-eye me-1" aria-hidden="true"></i>
+                                    <i class="ti ti-eye me-1" aria-hidden="true"></i>
+                                    Proses
                                 </button>
                                 @else
                                 @if($letter->file_path)
-                                <a href="{{ route('letter.view', $letter->id) }}" target="_blank" class="btn btn-outline-info btn-sm" title="Lihat PDF">
-                                    
+                                <a href="{{ route('letter.view', $letter->
+id) }}" target="_blank" class="btn btn-outline-info btn-sm d-flex align-items-center gap-2" title="Lihat PDF">
+                                    <i class="ti ti-file me-1" aria-hidden="true"></i>
                                 </a>
                                 @endif
-                                <a href="{{ route('letter.download', $letter->id) }}" target="_blank" class="btn btn-outline-info btn-sm" title="Unduh PDF">
-                                    
+                                <a href="{{ route('letter.download', $letter->
+id) }}" target="_blank" class="btn btn-outline-info btn-sm d-flex align-items-center gap-2" title="Unduh PDF">
+                                    <i class="ti ti-download me-1" aria-hidden="true"></i>
                                 </a>
                                 @endif
                             </div>
@@ -157,8 +163,9 @@
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content shadow-lg">
                 <div class="modal-header bg-dark text-white">
-                    <h5 class="modal-title">Preview & Persetujuan Surat</h5>
-                    <button type="button" class="btn-close btn-close-white" wire:click="closePreviewModal"></button>
+                    <h5 class="modal-title"><i class="ti ti-eye me-1" aria-hidden="true"></i>
+Preview & Persetujuan Surat</h5>
+                    <button type="button" class="btn-close btn-close-white d-flex align-items-center gap-2" wire:click="closePreviewModal"></button>
                 </div>
                 <div class="modal-body p-0 bg-light" style="height: 70vh; overflow-y: auto;">
                     @if($selectedLetter)
@@ -226,13 +233,19 @@
                 </div>
                 <div class="modal-footer">
                     @if($selectedLetter && $selectedLetter->status?->value === 'pending_approval')
-                    <button type="button" class="btn btn-outline-danger me-auto" wire:click="openRejectModal('{{ $selectedLetter?->id }}')">
+                    <button type="button" class="btn btn-outline-danger me-auto d-flex align-items-center gap-2" wire:click="openRejectModal('{{ $selectedLetter?->id }}')">
+                        <i class="ti ti-trash me-1" aria-hidden="true"></i>
                         Tolak Surat
                     </button>
                     @endif
-                    <button type="button" class="btn btn-link link-secondary" wire:click="closePreviewModal">Batal</button>
+                    <button type="button" class="btn btn-link link-secondary d-flex align-items-center gap-2" wire:click="closePreviewModal">
+                        <i class="ti ti-x me-1" aria-hidden="true"></i>
+                        <i class="ti ti-x me-1" aria-hidden="true"></i>
+                        Batal
+                    </button>
                     @if($selectedLetter && $selectedLetter->status?->value === 'pending_approval')
-                    <button type="button" class="btn btn-success px-4 shadow-sm" wire:click="approve('{{ $selectedLetter?->id }}')">
+                    <button type="button" class="btn btn-success px-4 shadow-sm d-flex align-items-center gap-2" wire:click="approve('{{ $selectedLetter?->id }}')">
+                        <i class="ti ti-check me-1" aria-hidden="true"></i>
                          Tanda Tangani & Publish
                     </button>
                     @endif
@@ -252,7 +265,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Alasan Penolakan</h5>
-                    <button type="button" class="btn-close" wire:click="closeRejectModal"></button>
+                    <button type="button" class="btn-close d-flex align-items-center gap-2" wire:click="closeRejectModal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
@@ -274,8 +287,13 @@
                     @endif
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-link" wire:click="closeRejectModal">Batal</button>
-                    <button type="button" class="btn btn-danger" wire:click="confirmReject" {{ empty($rejectReason) ? 'disabled' : '' }}>
+                    <button type="button" class="btn btn-link d-flex align-items-center gap-2" wire:click="closeRejectModal">
+                        <i class="ti ti-x me-1" aria-hidden="true"></i>
+                        <i class="ti ti-x me-1" aria-hidden="true"></i>
+                        Batal
+                    </button>
+                    <button type="button" class="btn btn-danger d-flex align-items-center gap-2" wire:click="confirmReject" {{ empty($rejectReason) ? 'disabled' : '' }}>
+                        <i class="ti ti-trash me-1" aria-hidden="true"></i>
                          Tolak Surat
                     </button>
                 </div>

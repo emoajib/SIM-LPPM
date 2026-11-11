@@ -56,6 +56,8 @@ class ResearchSchemeManager extends Component
 
     public bool $require_cross_prodi = false;
 
+    public bool $is_active = true;
+
     public ?int $min_cross_prodi_members = null;
 
     public string $pending_report_block_role = 'none';
@@ -92,6 +94,7 @@ class ResearchSchemeManager extends Component
 
         $data = [
             'name' => $this->name,
+            'is_active' => $this->is_active,
             'strata' => $this->strata,
             'min_tkt' => $this->min_tkt,
             'max_tkt' => $this->max_tkt,
@@ -132,6 +135,7 @@ class ResearchSchemeManager extends Component
     {
         $this->editingId = $researchScheme->id;
         $this->name = $researchScheme->name;
+        $this->is_active = (bool) $researchScheme->is_active;
         $this->strata = $researchScheme->strata;
         $this->min_tkt = $researchScheme->min_tkt;
         $this->max_tkt = $researchScheme->max_tkt;
@@ -185,6 +189,7 @@ class ResearchSchemeManager extends Component
             'max_members',
             'require_cross_prodi',
             'min_cross_prodi_members',
+            'is_active',
         ]);
         $this->pending_report_block_role = 'none';
         $this->resetValidation();

@@ -25,8 +25,8 @@
                                 </div>
                                 <a data-navigate-ignore="true" href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
                                     download="{{ $media->file_name ?? $media->name ?? 'download' }}" target="_blank"
-                                    class="btn-outline-primary btn btn-sm">
-                                    
+                                    class="btn-outline-primary btn btn-sm d-flex align-items-center gap-2">
+                                    <i class="ti ti-download me-1" aria-hidden="true"></i>
                                     Download
                                 </a>
                             </div>
@@ -84,9 +84,11 @@
                 </div>
             @endif
 
-            <h5 class="mb-2">2.2.2 Luaran Tambahan</h5>
+            <h5 class="mb-2"><i class="ti ti-plus me-1" aria-hidden="true"></i>
+2.2.2 Luaran Tambahan</h5>
             @php
-                $additionalOutputs = $proposal->outputs->where('category', 'Tambahan');
+                $additionalOutputs = $proposal->
+outputs->where('category', 'Tambahan');
             @endphp
             @if ($additionalOutputs->isEmpty())
                 <p class="text-muted small">Belum ada luaran tambahan</p>

@@ -122,7 +122,7 @@
                 </div>
 
                 <div class="col-md-1">
-                    <button type="button" class="btn btn-outline-secondary w-100" wire:click="resetFilters" title="Reset Filter">
+                    <button type="button" class="btn btn-outline-secondary w-100 d-flex align-items-center gap-2" wire:click="resetFilters" title="Reset Filter">
                         
                     </button>
                 </div>
@@ -150,7 +150,8 @@
                             $totalBudget = (float) $proposal->activeBudgetItems->sum('total_price');
                             $usedBudget = (float) $proposal->dailyNotes->sum('amount');
                             $budgetPct = $totalBudget > 0 ? round(($usedBudget / $totalBudget) * 100, 1) : 0;
-                            $isApproved = $proposal->logbook_approved_at !== null;
+                            $isApproved = $proposal->
+logbook_approved_at !== null;
                             $scanMedia = $proposal->getFirstMedia('logbook_approval_file');
 
                             $dailyNoteRoute = $proposal->detailable_type === 'App\Models\Research'
@@ -244,11 +245,11 @@
                             </td>
                             <td class="text-end text-nowrap">
                                 <div class="btn-list flex-nowrap justify-content-end">
-                                    <a href="{{ route('financial-reports.export-pdf', $proposal) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Tinjau Berkas PDF Laporan Keuangan (LPJ)">
+                                    <a href="{{ route('financial-reports.export-pdf', $proposal) }}" target="_blank" class="btn btn-sm btn-outline-primary d-flex align-items-center gap-2" title="Tinjau Berkas PDF Laporan Keuangan (LPJ)">
                                         
                                         Tinjau PDF
                                     </a>
-                                    <a href="{{ $dailyNoteRoute }}" target="_blank" class="btn btn-sm btn-ghost-secondary px-2" title="Buka Logbook &amp; Nota di Web">
+                                    <a href="{{ $dailyNoteRoute }}" target="_blank" class="btn btn-sm btn-ghost-secondary px-2 d-flex align-items-center gap-2" title="Buka Logbook &amp; Nota di Web">
                                         
                                     </a>
 
@@ -320,8 +321,9 @@
             @enderror
         </x-slot:body>
         <x-slot:footer>
-            <button type="button" class="btn btn-ghost-secondary" data-bs-dismiss="modal">Batal</button>
-            <button type="button" class="btn btn-warning" wire:click="returnToDosen" wire:loading.attr="disabled">
+            <button type="button" class="btn btn-ghost-secondary d-flex align-items-center gap-2" data-bs-dismiss="modal"><i class="ti ti-x me-1" aria-hidden="true"></i>
+Batal</button>
+            <button type="button" class="btn btn-warning d-flex align-items-center gap-2" wire:click="returnToDosen" wire:loading.attr="disabled">
                 <span wire:loading.remove wire:target="returnToDosen">
                     
                     Kembalikan ke Dosen

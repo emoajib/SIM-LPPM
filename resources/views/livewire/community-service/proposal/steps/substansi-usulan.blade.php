@@ -31,7 +31,9 @@
             <div class="col-md-6">
                 <div class="mb-3">
                     <label class="d-flex align-items-center justify-content-between form-label" for="substance_file">
-                        <span>Unggah Substansi (PDF) <span class="text-danger">*</span></span>
+                        <span><i class="ti ti-upload me-1" aria-hidden="true"></i>
+Unggah Substansi (PDF) <span class="text-danger"><i class="ti ti-upload me-1" aria-hidden="true"></i>
+*</span></span>
                         @if ($this->templateUrl)
                             <a href="{{ $this->templateUrl }}" target="_blank" class="text-primary text-decoration-none"
                                 style="font-size: 0.875rem;">
@@ -81,7 +83,7 @@
                 
                 <h3 class="mb-0 card-title">2.2 Luaran Target Capaian</h3>
             </div>
-            <button type="button" wire:click="addOutput" class="btn btn-primary btn-sm">
+            <button type="button" wire:click="addOutput" class="btn btn-primary btn-sm d-flex align-items-center gap-2">
                 
                 Tambah Luaran
             </button>
@@ -134,7 +136,8 @@
                                     <select wire:model.live="form.outputs.{{ $index }}.category"
                                         class="form-select-sm form-select @error('form.outputs.' . $index . '.category') is-invalid @enderror">
                                         <option value="Wajib">Wajib</option>
-                                        <option value="Tambahan">Tambahan</option>
+                                        <option value="Tambahan"><i class="ti ti-plus me-1" aria-hidden="true"></i>
+Tambahan</option>
                                     </select>
                                 </td>
                                 <td>
@@ -177,7 +180,7 @@
                                         placeholder="Keterangan (URL)">
                                 </td>
                                 <td>
-                                    <button type="button" wire:click="removeOutput({{ $index }})" class="btn btn-sm btn-danger" title="Hapus" aria-label="Hapus">
+                                    <button type="button" wire:click="removeOutput({{ $index }})" class="btn btn-sm btn-danger d-flex align-items-center gap-2" title="Hapus" aria-label="Hapus">
                                         <x-lucide-trash-2 class="icon" />
                                     </button>
                                 </td>

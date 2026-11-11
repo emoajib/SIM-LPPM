@@ -1,13 +1,19 @@
 @php
     $outputTypeGroup = strtolower(($output->type ?? '').' '.($output->group ?? ''));
     $isVideo = str_contains($outputTypeGroup, 'video');
-    $linkUrl = $rowAdditionalOutput?->video_url
-        ?? $rowAdditionalOutput?->media_url
-        ?? $rowAdditionalOutput?->article_url
-        ?? $rowAdditionalOutput?->journal_url
-        ?? $rowAdditionalOutput?->book_url;
+    $linkUrl = $rowAdditionalOutput?->
+video_url
+        ?? $rowAdditionalOutput?->
+media_url
+        ?? $rowAdditionalOutput?->
+article_url
+        ?? $rowAdditionalOutput?->
+journal_url
+        ?? $rowAdditionalOutput?->
+book_url;
     $hasFile = $rowAdditionalOutput
-        && ($rowAdditionalOutput->hasMedia('book_document') || $rowAdditionalOutput->hasMedia('publication_certificate'));
+        && ($rowAdditionalOutput->
+hasMedia('book_document') || $rowAdditionalOutput->hasMedia('publication_certificate'));
 @endphp
 @if ($rowAdditionalOutput)
     <div class="d-flex flex-column gap-1">
@@ -15,7 +21,8 @@
             <div class="d-flex gap-2">
                 @if ($rowAdditionalOutput->hasMedia('book_document'))
                     @php
-                        $media = $rowAdditionalOutput->getFirstMedia('book_document');
+                        $media = $rowAdditionalOutput->
+getFirstMedia('book_document');
                     @endphp
                     <a data-navigate-ignore="true"
                         href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
@@ -26,7 +33,8 @@
                 @endif
                 @if ($rowAdditionalOutput->hasMedia('publication_certificate'))
                     @php
-                        $media = $rowAdditionalOutput->getFirstMedia('publication_certificate');
+                        $media = $rowAdditionalOutput->
+getFirstMedia('publication_certificate');
                     @endphp
                     <a data-navigate-ignore="true"
                         href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $media]) }}"
@@ -38,13 +46,13 @@
             </div>
         @endif
         @if (! empty($linkUrl))
-            <a href="{{ $linkUrl }}" target="_blank" rel="noopener" class="btn btn-sm btn-danger">
+            <a href="{{ $linkUrl }}" target="_blank" rel="noopener" class="btn btn-sm btn-danger d-flex align-items-center gap-2">
                 
                 {{ $isVideo ? 'Tonton Video' : 'Lihat Link' }}
             </a>
             <div class="d-flex align-items-center gap-1">
                 <small class="text-muted text-truncate" style="max-width: 180px;" title="{{ $linkUrl }}">{{ \Illuminate\Support\Str::limit($linkUrl, 40) }}</small>
-                <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1"
+                <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1 d-flex align-items-center gap-2"
                     data-copy-url="{{ $linkUrl }}" title="Salin link"
                     onclick="(function(btn){var url=btn.dataset.copyUrl;var done=function(){var t=btn.innerHTML;btn.innerHTML='Tersalin ✓';setTimeout(function(){btn.innerHTML=t;},1500);};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(done).catch(function(){btn.innerHTML='Gagal';});}else{var ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){btn.innerHTML='Gagal';}document.body.removeChild(ta);}})(this)">
                     
