@@ -535,13 +535,13 @@ Total Usulan Masuk</div>
                 <!-- Scheme Filters -->
                 <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;">
                     <div style="background: #f1f5f9; padding: 0.2rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; display: flex; font-size: 0.75rem;">
-                        <button type="button" id="btn-scheme-all" onclick="sliSetScheme('all')" style="padding: 0.25rem 0.75rem; border-radius: 0.375rem; border: none; font-weight: 700; cursor: pointer; background: #ffffff; color: #0c4a6e; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                        <button type="button" id="btn-scheme-all" data-scheme="all" style="padding: 0.25rem 0.75rem; border-radius: 0.375rem; border: none; font-weight: 700; cursor: pointer; background: #ffffff; color: #0c4a6e; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                             Semua Skema
                         </button>
-                        <button type="button" id="btn-scheme-penelitian" onclick="sliSetScheme('penelitian')" style="padding: 0.25rem 0.75rem; border-radius: 0.375rem; border: none; font-weight: 600; cursor: pointer; background: transparent; color: #64748b;">
+                        <button type="button" id="btn-scheme-penelitian" data-scheme="penelitian" style="padding: 0.25rem 0.75rem; border-radius: 0.375rem; border: none; font-weight: 600; cursor: pointer; background: transparent; color: #64748b;">
                             Penelitian
                         </button>
-                        <button type="button" id="btn-scheme-pengabdian" onclick="sliSetScheme('pengabdian')" style="padding: 0.25rem 0.75rem; border-radius: 0.375rem; border: none; font-weight: 600; cursor: pointer; background: transparent; color: #64748b;">
+                        <button type="button" id="btn-scheme-pengabdian" data-scheme="pengabdian" style="padding: 0.25rem 0.75rem; border-radius: 0.375rem; border: none; font-weight: 600; cursor: pointer; background: transparent; color: #64748b;">
                             Pengabdian
                         </button>
                     </div>
@@ -1076,6 +1076,14 @@ Usulan Masuk</div>
     let activeYearIndex = -1;
     let isTableOpen = false;
     let editingId = null;
+
+    // Event listeners untuk tombol scheme filter (lebih andal dari inline onclick)
+    document.querySelectorAll('[data-scheme]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const scheme = btn.getAttribute('data-scheme');
+            if (scheme) sliSetScheme(scheme);
+        });
+    });
 
     let bulletins = defaultBulletins;
     try {
