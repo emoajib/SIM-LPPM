@@ -35,20 +35,22 @@
                                     <th class="text-center">Status</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="sli-proposal-table-body">
                                 @forelse ($recentProposals as $index => $prop)
                                     @php
                                         $title = $prop->title ?? 'Judul Usulan Penelitian';
                                         $submitterName = $prop->submitter?->name ?? $user->name ?? 'MUJIBUL HAKIM';
                                         $nidn = $prop->submitter?->identity?->identity_id ?? $user->identity?->identity_id ?? '0608068901';
-                                        $cat = $prop->category_label ?? ($prop->detailable_type === 'App\Models\CommunityService' ? 'Pengabdian Masyarakat' : 'Penelitian Terapan');
+                                        $isPengabdian = $prop->detailable_type === 'App\Models\CommunityService';
+                                        $cat = $prop->category_label ?? ($isPengabdian ? 'Pengabdian Masyarakat' : 'Penelitian Terapan');
+                                        $schemeData = $isPengabdian ? 'pengabdian' : 'penelitian';
                                         $focus = $prop->focus_label ?? ($prop->focusArea?->name ?? 'Sosial Humaniora');
                                         $year = $prop->year ?? ($prop->created_at ? $prop->created_at->format('Y') : date('Y'));
                                         $role = $prop->role ?? 'Ketua';
                                         $statusStr = $prop->status_label ?? ($prop->status?->label() ?? 'Didanai');
                                         $statusClass = $prop->status_class ?? (str_contains(strtolower($statusStr), 'didanai') || str_contains(strtolower($statusStr), 'approved') ? 'bg-success-lt text-success' : 'bg-azure-lt text-azure');
                                     @endphp
-                                    <tr>
+                                    <tr data-scheme="{{ $schemeData }}">
                                         <td class="text-secondary">{{ $index + 1 }}</td>
                                         <td>
                                             <div class="fw-bold text-dark text-truncate" style="max-width: 420px;" title="{{ $title }}">

@@ -1185,6 +1185,7 @@ Usulan Masuk</div>
         renderMountainSplineChart();
         renderYearInspection();
         renderTable();
+        filterProposalTable(currentScheme);
     }
 
     // 2. Render Functions
@@ -1635,6 +1636,33 @@ Usulan Masuk</div>
         refreshVisuals();
     };
 
+    // Filter tabel proposal Daftar Usulan Terdaftar berdasarkan skema (client-side)
+    window.filterProposalTable = function(scheme) {
+        const tbody = document.getElementById('sli-proposal-table-body');
+        if (!tbody) return;
+        const rows = tbody.querySelectorAll('tr[data-scheme]');
+        let visibleCount = 0;
+        rows.forEach(row => {
+            const rowScheme = row.getAttribute('data-scheme');
+            const show = (scheme === 'all' || rowScheme === scheme);
+            row.style.display = show ? '' : 'none';
+            if (show) visibleCount++;
+        });
+        // Tampilkan pesan kosong jika tidak ada baris yang cocok
+        let emptyMsg = tbody.querySelector('.sli-empty-msg');
+        if (visibleCount === 0) {
+            if (!emptyMsg) {
+                emptyMsg = document.createElement('tr');
+                emptyMsg.className = 'sli-empty-msg';
+                emptyMsg.innerHTML = '<td colspan="6" style="padding: 1rem; text-align: center; color: #94a3b8; font-family: sans-serif;">Tidak ada data usulan untuk skema ini</td>';
+                tbody.appendChild(emptyMsg);
+            }
+            emptyMsg.style.display = '';
+        } else if (emptyMsg) {
+            emptyMsg.style.display = 'none';
+        }
+    };
+
     window.sliSetAcademicYear = function(value) {
         currentAcademicYear = value || 'all';
         resetActivePeriod();
@@ -1811,6 +1839,17 @@ Usulan Masuk</div>
     }, 6000);
 
     function renderAll() {
+        // Re-attach scheme filter event listeners (aman untuk Livewire re-render)
+        document.querySelectorAll('[data-scheme]').forEach(btn => {
+            // Clone to remove old listeners, then re-add
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+            newBtn.addEventListener('click', () => {
+                const scheme = newBtn.getAttribute('data-scheme');
+                if (scheme) sliSetScheme(scheme);
+            });
+        });
+
         renderBanner();
         const periods = getProcessedData();
         if (activeYearIndex < 0 || activeYearIndex >= periods.length) {
