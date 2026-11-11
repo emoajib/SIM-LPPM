@@ -652,6 +652,7 @@ document.addEventListener("alpine:init", () => {
      * Alpine component for server-synced countdown timer
      */
     Alpine.data("countdownTimer", (config) => countdownTimer(config));
+    window.countdownTimer = countdownTimer;
 });
 
 // Fallback: Initialize on page navigation (e.g., wire:navigate)

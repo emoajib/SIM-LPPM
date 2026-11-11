@@ -92,7 +92,7 @@
     @endphp
 
     @if ($timerData)
-        <div x-data="countdownTimer(@json($timerData))" x-cloak class="mb-4">
+        <div x-data='countdownTimer(@json($timerData))' x-cloak class="mb-4">
             <div class="alert border-start border-4 border-0 shadow-sm mb-0"
                 :class="{
                     'alert-info': state === 'waiting',
