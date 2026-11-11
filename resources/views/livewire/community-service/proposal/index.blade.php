@@ -414,7 +414,7 @@
                                 <div class="flex-nowrap btn-list">
                                     <a href="{{ route('community-service.proposal.show', $proposal) }}"
                                         class="btn btn-icon btn-ghost-primary d-flex align-items-center justify-center" wire:navigate.hover title="Lihat" aria-label="Lihat detail proposal">
-                                        <i class="ti ti-eye" aria-hidden="true"></i>
+                                        <i class="ti ti-eye me-1" aria-hidden="true"></i>
                                     </a>
                                 </div>
                             </td>

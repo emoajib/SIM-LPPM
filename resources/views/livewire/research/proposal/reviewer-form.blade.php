@@ -91,14 +91,16 @@
                                                                                                             @if($canSeeReviewerIdentity)
                                                                                                                 <a data-navigate-ignore="true" href="{{ route('reviewers.export-pdf', [$review->id, 'preview' => 1]) }}"
                                                                                                                     target="_blank"
-                                                                                                                    class="px-2 py-1 btn btn-sm btn-ghost-danger">
+                                                                                                                    class="px-2 py-1 btn btn-sm btn-ghost-danger d-flex align-items-center gap-2">
                                                                                                                     
+                                                                                                                    <i class="ti ti-file me-1" aria-hidden="true"></i>
                                                                                                                     Tinjau PDF
                                                                                                                 </a>
                                                                                                                 <a data-navigate-ignore="true" href="{{ route('reviewers.export-pdf', $review->id) }}"
                                                                                                                     target="_blank"
-                                                                                                                    class="px-2 py-1 btn btn-sm btn-ghost-danger">
+                                                                                                                    class="px-2 py-1 btn btn-sm btn-ghost-danger d-flex align-items-center gap-2">
                                                                                                                     
+                                                                                                                    <i class="ti ti-download me-1" aria-hidden="true"></i>
                                                                                                                     Export PDF
                                                                                                                 </a>
                                                                                                             @endif

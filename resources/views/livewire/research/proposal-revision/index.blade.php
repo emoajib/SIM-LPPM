@@ -117,9 +117,9 @@
                             <td>
                                 <div class="flex-nowrap btn-list">
                                     <a href="{{ route('research.proposal-revision.show', $proposal) }}"
-                                        class="btn btn-icon btn-ghost-primary" title="Lihat Detail Revisi"
+                                        class="btn btn-icon btn-ghost-primary d-flex align-items-center gap-2" title="Lihat Detail Revisi"
                                         wire:navigate.hover aria-label="Lihat Detail Revisi">
-                                        
+                                        <i class="ti ti-eye me-1" aria-hidden="true"></i>
                                     </a>
                                 </div>
                             </td>

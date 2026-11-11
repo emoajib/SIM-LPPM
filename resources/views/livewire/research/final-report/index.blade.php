@@ -169,7 +169,7 @@ Dalam Proses</div>
                         <!-- Reset Button -->
                         <div class="col-md-1 text-end">
                             <button type="button" class="btn btn-icon btn-outline-secondary w-100 d-flex align-items-center gap-2" wire:click="resetFilters" title="Reset Semua Filter" aria-label="Reset Semua Filter">
-                                
+                                <i class="ti ti-refresh me-1" aria-hidden="true"></i>
                             </button>
                         </div>
                     </div>
