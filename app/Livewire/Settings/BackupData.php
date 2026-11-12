@@ -68,8 +68,10 @@ class BackupData extends Component
             return;
         }
 
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
         set_time_limit(1800);
+        // Dump ditulis langsung ke file (lihat backupDatabase di bawah), jadi
+        // memori PHP tidak perlu menampung seluruh isi database.
+        @ini_set('memory_limit', '512M');
 
         $freeSpace = @disk_free_space(storage_path('app'));
         if ($freeSpace !== false && $freeSpace < 100 * 1024 * 1024) {
@@ -113,77 +115,89 @@ class BackupData extends Component
 
         $this->output .= "mysqldump: {$mysqldumpPath}\n\n";
 
-        // Fix: Paksa menggunakan TCP jika host adalah localhost atau 127.0.0.1
-        // untuk menghindari error 'Can't connect to local server through socket'
-        $finalHost = $dbHost;
-        if ($dbHost === 'localhost' || empty($dbHost)) {
-            $finalHost = '127.0.0.1';
+        // Paksa TCP bila host `localhost` agar terhindar dari error
+        // "Can't connect to local server through socket".
+        $finalHost = ($dbHost === 'localhost' || empty($dbHost))
+            ? '127.0.0.1'
+            : (string) $dbHost;
+
+        // Kredensial dikirim lewat defaults-file (0600) supaya password tidak
+        // tampak di daftar proses (`ps`) seperti pada opsi `-p{password}`.
+        $defaultsFile = tempnam(sys_get_temp_dir(), 'mycnf');
+        if ($defaultsFile === false) {
+            $this->output .= "\n❌ Gagal membuat file konfigurasi sementara.";
+            $this->isRunning = false;
+
+            return;
         }
 
-        $cmd = [$mysqldumpPath];
-        $cmd[] = '-h';
-        $cmd[] = $finalHost;
+        $iniValue = fn (?string $value): string => '"'.str_replace(
+            ['\\', '"'],
+            ['\\\\', '\\"'],
+            (string) $value
+        ).'"';
 
-        if ($dbPort) {
-            $cmd[] = '-P';
-            $cmd[] = (string) $dbPort;
-        }
+        file_put_contents($defaultsFile, "[client]\n"
+            .'user='.$iniValue($dbUser)."\n"
+            .'password='.$iniValue($dbPass)."\n"
+            .'host='.$iniValue($finalHost)."\n"
+            .'port='.$iniValue((string) $dbPort)."\n");
+        @chmod($defaultsFile, 0600);
 
-        $cmd[] = '--protocol=tcp'; // Memastikan tidak menggunakan socket
-        $cmd[] = '-u';
-        $cmd[] = $dbUser;
-        if ($dbPass) {
-            $cmd[] = "-p{$dbPass}";
-        }
-        $cmd[] = '--single-transaction';
-        $cmd[] = '--quick';
-        $cmd[] = '--complete-insert';
-        $cmd[] = '--lock-tables=false';
-        $cmd[] = $dbName;
+        // Redirect langsung ke file: dump tidak ditahan di memori PHP dan tidak
+        // terpotong oleh batas output Process. stderr ditampung ke file .err.
+        $command = escapeshellarg($mysqldumpPath)
+            .' --defaults-extra-file='.escapeshellarg($defaultsFile)
+            .' --protocol=tcp --single-transaction --quick --complete-insert --lock-tables=false'
+            .' '.escapeshellarg((string) $dbName)
+            .' > '.escapeshellarg($path)
+            .' 2> '.escapeshellarg($path.'.err');
 
-        $result = Process::timeout(1800)->run($cmd, function ($type, $line) {
-            $this->output .= $line."\n";
-        });
+        $result = Process::timeout(1800)->run($command);
 
-        if ($result->successful()) {
-            file_put_contents($path, $result->output());
-            chmod($path, 0644);
+        @unlink($defaultsFile);
 
-            if (file_exists($path) && filesize($path) > 0) {
-                cache([
-                    'backup_last_time' => now()->format('d M Y H:i:s'),
-                    'backup_last_db_file' => $filename,
-                ]);
-                $this->lastBackup = cache('backup_last_time');
-                $this->lastDbFile = $filename;
+        if (! $result->successful() || ! file_exists($path) || filesize($path) === 0) {
+            $error = trim((string) @file_get_contents($path.'.err'));
+            @unlink($path.'.err');
+            @unlink($path);
 
-                $size = $this->formatSize(filesize($path));
-                $this->output .= "\n✅ Backup database berhasil! ({$size})";
-                $this->output .= "\n📁 File: {$filename}";
-            } else {
-                $this->output .= "\n❌ File backup kosong atau gagal ditulis.";
-            }
-        } else {
-            $error = $result->errorOutput();
-            $output = $result->output();
+            $this->output .= "\n❌ Backup database gagal:";
 
-            if (empty($error) && empty($output)) {
-                $this->output .= "\n❌ Backup gagal. Proses timeout atau error tak terduga.";
+            if ($error === '') {
+                $this->output .= "\n   Proses timeout atau error tak terduga.";
                 $this->output .= "\n   Tips: Coba lagi atau gunakan export manual via phpMyAdmin.";
-            } elseif (str_contains($error, 'not found') || str_contains($error, 'command not found')) {
-                $this->output .= "\n❌ perintah `mysqldump` tidak tersedia di server ini.";
+            } elseif (str_contains($error, 'command not found') || str_contains($error, 'not found')) {
+                $this->output .= "\n   perintah `mysqldump` tidak tersedia di server ini.";
                 $this->output .= "\n   Gunakan alternatif: export manual via phpMyAdmin.";
             } elseif (str_contains($error, 'Access denied') || str_contains($error, 'password')) {
-                $this->output .= "\n❌ Gagal koneksi ke database: akses ditolak.";
+                $this->output .= "\n   Gagal koneksi ke database: akses ditolak.";
                 $this->output .= "\n   Periksa username & password database di file .env";
             } elseif (str_contains($error, 'Unknown database')) {
-                $this->output .= "\n❌ Database tidak ditemukan: {$dbName}";
+                $this->output .= "\n   Database tidak ditemukan: {$dbName}";
                 $this->output .= "\n   Periksa nama database di file .env";
             } else {
-                $this->output .= "\n❌ Backup database gagal:";
-                $this->output .= "\n   ".($error ?: $output);
+                $this->output .= "\n   ".$error;
             }
+
+            $this->isRunning = false;
+
+            return;
         }
+
+        @unlink($path.'.err');
+        chmod($path, 0644);
+
+        cache([
+            'backup_last_time' => now()->format('d M Y H:i:s'),
+            'backup_last_db_file' => $filename,
+        ]);
+        $this->lastBackup = cache('backup_last_time');
+        $this->lastDbFile = $filename;
+
+        $size = $this->formatSize(filesize($path));
+        $this->output .= "\n✅ Backup database berhasil! ({$size})";
+        $this->output .= "\n📁 File: {$filename}";
 
         $this->isRunning = false;
     }
