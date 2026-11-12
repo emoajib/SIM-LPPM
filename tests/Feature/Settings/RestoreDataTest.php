@@ -4,6 +4,7 @@ use App\Livewire\Settings\RestoreData;
 use App\Models\User;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Livewire\Livewire;
 
 // Vetted by AI - Manual Review Required by Senior Engineer/Manager
@@ -108,4 +109,66 @@ test('selectServerFile selects and previews sql file', function () {
         ->assertSet('hasPreview', false);
 
     @unlink($sqlFile);
+});
+
+/**
+ * Regresi: file dump .sql selalu terdeteksi finfo sebagai "text/plain".
+ * Symfony memetakan text/plain -> ekstensi "txt", sehingga rule "mimes:sql,text,plain"
+ * menolak file SQL yang sah. Rule "extensions" memakai ekstensi nama file asli.
+ */
+test('sql upload named .sql with text/plain mime is accepted', function () {
+    $this->actingAs($this->admin);
+    session(['active_role' => 'admin lppm']);
+
+    $content = "-- MariaDB dump 10.19\n/*!40101 SET NAMES utf8mb4 */;\n"
+        ."INSERT INTO `users` (`id`, `name`) VALUES (1, 'admin');\n";
+
+    $file = UploadedFile::fake()->createWithContent('db_20261111_132833.sql', $content);
+    // Tiru finfo: dump .sql dilaporkan sebagai text/plain (guessExtension() => "txt")
+    $file->mimeTypeToReport = 'text/plain';
+
+    expect($file->guessExtension())->toBe('txt');
+
+    $component = Livewire::test(RestoreData::class)
+        ->set('sqlFile', $file)
+        ->assertHasNoErrors()
+        ->assertSet('hasPreview', true)
+        ->assertSet('uploadErrorMessage', null);
+
+    $uploadedPath = $component->get('uploadedSqlPath');
+    expect($uploadedPath)->not->toBeNull();
+    expect($component->get('preview')['allowed'])->toBeGreaterThan(0);
+
+    @unlink($uploadedPath);
+});
+
+test('sql upload with non sql content is rejected', function () {
+    $this->actingAs($this->admin);
+    session(['active_role' => 'admin lppm']);
+
+    $file = UploadedFile::fake()->createWithContent(
+        'fake_dump.sql',
+        'ini bukan dump database, hanya teks biasa '.str_repeat('x', 200)
+    );
+    $file->mimeTypeToReport = 'text/plain';
+
+    Livewire::test(RestoreData::class)
+        ->set('sqlFile', $file)
+        ->assertHasErrors('sqlFile')
+        ->assertSet('uploadedSqlPath', null);
+});
+
+test('sql upload with disallowed extension is rejected', function () {
+    $this->actingAs($this->admin);
+    session(['active_role' => 'admin lppm']);
+
+    $file = UploadedFile::fake()->createWithContent(
+        'dump.exe',
+        'INSERT INTO `users` (`id`) VALUES (1);'
+    );
+
+    Livewire::test(RestoreData::class)
+        ->set('sqlFile', $file)
+        ->assertHasErrors('sqlFile')
+        ->assertSet('uploadedSqlPath', null);
 });

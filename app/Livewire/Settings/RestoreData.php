@@ -5,6 +5,7 @@ namespace App\Livewire\Settings;
 use App\Services\DatabaseRestoreService;
 use App\Services\StorageRestoreService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -62,9 +63,14 @@ class RestoreData extends Component
     {
         $this->resetStates();
 
+        // CATATAN: jangan pakai rule "mimes:sql" untuk file .sql.
+        // Validator mimes memakai UploadedFile::guessExtension() yang diturunkan dari MIME
+        // hasil finfo. File dump .sql hampir selalu terdeteksi "text/plain", dan Symfony
+        // memetakan text/plain -> ekstensi pertama "txt", sehingga "mimes:sql" selalu GAGAL
+        // walau file benar-benar SQL. Rule "extensions" memakai ekstensi nama file asli.
         try {
             $this->validate([
-                'sqlFile' => 'file|mimes:sql,text,plain|max:524288',
+                'sqlFile' => 'file|extensions:sql,txt|max:524288',
             ]);
         } catch (ValidationException $e) {
             $this->uploadErrorMessage = $e->getMessage();
@@ -84,6 +90,18 @@ class RestoreData extends Component
             $this->output = "❌ Gagal menyimpan file ke {$backupDir}.\n";
 
             return;
+        }
+
+        // Pengaman tambahan: rule "extensions" hanya melihat nama file, jadi pastikan
+        // isinya benar-benar dump SQL (bukan file lain yang hanya diberi ekstensi .sql).
+        if (! $this->looksLikeSqlDump($this->uploadedSqlPath)) {
+            File::delete($this->uploadedSqlPath);
+            $this->uploadedSqlPath = null;
+
+            $message = 'File tidak dikenali sebagai dump SQL. Pastikan file berisi pernyataan SQL seperti INSERT INTO atau CREATE TABLE.';
+            $this->uploadErrorMessage = $message;
+
+            throw ValidationException::withMessages(['sqlFile' => $message]);
         }
 
         $service = app(DatabaseRestoreService::class);
@@ -196,6 +214,34 @@ class RestoreData extends Component
         $this->output .= "File: {$filename}\n";
         $this->output .= 'Tabel: '.count($this->preview['tables'])."\n";
         $this->output .= "Baris: {$this->preview['allowed']}\n";
+
+        if (($this->preview['allowed'] ?? 0) === 0) {
+            $this->output .= "\n⚠️ Tidak ada pernyataan yang dapat dipulihkan. "
+                ."Hanya pernyataan INSERT INTO / REPLACE INTO / SET yang diizinkan.\n";
+        }
+    }
+
+    /**
+     * Pastikan isi file benar-benar dump SQL, bukan file lain yang diberi ekstensi .sql.
+     */
+    private function looksLikeSqlDump(string $path): bool
+    {
+        $handle = @fopen($path, 'rb');
+        if ($handle === false) {
+            return false;
+        }
+
+        $sample = (string) fread($handle, 65536);
+        fclose($handle);
+
+        if ($sample === '' || str_contains($sample, "\0")) {
+            return false;
+        }
+
+        return (bool) preg_match(
+            '/\b(INSERT\s+(IGNORE\s+)?INTO|REPLACE\s+INTO|CREATE\s+TABLE|DROP\s+TABLE|SET\s+@|\/\*!)/i',
+            $sample
+        );
     }
 
     public function getPhpLimitsProperty(): array
