@@ -418,8 +418,12 @@ body.theme-modern .navbar {
 }
 
 /* Modern theme: boxed unified layout */
+/* Lebar konten modern.
+   1320px + 2 x 1 cm (37,8 px @96dpi) = 1395,6 px  ->  konten lebih lega 1 cm
+   di kiri dan 1 cm di kanan. Ubah variabel ini bila perlu lebih lebar lagi. */
 body.theme-modern .page {
-    max-width: 1320px;
+    --sli-page-max: 1396px;
+    max-width: var(--sli-page-max);
     margin: 0 auto;
 }
 body.theme-modern .navbar-expand-md .container-xl,
@@ -794,3 +798,26 @@ body.theme-modern.theme-dark .bg-white { background: #1e293b !important; }
 body.theme-modern.theme-dark .text-slate-800 { color: #e2e8f0 !important; }
 body.theme-modern.theme-dark .text-slate-500 { color: #94a3b8 !important; }
 body.theme-modern.theme-dark .border-slate-200 { border-color: #334155 !important; }
+
+/* Panel pengaturan bertingkat (TKT / Cluster Ilmu) — satu sumber, dipakai
+   tema modern maupun klasik. Sebelumnya blok ini diduplikasi di dalam
+   <style> pada masing-masing komponen Livewire. */
+.btn-ghost-primary,
+.btn-ghost-success,
+.btn-ghost-danger {
+    background: transparent;
+    border: none;
+}
+.btn-ghost-primary { color: var(--tblr-primary); }
+.btn-ghost-success { color: var(--tblr-success); }
+.btn-ghost-danger { color: var(--tblr-danger); }
+.btn-ghost-primary:hover { background-color: var(--tblr-primary-bg-subtle, rgba(30, 58, 110, .08)); }
+.btn-ghost-success:hover { background-color: var(--tblr-success-bg-subtle, rgba(16, 185, 129, .08)); }
+.btn-ghost-danger:hover { background-color: var(--tblr-danger-bg-subtle, rgba(239, 68, 68, .08)); }
+.tkt-tree-header:hover,
+.cluster-tree-header:hover { background-color: var(--tblr-bg-surface-secondary); }
+.tkt-level-item:hover:not(.bg-primary) { background-color: var(--tblr-bg-surface-secondary); }
+.tkt-tree-levels,
+.cluster-tree-levels { border-color: var(--tblr-border-color) !important; }
+.tkt-tree-header .btn,
+.cluster-tree-header .btn { --tblr-btn-line-height: 1; }
