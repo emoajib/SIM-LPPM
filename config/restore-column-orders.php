@@ -2,7 +2,7 @@
 
 return [
     'community_service_schemes' => [
-        'id', 'name', 'strata', 'eligibility_rules', 'created_at', 'updated_at',
+        'id', 'name', 'strata', 'is_active', 'eligibility_rules', 'created_at', 'updated_at',
     ],
     'document_signatures' => [
         'id', 'document_type', 'document_id', 'variant', 'action', 'mode',
@@ -32,7 +32,7 @@ return [
         'id', 'name', 'prn_code', 'valid_from', 'valid_until', 'description', 'created_at', 'updated_at',
     ],
     'research_schemes' => [
-        'id', 'name', 'strata', 'min_tkt', 'max_tkt', 'eligibility_rules', 'description', 'created_at', 'updated_at',
+        'id', 'name', 'strata', 'min_tkt', 'max_tkt', 'eligibility_rules', 'description', 'is_active', 'created_at', 'updated_at',
     ],
     'proposal_outputs' => [
         'id', 'proposal_id', 'output_year', 'category', 'group', 'type', 'target_status', 'description', 'created_at', 'updated_at',
