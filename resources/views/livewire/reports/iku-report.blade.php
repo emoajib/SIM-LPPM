@@ -54,7 +54,7 @@
                         </div>
                     </div>
                     <div class="col-auto">
-                        <button class="btn btn-icon btn-white shadow-sm" wire:click="resetFilters" title="Reset Filter" aria-label="Reset Filter">
+                        <button class="btn btn-icon btn-white shadow-sm" wire:click="resetFilters" title="Reset Filter" aria-label="Reset Filter"><i class="ti ti-refresh" aria-hidden="true"></i>
                             
                         </button>
                     </div>
@@ -411,7 +411,7 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <button class="btn btn-icon btn-sm btn-ghost-primary" title="Lihat detail" aria-label="Lihat detail">
+                                        <button class="btn btn-icon btn-sm btn-ghost-primary" title="Lihat detail" aria-label="Lihat detail"><i class="ti ti-eye" aria-hidden="true"></i>
                                             
                                         </button>
                                     </td>

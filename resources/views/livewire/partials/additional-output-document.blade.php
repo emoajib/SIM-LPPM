@@ -54,7 +54,7 @@ getFirstMedia('publication_certificate');
                 <small class="text-muted text-truncate" style="max-width: 180px;" title="{{ $linkUrl }}">{{ \Illuminate\Support\Str::limit($linkUrl, 40) }}</small>
                 <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1 d-flex align-items-center gap-2"
                     data-copy-url="{{ $linkUrl }}" title="Salin link"
-                    onclick="(function(btn){var url=btn.dataset.copyUrl;var done=function(){var t=btn.innerHTML;btn.innerHTML='Tersalin ✓';setTimeout(function(){btn.innerHTML=t;},1500);};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(done).catch(function(){btn.innerHTML='Gagal';});}else{var ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){btn.innerHTML='Gagal';}document.body.removeChild(ta);}})(this)">
+                    onclick="(function(btn){var url=btn.dataset.copyUrl;var done=function(){var t=btn.innerHTML;btn.innerHTML='Tersalin ✓';setTimeout(function(){btn.innerHTML=t;},1500);};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(done).catch(function(){btn.innerHTML='Gagal';});}else{var ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){btn.innerHTML='Gagal';}document.body.removeChild(ta);}})(this)"><i class="ti ti-copy me-1" aria-hidden="true"></i>
                     
                 </button>
             </div>

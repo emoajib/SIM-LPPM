@@ -134,7 +134,7 @@
                                                         </select>
                                                     </td>
                                                     <td>
-                                                        <button type="button" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-2" wire:click="removeTeamMember({{ $index }})" title="Tutup" aria-label="Tutup">
+                                                        <button type="button" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-2" wire:click="removeTeamMember({{ $index }})" title="Tutup" aria-label="Tutup"><i class="ti ti-trash me-1" aria-hidden="true"></i>
                                                             
                                                         </button>
                                                     </td>

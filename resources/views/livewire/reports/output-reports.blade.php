@@ -275,7 +275,7 @@
                         </select>
                     </div>
                     <div class="col-auto ms-auto">
-                        <button class="btn btn-icon btn-white shadow-sm" wire:click="resetFilters" title="Reset" aria-label="Reset">
+                        <button class="btn btn-icon btn-white shadow-sm" wire:click="resetFilters" title="Reset" aria-label="Reset"><i class="ti ti-refresh" aria-hidden="true"></i>
                             
                         </button>
                     </div>

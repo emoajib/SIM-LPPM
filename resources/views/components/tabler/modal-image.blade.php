@@ -47,13 +47,13 @@
                 @if($zoomable || $downloadable)
                     <div class="image-actions d-flex gap-2">
                         @if($zoomable)
-                            <button type="button" class="btn btn-sm btn-light d-flex align-items-center gap-2" title="Perkecil" aria-label="Perkecil" @click="zoomOut">
+                            <button type="button" class="btn btn-sm btn-light d-flex align-items-center gap-2" title="Perkecil" aria-label="Perkecil" @click="zoomOut"><i class="ti ti-zoom-out me-1" aria-hidden="true"></i>
                                 
                             </button>
                             <button type="button" class="btn btn-sm btn-light d-flex align-items-center gap-2" title="Reset zoom" aria-label="Reset zoom" @click="resetZoom">
                                 100%
                             </button>
-                            <button type="button" class="btn btn-sm btn-light d-flex align-items-center gap-2" title="Perbesar" aria-label="Perbesar" @click="zoomIn">
+                            <button type="button" class="btn btn-sm btn-light d-flex align-items-center gap-2" title="Perbesar" aria-label="Perbesar" @click="zoomIn"><i class="ti ti-zoom-in me-1" aria-hidden="true"></i>
                                 
                             </button>
                         @endif

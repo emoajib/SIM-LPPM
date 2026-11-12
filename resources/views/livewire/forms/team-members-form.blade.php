@@ -45,11 +45,11 @@
                                 <td class="text-end align-middle">
                                     @if($editingIndex === $index)
                                         <button type="button" wire:click="saveEditingMember" class="btn btn-sm btn-success d-flex align-items-center gap-2"
-                                            title="Simpan">
+                                            title="Simpan"><i class="ti ti-check me-1" aria-hidden="true"></i>
                                             
                                         </button>
                                         <button type="button" wire:click="cancelEditingMember"
-                                            class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2" title="Batal">
+                                            class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2" title="Batal"><i class="ti ti-x me-1" aria-hidden="true"></i>
                                             
                                         </button>
                                     @else

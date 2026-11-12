@@ -452,7 +452,7 @@
                                                         wire:click="removeEvidence({{ $index }})"
                                                         wire:confirm="Batalkan upload file ini?"
                                                         class="btn btn-icon btn-sm btn-ghost-danger" aria-label="Hapus"
-                                                        title="Hapus file" aria-label="Hapus file">
+                                                        title="Hapus file" aria-label="Hapus file"><i class="ti ti-trash" aria-hidden="true"></i>
                                                         
                                                     </button>
                                                 </div>

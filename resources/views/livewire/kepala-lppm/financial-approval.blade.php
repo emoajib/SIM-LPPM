@@ -122,7 +122,7 @@
                 </div>
 
                 <div class="col-md-1">
-                    <button type="button" class="btn btn-outline-secondary w-100 d-flex align-items-center gap-2" wire:click="resetFilters" title="Reset Filter">
+                    <button type="button" class="btn btn-outline-secondary w-100 d-flex align-items-center gap-2" wire:click="resetFilters" title="Reset Filter"><i class="ti ti-refresh me-1" aria-hidden="true"></i>
                         
                     </button>
                 </div>
@@ -249,7 +249,7 @@ logbook_approved_at !== null;
                                         
                                         Tinjau PDF
                                     </a>
-                                    <a href="{{ $dailyNoteRoute }}" target="_blank" class="btn btn-sm btn-ghost-secondary px-2 d-flex align-items-center gap-2" title="Buka Logbook &amp; Nota di Web">
+                                    <a href="{{ $dailyNoteRoute }}" target="_blank" class="btn btn-sm btn-ghost-secondary px-2 d-flex align-items-center gap-2" title="Buka Logbook &amp; Nota di Web"><i class="ti ti-external-link me-1" aria-hidden="true"></i>
                                         
                                     </a>
 

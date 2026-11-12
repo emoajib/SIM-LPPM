@@ -232,7 +232,7 @@
                                                     x-on:click="$refs.fileInput.click()"
                                                     x-show="!uploading"
                                                     class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2"
-                                                    title="Upload Surat Kesediaan">
+                                                    title="Upload Surat Kesediaan"><i class="ti ti-upload me-1" aria-hidden="true"></i>
                                                     
                                                 </button>
                                                 <button type="button"

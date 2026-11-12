@@ -137,7 +137,7 @@
                 class="btn btn-sm btn-outline-danger"
                 wire:click="resetOverrides"
                 wire:confirm="Reset semua pengaturan kustom untuk '{{ $moduleName }}' ke nilai global?"
-                @disabled(!$hasOverrides) title="Reset" aria-label="Reset">
+                @disabled(!$hasOverrides) title="Reset" aria-label="Reset"><i class="ti ti-refresh me-1" aria-hidden="true"></i>
                 
             </button>
         </div>

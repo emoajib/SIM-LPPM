@@ -62,7 +62,7 @@
                     </div>
                     {{-- ⑤ Reset button selalu tampil di col-auto ms-auto (konsisten dengan research.blade.php) --}}
                     <div class="col-auto ms-auto">
-                        <button class="btn btn-icon btn-white shadow-sm" wire:click="resetFilters" title="Reset Filter" aria-label="Reset Filter">
+                        <button class="btn btn-icon btn-white shadow-sm" wire:click="resetFilters" title="Reset Filter" aria-label="Reset Filter"><i class="ti ti-refresh" aria-hidden="true"></i>
                             
                         </button>
                     </div>
@@ -340,7 +340,7 @@
                             {{-- ⑦ Tambah title tooltip pada tombol tutup panel --}}
                             <button type="button" wire:click="$set('selectedPartnerId', null)"
                                 class="btn btn-sm btn-ghost-secondary"
-                                title="Tutup panel detail">
+                                title="Tutup panel detail"><i class="ti ti-x me-1" aria-hidden="true"></i>
                                 
                             </button>
                         </div>

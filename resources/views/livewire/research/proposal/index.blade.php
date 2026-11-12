@@ -163,9 +163,9 @@
     </div>
 
     <div class="mb-3">
-        <button class="btn btn-ghost-info btn-sm" type="button" data-bs-toggle="collapse"
+        <button class="btn btn-ghost-info btn-sm d-flex align-items-center gap-2" type="button" data-bs-toggle="collapse"
             data-bs-target="#researchIndexInfo" aria-expanded="false" aria-controls="researchIndexInfo">
-            
+            <i class="ti ti-help me-1" aria-hidden="true"></i>
             Bantuan Penggunaan
         </button>
     </div>

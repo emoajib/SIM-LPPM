@@ -131,7 +131,7 @@
                     
                     Rincian Data: {{ strtoupper($selectedIku) }} - {{ $this->ikuMetrics[$selectedIku]['name'] }}
                 </h5>
-                <button wire:click="selectIku(null)" class="btn btn-sm btn-light rounded-circle" title="Tutup" aria-label="Tutup">
+                <button wire:click="selectIku(null)" class="btn btn-sm btn-light rounded-circle" title="Tutup" aria-label="Tutup"><i class="ti ti-x me-1" aria-hidden="true"></i>
                     
                 </button>
             </div>

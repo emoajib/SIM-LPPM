@@ -64,7 +64,7 @@
                         </select>
                     </div>
                     <div class="col-auto ms-auto">
-                        <button class="btn btn-icon btn-white shadow-sm d-flex align-items-center gap-2" wire:click="resetFilters" title="Reset Filter" aria-label="Reset Filter">
+                        <button class="btn btn-icon btn-white shadow-sm d-flex align-items-center gap-2" wire:click="resetFilters" title="Reset Filter" aria-label="Reset Filter"><i class="ti ti-refresh" aria-hidden="true"></i>
                             
                         </button>
                     </div>
@@ -210,7 +210,7 @@ Verifikasi LPPM</th>
                                             
                                         </a>
                                     @else
-                                        <button class="btn btn-sm btn-icon btn-outline-secondary d-flex align-items-center gap-2" disabled title="Belum direview" aria-label="Belum direview">
+                                        <button class="btn btn-sm btn-icon btn-outline-secondary d-flex align-items-center gap-2" disabled title="Belum direview" aria-label="Belum direview"><i class="ti ti-clock" aria-hidden="true"></i>
                                             
                                         </button>
                                     @endif

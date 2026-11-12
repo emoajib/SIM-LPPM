@@ -217,7 +217,7 @@
                         <option value="genap">Genap</option>
                     </select>
                     @if ($search || $typeFilter !== 'all')
-                        <button class="btn btn-ghost-danger p-2" wire:click="resetFilters" title="Reset filter">
+                        <button class="btn btn-ghost-danger p-2" wire:click="resetFilters" title="Reset filter"><i class="ti ti-refresh me-1" aria-hidden="true"></i>
                             
                         </button>
                     @endif

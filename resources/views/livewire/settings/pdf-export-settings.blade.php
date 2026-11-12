@@ -634,7 +634,7 @@
                     <button type="button" class="btn {{ $viewMode === 'card' ? 'btn-primary' : 'btn-outline-primary' }}" wire:click="$set('viewMode', 'card')" title="Tampilan Kartu">
                         <x-lucide-grid-3x3 class="icon" />
                     </button>
-                    <button type="button" class="btn {{ $viewMode === 'table' ? 'btn-primary' : 'btn-outline-primary' }}" wire:click="$set('viewMode', 'table')" title="Tampilan Tabel">
+                    <button type="button" class="btn {{ $viewMode === 'table' ? 'btn-primary' : 'btn-outline-primary' }}" wire:click="$set('viewMode', 'table')" title="Tampilan Tabel"><i class="ti ti-table me-1" aria-hidden="true"></i>
                         
                     </button>
                 </div>

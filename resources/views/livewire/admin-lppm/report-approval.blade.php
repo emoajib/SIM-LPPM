@@ -162,7 +162,7 @@
                             </select>
                         </div>
                         <div class="col-md-1">
-                            <button type="button" class="btn btn-outline-secondary w-100" wire:click="resetFilters" title="Reset Filter">
+                            <button type="button" class="btn btn-outline-secondary w-100" wire:click="resetFilters" title="Reset Filter"><i class="ti ti-refresh me-1" aria-hidden="true"></i>
                                 
                             </button>
                         </div>

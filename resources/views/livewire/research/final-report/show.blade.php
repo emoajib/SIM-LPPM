@@ -324,7 +324,7 @@
                                 </td>
                                 <td class="text-center">
                                     @if($hasSubstance && $subMedia)
-                                        <a href="{{ route('media.download', $subMedia) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh Berkas Substansi">
+                                        <a href="{{ route('media.download', $subMedia) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh Berkas Substansi"><i class="ti ti-download me-1" aria-hidden="true"></i>
                                             
                                         </a>
                                     @else
@@ -414,7 +414,7 @@
                                 </td>
                                 <td class="text-center">
                                     @if($hasTeachingMaterial && $tmMedia)
-                                        <a href="{{ route('media.download', $tmMedia) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh">
+                                        <a href="{{ route('media.download', $tmMedia) }}" target="_blank" class="btn btn-sm btn-outline-primary" title="Unduh" aria-label="Unduh"><i class="ti ti-download me-1" aria-hidden="true"></i>
                                             
                                         </a>
                                     @else
@@ -436,7 +436,7 @@
                                 </td>
                                 <td><small class="text-muted">Laporan Keuangan (LPJ) dikelola mandiri di Realisasi Anggaran tanpa memblokir laporan ini.</small></td>
                                 <td class="text-center">
-                                    <a href="{{ route('research.daily-note.show', $proposal) }}" target="_blank" class="btn btn-sm btn-outline-info" title="Buka Realisasi Anggaran title="Buka Catatan Harian & LPJ" LPJ">
+                                    <a href="{{ route('research.daily-note.show', $proposal) }}" target="_blank" class="btn btn-sm btn-outline-info" title="Buka Realisasi Anggaran title="Buka Catatan Harian & LPJ" LPJ"><i class="ti ti-eye me-1" aria-hidden="true"></i>
                                         
                                     </a>
                                 </td>

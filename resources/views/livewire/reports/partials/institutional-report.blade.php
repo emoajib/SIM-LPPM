@@ -57,7 +57,7 @@
                     </select>
                 </div>
                 <div class="col-auto ms-auto">
-                    <button class="btn btn-icon btn-white shadow-sm" wire:click="resetFilters" title="Reset Filter" aria-label="Reset Filter">
+                    <button class="btn btn-icon btn-white shadow-sm" wire:click="resetFilters" title="Reset Filter" aria-label="Reset Filter"><i class="ti ti-refresh" aria-hidden="true"></i>
                         
                     </button>
                 </div>
@@ -411,7 +411,7 @@
                                             </a>
                                             <a href="{{ route($config['detailRoute'], $proposal) }}"
                                                 class="btn btn-sm btn-icon btn-outline-secondary" title="Lihat Usulan Proposal"
-                                                wire:navigate.hover aria-label="Lihat Usulan Proposal">
+                                                wire:navigate.hover aria-label="Lihat Usulan Proposal"><i class="ti ti-eye" aria-hidden="true"></i>
                                                 
                                             </a>
                                         </div>
