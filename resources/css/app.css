@@ -419,10 +419,11 @@ body.theme-modern .navbar {
 
 /* Modern theme: boxed unified layout */
 /* Lebar konten modern.
-   1320px + 2 x 1 cm (37,8 px @96dpi) = 1395,6 px  ->  konten lebih lega 1 cm
-   di kiri dan 1 cm di kanan. Ubah variabel ini bila perlu lebih lebar lagi. */
+   Baseline Tabler 1320px, lalu dilebarkan 2 x 1 cm per sisi
+   (1 cm = 37,8 px @96dpi): 1320 + 4 x 37,8 = 1471,2 px -> 1472px.
+   Ubah variabel ini bila perlu lebih lebar lagi. */
 body.theme-modern .page {
-    --sli-page-max: 1396px;
+    --sli-page-max: 1472px;
     max-width: var(--sli-page-max);
     margin: 0 auto;
 }

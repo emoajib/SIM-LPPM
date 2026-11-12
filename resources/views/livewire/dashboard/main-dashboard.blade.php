@@ -38,17 +38,28 @@
                             <tbody id="sli-proposal-table-body">
                                 @forelse ($recentProposals as $index => $prop)
                                     @php
-                                        $title = $prop->title ?? 'Judul Usulan Penelitian';
-                                        $submitterName = $prop->submitter?->name ?? $user->name ?? 'MUJIBUL HAKIM';
-                                        $nidn = $prop->submitter?->identity?->identity_id ?? $user->identity?->identity_id ?? '0608068901';
-                                        $isPengabdian = $prop->detailable_type === 'App\Models\CommunityService';
-                                        $cat = $prop->category_label ?? ($isPengabdian ? 'Pengabdian Masyarakat' : 'Penelitian Terapan');
+                                        $title = $prop->title ?: '-';
+                                        $submitterName = $prop->submitter?->name ?? '-';
+                                        $nidn = $prop->submitter?->identity?->identity_id ?? '-';
+                                        $isPengabdian = $prop->detailable_type === \App\Models\CommunityService::class;
+                                        // Skema diambil dari data master (research_schemes / community_service_schemes),
+                                        // bukan dari area fokus (SAINTEK/DEKABITA) maupun label karangan.
+                                        $scheme = $isPengabdian ? $prop->communityServiceScheme : $prop->researchScheme;
+                                        $schemeName = $scheme?->name ?? 'Belum ditentukan';
+                                        $focusName = $prop->focusArea?->name;
+                                        $kategori = ($isPengabdian ? 'Pengabdian' : 'Penelitian')
+                                            .($focusName ? ' · '.$focusName : '');
+                                        $year = $prop->start_year ?: ($prop->created_at?->format('Y') ?? '-');
+                                        // Peran: peran pengguna pada usulan ini (pivot proposal_user); pengusul = ketua.
+                                        $roleRaw = $prop->teamMembers->firstWhere('id', $user?->id)?->pivot?->role
+                                            ?? 'ketua';
+                                        $role = \App\Enums\ProposalUserRole::tryFrom($roleRaw)?->label()
+                                            ?? ucfirst((string) $roleRaw);
+                                        $status = $prop->status;
+                                        $statusStr = $status?->label() ?? 'Draft';
+                                        $statusColor = $status?->color() ?? 'secondary';
+                                        $statusClass = 'bg-'.$statusColor.'-lt text-'.$statusColor;
                                         $schemeData = $isPengabdian ? 'pengabdian' : 'penelitian';
-                                        $focus = $prop->focus_label ?? ($prop->focusArea?->name ?? 'Sosial Humaniora');
-                                        $year = $prop->year ?? ($prop->created_at ? $prop->created_at->format('Y') : date('Y'));
-                                        $role = $prop->role ?? 'Ketua';
-                                        $statusStr = $prop->status_label ?? ($prop->status?->label() ?? 'Didanai');
-                                        $statusClass = $prop->status_class ?? (str_contains(strtolower($statusStr), 'didanai') || str_contains(strtolower($statusStr), 'approved') ? 'bg-success-lt text-success' : 'bg-azure-lt text-azure');
                                     @endphp
                                     <tr data-scheme="{{ $schemeData }}">
                                         <td class="text-secondary">{{ $index + 1 }}</td>
@@ -62,12 +73,12 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <div class="badge bg-blue-lt">{{ $cat }}</div>
-                                            <div class="text-muted small mt-0.5">{{ $focus }}</div>
+                                            <div class="badge {{ $isPengabdian ? 'bg-teal-lt text-teal' : 'bg-azure-lt text-azure' }}">{{ $schemeName }}</div>
+                                            <div class="text-muted small mt-0.5">{{ $kategori }}</div>
                                         </td>
                                         <td class="font-monospace text-secondary">{{ $year }}</td>
                                         <td>
-                                            <span class="badge bg-purple-lt">{{ $role }}</span>
+                                            <span class="badge bg-purple-lt text-purple">{{ $role }}</span>
                                         </td>
                                         <td class="text-center">
                                             <span class="badge {{ $statusClass }} fw-bold px-2 py-1">

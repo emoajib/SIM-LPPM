@@ -385,7 +385,16 @@ class Dashboard extends Component
     {
         try {
             $query = $this->applyProposalScope(
-                Proposal::with(['submitter', 'detailable']),
+                Proposal::with([
+                    'submitter.identity',
+                    'detailable',
+                    // Kolom "Skema / Kategori" memakai data master, bukan tebakan:
+                    'researchScheme:id,name,strata',
+                    'communityServiceScheme:id,name,strata',
+                    'focusArea:id,name',
+                    // Peran pengguna pada usulan (ketua/anggota) diambil dari pivot.
+                    'teamMembers:id,name',
+                ]),
                 $this->user
             )->latest()->take(10);
 
