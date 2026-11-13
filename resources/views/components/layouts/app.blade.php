@@ -20,7 +20,7 @@
     <!-- END CUSTOM FONT -->
 </head>
 
-<body class="{{ (session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')) === 'modern') ? 'theme-modern' : 'theme-classic' }} {{ session('sim_lppm_color_mode') === 'dark' ? 'theme-dark' : '' }}">
+<body class="{{ (session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'classic')) === 'modern') ? 'theme-modern' : 'theme-classic' }} {{ session('sim_lppm_color_mode') === 'dark' ? 'theme-dark' : '' }}">
     <!-- Toast Container for notifications -->
     <x-tabler.toast-container />
 
@@ -28,7 +28,7 @@
     @vite(['resources/js/theme-config.js'])
     <!-- END GLOBAL THEME SCRIPT -->
     @php
-        $isModernTheme = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')) === 'modern';
+        $isModernTheme = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'classic')) === 'modern';
     @endphp
     <div class="page">
         @include('components.layouts.header')

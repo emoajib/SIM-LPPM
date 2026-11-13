@@ -361,6 +361,37 @@ export default function DailyNoteIndex() {
 
             <ModuleTabNav tabs={tabs} currentPath={currentPath} />
 
+            {userRoles.some((r) => ["kepala lppm", "admin lppm", "superadmin"].includes(r)) && !proposal?.logbook_approved_at && (
+                <div className="flex justify-end">
+                    <button
+                        onClick={async () => {
+                            if (!confirm("Sahkan LPJ untuk proposal ini?")) return;
+                            try {
+                                const res = await fetch(`/research/api/v1/daily-notes/${proposalId}/approve-logbook`, {
+                                    method: "POST",
+                                    credentials: "same-origin",
+                                    headers: { "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.content || "" },
+                                });
+                                const json = await res.json();
+                                if (!res.ok) throw new Error(json.message || "Gagal");
+                                setToast({ type: "success", message: json.message });
+                                load();
+                            } catch (e) {
+                                setToast({ type: "error", message: e.message });
+                            }
+                        }}
+                        className="px-4 py-2 text-sm rounded bg-emerald-600 text-white hover:bg-emerald-700"
+                    >
+                        Sahkan LPJ
+                    </button>
+                </div>
+            )}
+            {proposal?.logbook_approved_at && (
+                <div className="text-xs text-emerald-600 dark:text-emerald-400">
+                    ✓ LPJ disahkan: {proposal.logbook_approved_at}
+                </div>
+            )}
+
             {amendments.length > 0 && (
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4">
                     <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">Amandemen RAB</h3>

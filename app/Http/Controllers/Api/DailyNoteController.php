@@ -63,6 +63,7 @@ class DailyNoteController
                 'detailable_type' => $proposal->detailable_type,
                 'total_proposed_budget' => $budgetTotal,
                 'total_actual' => (float) $proposal->dailyNotes->sum('amount'),
+                'logbook_approved_at' => $proposal->logbook_approved_at?->format('d/m/Y H:i'),
             ],
             'budget_groups' => $budgetGroups
                 ->map(function ($allocated, $bgId) use ($proposal) {
@@ -417,6 +418,37 @@ class DailyNoteController
         }
 
         return response()->json(['message' => 'Amandemen ditolak.']);
+    }
+
+    public function approveLogbook(Request $request, string $proposalId)
+    {
+        $user = Auth::user();
+        if (! $user->activeHasAnyRole(['kepala lppm', 'admin lppm', 'superadmin'])) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $proposal = Proposal::find($proposalId);
+        if (! $proposal || ! $this->canAccess($user, $proposal)) {
+            return response()->json(['message' => 'Proposal tidak ditemukan'], 404);
+        }
+
+        if ($proposal->hasPendingBudgetAmendment()) {
+            return response()->json(['message' => 'LPJ belum bisa disahkan: ada amandemen RAB yang menunggu persetujuan.'], 422);
+        }
+
+        if (! $proposal->hasMedia('logbook_approval_file') && ! $proposal->dailyNotes()->exists()) {
+            return response()->json(['message' => 'LPJ belum bisa disahkan: belum ada berkas scan maupun catatan harian.'], 422);
+        }
+
+        $proposal->update([
+            'logbook_approved_at' => now(),
+            'logbook_rejection_notes' => null,
+            'logbook_rejected_by' => null,
+            'logbook_rejected_at' => null,
+        ]);
+        app(BudgetAmendmentService::class)->snapshotApprovedBudget($proposal->fresh());
+
+        return response()->json(['message' => 'LPJ berhasil disahkan.', 'logbook_approved_at' => now()->format('d/m/Y H:i')]);
     }
 
     private function canAccess($user, Proposal $proposal): bool

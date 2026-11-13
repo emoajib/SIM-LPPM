@@ -18,7 +18,7 @@ class MenuComposer
     public function compose(View $view): void
     {
         $user = Auth::user();
-        $isModern = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')) === 'modern';
+        $isModern = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'classic')) === 'modern';
         $menuCacheVersion = (int) Setting::get('menu_cache_version', 1);
         $cacheKey = 'menu_items_'.($user ? $user->id : 'guest').'_'.(active_role() ?? 'none').'_'.($isModern ? 'modern' : 'classic').'_v'.$menuCacheVersion;
 
@@ -27,7 +27,7 @@ class MenuComposer
         });
 
         $view->with('headerMenuItems', $items);
-        $view->with('userActiveTheme', session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')));
+        $view->with('userActiveTheme', session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'classic')));
     }
 
     protected function menuItems(?User $user): array
@@ -483,7 +483,7 @@ class MenuComposer
 
         // Modern theme: pastikan child item navigasi React menggunakan full page load (navigate => false)
         // agar komponen React SPA ter-mount dengan sempurna saat diakses dari navbar dropdown.
-        $isModernHere = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')) === 'modern';
+        $isModernHere = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'classic')) === 'modern';
         if ($isModernHere) {
             foreach ($items as &$__item) {
                 // Force full page load for React modern pages (avoid wire:navigate blank)
@@ -623,7 +623,7 @@ class MenuComposer
         // Classic theme keeps the existing flat layout untouched.
         // Modern collapse to "Lainnya" dinonaktifkan agar semua menu tetap terlihat
         // (menghindari menu hilang). $isModern tetap dihitung untuk kompatibilitas.
-        $isModern = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')) === 'modern';
+        $isModern = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'classic')) === 'modern';
         unset($isModern);
 
         return $formatted;

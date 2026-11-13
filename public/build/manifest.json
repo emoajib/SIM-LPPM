@@ -80,7 +80,7 @@
     ]
   },
   "resources/css/modern.css": {
-    "file": "assets/modern-C4dU64V4.css",
+    "file": "assets/modern-TBW9KChd.css",
     "src": "resources/css/modern.css",
     "isEntry": true,
     "names": [
@@ -98,7 +98,7 @@
     ]
   },
   "resources/js/modern.jsx": {
-    "file": "assets/modern-Bs7c9bnv.js",
+    "file": "assets/modern-DSnyD1-v.js",
     "name": "modern",
     "src": "resources/js/modern.jsx",
     "isEntry": true,
@@ -106,7 +106,7 @@
       "__commonjsHelpers-CqkleIqs.js"
     ],
     "css": [
-      "assets/modern-C4dU64V4.css"
+      "assets/modern-TBW9KChd.css"
     ]
   },
   "resources/js/theme-config.js": {

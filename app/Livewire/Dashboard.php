@@ -29,7 +29,7 @@ class Dashboard extends Component
     {
         $this->user = Auth::user();
         $this->roleName = active_role();
-        $this->dashboardTheme = session('sim_lppm_app_theme', session('sim_lppm_dashboard_theme', request()->cookie('sim_lppm_dashboard_theme', 'modern')));
+        $this->dashboardTheme = session('sim_lppm_app_theme', session('sim_lppm_dashboard_theme', request()->cookie('sim_lppm_dashboard_theme', 'classic')));
         if (request()->has('theme') && in_array(request('theme'), ['dark', 'light'])) {
             session(['sim_lppm_color_mode' => request('theme')]);
         }

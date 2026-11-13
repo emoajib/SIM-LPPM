@@ -1,6 +1,6 @@
 @props(['items' => []])
 
-@if (session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')) === 'modern')
+@if (session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'classic')) === 'modern')
 <nav aria-label="Breadcrumb" class="text-xs text-slate-500 mb-3">
     <ol class="flex items-center gap-1 flex-wrap">
         @foreach ($items as $i => $item)
