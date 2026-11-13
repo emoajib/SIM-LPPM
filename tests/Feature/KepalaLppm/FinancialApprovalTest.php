@@ -8,6 +8,8 @@ use App\Models\DailyNote;
 use App\Models\Identity;
 use App\Models\Proposal;
 use App\Models\Research;
+use App\Enums\BudgetAmendmentStatus;
+use App\Models\BudgetAmendment;
 use App\Models\User;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -116,6 +118,35 @@ test('financial approval filtering works correctly', function () {
         ->set('typeFilter', 'research')
         ->assertSee('Penelitian Pengujian Persetujuan LPJ 2026', false)
         ->assertDontSee('PKM Pengabdian Masyarakat 2026', false);
+});
+
+test('approve lpj is blocked when a budget amendment is pending', function () {
+    $this->actingAs($this->kepala);
+    session(['active_role' => 'kepala lppm']);
+
+    DailyNote::factory()->create([
+        'proposal_id' => $this->proposal->id,
+        'amount' => 1000000,
+        'activity_date' => now(),
+        'activity_description' => 'Belanja ATK penelitian',
+    ]);
+
+    BudgetAmendment::create([
+        'proposal_id' => $this->proposal->id,
+        'version' => 2,
+        'status' => BudgetAmendmentStatus::PENDING,
+        'reason' => 'Harga bahan naik di lapangan',
+        'requested_by' => $this->lecturer->id,
+    ]);
+
+    $this->assertNull($this->proposal->logbook_approved_at);
+
+    Livewire::test(FinancialApproval::class)
+        ->call('approveLpj', $this->proposal->id)
+        ->assertHasNoErrors();
+
+    $this->proposal->refresh();
+    $this->assertNull($this->proposal->logbook_approved_at);
 });
 
 test('lecturer can check completeness of final report without logbook requirement', function () {
