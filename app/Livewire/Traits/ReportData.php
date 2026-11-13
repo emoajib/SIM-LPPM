@@ -26,7 +26,7 @@ trait ReportData
         /** @phpstan-ignore-next-line */
         $roleFilter = property_exists($this, 'roleFilter') ? $this->roleFilter : '';
 
-        if ($roleFilter && ! $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'dekan', 'kaprodi'])) {
+        if ($roleFilter && ! $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'dekan', 'kaprodi', 'superadmin'])) {
             $query = $this->applyRoleFilter($query, $user, $roleFilter);
         }
 

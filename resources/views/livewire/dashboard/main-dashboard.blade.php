@@ -211,10 +211,14 @@
                     <div class="card-body p-3">
                         <div class="text-secondary small fw-bold text-uppercase mb-2">Aksi Cepat Peneliti</div>
                         <div class="d-grid gap-2">
-                            <a href="{{ Route::has('letters.manual-request') ? route('letters.manual-request') : (Route::has('dashboard.dosen.surat.dashboard') ? route('dashboard.dosen.surat.dashboard') : url('surat')) }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2">
-                                <i class="ti ti-mail me-1" aria-hidden="true"></i>
-                                Buat Surat Tugas / Izin
-                            </a>
+                            @if (app(\App\Services\LetterService::class)->isActive())
+                                <a href="{{ Route::has('letters.manual-request') ? route('letters.manual-request') : (Route::has('dashboard.dosen.surat.dashboard') ? route('dashboard.dosen.surat.dashboard') : url('surat')) }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2">
+                                    <i class="ti ti-mail me-1" aria-hidden="true"></i>
+                                    Buat Surat Tugas / Izin
+                                </a>
+                            @else
+                                <span class="text-muted small">Modul persuratan sedang dinonaktifkan.</span>
+                            @endif
                         </div>
                     </div>
                 </div>

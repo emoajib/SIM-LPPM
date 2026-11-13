@@ -46,7 +46,7 @@
                     'research.verifikasi-luaran.page' => 'verifikasi-luaran-index',
                     'community-service.verifikasi-luaran.page' => 'verifikasi-luaran-index',
                     'research.daily-note.modern' => 'daily-note-index',
-                    'proposal.show.modern' => 'proposal-show-index',
+                    'research.proposal.show.modern' => 'proposal-show-index',
                 ];
                 $modernPage = $modernPageMap[request()->route()?->getName() ?? ''] ?? null;
                 $modernPageEarly = $modernPage; // alias for header hiding
@@ -76,10 +76,6 @@
             <div class="page-body">
                 <div class="container-xl">
                     @if ($isModernTheme)
-                        @php
-                            // reuse map computed earlier (single source)
-                            $modernPage = $modernPageMap[request()->route()?->getName() ?? ''] ?? null;
-                        @endphp
                         <script>window.__MODERN_PAGE__ = @json($modernPage);</script>
                         <script>window.__USER_ROLES__ = @json(auth()->user()?->getRoleNames() ?? []);</script>
                         <script>window.__ACTIVE_ROLE__ = @json(session('active_role', ''));</script>

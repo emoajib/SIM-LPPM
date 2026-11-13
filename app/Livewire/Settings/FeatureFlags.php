@@ -44,6 +44,11 @@ class FeatureFlags extends Component
             Setting::set('feature_roadmap_active', $value, 'boolean');
         }
 
+        // Invalidate menu cache for all users/roles when a feature flag changes
+        if (in_array($property, ['featureRoadmapActive', 'featureKaprodiValidation', 'modulePersuratanActive', 'suratSignatureMode', 'suratWetSignatureBypass', 'featureCommunityPartnerRequired'], true)) {
+            Setting::set('menu_cache_version', (int) Setting::get('menu_cache_version', 1) + 1, 'integer');
+        }
+
         if ($property === 'featureKaprodiValidation') {
             Setting::set('feature_kaprodi_validation', $value, 'boolean');
         }

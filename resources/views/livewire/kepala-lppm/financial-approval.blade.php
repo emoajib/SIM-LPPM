@@ -132,6 +132,10 @@
 
     <!-- Table of Proposals -->
     <div class="card border-0 shadow-sm">
+        <div class="px-3 py-2 border-bottom bg-light">
+            <label class="form-label small mb-1">Catatan keputusan amandemen</label>
+            <textarea wire:model="decisionNotes" class="form-control form-control-sm" rows="1" placeholder="Opsional saat menyetujui; wajib minimal 5 karakter saat menolak."></textarea>
+        </div>
         <div class="table-responsive">
             <table class="table table-vcenter card-table table-hover">
                 <thead>
@@ -141,6 +145,7 @@
                         <th style="min-width: 170px;">Realisasi Belanja</th>
                         <th style="min-width: 150px;">Berkas Scan Basah</th>
                         <th style="min-width: 140px;">Status LPJ</th>
+                        <th style="min-width: 160px;">Amandemen RAB</th>
                         <th class="w-1 text-end">Aksi</th>
                     </tr>
                 </thead>
@@ -241,6 +246,29 @@ logbook_approved_at !== null;
                                     </span>
                                 @else
                                     <span class="badge bg-secondary-lt">Belum Diisi</span>
+                                @endif
+                            </td>
+                            <td>
+                                @php
+                                    $pendingAmd = $proposal->budgetAmendments->firstWhere('status', \App\Enums\BudgetAmendmentStatus::PENDING->value);
+                                @endphp
+                                @if ($pendingAmd)
+                                    <span class="badge bg-warning-lt d-inline-flex align-items-center gap-1 mb-1">
+                                        <i class="ti ti-alert-triangle"></i> v{{ $pendingAmd->version }} pending
+                                    </span>
+                                    <div class="small text-muted mb-1" style="font-size:0.7rem;">{{ $pendingAmd->requester->name ?? '-' }}</div>
+                                    <div class="btn-list flex-nowrap">
+                                        <button type="button" class="btn btn-sm btn-success" wire:click="approveAmendment('{{ $pendingAmd->id }}')"
+                                            wire:confirm="Setujui amandemen RAB v{{ $pendingAmd->version }}? RAB aktif akan diperbarui.">
+                                            <i class="ti ti-check me-1"></i>Setujui
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" wire:click="rejectAmendment('{{ $pendingAmd->id }}')"
+                                            wire:confirm="Tolak amandemen RAB v{{ $pendingAmd->version }}?">
+                                            <i class="ti ti-x me-1"></i>Tolak
+                                        </button>
+                                    </div>
+                                @else
+                                    <span class="text-muted small">—</span>
                                 @endif
                             </td>
                             <td class="text-end text-nowrap">

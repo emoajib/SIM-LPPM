@@ -255,6 +255,11 @@ Route::middleware(['auth'])->group(function () {
 
         // Modern theme page for Verifikasi Luaran (Research)
         Route::get('verifikasi-luaran', function () {
+            $theme = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern'));
+            if ($theme !== 'modern') {
+                return redirect()->route('accreditation.verification');
+            }
+
             return view('modern.verifikasi-luaran', [
                 'title' => 'Verifikasi Luaran IKU',
                 'pageSubtitle' => 'Pemantauan dan verifikasi target output penelitian & pengabdian',
@@ -359,6 +364,11 @@ Route::middleware(['auth'])->group(function () {
 
         // Modern theme page for Verifikasi Luaran (Community Service)
         Route::get('verifikasi-luaran', function () {
+            $theme = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern'));
+            if ($theme !== 'modern') {
+                return redirect()->route('accreditation.verification');
+            }
+
             return view('modern.verifikasi-luaran-pkm', [
                 'title' => 'Verifikasi Luaran IKU',
                 'pageSubtitle' => 'Pemantauan dan verifikasi target output pengabdian masyarakat',
@@ -441,7 +451,7 @@ Route::middleware(['auth'])->group(function () {
         return response()->download($filePath, $fileName, [
             'Content-Type' => 'application/pdf',
         ]);
-    })->middleware('letter.active')->name('letter.download');
+    })->name('letter.download');
 
     // Letter View (inline PDF in browser)
     Route::get('letters/{letter}/view', function (Letter $letter) {
@@ -454,7 +464,7 @@ Route::middleware(['auth'])->group(function () {
         return response($pdfContent, 200, [
             'Content-Type' => 'application/pdf',
         ]);
-    })->middleware('letter.active')->name('letter.view');
+    })->name('letter.view');
 
     // Dosen - Persuratan Routes
     Route::middleware(['auth', 'letter.active'])->prefix('surat')->name('letters.')->group(function () {
@@ -669,7 +679,7 @@ Route::get('/verify/signatures/{documentSignature}', [DocumentSignatureVerificat
     ->name('signatures.verify');
 
 Route::get('/verify/letters/{letter}', [LetterVerificationController::class, 'show'])
-    ->middleware(['signed', 'letter.active', 'throttle:30,1'])
+    ->middleware(['signed', 'throttle:30,1'])
     ->name('letters.verify');
 
 // Rute Ekspor Laporan (Dekan & Role dengan module_laporan)

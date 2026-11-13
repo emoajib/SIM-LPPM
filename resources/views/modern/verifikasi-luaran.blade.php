@@ -13,9 +13,7 @@
     </style>
 @endpushOnce
 
-@section('content')
-    <div id="modern-root"></div>
-@endsection
+{{-- #modern-root dirender oleh layout saat modernPage terdeteksi --}}
 
 @pushOnce('scripts')
     <script>

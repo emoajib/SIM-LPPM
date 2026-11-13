@@ -464,7 +464,9 @@ Total Usulan Masuk</div>
 + Buat Usulan Penelitian</a>
         <a href="{{ route('community-service.proposal.create') }}" class="btn btn-outline-primary btn-sm d-flex align-items-center gap-2"><i class="ti ti-plus me-1" aria-hidden="true"></i>
 + Buat Usulan Pengabdian</a>
-        <a href="{{ route('dashboard.dosen.surat.dashboard') }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2">📄 Dashboard Surat</a>
+        @if (app(\App\Services\LetterService::class)->isActive())
+            <a href="{{ route('dashboard.dosen.surat.dashboard') }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2">📄 Dashboard Surat</a>
+        @endif
     </div>
     @endif
 

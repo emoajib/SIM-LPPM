@@ -82,7 +82,7 @@ class ModernProposalController
                 ->has('dailyNotes');
         }
 
-        if ($user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor'])) {
+        if ($user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'superadmin'])) {
             // global access
         } elseif ($user->activeHasRole('dekan')) {
             if ($user->identity?->faculty_id) {
@@ -304,7 +304,7 @@ class ModernProposalController
 
         $faculties = [];
         $studyPrograms = [];
-        if ($user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'dekan'])) {
+        if ($user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'dekan', 'superadmin'])) {
             $faculties = Faculty::select('id', 'name')->orderBy('name')->get();
             if ($user->activeHasRole('dekan') && $user->identity?->faculty_id) {
                 $studyPrograms = StudyProgram::where('faculty_id', $user->identity->faculty_id)->select('id', 'name')->orderBy('name')->get();

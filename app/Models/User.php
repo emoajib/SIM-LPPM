@@ -273,9 +273,13 @@ class User extends Authenticatable implements HasMedia
      */
     public function activeHasAnyRole(array $roles): bool
     {
-        $activeRole = $this->activeRole();
+        foreach ($roles as $role) {
+            if ($this->activeHasRole($role)) {
+                return true;
+            }
+        }
 
-        return in_array($activeRole, $roles, true);
+        return false;
     }
 
     /**

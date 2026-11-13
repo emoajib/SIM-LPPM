@@ -7,7 +7,7 @@ import ModernPageCard from "./components/ModernPageCard.jsx";
 import ModernTable from "./components/ModernTable.jsx";
 import { MODULE_TABS, getVerifierTab } from "./constants/themeColors.js";
 
-const VERIFIER_ROLES = ["admin lppm", "kepala lppm", "rektor", "dosen"];
+const VERIFIER_ROLES = ["admin lppm", "kepala lppm", "rektor"];
 
 export default function VerifikasiLuaranIndex() {
     const [outputs, setOutputs] = useState([]);
@@ -62,8 +62,9 @@ export default function VerifikasiLuaranIndex() {
 
     const userRoles = window.__USER_ROLES__ || [];
     const activeRole = window.__ACTIVE_ROLE__ || "";
-    const isVerifier = VERIFIER_ROLES.includes(activeRole);
-    const isDosen = activeRole === "dosen";
+    const isVerifierByRole = VERIFIER_ROLES.includes(activeRole);
+    const [canVerify, setCanVerify] = useState(false);
+    const [isDosen, setIsDosen] = useState(activeRole === "dosen");
 
     const isCommunityService = window.location.pathname.includes("community-service");
     const module = isCommunityService ? "communityService" : "research";
@@ -71,7 +72,7 @@ export default function VerifikasiLuaranIndex() {
 
     const tabs = [
         ...MODULE_TABS[module],
-        ...(isVerifier ? [getVerifierTab(module)] : []),
+        ...((isDosen || canVerify) ? [getVerifierTab(module)] : []),
     ];
     const currentPath = window.location.pathname.replace(/\/$/, "");
 
@@ -88,6 +89,8 @@ export default function VerifikasiLuaranIndex() {
             const json = await res.json();
             setOutputs(json.data || []);
             setMeta(json.meta || meta);
+            setIsDosen(Boolean(json.is_dosen));
+            setCanVerify(Boolean(json.can_verify));
         } catch (e) {
             console.error(e);
             setError("Gagal memuat data verifikasi luaran. Silakan coba lagi.");
@@ -423,7 +426,7 @@ export default function VerifikasiLuaranIndex() {
                 const isOwner = isDosen && (String(p.submitter_id) === String(window.__USER_ID__ || "") || p.is_team_member);
                 return (
                     <div className="flex items-center gap-1">
-                        {isVerifier && (
+                        {canVerify && (
                             <>
                                 <Button
                                     onClick={() => handleVerify(p.id, p.model_type)}
@@ -460,7 +463,7 @@ export default function VerifikasiLuaranIndex() {
                                 </select>
                             </>
                         )}
-                        {isDosen && isOwner && !isVerifier && (
+                        {isDosen && isOwner && !canVerify && (
                             <>
                                 <Button
                                     onClick={() => openDetailModal(p)}
@@ -487,7 +490,7 @@ export default function VerifikasiLuaranIndex() {
                                 </Button>
                             </>
                         )}
-                        {isVerifier && (
+                        {canVerify && (
                             <>
                                 <Button
                                     onClick={() => openDetailModal(p)}
@@ -574,7 +577,7 @@ export default function VerifikasiLuaranIndex() {
                     emptyDescription={
                         error
                             ? error
-                            : isDosen && !isVerifier
+                            : isDosen && !canVerify
                             ? "Belum ada output luaran yang tercatat untuk proposal Anda."
                             : "Belum ada data output luaran yang perlu diverifikasi."
                     }

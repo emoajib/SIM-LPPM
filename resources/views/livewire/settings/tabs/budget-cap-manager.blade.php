@@ -24,7 +24,10 @@
                 <tbody>
                     @forelse ($budgetCaps as $item)
                         <tr wire:key="budget-cap-{{ $item->id }}">
-                            <td><span class="bg-blue-lt badge">{{ $item->year }}</span></td>
+                            <td>
+                                <span class="bg-blue-lt badge" title="Tahun akademik {{ $item->year }} (input mentah)">{{ \App\Models\BudgetCap::academicYearLabel($item->year, $item->semester) }}</span>
+                                <div class="small text-muted">{{ ucfirst($item->semester) }}</div>
+                            </td>
                             <td>
                                 @if ($item->semester == 'ganjil')
                                     <span class="badge bg-purple-lt">Ganjil</span>
@@ -71,10 +74,16 @@
                                 @endif
                             </td>
                             <td>
+                                @if ($item->enforce_percentage)
+                                    <span class="badge bg-success-lt">Aktif</span>
+                                @else
+                                    <span class="badge bg-danger-lt">Nonaktif</span>
+                                @endif
+                            </td>
+                            <td>
                                 <div class="btn-list">
                                     <button type="button" class="btn-outline-warning btn btn-sm d-flex align-items-center gap-2"
                                         wire:click="edit('{{ $item->id }}')">
-                                        <i class="ti ti-pencil me-1" aria-hidden="true"></i>
                                         <i class="ti ti-pencil me-1" aria-hidden="true"></i>
                                         Edit
                                     </button>
@@ -82,22 +91,14 @@
                                         wire:click="confirmDelete('{{ $item->
 id }}')" wire:loading.attr="disabled">
                                         <i class="ti ti-trash me-1" aria-hidden="true"></i>
-                                        <i class="ti ti-trash me-1" aria-hidden="true"></i>
                                         Hapus
                                     </button>
                                 </div>
                             </td>
-                            <td>
-                                @if ($item->enforce_percentage)
-                                    <span class="badge bg-success-lt">Aktif</span>
-                                @else
-                                    <span class="badge bg-danger-lt">Nonaktif (Panic)</span>
-                                @endif
-                            </td>
                         </tr>
                     @empty
 <tr>
-            <td colspan="5" class="text-muted text-center">Belum ada pengaturan anggaran</td>
+            <td colspan="6" class="text-muted text-center">Belum ada pengaturan anggaran</td>
         </tr>
                     @endforelse
                 </tbody>

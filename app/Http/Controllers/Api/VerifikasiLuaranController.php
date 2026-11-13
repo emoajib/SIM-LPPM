@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\ProposalUserStatus;
 use App\Models\AdditionalOutput;
 use App\Models\MandatoryOutput;
 use App\Models\StudyProgram;
@@ -59,8 +60,13 @@ class VerifikasiLuaranController
                 $additionalQuery->whereRaw('1=0');
             }
         } elseif ($isDosen) {
-            $mandatoryQuery->whereHas('progressReport.proposal', fn ($q) => $q->where('submitter_id', $user->id));
-            $additionalQuery->whereHas('progressReport.proposal', fn ($q) => $q->where('submitter_id', $user->id));
+            $ownerFilter = fn ($q) => $q->where('submitter_id', $user->id)
+                ->orWhereHas('teamMembers', fn ($t) => $t
+                    ->where('user_id', $user->id)
+                    ->where('status', ProposalUserStatus::ACCEPTED->value));
+
+            $mandatoryQuery->whereHas('progressReport.proposal', $ownerFilter);
+            $additionalQuery->whereHas('progressReport.proposal', $ownerFilter);
         } else {
             $mandatoryQuery->whereRaw('1=0');
             $additionalQuery->whereRaw('1=0');
@@ -231,8 +237,11 @@ class VerifikasiLuaranController
             return response()->json(['message' => 'Data tidak ditemukan'], 404);
         }
 
-        // Dosen hanya bisa mengedit output milik proposalnya sendiri
-        if ($model->progressReport?->proposal?->submitter_id !== $user->id) {
+        // Dosen hanya bisa mengedit output milik proposalnya sendiri (submitter atau anggota tim ACCEPTED)
+        $proposal = $model->progressReport?->proposal;
+        $isOwner = $proposal?->submitter_id === $user->id
+            || ($proposal?->teamMembers()->where('user_id', $user->id)->where('status', ProposalUserStatus::ACCEPTED->value)->exists() ?? false);
+        if (! $isOwner) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -276,7 +285,8 @@ class VerifikasiLuaranController
 
         // Dosen hanya bisa upload bukti untuk output miliknya sendiri
         $proposal = $model->progressReport?->proposal;
-        if ($user->activeHasRole('dosen') && $proposal?->submitter_id !== $user->id) {
+        if ($user->activeHasRole('dosen') && ! ($proposal?->submitter_id === $user->id
+            || ($proposal?->teamMembers()->where('user_id', $user->id)->where('status', ProposalUserStatus::ACCEPTED->value)->exists() ?? false))) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -359,7 +369,8 @@ class VerifikasiLuaranController
 
         // Dosen hanya bisa mengedit output miliknya sendiri
         $proposal = $model->progressReport?->proposal;
-        if ($user->activeHasRole('dosen') && $proposal?->submitter_id !== $user->id) {
+        if ($user->activeHasRole('dosen') && ! ($proposal?->submitter_id === $user->id
+            || ($proposal?->teamMembers()->where('user_id', $user->id)->where('status', ProposalUserStatus::ACCEPTED->value)->exists() ?? false))) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

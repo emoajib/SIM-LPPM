@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Livewire\KepalaLppm;
 
+use App\Enums\BudgetAmendmentStatus;
 use App\Enums\ProposalStatus;
 use App\Livewire\Concerns\HasToast;
+use App\Models\BudgetAmendment;
 use App\Models\Faculty;
 use App\Models\Proposal;
 use App\Services\BudgetAmendmentService;
@@ -13,6 +15,8 @@ use App\Services\NotificationService;
 use App\Support\AcademicPeriod;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
@@ -48,6 +52,8 @@ class FinancialApproval extends Component
     public ?string $returningProposalId = null;
 
     public string $returnNotes = '';
+
+    public string $decisionNotes = '';
 
     public function mount(): void
     {
@@ -105,19 +111,22 @@ class FinancialApproval extends Component
         }
 
         // Jangan sahkan LPJ yang RAB-nya sedang dalam amandemen pending.
-        if ($proposal->hasPendingBudgetAmendment()) {
-            $this->toastError('LPJ belum bisa disahkan: ada amandemen RAB yang menunggu persetujuan. Putuskan amandemen terlebih dahulu.');
+        $pendingAmendment = $proposal->budgetAmendments()->where('status', BudgetAmendmentStatus::PENDING->value)->first();
+        if ($pendingAmendment) {
+            $this->toastError('LPJ belum bisa disahkan: ada amandemen RAB v'.$pendingAmendment->version.' yang menunggu persetujuan. Putuskan amandemen terlebih dahulu (lihat kolom Amandemen).');
 
             return;
         }
 
-        $proposal->update([
-            'logbook_approved_at' => now(),
-            'logbook_rejection_notes' => null,
-            'logbook_rejected_by' => null,
-            'logbook_rejected_at' => null,
-        ]);
-        app(BudgetAmendmentService::class)->snapshotApprovedBudget($proposal->fresh());
+        DB::transaction(function () use ($proposal) {
+            $proposal->update([
+                'logbook_approved_at' => now(),
+                'logbook_rejection_notes' => null,
+                'logbook_rejected_by' => null,
+                'logbook_rejected_at' => null,
+            ]);
+            app(BudgetAmendmentService::class)->snapshotApprovedBudget($proposal->fresh());
+        });
         $this->clearFinancialPdfCache((string) $proposal->id);
 
         unset($this->proposals);
@@ -143,6 +152,50 @@ class FinancialApproval extends Component
         $message = 'Pengesahan Laporan Keuangan usulan "'.$proposal->title.'" dibatalkan.';
         session()->flash('info', $message);
         $this->toastInfo($message);
+    }
+
+    public function approveAmendment(string $amendmentId): void
+    {
+        abort_unless(Auth::user()?->activeHasAnyRole(['kepala lppm', 'admin lppm', 'superadmin']), 403);
+
+        try {
+            $amendment = BudgetAmendment::findOrFail($amendmentId);
+            app(BudgetAmendmentService::class)->approve($amendment, Auth::user(), $this->decisionNotes ?: null);
+            $this->reset('decisionNotes');
+            $this->toastSuccess('Amandemen RAB disetujui dan RAB aktif diperbarui.');
+        } catch (ValidationException $e) {
+            $this->toastError(collect($e->errors())->flatten()->first() ?? 'Gagal menyetujui amandemen.');
+        } catch (\Throwable $e) {
+            $this->toastError('Gagal menyetujui amandemen: '.$e->getMessage());
+        }
+
+        unset($this->proposals);
+        unset($this->stats);
+    }
+
+    public function rejectAmendment(string $amendmentId): void
+    {
+        abort_unless(Auth::user()?->activeHasAnyRole(['kepala lppm', 'admin lppm', 'superadmin']), 403);
+
+        if (mb_strlen(trim($this->decisionNotes)) < 5) {
+            $this->toastError('Catatan penolakan amandemen minimal 5 karakter.');
+
+            return;
+        }
+
+        try {
+            $amendment = BudgetAmendment::findOrFail($amendmentId);
+            app(BudgetAmendmentService::class)->reject($amendment, Auth::user(), $this->decisionNotes);
+            $this->reset('decisionNotes');
+            $this->toastSuccess('Amandemen RAB ditolak.');
+        } catch (ValidationException $e) {
+            $this->toastError(collect($e->errors())->flatten()->first() ?? 'Gagal menolak amandemen.');
+        } catch (\Throwable $e) {
+            $this->toastError('Gagal menolak amandemen: '.$e->getMessage());
+        }
+
+        unset($this->proposals);
+        unset($this->stats);
     }
 
     protected function clearFinancialPdfCache(string $proposalId): void
@@ -245,6 +298,11 @@ class FinancialApproval extends Component
             })
             ->count();
 
+        $blockedAmendment = (clone $baseQuery)
+            ->whereNull('logbook_approved_at')
+            ->whereHas('budgetAmendments', fn ($q) => $q->where('status', BudgetAmendmentStatus::PENDING->value))
+            ->count();
+
         $empty = (clone $baseQuery)
             ->whereNull('logbook_approved_at')
             ->whereDoesntHave('media', fn ($m) => $m->where('collection_name', 'logbook_approval_file'))
@@ -257,6 +315,7 @@ class FinancialApproval extends Component
             'total' => $total,
             'approved' => $approved,
             'pending' => $pending,
+            'blocked_amendment' => $blockedAmendment,
             'empty' => $empty,
             'progress' => $progress,
         ];
@@ -276,6 +335,7 @@ class FinancialApproval extends Component
                 'dailyNotes',
                 'budgetItems',
                 'media',
+                'budgetAmendments',
             ]);
 
         if ($this->search !== '') {

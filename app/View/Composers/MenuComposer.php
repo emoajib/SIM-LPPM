@@ -19,7 +19,8 @@ class MenuComposer
     {
         $user = Auth::user();
         $isModern = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern')) === 'modern';
-        $cacheKey = 'menu_items_'.($user ? $user->id : 'guest').'_'.(active_role() ?? 'none').'_'.($isModern ? 'modern' : 'classic');
+        $menuCacheVersion = (int) Setting::get('menu_cache_version', 1);
+        $cacheKey = 'menu_items_'.($user ? $user->id : 'guest').'_'.(active_role() ?? 'none').'_'.($isModern ? 'modern' : 'classic').'_v'.$menuCacheVersion;
 
         $items = Cache::remember($cacheKey, 60, function () use ($user) {
             return $this->menuItems($user);

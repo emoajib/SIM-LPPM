@@ -387,7 +387,7 @@ class Show extends Component
         }
 
         if ($this->proposal->hasPendingBudgetAmendment()) {
-            $this->toastError('LPJ belum bisa disahkan: ada amandemen RAB yang menunggu persetujuan.');
+            $this->toastError('LPJ belum bisa disahkan: ada amandemen RAB yang menunggu persetujuan. Putuskan di Persetujuan Keuangan.');
 
             return;
         }
@@ -414,7 +414,7 @@ class Show extends Component
         }
 
         if ($this->proposal->hasPendingBudgetAmendment()) {
-            $this->toastError('LPJ belum bisa disahkan: ada amandemen RAB yang menunggu persetujuan.');
+            $this->toastError('LPJ belum bisa disahkan: ada amandemen RAB yang menunggu persetujuan. Putuskan di Persetujuan Keuangan.');
 
             return;
         }

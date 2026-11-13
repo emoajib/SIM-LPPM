@@ -48,7 +48,7 @@
             </div>
             <div class="row">
                 <div class="k">Mode Tanda Tangan</div>
-                <div class="v">{{ ($letter->signature_mode?->value === 'tte') ? 'TTE (QR Code)' : 'Kosong' }}</div>
+                <div class="v">{{ ($letter->signature_mode?->value === 'tte') ? 'TTE (QR Code)' : 'Tanda tangan basah (manual)' }}</div>
             </div>
         </div>
 

@@ -61,7 +61,7 @@ class BudgetCapManager extends Component
     public function render()
     {
         return view('livewire.settings.tabs.budget-cap-manager', [
-            'budgetCaps' => BudgetCap::latest('year')->paginate(10),
+            'budgetCaps' => BudgetCap::orderByDesc('year')->orderBy('semester')->paginate(10),
             'researchSchemes' => ResearchScheme::all(),
             'communityServiceSchemes' => CommunityServiceScheme::all(),
         ]);
