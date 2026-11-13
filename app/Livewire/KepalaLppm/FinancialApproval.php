@@ -195,7 +195,8 @@ class FinancialApproval extends Component
                 'method' => request()->method(),
             ]);
         } catch (ValidationException $e) {
-            $this->toastError(collect($e->errors())->flatten()->first() ?? 'Gagal menyetujui amandemen.');
+            $msg = collect($e->errors())->flatten()->implode(' ');
+            $this->toastError($msg ?: 'Gagal menyetujui amandemen.');
         } catch (\Throwable $e) {
             $this->toastError('Gagal menyetujui amandemen: '.$e->getMessage());
         }

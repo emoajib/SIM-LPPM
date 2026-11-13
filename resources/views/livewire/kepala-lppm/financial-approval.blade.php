@@ -263,14 +263,17 @@ logbook_approved_at !== null;
                                                 wire:confirm="Setujui amandemen RAB v{{ $pendingAmd->version }}? RAB aktif akan diperbarui.">
                                                 <i class="ti ti-check me-1"></i>Setujui
                                             </button>
-                                            <button type="button" class="btn btn-sm btn-outline-danger" wire:click="rejectAmendment('{{ $pendingAmd->id }}')"
-                                                wire:confirm="Tolak amandemen RAB v{{ $pendingAmd->version }}?">
-                                                <i class="ti ti-x me-1"></i>Tolak
+                                            <button type="button" class="btn btn-sm btn-danger" wire:click="rejectAmendment('{{ $pendingAmd->id }}')"
+                                                wire:confirm="Tolak amandemen RAB v{{ $pendingAmd->version }}? Amandemen akan ditolak dan LPJ dapat disahkan dengan RAB awal.">
+                                                <i class="ti ti-x me-1"></i>Tolak Amandemen
                                             </button>
                                         </div>
                                     @else
                                         <span class="text-muted small">Menunggu keputusan Kepala LPPM</span>
                                     @endif
+                                    <div class="small text-muted mt-1" style="font-size:0.7rem;">
+                                        Jika alokasi baru &lt; realisasi, tolak amandemen agar LPJ bisa disahkan dengan RAB awal.
+                                    </div>
                                 @else
                                     <span class="text-muted small">—</span>
                                 @endif

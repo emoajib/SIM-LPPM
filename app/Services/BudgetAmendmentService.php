@@ -316,7 +316,7 @@ class BudgetAmendmentService
 
         if ($violations !== []) {
             throw ValidationException::withMessages(['amendment' => array_merge(
-                ['Realisasi yang sudah dicatat melebihi alokasi baru:'],
+                ['Realisasi yang sudah dicatat melebihi alokasi baru. Tolak amandemen ini, atau minta dosen menyesuaikan alokasi agar tidak di bawah realisasi:'],
                 $violations
             )]);
         }
