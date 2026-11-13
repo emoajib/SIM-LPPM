@@ -7,6 +7,7 @@ namespace App\Livewire\KepalaLppm;
 use App\Enums\BudgetAmendmentStatus;
 use App\Enums\ProposalStatus;
 use App\Livewire\Concerns\HasToast;
+use App\Models\ActivityLog;
 use App\Models\BudgetAmendment;
 use App\Models\Faculty;
 use App\Models\Proposal;
@@ -135,6 +136,16 @@ class FinancialApproval extends Component
         $message = 'Laporan Keuangan untuk usulan "'.$proposal->title.'" berhasil disahkan.';
         session()->flash('success', $message);
         $this->toastSuccess($message);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'activity' => 'approve_lpj',
+            'description' => 'Mengesahkan LPJ: '.$proposal->title,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+            'url' => request()->fullUrl(),
+            'method' => request()->method(),
+        ]);
     }
 
     // Vetted by AI - Manual Review Required by Senior Engineer/Manager
@@ -152,6 +163,16 @@ class FinancialApproval extends Component
         $message = 'Pengesahan Laporan Keuangan usulan "'.$proposal->title.'" dibatalkan.';
         session()->flash('info', $message);
         $this->toastInfo($message);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'activity' => 'unapprove_lpj',
+            'description' => 'Membatalkan pengesahan LPJ: '.$proposal->title,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+            'url' => request()->fullUrl(),
+            'method' => request()->method(),
+        ]);
     }
 
     public function approveAmendment(string $amendmentId): void
@@ -163,6 +184,16 @@ class FinancialApproval extends Component
             app(BudgetAmendmentService::class)->approve($amendment, Auth::user(), $this->decisionNotes ?: null);
             $this->reset('decisionNotes');
             $this->toastSuccess('Amandemen RAB disetujui dan RAB aktif diperbarui.');
+
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'activity' => 'approve_amendment',
+                'description' => 'Menyetujui amandemen RAB #'.$amendment->id,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'url' => request()->fullUrl(),
+                'method' => request()->method(),
+            ]);
         } catch (ValidationException $e) {
             $this->toastError(collect($e->errors())->flatten()->first() ?? 'Gagal menyetujui amandemen.');
         } catch (\Throwable $e) {
@@ -188,6 +219,16 @@ class FinancialApproval extends Component
             app(BudgetAmendmentService::class)->reject($amendment, Auth::user(), $this->decisionNotes);
             $this->reset('decisionNotes');
             $this->toastSuccess('Amandemen RAB ditolak.');
+
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'activity' => 'reject_amendment',
+                'description' => 'Menolak amandemen RAB #'.$amendment->id,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'url' => request()->fullUrl(),
+                'method' => request()->method(),
+            ]);
         } catch (ValidationException $e) {
             $this->toastError(collect($e->errors())->flatten()->first() ?? 'Gagal menolak amandemen.');
         } catch (\Throwable $e) {
@@ -279,6 +320,16 @@ class FinancialApproval extends Component
         $message = 'LPJ dikembalikan ke dosen beserta catatan perbaikan. Dosen akan menerima notifikasi.';
         session()->flash('success', $message);
         $this->toastSuccess($message);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'activity' => 'return_lpj',
+            'description' => 'Mengembalikan LPJ: '.$proposal->title,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+            'url' => request()->fullUrl(),
+            'method' => request()->method(),
+        ]);
         $this->dispatch('close-modal', modalId: 'modalReturnLpj');
     }
 
