@@ -41,6 +41,8 @@ class DashboardProposalTableTest extends TestCase
         $this->admin->assignRole('admin lppm');
 
         session(['active_role' => 'admin lppm']);
+        session(['sim_lppm_app_theme' => 'modern']);
+        session(['sim_lppm_dashboard_theme' => 'modern']);
         $this->actingAs($this->admin);
     }
 
