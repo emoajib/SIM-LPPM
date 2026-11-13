@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\BudgetAmendmentStatus;
 use App\Models\BudgetGroup;
 use App\Models\DailyNote;
 use App\Models\Proposal;
@@ -84,6 +85,8 @@ class DailyNoteController
             'notes' => $notes,
             'can_manage' => $this->canManage($user, $proposal),
             'is_editable' => ! $proposal->logbook_approved_at,
+            'pending_amendments' => $proposal->budgetAmendments()->where('status', BudgetAmendmentStatus::PENDING->value)->count(),
+            'can_decide_amendment' => $user->activeHasAnyRole(['kepala lppm', 'admin lppm', 'superadmin']),
         ]);
     }
 

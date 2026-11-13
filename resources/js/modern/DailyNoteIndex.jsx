@@ -40,6 +40,7 @@ export default function DailyNoteIndex() {
     const [evidenceFiles, setEvidenceFiles] = useState([]);
     const [showForm, setShowForm] = useState(false);
     const [toast, setToast] = useState(null);
+    const [pendingAmendments, setPendingAmendments] = useState(0);
 
     const userRoles = window.__USER_ROLES__ || [];
     const userId = window.__USER_ID__ || "";
@@ -72,6 +73,7 @@ export default function DailyNoteIndex() {
             }
             setBudgetGroups(json.budget_groups || []);
             setNotes(json.notes || []);
+            setPendingAmendments(Number(json.pending_amendments || 0));
         } catch (e) {
             console.error(e);
             setError("Gagal memuat catatan harian. Silakan coba lagi.");
@@ -318,15 +320,25 @@ export default function DailyNoteIndex() {
 
             <ModuleTabNav tabs={tabs} currentPath={currentPath} />
 
-            <div className="px-4 py-3 rounded-lg border border-amber-200 bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:border-amber-900/50 dark:text-amber-300 text-sm flex items-center gap-2">
-                <span>ℹ</span>
-                <span>
-                    Pengelolaan amandemen RAB dilakukan di halaman klasik.{" "}
-                    <a href={`/research/daily-note/${window.__PROPOSAL_ID__}`} className="underline font-semibold">
-                        Buka halaman klasik
-                    </a>
-                </span>
+            <div className="text-xs text-slate-500 dark:text-slate-400">
+                Pengelolaan amandemen RAB dilakukan di{" "}
+                <a href={`/research/daily-note/${window.__PROPOSAL_ID__}`} className="underline">
+                    halaman klasik
+                </a>
+                .
             </div>
+
+            {pendingAmendments > 0 && (
+                <div className="px-4 py-3 rounded-lg border border-amber-200 bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:border-amber-900/50 dark:text-amber-300 text-sm flex items-center gap-2">
+                    <span>⚠</span>
+                    <span>
+                        Ada {pendingAmendments} amandemen RAB menunggu keputusan.{" "}
+                        <a href={`/research/daily-note/${window.__PROPOSAL_ID__}`} className="underline font-semibold">
+                            Buka halaman klasik untuk memutuskan
+                        </a>
+                    </span>
+                </div>
+            )}
 
             {/* Budget vs Actual Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
