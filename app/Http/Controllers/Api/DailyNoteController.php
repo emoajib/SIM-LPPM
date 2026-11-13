@@ -348,6 +348,46 @@ class DailyNoteController
         return response()->json(['message' => 'Amandemen disetujui.']);
     }
 
+    public function requestAmendment(Request $request, string $proposalId)
+    {
+        $user = Auth::user();
+
+        $proposal = Proposal::find($proposalId);
+        if (! $proposal || ! $this->canAccess($user, $proposal)) {
+            return response()->json(['message' => 'Proposal tidak ditemukan'], 404);
+        }
+
+        $check = app(BudgetAmendmentService::class)->canRequest($proposal, $user);
+        if (! $check['ok']) {
+            return response()->json(['message' => $check['reason']], 422);
+        }
+
+        $validated = $request->validate([
+            'reason' => 'required|string|min:10',
+            'items' => 'required|array|min:1',
+            'items.*.budget_group_id' => 'required',
+            'items.*.item_description' => 'required|string',
+            'items.*.volume' => 'required|numeric|min:0',
+            'items.*.unit_price' => 'required|numeric|min:0',
+        ]);
+
+        try {
+            $amendment = app(BudgetAmendmentService::class)->request(
+                $proposal,
+                $user,
+                $validated['items'],
+                $validated['reason']
+            );
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return response()->json([
+            'message' => 'Amandemen RAB berhasil diajukan.',
+            'amendment_id' => $amendment->id,
+        ], 201);
+    }
+
     public function rejectAmendment(Request $request, string $proposalId, string $amendmentId)
     {
         $user = Auth::user();

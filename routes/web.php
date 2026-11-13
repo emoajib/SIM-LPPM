@@ -254,6 +254,9 @@ Route::middleware(['auth'])->group(function () {
             ->name('daily-notes.evidence.destroy');
 
         // Budget amendment decisions (Kepala LPPM / Admin LPPM)
+        Route::post('api/v1/daily-notes/{proposal}/amendments', [DailyNoteController::class, 'requestAmendment'])
+            ->middleware('throttle:60,1')
+            ->name('daily-notes.amendments.request');
         Route::post('api/v1/daily-notes/{proposal}/amendments/{amendment}/approve', [DailyNoteController::class, 'approveAmendment'])
             ->middleware('throttle:60,1')
             ->name('daily-notes.amendments.approve');
