@@ -78,6 +78,14 @@ build/phpstan/
 # One-off SQL scripts
 /*.sql
 
+# Local report documents (user-generated, not part of app)
+/docs/Laporan_Update_SIM-LPPM_*
+/docs/TEMPLATE_LAPORAN_UPDATE_SIM_LPPM.*
+
+# Local deploy script variants (user-generated)
+/update_production.sh.OLD
+/update_production_fixed.sh
+
 # Deployments
 /sosiomen_deploy/
 /sosiomen_deploy.zip
