@@ -58,13 +58,13 @@ class AuditBudgetCaps extends Command
         foreach ($caps as $cap) {
             $sc = is_array($cap->scheme_caps) ? $cap->scheme_caps : [];
             foreach ($researchSchemes as $sid) {
-                $has = ($cap->research_budget_cap !== null) || (isset($sc['research'][$sid]) && $sc['research'][$sid] !== null);
+                $has = ! empty($cap->research_budget_cap) || ! empty($sc['research'][$sid] ?? null);
                 if (! $has) {
                     $missingResearch[] = "{$cap->year}/{$cap->semester}: skema #{$sid}";
                 }
             }
             foreach ($pkmSchemes as $sid) {
-                $has = ($cap->community_service_budget_cap !== null) || (isset($sc['community_service'][$sid]) && $sc['community_service'][$sid] !== null);
+                $has = ! empty($cap->community_service_budget_cap) || ! empty($sc['community_service'][$sid] ?? null);
                 if (! $has) {
                     $missingPkm[] = "{$cap->year}/{$cap->semester}: skema #{$sid}";
                 }
