@@ -120,6 +120,6 @@ class BudgetCap extends Model
             $query->where('semester', $semester);
         }
 
-        return $query->first();
+        return $query->orderByDesc('updated_at')->first();
     }
 }

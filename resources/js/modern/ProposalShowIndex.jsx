@@ -21,6 +21,7 @@ export default function ProposalShowIndex() {
     const isVerifier = userRoles.some((r) => ["admin lppm", "kepala lppm", "rektor", "dosen"].includes(r));
     const isResearch = window.location.pathname.includes("/research/");
     const module = isResearch ? "research" : "communityService";
+    const apiBase = isResearch ? "/research" : "/community-service";
 
     const tabs = [
         ...MODULE_TABS[module],
@@ -31,7 +32,7 @@ export default function ProposalShowIndex() {
     useEffect(() => {
         const id = window.__PROPOSAL_ID__;
         if (!id) { setError("ID proposal tidak ditemukan."); setLoading(false); return; }
-        fetch(`/research/api/v1/proposals/${id}`, { credentials: "same-origin", cache: "no-store" })
+        fetch(`${apiBase}/api/v1/proposals/${id}`, { credentials: "same-origin", cache: "no-store" })
             .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
             .then((json) => { setProposal(json); setLoading(false); })
             .catch((e) => { console.error(e); setError("Gagal memuat detail proposal."); setLoading(false); });

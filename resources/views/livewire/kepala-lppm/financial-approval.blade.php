@@ -257,16 +257,20 @@ logbook_approved_at !== null;
                                         <i class="ti ti-alert-triangle"></i> v{{ $pendingAmd->version }} pending
                                     </span>
                                     <div class="small text-muted mb-1" style="font-size:0.7rem;">{{ $pendingAmd->requester->name ?? '-' }}</div>
-                                    <div class="btn-list flex-nowrap">
-                                        <button type="button" class="btn btn-sm btn-success" wire:click="approveAmendment('{{ $pendingAmd->id }}')"
-                                            wire:confirm="Setujui amandemen RAB v{{ $pendingAmd->version }}? RAB aktif akan diperbarui.">
-                                            <i class="ti ti-check me-1"></i>Setujui
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" wire:click="rejectAmendment('{{ $pendingAmd->id }}')"
-                                            wire:confirm="Tolak amandemen RAB v{{ $pendingAmd->version }}?">
-                                            <i class="ti ti-x me-1"></i>Tolak
-                                        </button>
-                                    </div>
+                                    @if (auth()->user()?->activeHasAnyRole(['kepala lppm', 'admin lppm', 'superadmin']))
+                                        <div class="btn-list flex-nowrap">
+                                            <button type="button" class="btn btn-sm btn-success" wire:click="approveAmendment('{{ $pendingAmd->id }}')"
+                                                wire:confirm="Setujui amandemen RAB v{{ $pendingAmd->version }}? RAB aktif akan diperbarui.">
+                                                <i class="ti ti-check me-1"></i>Setujui
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" wire:click="rejectAmendment('{{ $pendingAmd->id }}')"
+                                                wire:confirm="Tolak amandemen RAB v{{ $pendingAmd->version }}?">
+                                                <i class="ti ti-x me-1"></i>Tolak
+                                            </button>
+                                        </div>
+                                    @else
+                                        <span class="text-muted small">Menunggu keputusan Kepala LPPM</span>
+                                    @endif
                                 @else
                                     <span class="text-muted small">—</span>
                                 @endif
@@ -282,35 +286,41 @@ logbook_approved_at !== null;
                                     </a>
 
                                     @if ($isApproved)
-                                        <button type="button" wire:click="unapproveLpj('{{ $proposal->id }}')" class="btn btn-sm btn-outline-danger"
-                                            wire:confirm="Yakin ingin membatalkan pengesahan LPJ proposal ini? Dosen akan dapat merevisi kembali berkas/catatan."
-                                            wire:loading.attr="disabled">
-                                            <span wire:loading.remove wire:target="unapproveLpj('{{ $proposal->id }}')">
-                                                
-                                                Batal Sahkan
-                                            </span>
-                                            <span wire:loading wire:target="unapproveLpj('{{ $proposal->id }}')">
-                                                <span class="spinner-border spinner-border-sm"></span>
-                                            </span>
-                                        </button>
-                                    @else
-                                        <button type="button" wire:click="approveLpj('{{ $proposal->id }}')" class="btn btn-sm btn-success"
-                                            wire:confirm="Sahkan Laporan Keuangan (LPJ) untuk proposal ini?"
-                                            wire:loading.attr="disabled">
-                                            <span wire:loading.remove wire:target="approveLpj('{{ $proposal->id }}')">
-                                                
-                                                Sahkan LPJ
-                                            </span>
-                                            <span wire:loading wire:target="approveLpj('{{ $proposal->id }}')">
-                                                <span class="spinner-border spinner-border-sm"></span>
-                                            </span>
-                                        </button>
-                                        @if ($scanMedia || $proposal->dailyNotes->count() > 0)
-                                            <button type="button" wire:click="openReturnModal('{{ $proposal->id }}')" class="btn btn-sm btn-outline-warning"
-                                                data-bs-toggle="modal" data-bs-target="#modalReturnLpj" title="Kembalikan LPJ ke dosen beserta catatan perbaikan">
-                                                
-                                                Kembalikan
+                                        @if (auth()->user()?->activeHasAnyRole(['kepala lppm', 'admin lppm', 'superadmin']))
+                                            <button type="button" wire:click="unapproveLpj('{{ $proposal->id }}')" class="btn btn-sm btn-outline-danger"
+                                                wire:confirm="Yakin ingin membatalkan pengesahan LPJ proposal ini? Dosen akan dapat merevisi kembali berkas/catatan."
+                                                wire:loading.attr="disabled">
+                                                <span wire:loading.remove wire:target="unapproveLpj('{{ $proposal->id }}')">
+                                                    
+                                                    Batal Sahkan
+                                                </span>
+                                                <span wire:loading wire:target="unapproveLpj('{{ $proposal->id }}')">
+                                                    <span class="spinner-border spinner-border-sm"></span>
+                                                </span>
                                             </button>
+                                        @endif
+                                    @else
+                                        @if (auth()->user()?->activeHasAnyRole(['kepala lppm', 'admin lppm', 'superadmin']))
+                                            <button type="button" wire:click="approveLpj('{{ $proposal->id }}')" class="btn btn-sm btn-success"
+                                                wire:confirm="Sahkan Laporan Keuangan (LPJ) untuk proposal ini?"
+                                                wire:loading.attr="disabled">
+                                                <span wire:loading.remove wire:target="approveLpj('{{ $proposal->id }}')">
+                                                    
+                                                    Sahkan LPJ
+                                                </span>
+                                                <span wire:loading wire:target="approveLpj('{{ $proposal->id }}')">
+                                                    <span class="spinner-border spinner-border-sm"></span>
+                                                </span>
+                                            </button>
+                                            @if ($scanMedia || $proposal->dailyNotes->count() > 0)
+                                                <button type="button" wire:click="openReturnModal('{{ $proposal->id }}')" class="btn btn-sm btn-outline-warning"
+                                                    data-bs-toggle="modal" data-bs-target="#modalReturnLpj" title="Kembalikan LPJ ke dosen beserta catatan perbaikan">
+                                                    
+                                                    Kembalikan
+                                                </button>
+                                            @endif
+                                        @else
+                                            <span class="text-muted small">Hanya Kepala LPPM/Admin yang dapat mengesahkan</span>
                                         @endif
                                     @endif
                                 </div>

@@ -47,6 +47,11 @@
     {{-- Tabs + Table --}}
     <div class="card border-0 shadow-sm section-table @if($showForm) hidden @endif" id="sectionTable">
         <div class="card-header bg-transparent border-0 pt-4 pb-0 letter-card-header">
+            <div class="d-flex justify-content-end mb-2">
+                <span class="badge {{ (app(\App\Models\Setting::class)::get('surat_signature_mode','tte') === 'tte') ? 'bg-info-lt' : 'bg-secondary-lt' }}">
+                    Mode tanda tangan: {{ (app(\App\Models\Setting::class)::get('surat_signature_mode','tte') === 'tte') ? 'TTE (QR)' : 'Basah' }}
+                </span>
+            </div>
             <div class="letter-tabs-scroll">
             <ul class="nav nav-tabs card-header-tabs">
                 @php
