@@ -264,9 +264,13 @@ Route::middleware(['auth'])->group(function () {
             ->middleware('throttle:60,1')
             ->name('daily-notes.amendments.reject');
 
+        Route::post('api/v1/daily-notes/{proposal}/approve-logbook', [DailyNoteController::class, 'approveLogbook'])
+            ->middleware('throttle:60,1')
+            ->name('daily-notes.approve-logbook');
+
         // Modern theme page for Verifikasi Luaran (Research)
         Route::get('verifikasi-luaran', function () {
-            $theme = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern'));
+            $theme = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'classic'));
             if ($theme !== 'modern') {
                 return redirect()->route('accreditation.verification');
             }
@@ -279,7 +283,7 @@ Route::middleware(['auth'])->group(function () {
 
         // Modern theme page for Daily Note (Realisasi Anggaran)
         Route::get('daily-note/{proposal}/modern', function (Proposal $proposal) {
-            $theme = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern'));
+            $theme = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'classic'));
             if ($theme !== 'modern') {
                 return redirect()->route('research.daily-note.show', $proposal);
             }
@@ -311,7 +315,7 @@ Route::middleware(['auth'])->group(function () {
 
         // Modern theme page for Proposal Show (detail)
         Route::get('proposal/{proposal}/modern', function (Proposal $proposal) {
-            $theme = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern'));
+            $theme = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'classic'));
             if ($theme !== 'modern') {
                 return redirect()->route('research.proposal.show', $proposal);
             }
@@ -383,7 +387,7 @@ Route::middleware(['auth'])->group(function () {
 
         // Modern theme page for Verifikasi Luaran (Community Service)
         Route::get('verifikasi-luaran', function () {
-            $theme = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern'));
+            $theme = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'classic'));
             if ($theme !== 'modern') {
                 return redirect()->route('accreditation.verification');
             }
@@ -396,7 +400,7 @@ Route::middleware(['auth'])->group(function () {
 
         // Modern theme page for Daily Note (Realisasi Anggaran) - Community Service
         Route::get('daily-note/{proposal}/modern', function (Proposal $proposal) {
-            $theme = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern'));
+            $theme = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'classic'));
             if ($theme !== 'modern') {
                 return redirect()->route('community-service.daily-note.show', $proposal);
             }
@@ -428,7 +432,7 @@ Route::middleware(['auth'])->group(function () {
 
         // Modern theme page for Proposal Show (detail) - Community Service
         Route::get('proposal/{proposal}/modern', function (Proposal $proposal) {
-            $theme = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern'));
+            $theme = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'classic'));
             if ($theme !== 'modern') {
                 return redirect()->route('community-service.proposal.show', $proposal);
             }
