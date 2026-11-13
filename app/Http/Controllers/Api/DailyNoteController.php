@@ -10,6 +10,7 @@ use App\Models\Proposal;
 use App\Models\StudyProgram;
 use App\Services\BudgetAmendmentService;
 use App\Services\ImageCompressionService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -89,16 +90,18 @@ class DailyNoteController
             'is_editable' => ! $proposal->logbook_approved_at,
             'pending_amendments' => $proposal->budgetAmendments()->where('status', BudgetAmendmentStatus::PENDING->value)->count(),
             'can_decide_amendment' => $user->activeHasAnyRole(['kepala lppm', 'admin lppm', 'superadmin']),
-            'amendments' => $proposal->budgetAmendments()->with(['requester', 'items'])->get()->map(fn ($a) => [
-                'id' => $a->id,
-                'version' => $a->version,
-                'status' => $a->status->value,
-                'reason' => $a->reason,
-                'requester' => $a->requester?->name,
-                'decided_at' => $a->decided_at?->format('d/m/Y H:i'),
-                'items_count' => $a->items->count(),
-                'total' => (float) $a->items->sum('total_price'),
-            ])->values(),
+            'amendments' => $proposal->budgetAmendments()->with(['requester', 'items'])->get()->map(function (BudgetAmendment $a) {
+                return [
+                    'id' => $a->id,
+                    'version' => $a->version,
+                    'status' => $a->status->value,
+                    'reason' => $a->reason,
+                    'requester' => $a->requester?->name,
+                    'decided_at' => $a->decided_at ? Carbon::parse($a->decided_at)->format('d/m/Y H:i') : null,
+                    'items_count' => $a->items->count(),
+                    'total' => (float) $a->items->sum('total_price'),
+                ];
+            })->values(),
         ]);
     }
 
