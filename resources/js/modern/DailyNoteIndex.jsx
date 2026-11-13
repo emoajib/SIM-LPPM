@@ -24,6 +24,8 @@ export default function DailyNoteIndex() {
     const [module, setModule] = useState("research");
     const [budgetGroups, setBudgetGroups] = useState([]);
     const [notes, setNotes] = useState([]);
+    const [amendments, setAmendments] = useState([]);
+    const [canDecideAmendment, setCanDecideAmendment] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [formMode, setFormMode] = useState("add"); // 'add' | 'edit'
@@ -45,6 +47,43 @@ export default function DailyNoteIndex() {
     const userRoles = window.__USER_ROLES__ || [];
     const userId = window.__USER_ID__ || "";
     const isVerifier = userRoles.some((r) => VERIFIER_ROLES.includes(r));
+    const proposalId = window.__PROPOSAL_ID__ || "";
+
+    const handleApproveAmendment = async (id) => {
+        if (!confirm("Setujui amandemen ini? RAB aktif akan diperbarui.")) return;
+        try {
+            const res = await fetch(`/research/api/v1/daily-notes/${proposalId}/amendments/${id}/approve`, {
+                method: "POST",
+                credentials: "same-origin",
+                headers: { "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.content || "" },
+            });
+            const json = await res.json();
+            if (!res.ok) throw new Error(json.message || "Gagal");
+            setToast({ type: "success", message: json.message });
+            load();
+        } catch (e) {
+            setToast({ type: "error", message: e.message });
+        }
+    };
+
+    const handleRejectAmendment = async (id) => {
+        const notes = prompt("Catatan penolakan (min 5 karakter):");
+        if (notes === null) return;
+        try {
+            const res = await fetch(`/research/api/v1/daily-notes/${proposalId}/amendments/${id}/reject`, {
+                method: "POST",
+                credentials: "same-origin",
+                headers: { "Content-Type": "application/json", "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.content || "" },
+                body: JSON.stringify({ notes }),
+            });
+            const json = await res.json();
+            if (!res.ok) throw new Error(json.message || "Gagal");
+            setToast({ type: "success", message: json.message });
+            load();
+        } catch (e) {
+            setToast({ type: "error", message: e.message });
+        }
+    };
     const canManage = window.__CAN_MANAGE__ === "true";
     const isEditable = window.__IS_EDITABLE__ === "true";
 
@@ -74,6 +113,8 @@ export default function DailyNoteIndex() {
             setBudgetGroups(json.budget_groups || []);
             setNotes(json.notes || []);
             setPendingAmendments(Number(json.pending_amendments || 0));
+            setAmendments(json.amendments || []);
+            setCanDecideAmendment(Boolean(json.can_decide_amendment));
         } catch (e) {
             console.error(e);
             setError("Gagal memuat catatan harian. Silakan coba lagi.");
@@ -319,6 +360,32 @@ export default function DailyNoteIndex() {
             </nav>
 
             <ModuleTabNav tabs={tabs} currentPath={currentPath} />
+
+            {amendments.length > 0 && (
+                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4">
+                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">Amandemen RAB</h3>
+                    <ul className="space-y-2">
+                        {amendments.map((a) => (
+                            <li key={a.id} className="flex items-center justify-between gap-3 text-sm">
+                                <div>
+                                    <span className="font-medium">v{a.version}</span>{" "}
+                                    <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-bold border ${a.status === "pending" ? "bg-amber-100 text-amber-800" : a.status === "approved" ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"}`}>
+                                        {a.status}
+                                    </span>
+                                    <div className="text-xs text-slate-500 dark:text-slate-400">{a.requester} — {a.items_count} item — {formatRupiah(a.total)}</div>
+                                    {a.reason && <div className="text-xs text-slate-400 italic">{a.reason}</div>}
+                                </div>
+                                {a.status === "pending" && canDecideAmendment && (
+                                    <div className="flex gap-2">
+                                        <button onClick={() => handleApproveAmendment(a.id)} className="px-3 py-1 text-xs rounded bg-emerald-600 text-white hover:bg-emerald-700">Setujui</button>
+                                        <button onClick={() => handleRejectAmendment(a.id)} className="px-3 py-1 text-xs rounded bg-rose-600 text-white hover:bg-rose-700">Tolak</button>
+                                    </div>
+                                )}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
 
             <div className="text-xs text-slate-500 dark:text-slate-400">
                 Pengelolaan amandemen RAB dilakukan di{" "}

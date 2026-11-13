@@ -253,6 +253,14 @@ Route::middleware(['auth'])->group(function () {
             ->middleware('throttle:60,1')
             ->name('daily-notes.evidence.destroy');
 
+        // Budget amendment decisions (Kepala LPPM / Admin LPPM)
+        Route::post('api/v1/daily-notes/{proposal}/amendments/{amendment}/approve', [DailyNoteController::class, 'approveAmendment'])
+            ->middleware('throttle:60,1')
+            ->name('daily-notes.amendments.approve');
+        Route::post('api/v1/daily-notes/{proposal}/amendments/{amendment}/reject', [DailyNoteController::class, 'rejectAmendment'])
+            ->middleware('throttle:60,1')
+            ->name('daily-notes.amendments.reject');
+
         // Modern theme page for Verifikasi Luaran (Research)
         Route::get('verifikasi-luaran', function () {
             $theme = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern'));

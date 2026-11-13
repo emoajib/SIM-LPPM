@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enums\BudgetAmendmentStatus;
+use App\Models\BudgetAmendment;
 use App\Models\BudgetGroup;
 use App\Models\DailyNote;
 use App\Models\Proposal;
 use App\Models\StudyProgram;
+use App\Services\BudgetAmendmentService;
 use App\Services\ImageCompressionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -87,6 +89,16 @@ class DailyNoteController
             'is_editable' => ! $proposal->logbook_approved_at,
             'pending_amendments' => $proposal->budgetAmendments()->where('status', BudgetAmendmentStatus::PENDING->value)->count(),
             'can_decide_amendment' => $user->activeHasAnyRole(['kepala lppm', 'admin lppm', 'superadmin']),
+            'amendments' => $proposal->budgetAmendments()->with(['requester', 'items'])->get()->map(fn ($a) => [
+                'id' => $a->id,
+                'version' => $a->version,
+                'status' => $a->status->value,
+                'reason' => $a->reason,
+                'requester' => $a->requester?->name,
+                'decided_at' => $a->decided_at?->format('d/m/Y H:i'),
+                'items_count' => $a->items->count(),
+                'total' => (float) $a->items->sum('total_price'),
+            ])->values(),
         ]);
     }
 
@@ -305,6 +317,63 @@ class DailyNoteController
         $media->delete();
 
         return response()->json(['message' => 'File bukti berhasil dihapus.']);
+    }
+
+    public function approveAmendment(Request $request, string $proposalId, string $amendmentId)
+    {
+        $user = Auth::user();
+        if (! $user->activeHasAnyRole(['kepala lppm', 'admin lppm', 'superadmin'])) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $proposal = Proposal::find($proposalId);
+        if (! $proposal || ! $this->canAccess($user, $proposal)) {
+            return response()->json(['message' => 'Proposal tidak ditemukan'], 404);
+        }
+
+        $amendment = BudgetAmendment::where('id', $amendmentId)->where('proposal_id', $proposalId)->first();
+        if (! $amendment) {
+            return response()->json(['message' => 'Amandemen tidak ditemukan'], 404);
+        }
+
+        try {
+            app(BudgetAmendmentService::class)->approve($amendment, $user, $request->get('notes'));
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return response()->json(['message' => 'Amandemen disetujui.']);
+    }
+
+    public function rejectAmendment(Request $request, string $proposalId, string $amendmentId)
+    {
+        $user = Auth::user();
+        if (! $user->activeHasAnyRole(['kepala lppm', 'admin lppm', 'superadmin'])) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $proposal = Proposal::find($proposalId);
+        if (! $proposal || ! $this->canAccess($user, $proposal)) {
+            return response()->json(['message' => 'Proposal tidak ditemukan'], 404);
+        }
+
+        $amendment = BudgetAmendment::where('id', $amendmentId)->where('proposal_id', $proposalId)->first();
+        if (! $amendment) {
+            return response()->json(['message' => 'Amandemen tidak ditemukan'], 404);
+        }
+
+        $notes = (string) $request->get('notes', '');
+        if (mb_strlen(trim($notes)) < 5) {
+            return response()->json(['message' => 'Catatan penolakan minimal 5 karakter.'], 422);
+        }
+
+        try {
+            app(BudgetAmendmentService::class)->reject($amendment, $user, $notes);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return response()->json(['message' => 'Amandemen ditolak.']);
     }
 
     private function canAccess($user, Proposal $proposal): bool
