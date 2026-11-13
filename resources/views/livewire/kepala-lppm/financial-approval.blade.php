@@ -136,6 +136,15 @@
             <label class="form-label small mb-1">Catatan keputusan amandemen</label>
             <textarea wire:model="decisionNotes" class="form-control form-control-sm" rows="1" placeholder="Opsional saat menyetujui; wajib minimal 5 karakter saat menolak."></textarea>
         </div>
+        @if (($this->stats['blocked_amendment'] ?? 0) > 0)
+            <div class="alert alert-warning d-flex align-items-center gap-2 mx-3 mt-2 mb-0">
+                <i class="ti ti-alert-triangle"></i>
+                <div>
+                    <strong>{{ $this->stats['blocked_amendment'] }} LPJ</strong> terblokir karena amandemen RAB pending yang alokasi barunya lebih kecil dari realisasi.
+                    Gunakan tombol <strong>Tolak Amandemen</strong> (merah) pada kolom Amandemen, atau minta dosen menyesuaikan alokasi agar tidak di bawah realisasi.
+                </div>
+            </div>
+        @endif
         <div class="table-responsive">
             <table class="table table-vcenter card-table table-hover">
                 <thead>
