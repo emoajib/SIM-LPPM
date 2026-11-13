@@ -36,6 +36,9 @@ class BudgetCapManager extends Component
     #[Validate('boolean')]
     public bool $enforce_percentage = true;
 
+    #[Validate('nullable|numeric|min:0|max:100')]
+    public ?string $amendment_tolerance_percent = '10';
+
     public array $research_scheme_caps = [];
 
     public array $community_service_scheme_caps = [];
@@ -67,10 +70,42 @@ class BudgetCapManager extends Component
         ]);
     }
 
+    public function copyFromPrevious(): void
+    {
+        $previous = BudgetCap::orderByDesc('year')->orderByDesc('semester')->first();
+        if (! $previous) {
+            $this->toastError('Belum ada periode sebelumnya untuk disalin.');
+
+            return;
+        }
+        $this->year = (string) $previous->year;
+        $this->semester = $previous->semester === 'ganjil' ? 'genap' : 'ganjil';
+        $this->research_budget_cap = $previous->research_budget_cap ? (string) (int) $previous->research_budget_cap : null;
+        $this->community_service_budget_cap = $previous->community_service_budget_cap ? (string) (int) $previous->community_service_budget_cap : null;
+        $this->enforce_percentage = $previous->enforce_percentage;
+        $this->amendment_tolerance_percent = $previous->amendment_tolerance_percent !== null ? (string) (float) $previous->amendment_tolerance_percent : '10';
+
+        $caps = is_array($previous->scheme_caps) ? $previous->scheme_caps : [];
+        $this->research_scheme_caps = [];
+        $this->community_service_scheme_caps = [];
+        if (isset($caps['research']) && is_array($caps['research'])) {
+            foreach ($caps['research'] as $k => $v) {
+                $this->research_scheme_caps[$k] = (string) $v;
+            }
+        }
+        if (isset($caps['community_service']) && is_array($caps['community_service'])) {
+            foreach ($caps['community_service'] as $k => $v) {
+                $this->community_service_scheme_caps[$k] = (string) $v;
+            }
+        }
+        $this->toastSuccess('Data periode sebelumnya disalin. Sesuaikan tahun/semester lalu simpan.');
+    }
+
     public function create(): void
     {
-        $this->reset(['year', 'semester', 'research_budget_cap', 'community_service_budget_cap', 'enforce_percentage', 'research_scheme_caps', 'community_service_scheme_caps', 'editingId']);
+        $this->reset(['year', 'semester', 'research_budget_cap', 'community_service_budget_cap', 'enforce_percentage', 'amendment_tolerance_percent', 'research_scheme_caps', 'community_service_scheme_caps', 'editingId']);
         $this->enforce_percentage = true;
+        $this->amendment_tolerance_percent = '10';
         $this->modalTitle = 'Tambah Aturan Anggaran';
     }
 
@@ -117,6 +152,7 @@ class BudgetCapManager extends Component
             'community_service_budget_cap' => $this->community_service_budget_cap ? (int) $this->community_service_budget_cap : null,
             'scheme_caps' => $schemeCaps,
             'enforce_percentage' => $this->enforce_percentage,
+            'amendment_tolerance_percent' => $this->amendment_tolerance_percent !== null && $this->amendment_tolerance_percent !== '' ? (float) $this->amendment_tolerance_percent : 10,
         ];
 
         if ($this->editingId) {
@@ -129,7 +165,7 @@ class BudgetCapManager extends Component
 
         // close modal
         $this->dispatch('close-modal', modalId: 'modal-budget-cap');
-        $this->reset(['year', 'semester', 'research_budget_cap', 'community_service_budget_cap', 'enforce_percentage', 'research_scheme_caps', 'community_service_scheme_caps', 'editingId']);
+        $this->reset(['year', 'semester', 'research_budget_cap', 'community_service_budget_cap', 'enforce_percentage', 'amendment_tolerance_percent', 'research_scheme_caps', 'community_service_scheme_caps', 'editingId']);
 
         session()->flash('success', $message);
         $this->toastSuccess($message);
@@ -143,6 +179,7 @@ class BudgetCapManager extends Component
         $this->research_budget_cap = $budgetCap->research_budget_cap ? (string) (int) $budgetCap->research_budget_cap : null;
         $this->community_service_budget_cap = $budgetCap->community_service_budget_cap ? (string) (int) $budgetCap->community_service_budget_cap : null;
         $this->enforce_percentage = $budgetCap->enforce_percentage;
+        $this->amendment_tolerance_percent = $budgetCap->amendment_tolerance_percent !== null ? (string) (float) $budgetCap->amendment_tolerance_percent : '10';
 
         /** @var array<string, array<int, mixed>> $caps */
         $caps = is_array($budgetCap->scheme_caps) ? $budgetCap->scheme_caps : [];
@@ -177,7 +214,7 @@ class BudgetCapManager extends Component
 
     public function resetForm(): void
     {
-        $this->reset(['year', 'semester', 'research_budget_cap', 'community_service_budget_cap', 'enforce_percentage', 'research_scheme_caps', 'community_service_scheme_caps', 'editingId']);
+        $this->reset(['year', 'semester', 'research_budget_cap', 'community_service_budget_cap', 'enforce_percentage', 'amendment_tolerance_percent', 'research_scheme_caps', 'community_service_scheme_caps', 'editingId']);
     }
 
     public function handleConfirmDeleteAction(): void

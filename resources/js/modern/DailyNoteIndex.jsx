@@ -318,6 +318,16 @@ export default function DailyNoteIndex() {
 
             <ModuleTabNav tabs={tabs} currentPath={currentPath} />
 
+            <div className="px-4 py-3 rounded-lg border border-amber-200 bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:border-amber-900/50 dark:text-amber-300 text-sm flex items-center gap-2">
+                <span>ℹ</span>
+                <span>
+                    Pengelolaan amandemen RAB dilakukan di halaman klasik.{" "}
+                    <a href={`/research/daily-note/${window.__PROPOSAL_ID__}`} className="underline font-semibold">
+                        Buka halaman klasik
+                    </a>
+                </span>
+            </div>
+
             {/* Budget vs Actual Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4">

@@ -3,11 +3,21 @@
     <div class="card">
         <div class="d-flex align-items-center justify-content-between card-header">
             <h3 class="card-title">Pengaturan Anggaran Tahunan</h3>
-            <button type="button" class="btn btn-primary d-flex align-items-center gap-2" wire:click='create' data-bs-toggle="modal"
-                data-bs-target="#modal-budget-cap">
-                <i class="ti ti-plus me-1" aria-hidden="true"></i>
-                Tambah Pengaturan Anggaran
-            </button>
+            <div class="btn-list">
+                <button type="button" class="btn btn-outline-secondary d-flex align-items-center gap-2" wire:click='copyFromPrevious'>
+                    <i class="ti ti-copy me-1" aria-hidden="true"></i>
+                    Salin dari Periode Sebelumnya
+                </button>
+                <button type="button" class="btn btn-primary d-flex align-items-center gap-2" wire:click='create' data-bs-toggle="modal"
+                    data-bs-target="#modal-budget-cap">
+                    <i class="ti ti-plus me-1" aria-hidden="true"></i>
+                    Tambah Pengaturan Anggaran
+                </button>
+            </div>
+        </div>
+        <div class="alert alert-warning py-2 mx-3 mt-2 mb-0 small">
+            <i class="ti ti-alert-triangle me-1"></i>
+            Skema yang tidak memiliki pagu (default maupun per-skema) tidak dibatasi saat pengajuan usulan. Pastikan setiap skema aktif memiliki pagu.
         </div>
         <div class="table-responsive">
             <table class="card-table table table-vcenter">
@@ -217,6 +227,14 @@ Aktifkan Validasi Persentase</strong>
                          Jika dinonaktifkan, validasi batasan persentase per kelompok anggaran akan dilewati. Gunakan hanya untuk keadaan darurat (panic button).
                     </small>
                 </div>
+            <div class="mb-3">
+                <label class="form-label">Toleransi Amandemen RAB (%)</label>
+                <input type="number" wire:model="amendment_tolerance_percent" class="form-control" min="0" max="100" step="0.5">
+                <small class="form-hint">Batas kenaikan/penurunan total amandemen terhadap pagu skema (default 10%).</small>
+                @error('amendment_tolerance_percent')
+                    <div class="d-block invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
             </form>
         </x-slot:body>
         <x-slot:footer>

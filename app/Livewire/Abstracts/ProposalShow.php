@@ -9,7 +9,6 @@ use App\Livewire\Traits\WithApproval;
 use App\Livewire\Traits\WithTeamManagement;
 use App\Models\ProgressReport;
 use App\Models\Proposal;
-use App\Models\Setting;
 use App\Models\User;
 use App\Services\LecturerEligibilityService;
 use App\Services\ProposalService;
@@ -134,12 +133,6 @@ abstract class ProposalShow extends Component
     public function review(): void
     {
         $this->redirectRoute($this->getReviewRoute($this->proposal->id));
-    }
-
-    #[Computed]
-    public function isLetteringModuleActive(): bool
-    {
-        return (bool) Setting::get('module_persuratan_active', false);
     }
 
     #[Computed]
