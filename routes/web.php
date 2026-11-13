@@ -279,6 +279,10 @@ Route::middleware(['auth'])->group(function () {
 
         // Modern theme page for Daily Note (Realisasi Anggaran)
         Route::get('daily-note/{proposal}/modern', function (Proposal $proposal) {
+            $theme = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern'));
+            if ($theme !== 'modern') {
+                return redirect()->route('research.daily-note.show', $proposal);
+            }
             $user = auth()->user();
             if (! $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'superadmin', 'dekan', 'kaprodi', 'dosen', 'reviewer'])) {
                 abort(403);
@@ -307,6 +311,10 @@ Route::middleware(['auth'])->group(function () {
 
         // Modern theme page for Proposal Show (detail)
         Route::get('proposal/{proposal}/modern', function (Proposal $proposal) {
+            $theme = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern'));
+            if ($theme !== 'modern') {
+                return redirect()->route('research.proposal.show', $proposal);
+            }
             $user = auth()->user();
             if (! $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'superadmin', 'dekan', 'kaprodi', 'dosen', 'reviewer'])) {
                 abort(403);
@@ -388,6 +396,10 @@ Route::middleware(['auth'])->group(function () {
 
         // Modern theme page for Daily Note (Realisasi Anggaran) - Community Service
         Route::get('daily-note/{proposal}/modern', function (Proposal $proposal) {
+            $theme = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern'));
+            if ($theme !== 'modern') {
+                return redirect()->route('community-service.daily-note.show', $proposal);
+            }
             $user = auth()->user();
             if (! $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'superadmin', 'dekan', 'kaprodi', 'dosen', 'reviewer'])) {
                 abort(403);
@@ -416,6 +428,10 @@ Route::middleware(['auth'])->group(function () {
 
         // Modern theme page for Proposal Show (detail) - Community Service
         Route::get('proposal/{proposal}/modern', function (Proposal $proposal) {
+            $theme = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'modern'));
+            if ($theme !== 'modern') {
+                return redirect()->route('community-service.proposal.show', $proposal);
+            }
             $user = auth()->user();
             if (! $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'superadmin', 'dekan', 'kaprodi', 'dosen', 'reviewer'])) {
                 abort(403);
