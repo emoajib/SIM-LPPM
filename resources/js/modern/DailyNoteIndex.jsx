@@ -46,13 +46,15 @@ export default function DailyNoteIndex() {
 
     const userRoles = window.__USER_ROLES__ || [];
     const userId = window.__USER_ID__ || "";
+    const isResearch = window.location.pathname.includes("/research/");
+    const apiBase = isResearch ? "/research" : "/community-service";
     const isVerifier = userRoles.some((r) => VERIFIER_ROLES.includes(r));
     const proposalId = window.__PROPOSAL_ID__ || "";
 
     const handleApproveAmendment = async (id) => {
         if (!confirm("Setujui amandemen ini? RAB aktif akan diperbarui.")) return;
         try {
-            const res = await fetch(`/research/api/v1/daily-notes/${proposalId}/amendments/${id}/approve`, {
+            const res = await fetch(`${apiBase}/api/v1/daily-notes/${proposalId}/amendments/${id}/approve`, {
                 method: "POST",
                 credentials: "same-origin",
                 headers: { "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.content || "" },
@@ -70,7 +72,7 @@ export default function DailyNoteIndex() {
         const notes = prompt("Catatan penolakan (min 5 karakter):");
         if (notes === null) return;
         try {
-            const res = await fetch(`/research/api/v1/daily-notes/${proposalId}/amendments/${id}/reject`, {
+            const res = await fetch(`${apiBase}/api/v1/daily-notes/${proposalId}/amendments/${id}/reject`, {
                 method: "POST",
                 credentials: "same-origin",
                 headers: { "Content-Type": "application/json", "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.content || "" },
@@ -98,7 +100,7 @@ export default function DailyNoteIndex() {
         setError(null);
         try {
             const params = new URLSearchParams({ proposal_id: window.__PROPOSAL_ID__ });
-            const res = await fetch(`/research/api/v1/daily-notes?${params.toString()}`, {
+            const res = await fetch(`${apiBase}/api/v1/daily-notes?${params.toString()}`, {
                 credentials: "same-origin",
                 cache: "no-store",
             });
@@ -184,8 +186,8 @@ export default function DailyNoteIndex() {
         evidenceFiles.forEach((file) => formData.append("evidence[]", file));
 
         const url = formMode === "edit" && editingId
-            ? `/research/api/v1/daily-notes/${editingId}`
-            : "/research/api/v1/daily-notes";
+            ? `${apiBase}/api/v1/daily-notes/${editingId}`
+            : `${apiBase}/api/v1/daily-notes`;
         const method = formMode === "edit" && editingId ? "PUT" : "POST";
 
         try {
@@ -216,7 +218,7 @@ export default function DailyNoteIndex() {
             return;
         }
         try {
-            const res = await fetch(`/research/api/v1/daily-notes/${id}`, {
+            const res = await fetch(`${apiBase}/api/v1/daily-notes/${id}`, {
                 method: "DELETE",
                 credentials: "same-origin",
                 headers: {
@@ -234,7 +236,7 @@ export default function DailyNoteIndex() {
     const handleDeleteEvidence = async (noteId, mediaId) => {
         if (!window.confirm("Hapus file bukti?")) return;
         try {
-            const res = await fetch(`/research/api/v1/daily-notes/${noteId}/evidence/${mediaId}`, {
+            const res = await fetch(`${apiBase}/api/v1/daily-notes/${noteId}/evidence/${mediaId}`, {
                 method: "DELETE",
                 credentials: "same-origin",
                 headers: {
@@ -361,13 +363,19 @@ export default function DailyNoteIndex() {
 
             <ModuleTabNav tabs={tabs} currentPath={currentPath} />
 
+            {proposal?.logbook_rejection_notes && (
+                <div className="px-4 py-3 rounded-lg border border-rose-200 bg-rose-50 text-rose-800 dark:bg-rose-950/40 dark:border-rose-900/50 dark:text-rose-300 text-sm">
+                    <strong>LPJ dikembalikan untuk diperbaiki:</strong> {proposal.logbook_rejection_notes}
+                </div>
+            )}
+
             {userRoles.some((r) => ["kepala lppm", "admin lppm", "superadmin"].includes(r)) && !proposal?.logbook_approved_at && (
                 <div className="flex justify-end">
                     <button
                         onClick={async () => {
                             if (!confirm("Sahkan LPJ untuk proposal ini?")) return;
                             try {
-                                const res = await fetch(`/research/api/v1/daily-notes/${proposalId}/approve-logbook`, {
+                                const res = await fetch(`${apiBase}/api/v1/daily-notes/${proposalId}/approve-logbook`, {
                                     method: "POST",
                                     credentials: "same-origin",
                                     headers: { "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.content || "" },
@@ -420,7 +428,7 @@ export default function DailyNoteIndex() {
 
             <div className="text-xs text-slate-500 dark:text-slate-400">
                 Pengelolaan amandemen RAB dilakukan di{" "}
-                <a href={`/research/daily-note/${window.__PROPOSAL_ID__}`} className="underline">
+                <a href={`${apiBase}/daily-note/${window.__PROPOSAL_ID__}`} className="underline">
                     halaman klasik
                 </a>
                 .
@@ -431,7 +439,7 @@ export default function DailyNoteIndex() {
                     <span>⚠</span>
                     <span>
                         Ada {pendingAmendments} amandemen RAB menunggu keputusan.{" "}
-                        <a href={`/research/daily-note/${window.__PROPOSAL_ID__}`} className="underline font-semibold">
+                        <a href={`${apiBase}/daily-note/${window.__PROPOSAL_ID__}`} className="underline font-semibold">
                             Buka halaman klasik untuk memutuskan
                         </a>
                     </span>

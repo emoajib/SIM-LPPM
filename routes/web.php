@@ -501,6 +501,35 @@ Route::middleware(['auth'])->group(function () {
         Route::post('api/v1/proposals/{id}/decide', [ModernProposalController::class, 'decide'])
             ->middleware('throttle:30,1')
             ->name('community.proposal.decide.v1');
+
+        // Modern theme (React) daily-note API (community-service)
+        Route::get('api/v1/daily-notes', [DailyNoteController::class, 'index'])
+            ->middleware('throttle:60,1')
+            ->name('community.daily-notes.index');
+        Route::post('api/v1/daily-notes', [DailyNoteController::class, 'store'])
+            ->middleware('throttle:60,1')
+            ->name('community.daily-notes.store');
+        Route::put('api/v1/daily-notes/{id}', [DailyNoteController::class, 'update'])
+            ->middleware('throttle:60,1')
+            ->name('community.daily-notes.update');
+        Route::delete('api/v1/daily-notes/{id}', [DailyNoteController::class, 'destroy'])
+            ->middleware('throttle:60,1')
+            ->name('community.daily-notes.destroy');
+        Route::delete('api/v1/daily-notes/{id}/evidence/{mediaId}', [DailyNoteController::class, 'deleteEvidence'])
+            ->middleware('throttle:60,1')
+            ->name('community.daily-notes.delete-evidence');
+        Route::post('api/v1/daily-notes/{proposal}/amendments', [DailyNoteController::class, 'requestAmendment'])
+            ->middleware('throttle:60,1')
+            ->name('community.daily-notes.amendments.request');
+        Route::post('api/v1/daily-notes/{proposal}/amendments/{amendment}/approve', [DailyNoteController::class, 'approveAmendment'])
+            ->middleware('throttle:60,1')
+            ->name('community.daily-notes.amendments.approve');
+        Route::post('api/v1/daily-notes/{proposal}/amendments/{amendment}/reject', [DailyNoteController::class, 'rejectAmendment'])
+            ->middleware('throttle:60,1')
+            ->name('community.daily-notes.amendments.reject');
+        Route::post('api/v1/daily-notes/{proposal}/approve-logbook', [DailyNoteController::class, 'approveLogbook'])
+            ->middleware('throttle:60,1')
+            ->name('community.daily-notes.approve-logbook');
     });
 
     // IKU Dashboard & Verification (Standardized access for Rektor/Kepala LPPM)
