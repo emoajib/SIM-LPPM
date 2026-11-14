@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enums\ProposalStatus;
+use App\Livewire\Actions\ApproveProposalAction;
 use App\Livewire\Actions\SubmitProposalAction;
 use App\Models\CommunityService;
 use App\Models\CommunityServiceScheme;
@@ -294,6 +295,26 @@ class ModernProposalController
         }
 
         $result = app(SubmitProposalAction::class)->execute($proposal);
+
+        $status = $result['success'] ? 200 : 422;
+
+        return response()->json($result, $status);
+    }
+
+    public function decide(Request $request, string $id): JsonResponse
+    {
+        $user = Auth::user();
+        if (! $user->activeHasAnyRole(['kepala lppm', 'admin lppm', 'superadmin'])) {
+            return response()->json(['message' => 'Anda tidak memiliki akses untuk keputusan ini.'], 403);
+        }
+
+        $proposal = Proposal::find($id);
+        if (! $proposal) {
+            return response()->json(['message' => 'Proposal tidak ditemukan'], 404);
+        }
+
+        $decision = (string) $request->input('decision', '');
+        $result = app(ApproveProposalAction::class)->execute($proposal, $decision);
 
         $status = $result['success'] ? 200 : 422;
 

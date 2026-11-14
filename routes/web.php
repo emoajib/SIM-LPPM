@@ -213,6 +213,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('api/v1/proposals/{id}/submit', [ModernProposalController::class, 'submit'])
             ->middleware('throttle:30,1')
             ->name('proposal.submit.v1');
+        Route::post('api/v1/proposals/{id}/decide', [ModernProposalController::class, 'decide'])
+            ->middleware('throttle:30,1')
+            ->name('proposal.decide.v1');
 
         // Output verification (Verifikasi Luaran) API for Modern Theme
         Route::get('api/v1/verifikasi-luaran', [VerifikasiLuaranController::class, 'index'])
@@ -495,6 +498,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('api/v1/proposals/{id}/submit', [ModernProposalController::class, 'submit'])
             ->middleware('throttle:30,1')
             ->name('community.proposal.submit.v1');
+        Route::post('api/v1/proposals/{id}/decide', [ModernProposalController::class, 'decide'])
+            ->middleware('throttle:30,1')
+            ->name('community.proposal.decide.v1');
     });
 
     // IKU Dashboard & Verification (Standardized access for Rektor/Kepala LPPM)

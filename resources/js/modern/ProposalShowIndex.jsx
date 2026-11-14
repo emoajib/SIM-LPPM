@@ -72,6 +72,69 @@ export default function ProposalShowIndex() {
             <ModuleTabNav tabs={tabs} currentPath={currentPath} />
 
             {/* Aksi lanjutan — paritas dengan tampilan klasik (BC-08, BC-01) */}
+            {userRoles.some((r) => ["kepala lppm", "admin lppm", "superadmin"].includes(r)) &&
+                ["reviewed", "revision_submitted"].includes(proposal.status) && (
+                    <div className="flex flex-wrap items-center gap-2">
+                        <button
+                            onClick={async () => {
+                                if (!confirm("Setujui proposal ini (selesai)?")) return;
+                                try {
+                                    const res = await fetch(`${apiBase}/api/v1/proposals/${proposal.id}/decide`, {
+                                        method: "POST",
+                                        credentials: "same-origin",
+                                        headers: { "Content-Type": "application/json", "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.content || "" },
+                                        body: JSON.stringify({ decision: "completed" }),
+                                    });
+                                    const json = await res.json();
+                                    if (!res.ok || !json.success) throw new Error(json.message || "Gagal");
+                                    window.location.reload();
+                                } catch (e) { alert(e.message); }
+                            }}
+                            className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition"
+                        >
+                            ✅ Setujui
+                        </button>
+                        <button
+                            onClick={async () => {
+                                if (!confirm("Minta revisi proposal ini?")) return;
+                                try {
+                                    const res = await fetch(`${apiBase}/api/v1/proposals/${proposal.id}/decide`, {
+                                        method: "POST",
+                                        credentials: "same-origin",
+                                        headers: { "Content-Type": "application/json", "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.content || "" },
+                                        body: JSON.stringify({ decision: "revision_needed" }),
+                                    });
+                                    const json = await res.json();
+                                    if (!res.ok || !json.success) throw new Error(json.message || "Gagal");
+                                    window.location.reload();
+                                } catch (e) { alert(e.message); }
+                            }}
+                            className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-bold text-white bg-amber-600 hover:bg-amber-700 transition"
+                        >
+                            🔁 Minta Revisi
+                        </button>
+                        <button
+                            onClick={async () => {
+                                if (!confirm("Tolak proposal ini?")) return;
+                                try {
+                                    const res = await fetch(`${apiBase}/api/v1/proposals/${proposal.id}/decide`, {
+                                        method: "POST",
+                                        credentials: "same-origin",
+                                        headers: { "Content-Type": "application/json", "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.content || "" },
+                                        body: JSON.stringify({ decision: "rejected" }),
+                                    });
+                                    const json = await res.json();
+                                    if (!res.ok || !json.success) throw new Error(json.message || "Gagal");
+                                    window.location.reload();
+                                } catch (e) { alert(e.message); }
+                            }}
+                            className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 transition"
+                        >
+                            ❌ Tolak
+                        </button>
+                    </div>
+                )}
+
             <div className="flex flex-wrap items-center gap-2">
                 {["draft", "need_assignment", "revision_needed"].includes(proposal.status) &&
                     String(proposal.submitter?.id) === String(window.__USER_ID__) && (
