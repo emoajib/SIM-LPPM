@@ -1,5 +1,7 @@
 <?php
 
+// Regression: BC-02
+
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Session;

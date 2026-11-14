@@ -1,5 +1,7 @@
 <?php
 
+// Regression: BC-06
+
 use App\Livewire\Dashboard\Dosen\LetterProposalLinkedRequest;
 use App\Models\LetterType;
 use App\Models\Proposal;

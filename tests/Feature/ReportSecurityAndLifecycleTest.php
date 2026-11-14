@@ -1,5 +1,7 @@
 <?php
 
+// Regression: BC-04
+
 namespace Tests\Feature;
 
 use App\Enums\ProposalStatus;
