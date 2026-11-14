@@ -1,5 +1,5 @@
 #!/bin/bash
-PLATE# update_production.sh — Script update cPanel (versi simpel)
+# update_production.sh — Script update cPanel (versi simpel)
 # Vetted by AI - Manual Review Required by Senior Engineer/Manager
 
 set -euo pipefail
@@ -138,3 +138,74 @@ fi
 
 echo "=== ✅ Update completed successfully! ==="
 echo "Test URL: https://sim-lppm.itsnupekalongan.ac.id"
+
+# ─────────────────────────────────────────────────────────────
+# Post-deploy security checklist (otomatis, non-fatal)
+# Semua cek di bawah ini HARUS bukan 200. Kalau 200, berarti file
+# sensitif bisa diakses publik — segera perbaiki .htaccess/konfigurasi.
+# ─────────────────────────────────────────────────────────────
+BASE_URL="https://sim-lppm.itsnupekalongan.ac.id"
+echo ""
+echo "🔒 Post-deploy security checklist:"
+
+SECURITY_FAIL=0
+check_http() {
+  local label="$1"
+  local url="$2"
+  local code
+  code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "$url" 2>/dev/null || true)
+  code="${code:-000}"
+  if [ "$code" = "200" ]; then
+    echo "  ❌ $label: HTTP $code (BOCOR — harus 403/404)"
+    SECURITY_FAIL=1
+  else
+    echo "  ✅ $label: HTTP $code"
+  fi
+}
+
+check_http ".env" "$BASE_URL/.env"
+check_http ".git/HEAD" "$BASE_URL/.git/HEAD"
+check_http "storage/app/backup/" "$BASE_URL/storage/app/backup/"
+check_http "phpinfo.php" "$BASE_URL/phpinfo.php"
+check_http "database/database.sqlite" "$BASE_URL/database/database.sqlite"
+
+# Permission file sensitif
+ENV_PERM=$(stat -c '%a' .env 2>/dev/null || echo "unknown")
+if [ "$ENV_PERM" = "600" ]; then
+  echo "  ✅ .env permission: $ENV_PERM"
+else
+  echo "  ❌ .env permission: $ENV_PERM (harus 600)"
+  SECURITY_FAIL=1
+fi
+
+BACKUP_DIR_PERM=$(stat -c '%a' storage/app/backup 2>/dev/null || echo "unknown")
+if [ "$BACKUP_DIR_PERM" = "700" ]; then
+  echo "  ✅ storage/app/backup permission: $BACKUP_DIR_PERM"
+else
+  echo "  ❌ storage/app/backup permission: $BACKUP_DIR_PERM (harus 700)"
+  SECURITY_FAIL=1
+fi
+
+# File sensitif nyasar di root proyek
+STRAY_FILES=$(ls -1 ./*.sql ./*.zip 2>/dev/null || true)
+if [ -z "$STRAY_FILES" ]; then
+  echo "  ✅ Tidak ada file .sql/.zip di root proyek"
+else
+  echo "  ❌ File sensitif di root proyek: $STRAY_FILES"
+  SECURITY_FAIL=1
+fi
+
+# Error baru di log
+if tail -50 storage/logs/laravel.log 2>/dev/null | grep -qiE "ERROR|exception|FATAL"; then
+  echo "  ⚠️  Ada ERROR/exception di 50 baris terakhir laravel.log — periksa manual"
+else
+  echo "  ✅ Tidak ada ERROR/exception baru di laravel.log"
+fi
+
+if [ "$SECURITY_FAIL" -ne 0 ]; then
+  echo ""
+  echo "❌ ADA TEMUAN KEAMANAN — perbaiki sebelum menutup deploy!"
+  exit 1
+fi
+
+echo "🔒 Security checklist: semua aman."
