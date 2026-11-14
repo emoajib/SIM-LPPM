@@ -45,7 +45,7 @@ Status kolom: DONE / TODO / PARTIAL.
 | W1-3 | `php artisan test` (timeout 600s) | 0 failed | regresi |
 | W1-4 | `pint --test`, `phpstan --level=5`, `theme:check`, `regression:check` | semua hijau | kualitas |
 | W1-5 | `php artisan route:cache` lalu `route:clear` | sukses | closure route |
-| W1-6 | Smoke test manual 3 role × 2 tema (lihat docs/plans/gap-analysis-modern-classic.md §6) | tidak ada 500/405, tab tidak muncul di klasik | BC-01 |
+| W1-6 | Smoke test manual 3 role × 2 tema (lihat docs/plans/gap-analysis-modern-classic.md §6) | tidak ada 500/405, tab tidak muncul di klasik | BC-01 — **di-otomatiskan**: `tests/Feature/Theme/RoleThemeSmokeTest.php` (8 peran × 2 tema × 9 halaman = 144 kasus) |
 | W1-7 | Cek `storage/logs/laravel.log` (grep error/exception/fatal) | kosong | observability |
 
 Kriteria lulus: semua hijau + `git status` bersih.
