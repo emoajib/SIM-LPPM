@@ -1,5 +1,6 @@
 @props(['module' => 'research', 'active' => 'usulan'])
 
+@if (is_modern_theme())
 @php
     $base = $module === 'community-service' ? '/community-service' : '/research';
     $isPkm = $module === 'community-service';
@@ -10,7 +11,7 @@
         'realisasi' => ['label' => 'Realisasi Anggaran', 'href' => $base.'/daily-note',            'icon' => '💰'],
     ];
 
-    if (active_has_any_role(['admin lppm', 'kepala lppm', 'rektor', 'dosen'])) {
+    if (active_has_any_role(['admin lppm', 'kepala lppm', 'rektor', 'dosen', 'superadmin'])) {
         $tabs['verifikasi'] = ['label' => 'Verifikasi Luaran', 'href' => '/iku/verification', 'icon' => '🛡️'];
     }
 @endphp
@@ -31,3 +32,4 @@
         @endforeach
     </div>
 </div>
+@endif

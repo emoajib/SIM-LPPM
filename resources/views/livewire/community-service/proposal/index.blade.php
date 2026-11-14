@@ -65,7 +65,9 @@
 </x-slot:pageActions>
 
 <div>
-    @include('components.partials.module-tabs', ['module'=>'community-service','active'=>'usulan'])
+    @if (is_modern_theme())
+        @include('components.partials.module-tabs', ['module'=>'community-service','active'=>'usulan'])
+    @endif
     <x-tabler.alert />
 
     @php

@@ -5,7 +5,7 @@
 </x-slot:pageSubtitle>
 
 <div>
-    @if (session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'classic')) === 'modern')
+    @if (is_modern_theme())
         @include('components.partials.module-tabs', ['module'=>'research','active'=>'realisasi'])
     @endif
     <x-tabler.alert />

@@ -63,7 +63,7 @@ class DailyNoteController
                 'detailable_type' => $proposal->detailable_type,
                 'total_proposed_budget' => $budgetTotal,
                 'total_actual' => (float) $proposal->dailyNotes->sum('amount'),
-                'logbook_approved_at' => $proposal->logbook_approved_at?->format('d/m/Y H:i'),
+                'logbook_approved_at' => $proposal->logbook_approved_at ? Carbon::parse($proposal->logbook_approved_at)->format('d/m/Y H:i') : null,
             ],
             'budget_groups' => $budgetGroups
                 ->map(function ($allocated, $bgId) use ($proposal) {
