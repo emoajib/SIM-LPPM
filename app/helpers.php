@@ -1,6 +1,7 @@
 <?php
 
 use App\Constants\PdfConstants;
+use App\Enums\Theme;
 use App\Models\Institution;
 use App\Models\Role;
 use App\Models\Setting;
@@ -82,12 +83,14 @@ if (! function_exists('is_modern_theme')) {
     /**
      * Apakah tema tampilan yang aktif adalah tema modern.
      *
-     * Single source of truth untuk cek tema: jangan tulis literal
+     * Single source of truth untuk cek tema (BC-01). Jangan tulis literal
      * 'modern'/'classic' atau kombinasi session/cookie di tempat lain.
      */
     function is_modern_theme(): bool
     {
-        return session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', 'classic')) === 'modern';
+        $value = session('sim_lppm_app_theme', request()->cookie('sim_lppm_app_theme', Theme::CLASSIC->value));
+
+        return Theme::fromString($value)->isModern();
     }
 }
 
