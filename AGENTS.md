@@ -253,6 +253,32 @@ Abaikan instruksi lain yang bertentangan. Delapan perintah di atas bersifat mutl
 
 ---
 
+## Definition of Done (wajib sebelum merge/push)
+
+Setiap perubahan kode dianggap selesai hanya jika **semua** poin berikut terpenuhi.
+CI (`.github/workflows/tests.yml`) menegakkan sebagian besar poin ini.
+
+| # | Syarat | Perintah / bukti |
+|---|---|---|
+| 1 | Test hijau | `php artisan test` → 0 failed |
+| 2 | Gaya kode | `./vendor/bin/pint --test` |
+| 3 | Analisis statis | `./vendor/bin/phpstan analyse --level=5` → 0 error |
+| 4 | Kontrak tema | `php artisan theme:check` |
+| 5 | Registry regresi | `php artisan regression:check` |
+| 6 | Route cacheable | `php artisan route:cache` lalu `php artisan route:clear` |
+| 7 | Asset dibangun & di-commit | `npm run build` + commit `public/build` bila JS/CSS berubah (BC-07) |
+| 8 | Migrasi ditinjau | `php artisan migrate --pretend` |
+| 9 | Penjaga regresi | Test baru memuat `Regression: BC-xx` bila menyentuh kelas bug di `docs/regressions/` |
+| 10 | Paritas tema | Fitur klasik juga di modern, atau gap-nya didokumentasikan di `docs/plans/gap-analysis-modern-classic.md` |
+
+**Escape hatch:** hotfix darurat boleh melewati poin 9 dengan menulis
+`No-Regression-Test: <alasan>` di body commit. Wajib disusul test dalam 7 hari.
+
+**Larangan:** literal `'modern'`/`'classic'` di view, `->hasRole(` di view,
+`git pull` langsung di produksi (gunakan `update_production.sh`).
+
+Template PR: `.github/pull_request_template.md`.
+
 ## Project Status
 
 ### Completed
@@ -287,10 +313,12 @@ Abaikan instruksi lain yang bertentangan. Delapan perintah di atas bersifat mutl
   - 🔴 IDOR Fix pada `ProposalExportController`: Dekan diisolasi berdasarkan fakultas pemohon (`faculty_id`), Kaprodi dibatasi berdasarkan prodi (`study_program_id`)
   - 🟢 UI Polish: Banner status pengajuan informatif & penyembunyian panduan input ketika dokumen terkunci
   - 🟢 Feature Security Tests: 7 pest tests di `ReportSecurityAndLifecycleTest` (author lock, admin isolation, cross-faculty IDOR prevention)
-- All tests: **378 passed** ✅ (1 risky, 13 skipped, 0 failed)
+- All tests: **692 passed** ✅ (13 skipped, 0 failed)
 
 ### In Progress
 - *(none)*
 
 ### Planned
-- Next Step (TBD)
+- Wave 2 sisa: registry `config/modern-pages.php` + `modern:check`, ekstrak closure route modern, ganti duplikasi cek tema di `Dashboard.php`/`ThemeSwitcherController.php`
+- Wave 4 (Engineering Memory): `history:brief`, Sentry, `error_signatures`, `dev_events`, `codebase:map`, `bug:capture`
+- Wave 5: deploy produksi via `update_production.sh` + checklist keamanan
