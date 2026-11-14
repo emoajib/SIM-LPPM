@@ -316,12 +316,22 @@ Template PR: `.github/pull_request_template.md`.
   - 🔴 IDOR Fix pada `ProposalExportController`: Dekan diisolasi berdasarkan fakultas pemohon (`faculty_id`), Kaprodi dibatasi berdasarkan prodi (`study_program_id`)
   - 🟢 UI Polish: Banner status pengajuan informatif & penyembunyian panduan input ketika dokumen terkunci
   - 🟢 Feature Security Tests: 7 pest tests di `ReportSecurityAndLifecycleTest` (author lock, admin isolation, cross-faculty IDOR prevention)
-- All tests: **692 passed** ✅ (13 skipped, 0 failed)
+- Wave 2/3 — Paritas tema modern ↔ klasik (registry, filter, otorisasi)
+  - ✅ `config/modern-pages.php` + `modern:check` (route ↔ komponen React)
+  - ✅ `ModernPageController` (closure route modern diekstrak, otorisasi terpusat)
+  - ✅ Filter sub-modul modern: status, tahun akademik, skema, fakultas, prodi, peran
+  - ✅ Kartu status Laporan Akhir dari `meta.stats` + filter status laporan
+  - ✅ Matriks smoke 8 peran × 2 tema × 9 halaman (`RoleThemeSmokeTest`)
+  - ✅ Kontrak React ↔ API (`ModernProposalShowContractTest`, `ModernFilterContractTest`)
+- Wave 4 (sebagian) — Engineering Memory
+  - ✅ `history:brief <area>` (commit, BC, test penjaga)
+  - ✅ `codebase:map` → `docs/history/codebase-map.md`
+  - ✅ Checklist keamanan otomatis di akhir `update_production.sh`
+- All tests: **710 passed** ✅ (13 skipped, 0 failed)
 
 ### In Progress
 - *(none)*
 
 ### Planned
-- Wave 2 sisa: registry `config/modern-pages.php` + `modern:check`, ekstrak closure route modern, ganti duplikasi cek tema di `Dashboard.php`/`ThemeSwitcherController.php`
-- Wave 4 (Engineering Memory): `history:brief`, Sentry, `error_signatures`, `dev_events`, `codebase:map`, `bug:capture`
-- Wave 5: deploy produksi via `update_production.sh` + checklist keamanan
+- Wave 4 sisa: Sentry (`SENTRY_DSN` di produksi), tabel `error_signatures` + `dev_events`, `history:sync`, `bug:capture`, rotasi log
+- Wave 5: deploy produksi via `update_production.sh` (checklist keamanan sudah otomatis di akhir script)
