@@ -167,6 +167,8 @@ echo "✅ Deploy selesai!"
 ## Future Update Guidelines
 
 ### Setiap Update Modul/Fitur Baru
+**Mulai dari konteks:** `php artisan history:brief <area>` (mis. `modern`, `final-report`, `amandemen`) — menampilkan commit terakhir, kelas bug (BC) terkait, dan test penjaganya.
+
 1. **Selalu gunakan `update_production.sh`** — jangan `git pull` langsung di produksi
 2. **Sebelum push:** jalankan `php artisan test` — semua harus PASS
 3. **Route baru yang butuh perlindungan:** pastikan ada middleware `auth` atau `signed`

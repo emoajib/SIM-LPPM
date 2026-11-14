@@ -94,8 +94,8 @@ Kriteria lulus: semua hijau + `git status` bersih.
 | W4-H1.2 | Registry docs/regressions (8 BC) | DONE |
 | W4-H1.3 | Marker `Regression: BC-xx` di test | DONE (5/8) |
 | W4-H1.4 | `regression:check` command | DONE |
-| W4-H1.5 | `history:brief <area>` (git-based) | Recall otomatis |
-| W4-H1.6 | Arsip 5 MD root | Housekeeping |
+| W4-H1.5 | `history:brief <area>` (git-based) | DONE — commit terakhir, BC terkait, test penjaga; `tests/Feature/Console/HistoryBriefTest.php` |
+| W4-H1.6 | Arsip 5 MD root | DONE (`docs/archive/`) |
 
 ### H2 (capture otomatis)
 | ID | Pekerjaan | Mitigasi |
