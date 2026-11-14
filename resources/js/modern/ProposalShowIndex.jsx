@@ -71,6 +71,19 @@ export default function ProposalShowIndex() {
 
             <ModuleTabNav tabs={tabs} currentPath={currentPath} />
 
+            {/* Aksi lanjutan — paritas dengan tampilan klasik (BC-08, BC-01) */}
+            <div className="flex flex-wrap items-center gap-2">
+                {proposal.show_url && (
+                    <a
+                        href={proposal.show_url}
+                        className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-bold text-[#1e3a6e] dark:text-cyan-400 border border-[#1e3a6e]/30 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition"
+                        title="Buka workflow, surat, tim, kontrak, amandemen RAB, dan hapus di tampilan klasik"
+                    >
+                        ⚙️ Aksi lanjutan (tampilan klasik)
+                    </a>
+                )}
+            </div>
+
             <ModernPageCard>
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
                     <div>
