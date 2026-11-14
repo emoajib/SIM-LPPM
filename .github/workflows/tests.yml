@@ -129,6 +129,14 @@ jobs:
       - name: Build Frontend Assets
         run: bun run build
 
+      - name: Verify committed build matches source (BC-07)
+        run: |
+          if ! git diff --quiet public/build; then
+            echo "::error::Committed public/build is stale vs source. Run 'npm run build' and commit public/build."
+            git diff --stat public/build
+            exit 1
+          fi
+
       - name: Run Tests
         env:
           DB_CONNECTION: sqlite
