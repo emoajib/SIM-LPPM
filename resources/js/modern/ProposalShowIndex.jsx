@@ -73,6 +73,29 @@ export default function ProposalShowIndex() {
 
             {/* Aksi lanjutan — paritas dengan tampilan klasik (BC-08, BC-01) */}
             <div className="flex flex-wrap items-center gap-2">
+                {["draft", "need_assignment", "revision_needed"].includes(proposal.status) &&
+                    String(proposal.submitter?.id) === String(window.__USER_ID__) && (
+                        <button
+                            onClick={async () => {
+                                if (!confirm("Ajukan proposal ini?")) return;
+                                try {
+                                    const res = await fetch(`${apiBase}/api/v1/proposals/${proposal.id}/submit`, {
+                                        method: "POST",
+                                        credentials: "same-origin",
+                                        headers: { "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')?.content || "" },
+                                    });
+                                    const json = await res.json();
+                                    if (!res.ok || !json.success) throw new Error(json.message || "Gagal mengajukan");
+                                    window.location.reload();
+                                } catch (e) {
+                                    alert(e.message);
+                                }
+                            }}
+                            className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition"
+                        >
+                            📤 Ajukan Proposal
+                        </button>
+                    )}
                 {proposal.show_url && (
                     <a
                         href={proposal.show_url}

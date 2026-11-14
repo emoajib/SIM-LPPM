@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enums\ProposalStatus;
+use App\Livewire\Actions\SubmitProposalAction;
 use App\Models\CommunityService;
 use App\Models\CommunityServiceScheme;
 use App\Models\Faculty;
@@ -14,6 +15,7 @@ use App\Models\StudyProgram;
 use App\Services\EligibilityService;
 use App\Services\LecturerEligibilityService;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -278,6 +280,24 @@ class ModernProposalController
             'preview_pdf_url' => route('proposals.preview-pdf', $proposal),
             'export_pdf_url' => route('proposals.export-pdf', $proposal),
         ]);
+    }
+
+    public function submit(Request $request, string $id): JsonResponse
+    {
+        $user = Auth::user();
+        $proposal = Proposal::find($id);
+        if (! $proposal) {
+            return response()->json(['message' => 'Proposal tidak ditemukan'], 404);
+        }
+        if ($proposal->submitter_id !== $user->id) {
+            return response()->json(['message' => 'Anda tidak memiliki akses untuk mengajukan proposal ini.'], 403);
+        }
+
+        $result = app(SubmitProposalAction::class)->execute($proposal);
+
+        $status = $result['success'] ? 200 : 422;
+
+        return response()->json($result, $status);
     }
 
     public function availableFilters(Request $request)
