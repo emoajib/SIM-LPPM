@@ -22,6 +22,7 @@
 - [ ] `./vendor/bin/pint --test` — lolos
 - [ ] `./vendor/bin/phpstan analyse --level=5` — 0 error
 - [ ] `php artisan theme:check` — lolos
+- [ ] `php artisan modern:check` — lolos
 - [ ] `php artisan regression:check` — lolos
 - [ ] `php artisan route:cache` lalu `route:clear` — lolos
 - [ ] Jika mengubah JS/CSS: `npm run build` dijalankan dan `public/build` ikut di-commit (BC-07)

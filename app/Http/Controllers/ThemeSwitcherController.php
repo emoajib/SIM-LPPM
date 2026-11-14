@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Theme;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,26 +12,24 @@ class ThemeSwitcherController extends Controller
 {
     public function switch(Request $request): RedirectResponse
     {
-        $theme = $request->input('theme', $request->query('theme'));
+        $requested = Theme::tryFromString($request->input('theme', $request->query('theme')));
+        $current = Theme::fromString(session('sim_lppm_app_theme', session('sim_lppm_dashboard_theme', Theme::CLASSIC->value)));
 
-        if (! in_array($theme, ['modern', 'classic'])) {
-            $current = session('sim_lppm_app_theme', session('sim_lppm_dashboard_theme', 'classic'));
-            $theme = $current === 'modern' ? 'classic' : 'modern';
-        }
+        $theme = $requested ?? $current->toggle();
 
-        session(['sim_lppm_app_theme' => $theme]);
-        session(['sim_lppm_dashboard_theme' => $theme]);
+        session(['sim_lppm_app_theme' => $theme->value]);
+        session(['sim_lppm_dashboard_theme' => $theme->value]);
 
-        // Invalidate menu cache agar tidak stale setelah switch tema
+        // Invalidate menu cache kedua tema agar tidak stale setelah switch tema
         if (Auth::check()) {
-            Cache::forget('menu_items_'.Auth::id().'_'.(active_role() ?? 'none').'_'.($theme === 'modern' ? 'classic' : 'modern'));
+            foreach (Theme::cases() as $case) {
+                Cache::forget('menu_items_'.Auth::id().'_'.(active_role() ?? 'none').'_'.$case->value);
+            }
         }
 
-        cookie()->queue(cookie('sim_lppm_app_theme', $theme, 60 * 24 * 365));
-        cookie()->queue(cookie('sim_lppm_dashboard_theme', $theme, 60 * 24 * 365));
+        cookie()->queue(cookie('sim_lppm_app_theme', $theme->value, 60 * 24 * 365));
+        cookie()->queue(cookie('sim_lppm_dashboard_theme', $theme->value, 60 * 24 * 365));
 
-        $themeLabel = $theme === 'modern' ? 'Modern (3D Infografis)' : 'Klasik (Standar Tabler)';
-
-        return redirect()->back()->with('success', "Tema website berhasil diubah ke: {$themeLabel}");
+        return redirect()->back()->with('success', "Tema website berhasil diubah ke: {$theme->label()}");
     }
 }

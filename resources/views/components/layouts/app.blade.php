@@ -34,32 +34,10 @@
         @include('components.layouts.header')
         <div class="page-wrapper">
             @php
-                $modernPageMap = [
-                    'research.proposal.index' => 'proposals-index',
-                    'research.proposal-revision.index' => 'research-revision-index',
-                    'research.final-report.index' => 'research-final-report-index',
-                    'research.daily-note.index' => 'research-daily-note-index',
-                    'community-service.proposal.index' => 'pengabdian-index',
-                    'community-service.proposal-revision.index' => 'pengabdian-revision-index',
-                    'community-service.final-report.index' => 'pengabdian-final-report-index',
-                    'community-service.daily-note.index' => 'pengabdian-daily-note-index',
-                    'research.verifikasi-luaran.page' => 'verifikasi-luaran-index',
-                    'community-service.verifikasi-luaran.page' => 'verifikasi-luaran-index',
-                    'research.daily-note.modern' => 'daily-note-index',
-                    'research.proposal.show.modern' => 'proposal-show-index',
-                    'community-service.daily-note.modern' => 'daily-note-index',
-                    'community-service.proposal.show.modern' => 'proposal-show-index',
-                ];
+                $modernPageMap = config('modern-pages.pages', []);
                 $modernPage = $modernPageMap[request()->route()?->getName() ?? ''] ?? null;
                 $modernPageEarly = $modernPage; // alias for header hiding
-                $hideHeaderRoutes = [
-                    'research.proposal-revision.index',
-                    'research.final-report.index',
-                    'research.daily-note.index',
-                    'community-service.proposal-revision.index',
-                    'community-service.final-report.index',
-                    'community-service.daily-note.index',
-                ];
+                $hideHeaderRoutes = config('modern-pages.hide_header_routes', []);
                 $hideHeaderModern = $isModernTheme && in_array(request()->route()?->getName() ?? '', $hideHeaderRoutes, true);
             @endphp
             <!-- BEGIN PAGE HEADER -->

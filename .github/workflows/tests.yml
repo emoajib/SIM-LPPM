@@ -138,6 +138,15 @@ jobs:
             echo "Committed public/build matches CI build output: OK"
           fi
 
+      - name: Theme, Modern Page & Regression Guards
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+        run: |
+          php artisan theme:check
+          php artisan modern:check
+          php artisan regression:check
+
       - name: Run Tests
         env:
           DB_CONNECTION: sqlite

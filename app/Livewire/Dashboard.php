@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Enums\Theme;
 use App\Models\DailyNote;
 use App\Models\MandatoryOutput;
 use App\Models\ProgressReport;
@@ -23,13 +24,16 @@ class Dashboard extends Component
 
     public $dashboardComponent;
 
-    public string $dashboardTheme = 'classic';
+    public string $dashboardTheme = Theme::CLASSIC->value;
 
     public function mount()
     {
         $this->user = Auth::user();
         $this->roleName = active_role();
-        $this->dashboardTheme = session('sim_lppm_app_theme', session('sim_lppm_dashboard_theme', request()->cookie('sim_lppm_dashboard_theme', 'classic')));
+        $this->dashboardTheme = Theme::fromString(session(
+            'sim_lppm_app_theme',
+            session('sim_lppm_dashboard_theme', request()->cookie('sim_lppm_dashboard_theme', Theme::CLASSIC->value))
+        ))->value;
         if (request()->has('theme') && in_array(request('theme'), ['dark', 'light'])) {
             session(['sim_lppm_color_mode' => request('theme')]);
         }
@@ -46,7 +50,7 @@ class Dashboard extends Component
 
     public function setDashboardTheme(string $theme)
     {
-        $this->dashboardTheme = in_array($theme, ['classic', 'modern']) ? $theme : 'classic';
+        $this->dashboardTheme = Theme::fromString($theme)->value;
         session(['sim_lppm_dashboard_theme' => $this->dashboardTheme]);
         session(['sim_lppm_app_theme' => $this->dashboardTheme]);
         cookie()->queue(cookie('sim_lppm_dashboard_theme', $this->dashboardTheme, 60 * 24 * 365));
@@ -442,7 +446,7 @@ class Dashboard extends Component
         $recentProposals = $this->loadRecentProposals();
         $trendData = $this->loadTrendData();
 
-        $isModernDashboard = $this->dashboardTheme === 'modern';
+        $isModernDashboard = Theme::fromString($this->dashboardTheme)->isModern();
 
         return view('livewire.dashboard.main-dashboard', [
             'pageTitle' => $isModernDashboard ? null : $titles['title'],

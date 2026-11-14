@@ -264,12 +264,13 @@ CI (`.github/workflows/tests.yml`) menegakkan sebagian besar poin ini.
 | 2 | Gaya kode | `./vendor/bin/pint --test` |
 | 3 | Analisis statis | `./vendor/bin/phpstan analyse --level=5` → 0 error |
 | 4 | Kontrak tema | `php artisan theme:check` |
-| 5 | Registry regresi | `php artisan regression:check` |
-| 6 | Route cacheable | `php artisan route:cache` lalu `php artisan route:clear` |
-| 7 | Asset dibangun & di-commit | `npm run build` + commit `public/build` bila JS/CSS berubah (BC-07) |
-| 8 | Migrasi ditinjau | `php artisan migrate --pretend` |
-| 9 | Penjaga regresi | Test baru memuat `Regression: BC-xx` bila menyentuh kelas bug di `docs/regressions/` |
-| 10 | Paritas tema | Fitur klasik juga di modern, atau gap-nya didokumentasikan di `docs/plans/gap-analysis-modern-classic.md` |
+| 5 | Registry halaman modern | `php artisan modern:check` (route ↔ komponen React) |
+| 6 | Registry regresi | `php artisan regression:check` |
+| 7 | Route cacheable | `php artisan route:cache` lalu `php artisan route:clear` |
+| 8 | Asset dibangun & di-commit | `npm run build` + commit `public/build` bila JS/CSS berubah (BC-07) |
+| 9 | Migrasi ditinjau | `php artisan migrate --pretend` |
+| 10 | Penjaga regresi | Test baru memuat `Regression: BC-xx` bila menyentuh kelas bug di `docs/regressions/` |
+| 11 | Paritas tema | Fitur klasik juga di modern, atau gap-nya didokumentasikan di `docs/plans/gap-analysis-modern-classic.md` |
 
 **Escape hatch:** hotfix darurat boleh melewati poin 9 dengan menulis
 `No-Regression-Test: <alasan>` di body commit. Wajib disusul test dalam 7 hari.
