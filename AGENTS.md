@@ -167,7 +167,7 @@ echo "✅ Deploy selesai!"
 ## Future Update Guidelines
 
 ### Setiap Update Modul/Fitur Baru
-**Mulai dari konteks:** `php artisan history:brief <area>` (mis. `modern`, `final-report`, `amandemen`) — menampilkan commit terakhir, kelas bug (BC) terkait, dan test penjaganya.
+**Mulai dari konteks:** `php artisan history:brief <area>` (mis. `modern`, `final-report`, `amandemen`) — menampilkan commit terakhir, kelas bug (BC) terkait, dan test penjaganya. Untuk peta struktur menyeluruh: `docs/history/codebase-map.md` (regenerate dengan `php artisan codebase:map`).
 
 1. **Selalu gunakan `update_production.sh`** — jangan `git pull` langsung di produksi
 2. **Sebelum push:** jalankan `php artisan test` — semua harus PASS

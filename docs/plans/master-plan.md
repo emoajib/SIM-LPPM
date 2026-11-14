@@ -111,7 +111,7 @@ Kriteria lulus: semua hijau + `git status` bersih.
 ### H3 (pemahaman kodebase & laporan)
 | ID | Pekerjaan | Mitigasi |
 |---|---|---|
-| W4-H3.1 | `codebase:map` → docs/history/codebase-map.md | Agent tidak eksplorasi ulang |
+| W4-H3.1 | `codebase:map` → docs/history/codebase-map.md | DONE — `tests/Feature/Console/CodebaseMapTest.php` |
 | W4-H3.2 | Auto-changelog dari conventional commit | History terbaca |
 | W4-H3.3 | Digest mingguan (error baru, fix tanpa test, BC tanpa penjaga) | Audit berkala |
 | W4-H3.4 | Dashboard kesehatan regresi (read-only) | Visibilitas |
