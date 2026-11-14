@@ -116,3 +116,26 @@ php artisan observability:prune [--days=365] [--dry-run]
 - `history:sync` (tarik commit + status CI via API) — butuh token GitHub.
 - Aktivasi Sentry (`SENTRY_DSN`) — butuh DSN produksi.
 - Hook deploy mencatat `dev_events` (W4-H2.5) — setelah script deploy stabil.
+
+## 7. Status lanjutan (W4-H2.4/H2.5/H2.6)
+
+| Item | Status | Cara pakai |
+|---|---|---|
+| `history:sync` | DONE | `php artisan history:sync --days=7` (butuh `GITHUB_TOKEN` atau `gh auth token`); terjadwal Senin 04:30 |
+| `dev:record` + hook deploy | DONE | `update_production.sh` mencatat sukses/gagal; manual: `php artisan dev:record deploy "..." --ref=<sha> --status=success` |
+| Rotasi log | DONE | `php artisan logs:prune` (harian 04:00); `LOG_MAX_SIZE_MB=25`, `LOG_KEEP_DAYS=14` |
+
+### Aktivasi Sentry (langkah manual, butuh akun)
+1. Buat project di Sentry, salin DSN.
+2. Set di `.env` produksi: `SENTRY_DSN=https://...`, `SENTRY_ENVIRONMENT=production`.
+3. `SENTRY_RELEASE` diisi otomatis oleh `update_production.sh` (commit SHA) saat `config:cache`.
+4. Verifikasi: picu error 500 → cek Sentry Issues; `php artisan logs:prune` dan `observability:prune` tetap jalan.
+5. Sampling: `SENTRY_TRACES_SAMPLE_RATE=0.05` (bukan 1.0) agar kuota tidak habis.
+
+### Verifikasi setelah deploy
+```bash
+php artisan dev:record deploy "manual check" --area=produksi --status=success --ref=$(git rev-parse --short HEAD)
+php artisan history:sync --days=1 --dry-run
+php artisan observability:prune --dry-run
+php artisan logs:prune --dry-run
+```

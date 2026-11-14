@@ -58,4 +58,26 @@ return [
      */
     'dev_events_enabled' => (bool) env('DEV_EVENTS_ENABLED', true),
 
+    /*
+     * `history:sync` — sumber data GitHub (commit + status workflow).
+     * Token dibutuhkan untuk rate limit 5000/jam; tanpa token API publik
+     * dibatasi 60 permintaan/jam per IP.
+     */
+    'history_sync' => [
+        'token' => env('GITHUB_TOKEN'),
+        'repo' => env('GITHUB_REPO'),
+        // Fallback `gh auth token` (lokal). Matikan bila tidak diinginkan.
+        'use_gh_cli' => (bool) env('GITHUB_SYNC_USE_GH_CLI', true),
+    ],
+
+    /*
+     * Rotasi/retensi log: cegah laravel.log & browser.log tumbuh tanpa batas
+     * (kejadian nyata: laravel.log 363 MB, browser.log 46 MB).
+     */
+    'logs' => [
+        'keep_days' => (int) env('LOG_KEEP_DAYS', 14),
+        'max_size_mb' => (int) env('LOG_MAX_SIZE_MB', 25),
+        'tail_bytes' => (int) env('LOG_TAIL_BYTES', 1048576),
+    ],
+
 ];

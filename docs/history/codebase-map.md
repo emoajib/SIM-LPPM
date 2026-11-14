@@ -143,7 +143,7 @@
 
 ## Artisan command
 
-- `app/Console/Commands` (35): `AuditBudgetCaps.php`, `BackfillIdentityScienceCluster.php`, `BenchmarkNotifications.php`, `BugCapture.php`, `CheckModernPages.php`, `CheckMySqlColumnOrders.php`, `CheckOverdueReviews.php`, `CheckRegressions.php`, `CheckSchemaDrift.php`, `CheckTheme.php`, `CleanupDummyData.php`, `CleanupOrphanMedia.php`, `ClearRateLimiters.php`, `CodebaseMap.php`, `FixDocSubstanceFiles.php`, `FixProposalSignatures.php`, `FixProposalSubstanceFile.php`, `GenerateMySqlColumnOrders.php`, `HistoryBrief.php`, `ImportSintaAuthor.php`, `ImportUsers.php`, `InstallCommand.php`, `MigrateMediaPaths.php`, `PatchSoftwareTkt.php`, `PruneObservability.php`, `RepairLetterData.php`, `ResetPdfSettings.php`, `RestoreBackupCommand.php`, `RunInstallationCommand.php`, `SendDailySummaries.php`, `SendReviewReminders.php`, `SendWeeklySummaries.php`, `SyncEnums.php`, `SyncProductionData.php`, `ValidateMySqlColumnOrders.php`
+- `app/Console/Commands` (38): `AuditBudgetCaps.php`, `BackfillIdentityScienceCluster.php`, `BenchmarkNotifications.php`, `BugCapture.php`, `CheckModernPages.php`, `CheckMySqlColumnOrders.php`, `CheckOverdueReviews.php`, `CheckRegressions.php`, `CheckSchemaDrift.php`, `CheckTheme.php`, `CleanupDummyData.php`, `CleanupOrphanMedia.php`, `ClearRateLimiters.php`, `CodebaseMap.php`, `FixDocSubstanceFiles.php`, `FixProposalSignatures.php`, `FixProposalSubstanceFile.php`, `GenerateMySqlColumnOrders.php`, `HistoryBrief.php`, `HistorySync.php`, `ImportSintaAuthor.php`, `ImportUsers.php`, `InstallCommand.php`, `MigrateMediaPaths.php`, `PatchSoftwareTkt.php`, `PruneLogs.php`, `PruneObservability.php`, `RecordDevEvent.php`, `RepairLetterData.php`, `ResetPdfSettings.php`, `RestoreBackupCommand.php`, `RunInstallationCommand.php`, `SendDailySummaries.php`, `SendReviewReminders.php`, `SendWeeklySummaries.php`, `SyncEnums.php`, `SyncProductionData.php`, `ValidateMySqlColumnOrders.php`
 - `app/Console/Commands/Traits` (1): `ParsesMigrationColumns.php`
 
 ## Model
@@ -160,7 +160,7 @@
 | `Feature/AdminLppm` | 1 |
 | `Feature/Api` | 4 |
 | `Feature/Auth` | 9 |
-| `Feature/Console` | 4 |
+| `Feature/Console` | 7 |
 | `Feature/Dekan` | 1 |
 | `Feature/Iku` | 2 |
 | `Feature/Installer` | 2 |

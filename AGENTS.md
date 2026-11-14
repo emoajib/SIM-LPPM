@@ -333,11 +333,15 @@ Template PR: `.github/pull_request_template.md`.
   - ✅ Checklist keamanan otomatis di akhir `update_production.sh`
   - ✅ `error_signatures` + `dev_events` (migrasi, model, recorder dedupe, `observability:prune` terjadwal)
   - ✅ `bug:capture` (entri BC + stub test `markTestIncomplete` + `dev_events`)
-- All tests: **710 passed** ✅ (13 skipped, 0 failed)
+  - ✅ `history:sync` (commit + status CI → `dev_events`; `GITHUB_TOKEN`/`gh auth token`)
+  - ✅ `dev:record` + hook deploy (catat deploy sukses/gagal ke `dev_events`)
+  - ✅ `logs:prune` (retensi harian; laravel.log 363 MB → 1 MB, browser.log 46 MB → 1 MB)
+- All tests: **736 passed** ✅ (13 skipped, 0 failed)
 
 ### In Progress
 - *(none)*
 
 ### Planned
-- Wave 4 sisa: Sentry (`SENTRY_DSN` di produksi), `history:sync` (token GitHub), hook deploy → `dev_events`, rotasi log
-- Wave 5: deploy produksi via `update_production.sh` (checklist keamanan sudah otomatis; migrasi observability ikut)
+- Sentry: isi `SENTRY_DSN` di `.env` produksi (kode/config sudah siap; `SENTRY_RELEASE` otomatis dari deploy)
+- Wave 5: deploy produksi via `update_production.sh` (checklist keamanan + hook `dev:record` aktif)
+- Opsional: `browser.log` 46 MB berasal dari tooling dev (Laravel Boost) — pastikan tidak aktif di produksi

@@ -46,3 +46,17 @@ Schedule::command('observability:prune')
     ->onOneServer()
     ->withoutOverlapping()
     ->description('Prune old dev_events and resolved error_signatures');
+
+// Retensi file log (W4-H2.6): laravel.log pernah mencapai 363 MB
+Schedule::command('logs:prune')
+    ->dailyAt('04:00')
+    ->onOneServer()
+    ->withoutOverlapping()
+    ->description('Delete old daily logs and rotate oversized active logs');
+
+// Sinkron commit + status CI ke dev_events (W4-H2.4)
+Schedule::command('history:sync')
+    ->weeklyOn(1, '04:30')
+    ->onOneServer()
+    ->withoutOverlapping()
+    ->description('Sync GitHub commits and workflow runs into dev_events');

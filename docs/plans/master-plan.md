@@ -100,12 +100,12 @@ Kriteria lulus: semua hijau + `git status` bersih.
 ### H2 (capture otomatis)
 | ID | Pekerjaan | Mitigasi |
 |---|---|---|
-| W4-H2.1 | Aktifkan Sentry (DSN, release=commit SHA, sample rendah) | Error terkumpul |
+| W4-H2.1 | Aktifkan Sentry (DSN, release=commit SHA, sample rendah) | **SEBAGIAN** — config release/traces/PII + deploy set `SENTRY_RELEASE`; **butuh `SENTRY_DSN` produksi** |
 | W4-H2.2 | Tabel `error_signatures` (fingerprint, modul, bc_code, commit fix) | **DONE** — migrasi + `ErrorSignatureRecorder` (dedupe, abaikan 4xx) + retensi |
 | W4-H2.3 | Tabel `dev_events` (commit, CI, deploy, error, bug) permanen | **DONE** — migrasi + `DevEventRecorder` + `observability:prune` (terjadwal) |
-| W4-H2.4 | `history:sync` (tarik commit + status CI via API) | Belum (butuh token GitHub) |
-| W4-H2.5 | Hook deploy mencatat ke `dev_events` (DB, bukan file) | Belum (bug:capture sudah menulis dev_events) |
-| W4-H2.6 | Rotasi log 363 MB lokal + produksi | Belum |
+| W4-H2.4 | `history:sync` (tarik commit + status CI via API) | **DONE** — butuh `GITHUB_TOKEN` (fallback `gh auth token`), terjadwal mingguan |
+| W4-H2.5 | Hook deploy mencatat ke `dev_events` (DB, bukan file) | **DONE** — `dev:record` dipanggil sukses/gagal di `update_production.sh` |
+| W4-H2.6 | Rotasi log 363 MB lokal + produksi | **DONE** — `logs:prune` (terjadwal harian) + lokal 363 MB → 1 MB |
 | W4-H2.7 | `bug:capture` command (entri BC + stub test gagal) | **DONE** — entri BC + stub test (incomplete) + dev_event |
 
 ### H3 (pemahaman kodebase & laporan)

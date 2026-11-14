@@ -3,10 +3,19 @@
 # Vetted by AI - Manual Review Required by Senior Engineer/Manager
 
 set -euo pipefail
-trap 'echo "❌ Update GAGAL! Memulihkan..."; php artisan up 2>/dev/null; exit 1' ERR
 
 echo "=== SIM-LPPM Production Update Script ==="
 cd /home/simlppmi/sim-lppm || { echo "❌ Direktori /home/simlppmi/sim-lppm tidak ditemukan!"; exit 1; }
+
+DEPLOY_SHA="$(git rev-parse --short HEAD 2>/dev/null || echo unknown)"
+
+# Catat kegagalan deploy ke dev_events (W4-H2.5). Tidak boleh menggagalkan deploy.
+record_deploy_failure() {
+  php artisan dev:record deploy "Deploy gagal (rev-parse: ${DEPLOY_SHA})" \
+    --area=produksi --status=failure --ref="${DEPLOY_SHA}" 2>/dev/null || true
+}
+
+trap 'echo "❌ Update GAGAL! Memulihkan..."; record_deploy_failure; php artisan up 2>/dev/null; exit 1' ERR
 
 # Cek disk space (min 1 GB)
 AVAIL=$(df --output=avail /home/simlppmi 2>/dev/null | tail -1)
@@ -88,9 +97,15 @@ php artisan patch:software-tkt
 # Clear & rebuild caches
 echo "Rebuilding caches..."
 php artisan optimize:clear
+# Sentry release = commit SHA (dipakai bila SENTRY_DSN aktif)
+export SENTRY_RELEASE="${DEPLOY_SHA}"
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
+
+# Retensi log (W4-H2.6): cegah laravel.log/browser.log membengkak di produksi
+echo "Pruning logs..."
+php artisan logs:prune || echo "⚠️  logs:prune selesai dengan error (cek manual)."
 
 # Clear OPcache
 php -r 'if (function_exists("opcache_reset")) { opcache_reset(); echo "OPcache cleared\n"; } else { echo "OPcache not available\n"; }'
@@ -209,3 +224,7 @@ if [ "$SECURITY_FAIL" -ne 0 ]; then
 fi
 
 echo "🔒 Security checklist: semua aman."
+
+# Catat deploy sukses ke dev_events (W4-H2.5). Bila gagal, deploy tetap dianggap sukses.
+php artisan dev:record deploy "Deploy ${DEPLOY_SHA}" --area=produksi --status=success --ref="${DEPLOY_SHA}" 2>/dev/null || true
+echo "🗂️  Dev event deploy dicatat (bila tabel dev_events tersedia)."
