@@ -12,6 +12,7 @@ use App\Http\Controllers\HealthCheckController;
 use App\Http\Controllers\LetterTypeController;
 use App\Http\Controllers\LetterVerificationController;
 use App\Http\Controllers\MediaDownloadController;
+use App\Http\Controllers\ModernPageController;
 use App\Http\Controllers\ProposalExportController;
 use App\Http\Controllers\ReportExportController;
 use App\Http\Controllers\ReportVerificationController;
@@ -87,8 +88,6 @@ use App\Livewire\Users\Import;
 use App\Livewire\Users\Index as UsersIndex;
 use App\Livewire\Users\Show as UsersShow;
 use App\Models\Letter;
-use App\Models\Proposal;
-use App\Models\StudyProgram;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -275,73 +274,19 @@ Route::middleware(['auth'])->group(function () {
             ->name('daily-notes.approve-logbook');
 
         // Modern theme page for Verifikasi Luaran (Research)
-        Route::get('verifikasi-luaran', function () {
-            if (! is_modern_theme()) {
-                return redirect()->route('accreditation.verification');
-            }
-
-            return view('modern.verifikasi-luaran', [
-                'title' => 'Verifikasi Luaran IKU',
-                'pageSubtitle' => 'Pemantauan dan verifikasi target output penelitian & pengabdian',
-            ]);
-        })->name('verifikasi-luaran.page');
+        Route::get('verifikasi-luaran', [ModernPageController::class, 'verifikasiLuaran'])
+            ->defaults('module', 'research')
+            ->name('verifikasi-luaran.page');
 
         // Modern theme page for Daily Note (Realisasi Anggaran)
-        Route::get('daily-note/{proposal}/modern', function (Proposal $proposal) {
-            if (! is_modern_theme()) {
-                return redirect()->route('research.daily-note.show', $proposal);
-            }
-            $user = auth()->user();
-            if (! $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'superadmin', 'dekan', 'kaprodi', 'dosen', 'reviewer'])) {
-                abort(403);
-            }
-            if ($user->activeHasRole('dekan') && $user->identity?->faculty_id !== $proposal->submitter->identity?->faculty_id) {
-                abort(403);
-            }
-            if ($user->activeHasRole('kaprodi')) {
-                $kaprodiProdiId = StudyProgram::where('kaprodi_user_id', $user->id)->value('id') ?? $user->identity?->study_program_id;
-                if ($kaprodiProdiId !== $proposal->submitter->identity?->study_program_id) {
-                    abort(403);
-                }
-            }
-            $canManage = $proposal->submitter_id === $user->id ||
-                $proposal->teamMembers()->where('user_id', $user->id)->exists();
-            $isEditable = ! $proposal->logbook_approved_at;
-
-            return view('modern.daily-note', [
-                'title' => 'Realisasi Anggaran',
-                'pageSubtitle' => 'Catatan harian aktivitas dan pengeluaran dana kegiatan',
-                'proposal' => $proposal,
-                'canManage' => $canManage,
-                'isEditable' => $isEditable,
-            ]);
-        })->middleware(['auth'])->name('daily-note.modern');
+        Route::get('daily-note/{proposal}/modern', [ModernPageController::class, 'dailyNote'])
+            ->defaults('module', 'research')
+            ->middleware(['auth'])->name('daily-note.modern');
 
         // Modern theme page for Proposal Show (detail)
-        Route::get('proposal/{proposal}/modern', function (Proposal $proposal) {
-            if (! is_modern_theme()) {
-                return redirect()->route('research.proposal.show', $proposal);
-            }
-            $user = auth()->user();
-            if (! $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'superadmin', 'dekan', 'kaprodi', 'dosen', 'reviewer'])) {
-                abort(403);
-            }
-            if ($user->activeHasRole('dekan') && $user->identity?->faculty_id !== $proposal->submitter->identity?->faculty_id) {
-                abort(403);
-            }
-            if ($user->activeHasRole('kaprodi')) {
-                $kaprodiProdiId = StudyProgram::where('kaprodi_user_id', $user->id)->value('id') ?? $user->identity?->study_program_id;
-                if ($kaprodiProdiId !== $proposal->submitter->identity?->study_program_id) {
-                    abort(403);
-                }
-            }
-
-            return view('modern.proposal-show', [
-                'title' => 'Detail Proposal',
-                'pageSubtitle' => $proposal->title,
-                'proposal' => $proposal,
-            ]);
-        })->middleware(['auth'])->name('proposal.show.modern');
+        Route::get('proposal/{proposal}/modern', [ModernPageController::class, 'proposalShow'])
+            ->defaults('module', 'research')
+            ->middleware(['auth'])->name('proposal.show.modern');
 
         // Only dosen can create proposals
         Route::get('proposal/create', Create::class)
@@ -389,73 +334,19 @@ Route::middleware(['auth'])->group(function () {
         Route::get('proposal-revision/{proposal}', App\Livewire\CommunityService\ProposalRevision\Show::class)->name('proposal-revision.show');
 
         // Modern theme page for Verifikasi Luaran (Community Service)
-        Route::get('verifikasi-luaran', function () {
-            if (! is_modern_theme()) {
-                return redirect()->route('accreditation.verification');
-            }
-
-            return view('modern.verifikasi-luaran-pkm', [
-                'title' => 'Verifikasi Luaran IKU',
-                'pageSubtitle' => 'Pemantauan dan verifikasi target output pengabdian masyarakat',
-            ]);
-        })->name('verifikasi-luaran.page');
+        Route::get('verifikasi-luaran', [ModernPageController::class, 'verifikasiLuaran'])
+            ->defaults('module', 'community-service')
+            ->name('verifikasi-luaran.page');
 
         // Modern theme page for Daily Note (Realisasi Anggaran) - Community Service
-        Route::get('daily-note/{proposal}/modern', function (Proposal $proposal) {
-            if (! is_modern_theme()) {
-                return redirect()->route('community-service.daily-note.show', $proposal);
-            }
-            $user = auth()->user();
-            if (! $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'superadmin', 'dekan', 'kaprodi', 'dosen', 'reviewer'])) {
-                abort(403);
-            }
-            if ($user->activeHasRole('dekan') && $user->identity?->faculty_id !== $proposal->submitter->identity?->faculty_id) {
-                abort(403);
-            }
-            if ($user->activeHasRole('kaprodi')) {
-                $kaprodiProdiId = StudyProgram::where('kaprodi_user_id', $user->id)->value('id') ?? $user->identity?->study_program_id;
-                if ($kaprodiProdiId !== $proposal->submitter->identity?->study_program_id) {
-                    abort(403);
-                }
-            }
-            $canManage = $proposal->submitter_id === $user->id ||
-                $proposal->teamMembers()->where('user_id', $user->id)->exists();
-            $isEditable = ! $proposal->logbook_approved_at;
-
-            return view('modern.daily-note', [
-                'title' => 'Realisasi Anggaran',
-                'pageSubtitle' => 'Catatan harian aktivitas dan pengeluaran dana kegiatan',
-                'proposal' => $proposal,
-                'canManage' => $canManage,
-                'isEditable' => $isEditable,
-            ]);
-        })->middleware(['auth'])->name('daily-note.modern');
+        Route::get('daily-note/{proposal}/modern', [ModernPageController::class, 'dailyNote'])
+            ->defaults('module', 'community-service')
+            ->middleware(['auth'])->name('daily-note.modern');
 
         // Modern theme page for Proposal Show (detail) - Community Service
-        Route::get('proposal/{proposal}/modern', function (Proposal $proposal) {
-            if (! is_modern_theme()) {
-                return redirect()->route('community-service.proposal.show', $proposal);
-            }
-            $user = auth()->user();
-            if (! $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'superadmin', 'dekan', 'kaprodi', 'dosen', 'reviewer'])) {
-                abort(403);
-            }
-            if ($user->activeHasRole('dekan') && $user->identity?->faculty_id !== $proposal->submitter->identity?->faculty_id) {
-                abort(403);
-            }
-            if ($user->activeHasRole('kaprodi')) {
-                $kaprodiProdiId = StudyProgram::where('kaprodi_user_id', $user->id)->value('id') ?? $user->identity?->study_program_id;
-                if ($kaprodiProdiId !== $proposal->submitter->identity?->study_program_id) {
-                    abort(403);
-                }
-            }
-
-            return view('modern.proposal-show', [
-                'title' => 'Detail Proposal',
-                'pageSubtitle' => $proposal->title,
-                'proposal' => $proposal,
-            ]);
-        })->middleware(['auth'])->name('proposal.show.modern');
+        Route::get('proposal/{proposal}/modern', [ModernPageController::class, 'proposalShow'])
+            ->defaults('module', 'community-service')
+            ->middleware(['auth'])->name('proposal.show.modern');
 
         // Verifikasi Luaran API (Community Service)
         Route::get('api/v1/verifikasi-luaran', [VerifikasiLuaranController::class, 'index'])
