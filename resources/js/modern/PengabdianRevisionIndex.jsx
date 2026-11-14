@@ -13,6 +13,7 @@ export default function PengabdianRevisionIndex() {
             emptyTitle="Tidak ada usulan perlu perbaikan"
             emptyDescription="Semua usulan pengabdian masyarakat telah selesai atau tidak memerlukan revisi lanjutan."
             ariaLabel="Daftar Perbaikan Usulan Pengabdian Masyarakat"
+            actionUrlFn={(p) => `/community-service/proposal-revision/${p.id}`}
         />
     );
 }

@@ -492,6 +492,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('daily-note/{proposal}', App\Livewire\CommunityService\DailyNote\Show::class)->name('daily-note.show');
 
         // Modern theme (React) data endpoint (community-service)
+        Route::get('api/v1/proposals', [ModernProposalController::class, 'index'])
+            ->middleware('throttle:60,1')
+            ->name('community.proposal.api.v1');
+        Route::get('api/v1/filters', [ModernProposalController::class, 'availableFilters'])
+            ->middleware('throttle:60,1')
+            ->name('community.proposal.filters.v1');
         Route::get('api/v1/proposals/{id}', [ModernProposalController::class, 'show'])
             ->middleware('throttle:60,1')
             ->name('community.proposal.show.v1');

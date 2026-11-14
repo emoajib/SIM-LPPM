@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enums\ProposalStatus;
+use App\Enums\ReportStatus;
 use App\Livewire\Actions\ApproveProposalAction;
 use App\Livewire\Actions\SubmitProposalAction;
 use App\Models\CommunityService;
@@ -15,7 +16,9 @@ use App\Models\Setting;
 use App\Models\StudyProgram;
 use App\Services\EligibilityService;
 use App\Services\LecturerEligibilityService;
+use App\Support\AcademicPeriod;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -28,6 +31,7 @@ class ModernProposalController
         $search = $request->get('search', '');
         $status = $request->get('status', 'all');
         $year = $request->get('year', '');
+        $academicYear = $request->get('academic_year', '');
         $type = $request->get('type', 'research');
         $roleFilter = $request->get('role', 'all');
         $facultyId = $request->get('faculty_id');
@@ -39,6 +43,9 @@ class ModernProposalController
         if ($submodule === 'daily-note') {
             $queryRelations[] = 'budgetItems';
             $queryRelations[] = 'dailyNotes';
+        }
+        if ($submodule === 'final-report') {
+            $queryRelations[] = 'latestFinalReport';
         }
 
         $query = Proposal::with($queryRelations)
@@ -61,13 +68,24 @@ class ModernProposalController
             $query->where($type === 'research' ? 'research_scheme_id' : 'community_service_scheme_id', $schemeId);
         }
         if ($status && $status !== 'all') {
-            $query->where('status', $status);
+            // Untuk Laporan Akhir, "status" berarti status laporan (progress report),
+            // bukan status proposal — paritas dengan tema klasik
+            // (lihat App\Livewire\Traits\ReportData::applyStatusFilter()).
+            if ($submodule !== 'final-report') {
+                $query->where('status', $status);
+            }
         }
         if ($year) {
             $query->whereYear('created_at', $year);
         }
+        if ($academicYear) {
+            // Paritas dengan tema klasik: filter tahun akademik memakai
+            // start_year + semester (bukan tahun kalender created_at).
+            Proposal::applyAcademicYearFilter($query, $academicYear);
+        }
 
         // Submodule-specific filtering (Perbaikan Usulan, Laporan Akhir, Realisasi Anggaran)
+        $statsBase = null;
         if ($submodule === 'revision') {
             $query->with(['reviewers' => function ($q) {
                 $q->whereIn('status', ['completed', 'pending']);
@@ -80,6 +98,10 @@ class ModernProposalController
             });
         } elseif ($submodule === 'final-report') {
             $query->where('status', ProposalStatus::COMPLETED->value);
+            // Statistik kartu status dihitung sebelum filter status laporan diterapkan,
+            // supaya angka tiap kartu tetap stabil saat filter diganti.
+            $statsBase = clone $query;
+            $query = $this->applyReportStatusFilter($query, (string) $status);
         } elseif ($submodule === 'daily-note') {
             $query->where('status', ProposalStatus::COMPLETED->value)
                 ->has('dailyNotes');
@@ -123,6 +145,8 @@ class ModernProposalController
 
         $proposals = $query->latest()->paginate(15);
 
+        $stats = $statsBase === null ? null : $this->finalReportStatistics($statsBase);
+
         return response()->json([
             'data' => $proposals->map(fn ($p) => [
                 'id' => $p->id,
@@ -134,6 +158,12 @@ class ModernProposalController
                 'status_label' => $p->status->label(),
                 'status_color' => $p->status->color(),
                 'created_at' => $p->created_at?->format('d M Y'),
+                'report_status' => $submodule === 'final-report'
+                    ? $this->finalReportStatusValue($p)
+                    : null,
+                'report_status_label' => $submodule === 'final-report'
+                    ? $this->finalReportStatusLabel($p)
+                    : null,
                 'show_url' => $p->detailable_type === CommunityService::class
                     ? route('community-service.proposal.show', $p)
                     : route('research.proposal.show', $p),
@@ -148,8 +178,72 @@ class ModernProposalController
                 'current_page' => $proposals->currentPage(),
                 'last_page' => $proposals->lastPage(),
                 'total' => $proposals->total(),
+                'stats' => $stats,
             ],
         ]);
+    }
+
+    /**
+     * Nilai status laporan akhir terbaru (null bila belum ada laporan).
+     */
+    private function finalReportStatusValue(Proposal $proposal): ?string
+    {
+        $status = $proposal->latestFinalReport?->status;
+
+        return $status instanceof ReportStatus ? $status->value : null;
+    }
+
+    /**
+     * Label status laporan akhir terbaru ("Belum Laporan" bila belum ada).
+     */
+    private function finalReportStatusLabel(Proposal $proposal): string
+    {
+        $status = $proposal->latestFinalReport?->status;
+
+        return $status instanceof ReportStatus ? $status->label() : 'Belum Laporan';
+    }
+
+    /**
+     * Filter Laporan Akhir berdasarkan status progress report (reporting_period = final).
+     * Paritas perilaku dengan App\Livewire\Traits\ReportData::applyStatusFilter().
+     *
+     * @param  Builder<Proposal>  $query
+     * @return Builder<Proposal>
+     */
+    private function applyReportStatusFilter(Builder $query, string $status): Builder
+    {
+        if ($status === '' || $status === 'all') {
+            return $query;
+        }
+
+        if ($status === 'belum_laporan') {
+            return $query->whereDoesntHave('progressReports', fn ($rq) => $rq->where('reporting_period', 'final'));
+        }
+
+        $statuses = $status === 'submitted'
+            ? [ReportStatus::SUBMITTED->value, ReportStatus::APPROVED_BY_DEKAN->value]
+            : [$status];
+
+        return $query->whereHas('progressReports', fn ($rq) => $rq->where('reporting_period', 'final')->whereIn('status', $statuses));
+    }
+
+    /**
+     * Statistik kartu status Laporan Akhir (Total, Disahkan, Dalam Proses, Belum Laporan).
+     *
+     * @param  Builder<Proposal>  $base
+     * @return array<string, int>
+     */
+    private function finalReportStatistics(Builder $base): array
+    {
+        return [
+            'total' => (clone $base)->count(),
+            'approved' => (clone $base)->whereHas('progressReports', fn ($rq) => $rq->where('reporting_period', 'final')->where('status', ReportStatus::APPROVED->value))->count(),
+            'in_review' => (clone $base)->whereHas('progressReports', fn ($rq) => $rq->where('reporting_period', 'final')->whereIn('status', [
+                ReportStatus::SUBMITTED->value,
+                ReportStatus::APPROVED_BY_DEKAN->value,
+            ]))->count(),
+            'belum_laporan' => (clone $base)->whereDoesntHave('progressReports', fn ($rq) => $rq->where('reporting_period', 'final'))->count(),
+        ];
     }
 
     public function show(Request $request, string $id)
@@ -343,6 +437,23 @@ class ModernProposalController
             'label' => $s->label(),
         ]);
 
+        // Opsi tahun akademik (format "2024/2025") — paritas dengan tema klasik
+        // yang memfilter memakai start_year + semester, bukan tahun kalender.
+        $academicYears = collect(AcademicPeriod::optionsFromPeriods(
+            Proposal::where('detailable_type', $type === 'research' ? Research::class : CommunityService::class)
+                ->select('start_year', 'semester')
+                ->distinct()
+                ->get()
+        ))->values();
+
+        // Opsi status laporan akhir (progress report), bukan status proposal.
+        $reportStatuses = collect([['value' => 'belum_laporan', 'label' => 'Belum Laporan']])
+            ->concat(collect(ReportStatus::cases())->map(fn ($s) => [
+                'value' => $s->value,
+                'label' => $s->label(),
+            ]))
+            ->values();
+
         $faculties = [];
         $studyPrograms = [];
         if ($user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'dekan', 'superadmin'])) {
@@ -358,8 +469,10 @@ class ModernProposalController
 
         return response()->json([
             'years' => $years,
+            'academic_years' => $academicYears,
             'schemes' => $schemes,
             'statuses' => $statuses,
+            'report_statuses' => $reportStatuses,
             'faculties' => $faculties,
             'study_programs' => $studyPrograms,
         ]);

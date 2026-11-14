@@ -36,9 +36,9 @@ Status: analisa awal (belum semua gap ditutup). Setiap gap disertai mitigasi.
 ### Gap
 | Gap | Role terdampak | Mitigasi | Status |
 |---|---|---|---|
-| Index modern "search only" (tanpa filter status/year/role/faculty) | Semua | Tambah filter ke ModuleSubpageIndex + kirim ke API (API sudah support) | Belum (P2-B) |
-| "Lihat" mengarah ke detail proposal, bukan revision view | Reviewer, Admin | Tambah actionUrlFn -> klasik atau bangun modern revision detail | Belum |
-| Tidak ada role tabs (ketua/anggota) untuk dosen | Dosen | Tambah role tabs di ModuleSubpageIndex | Belum |
+| Index modern "search only" (tanpa filter status/year/role/faculty) | Semua | Tambah filter ke ModuleSubpageIndex + kirim ke API (API sudah support) | **SELESAI** (W3-1) |
+| "Lihat" mengarah ke detail proposal, bukan revision view | Reviewer, Admin | `actionUrlFn` -> `/research/proposal-revision/{id}` (show klasik) | **SELESAI** |
+| Tidak ada role tabs (ketua/anggota) untuk dosen | Dosen | Select peran (ketua/anggota) di ModuleSubpageIndex | **SELESAI** (W3-2) |
 
 ## 3. Laporan Akhir (Final Report)
 
@@ -55,9 +55,9 @@ Status: analisa awal (belum semua gap ditutup). Setiap gap disertai mitigasi.
 ### Gap
 | Gap | Role terdampak | Mitigasi | Status |
 |---|---|---|---|
-| Index modern "search only" | Semua | Tambah filter ke ModuleSubpageIndex | Belum (P2-B) |
-| Role tabs hilang | Dosen | Tambah role tabs | Belum |
-| Status filter cards hilang (approved/submitted/belum_laporan) | Admin LPPM, Kepala LPPM | Tambah status cards di ModuleSubpageIndex | Belum |
+| Index modern "search only" | Semua | Tambah filter ke ModuleSubpageIndex | **SELESAI** (W3-1) |
+| Role tabs hilang | Dosen | Select peran ketua/anggota | **SELESAI** (W3-2) |
+| Status filter cards hilang (approved/submitted/belum_laporan) | Admin LPPM, Kepala LPPM | Kartu status dari `meta.stats` API + filter laporan (bukan status proposal) | **SELESAI** (W3-3) |
 | Tidak ada detail modern | Semua | Tetap klasik (form kompleks) - terima | Diterima |
 
 ## 4. Realisasi Anggaran (Daily Note)
@@ -87,7 +87,7 @@ Status: analisa awal (belum semua gap ditutup). Setiap gap disertai mitigasi.
 | Scan LPJ upload tidak ada di modern | Kepala LPPM, Admin LPPM | Taut "Aksi lanjutan" ke klasik (sudah) | Diterima (via klasik) |
 | Form ajukan amandemen tidak ada di modern | Dosen | Taut ke klasik (P3 nanti) | Diterima |
 | Ekspor PDF logbook tidak ada di modern | Semua | Taut ke klasik | Diterima |
-| Index list "search only" | Semua | Tambah filter ke ModuleSubpageIndex | Belum (P2-B) |
+| Index list "search only" | Semua | Tambah filter ke ModuleSubpageIndex | **SELESAI** (W3-1) |
 
 ## 5. Verifikasi Luaran
 
@@ -105,15 +105,16 @@ Status: analisa awal (belum semua gap ditutup). Setiap gap disertai mitigasi.
 ### Gap
 | Gap | Role terdampak | Mitigasi | Status |
 |---|---|---|---|
-| Filter faculty/study program/year mungkin hilang | Admin LPPM, Kepala LPPM | Tambah filter jika diperlukan | Perlu verifikasi |
+| Filter faculty/study program/year | — | **Tidak ada gap**: index klasik (`iku-verification.blade.php`) juga hanya punya search/type/status. Scoping fakultas/prodi sudah otomatis di server (dekan/kaprodi) | Terverifikasi (W3-4) |
 
 ## 6. Cross-cutting gap (paling berdampak)
 
-### A. ModuleSubpageIndex "search only" (gap terbesar)
+### A. ModuleSubpageIndex "search only" (gap terbesar) — **SELESAI**
 Eksosistem terdampak: Perbaikan Usulan, Laporan Akhir, Realisasi Anggaran (index).
 Role terdampak: semua (dosen kehilangan role tabs; admin kehilangan filter faculty/study program/year/status).
 Akar masalah: ModuleSubpageIndex hanya mengirim search, type, submodule, page; API index sudah mendukung status, year, faculty_id, study_program_id, scheme_id, role.
-Mitigasi: tambah filter (status dropdown, year dropdown, role tabs untuk dosen, faculty/study program untuk admin) di ModuleSubpageIndex; pass ke API. Effort: M.
+Mitigasi diterapkan: filter status, tahun akademik, skema, fakultas, prodi, dan peran (ketua/anggota) dikirim ke API; `apiBase` module-aware (penelitian vs pengabdian); kartu status Laporan Akhir dari `meta.stats`.
+Penjaga: `tests/Feature/Api/ModuleSubpageFilterParityTest.php` + `tests/Feature/Theme/ModernFilterContractTest.php`.
 
 ### B. Modern detail tanpa aksi tulis (sebagian ditutup)
 Mitigasi yang sudah diterapkan: panel "Aksi lanjutan ke klasik" + native Ajukan/Setujui/Tolak.
@@ -123,19 +124,20 @@ Keputusan: tetap via klasik (hybrid). Native hanya untuk yang sering dipakai.
 ### C. Create/Edit form hanya di klasik
 Keputusan: diterima - form panjang & validasi kompleks lebih stabil di Blade.
 
-### D. Role tabs (ketua/anggota) hilang di modern sub-pages
-Mitigasi: tambah di ModuleSubpageIndex (bagian dari gap A).
+### D. Role tabs (ketua/anggota) hilang di modern sub-pages — **SELESAI**
+Mitigasi: select peran ketua/anggota di ModuleSubpageIndex (konsisten dengan halaman Usulan modern).
 
 ## 7. Rekomendasi prioritas penutupan gap
 
-| Prioritas | Item | Effort | BC terkait |
-|---|---|---|---|
-| 1 | Tambah filter (status, year, role, faculty, study program) ke ModuleSubpageIndex | M | BC-01, BC-03 |
-| 2 | Tambah role tabs (ketua/anggota) di ModuleSubpageIndex | S | BC-01 |
-| 3 | Tambah status filter cards di final-report index modern | S | BC-01 |
-| 4 | Native: kontrak editor, surat list, tim management (opsional) | L | BC-08 |
-| 5 | Native: scan upload, amandemen request, ekspor PDF (opsional) | L | BC-08 |
-| 6 | Verifikasi filter faculty/year di Verifikasi Luaran modern | S | BC-01 |
+| Prioritas | Item | Effort | BC terkait | Status |
+|---|---|---|---|---|
+| 1 | Tambah filter (status, tahun akademik, role, faculty, study program) ke ModuleSubpageIndex | M | BC-01, BC-03 | SELESAI |
+| 2 | Tambah role tabs (ketua/anggota) di ModuleSubpageIndex | S | BC-01 | SELESAI |
+| 3 | Tambah status filter cards di final-report index modern | S | BC-01 | SELESAI |
+| 4 | Native: kontrak editor, surat list, tim management (opsional) | L | BC-08 | DITERIMA (via klasik) |
+| 5 | Native: scan upload, amandemen request, ekspor PDF (opsional) | L | BC-08 | DITERIMA (via klasik) |
+| 6 | Verifikasi filter faculty/year di Verifikasi Luaran modern | S | BC-01 | SELESAI (tidak ada gap) |
+| 7 | "Lihat" di Perbaikan Usulan/Laporan Akhir mengarah ke halaman yang tepat | S | BC-01 | SELESAI |
 
 ## 8. Mitigasi sistemik (agar gap tidak berulang)
 

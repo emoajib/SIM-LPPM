@@ -13,6 +13,7 @@ export default function ResearchRevisionIndex() {
             emptyTitle="Tidak ada usulan perlu perbaikan"
             emptyDescription="Semua usulan penelitian telah selesai atau tidak memerlukan revisi lanjutan."
             ariaLabel="Daftar Perbaikan Usulan Penelitian"
+            actionUrlFn={(p) => `/research/proposal-revision/${p.id}`}
         />
     );
 }

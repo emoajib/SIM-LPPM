@@ -24,7 +24,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  * @property string|null $summary_update
  * @property int|null $reporting_year
  * @property string|null $reporting_period
- * @property string|null $status
+ * @property ReportStatus|null $status
  * @property string|null $submitted_by
  * @property Carbon|null $submitted_at
  * @property string|null $partner_changes

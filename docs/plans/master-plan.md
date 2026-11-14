@@ -74,13 +74,14 @@ Kriteria lulus: semua hijau + `git status` bersih.
 
 | ID | Pekerjaan | Effort | Mitigasi |
 |---|---|---|---|
-| W3-1 | Tambah filter (status, year, role, faculty, study program) ke `ModuleSubpageIndex` + pass ke API | M | BC-01, BC-03 — gap terbesar |
-| W3-2 | Tambah role tabs (ketua/anggota) di `ModuleSubpageIndex` | S | BC-01 |
-| W3-3 | Tambah status filter cards di final-report index modern | S | BC-01 |
-| W3-4 | Verifikasi filter faculty/year di Verifikasi Luaran modern | S | BC-01 |
-| W3-5 | Perluas `ThemeParityTest` dengan assertion fitur kunci (filter ada, tombol ada) | S | Pencegahan gap berulang |
+| W3-1 | Tambah filter (status, tahun akademik, role, faculty, study program) ke `ModuleSubpageIndex` + pass ke API | M | BC-01, BC-03 — **SELESAI** (termasuk `academic_year`, `report_statuses`, `apiBase` module-aware) |
+| W3-2 | Tambah role tabs (ketua/anggota) di `ModuleSubpageIndex` | S | BC-01 — **SELESAI** (select peran) |
+| W3-3 | Tambah status filter cards di final-report index modern | S | BC-01 — **SELESAI** (`meta.stats` + filter status laporan) |
+| W3-4 | Verifikasi filter faculty/year di Verifikasi Luaran modern | S | BC-01 — **SELESAI**: klasik juga tidak punya; scoping server-side sudah ada |
+| W3-5 | Perluas `ThemeParityTest` dengan assertion fitur kunci (filter ada, tombol ada) | S | **SELESAI** via `ModernFilterContractTest` (kontrak statis React↔Blade) |
 | W3-6 | Native kontrak editor, surat list, tim management (opsional) | L | BC-08 (via "Aksi lanjutan" diterima) |
 | W3-7 | Native scan upload, amandemen request, ekspor PDF (opsional, P3) | L | BC-08 (via klasik diterima) |
+| W3-8 | "Lihat" di Perbaikan Usulan / Laporan Akhir mengarah ke halaman yang benar (bukan detail proposal) | S | BC-01 — **SELESAI** |
 
 ---
 
