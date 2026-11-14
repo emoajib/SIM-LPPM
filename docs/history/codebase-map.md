@@ -143,12 +143,12 @@
 
 ## Artisan command
 
-- `app/Console/Commands` (33): `AuditBudgetCaps.php`, `BackfillIdentityScienceCluster.php`, `BenchmarkNotifications.php`, `CheckModernPages.php`, `CheckMySqlColumnOrders.php`, `CheckOverdueReviews.php`, `CheckRegressions.php`, `CheckSchemaDrift.php`, `CheckTheme.php`, `CleanupDummyData.php`, `CleanupOrphanMedia.php`, `ClearRateLimiters.php`, `CodebaseMap.php`, `FixDocSubstanceFiles.php`, `FixProposalSignatures.php`, `FixProposalSubstanceFile.php`, `GenerateMySqlColumnOrders.php`, `HistoryBrief.php`, `ImportSintaAuthor.php`, `ImportUsers.php`, `InstallCommand.php`, `MigrateMediaPaths.php`, `PatchSoftwareTkt.php`, `RepairLetterData.php`, `ResetPdfSettings.php`, `RestoreBackupCommand.php`, `RunInstallationCommand.php`, `SendDailySummaries.php`, `SendReviewReminders.php`, `SendWeeklySummaries.php`, `SyncEnums.php`, `SyncProductionData.php`, `ValidateMySqlColumnOrders.php`
+- `app/Console/Commands` (35): `AuditBudgetCaps.php`, `BackfillIdentityScienceCluster.php`, `BenchmarkNotifications.php`, `BugCapture.php`, `CheckModernPages.php`, `CheckMySqlColumnOrders.php`, `CheckOverdueReviews.php`, `CheckRegressions.php`, `CheckSchemaDrift.php`, `CheckTheme.php`, `CleanupDummyData.php`, `CleanupOrphanMedia.php`, `ClearRateLimiters.php`, `CodebaseMap.php`, `FixDocSubstanceFiles.php`, `FixProposalSignatures.php`, `FixProposalSubstanceFile.php`, `GenerateMySqlColumnOrders.php`, `HistoryBrief.php`, `ImportSintaAuthor.php`, `ImportUsers.php`, `InstallCommand.php`, `MigrateMediaPaths.php`, `PatchSoftwareTkt.php`, `PruneObservability.php`, `RepairLetterData.php`, `ResetPdfSettings.php`, `RestoreBackupCommand.php`, `RunInstallationCommand.php`, `SendDailySummaries.php`, `SendReviewReminders.php`, `SendWeeklySummaries.php`, `SyncEnums.php`, `SyncProductionData.php`, `ValidateMySqlColumnOrders.php`
 - `app/Console/Commands/Traits` (1): `ParsesMigrationColumns.php`
 
 ## Model
 
-- `app/Models` (65): `ActivityLog.php`, `ActivitySchedule.php`, `AdditionalOutput.php`, `BudgetAmendment.php`, `BudgetAmendmentItem.php`, `BudgetCap.php`, `BudgetComponent.php`, `BudgetGroup.php`, `BudgetItem.php`, `CommunityService.php`, `CommunityServiceScheme.php`, `DailyNote.php`, `DocumentSignature.php`, `Faculty.php`, `FacultyRoadmap.php`, `FocusArea.php`, `Identity.php`, `IkuOutputType.php`, `Institution.php`, `InstitutionalReport.php`, `KaprodiApproval.php`, `Keyword.php`, `Letter.php`, `LetterCategory.php`, `LetterLog.php`, `LetterType.php`, `MacroResearchGroup.php`, `MandatoryOutput.php`, `ManualBook.php`, `MasterIku.php`, `MonevReview.php`, `NationalPriority.php`, `NotificationLog.php`, `NotificationSetting.php`, `Partner.php`, `Permission.php`, `PolicyInvolvement.php`, `ProgressReport.php`, `Proposal.php`, `ProposalActivity.php`, `ProposalMonev.php`, `ProposalOutput.php`, `ProposalReviewer.php`, `ProposalStatusLog.php`, `QuotaMessage.php`, `Research.php`, `ResearchScheme.php`, `ResearchStage.php`, `ReviewCriteria.php`, `ReviewLog.php`, `ReviewScore.php`, `ReviewerProfile.php`, `Role.php`, `ScienceCluster.php`, `Sdg.php`, `Setting.php`, `SintaScoreSubmission.php`, `Strata.php`, `StudyProgram.php`, `StudyProgramRoadmap.php`, `Theme.php`, `TktIndicator.php`, `TktLevel.php`, `Topic.php`, `User.php`
+- `app/Models` (67): `ActivityLog.php`, `ActivitySchedule.php`, `AdditionalOutput.php`, `BudgetAmendment.php`, `BudgetAmendmentItem.php`, `BudgetCap.php`, `BudgetComponent.php`, `BudgetGroup.php`, `BudgetItem.php`, `CommunityService.php`, `CommunityServiceScheme.php`, `DailyNote.php`, `DevEvent.php`, `DocumentSignature.php`, `ErrorSignature.php`, `Faculty.php`, `FacultyRoadmap.php`, `FocusArea.php`, `Identity.php`, `IkuOutputType.php`, `Institution.php`, `InstitutionalReport.php`, `KaprodiApproval.php`, `Keyword.php`, `Letter.php`, `LetterCategory.php`, `LetterLog.php`, `LetterType.php`, `MacroResearchGroup.php`, `MandatoryOutput.php`, `ManualBook.php`, `MasterIku.php`, `MonevReview.php`, `NationalPriority.php`, `NotificationLog.php`, `NotificationSetting.php`, `Partner.php`, `Permission.php`, `PolicyInvolvement.php`, `ProgressReport.php`, `Proposal.php`, `ProposalActivity.php`, `ProposalMonev.php`, `ProposalOutput.php`, `ProposalReviewer.php`, `ProposalStatusLog.php`, `QuotaMessage.php`, `Research.php`, `ResearchScheme.php`, `ResearchStage.php`, `ReviewCriteria.php`, `ReviewLog.php`, `ReviewScore.php`, `ReviewerProfile.php`, `Role.php`, `ScienceCluster.php`, `Sdg.php`, `Setting.php`, `SintaScoreSubmission.php`, `Strata.php`, `StudyProgram.php`, `StudyProgramRoadmap.php`, `Theme.php`, `TktIndicator.php`, `TktLevel.php`, `Topic.php`, `User.php`
 
 ## Test (per folder)
 
@@ -160,7 +160,7 @@
 | `Feature/AdminLppm` | 1 |
 | `Feature/Api` | 4 |
 | `Feature/Auth` | 9 |
-| `Feature/Console` | 1 |
+| `Feature/Console` | 4 |
 | `Feature/Dekan` | 1 |
 | `Feature/Iku` | 2 |
 | `Feature/Installer` | 2 |
@@ -168,6 +168,7 @@
 | `Feature/KepalaLppm` | 3 |
 | `Feature/Livewire/Research` | 1 |
 | `Feature/Livewire/Research/Proposal/Components` | 1 |
+| `Feature/Observability` | 1 |
 | `Feature/Reports` | 2 |
 | `Feature/Security` | 6 |
 | `Feature/Services` | 1 |

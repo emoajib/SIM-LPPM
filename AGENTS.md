@@ -169,6 +169,10 @@ echo "✅ Deploy selesai!"
 ### Setiap Update Modul/Fitur Baru
 **Mulai dari konteks:** `php artisan history:brief <area>` (mis. `modern`, `final-report`, `amandemen`) — menampilkan commit terakhir, kelas bug (BC) terkait, dan test penjaganya. Untuk peta struktur menyeluruh: `docs/history/codebase-map.md` (regenerate dengan `php artisan codebase:map`).
 
+**Saat menemukan bug:** `php artisan bug:capture "gejala" --area=<area> --cause="..."` → membuat entri `docs/regressions/BC-xx-*.md`, stub test (`markTestIncomplete`), dan `dev_events`. Lalu tulis assertion yang gagal, perbaiki, commit `[BC-xx]`.
+
+**Retensi observability:** `php artisan observability:prune --dry-run` (terjadwal harian 03:30).
+
 1. **Selalu gunakan `update_production.sh`** — jangan `git pull` langsung di produksi
 2. **Sebelum push:** jalankan `php artisan test` — semua harus PASS
 3. **Route baru yang butuh perlindungan:** pastikan ada middleware `auth` atau `signed`
@@ -327,11 +331,13 @@ Template PR: `.github/pull_request_template.md`.
   - ✅ `history:brief <area>` (commit, BC, test penjaga)
   - ✅ `codebase:map` → `docs/history/codebase-map.md`
   - ✅ Checklist keamanan otomatis di akhir `update_production.sh`
+  - ✅ `error_signatures` + `dev_events` (migrasi, model, recorder dedupe, `observability:prune` terjadwal)
+  - ✅ `bug:capture` (entri BC + stub test `markTestIncomplete` + `dev_events`)
 - All tests: **710 passed** ✅ (13 skipped, 0 failed)
 
 ### In Progress
 - *(none)*
 
 ### Planned
-- Wave 4 sisa: Sentry (`SENTRY_DSN` di produksi), tabel `error_signatures` + `dev_events`, `history:sync`, `bug:capture`, rotasi log
-- Wave 5: deploy produksi via `update_production.sh` (checklist keamanan sudah otomatis di akhir script)
+- Wave 4 sisa: Sentry (`SENTRY_DSN` di produksi), `history:sync` (token GitHub), hook deploy → `dev_events`, rotasi log
+- Wave 5: deploy produksi via `update_production.sh` (checklist keamanan sudah otomatis; migrasi observability ikut)

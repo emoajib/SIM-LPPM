@@ -12,7 +12,8 @@ halaman/modul baru. Tiap kelas memiliki:
 
 ## Cara pakai
 - Sebelum mengerjakan fitur baru: `php artisan history:brief <area>` (lihat BC relevan).
-- Saat menemukan bug: `php artisan bug:capture "gejala"` → buat entri baru + stub test.
+- Saat menemukan bug: `php artisan bug:capture "gejala" --area=<area>` → buat entri baru + stub test + `dev_events`.
+- Retensi memori: `php artisan observability:prune --dry-run` (terjadwal harian 03:30; hanya menghapus `dev_events` lama dan `error_signatures` berstatus fixed/ignored).
 - Saat memperbaiki: commit dengan suffix `[BC-xx]` dan body berisi *Why / BC / Test*.
 - Saat menambah test: tandai docblock `Regression: BC-xx`.
 - CI menjalankan `php artisan regression:check` (dua arah registry ↔ test).

@@ -39,3 +39,10 @@ Schedule::command('telescope:prune --hours=48')
     ->onOneServer()
     ->withoutOverlapping()
     ->description('Prune Telescope entries older than 48 hours');
+
+// Retensi tabel observability (W4-H2.2/H2.3): cegah tabel tumbuh tanpa batas
+Schedule::command('observability:prune')
+    ->dailyAt('03:30')
+    ->onOneServer()
+    ->withoutOverlapping()
+    ->description('Prune old dev_events and resolved error_signatures');

@@ -101,12 +101,12 @@ Kriteria lulus: semua hijau + `git status` bersih.
 | ID | Pekerjaan | Mitigasi |
 |---|---|---|
 | W4-H2.1 | Aktifkan Sentry (DSN, release=commit SHA, sample rendah) | Error terkumpul |
-| W4-H2.2 | Tabel `error_signatures` (fingerprint, modul, bc_code, commit fix) | Error tidak hilang |
-| W4-H2.3 | Tabel `dev_events` (commit, CI, deploy, error, bug) permanen | Retensi GitHub/log habis |
-| W4-H2.4 | `history:sync` (tarik commit + status CI via API) | Otomatis |
-| W4-H2.5 | Hook deploy mencatat ke `dev_events` (DB, bukan file) | git status produksi bersih |
-| W4-H2.6 | Rotasi log 374 MB lokal + produksi | Observability |
-| W4-H2.7 | `bug:capture` command (entri BC + stub test gagal) | Bug baru otomatis tersimpan |
+| W4-H2.2 | Tabel `error_signatures` (fingerprint, modul, bc_code, commit fix) | **DONE** — migrasi + `ErrorSignatureRecorder` (dedupe, abaikan 4xx) + retensi |
+| W4-H2.3 | Tabel `dev_events` (commit, CI, deploy, error, bug) permanen | **DONE** — migrasi + `DevEventRecorder` + `observability:prune` (terjadwal) |
+| W4-H2.4 | `history:sync` (tarik commit + status CI via API) | Belum (butuh token GitHub) |
+| W4-H2.5 | Hook deploy mencatat ke `dev_events` (DB, bukan file) | Belum (bug:capture sudah menulis dev_events) |
+| W4-H2.6 | Rotasi log 363 MB lokal + produksi | Belum |
+| W4-H2.7 | `bug:capture` command (entri BC + stub test gagal) | **DONE** — entri BC + stub test (incomplete) + dev_event |
 
 ### H3 (pemahaman kodebase & laporan)
 | ID | Pekerjaan | Mitigasi |

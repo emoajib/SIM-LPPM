@@ -3,6 +3,7 @@
 use App\Http\Middleware\ActiveRoleMiddleware;
 use App\Http\Middleware\EnsureLetterModuleActive;
 use App\Http\Middleware\RecordActivity;
+use App\Services\ErrorSignatureRecorder;
 use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -46,6 +47,12 @@ return Application::configure(basePath: dirname(__DIR__))
         // $middleware->prepend(\App\Http\Middleware\InstallerMiddleware::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        // W4-H2.2: agregasi kelas error ke error_signatures (dedupe per fingerprint).
+        // Recorder menelan semua kegagalan agar observability tidak menggagalkan request.
+        $exceptions->report(function (Throwable $e) {
+            app(ErrorSignatureRecorder::class)->record($e);
+        });
+
         $exceptions->renderable(function (Throwable $e, Request $request) {
             // Vetted by AI - Manual Review Required by Senior Engineer/Manager
             if ($e instanceof HttpException && $e->getStatusCode() === 405) {
