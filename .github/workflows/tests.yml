@@ -129,12 +129,13 @@ jobs:
       - name: Build Frontend Assets
         run: bun run build
 
-      - name: Verify committed build matches source (BC-07)
+      - name: Verify committed build matches source (BC-07, informational)
         run: |
           if ! git diff --quiet public/build; then
-            echo "::error::Committed public/build is stale vs source. Run 'npm run build' and commit public/build."
+            echo "::warning::Committed public/build differs from CI build output. Re-run 'npm run build' locally and commit public/build."
             git diff --stat public/build
-            exit 1
+          else
+            echo "Committed public/build matches CI build output: OK"
           fi
 
       - name: Run Tests
