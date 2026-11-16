@@ -84,6 +84,7 @@ class ContractManagerTest extends TestCase
             'detailable_type' => 'App\Models\Research',
             'detailable_id' => $research1->id,
             'status' => ProposalStatus::COMPLETED,
+            'created_at' => now()->subMinute(),
         ]);
 
         $research2 = Research::factory()->create();
@@ -91,6 +92,7 @@ class ContractManagerTest extends TestCase
             'detailable_type' => 'App\Models\Research',
             'detailable_id' => $research2->id,
             'status' => ProposalStatus::COMPLETED,
+            'created_at' => now(),
         ]);
 
         Livewire::actingAs($admin)

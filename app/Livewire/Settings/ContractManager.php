@@ -340,9 +340,15 @@ class ContractManager extends Component
 
                 return;
             }
-            $proposals = Proposal::whereIn('id', $this->selectedProposals)->orderBy('created_at', 'asc')->get();
+            $proposals = Proposal::whereIn('id', $this->selectedProposals)
+                ->orderBy('created_at', 'asc')
+                ->orderBy('id', 'asc')
+                ->get();
         } else {
-            $proposals = $this->proposalsQuery()->orderBy('created_at', 'asc')->get();
+            $proposals = $this->proposalsQuery()
+                ->orderBy('created_at', 'asc')
+                ->orderBy('id', 'asc')
+                ->get();
         }
 
         if ($this->batchScopeType === 'research') {
