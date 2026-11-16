@@ -14,7 +14,6 @@ export default function PengabdianDailyNoteIndex() {
             emptyDescription="Belum ada catatan harian kegiatan atau belanja dana pengabdian."
             ariaLabel="Daftar Realisasi Anggaran Pengabdian Masyarakat"
             isRealisasi
-            actionUrlFn={(p) => `/community-service/daily-note/${p.id}/modern`}
-        />
+                />
     );
 }

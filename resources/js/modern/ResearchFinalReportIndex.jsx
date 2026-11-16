@@ -13,7 +13,6 @@ export default function ResearchFinalReportIndex() {
             emptyTitle="Belum ada laporan akhir"
             emptyDescription="Belum ada laporan akhir penelitian yang diajukan."
             ariaLabel="Daftar Laporan Akhir Penelitian"
-            actionUrlFn={(p) => `/research/final-report/${p.id}`}
-        />
+                />
     );
 }

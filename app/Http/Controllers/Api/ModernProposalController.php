@@ -165,9 +165,7 @@ class ModernProposalController
                 'report_status_label' => $submodule === 'final-report'
                     ? $this->finalReportStatusLabel($p)
                     : null,
-                'show_url' => $p->detailable_type === CommunityService::class
-                    ? route('community-service.proposal.show', $p)
-                    : route('research.proposal.show', $p),
+                'show_url' => $this->showUrl($type, $submodule, $p),
                 'budget_total' => $submodule === 'daily-note'
                     ? (float) $p->budgetItems->where('is_active', true)->sum('total_price')
                     : null,
@@ -187,6 +185,25 @@ class ModernProposalController
     /**
      * Nilai status laporan akhir terbaru (null bila belum ada laporan).
      */
+    /**
+     * URL halaman detail sesuai sub-modul & modul.
+     *
+     * Sebelumnya selalu mengarah ke proposal.show, sehingga tautan "Lihat"
+     * di halaman revision/final-report/daily-note salah sasaran.
+     */
+    private function showUrl(string $module, string $submodule, Proposal $proposal): string
+    {
+        $prefix = $module === 'community-service' ? 'community-service' : 'research';
+        $suffix = match ($submodule) {
+            'daily-note' => 'daily-note.show',
+            'final-report' => 'final-report.show',
+            'revision' => 'proposal-revision.show',
+            default => 'proposal.show',
+        };
+
+        return route($prefix.'.'.$suffix, $proposal);
+    }
+
     private function finalReportStatusValue(Proposal $proposal): ?string
     {
         $status = $proposal->latestFinalReport?->status;

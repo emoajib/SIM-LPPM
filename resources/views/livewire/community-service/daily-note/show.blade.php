@@ -6,6 +6,12 @@
         
         Kembali
     </a>
+    @if (is_modern_theme())
+        <a href="{{ route('community-service.daily-note.modern', $proposal) }}" data-navigate-ignore="true" class="btn btn-outline-secondary d-flex align-items-center gap-2">
+            <i class="ti ti-bolt me-1" aria-hidden="true"></i>
+            Tampilan Modern
+        </a>
+    @endif
     <a data-navigate-ignore="true" href="{{ route('financial-reports.export-pdf', ['proposal' => $proposal, 'preview' => 1]) }}" target="_blank" class="btn-outline-primary btn">
         
         Pratinjau LPJ

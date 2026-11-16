@@ -9,7 +9,7 @@ use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
-#[Layout('components.layouts.app', ['title' => 'Dashboard IKU (Kepmen 358/M/KEP/2025)'])]
+#[Layout('components.layouts.app', ['title' => 'IKU'])]
 class IkuDashboard extends Component
 {
     use HasIkuCalculations;
@@ -89,7 +89,7 @@ class IkuDashboard extends Component
     public function render()
     {
         return view('livewire.iku.iku-dashboard', [
-            'pageTitle' => 'Dashboard IKU LPPM',
+            'pageTitle' => 'IKU',
             'pageSubtitle' => 'Monitoring Indikator Kinerja Utama sesuai Keputusan Menteri Nomor 358/M/KEP/2025.',
         ]);
     }

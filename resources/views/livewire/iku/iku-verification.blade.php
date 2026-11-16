@@ -10,7 +10,7 @@ Pusat Verifikasi IKU</h2>
                 <div class="btn-list">
                     <a href="{{ route('accreditation.hub') }}" class="btn btn-outline-primary d-flex align-items-center gap-2" wire:navigate>
                         
-                        Dashboard IKU
+                        IKU
                     </a>
                 </div>
             </div>

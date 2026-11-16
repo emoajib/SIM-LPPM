@@ -497,13 +497,7 @@ class MenuComposer
                         : 'community-service.proposal.index';
                     unset($__item['children']);
                 }
-                // Pindahkan "Verifikasi Luaran" ke tab in-page (bukan duplikasi di menu)
-                if ($itemTitle === 'IKU & Luaran') {
-                    $__item['children'] = array_values(array_filter(
-                        $__item['children'],
-                        fn ($c) => ($c['title'] ?? '') !== 'Verifikasi Luaran'
-                    ));
-                }
+                // (IKU sekarang tautan tunggal ke /iku; filter child lama tidak diperlukan)
             }
             unset($__item);
         }
@@ -597,6 +591,19 @@ class MenuComposer
 
             $items = $newItems;
         }
+
+        // IKU: jadikan tautan tunggal ke /iku (tanpa dropdown).
+        // Dilakukan di sini (setelah reorder admin lppm yang memakai key
+        // 'IKU & Luaran') agar urutan menu tidak rusak.
+        foreach ($items as &$__ikuItem) {
+            if (($__ikuItem['title'] ?? '') === 'IKU & Luaran') {
+                $__ikuItem['title'] = 'IKU';
+                $__ikuItem['route'] = 'accreditation.hub';
+                $__ikuItem['navigate'] = false;
+                unset($__ikuItem['children']);
+            }
+        }
+        unset($__ikuItem);
 
         // Format (role-filter + href resolution) FIRST, so overflow is computed
         // on the items actually visible to this user (avoids empty "Lainnya").

@@ -13,7 +13,6 @@ export default function PengabdianFinalReportIndex() {
             emptyTitle="Belum ada laporan akhir"
             emptyDescription="Belum ada laporan akhir pengabdian masyarakat yang diajukan."
             ariaLabel="Daftar Laporan Akhir Pengabdian Masyarakat"
-            actionUrlFn={(p) => `/community-service/final-report/${p.id}`}
-        />
+                />
     );
 }
