@@ -50,7 +50,7 @@ it('opens every ecosystem page for every role in both themes', function (string 
         ->get(route($routeName));
 
     // Verifikasi Luaran punya halaman modern-only: tema klasik dialihkan.
-    if ($theme === 'classic' && $routeName === 'research.verifikasi-luaran.page') {
+    if ($theme === 'classic' && in_array($routeName, ['research.verifikasi-luaran.page', 'community-service.verifikasi-luaran.page'], true)) {
         $response->assertRedirect(route('accreditation.verification'));
 
         return;
@@ -77,4 +77,5 @@ it('opens every ecosystem page for every role in both themes', function (string 
         'community-service.final-report.index',
         'community-service.daily-note.index',
         'research.verifikasi-luaran.page',
+        'community-service.verifikasi-luaran.page',
     ]);
