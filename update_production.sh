@@ -44,6 +44,13 @@ trap on_exit EXIT
 echo "=== SIM-LPPM Production Update Script ==="
 cd "$APP_DIR" || fail "Direktori ${APP_DIR} tidak ditemukan!"
 
+# Preflight snapshot DB — dicek SEBELUM maintenance agar deploy tidak batal
+# setelah situs mati. Cakup PATH dan jalur khusus cPanel (ea-mysql).
+if ! command -v mysqldump >/dev/null 2>&1 \
+  && ! compgen -G "/opt/cpanel/ea-mysql*/bin/mysqldump" >/dev/null; then
+  fail "mysqldump tidak ditemukan — snapshot database tidak bisa dibuat. Deploy dibatalkan sebelum maintenance."
+fi
+
 # Cek disk space (min 1 GB)
 AVAIL=$(df --output=avail "$APP_DIR" 2>/dev/null | tail -1 || true)
 if [[ -n "$AVAIL" && "$AVAIL" -lt 1048576 ]]; then
@@ -127,9 +134,9 @@ echo "📁 Migrasi path file media..."
 php artisan media:migrate-paths --force || echo "⚠️  Migrasi media selesai dengan error (cek log)."
 echo "Media migration done."
 
-# Bersihkan record media yatim ID 97 & 99 (idempotent)
-echo "🧹 Pembersihan media yatim..."
-php artisan media:cleanup-orphans --ids=97,99 --force 2>/dev/null || true
+# Catatan: `media:cleanup-orphans --ids=97,99` DIHAPUS dari deploy. Mode --ids
+# menghapus record media tanpa cek orphan, jadi dua ID itu akan terhapus setiap
+# deploy. Pembersihan media yatim cukup dijalankan manual dengan --dry-run.
 
 # Patch missing Software TKT levels
 echo "Patching Software TKT levels..."

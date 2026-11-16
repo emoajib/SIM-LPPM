@@ -83,4 +83,25 @@ class DeployScriptTest extends TestCase
         $this->assertNotFalse($migrateAt);
         $this->assertLessThan($migrateAt, $snapshotAt);
     }
+
+    public function test_does_not_delete_media_records_by_hardcoded_id(): void
+    {
+        $script = $this->script();
+
+        // Mode --ids menghapus record tanpa cek orphan; ID 97/99 pernah dipakai
+        // di produksi dan tidak boleh terhapus otomatis setiap deploy.
+        $this->assertStringNotContainsString('php artisan media:cleanup-orphans', $script);
+    }
+
+    public function test_checks_mysqldump_before_entering_maintenance(): void
+    {
+        $script = $this->script();
+
+        $checkAt = strpos($script, 'command -v mysqldump');
+        $downAt = strpos($script, 'php artisan down');
+
+        $this->assertNotFalse($checkAt);
+        $this->assertNotFalse($downAt);
+        $this->assertLessThan($downAt, $checkAt);
+    }
 }
