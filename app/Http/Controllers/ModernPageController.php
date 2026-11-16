@@ -95,4 +95,36 @@ class ModernPageController extends Controller
         return $proposal->submitter_id === $user->id
             || $proposal->teamMembers()->where('user_id', $user->id)->exists();
     }
+
+    /**
+     * Modern theme: Konfigurasi Notifikasi (admin LPPM/superadmin only).
+     */
+    public function settingsNotificationConfig(Request $request): View|RedirectResponse
+    {
+        if (! is_modern_theme()) {
+            return redirect()->route('settings.notification-config');
+        }
+
+        abort_unless($request->user()?->activeHasAnyRole(['admin lppm', 'superadmin']), 403);
+
+        return view('modern.settings-notification-config', [
+            'title' => 'Konfigurasi Notifikasi',
+            'pageSubtitle' => 'Kelola SMTP & WhatsApp untuk notifikasi email/WA (admin LPPM & super admin)',
+        ]);
+    }
+
+    /**
+     * Modern theme: Profil Saya (all authenticated users).
+     */
+    public function settingsProfile(Request $request): View|RedirectResponse
+    {
+        if (! is_modern_theme()) {
+            return redirect()->route('settings.profile');
+        }
+
+        return view('modern.settings-profile', [
+            'title' => 'Profil Saya',
+            'pageSubtitle' => 'Kelola data profil dan identitas akademik Anda',
+        ]);
+    }
 }

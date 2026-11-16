@@ -13,6 +13,8 @@ import PengabdianDailyNoteIndex from "./modern/PengabdianDailyNoteIndex.jsx";
 import VerifikasiLuaranIndex from "./modern/VerifikasiLuaranIndex.jsx";
 import DailyNoteIndex from "./modern/DailyNoteIndex.jsx";
 import ProposalShowIndex from "./modern/ProposalShowIndex.jsx";
+import NotificationConfigIndex from "./modern/NotificationConfigIndex.jsx";
+import ProfileIndex from "./modern/ProfileIndex.jsx";
 
 const PAGES = {
     "proposals-index": ProposalsIndex,
@@ -27,6 +29,8 @@ const PAGES = {
     "verifikasi-luaran-index": VerifikasiLuaranIndex,
     "daily-note-index": DailyNoteIndex,
     "proposal-show-index": ProposalShowIndex,
+    "notification-config-index": NotificationConfigIndex,
+    "profile-index": ProfileIndex,
 };
 
 class ErrorBoundary extends React.Component {

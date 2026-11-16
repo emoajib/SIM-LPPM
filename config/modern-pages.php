@@ -33,6 +33,8 @@ return [
         'research.proposal.show.modern' => 'proposal-show-index',
         'community-service.daily-note.modern' => 'daily-note-index',
         'community-service.proposal.show.modern' => 'proposal-show-index',
+        'settings.notification-config.page' => 'notification-config-index',
+        'settings.profile.page' => 'profile-index',
     ],
 
     /*

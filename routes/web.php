@@ -4,6 +4,8 @@ use App\Exports\UsersTemplateExport;
 use App\Http\Controllers\AdminLppm\ManualBookUploadController;
 use App\Http\Controllers\Api\DailyNoteController;
 use App\Http\Controllers\Api\ModernProposalController;
+use App\Http\Controllers\Api\Settings\NotificationConfigApiController;
+use App\Http\Controllers\Api\Settings\ProfileApiController;
 use App\Http\Controllers\Api\VerifikasiLuaranController;
 use App\Http\Controllers\Auth\MathCaptchaController;
 use App\Http\Controllers\DailyNoteExportController;
@@ -628,6 +630,30 @@ Route::middleware(['auth'])->group(function () {
             ->name('download-storage');
     });
 
+    // Settings API Routes (for Modern Theme React components)
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
+    Route::middleware(['auth', 'verified'])->prefix('api/v1/settings')->name('api.settings.')->group(function () {
+        // Notification Config (admin lppm/superadmin only - enforced in controller)
+        Route::get('notification', [NotificationConfigApiController::class, 'show'])
+            ->name('notification.show');
+        Route::put('notification', [NotificationConfigApiController::class, 'update'])
+            ->name('notification.update');
+        Route::post('notification/test-email', [NotificationConfigApiController::class, 'testEmail'])
+            ->name('notification.test-email');
+        Route::post('notification/test-whatsapp', [NotificationConfigApiController::class, 'testWhatsApp'])
+            ->name('notification.test-whatsapp');
+
+        // Profile (all authenticated users)
+        Route::get('profile', [ProfileApiController::class, 'show'])
+            ->name('profile.show');
+        Route::put('profile', [ProfileApiController::class, 'update'])
+            ->name('profile.update');
+        Route::post('profile/photo', [ProfileApiController::class, 'uploadPhoto'])
+            ->name('profile.photo.upload');
+        Route::delete('profile/photo', [ProfileApiController::class, 'deletePhoto'])
+            ->name('profile.photo.delete');
+    });
+
     Route::get('settings/two-factor', TwoFactor::class)
         ->middleware(
             when(
@@ -651,6 +677,16 @@ Route::middleware(['auth'])->group(function () {
     // Theme Switcher Route (Modern 3D Infografis vs Classic Tabler)
     Route::match(['get', 'post'], 'theme/switch', [ThemeSwitcherController::class, 'switch'])
         ->name('theme.switch');
+
+    // Modern theme page for Settings: Notification Config (admin LPPM/superadmin)
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
+    Route::get('settings/notification-config/modern', [ModernPageController::class, 'settingsNotificationConfig'])
+        ->middleware(['auth', 'verified', 'role:admin lppm|superadmin'])->name('settings.notification-config.page');
+
+    // Modern theme page for Settings: Profile (all authenticated users)
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
+    Route::get('settings/profile/modern', [ModernPageController::class, 'settingsProfile'])
+        ->middleware(['auth', 'verified'])->name('settings.profile.page');
 
     // PDF Export Route
     Route::get('proposals/{proposal}/export-pdf', [ProposalExportController::class, 'download'])
