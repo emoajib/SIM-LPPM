@@ -4,7 +4,14 @@ Analisa paritas tampilan & fitur antara tema modern (React) dan klasik (Blade/Li
 untuk ekosistem: **Usulan, Perbaikan Usulan, Laporan Akhir, Realisasi Anggaran, Verifikasi Luaran**,
 untuk **semua role** (Dosen, Reviewer, Admin LPPM, Kepala LPPM, Dekan, Kaprodi, Rektor, Superadmin).
 
-Status: analisa awal (belum semua gap ditutup). Setiap gap disertai mitigasi.
+Status: **audit ulang 2026-11-16** — gap paritas ditutup sebagian; yang belum ditutup
+ditandai "Diterima" (keputusan sadar, hybrid) atau backlog Fase 7. Setiap gap disertai mitigasi.
+
+Ringkasan status rilis 2026-11-16:
+- Otorisasi (proposal, realisasi anggaran, API, halaman modern) = **satu sumber** di `ProposalPolicy`.
+- URL detail = **Opsi A**: index memakai `p.show_url` (klasik kanonik) + tombol "Tampilan Modern" eksplisit.
+- Dashboard React (`DashboardIndex.jsx`) = dipertahankan sebagai komponen cadangan (unrouted).
+- Bulletin = masih client-side (`localStorage`), backlog opsional.
 
 ## 1. Usulan (Proposal)
 

@@ -118,6 +118,22 @@ Kriteria lulus: semua hijau + `git status` bersih.
 
 ---
 
+## Wave 6 — Dokumentasi & kebersihan (P3) — SELESAI 2026-11-16
+
+| ID | Pekerjaan | Status |
+|---|---|---|
+| F6-01 | `gap-analysis-modern-classic.md`: status URL (Opsi A), otorisasi, gap diterima, tanggal audit | DONE |
+| F6-02 | `codebase:map` → `docs/history/codebase-map.md` | DONE (regenerate) |
+| F6-03 | `bug:capture` artefak copy → BC-09; BC-01/BC-06 diperbarui | DONE |
+| F6-04 | Drift `AGENTS.md`: baseline test, deploy via `update_production.sh`, DoD + `copy:check`, header `Vetted by SOSIOMEN` | DONE |
+| F6-05 | `DashboardIndex.jsx`: dipertahankan + didokumentasikan (unrouted, `allowed_unrouted_components`) | DONE (Opsi A) |
+| F6-06 | Arsip plan obsolete: `docs/migration-refactoring-plan.md` → `docs/archive/` | DONE |
+| F6-07 | Verifikasi "Bulletin server-side": masih client-side (`localStorage`), ditutup sebagai backlog | DONE (diverifikasi) |
+| F6-08 | Sinkronkan status `docs/plans/master-plan.md` dengan hasil Fase 1–5 | DONE |
+| F6-09 | Lengkapi penjaga BC-05 & BC-07 (regression 9/9) | DONE — `BC05MassAssignmentTest`, `BC07StaleBuildTest` |
+
+---
+
 ## Wave 5 — Deploy produksi (P4)
 
 | ID | Pekerjaan | Mitigasi |
