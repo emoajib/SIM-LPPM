@@ -13,4 +13,4 @@
 2. Dilarang menambahkan marker AI generik; guard `copy:check` harus hijau sebelum commit.
 3. Teks placeholder/artefak tidak boleh muncul di output UI — tambahkan test render bila menyentuh partial bersama.
 
-**Kasus:** 2026-11-16 (breadcrumb `ngapa`; header `Vetted by AI`).
+**Kasus:** 2026-11-16 (breadcrumb `ngapa`; marker header AI generik).
