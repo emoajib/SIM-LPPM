@@ -1,47 +1,76 @@
-#!/bin/bash
-# update_production.sh — Script update cPanel (versi simpel)
+#!/usr/bin/env bash
+# update_production.sh — Script update cPanel (hardened)
 # Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 
 set -euo pipefail
 
-echo "=== SIM-LPPM Production Update Script ==="
-cd /home/simlppmi/sim-lppm || { echo "❌ Direktori /home/simlppmi/sim-lppm tidak ditemukan!"; exit 1; }
+APP_DIR="${APP_DIR:-/home/simlppmi/sim-lppm}"
+BASE_URL="${BASE_URL:-https://sim-lppm.itsnupekalongan.ac.id}"
 
-DEPLOY_SHA="$(git rev-parse --short HEAD 2>/dev/null || echo unknown)"
+PRE_DEPLOY_SHA="$(git -C "$APP_DIR" rev-parse --short HEAD 2>/dev/null || echo unknown)"
+DEPLOY_SHA="$PRE_DEPLOY_SHA"
+MAINTENANCE_ON=0
+
+fail() {
+  echo "❌ $*" >&2
+  exit 1
+}
 
 # Catat kegagalan deploy ke dev_events (W4-H2.5). Tidak boleh menggagalkan deploy.
 record_deploy_failure() {
-  php artisan dev:record deploy "Deploy gagal (rev-parse: ${DEPLOY_SHA})" \
+  php artisan dev:record deploy "Deploy gagal (${DEPLOY_SHA})" \
     --area=produksi --status=failure --ref="${DEPLOY_SHA}" 2>/dev/null || true
 }
 
-trap 'echo "❌ Update GAGAL! Memulihkan..."; record_deploy_failure; php artisan up 2>/dev/null; exit 1' ERR
+# EXIT trap menangkap semua jalur gagal — termasuk `exit 1` eksplisit yang
+# tidak memicu trap ERR. Situs wajib dinyalakan kembali bila maintenance aktif.
+on_exit() {
+  local status=$?
+  trap - EXIT
+
+  if [ "$status" -ne 0 ]; then
+    echo "❌ Update GAGAL (exit $status). Memulihkan..." >&2
+    record_deploy_failure
+
+    if [ "$MAINTENANCE_ON" -eq 1 ]; then
+      php artisan up 2>/dev/null || true
+    fi
+  fi
+
+  exit "$status"
+}
+trap on_exit EXIT
+
+echo "=== SIM-LPPM Production Update Script ==="
+cd "$APP_DIR" || fail "Direktori ${APP_DIR} tidak ditemukan!"
 
 # Cek disk space (min 1 GB)
-AVAIL=$(df --output=avail /home/simlppmi 2>/dev/null | tail -1)
+AVAIL=$(df --output=avail "$APP_DIR" 2>/dev/null | tail -1 || true)
 if [[ -n "$AVAIL" && "$AVAIL" -lt 1048576 ]]; then
-  echo "❌ Disk space < 1 GB. Tersedia: $((AVAIL/1024)) MB"
-  exit 1
+  fail "Disk space < 1 GB. Tersedia: $((AVAIL/1024)) MB"
 fi
 
 # Maintenance mode ON (sebelum backup agar data konsisten)
 php artisan down --retry=300
+MAINTENANCE_ON=1
 
 # Backup (ke storage/ yang aman — BUKAN ../  yang bisa terekspos)
 echo "📦 Membuat backup..."
 BACKUP_DIR="storage/app/backup"
 mkdir -p "$BACKUP_DIR"
-tar czf "$BACKUP_DIR/backup-$(date +%Y%m%d-%H%M%S).tar.gz" \
+BACKUP_FILE="$BACKUP_DIR/backup-$(date +%Y%m%d-%H%M%S).tar.gz"
+tar czf "$BACKUP_FILE" \
   --exclude="./storage/app/backup" \
   --exclude="./node_modules" \
   --exclude="./.git" \
   --exclude="./vendor" \
+  --exclude="./.env" \
   --exclude="./storage/logs/*.log" \
   --exclude="./storage/framework/cache/data/*" \
   --exclude="./storage/framework/views/*" \
   --exclude="./storage/framework/sessions/*" \
-  --exclude="./storage/debugbar/*" . || { echo "❌ Backup gagal! Periksa disk space."; exit 1; }
-chmod 600 "$BACKUP_DIR"/backup-*.tar.gz 2>/dev/null || true
+  --exclude="./storage/debugbar/*" . || fail "Backup gagal! Periksa disk space."
+chmod 600 "$BACKUP_FILE" 2>/dev/null || true
 
 # Retensi backup otomatis — simpan 3 terbaru, hapus yang lama agar disk tidak penuh
 KEEP_BACKUPS=3
@@ -56,12 +85,17 @@ else
   echo "Jumlah backup ($BACKUP_COUNT) masih dalam batas retensi ($KEEP_BACKUPS)."
 fi
 
-# Pull changes — gunakan git rm --cached agar file yg masuk gitignore tidak konflik
+# Pull changes — JANGAN pakai git checkout/clean di produksi: perintah itu bisa
+# menghapus perubahan lokal atau file untracked yang masih diperlukan.
+if [ -n "$(git status --short 2>/dev/null || true)" ]; then
+  echo "⚠️  Production working tree tidak bersih:" >&2
+  git status --short >&2
+  fail "Working tree tidak bersih. Commit/stash manual sebelum deploy."
+fi
+
 echo "Pulling latest changes..."
-git rm --cached -r storage/backups/ 2>/dev/null || true
-git checkout -- . 2>/dev/null || true
-git clean -fd 2>/dev/null || true
-git pull origin main || { echo "❌ git pull gagal! Periksa koneksi atau konflik manual, lalu jalankan: php artisan up"; exit 1; }
+git pull --ff-only origin main || fail "git pull gagal! Periksa koneksi atau konflik manual, lalu jalankan: php artisan up"
+DEPLOY_SHA="$(git rev-parse --short HEAD)"
 
 # Install dependencies
 echo "Installing dependencies..."
@@ -88,7 +122,6 @@ echo "Media migration done."
 # Bersihkan record media yatim ID 97 & 99 (idempotent)
 echo "🧹 Pembersihan media yatim..."
 php artisan media:cleanup-orphans --ids=97,99 --force 2>/dev/null || true
-
 
 # Patch missing Software TKT levels
 echo "Patching Software TKT levels..."
@@ -127,7 +160,7 @@ chmod 644 public/.htaccess
 chmod 644 public/index.php
 chmod 600 .env     # KRITIS: .env hanya boleh dibaca owner
 
-# Harden backup — direktori 700 dan file 600 sesuai Security Checklist (aman, owner tetap simlppmi)
+# Harden backup — direktori 700 dan file 600 sesuai Security Checklist
 chmod 700 storage/app/backup
 find storage/app/backup -type f -print0 | xargs -0 chmod 600 2>/dev/null || true
 
@@ -135,31 +168,64 @@ find storage/app/backup -type f -print0 | xargs -0 chmod 600 2>/dev/null || true
 echo "Testing application..."
 php artisan tinker --execute="\$p = App\Models\Proposal::first(); if (\$p) { echo '✓ Proposal found: ' . \$p->title . PHP_EOL; echo '✓ Status: ' . \$p->status->label() . PHP_EOL; } else { echo '✗ No proposals found' . PHP_EOL; }"
 
-
 # Clear rate limiters (biar user yg kena lockout bisa login lagi)
 php artisan rate-limiter:clear --force
 echo "Rate limiters cleared"
 
-# Maintenance mode OFF
-trap - ERR
+# Maintenance mode OFF sebelum smoke test
 php artisan up
+MAINTENANCE_ON=0
 
-# Smoke test
-SMOKE=$(curl -s -o /dev/null -w "%{http_code}" https://sim-lppm.itsnupekalongan.ac.id/)
-echo "Smoke test (homepage): HTTP $SMOKE"
-if [ "$SMOKE" != "200" ]; then
-  echo "⚠️  Homepage returned $SMOKE — cek log!"
+# Smoke test — 6 URL kunci. Redirect 3xx wajar untuk halaman ber-auth.
+SMOKE_FAIL=0
+smoke_check() {
+  local label="$1"
+  local url="$2"
+  local allow_redirect="${3:-true}"
+  local code
+
+  code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "$url" 2>/dev/null || true)
+  code="${code:-000}"
+
+  case "$code" in
+    200)
+      echo "  ✅ $label: HTTP $code"
+      ;;
+    301|302|307|308)
+      if [ "$allow_redirect" = "true" ]; then
+        echo "  ✅ $label: HTTP $code (redirect)"
+      else
+        echo "  ❌ $label: HTTP $code (tidak boleh redirect)"
+        SMOKE_FAIL=1
+      fi
+      ;;
+    *)
+      echo "  ❌ $label: HTTP $code"
+      SMOKE_FAIL=1
+      ;;
+  esac
+}
+
+echo "Smoke test:"
+smoke_check "homepage" "$BASE_URL/"
+smoke_check "login" "$BASE_URL/login" false
+smoke_check "dashboard" "$BASE_URL/dashboard" true
+smoke_check "research" "$BASE_URL/research" true
+smoke_check "community-service" "$BASE_URL/community-service" true
+smoke_check "health-check" "$BASE_URL/health-check" false
+
+if [ "$SMOKE_FAIL" -ne 0 ]; then
+  fail "Smoke test gagal — cek log sebelum menutup deploy."
 fi
 
 echo "=== ✅ Update completed successfully! ==="
-echo "Test URL: https://sim-lppm.itsnupekalongan.ac.id"
+echo "Test URL: $BASE_URL"
 
 # ─────────────────────────────────────────────────────────────
-# Post-deploy security checklist (otomatis, non-fatal)
+# Post-deploy security checklist (otomatis)
 # Semua cek di bawah ini HARUS bukan 200. Kalau 200, berarti file
 # sensitif bisa diakses publik — segera perbaiki .htaccess/konfigurasi.
 # ─────────────────────────────────────────────────────────────
-BASE_URL="https://sim-lppm.itsnupekalongan.ac.id"
 echo ""
 echo "🔒 Post-deploy security checklist:"
 
@@ -218,9 +284,7 @@ else
 fi
 
 if [ "$SECURITY_FAIL" -ne 0 ]; then
-  echo ""
-  echo "❌ ADA TEMUAN KEAMANAN — perbaiki sebelum menutup deploy!"
-  exit 1
+  fail "ADA TEMUAN KEAMANAN — perbaiki sebelum menutup deploy!"
 fi
 
 echo "🔒 Security checklist: semua aman."
