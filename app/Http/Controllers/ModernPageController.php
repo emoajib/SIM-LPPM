@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Proposal;
-use App\Models\StudyProgram;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 /**
@@ -20,22 +20,6 @@ use Illuminate\View\View;
  */
 class ModernPageController extends Controller
 {
-    /**
-     * Peran yang boleh membuka halaman modern berbasis proposal.
-     *
-     * @var array<int, string>
-     */
-    private const PROPOSAL_ROLES = [
-        'admin lppm',
-        'kepala lppm',
-        'rektor',
-        'superadmin',
-        'dekan',
-        'kaprodi',
-        'dosen',
-        'reviewer',
-    ];
-
     public function verifikasiLuaran(Request $request): View|RedirectResponse
     {
         if (! is_modern_theme()) {
@@ -59,7 +43,7 @@ class ModernPageController extends Controller
         }
 
         $user = $request->user();
-        $this->authorizeProposalAccess($user, $proposal);
+        Gate::authorize('viewDailyNote', $proposal);
 
         return view('modern.daily-note', [
             'title' => 'Realisasi Anggaran',
@@ -76,7 +60,7 @@ class ModernPageController extends Controller
             return redirect()->route($this->routeName($request, 'proposal.show'), $proposal);
         }
 
-        $this->authorizeProposalAccess($request->user(), $proposal);
+        Gate::authorize('view', $proposal);
 
         return view('modern.proposal-show', [
             'title' => 'Detail Proposal',
@@ -101,33 +85,6 @@ class ModernPageController extends Controller
     private function routeName(Request $request, string $suffix): string
     {
         return $this->module($request).'.'.$suffix;
-    }
-
-    /**
-     * Otorisasi baca proposal: peran global, dekan per fakultas, kaprodi per prodi.
-     */
-    private function authorizeProposalAccess(?User $user, Proposal $proposal): void
-    {
-        if ($user === null) {
-            abort(403);
-        }
-
-        if (! $user->activeHasAnyRole(self::PROPOSAL_ROLES)) {
-            abort(403);
-        }
-
-        if ($user->activeHasRole('dekan') && $user->identity?->faculty_id !== $proposal->submitter?->identity?->faculty_id) {
-            abort(403);
-        }
-
-        if ($user->activeHasRole('kaprodi')) {
-            $kaprodiProdiId = StudyProgram::where('kaprodi_user_id', $user->id)->value('id')
-                ?? $user->identity?->study_program_id;
-
-            if ($kaprodiProdiId !== $proposal->submitter?->identity?->study_program_id) {
-                abort(403);
-            }
-        }
     }
 
     /**

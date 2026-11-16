@@ -7,12 +7,12 @@ use App\Models\BudgetAmendment;
 use App\Models\BudgetGroup;
 use App\Models\DailyNote;
 use App\Models\Proposal;
-use App\Models\StudyProgram;
 use App\Services\BudgetAmendmentService;
 use App\Services\ImageCompressionService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class DailyNoteController
@@ -454,27 +454,12 @@ class DailyNoteController
 
     private function canAccess($user, Proposal $proposal): bool
     {
-        if ($user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'superadmin'])) {
-            return true;
-        }
-        if ($user->activeHasRole('dekan')) {
-            return (bool) ($user->identity?->faculty_id && $user->identity->faculty_id === $proposal->submitter->identity?->faculty_id);
-        }
-        if ($user->activeHasRole('kaprodi')) {
-            $kaprodiProdiId = StudyProgram::where('kaprodi_user_id', $user->id)->value('id')
-                ?? $user->identity?->study_program_id;
-
-            return (bool) ($kaprodiProdiId && $kaprodiProdiId === $proposal->submitter->identity?->study_program_id);
-        }
-
-        return $proposal->submitter_id === $user->id ||
-            $proposal->teamMembers()->where('user_id', $user->id)->exists();
+        return Gate::allows('viewDailyNote', $proposal);
     }
 
     private function canManage($user, Proposal $proposal): bool
     {
-        return $proposal->submitter_id === $user->id ||
-            $proposal->teamMembers()->where('user_id', $user->id)->exists();
+        return Gate::allows('manageDailyNote', $proposal);
     }
 
     private function formatNote(DailyNote $note): array

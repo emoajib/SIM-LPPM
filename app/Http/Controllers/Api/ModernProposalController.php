@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class ModernProposalController
 {
@@ -273,23 +274,8 @@ class ModernProposalController
             return response()->json(['message' => 'Proposal tidak ditemukan'], 404);
         }
 
-        // Authorization check
-        if (! $user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'superadmin'])) {
-            if ($proposal->submitter_id !== $user->id && ! $proposal->teamMembers()->where('user_id', $user->id)->exists() && ! $proposal->reviewers()->where('user_id', $user->id)->exists()) {
-                if ($user->activeHasRole('dekan')) {
-                    if ($user->identity?->faculty_id !== $proposal->submitter->identity?->faculty_id) {
-                        return response()->json(['message' => 'Unauthorized'], 403);
-                    }
-                } elseif ($user->activeHasRole('kaprodi')) {
-                    $kaprodiProdiId = StudyProgram::where('kaprodi_user_id', $user->id)->value('id') ?? $user->identity?->study_program_id;
-                    if ($kaprodiProdiId !== $proposal->submitter->identity?->study_program_id) {
-                        return response()->json(['message' => 'Unauthorized'], 403);
-                    }
-                } else {
-                    return response()->json(['message' => 'Unauthorized'], 403);
-                }
-            }
-        }
+        // Single source of truth: ProposalPolicy (parity klasik/modern/API)
+        Gate::authorize('view', $proposal);
 
         $isResearch = $proposal->detailable_type === 'App\\Models\\Research';
 

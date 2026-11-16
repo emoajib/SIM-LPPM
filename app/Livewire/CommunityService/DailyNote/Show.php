@@ -8,10 +8,10 @@ use App\Models\BudgetGroup;
 use App\Models\DailyNote;
 use App\Models\ProgressReport;
 use App\Models\Proposal;
-use App\Models\StudyProgram;
 use App\Services\BudgetAmendmentService;
 use App\Services\ImageCompressionService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
@@ -66,37 +66,12 @@ class Show extends Component
     // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     protected function canAccess(Proposal $proposal): bool
     {
-        $user = Auth::user();
-
-        if ($user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'superadmin'])) {
-            return true;
-        }
-
-        if ($user->activeHasRole('dekan')) {
-            $dekanFacultyId = $user->identity?->faculty_id;
-            $submitterFacultyId = $proposal->submitter->identity?->faculty_id;
-
-            return (bool) ($dekanFacultyId && $dekanFacultyId === $submitterFacultyId);
-        }
-
-        if ($user->activeHasRole('kaprodi')) {
-            $kaprodiProdiId = StudyProgram::where('kaprodi_user_id', $user->id)->value('id')
-                ?? $user->identity?->study_program_id;
-            $submitterProdiId = $proposal->submitter->identity?->study_program_id;
-
-            return (bool) ($kaprodiProdiId && $kaprodiProdiId === $submitterProdiId);
-        }
-
-        return $proposal->submitter_id === $user->id ||
-            $proposal->teamMembers()->where('user_id', $user->id)->exists();
+        return Gate::allows('viewDailyNote', $proposal);
     }
 
     public function canManage(Proposal $proposal): bool
     {
-        $userId = Auth::id();
-
-        return $proposal->submitter_id === $userId ||
-            $proposal->teamMembers()->where('user_id', $userId)->exists();
+        return Gate::allows('manageDailyNote', $proposal);
     }
 
     public function create(): void

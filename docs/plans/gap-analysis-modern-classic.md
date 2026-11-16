@@ -127,6 +127,16 @@ Keputusan: diterima - form panjang & validasi kompleks lebih stabil di Blade.
 ### D. Role tabs (ketua/anggota) hilang di modern sub-pages — **SELESAI**
 Mitigasi: select peran ketua/anggota di ModuleSubpageIndex (konsisten dengan halaman Usulan modern).
 
+### E. Otorisasi tidak seragam antar tema — **SELESAI**
+Gejala: halaman modern hanya memeriksa role global, sehingga dosen tanpa relasi bisa membuka detail; `ProposalPolicy` klasik belum mengizinkan kaprodi; API memakai salinan aturan sendiri. Akibatnya hasil 200/403 berbeda antar tema.
+Mitigasi: `ProposalPolicy` menjadi sumber tunggal (`view`, `viewDailyNote`, `manageDailyNote`) untuk `ModernPageController`, `ModernProposalController`, `DailyNoteController`, dan Livewire Daily Note. Reviewer hanya boleh membaca proposal yang ditugaskan; reviewer tanpa penugasan tetap ditolak. Kaprodi diizinkan pada prodi yang sama.
+Penjaga: `tests/Feature/Security/ModernAccessBolaTest.php` (matriks lintas peran, tema, API, dan unit).
+
+### F. URL detail modern tidak kanonik — **DITERIMA (Opsi A)**
+Gejala: index penelitian menautkan `/research/proposal/{id}/modern`, sementara pengabdian memakai `show_url`, sehingga URL detail tidak konsisten.
+Mitigasi rilis ini: semua index memakai `p.show_url` (URL klasik kanonik) + tombol eksplisit "Tampilan Modern" saat tema modern aktif.
+Rencana jangka panjang (Opsi B): URL detail theme-aware `/{module}/proposal/{id}` dengan `classic_url` untuk panel aksi; butuh audit 84 referensi `proposal.show` dan 10 `wire:navigate`.
+
 ## 7. Rekomendasi prioritas penutupan gap
 
 | Prioritas | Item | Effort | BC terkait | Status |
@@ -138,6 +148,8 @@ Mitigasi: select peran ketua/anggota di ModuleSubpageIndex (konsisten dengan hal
 | 5 | Native: scan upload, amandemen request, ekspor PDF (opsional) | L | BC-08 | DITERIMA (via klasik) |
 | 6 | Verifikasi filter faculty/year di Verifikasi Luaran modern | S | BC-01 | SELESAI (tidak ada gap) |
 | 7 | "Lihat" di Perbaikan Usulan/Laporan Akhir mengarah ke halaman yang tepat | S | BC-01 | SELESAI |
+| 8 | Satukan otorisasi modern/klasik/API di `ProposalPolicy` | M | BC-06 | SELESAI |
+| 9 | URL detail modern theme-aware (Opsi B) | L | BC-01 | DITERIMA (Opsi A; Opsi B jangka panjang) |
 
 ## 8. Mitigasi sistemik (agar gap tidak berulang)
 

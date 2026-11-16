@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Enums\ProposalStatus;
 use App\Models\Proposal;
+use App\Models\StudyProgram;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -46,13 +47,67 @@ class ProposalPolicy
 
         // 5. Dekan of the submitter's faculty can view
         if ($user->activeHasRole('dekan')) {
-            $submitterFacultyId = $proposal->submitter->identity?->faculty_id;
-            if ($user->identity?->faculty_id === $submitterFacultyId) {
+            $dekanFacultyId = $user->identity?->faculty_id;
+            $submitterFacultyId = $proposal->submitter?->identity?->faculty_id;
+
+            if (filled($dekanFacultyId) && $dekanFacultyId === $submitterFacultyId) {
+                return true;
+            }
+        }
+
+        // 6. Kaprodi of the submitter's study program can view (parity API)
+        if ($user->activeHasRole('kaprodi')) {
+            $kaprodiProdiId = StudyProgram::where('kaprodi_user_id', $user->id)->value('id')
+                ?? $user->identity?->study_program_id;
+            $submitterProdiId = $proposal->submitter?->identity?->study_program_id;
+
+            if (filled($kaprodiProdiId) && $kaprodiProdiId === $submitterProdiId) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * Otorisasi halaman realisasi anggaran (daily note).
+     *
+     * Aturan sama dengan `view`, tetapi reviewer yang hanya ditugaskan review
+     * proposal tidak boleh membuka data keuangan. Reviewer tetap bisa mengakses
+     * bila juga memegang peran lain (admin/dekan/kaprodi/dll).
+     */
+    public function viewDailyNote(User $user, Proposal $proposal): bool
+    {
+        if ($user->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor', 'superadmin'])) {
+            return true;
+        }
+
+        if ($user->activeHasRole('dekan')) {
+            $dekanFacultyId = $user->identity?->faculty_id;
+            $submitterFacultyId = $proposal->submitter?->identity?->faculty_id;
+
+            return filled($dekanFacultyId) && $dekanFacultyId === $submitterFacultyId;
+        }
+
+        if ($user->activeHasRole('kaprodi')) {
+            $kaprodiProdiId = StudyProgram::where('kaprodi_user_id', $user->id)->value('id')
+                ?? $user->identity?->study_program_id;
+            $submitterProdiId = $proposal->submitter?->identity?->study_program_id;
+
+            return filled($kaprodiProdiId) && $kaprodiProdiId === $submitterProdiId;
+        }
+
+        return $proposal->submitter_id === $user->id
+            || $proposal->teamMembers()->where('user_id', $user->id)->exists();
+    }
+
+    /**
+     * Otorisasi mutasi catatan harian (tambah/edit/hapus).
+     */
+    public function manageDailyNote(User $user, Proposal $proposal): bool
+    {
+        return $proposal->submitter_id === $user->id
+            || $proposal->teamMembers()->where('user_id', $user->id)->exists();
     }
 
     /**

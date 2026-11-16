@@ -8,10 +8,12 @@
  * untuk halaman modern detail proposal dan realisasi anggaran.
  */
 
+use App\Enums\ReviewStatus;
 use App\Models\Faculty;
 use App\Models\Identity;
 use App\Models\Institution;
 use App\Models\Proposal;
+use App\Models\ProposalReviewer;
 use App\Models\Research;
 use App\Models\StudyProgram;
 use App\Models\User;
@@ -108,14 +110,30 @@ it('allows team member to open modern daily note', function () {
     $response->assertStatus(200);
 });
 
-it('allows reviewer to read modern proposal detail', function () {
+it('allows assigned reviewer to read modern proposal detail', function () {
+    $reviewer = User::factory()->create();
+    $reviewer->assignRole('reviewer');
+
+    ProposalReviewer::create([
+        'proposal_id' => $this->proposal->id,
+        'user_id' => $reviewer->id,
+        'status' => ReviewStatus::PENDING,
+    ]);
+
+    $this->actingAs($reviewer)
+        ->withSession(['active_role' => 'reviewer', 'sim_lppm_app_theme' => 'modern'])
+        ->get(route('research.proposal.show.modern', $this->proposal))
+        ->assertStatus(200);
+});
+
+it('blocks reviewer without assignment from modern proposal detail', function () {
     $reviewer = User::factory()->create();
     $reviewer->assignRole('reviewer');
 
     $this->actingAs($reviewer)
         ->withSession(['active_role' => 'reviewer', 'sim_lppm_app_theme' => 'modern'])
         ->get(route('research.proposal.show.modern', $this->proposal))
-        ->assertStatus(200);
+        ->assertStatus(403);
 });
 
 it('redirects guest to login', function () {
