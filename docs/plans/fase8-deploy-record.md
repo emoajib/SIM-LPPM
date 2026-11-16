@@ -154,7 +154,7 @@ terkonfirmasi di produksi pada kedua tema.
 |---|---|
 | `php artisan budget-caps:audit` di produksi | belum dijalankan |
 | `SENTRY_DSN` produksi | belum diisi |
-| `GITHUB_TOKEN` produksi | belum diisi (agar `history:sync` terjadwal tidak gagal) |
+| `GITHUB_TOKEN` produksi | **DONE 2026-11-16** — `history:sync` menarik 50 commit + 20 workflow run; `history:brief deploy` OK |
 | Verifikasi manual 4 halaman | **DONE 2026-11-16** (klasik + modern) |
 | `composer install --no-dev` memastikan Boost/`browser.log` tidak aktif | perlu cek `storage/logs` |
 
