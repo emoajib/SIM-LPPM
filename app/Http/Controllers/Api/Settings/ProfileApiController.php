@@ -71,11 +71,20 @@ class ProfileApiController extends Controller
         $user->update($validated['user'] ?? []);
 
         if (isset($validated['identity'])) {
+            $identityData = $validated['identity'];
+
+            // Handle hybrid institution (existing ID or new name) - same as Livewire ProfileForm
+            $institutionInput = $identityData['institution_id'] ?? null;
+            $finalInstitutionId = $this->institutionHandler->execute($institutionInput);
+            $finalInstitutionName = is_numeric($institutionInput) ? null : $institutionInput;
+
             $user->identity()->updateOrCreate(
                 ['user_id' => $user->id],
-                $validated['identity']
+                array_merge($identityData, [
+                    'institution_id' => $finalInstitutionId,
+                    'institution_name' => $finalInstitutionName,
+                ])
             );
-            $this->institutionHandler->execute($user);
         }
 
         ActivityLog::create([
