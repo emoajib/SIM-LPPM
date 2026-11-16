@@ -60,3 +60,10 @@ Schedule::command('history:sync')
     ->onOneServer()
     ->withoutOverlapping()
     ->description('Sync GitHub commits and workflow runs into dev_events');
+
+// Rekap mingguan engineering (W4-H3.2/H3.3)
+Schedule::command('digest:weekly')
+    ->weeklyOn(1, '05:00')
+    ->onOneServer()
+    ->withoutOverlapping()
+    ->description('Write weekly engineering digest from errors, CI, and regressions');

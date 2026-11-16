@@ -36,6 +36,8 @@ class DevEvent extends Model
 
     public const TYPE_DECISION = 'decision';
 
+    public const TYPE_DIGEST = 'digest';
+
     protected $fillable = [
         'type',
         'area',
