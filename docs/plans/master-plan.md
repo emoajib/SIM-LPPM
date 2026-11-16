@@ -100,7 +100,7 @@ Kriteria lulus: semua hijau + `git status` bersih.
 ### H2 (capture otomatis)
 | ID | Pekerjaan | Mitigasi |
 |---|---|---|
-| W4-H2.1 | Aktifkan Sentry (DSN, release=commit SHA, sample rendah) | **SEBAGIAN** — config release/traces/PII + deploy set `SENTRY_RELEASE`; **butuh `SENTRY_DSN` produksi** |
+| W4-H2.1 | Aktifkan Sentry (DSN, release=commit SHA, sample rendah) | **KODE SIAP** — config release/traces/PII + deploy set `SENTRY_RELEASE`; butuh `SENTRY_DSN` di `.env` produksi; aplikasi jalan tanpa Sentry |
 | W4-H2.2 | Tabel `error_signatures` (fingerprint, modul, bc_code, commit fix) | **DONE** — migrasi + `ErrorSignatureRecorder` (dedupe, abaikan 4xx) + retensi |
 | W4-H2.3 | Tabel `dev_events` (commit, CI, deploy, error, bug) permanen | **DONE** — migrasi + `DevEventRecorder` + `observability:prune` (terjadwal) |
 | W4-H2.4 | `history:sync` (tarik commit + status CI via API) | **DONE** — butuh `GITHUB_TOKEN` (fallback `gh auth token`), terjadwal mingguan |

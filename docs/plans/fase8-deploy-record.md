@@ -153,7 +153,7 @@ terkonfirmasi di produksi pada kedua tema.
 | Item | Status |
 |---|---|
 | `php artisan budget-caps:audit` di produksi | **DONE 2026-11-16** — index unik OK, 0 duplikat, 0 `semester` NULL, semua skema berpagu, 3 baris |
-| `SENTRY_DSN` produksi | belum diisi (opsional; aplikasi jalan tanpa Sentry) |
+| `SENTRY_DSN` produksi | **Sudah terintegrasi di kode** — butuh `SENTRY_DSN` di `.env`; aplikasi jalan tanpa Sentry; `SENTRY_RELEASE` otomatis dari deploy script |
 | `GITHUB_TOKEN` produksi | **DONE 2026-11-16** — `history:sync` menarik 50 commit + 20 workflow run; `history:brief deploy` OK |
 | Verifikasi manual 4 halaman | **DONE 2026-11-16** (klasik + modern) |
 | `composer install --no-dev` memastikan Boost/`browser.log` tidak aktif | **DONE 2026-11-16** — `laravel/boost` & `phpunit/phpunit` tidak installed, `browser.log` tidak ada |
