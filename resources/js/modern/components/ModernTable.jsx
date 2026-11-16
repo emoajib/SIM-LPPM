@@ -19,6 +19,7 @@ export default function ModernTable({
     rowClassName = "",
     ariaLabel = "Tabel Data",
 }) {
+    const rows = Array.isArray(data) ? data : [];
     if (loading) {
         return (
             <div className="py-2">
@@ -27,7 +28,7 @@ export default function ModernTable({
         );
     }
 
-    if (!data || data.length === 0) {
+    if (!rows || rows.length === 0) {
         return (
             <EmptyState
                 icon={emptyIcon}
@@ -55,7 +56,7 @@ export default function ModernTable({
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-700/60 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200">
-                    {data.map((item, rowIdx) => (
+                    {rows.map((item, rowIdx) => (
                         <tr
                             key={item[keyField] ?? rowIdx}
                             className={`group hover:bg-slate-50/80 dark:hover:bg-slate-700/40 transition-colors duration-150 ${rowClassName}`}

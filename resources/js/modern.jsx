@@ -29,6 +29,48 @@ const PAGES = {
     "proposal-show-index": ProposalShowIndex,
 };
 
+class ErrorBoundary extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { error: null };
+    }
+    static getDerivedStateFromError(error) {
+        return { error };
+    }
+    componentDidCatch(error, info) {
+        // eslint-disable-next-line no-console
+        console.error("Modern page crashed:", error, info);
+    }
+    render() {
+        if (this.state.error) {
+            return React.createElement(
+                "div",
+                {
+                    className:
+                        "mx-auto max-w-lg rounded-xl border border-rose-200 bg-rose-50 p-6 text-center text-rose-800 dark:border-rose-900/50 dark:bg-rose-950/50 dark:text-rose-200",
+                },
+                React.createElement("h2", { className: "mb-2 text-lg font-bold" }, "Halaman gagal dimuat"),
+                React.createElement(
+                    "p",
+                    { className: "mb-4 text-sm" },
+                    String(this.state.error?.message || this.state.error || "Terjadi kesalahan tak terduga.")
+                ),
+                React.createElement(
+                    "button",
+                    {
+                        type: "button",
+                        onClick: () => window.location.reload(),
+                        className:
+                            "rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-700",
+                    },
+                    "Muat ulang"
+                )
+            );
+        }
+        return this.props.children;
+    }
+}
+
 function mount() {
     const PAGE = window.__MODERN_PAGE__ || "banner";
     const rootEl = document.getElementById("modern-root");
@@ -38,7 +80,7 @@ function mount() {
         rootEl.innerHTML = "<div style='padding:2rem;text-align:center;color:#64748b'>Halaman modern tidak tersedia: " + PAGE + "</div>";
         return;
     }
-    createRoot(rootEl).render(React.createElement(Comp));
+    createRoot(rootEl).render(React.createElement(ErrorBoundary, null, React.createElement(Comp)));
 }
 
 if (document.readyState === "loading") {

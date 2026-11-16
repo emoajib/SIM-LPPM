@@ -87,7 +87,8 @@ export default function VerifikasiLuaranIndex() {
             });
             if (!res.ok) throw new Error("HTTP " + res.status);
             const json = await res.json();
-            setOutputs(json.data || []);
+            const rows = Array.isArray(json.data) ? json.data : Object.values(json.data || {});
+            setOutputs(rows);
             setMeta(json.meta || meta);
             setIsDosen(Boolean(json.is_dosen));
             setCanVerify(Boolean(json.can_verify));

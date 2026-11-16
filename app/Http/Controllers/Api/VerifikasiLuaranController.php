@@ -107,12 +107,13 @@ class VerifikasiLuaranController
 
         $combined = $mandatory->concat($additional)->sortByDesc('created_at');
 
-        // Pagination manual
+        // Pagination manual. Wajib ->values() agar key berurutan (JSON array, bukan object).
+        // Tanpa ini, key non-sekuensial membuat React `data.map` crash (BC-01, 2026-11-16).
         $total = $combined->count();
-        $items = $combined->slice(($page - 1) * $perPage, $perPage)->all();
+        $items = $combined->slice(($page - 1) * $perPage, $perPage)->values()->all();
 
         return response()->json([
-            'data' => $items,
+            'data' => array_values($items),
             'meta' => [
                 'current_page' => (int) $page,
                 'last_page' => max(1, (int) ceil($total / $perPage)),
