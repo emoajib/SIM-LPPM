@@ -65,4 +65,22 @@ class DeployScriptTest extends TestCase
         $this->assertStringContainsString('smoke_check "community-service"', $script);
         $this->assertStringContainsString('smoke_check "health-check"', $script);
     }
+
+    public function test_takes_database_snapshot_before_running_migrations(): void
+    {
+        $script = $this->script();
+
+        $this->assertStringContainsString('php artisan db:snapshot', $script);
+
+        // Pemulihan harus manual + punya preview, bukan drop-all otomatis.
+        $this->assertStringContainsString('app:restore-backup', $script);
+        $this->assertStringNotContainsString('DROP TABLE IF EXISTS', $script);
+
+        $snapshotAt = strpos($script, 'php artisan db:snapshot');
+        $migrateAt = strpos($script, 'php artisan migrate --force');
+
+        $this->assertNotFalse($snapshotAt);
+        $this->assertNotFalse($migrateAt);
+        $this->assertLessThan($migrateAt, $snapshotAt);
+    }
 }

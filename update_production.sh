@@ -107,6 +107,14 @@ echo "📋 Pending migrations:"
 php artisan migrate --pretend --force
 echo "⏳ Lanjut dalam 5 detik... (Ctrl+C untuk batal)"
 sleep 5
+
+# Snapshot database SEBELUM migrasi — satu-satunya titik pulih bila migrasi
+# gagal. Snapshot tidak pernah di-restore otomatis: pemulihan lewat
+# `php artisan app:restore-backup --sql=<file>`, yang punya preview.
+echo "🗄️  Snapshot database sebelum migrasi..."
+php artisan db:snapshot --label=pre-migrate \
+  || fail "Snapshot database gagal — deploy dibatalkan. Pulihkan manual: php artisan app:restore-backup --sql=<file>"
+
 php artisan migrate --force
 
 # Restart queue workers agar tidak pakai kode lama

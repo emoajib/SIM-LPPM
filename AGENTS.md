@@ -48,6 +48,7 @@ Script `update_production.sh` adalah satu-satunya jalur deploy. Script menangani
 - `trap EXIT` + `fail()`: kegagalan di step apa pun menyalakan kembali situs (`php artisan up`).
 - Backup `storage/app/backup` (exclude `.env`, vendor, git, node_modules; file 600, dir 700).
 - `git pull --ff-only` (tanpa `checkout`/`clean` yang bisa menghapus file produksi).
+- Snapshot database (`php artisan db:snapshot --label=pre-migrate`) sebelum `migrate --force`; gagal snapshot = deploy batal, pemulihan manual lewat `app:restore-backup --sql=<file>` (tidak ada drop-all otomatis).
 - Migrasi preview + jeda 5 detik, cache rebuild, permission hardening, OPcache, PDF cache, rate limiter.
 - Smoke test 6 URL (`/`, `/login`, `/dashboard`, `/research`, `/community-service`, `/health-check`).
 - Checklist keamanan 10 item + pencatatan `dev:record` sukses/gagal.
