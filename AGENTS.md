@@ -243,7 +243,7 @@ Template PR: `.github/pull_request_template.md`.
 ## Project Status
 
 ### Completed
-- Phase 8 — Deploy produksi pertama (2026-11-16): `9b8d9724` → `6a53ca53`, 61 commit, migrasi batch 38 (`error_signatures`, `dev_events`), snapshot DB pra-migrasi, smoke 6/6, checklist keamanan. Catatan: `docs/plans/fase8-deploy-record.md`.
+- Phase 8 — Deploy produksi pertama (2026-11-16): `9b8d9724` → `6a53ca53`, 61 commit, migrasi batch 38 (`error_signatures`, `dev_events`), snapshot DB pra-migrasi, smoke 6/6, checklist keamanan, verifikasi manual 4 halaman × 2 tema. Catatan: `docs/plans/fase8-deploy-record.md`.
 - Phase 7 — Analisa modernisasi lanjutan: `docs/plans/fase7-analisa-modernisasi.md` + backlog `#30–#47` (`docs/plans/backlog-modernisasi-30-47.md`), revisi rencana (Tabler bukan lucide, `DashboardIndex` dihapus).
 - Phase 3 — Security & Data Integrity Fixes (H1-H4, M1, M2, M7)
   - 🔴 H1: Add `qualification_snapshot` to Proposal `$fillable` (stop silent data loss)

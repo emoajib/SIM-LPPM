@@ -147,7 +147,7 @@ Kriteria lulus: semua hijau + `git status` bersih.
 | W5-3 | Push main + pantau 4 CI (Test & Q, MySQL, PostgreSQL, Security) | Semua hijau — **DONE** |
 | W5-4 | `update_production.sh` (backup 700/600 → maintenance → migrate preview 5s → migrate → cache → OPcache → permission → rate limiter → up) | **DONE 2026-11-16** — `trap EXIT` + `fail()`, `git pull --ff-only`, dirty-tree check, retensi backup 3, snapshot DB pra-migrasi; `tests/Feature/Console/DeployScriptTest.php` |
 | W5-5 | Checklist keamanan 10 item (curl .env, .git/HEAD, backup tar, phpinfo.php, database.sqlite, log, .env 600) | **DONE 2026-11-16** — otomatis di script; satu temuan (`backup-20261027.sql`, 120 byte) dibersihkan pasca-deploy |
-| W5-6 | Smoke test browser: 11 halaman kunci × 2 tema | **DONE (otomatis)** 6 URL; **verifikasi manual 4 halaman** masih menunggu browser |
+| W5-6 | Smoke test browser: 11 halaman kunci × 2 tema | **DONE 2026-11-16** — otomatis 6 URL + verifikasi manual 4 halaman × 2 tema (verifikasi luaran, daily-note kanonik, menu IKU, `/iku`) |
 | W5-7 | `budget-caps:audit` + verifikasi unique index (year, semester) | **BELUM** — jalankan di produksi |
 | W5-8 | Rencana rollback: `git revert <sha>` per tahap; restore tar backup | **DONE** — snapshot `pre-migrate-20261116_135905.sql.gz` + backup app; prosedur di `fase8-deploy-record.md` §8 |
 

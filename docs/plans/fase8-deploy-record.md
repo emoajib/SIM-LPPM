@@ -132,12 +132,19 @@ OPcache web (PHP-FPM) tetap menjadi tanggung jawab runtime.
 | `storage/app/backup` | `700`, semua file `600` ✅ |
 | Root `.sql`/`.zip` | bersih ✅ |
 
-### Verifikasi manual yang masih disarankan
+### Verifikasi manual (selesai 2026-11-16)
 
-1. `/research/verifikasi-luaran` — tabel tampil di tema modern (bukan putih)
-2. `/community-service/verifikasi-luaran` — sama
-3. `/research/daily-note/{id}` — klasik, tanpa `/modern`
-4. Menu "IKU" → `/iku`, judul "IKU"
+| Halaman | Klasik | Modern |
+|---|---|---|
+| `/research/verifikasi-luaran` | 302 → `/iku/verification` (normal) | ✅ tabel tampil, tidak blank |
+| `/community-service/verifikasi-luaran` | 302 → `/iku/verification` (normal) | ✅ tabel tampil |
+| `/research/daily-note/{id}` | ✅ Livewire klasik | ✅ Livewire + tombol "Tampilan Modern" |
+| `/community-service/daily-note/{id}` | ✅ | ✅ |
+| Menu IKU | ✅ tautan tunggal ke `/iku`, tanpa dropdown | ✅ sama |
+| `/iku` | ✅ judul "IKU" | ✅ judul "IKU" |
+
+Hotfix 16 Nov (blank verifikasi luaran, URL daily-note kanonik, menu IKU)
+terkonfirmasi di produksi pada kedua tema.
 
 ---
 
@@ -148,7 +155,7 @@ OPcache web (PHP-FPM) tetap menjadi tanggung jawab runtime.
 | `php artisan budget-caps:audit` di produksi | belum dijalankan |
 | `SENTRY_DSN` produksi | belum diisi |
 | `GITHUB_TOKEN` produksi | belum diisi (agar `history:sync` terjadwal tidak gagal) |
-| Verifikasi manual 4 halaman | menunggu browser |
+| Verifikasi manual 4 halaman | **DONE 2026-11-16** (klasik + modern) |
 | `composer install --no-dev` memastikan Boost/`browser.log` tidak aktif | perlu cek `storage/logs` |
 
 ---
