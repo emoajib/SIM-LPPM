@@ -59,7 +59,10 @@ agar konsisten dengan `body.theme-modern` global di `app.css`.
 - [x] Infrastruktur React+Tailwind (Fase 1) — vite config, entry resources/js/modern.jsx, build OK
 - [x] Modern theme shell (Fase 2) — React banner (navy gradient) + Blade content tetap (hybrid, fungsionalitas aman)
 - [x] Migrasi modul Penelitian (Proposal) index ke React (modern theme) + API endpoint /research/api/proposals
-- [ ] Bulletin pindah ke server-side (fitur tersisa: migrasi + model + API + refactor view)
+- [ ] Bulletin pindah ke server-side — **DIVERIFIKASI 2026-11-16**: bulletin masih 100% client-side
+  (`localStorage['lppm_dashboard_bulletins']` di `modern-infographic.blade.php`); belum ada
+  migrasi/model/API. Item ini **tetap terbuka** sebagai backlog opsional (butuh migrasi + model +
+  endpoint + refactor view), bukan bug produksi.
 - [x] Aksesibilitas aria-label (sweep icon buttons di modul-modul utama)
 
 ## File kunci

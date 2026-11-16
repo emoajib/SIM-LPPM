@@ -137,6 +137,15 @@ Gejala: index penelitian menautkan `/research/proposal/{id}/modern`, sementara p
 Mitigasi rilis ini: semua index memakai `p.show_url` (URL klasik kanonik) + tombol eksplisit "Tampilan Modern" saat tema modern aktif.
 Rencana jangka panjang (Opsi B): URL detail theme-aware `/{module}/proposal/{id}` dengan `classic_url` untuk panel aksi; butuh audit 84 referensi `proposal.show` dan 10 `wire:navigate`.
 
+### G. `DashboardIndex.jsx` tidak punya route sendiri — **DITERIMA (Opsi A, dokumentasi)**
+Gejala: komponen `dashboard-index` ada di `resources/js/modern.jsx` tetapi tidak terdaftar di `config/modern-pages.php` sebagai halaman ber-route.
+Keputusan: **dipertahankan** — komponen didaftarkan di `allowed_unrouted_components` sehingga `modern:check` tetap hijau. Dashboard klasik (`livewire/dashboard/main-dashboard.blade.php`) tetap menjadi sumber utama; komponen React ini dipakai sebagai referensi/cadangan, bukan halaman aktif.
+Rencana: hapus hanya bila dashboard modern dirombak (Fase 7), bukan di rilis ini.
+
+### H. Bulletin dashboard masih client-side — **DITERIMA (backlog)**
+Gejala: bulletin hanya dibaca/ditulis lewat `localStorage['lppm_dashboard_bulletins']` di `modern-infographic.blade.php`; tidak ada migrasi/model/API.
+Keputusan: tidak ada dampak produksi (data default dipakai bila localStorage kosong). Migrasi ke server-side butuh migrasi + model + endpoint + refactor view — dijadwalkan sebagai backlog opsional Fase 7, bukan blocker rilis.
+
 ## 7. Rekomendasi prioritas penutupan gap
 
 | Prioritas | Item | Effort | BC terkait | Status |

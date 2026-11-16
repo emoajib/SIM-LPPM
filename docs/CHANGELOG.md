@@ -5,6 +5,9 @@
 
 ## Fitur
 
+- **observability** [dfb4e8d8](https://github.com/emoajib/SIM-LPPM/commit/dfb4e8d81bb8dadedbdc8a6b51af7fbd4b9656ce) — feat(observability): digest mingguan error/CI/fix tanpa test
+- **tooling** [1520c00e](https://github.com/emoajib/SIM-LPPM/commit/1520c00e4f07423df2fae834938f006c2e8ddbfc) — feat(tooling): status kesehatan registry regresi read-only
+- **tooling** [bbe2b44e](https://github.com/emoajib/SIM-LPPM/commit/bbe2b44ebb4f84ee49e214c4a9c069fa83b75edb) — feat(tooling): auto changelog dari conventional commit
 - **observability** [365dca79](https://github.com/emoajib/SIM-LPPM/commit/365dca794b79ae2895a7976c314890a75860e880) — feat(observability): history:sync, dev:record, logs:prune, dan wiring Sentry
 - **observability** [3f8355cc](https://github.com/emoajib/SIM-LPPM/commit/3f8355cc1d17a858555801f27c0a8b17df677dcd) — feat(observability): error_signatures, dev_events, dan bug:capture
 - **history** [1f019873](https://github.com/emoajib/SIM-LPPM/commit/1f0198730aaa99b217ff1027704210b7944df54b) — feat(history): codebase:map untuk peta struktur kodebase
@@ -32,7 +35,6 @@
 - **modern** [34efffb3](https://github.com/emoajib/SIM-LPPM/commit/34efffb32a04d409212c595ecd35029b221b9625) — feat(modern): integrate real filter metadata (statuses) from availableFilters API
 - **api** [20c701ab](https://github.com/emoajib/SIM-LPPM/commit/20c701ab0957454b8b7348a39246d9d7bcb864e8) — feat(api): add availableFilters endpoint + multi-column search + faculty/prodi filter
 - **modern** [6ec6ce79](https://github.com/emoajib/SIM-LPPM/commit/6ec6ce797db6d896799862f480c1b4a94f5bab9d) — feat(modern): adopt surat-style card + sticky table + FAB for research & pengabdian
-- **modern** [44662aec](https://github.com/emoajib/SIM-LPPM/commit/44662aece77cc7c50e8a8ea676fa5a93d4f5ff33) — feat(modern): upgrade academic icons (Tabler) for eye-pleasing & consistent theme
 
 ## Perbaikan
 
@@ -82,10 +84,6 @@
 - **modern** [6ac75b36](https://github.com/emoajib/SIM-LPPM/commit/6ac75b36cf2a3ca9d71ca9565a7aa75608e9bc70) — fix(modern): ensure navbar menu never disappears (dynamic persist key + cache invalidate + fallback + css)
 - **modern** [cc30520e](https://github.com/emoajib/SIM-LPPM/commit/cc30520e87a8295d7c6638c447a00d524f8b5fa0) — fix(modern): disable menu collapse to 'Lainnya' so all navbar items stay visible
 - **modern** [46d95d3a](https://github.com/emoajib/SIM-LPPM/commit/46d95d3a1ed8434734dada43c3f5488a4cc8223f) — fix(modern): make Penelitian & Pengabdian single links (like Surat module)
-- **modern** [c577980a](https://github.com/emoajib/SIM-LPPM/commit/c577980a527f94f4c6f424d449e0f241efc739e6) — fix(modern): remove duplicate heavy Blade eligible button; use fast React button (API)
-- **modern** [383ff74a](https://github.com/emoajib/SIM-LPPM/commit/383ff74ae96854152c231c6573b582a6fa3b7aae) — fix(modern): keep navbar dropdowns uniform + render eligible button in modern layout
-- [b7e5c311](https://github.com/emoajib/SIM-LPPM/commit/b7e5c311754c9e5f246772094c87c925cb83d3da) — fix: restore modern theme layout for proposal index pages
-- [54d51a00](https://github.com/emoajib/SIM-LPPM/commit/54d51a001bae1f7420cd38cb062fb730329ba544) — fix: render proposal index via Blade in modern theme (React mount unreliable)
 
 ## Performa
 
@@ -93,6 +91,8 @@
 
 ## Lainnya
 
+- [d2f97583](https://github.com/emoajib/SIM-LPPM/commit/d2f975839f3a26bf1fcfb08181288e48ec6144f0) — ci: buat gate BC-07 adaptif terhadap perbedaan build lintas OS
+- **deploy** [5ea5462f](https://github.com/emoajib/SIM-LPPM/commit/5ea5462f9a9d12a23572199b8b761cbf919351cc) — ci(deploy): hardening update_production.sh dan tegakkan BC-07
 - **regressions** [3decd592](https://github.com/emoajib/SIM-LPPM/commit/3decd592727ad0db9195619442ab2eee83c7e8d5) — docs(regressions): hindari marker terlarang di BC-09 [BC-09]
 - [a6a24d15](https://github.com/emoajib/SIM-LPPM/commit/a6a24d153013f1032436ab9d4d8fae076319f944) — docs: perbarui status proyek (Wave 2/3 selesai, Wave 4 sebagian)
 - **deploy** [8eb8146e](https://github.com/emoajib/SIM-LPPM/commit/8eb8146e6bf318635778eaafe94976984088cb9a) — chore(deploy): checklist keamanan otomatis di akhir update_production.sh

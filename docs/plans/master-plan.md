@@ -112,9 +112,9 @@ Kriteria lulus: semua hijau + `git status` bersih.
 | ID | Pekerjaan | Mitigasi |
 |---|---|---|
 | W4-H3.1 | `codebase:map` → docs/history/codebase-map.md | DONE — `tests/Feature/Console/CodebaseMapTest.php` |
-| W4-H3.2 | Auto-changelog dari conventional commit | History terbaca |
-| W4-H3.3 | Digest mingguan (error baru, fix tanpa test, BC tanpa penjaga) | Audit berkala |
-| W4-H3.4 | Dashboard kesehatan regresi (read-only) | Visibilitas |
+| W4-H3.2 | Auto-changelog dari conventional commit | **DONE** — `changelog:build` → `docs/CHANGELOG.md`; `tests/Feature/Console/ChangelogBuildTest.php` |
+| W4-H3.3 | Digest mingguan (error baru, fix tanpa test, BC tanpa penjaga) | **DONE** — `digest:weekly` (markdown + `dev_events`, terjadwal Senin 05:00); `tests/Feature/Console/DigestWeeklyTest.php` |
+| W4-H3.4 | Dashboard kesehatan regresi (read-only) | **DONE** — `regression:health` (tabel + `--json`) memakai `RegressionRegistry` bersama dengan `regression:check` |
 
 ---
 
@@ -125,11 +125,11 @@ Kriteria lulus: semua hijau + `git status` bersih.
 | W5-1 | Pre-flight lokal: pint, phpstan, route:cache, full test, npm build + commit | BC-07 |
 | W5-2 | `rate-limiter:clear --force`, `config:clear` | AGENTS.md |
 | W5-3 | Push main + pantau 4 CI (Test & Q, MySQL, PostgreSQL, Security) | Semua hijau |
-| W5-4 | `update_production.sh` (backup 700/600 → maintenance → migrate preview 5s → migrate → cache → OPcache → permission → rate limiter → up) | Auto-recovery |
-| W5-5 | Checklist keamanan 10 item (curl .env, .git/HEAD, backup tar, phpinfo.php, database.sqlite, log, .env 600) | Keamanan |
-| W5-6 | Smoke test browser: 11 halaman kunci × 2 tema | Tidak ada 500/405 |
-| W5-7 | `budget-caps:audit` + verifikasi unique index (year, semester) | Read-only |
-| W5-8 | Rencana rollback: `git revert <sha>` per tahap; restore tar backup | Dokumentasi |
+| W5-4 | `update_production.sh` (backup 700/600 → maintenance → migrate preview 5s → migrate → cache → OPcache → permission → rate limiter → up) | **DONE (script)** — `trap EXIT` + `fail()`, `git pull --ff-only`, dirty-tree check, retensi backup 3; `tests/Feature/Console/DeployScriptTest.php` |
+| W5-5 | Checklist keamanan 10 item (curl .env, .git/HEAD, backup tar, phpinfo.php, database.sqlite, log, .env 600) | **DONE (otomatis di script)** — gagal keras bila ada temuan |
+| W5-6 | Smoke test browser: 11 halaman kunci × 2 tema | **SEBAGIAN** — otomatis 6 URL di script; `RoleThemeSmokeTest` 8 peran × 2 tema × 9 halaman; verifikasi manual pasca-deploy |
+| W5-7 | `budget-caps:audit` + verifikasi unique index (year, semester) | **SEBAGIAN** — lokal hijau; **butuh dijalankan di produksi** |
+| W5-8 | Rencana rollback: `git revert <sha>` per tahap; restore tar backup | **DONE** — backup tar di `storage/app/backup`; deploy via `git pull --ff-only` (revert + jalankan ulang script) |
 
 ---
 
@@ -137,7 +137,7 @@ Kriteria lulus: semua hijau + `git status` bersih.
 
 1. **Single source of truth tema**: `App\Enums\Theme` + `is_modern_theme()` — dilarang literal `'modern'`/`'classic'`.
 2. **Self-guard komponen modern**: `@if (is_modern_theme())` di dalam partial, bukan hanya di caller.
-3. **Gate CI**: `theme:check`, `regression:check`, `pint --test`, `phpstan --level=5`, build-verify (informational).
+3. **Gate CI**: `theme:check`, `regression:check`, `pint --test`, `phpstan --level=5`, build stage wajib sukses + BC-07 commit-level (source frontend berubah tanpa `public/build` = gagal).
 4. **Escape hatch**: `No-Regression-Test: <alasan>` untuk hotfix darurat, muncul di digest mingguan.
 5. **Hybrid approach**: modern read-only untuk aksi kompleks + "Aksi lanjutan → klasik"; native bertahap.
 6. **Feature flag** sebagai kill switch (`feature_modern_proposal_actions`, `feature_amendment_react`).

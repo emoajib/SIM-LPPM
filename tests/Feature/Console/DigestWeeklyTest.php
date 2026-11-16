@@ -6,6 +6,7 @@ namespace Tests\Feature\Console;
 
 use App\Models\DevEvent;
 use App\Models\ErrorSignature;
+use App\Support\RegressionRegistry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
@@ -87,7 +88,16 @@ class DigestWeeklyTest extends TestCase
         $this->assertStringContainsString('perbaiki guard', $output);
         $this->assertStringContainsString('No-Regression-Test', $output);
         $this->assertStringContainsString('BC tanpa penjaga', $output);
-        $this->assertStringContainsString('BC-05', $output);
+
+        // Registry bisa berubah (BC yang tadinya tanpa penjaga kini terjaga).
+        // Assertion mengikuti kondisi nyata, bukan nomor BC yang di-hardcode.
+        $missing = app(RegressionRegistry::class)->missingInTests();
+        if ($missing === []) {
+            $this->assertStringContainsString('Tidak ada', $output);
+        } else {
+            $this->assertStringContainsString($missing[0], $output);
+        }
+
         $this->assertDatabaseMissing('dev_events', ['type' => DevEvent::TYPE_DIGEST]);
     }
 

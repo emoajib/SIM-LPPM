@@ -2,7 +2,7 @@
 
 > Dihasilkan oleh `php artisan codebase:map`. **Jangan edit manual** —
 > jalankan ulang perintahnya setelah menambah route/komponen/test.
-> Dibuat: 2026-11-15
+> Dibuat: 2026-11-16
 
 ## Halaman modern (React)
 
@@ -143,7 +143,7 @@
 
 ## Artisan command
 
-- `app/Console/Commands` (38): `AuditBudgetCaps.php`, `BackfillIdentityScienceCluster.php`, `BenchmarkNotifications.php`, `BugCapture.php`, `CheckModernPages.php`, `CheckMySqlColumnOrders.php`, `CheckOverdueReviews.php`, `CheckRegressions.php`, `CheckSchemaDrift.php`, `CheckTheme.php`, `CleanupDummyData.php`, `CleanupOrphanMedia.php`, `ClearRateLimiters.php`, `CodebaseMap.php`, `FixDocSubstanceFiles.php`, `FixProposalSignatures.php`, `FixProposalSubstanceFile.php`, `GenerateMySqlColumnOrders.php`, `HistoryBrief.php`, `HistorySync.php`, `ImportSintaAuthor.php`, `ImportUsers.php`, `InstallCommand.php`, `MigrateMediaPaths.php`, `PatchSoftwareTkt.php`, `PruneLogs.php`, `PruneObservability.php`, `RecordDevEvent.php`, `RepairLetterData.php`, `ResetPdfSettings.php`, `RestoreBackupCommand.php`, `RunInstallationCommand.php`, `SendDailySummaries.php`, `SendReviewReminders.php`, `SendWeeklySummaries.php`, `SyncEnums.php`, `SyncProductionData.php`, `ValidateMySqlColumnOrders.php`
+- `app/Console/Commands` (42): `AuditBudgetCaps.php`, `BackfillIdentityScienceCluster.php`, `BenchmarkNotifications.php`, `BugCapture.php`, `ChangelogBuild.php`, `CheckCopyArtifacts.php`, `CheckModernPages.php`, `CheckMySqlColumnOrders.php`, `CheckOverdueReviews.php`, `CheckRegressions.php`, `CheckSchemaDrift.php`, `CheckTheme.php`, `CleanupDummyData.php`, `CleanupOrphanMedia.php`, `ClearRateLimiters.php`, `CodebaseMap.php`, `DigestWeekly.php`, `FixDocSubstanceFiles.php`, `FixProposalSignatures.php`, `FixProposalSubstanceFile.php`, `GenerateMySqlColumnOrders.php`, `HistoryBrief.php`, `HistorySync.php`, `ImportSintaAuthor.php`, `ImportUsers.php`, `InstallCommand.php`, `MigrateMediaPaths.php`, `PatchSoftwareTkt.php`, `PruneLogs.php`, `PruneObservability.php`, `RecordDevEvent.php`, `RegressionHealth.php`, `RepairLetterData.php`, `ResetPdfSettings.php`, `RestoreBackupCommand.php`, `RunInstallationCommand.php`, `SendDailySummaries.php`, `SendReviewReminders.php`, `SendWeeklySummaries.php`, `SyncEnums.php`, `SyncProductionData.php`, `ValidateMySqlColumnOrders.php`
 - `app/Console/Commands/Traits` (1): `ParsesMigrationColumns.php`
 
 ## Model
@@ -160,7 +160,7 @@
 | `Feature/AdminLppm` | 1 |
 | `Feature/Api` | 4 |
 | `Feature/Auth` | 9 |
-| `Feature/Console` | 7 |
+| `Feature/Console` | 12 |
 | `Feature/Dekan` | 1 |
 | `Feature/Iku` | 2 |
 | `Feature/Installer` | 2 |
@@ -170,10 +170,10 @@
 | `Feature/Livewire/Research/Proposal/Components` | 1 |
 | `Feature/Observability` | 1 |
 | `Feature/Reports` | 2 |
-| `Feature/Security` | 6 |
+| `Feature/Security` | 7 |
 | `Feature/Services` | 1 |
 | `Feature/Settings` | 12 |
-| `Feature/Theme` | 6 |
+| `Feature/Theme` | 8 |
 | `Support` | 1 |
 | `Unit` | 3 |
 | `Unit/Commands` | 1 |
@@ -191,6 +191,7 @@
 - `BC-06-idor-bola.md`
 - `BC-07-stale-build.md`
 - `BC-08-workflow-dead-end.md`
+- `BC-09-ai-copy-artifact.md`
 
 ## Dokumen acuan
 

@@ -6,7 +6,7 @@
 
 **Perbaikan:** H1 — tambah `qualification_snapshot` ke `Proposal::$fillable`; M1 — tambah `description` ke `ResearchScheme::$fillable`.
 
-**Penjaga:** test CRUD yang memverifikasi field tersimpan; audit `$fillable` saat review.
+**Penjaga:** `tests/Feature/Regression/BC05MassAssignmentTest.php` (fillable + persistensi mass assignment); test CRUD yang memverifikasi field tersimpan; audit `$fillable` saat review.
 
 **Aturan:**
 1. Setiap field yang bisa diisi form wajib ada di `$fillable` (atau `$guarded` eksplisit).

@@ -6,7 +6,7 @@
 
 **Perbaikan:** build + commit `public/build` tiap perubahan JS/CSS; nama asset hash berubah diverifikasi.
 
-**Penjaga:** guard manifest di CI (`public/build/manifest.json` harus berubah bila `resources/js|css` berubah); langkah verifikasi di `update_production.sh`.
+**Penjaga:** `tests/Feature/Regression/BC07StaleBuildTest.php` (manifest + seluruh file yang dirujuk ada); guard commit-level di CI (`resources/js|css` berubah tanpa `public/build` = gagal); build stage wajib sukses.
 
 **Aturan:**
 1. Setiap perubahan `resources/js` atau `resources/css` wajib `npm run build` + commit `public/build` di commit yang sama.

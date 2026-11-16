@@ -26,10 +26,13 @@ halaman/modul baru. Tiap kelas memiliki:
 | BC-02 | Active role vs stored role (`hasRole` bypass, superadmin 0 data) | `activeHasRole` lint, `ActiveRoleAuthorizationTest` |
 | BC-03 | UI ↔ API drift (field hilang → UI kosong/blank) | kontrak snapshot React↔API |
 | BC-04 | State-machine UI leak (tombol/aksi muncul di status yang salah) | `ReportSecurityAndLifecycleTest` |
-| BC-05 | Mass assignment / silent data loss | `$fillable` audit + test CRUD |
-| BC-06 | IDOR / BOLA (akses data milik orang lain) | `LetterLinkedRequestBolaTest`, policy test |
-| BC-07 | Stale build asset (deploy tanpa `npm run build`) | guard manifest di CI/deploy |
+| BC-05 | Mass assignment / silent data loss | `BC05MassAssignmentTest`, `$fillable` audit |
+| BC-06 | IDOR / BOLA (akses data milik orang lain) | `LetterLinkedRequestBolaTest`, `ModernAccessBolaTest`, policy test |
+| BC-07 | Stale build asset (deploy tanpa `npm run build`) | `BC07StaleBuildTest`, BC-07 commit-level di CI |
 | BC-08 | Workflow dead-end (LPJ–amandemen, surat saat modul off) | `FinancialApprovalTest`, `LetterModuleGatingTest` |
 | BC-09 | Artefak copy/placeholder AI (teks liar di UI, marker generik) | `copy:check`, `ModernBreadcrumbTest`, `CopyCheckTest` |
 
 Detail tiap kelas: lihat file `BC-0x-*.md`.
+
+Status kesehatan (BC × penjaga × commit terakhir):
+`php artisan regression:health` (tabel) atau `--json` untuk tooling.

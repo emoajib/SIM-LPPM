@@ -41,69 +41,18 @@ Pastikan:
 ### 5. Update Website Manual via Terminal cPanel
 ```bash
 cd /home/simlppmi/sim-lppm
-
-# === SAFETY SETUP ===
-set -euo pipefail
-# Jika ada error di step manapun → otomatis nyalakan site kembali
-trap 'echo "❌ Deploy GAGAL! Menjalankan php artisan up..."; php artisan up; exit 1' ERR
-
-# 1. Backup (ke storage/ yang aman, exclude vendor & git)
-BACKUP_DIR="storage/app/backup"
-mkdir -p "$BACKUP_DIR"
-echo "📦 Membuat backup..."
-tar czf "$BACKUP_DIR/backup-$(date +%Y%m%d-%H%M%S).tar.gz" \
-  --exclude="./storage/app/backup" \
-  --exclude="./node_modules" \
-  --exclude="./.git" \
-  --exclude="./vendor" .
-echo "✅ Backup tersimpan di $BACKUP_DIR"
-
-# 2. Maintenance mode ON
-php artisan down --retry=300
-
-# 3. Pull & install
-git pull origin main
-composer install --no-dev --optimize-autoloader
-
-# 4. Preview migration (beri waktu 5 detik untuk review, Ctrl+C jika ada yang salah)
-echo "📋 Pending migrations yang akan dijalankan:"
-php artisan migrate --pretend --force
-echo "⏳ Lanjut dalam 5 detik... (Ctrl+C untuk batal)"
-sleep 5
-php artisan migrate --force
-
-# 5. Cache
-php artisan optimize:clear
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-
-# 6. Flush PDF cache (akan regenerate otomatis)
-find storage/app/pdf_cache -type f -name "*.pdf" -delete 2>/dev/null
-rm -rf storage/app/public/pdf_cache 2>/dev/null
-echo "PDF cache cleaned"
-
-# 7. OPcache
-php -r 'if (function_exists("opcache_reset")) { opcache_reset(); echo "OPcache cleared\n"; } else { echo "OPcache not available\n"; }'
-
-# 8. Permissions
-find . -type f -print0 | xargs -0 chmod 644
-find . -type d -print0 | xargs -0 chmod 755
-chmod -R 775 storage bootstrap/cache
-chmod 755 public
-chmod 644 public/.htaccess
-chmod 644 public/index.php
-chmod 600 .env                    # KRITIS: .env hanya boleh dibaca owner
-
-# 9. Clear rate limiters (biar user yg kena lockout bisa login lagi)
-php artisan rate-limiter:clear --force
-echo "Rate limiters cleared"
-
-# 10. Maintenance mode OFF
-trap - ERR                         # Reset trap sebelum artisan up
-php artisan up
-echo "✅ Deploy selesai!"
+bash update_production.sh
 ```
+
+Script `update_production.sh` adalah satu-satunya jalur deploy. Script menangani:
+- `trap EXIT` + `fail()`: kegagalan di step apa pun menyalakan kembali situs (`php artisan up`).
+- Backup `storage/app/backup` (exclude `.env`, vendor, git, node_modules; file 600, dir 700).
+- `git pull --ff-only` (tanpa `checkout`/`clean` yang bisa menghapus file produksi).
+- Migrasi preview + jeda 5 detik, cache rebuild, permission hardening, OPcache, PDF cache, rate limiter.
+- Smoke test 6 URL (`/`, `/login`, `/dashboard`, `/research`, `/community-service`, `/health-check`).
+- Checklist keamanan 10 item + pencatatan `dev:record` sukses/gagal.
+
+Jika `git status --short` di produksi tidak bersih, script berhenti sebelum mengubah kode. Commit/stash manual dulu.
 
 ### 6. Verifikasi di Browser & Produksi
 - Test fitur yang diperbaiki
@@ -182,8 +131,9 @@ echo "✅ Deploy selesai!"
 
 ### Menjaga `update_production.sh`
 - Jika ada perubahan proses deploy (migrasi baru, dependency baru, seeder baru), update script-nya
-- Script sudah memiliki: backup (700/600), maintenance mode, migrasi preview, cache rebuild, permission hardening, rate limiter clear, auto recovery on failure
+- Script hardened: `trap EXIT` + `fail()`, `git pull --ff-only`, backup exclude `.env`, smoke test 6 URL, checklist keamanan, auto recovery on failure
 - Jangan hapus `set -euo pipefail` dan `trap` — ini safety net wajib
+- Jangan tambahkan `git checkout -- .` / `git clean -fd` ke script produksi — bisa menghapus file/changes lokal
 
 ### `.gitignore` Maintenance
 - Jika ada file sensitif baru yang dibuat (DB dump, zip, dll), langsung tambahkan polanya
@@ -339,12 +289,21 @@ Template PR: `.github/pull_request_template.md`.
   - ✅ `history:sync` (commit + status CI → `dev_events`; `GITHUB_TOKEN`/`gh auth token`)
   - ✅ `dev:record` + hook deploy (catat deploy sukses/gagal ke `dev_events`)
   - ✅ `logs:prune` (retensi harian; laravel.log 363 MB → 1 MB, browser.log 46 MB → 1 MB)
-- All tests: **736 passed** ✅ (13 skipped, 0 failed)
+- Wave 4 (lanjutan) — Engineering Memory H3.2–H3.3
+  - ✅ `changelog:build` (conventional commit → `docs/CHANGELOG.md`)
+  - ✅ `digest:weekly` (error baru, CI gagal, fix tanpa test, BC tanpa penjaga)
+  - ✅ `regression:health` (status BC × penjaga × commit terakhir)
+- Wave 5 (sebagian) — Ops hardening
+  - ✅ `update_production.sh` hardened (trap EXIT, `git pull --ff-only`, backup exclude `.env`, smoke 6 URL)
+  - ✅ BC-07 gate adaptif di CI (build stage + source/build commit consistency)
+  - ✅ `budget-caps:audit` read-only tersedia
+- All tests: **770 passed** ✅ (13 skipped, 0 failed)
 
 ### In Progress
 - *(none)*
 
 ### Planned
 - Sentry: isi `SENTRY_DSN` di `.env` produksi (kode/config sudah siap; `SENTRY_RELEASE` otomatis dari deploy)
-- Wave 5: deploy produksi via `update_production.sh` (checklist keamanan + hook `dev:record` aktif)
-- Opsional: `browser.log` 46 MB berasal dari tooling dev (Laravel Boost) — pastikan tidak aktif di produksi
+- `GITHUB_TOKEN` produksi agar `history:sync` terjadwal tidak gagal
+- Fase 8: deploy produksi via `bash update_production.sh` (butuh terminal cPanel)
+- Opsional: pastikan Laravel Boost tidak aktif di produksi (`composer install --no-dev`)
