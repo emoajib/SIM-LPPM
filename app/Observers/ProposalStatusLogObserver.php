@@ -36,7 +36,7 @@ class ProposalStatusLogObserver
      */
     private function bustDashboardCache(): void
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         Cache::forever('dashboard.cache_version', time());
     }
 }

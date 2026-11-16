@@ -1,6 +1,6 @@
 import React from "react";
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 // Presets: lines (default), avatar, card, table-row
 const PRESETS = {
     "avatar": "h-10 w-10 rounded-full",

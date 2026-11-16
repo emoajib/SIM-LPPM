@@ -29,7 +29,7 @@ class PartnerCollaborationExport implements FromView, ShouldAutoSize, WithColumn
             ->when($this->facultyId, fn ($q) => $q->whereHas('proposals.submitter.identity', fn ($i) => $i->where('faculty_id', $this->facultyId)))
             ->get();
 
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $partners->each(function (Partner $partner) {
             $proposals = Proposal::query()
                 ->withArchived()

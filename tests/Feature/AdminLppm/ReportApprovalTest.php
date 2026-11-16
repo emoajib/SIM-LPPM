@@ -1,6 +1,6 @@
 <?php
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 
 use App\Enums\ProposalStatus;
 use App\Enums\ReportStatus;

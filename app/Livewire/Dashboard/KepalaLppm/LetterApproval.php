@@ -10,7 +10,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 #[Layout('components.layouts.app', ['title' => 'Persetujuan Surat', 'pageTitle' => 'Persetujuan Surat', 'pageSubtitle' => 'Penandatanganan dokumen legal LPPM'])]
 class LetterApproval extends Component
 {

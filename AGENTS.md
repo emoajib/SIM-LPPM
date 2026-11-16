@@ -201,6 +201,8 @@ echo "✅ Deploy selesai!"
 - Gunakan Laravel Pint: `./vendor/bin/pint`
 - Gunakan PHPStan: `./vendor/bin/phpstan analyse`
 - Semua file PHP harus mengikuti PSR-12
+- Header komentar file wajib `Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager`.
+  Dilarang memakai marker header lama; guard: `php artisan copy:check`.
 
 ---
 
@@ -277,6 +279,7 @@ CI (`.github/workflows/tests.yml`) menegakkan sebagian besar poin ini.
 | 9 | Migrasi ditinjau | `php artisan migrate --pretend` |
 | 10 | Penjaga regresi | Test baru memuat `Regression: BC-xx` bila menyentuh kelas bug di `docs/regressions/` |
 | 11 | Paritas tema | Fitur klasik juga di modern, atau gap-nya didokumentasikan di `docs/plans/gap-analysis-modern-classic.md` |
+| 12 | Artefak copy | `php artisan copy:check` → 0 temuan |
 
 **Escape hatch:** hotfix darurat boleh melewati poin 9 dengan menulis
 `No-Regression-Test: <alasan>` di body commit. Wajib disusul test dalam 7 hari.

@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 trait ReportData
 {
     protected function buildProposalQuery(string $detailableType, array $statuses): Builder

@@ -30,5 +30,5 @@ Semua lingkungan wajib mengekspos endpoint `/api/health` yang divalidasi oleh Pi
 - `STORAGE_STATUS`: WRITABLE
 
 ---
-*Vetted by AI - Manual Review Required by Senior Engineer/Manager*
+*Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager*
 *Architectural Alignment: TOGAF (Technology Architecture)*

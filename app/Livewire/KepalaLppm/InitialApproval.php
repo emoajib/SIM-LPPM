@@ -35,7 +35,7 @@ class InitialApproval extends Component
     #[Url(except: 'all')]
     public string $schemeFilter = 'all';
 
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     public function updated(string $property): void
     {
         if ($property === 'typeFilter') {

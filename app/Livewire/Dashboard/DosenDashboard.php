@@ -36,7 +36,7 @@ class DosenDashboard extends Component
 
     public $chartData = [];
 
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     public $processStats = [];
 
     // Edit Metrics State
@@ -98,7 +98,7 @@ class DosenDashboard extends Component
 
     public function loadAnalytics(): void
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $yearFilter = $this->selectedYear;
 
         // OPTIMIZED: Single aggregated query for own proposals stats
@@ -122,7 +122,7 @@ class DosenDashboard extends Component
 
     /**
      * Load historical chart data for the last 5 years.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     private function loadChartData(): void
     {
@@ -218,7 +218,7 @@ class DosenDashboard extends Component
      */
     private function loadStats(string $yearFilter): void
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $statsRaw = Proposal::query()
             ->forAcademicYear($yearFilter)
             ->where(function ($q) {
@@ -257,7 +257,7 @@ class DosenDashboard extends Component
     private function loadMemberStats(string $yearFilter): void
     {
         // Use raw query builder to avoid pivot columns being auto-included
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $memberStats = DB::table('proposals')
             ->join('proposal_user', 'proposals.id', '=', 'proposal_user.proposal_id')
             ->where('proposal_user.user_id', $this->user->id)
@@ -285,7 +285,7 @@ class DosenDashboard extends Component
      */
     /**
      * Load recent proposals ordered by updated_at descending.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     private function loadRecentProposals(string $yearFilter): void
     {
@@ -313,11 +313,11 @@ class DosenDashboard extends Component
 
     /**
      * Load process stats (usulan, revisi, monev, laporan akhir, keuangan).
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     private function loadProcessStats(string $yearFilter): void
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $proposalsThisYear = Proposal::where(function ($q) {
             $q->where('submitter_id', $this->user->id)
                 ->orWhereHas('teamMembers', fn ($q2) => $q2

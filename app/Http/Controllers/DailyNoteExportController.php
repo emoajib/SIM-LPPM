@@ -32,7 +32,7 @@ class DailyNoteExportController extends Controller
 
     /**
      * Download the Financial Report (LPJ) PDF.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     public function financialReport(Proposal $proposal, Request $request)
     {
@@ -81,7 +81,7 @@ class DailyNoteExportController extends Controller
 
     /**
      * Download the Financial Report Approval Page Template (Lembar Pengesahan LPJ TTD Basah).
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     public function approvalPageTemplate(Proposal $proposal, Request $request)
     {
@@ -174,7 +174,7 @@ class DailyNoteExportController extends Controller
         $pdfConfig = get_pdf_config('letter', 'logbook');
 
         // 1. Render for hash
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $pdf = Pdf::loadView('pdf.daily-notes', [
             'isPreview' => $request->has('preview'),
             'proposal' => $proposal,
@@ -216,7 +216,7 @@ class DailyNoteExportController extends Controller
         }
 
         // 4. Re-render with QR codes
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $pdf = Pdf::loadView('pdf.daily-notes', [
             'isPreview' => false,
             'proposal' => $proposal,
@@ -240,7 +240,7 @@ class DailyNoteExportController extends Controller
         $filename = 'Catatan_Harian_'.$title.'.pdf';
         $outputPdfBinary = $pdf->output();
 
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         // Collect all Daily Notes PDF evidence media to append at the end of the Logbook
         $dailyNotesPdfMedia = [];
         foreach ($proposal->dailyNotes as $note) {

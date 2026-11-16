@@ -48,7 +48,7 @@ class RestoreData extends Component
 
     public ?string $uploadErrorMessage = null;
 
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     public array $serverFiles = [];
 
     public ?string $selectedServerFile = null;
@@ -332,7 +332,7 @@ class RestoreData extends Component
         $this->scanServerFiles();
     }
 
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     public function scanServerFiles(): void
     {
         abort_unless(Auth::user()?->activeHasRole('admin lppm'), 403);
@@ -373,7 +373,7 @@ class RestoreData extends Component
         $this->serverFiles = $fileList;
     }
 
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     public function selectServerFile(string $filename): void
     {
         abort_unless(Auth::user()?->activeHasRole('admin lppm'), 403);

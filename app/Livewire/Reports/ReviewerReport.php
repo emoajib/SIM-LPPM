@@ -1,6 +1,6 @@
 <?php
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 
 namespace App\Livewire\Reports;
 
@@ -292,7 +292,7 @@ class ReviewerReport extends Component
         $progressPercent = $totalReviews > 0 ? round(($completedReviews / $totalReviews) * 100) : 0;
 
         // Calculate average score of completed reviews
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $avgScore = round(ReviewLog::query()
             ->whereHas('proposal', function ($q) use ($year) {
                 $q->whereIn('status', [

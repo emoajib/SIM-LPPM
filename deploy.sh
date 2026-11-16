@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Secure deploy script for SIM-LPPM Cloud Run
-# Vetted by AI - Manual Review Required by Senior Engineer/Manager
+# Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 
 set -uo pipefail
 

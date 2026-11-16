@@ -17,7 +17,7 @@ use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 
 uses(RefreshDatabase::class);
 
@@ -204,7 +204,7 @@ test('admin lppm can mount financial approval component and approve and unapprov
     expect($this->proposal->logbook_approved_at)->toBeNull();
 });
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 test('admin lppm can access financial approval route directly via http', function () {
     $admin = User::factory()->create();
     $admin->assignRole('admin lppm');
@@ -217,7 +217,7 @@ test('admin lppm can access financial approval route directly via http', functio
         ->assertSeeLivewire(FinancialApproval::class);
 });
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 test('regular lecturer is forbidden from accessing financial approval route directly via http', function () {
     $this->actingAs($this->lecturer);
     session(['active_role' => 'dosen']);

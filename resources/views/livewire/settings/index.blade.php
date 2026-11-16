@@ -35,7 +35,7 @@
                                 
                                 <span>Tampilan</span>
                             </button>
-                            {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                            {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
                              <button wire:click="setActiveTab('pdf-export')"
                                  class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'pdf-export' ? 'active' : '' }}">
                                  
@@ -105,7 +105,7 @@
                         <div>
                             <livewire:settings.appearance />
                         </div>
-                    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                    {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
                     @elseif ($activeTab === 'pdf-export')
                         <div>
                             <h2 class="mb-4">Pengaturan PDF & Ekspor</h2>

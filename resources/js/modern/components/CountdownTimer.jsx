@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 export default function CountdownTimer({ start, end }) {
     const [now, setNow] = useState(new Date());
     useEffect(() => {

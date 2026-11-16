@@ -1,9 +1,9 @@
 <div>
     {{-- ===================================================================
          PAGE HEADER — Filter Dashboard Eksekutif (Rektor / Dekan)
-         Vetted by AI - Manual Review Required by Senior Engineer/Manager
+         Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
          =================================================================== --}}
-    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+    {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
     <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
         {{-- Tahun Dropdown --}}
         <div class="dropdown">
@@ -198,7 +198,7 @@
         <!-- KPI Section: Approval Rate -->
         <div class="col-sm-6 col-lg-3">
             @php
-                // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+                // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
                 $totalProp = $stats['total_research'] + $stats['total_community_service'];
                 $totalAppr = $stats['research_approved'] + $stats['community_service_approved'];
                 $approvalRate = ($totalProp > 0) ? round(($totalAppr / $totalProp) * 100, 1) : 0;
@@ -273,7 +273,7 @@
         </div>
     </div>
 
-    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+    {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
     <div class="row row-cards mb-4">
         <div class="col-lg-6">
             <x-dashboard.analytics-chart 
@@ -291,7 +291,7 @@
         </div>
     </div>
     
-    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+    {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
     <div class="row row-cards mb-4">
         <div class="col-12">
             <div class="card border-0 shadow-sm" style="border-radius: 12px; transition: transform 0.2s ease, box-shadow 0.2s ease; cursor: default;"
@@ -375,7 +375,7 @@
                                                      usePointStyle: true
                                                  }
                                              },
-                                             // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+                                             // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
                                              // Angka tampil langsung di atas titik tren tanpa perlu hover
                                              datalabels: {
                                                  display: true,
@@ -458,7 +458,7 @@
         </div>
     </div>
 
-    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+    {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
     <!-- Alur Proses Tahapan Penelitian & Pengabdian (Data Riil) -->
     <div class="row row-cards mb-4">
         <div class="col-12">
@@ -1020,6 +1020,6 @@
         </div>
     </div>
 
-    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+    {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
     @include('livewire.dashboard.partials.process-details-modal')
 </div>

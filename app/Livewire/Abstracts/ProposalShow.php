@@ -156,7 +156,7 @@ abstract class ProposalShow extends Component
         }
 
         // Allow editing for draft, revision_needed, need_assignment, or completed (if final report not yet approved)
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $isEditableStatus = in_array($this->proposal->status, [ProposalStatus::DRAFT, ProposalStatus::REVISION_NEEDED, ProposalStatus::NEED_ASSIGNMENT]);
 
         if (! $isEditableStatus && $this->proposal->status === ProposalStatus::COMPLETED) {

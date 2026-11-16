@@ -247,7 +247,7 @@
                             <div style="height: 70px;"></div>
                         @endif
                         <strong><u>{{ $dean_name ?? '.......................' }}</u></strong><br>
-                        <!-- Vetted by AI - Manual Review Required by Senior Engineer/Manager -->
+                        <!-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager -->
                         NIDN. {{ $dean_id ?? '-' }}
                     </td>
                     <td class="text-center" style="height: 120px; vertical-align: bottom; padding-bottom: 20px;">
@@ -258,7 +258,7 @@
                             <div style="font-size: 7pt; color: #555; font-weight: bold; margin-bottom: 5px;">DIGITALLY SIGNED</div>
                         @endif
                         <strong><u>{{ $submitterFullName }}</u></strong><br>
-                        <!-- Vetted by AI - Manual Review Required by Senior Engineer/Manager -->
+                        <!-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager -->
                         NIDN. {{ $proposal->submitter->identity?->identity_id ?? '-' }}
                     </td>
                 </tr>
@@ -282,7 +282,7 @@
                             <div style="height: 70px;"></div>
                         @endif
                         <strong><u>{{ $lppm_head_name ?? '.......................' }}</u></strong><br>
-                        <!-- Vetted by AI - Manual Review Required by Senior Engineer/Manager -->
+                        <!-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager -->
                         NIDN. {{ $lppm_head_id ?? '-' }}
                     </td>
                 </tr>

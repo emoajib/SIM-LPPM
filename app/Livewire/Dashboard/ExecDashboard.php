@@ -119,7 +119,7 @@ class ExecDashboard extends Component
                 $this->availableProdis = $this->getProdiByFaculty();
             }
         } elseif ($this->roleName === 'kaprodi') {
-            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
             $studyProgram = StudyProgram::where('kaprodi_user_id', $this->user->id)->first();
             if ($studyProgram) {
                 $this->selectedProdi = (string) $studyProgram->id;
@@ -284,7 +284,7 @@ class ExecDashboard extends Component
      * Hitung jumlah filter lanjutan yang sedang aktif (selain filter Tahun).
      * Digunakan untuk menampilkan badge indikator di tombol "Filter Lanjutan".
      *
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     public function getActiveFilterCountProperty(): int
     {
@@ -315,7 +315,7 @@ class ExecDashboard extends Component
      * Reset semua filter lanjutan ke nilai default.
      * Kembalikan Prodi ke 'all' dan refresh prodis list sesuai state saat ini.
      *
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     public function resetFilters(): void
     {
@@ -335,7 +335,7 @@ class ExecDashboard extends Component
 
     public function loadAnalytics(): void
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $yearFilter = $this->selectedYear;
         $version = Cache::rememberForever('dashboard.cache_version', fn () => time());
 
@@ -400,7 +400,7 @@ class ExecDashboard extends Component
 
     /**
      * Load chart data for focus areas and faculties.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     private function loadChartData(string|int $yearFilter): void
     {
@@ -623,7 +623,7 @@ class ExecDashboard extends Component
 
     /**
      * Apply common filters for trend chart (excluding year filter).
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     private function applyTrendFilters(Builder $query): Builder
     {
@@ -639,7 +639,7 @@ class ExecDashboard extends Component
                 $query->whereHas('submitter.identity', fn ($q) => $q->where('faculty_id', $facultyId));
             }
         } elseif ($this->isKaprodiRestricted()) {
-            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
             $studyProgram = StudyProgram::where('kaprodi_user_id', $this->user->id)->first();
             if (! $studyProgram) {
                 $query->whereRaw('1 = 0');
@@ -665,7 +665,7 @@ class ExecDashboard extends Component
 
     private function loadTrendChartData(): void
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $currentYear = (int) date('Y');
         $startYear = $currentYear - 4;
         $years = range($startYear, $currentYear);
@@ -716,7 +716,7 @@ class ExecDashboard extends Component
                 $query->whereHas('submitter.identity', fn ($q) => $q->where('faculty_id', $facultyId));
             }
         } elseif ($this->isKaprodiRestricted()) {
-            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
             $studyProgram = StudyProgram::where('kaprodi_user_id', $this->user->id)->first();
             if (! $studyProgram) {
                 $query->whereRaw('1 = 0');
@@ -952,7 +952,7 @@ class ExecDashboard extends Component
 
     private function loadProcessStats(string $yearFilter): void
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         // Baseline: Retrieve all proposals for the selected start_year
         $proposalsThisYear = Proposal::query()
             ->forAcademicYear($yearFilter)
@@ -971,7 +971,7 @@ class ExecDashboard extends Component
         $revisionTotal = $revisionNeeded + $revisionSubmitted;
 
         // 1. Review Status
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $totalReview = Proposal::whereIn('id', $proposalsThisYearIds)
             ->whereIn('status', [ProposalStatus::APPROVED->value, ProposalStatus::WAITING_REVIEWER->value, ProposalStatus::UNDER_REVIEW->value, ProposalStatus::REVIEWED->value, ProposalStatus::REVISION_NEEDED->value, ProposalStatus::COMPLETED->value, ProposalStatus::REJECTED->value])
             ->count();

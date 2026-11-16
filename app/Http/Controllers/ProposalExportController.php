@@ -25,7 +25,7 @@ class ProposalExportController extends Controller
 
     /**
      * Authorize user to access proposal export / preview.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     protected function authorizeAccess(User $user, Proposal $proposal): void
     {

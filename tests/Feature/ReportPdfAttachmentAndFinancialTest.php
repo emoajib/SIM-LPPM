@@ -53,7 +53,7 @@ class ReportPdfAttachmentAndFinancialTest extends TestCase
 
     /**
      * Test that image files (e.g. activity_photos_pkm or service_location_map) are successfully merged into PDF.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     public function test_export_report_merges_image_attachment_successfully()
     {
@@ -92,7 +92,7 @@ class ReportPdfAttachmentAndFinancialTest extends TestCase
 
     /**
      * Test smart fallback to proposal partner commitment letter when report partner_agreement_letter is empty.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     public function test_export_report_smart_fallback_to_proposal_partner_document()
     {
@@ -131,7 +131,7 @@ class ReportPdfAttachmentAndFinancialTest extends TestCase
 
     /**
      * Test that financial report exports successfully with image scan approval and daily note evidence.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     public function test_export_financial_report_with_image_scan_and_evidence()
     {
@@ -160,7 +160,7 @@ class ReportPdfAttachmentAndFinancialTest extends TestCase
 
     /**
      * Test that research report merges realization_file and partner_cooperation_proof properly.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     public function test_export_research_report_merges_realization_and_proof_files()
     {
@@ -207,7 +207,7 @@ class ReportPdfAttachmentAndFinancialTest extends TestCase
 
     /**
      * Test that financial approval page template can be generated and has 1 page.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     public function test_export_financial_approval_template_generates_single_page_pdf()
     {
@@ -230,7 +230,7 @@ class ReportPdfAttachmentAndFinancialTest extends TestCase
 
     /**
      * Test that media files are found after the identity-based folder changes.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     public function test_get_local_pdf_path_resolves_relocated_identity_folder()
     {
@@ -277,7 +277,7 @@ class ReportPdfAttachmentAndFinancialTest extends TestCase
 
     /**
      * Test that a relocated attachment is merged into the exported report PDF.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     public function test_export_report_includes_attachment_relocated_after_profile_change()
     {
@@ -333,7 +333,7 @@ class ReportPdfAttachmentAndFinancialTest extends TestCase
 
     /**
      * Test that submitter can download financial approval template via route.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     public function test_dosen_can_download_approval_template_route()
     {

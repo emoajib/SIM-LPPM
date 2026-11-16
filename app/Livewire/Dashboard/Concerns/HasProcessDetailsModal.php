@@ -11,11 +11,11 @@ use Livewire\Attributes\Computed;
 /**
  * Trait untuk modal interaktif monitoring proses pada Dashboard.
  *
- * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+ * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
  */
 trait HasProcessDetailsModal
 {
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     public ?string $activeProcessType = null;
 
     public string $processSearch = '';
@@ -26,7 +26,7 @@ trait HasProcessDetailsModal
 
     public function openProcessModal(string $type): void
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $canonicalType = match ($type) {
             'revision', 'perbaikan_usulan' => 'perbaikan_usulan',
             'financial', 'catatan_harian_keuangan' => 'catatan_harian_keuangan',
@@ -59,7 +59,7 @@ trait HasProcessDetailsModal
 
     public function closeProcessModal(): void
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $this->activeProcessType = null;
         $this->processSearch = '';
         $this->processTypeFilter = 'all';
@@ -146,7 +146,7 @@ trait HasProcessDetailsModal
     #[Computed]
     public function processModalData(): Collection
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         if (! $this->activeProcessType) {
             return collect();
         }

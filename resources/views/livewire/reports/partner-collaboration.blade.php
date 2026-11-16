@@ -1,5 +1,5 @@
 <div>
-    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+    {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
     <x-slot:pageHeader>
         {{-- Header empty as requested --}}
     </x-slot:pageHeader>
@@ -28,7 +28,7 @@
     </x-slot:pageActions>
 
     {{-- ①② container-xl: Filter Bar (dipindahkan ke atas) + Kartu Validasi Institusi --}}
-    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+    {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
     <div class="mt-3">
 
         {{-- ① Filter Bar — sekarang di atas (sebelum kartu validasi), mengikuti pola research.blade.php --}}
@@ -141,7 +141,7 @@
                         <div class="p-2.5 {{ explode(' ', $card['variant'])[0] }} bg-opacity-10 rounded-3 d-flex align-items-center justify-content-center"
                             style="width: 56px; height: 56px;">
                             {{-- ④ Fix typo icon: 'ti-chart-dotsfs-2' → 'ti-chart-dots fs-2' --}}
-                            {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                            {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
                             @switch($card['icon'])
                                 @case('handshake')              @break
                                 @case('file-check')        @break
@@ -244,7 +244,7 @@
                                     </td>
                                     <td class="text-center">
                                         {{-- Surat Kesediaan (Indikator & Tautan Unduh/Lihat) --}}
-                                        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                                        {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
                                         @if($partner->hasMedia('commitment_letter'))
                                             @php 
                                                 $commitmentLetters = $partner->getMedia('commitment_letter');
@@ -405,7 +405,7 @@
                                             <span class="text-muted small">{{ $proposal->submitter?->name }}</span>
 
                                             {{-- Tombol Surat Kesediaan Spesifik Proposal --}}
-                                            {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                                            {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
                                             @if($selectedPartner->hasCommitmentForProposal($proposal->id))
                                                 @php $commitmentMedia = $selectedPartner->getCommitmentMediaForProposal($proposal->id); @endphp
                                                 @if($commitmentMedia)

@@ -1,4 +1,4 @@
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 import React, { useEffect, useRef } from "react";
 
 export default function Modal({ open, onClose, title, children, size = "md", ariaLabelledBy = "modal-title" }) {

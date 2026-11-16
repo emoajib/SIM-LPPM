@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Research\ProposalRevision;
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 
 use App\Enums\ProposalStatus;
 use App\Livewire\Concerns\HasToast;

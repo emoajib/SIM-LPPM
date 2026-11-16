@@ -17,7 +17,7 @@ class MigrateMediaPaths extends Command
 
     public function handle(): int
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $isDryRun = $this->option('dry-run');
         $disk = Storage::disk('public');
 

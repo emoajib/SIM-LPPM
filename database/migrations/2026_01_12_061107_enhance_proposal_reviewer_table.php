@@ -82,7 +82,7 @@ return new class extends Migration
      * table-recreation untuk SQLite secara terpisah. Rollback di SQLite tidak
      * didukung dan diasumsikan tidak dijalankan di production.
      *
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     public function down(): void
     {

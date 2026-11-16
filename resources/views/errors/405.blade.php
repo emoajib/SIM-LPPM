@@ -1,4 +1,4 @@
-{{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+{{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
 @extends('errors.layout')
 
 @section('title', '405 - Metode Tidak Diizinkan')

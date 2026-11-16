@@ -1,4 +1,4 @@
-{{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+{{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
 <x-slot:title>Persetujuan Laporan Akhir</x-slot:title>
 <x-slot:pageTitle>Persetujuan Laporan Akhir</x-slot:pageTitle>
 <x-slot:pageSubtitle>
@@ -127,7 +127,7 @@
                             </select>
                         </div>
 
-                        <!-- Baris 2: Fakultas, Skema, Tahun, dan Reset (Vetted by AI - Manual Review Required by Senior Engineer/Manager) -->
+                        <!-- Baris 2: Fakultas, Skema, Tahun, dan Reset (Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager) -->
                         <div class="col-md-4">
                             <select class="form-select" wire:model.live="facultyFilter">
                                 <option value="all">Semua Fakultas</option>

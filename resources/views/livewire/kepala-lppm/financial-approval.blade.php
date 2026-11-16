@@ -102,7 +102,7 @@
                     </select>
                 </div>
 
-                <!-- Baris 2: Fakultas, Tahun, dan Reset (Vetted by AI - Manual Review Required by Senior Engineer/Manager) -->
+                <!-- Baris 2: Fakultas, Tahun, dan Reset (Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager) -->
                 <div class="col-md-6">
                     <select class="form-select" wire:model.live="facultyFilter">
                         <option value="all">Semua Fakultas</option>

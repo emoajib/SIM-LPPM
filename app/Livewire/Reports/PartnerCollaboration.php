@@ -93,7 +93,7 @@ class PartnerCollaboration extends Component
             fn ($q) => $q->when($this->periodFilter, fn ($q2) => Proposal::applyAcademicYearFilter($q2, $this->periodFilter))
         )->count();
 
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $activeProposals = Proposal::query()
             ->withArchived()
             ->whereHas('partners')
@@ -159,7 +159,7 @@ class PartnerCollaboration extends Component
 
         $partners = $action->handle($this->search, $this->typeFilter, $this->periodFilter, $facultyId !== null ? (string) $facultyId : null)->paginate(15);
 
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         // Hitung total dana secara dinamis dengan fallback ke RAB
         $partners->getCollection()->each(function (Partner $partner) use ($facultyId) {
             $proposals = Proposal::query()

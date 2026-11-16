@@ -12,7 +12,7 @@ use App\Models\StudyProgram;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 trait ReportAuthorization
 {
     protected function filterByUserAccess(Builder $query): Builder
@@ -51,7 +51,7 @@ trait ReportAuthorization
 
     /**
      * Determine if current user can edit the report.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      *
      * Rules:
      * 1. Only submitter or accepted team member can edit report content.

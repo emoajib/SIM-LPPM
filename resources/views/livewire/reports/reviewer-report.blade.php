@@ -1,4 +1,4 @@
-{{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+{{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
 <div>
     <div class="page-header d-print-none mb-3">
         <div class="container-xl">
@@ -371,7 +371,7 @@
                     <tbody>
                         @forelse ($this->proposals as $proposal)
                             @php
-                                // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+                                // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
                                 $reviewersList = $proposal->reviewers;
                             @endphp
                             <tr>

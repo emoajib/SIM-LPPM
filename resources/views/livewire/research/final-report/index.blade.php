@@ -4,7 +4,7 @@
     Pantau progres, filter status, dan kelola laporan akhir penelitian yang telah didanai.
 </x-slot:pageSubtitle>
 
-{{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+{{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
 <div>
     @if (is_modern_theme())
         @include('components.partials.module-tabs', ['module'=>'research','active'=>'laporan'])

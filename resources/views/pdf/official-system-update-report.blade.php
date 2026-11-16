@@ -1,6 +1,6 @@
 {{--
     Template: Laporan Resmi Pembaruan & Peningkatan SIM-LPPM
-    Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 --}}
 <!DOCTYPE html>
 <html lang="id">

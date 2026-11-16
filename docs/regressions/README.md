@@ -30,5 +30,6 @@ halaman/modul baru. Tiap kelas memiliki:
 | BC-06 | IDOR / BOLA (akses data milik orang lain) | `LetterLinkedRequestBolaTest`, policy test |
 | BC-07 | Stale build asset (deploy tanpa `npm run build`) | guard manifest di CI/deploy |
 | BC-08 | Workflow dead-end (LPJ–amandemen, surat saat modul off) | `FinancialApprovalTest`, `LetterModuleGatingTest` |
+| BC-09 | Artefak copy/placeholder AI (teks liar di UI, marker generik) | `copy:check`, `ModernBreadcrumbTest`, `CopyCheckTest` |
 
 Detail tiap kelas: lihat file `BC-0x-*.md`.

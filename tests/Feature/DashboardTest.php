@@ -11,7 +11,7 @@ class DashboardTest extends TestCase
 {
     use RefreshDatabase;
 
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     public function test_dashboard_screen_can_be_rendered(): void
     {
         $this->seed(RoleSeeder::class);
@@ -26,7 +26,7 @@ class DashboardTest extends TestCase
         $response->assertStatus(200);
     }
 
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     public function test_modern_dashboard_does_not_render_hardcoded_mock_metrics(): void
     {
         $this->seed(RoleSeeder::class);

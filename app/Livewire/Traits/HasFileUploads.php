@@ -33,7 +33,7 @@ trait HasFileUploads
 
     public $implementationProofFile;
 
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     // Research Attachments
     public $teachingMaterialFile; // Lampiran 5: RPS / Bahan Ajar
 
@@ -269,7 +269,7 @@ trait HasFileUploads
     /**
      * Resolve a valid local path from an uploaded file.
      * Returns null if the file does not exist on disk or cannot be read.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     protected function getValidUploadPath(mixed $file): ?string
     {
@@ -451,7 +451,7 @@ trait HasFileUploads
         }
     }
 
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     protected function saveSingleAttachment(ProgressReport $report, mixed $file, string $collectionName): void
     {
         $realPath = $this->getValidUploadPath($file);
@@ -484,7 +484,7 @@ trait HasFileUploads
             $this->saveSingleAttachment($report, $this->teachingMaterialFile, 'teaching_material_file');
         }
 
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $this->teachingMaterialFile = null;
         $report->unsetRelation('media');
         $report->load('media');
@@ -547,7 +547,7 @@ trait HasFileUploads
             }
         }
 
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         // Reset temporary attachment properties after persisting to Spatie
         $this->partnerAgreementFile = null;
         $this->chairpersonStatementFile = null;

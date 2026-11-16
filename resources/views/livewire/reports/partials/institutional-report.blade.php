@@ -142,7 +142,7 @@
                 <div class="d-flex align-items-center gap-3 card-body">
                     <div class="p-2.5 bg-opacity-10 {{ str_replace('bg-', 'bg-opacity-10 text-', explode(' ', $card['variant'])[0]) }} rounded-3 d-flex align-items-center justify-content-center"
                         style="width: 56px; height: 56px;">
-                        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                        {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
                         
                     </div>
                     <div>

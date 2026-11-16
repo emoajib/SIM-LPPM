@@ -110,7 +110,7 @@ Lihat & Proses</strong> <i class="ti ti-eye me-1" aria-hidden="true"></i>
                             </select>
                         </div>
 
-                        <!-- Study Program Filter (Vetted by AI - Manual Review Required by Senior Engineer/Manager) -->
+                        <!-- Study Program Filter (Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager) -->
                         <div class="col-md-3">
                             <select class="form-select" wire:model.live="studyProgramFilter">
                                 <option value="all">Semua Program Studi</option>

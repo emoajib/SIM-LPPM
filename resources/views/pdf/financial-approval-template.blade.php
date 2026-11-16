@@ -1,6 +1,6 @@
 {{--
     Template: Lembar Pengesahan Laporan Keuangan (LPJ) Khusus TTD Basah
-    Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 --}}
 <!DOCTYPE html>
 <html>

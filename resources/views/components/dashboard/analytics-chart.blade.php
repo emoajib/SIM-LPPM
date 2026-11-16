@@ -1,4 +1,4 @@
-{{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+{{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
 @props([
     'type' => 'bar',
     'labels' => [],
@@ -31,7 +31,7 @@
         a11yData: [],
         
         initChart(labels, datasets, isReinit = false) {
-            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
             
             // 1. Edge Case Handling: Data Kosong
             if (!labels || !datasets || labels.length === 0 || datasets.length === 0) {
@@ -134,7 +134,7 @@
                                 usePointStyle: true
                             }
                         },
-                        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+                        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
                         // Direct Data Labels: Angka tampil langsung di atas chart tanpa perlu hover
                         datalabels: {
                             display: function(context) {

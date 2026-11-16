@@ -1,6 +1,6 @@
 import React from "react";
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 const VARIANTS = {
     primary:   "bg-[#1e3a6e] text-white hover:bg-[#254b8c] shadow-sm dark:bg-[#254b8c] dark:hover:bg-[#1e3a6e]",
     secondary: "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600",

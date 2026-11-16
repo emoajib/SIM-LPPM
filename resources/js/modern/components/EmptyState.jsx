@@ -1,6 +1,6 @@
 import React from "react";
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 export default function EmptyState({ icon = "ti ti-folder-open", title = "Tidak ada data", description = "", action = null }) {
     return (
         <div className="text-center py-12 px-4">

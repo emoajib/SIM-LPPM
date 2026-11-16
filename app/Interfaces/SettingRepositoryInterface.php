@@ -4,7 +4,7 @@ namespace App\Interfaces;
 
 /**
  * Interface for Setting repository.
- * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+ * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
  */
 interface SettingRepositoryInterface
 {

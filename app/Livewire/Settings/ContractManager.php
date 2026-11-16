@@ -18,7 +18,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 
 /**
- * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+ * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
  * Contract Management Livewire Component for Admin LPPM
  */
 class ContractManager extends Component

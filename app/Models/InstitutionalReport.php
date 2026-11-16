@@ -58,7 +58,7 @@ class InstitutionalReport extends Model
      */
     public function signatures(): MorphMany
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         return $this->morphMany(DocumentSignature::class, 'document', 'document_type', 'document_id');
     }
 }

@@ -4,7 +4,7 @@ namespace App\Constants;
 
 /**
  * Constants for PDF configuration and overrides.
- * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+ * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
  */
 class PdfConstants
 {

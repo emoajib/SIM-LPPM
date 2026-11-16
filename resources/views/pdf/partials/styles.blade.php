@@ -1,6 +1,6 @@
 @php $pdfConfig ??= get_pdf_config('letter'); @endphp
 <style>
-    /* Vetted by AI - Manual Review Required by Senior Engineer/Manager */
+    /* Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager */
     @page {
         size: {{ $pdfConfig['paper_size'] ?? 'a4' }} {{ $pdfConfig['orientation'] ?? 'portrait' }};
         margin: {{ $pdfConfig['custom_margins'] ?: $pdfConfig['page_margin'] }};

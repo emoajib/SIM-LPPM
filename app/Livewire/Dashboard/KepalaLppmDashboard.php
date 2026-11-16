@@ -154,7 +154,7 @@ class KepalaLppmDashboard extends Component
     /**
      * Reset semua filter ke status default.
      *
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     public function resetFilters(): void
     {
@@ -290,7 +290,7 @@ class KepalaLppmDashboard extends Component
 
     public function loadAnalytics(): void
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $yearFilter = $this->selectedYear;
         $version = Cache::rememberForever('dashboard.cache_version', fn () => time());
 
@@ -351,7 +351,7 @@ class KepalaLppmDashboard extends Component
 
     /**
      * Load chart data for focus areas and faculties.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     private function loadChartData(string $yearFilter): void
     {
@@ -574,7 +574,7 @@ class KepalaLppmDashboard extends Component
 
     private function loadTrendChartData(): void
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $currentYear = (int) date('Y');
         $startYear = $currentYear - 4;
         $years = range($startYear, $currentYear);
@@ -628,7 +628,7 @@ class KepalaLppmDashboard extends Component
 
     private function transformStats(Collection $raw, string $yearFilter): array
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $research = $raw->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'Research'));
         $communityService = $raw->filter(fn ($r) => str_contains($r->detailable_type ?? '', 'CommunityService'));
 
@@ -746,7 +746,7 @@ class KepalaLppmDashboard extends Component
 
     private function loadProcessStats(string $yearFilter): void
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         // Baseline: Retrieve all proposals for the selected start_year
         $proposalsThisYear = Proposal::query()
             ->forAcademicYear($yearFilter)
@@ -765,7 +765,7 @@ class KepalaLppmDashboard extends Component
         $revisionTotal = $revisionNeeded + $revisionSubmitted;
 
         // 1. Review Status
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $totalReview = Proposal::whereIn('id', $proposalsThisYearIds)
             ->whereIn('status', [ProposalStatus::APPROVED->value, ProposalStatus::WAITING_REVIEWER->value, ProposalStatus::UNDER_REVIEW->value, ProposalStatus::REVIEWED->value, ProposalStatus::REVISION_NEEDED->value, ProposalStatus::COMPLETED->value, ProposalStatus::REJECTED->value])
             ->count();

@@ -7,7 +7,7 @@ namespace App\Livewire\Traits;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 trait ReportFilters
 {
     #[Url]

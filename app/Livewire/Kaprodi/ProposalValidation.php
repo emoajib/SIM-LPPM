@@ -40,7 +40,7 @@ class ProposalValidation extends Component
     #[Url]
     public string $yearFilter = '';
 
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     public function updated(string $property): void
     {
         if (str_ends_with($property, 'Filter') || $property === 'search') {
@@ -73,7 +73,7 @@ class ProposalValidation extends Component
 
     /**
      * Available academic years for proposals from Kaprodi's study program.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     #[Computed]
     public function availableYears(): array

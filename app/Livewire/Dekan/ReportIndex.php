@@ -41,7 +41,7 @@ class ReportIndex extends Component
     #[Url(except: 'all')]
     public string $studyProgramFilter = 'all';
 
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     public function updated(string $property): void
     {
         if (str_ends_with($property, 'Filter') || $property === 'search') {
@@ -72,7 +72,7 @@ class ReportIndex extends Component
 
     /**
      * Available study programs in Dekan's faculty for filtering.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     #[Computed]
     public function availableStudyPrograms()
@@ -88,7 +88,7 @@ class ReportIndex extends Component
 
     /**
      * Available academic years for reports in Dekan's faculty.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     #[Computed]
     public function availableYears(): array

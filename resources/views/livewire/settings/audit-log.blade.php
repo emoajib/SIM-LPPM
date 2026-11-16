@@ -1,5 +1,5 @@
 <div>
-    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+    {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
     <div class="row mb-3 g-2">
         <div class="col-md-4">
             <input type="text" wire:model.live.debounce.500ms="searchUser" class="form-control" placeholder="Cari pengguna…" />

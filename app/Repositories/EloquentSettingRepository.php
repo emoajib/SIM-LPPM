@@ -7,7 +7,7 @@ use App\Models\Setting;
 
 /**
  * Eloquent implementation of SettingRepositoryInterface.
- * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+ * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
  */
 class EloquentSettingRepository implements SettingRepositoryInterface
 {

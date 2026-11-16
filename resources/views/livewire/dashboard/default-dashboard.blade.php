@@ -80,7 +80,7 @@
                             <h3 class="card-title fw-bold mb-0">Penelitian Terbaru</h3>
                         </div>
                         <div class="table-responsive">
-                            {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                            {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
                             <table class="table table-vcenter card-table table-hover table-borderless">
                                 <thead class="bg-transparent text-muted">
                                     <tr>
@@ -136,7 +136,7 @@
                             <h3 class="card-title fw-bold mb-0">PKM Terbaru</h3>
                         </div>
                         <div class="table-responsive">
-                            {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                            {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
                             <table class="table table-vcenter card-table table-hover table-borderless">
                                 <thead class="bg-transparent text-muted">
                                     <tr>

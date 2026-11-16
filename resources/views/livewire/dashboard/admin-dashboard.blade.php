@@ -119,7 +119,7 @@
             </div>
         </div>
         
-        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+        {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
         @if ($selectedSemester !== 'all' || $selectedStatus !== 'all' || $selectedFaculty !== 'all' || $selectedProdi !== 'all' || $selectedResearchScheme !== 'all' || $selectedCommunityServiceScheme !== 'all')
             <button class="btn btn-ghost-danger d-flex align-items-center gap-1 shadow-sm"
                 type="button"
@@ -236,7 +236,7 @@
         </div>
     </div>
  
-    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+    {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
     <div class="row row-cards mb-4">
         <div class="col-lg-6">
             <x-dashboard.analytics-chart 
@@ -254,7 +254,7 @@
         </div>
     </div>
 
-    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+    {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
     <div class="row row-cards mb-4">
         <div class="col-12">
             <div class="card border-0 shadow-sm" style="border-radius: 12px; transition: transform 0.2s ease, box-shadow 0.2s ease; cursor: default;"
@@ -338,7 +338,7 @@
                                                       usePointStyle: true
                                                   }
                                               },
-                                              // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+                                              // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
                                               // Angka tampil langsung di atas titik tren tanpa perlu hover
                                               datalabels: {
                                                   display: true,
@@ -649,7 +649,7 @@
                     </div>
                 </div>
                 <div class="table-responsive" style="max-height: 520px; overflow-y: auto;">
-                    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                    {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
                     <table class="table table-vcenter card-table table-hover table-borderless mb-0">
                         <thead class="bg-surface text-muted" style="position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                             <tr>
@@ -752,7 +752,7 @@
                     </div>
                 </div>
                 <div class="table-responsive" style="max-height: 520px; overflow-y: auto;">
-                    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                    {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
                     <table class="table table-vcenter card-table table-hover table-borderless">
                         <thead class="bg-surface text-muted" style="position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                             <tr>
@@ -839,6 +839,6 @@
     </div>
 
 
-    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+    {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
     @include('livewire.dashboard.partials.process-details-modal')
 </div>

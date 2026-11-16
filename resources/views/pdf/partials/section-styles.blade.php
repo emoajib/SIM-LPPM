@@ -1,5 +1,5 @@
 <style>
-    /* Vetted by AI - Manual Review Required by Senior Engineer/Manager */
+    /* Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager */
     .section-title {
         font-weight: bold;
         font-size: 11pt;

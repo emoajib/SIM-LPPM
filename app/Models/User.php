@@ -167,7 +167,7 @@ class User extends Authenticatable implements HasMedia
 
     /**
      * Check if the user is female based on gender column or common Indonesian female names.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     public function isFemale(): bool
     {

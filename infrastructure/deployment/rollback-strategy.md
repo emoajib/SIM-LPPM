@@ -23,5 +23,5 @@ Untuk meminimalkan kejutan:
 - Konfigurasi infrastruktur (PHP-FPM, Nginx, Redis) dikelola melalui file Dockerfile yang seragam.
 
 ---
-*Vetted by AI - Manual Review Required by Senior Engineer/Manager*
+*Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager*
 *Architectural Alignment: Zero Trust & TOGAF Principles*

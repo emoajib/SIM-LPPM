@@ -16,7 +16,7 @@ use Livewire\Attributes\On;
  * Trait ReportAccess
  *
  * Handles report access control and loading logic
- * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+ * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
  */
 trait ReportAccess
 {

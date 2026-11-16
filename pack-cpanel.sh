@@ -56,4 +56,4 @@ echo "2. vendor_deploy.zip (~$(du -h vendor_deploy.zip | cut -f1))"
 echo "------------------------------------------------"
 echo "Panduan Ekstrak ada di CPANEL_DEPLOYMENT.md"
 
-# Vetted by AI - Manual Review Required by Senior Engineer/Manager
+# Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager

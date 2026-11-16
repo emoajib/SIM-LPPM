@@ -1,6 +1,6 @@
 #!/bin/bash
 # update_local.sh — Skrip Pembaruan Lokal Otomatis & Aman
-# Vetted by AI - Manual Review Required by Senior Engineer/Manager
+# Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 
 set -e # Berhenti jika ada error
 

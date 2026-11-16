@@ -9,7 +9,7 @@ class SyncEnumsTest extends TestCase
 {
     public function test_enum_sync_command_exists()
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         // This test verifies the command is registered and runnable.
         // Exit code 0 = no mismatches found (expected for pgsql with varchar+CHECK).
         // Exit code 1 = mismatches found (expected for sqlite/mysql in dev).

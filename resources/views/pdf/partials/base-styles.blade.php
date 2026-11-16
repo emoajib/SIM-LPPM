@@ -1,4 +1,4 @@
-/* Vetted by AI - Manual Review Required by Senior Engineer/Manager */
+/* Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager */
 .no-border, .no-border td, .no-border th {
     border: none !important;
     padding: 1px !important;

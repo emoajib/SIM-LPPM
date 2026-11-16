@@ -1,5 +1,5 @@
 <div>
-    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+    {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
 
     {{-- Alpine.js root: holds all preview state locally for instant update --}}
     <div

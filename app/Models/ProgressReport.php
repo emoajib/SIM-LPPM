@@ -210,7 +210,7 @@ class ProgressReport extends Model implements HasMedia
         $this->addMediaCollection('partner_implementation_proof')
             ->acceptsMimeTypes(['application/pdf', 'image/jpeg', 'image/png']);
 
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         // Lampiran 5 Penelitian: RPS atau Bahan Ajar
         $this->addMediaCollection('teaching_material_file')
             ->singleFile()

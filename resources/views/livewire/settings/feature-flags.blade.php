@@ -86,7 +86,7 @@
                     </div>
                 </div>
                 <div class="col-auto">
-                    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                    {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
                     <select class="form-select form-select-sm" style="width: auto;" wire:model.live="reviewerCountRequired">
                         <option value="1">1 Reviewer</option>
                         <option value="2">2 Reviewer</option>

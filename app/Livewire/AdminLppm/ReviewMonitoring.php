@@ -53,7 +53,7 @@ class ReviewMonitoring extends Component
         abort_unless(Auth::user()?->activeHasAnyRole(['admin lppm', 'kepala lppm', 'rektor']), 403);
     }
 
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     public function updated(string $property): void
     {
         if ($property === 'typeFilter') {

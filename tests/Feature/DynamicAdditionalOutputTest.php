@@ -21,7 +21,7 @@ use Tests\TestCase;
 
 /**
  * Test dynamic additional output management (Feature 4) and verification page metadata (Feature 5).
- * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+ * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
  */
 class DynamicAdditionalOutputTest extends TestCase
 {

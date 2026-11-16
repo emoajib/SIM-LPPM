@@ -146,6 +146,7 @@ jobs:
           php artisan theme:check
           php artisan modern:check
           php artisan regression:check
+          php artisan copy:check
 
       - name: Run Tests
         env:
@@ -155,4 +156,4 @@ jobs:
 
       - name: Check MySQL Column Orders (Offline — informational)
         run: php artisan mysql-column-orders:check || true
-# Vetted by AI - Manual Review Required by Senior Engineer/Manager
+# Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager

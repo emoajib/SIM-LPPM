@@ -51,7 +51,7 @@
     @if ($this->currentReviewers->count() > 0)
         <div class="card">
 
-            {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+            {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h3 class="card-title">Reviewer yang Ditugaskan</h3>
                 <div>

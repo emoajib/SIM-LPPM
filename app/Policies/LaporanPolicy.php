@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 
 use App\Models\ProgressReport;
 use App\Models\User;

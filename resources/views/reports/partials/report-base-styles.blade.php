@@ -1,5 +1,5 @@
 @php
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     $pdfConfig ??= get_pdf_config('report');
 @endphp
 body {

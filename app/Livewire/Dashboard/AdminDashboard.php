@@ -155,7 +155,7 @@ class AdminDashboard extends Component
     /**
      * Reset semua filter ke status default.
      *
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     public function resetFilters(): void
     {
@@ -291,7 +291,7 @@ class AdminDashboard extends Component
 
     public function loadAnalytics(): void
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $yearFilter = $this->selectedYear;
         $version = Cache::rememberForever('dashboard.cache_version', fn () => time());
 
@@ -352,7 +352,7 @@ class AdminDashboard extends Component
 
     /**
      * Load chart data for focus areas and faculties.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     private function loadChartData(string $yearFilter): void
     {
@@ -575,7 +575,7 @@ class AdminDashboard extends Component
 
     private function loadTrendChartData(): void
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $currentYear = (int) date('Y');
         $startYear = $currentYear - 4;
         $years = range($startYear, $currentYear);
@@ -740,7 +740,7 @@ class AdminDashboard extends Component
         $revisionTotal = $revisionNeeded + $revisionSubmitted;
 
         // 1. Review Status
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $totalReview = Proposal::whereIn('id', $proposalsThisYearIds)
             ->whereIn('status', [ProposalStatus::APPROVED->value, ProposalStatus::WAITING_REVIEWER->value, ProposalStatus::UNDER_REVIEW->value, ProposalStatus::REVIEWED->value, ProposalStatus::REVISION_NEEDED->value, ProposalStatus::COMPLETED->value, ProposalStatus::REJECTED->value])
             ->count();

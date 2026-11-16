@@ -21,7 +21,7 @@ class FeatureFlags extends Component
 
     public bool $featureCommunityPartnerRequired = true;
 
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     public int $reviewerCountRequired = 1;
 
     public function mount(): void
@@ -34,7 +34,7 @@ class FeatureFlags extends Component
         $this->suratSignatureMode = Setting::get('surat_signature_mode', 'tte');
         $this->suratWetSignatureBypass = (bool) Setting::get('surat_wet_signature_bypass', false);
         $this->featureCommunityPartnerRequired = Setting::get('feature_community_partner_required', true);
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $this->reviewerCountRequired = (int) Setting::get('reviewer_count_required', 1);
     }
 
@@ -74,7 +74,7 @@ class FeatureFlags extends Component
             Setting::set('feature_community_partner_required', $value, 'boolean');
         }
 
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         if ($property === 'reviewerCountRequired') {
             Setting::set('reviewer_count_required', (int) $value, 'integer');
         }

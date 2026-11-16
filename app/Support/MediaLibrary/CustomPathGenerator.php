@@ -49,7 +49,7 @@ class CustomPathGenerator implements PathGenerator
             // @phpstan-ignore-next-line
             $user = $model->submitter;
 
-            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
             // ProgressReport::submitter() uses submitted_by which is null in draft state.
             // Fall back to the proposal's submitter (always set) for a consistent path
             // that is identical whether the file is uploaded in draft or submitted state.

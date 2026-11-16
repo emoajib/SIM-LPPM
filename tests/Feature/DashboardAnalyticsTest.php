@@ -1,6 +1,6 @@
 <?php
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 
 namespace Tests\Feature;
 
@@ -90,7 +90,7 @@ class DashboardAnalyticsTest extends TestCase
 
     public function test_kaprodi_dashboard_loads_analytics()
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $kaprodi = User::factory()->create(['name' => 'Kaprodi']);
         $kaprodi->assignRole('kaprodi');
 
@@ -111,7 +111,7 @@ class DashboardAnalyticsTest extends TestCase
 
     public function test_kepala_lppm_dashboard_calculates_final_report_process_stats()
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $this->actingAs($this->kepalaLppm);
         Session::put('active_role', 'kepala lppm');
 

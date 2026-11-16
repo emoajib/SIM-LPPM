@@ -3,7 +3,7 @@
 <x-slot:pageSubtitle>Daftar proposal yang telah Anda tinjau dan berikan keputusan.</x-slot:pageSubtitle>
 
 <div>
-    <!-- Filter Section (Vetted by AI - Manual Review Required by Senior Engineer/Manager) -->
+    <!-- Filter Section (Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager) -->
     <div class="mb-3 row">
         <div class="col-12">
             <div class="card">

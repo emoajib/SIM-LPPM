@@ -78,7 +78,7 @@
             text-align: justify;
             white-space: pre-wrap;
         }
-        /* Vetted by AI - Manual Review Required by Senior Engineer/Manager */
+        /* Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager */
         .signature-section {
             width: 100%;
             margin-top: 1cm;
@@ -217,7 +217,7 @@
                     Kepala LPPM ITSNU Pekalongan
                 </td>
                 <td width="50%" class="text-center" style="vertical-align: top; border: none;">
-                    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                    {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
                     Pekalongan, {{ $proposal->logbook_signed_at ? \Carbon\Carbon::parse($proposal->logbook_signed_at)->format('d F Y') : now()->format('d F Y') }}<br>
                     Ketua {{ $proposal->detailable_type === 'App\Models\Research' ? 'Peneliti' : 'Pelaksana' }}
                 </td>
@@ -234,7 +234,7 @@
                     @endif
                     @php $kepala = \App\Models\User::role('kepala lppm')->first(); @endphp
                     <strong><u>{{ $kepala->name ?? '.......................' }}</u></strong><br>
-                    <!-- Vetted by AI - Manual Review Required by Senior Engineer/Manager -->
+                    <!-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager -->
                     NIDN. {{ $kepala->identity?->identity_id ?? '-' }}
                 </td>
                 <td class="text-center" style="height: 120px; vertical-align: bottom; border: none; padding-bottom: 10px;">
@@ -302,7 +302,7 @@
                                     </div>
                                 @endif
                             @else
-                                {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                                {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
                                 <div style="background: #f0f7ff; border: 1px dashed #0054a6; padding: 12px; color: #333; font-size: 8pt;">
                                     <strong>Dokumen Bukti Eksternal (<span style="text-transform: uppercase">{{ $media->extension }}</span>):</strong> {{ $media->file_name }}<br>
                                     <small style="color: #0054a6; font-weight: bold; font-style: italic;">

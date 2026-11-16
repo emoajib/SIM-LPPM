@@ -386,7 +386,7 @@ if (! function_exists('normalize_paper_size')) {
 
 if (! function_exists('get_pdf_config')) {
     /**
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      * Ambil konfigurasi PDF dari settings. Default = existing hardcode values.
      * Menggunakan cache layer untuk optimasi module-level caching (Phase 2 Performance).
      *
@@ -520,7 +520,7 @@ if (! function_exists('get_pdf_config')) {
 
 if (! function_exists('clear_pdf_config_cache')) {
     /**
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      * Clear the cached pdf configuration.
      * If moduleKey is provided, only that module's cache is cleared.
      * If null, ALL pdf configs are cleared (e.g. on global layout change).
@@ -550,7 +550,7 @@ if (! function_exists('clear_pdf_config_cache')) {
 
 if (! function_exists('_build_custom_margins')) {
     /**
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      * Build custom margin string from per-side settings.
      * Returns empty string if no custom margins are set (fallback to preset).
      *
@@ -626,7 +626,7 @@ if (! function_exists('embed_attachment_image')) {
             $mime = 'image/svg+xml';
         }
 
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         // If the image is large (> 1MB) and GD is available, downscale to max 1200px to avoid DomPDF memory exhaustion
         if (strlen($content) > 1024 * 1024 && extension_loaded('gd') && ! str_contains($mime, 'svg')) {
             $img = @imagecreatefromstring($content);

@@ -13,7 +13,7 @@ class DocumentSignatureVerificationController extends Controller
 {
     /**
      * Display the document signature verification page.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     public function show(DocumentSignature $documentSignature, DocumentSignatureService $signatureService): View
     {

@@ -9,7 +9,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class CleanupOrphanMedia extends Command
 {
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     protected $signature = 'media:cleanup-orphans
                             {--ids= : ID media spesifik yang dipisahkan koma (contoh: --ids=97,99)}
                             {--include-trashed : Hapus juga media yang model induknya berstatus soft-deleted}
@@ -20,7 +20,7 @@ class CleanupOrphanMedia extends Command
 
     public function handle(): int
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $isDryRun = (bool) $this->option('dry-run');
         $includeTrashed = (bool) $this->option('include-trashed');
         $idsOption = $this->option('ids');

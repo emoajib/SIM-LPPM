@@ -189,7 +189,7 @@ class ReviewSystemTest extends TestCase
 
     /**
      * Test dynamic reviewer count requirements for status transition.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     public function test_dynamic_reviewer_count_requirements()
     {

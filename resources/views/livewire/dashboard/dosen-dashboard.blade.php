@@ -1,5 +1,5 @@
 <div>
-    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+    {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
     <div class="d-flex justify-content-end mb-4">
         <div class="d-flex align-items-center gap-2">
             <div class="dropdown">
@@ -264,7 +264,7 @@
                             </span>
                         </div>
                     </div>
-                    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                    {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
                     <div class="card-body">
                         <div style="position:relative;height:250px;width:100%;"
                              wire:ignore
@@ -335,7 +335,7 @@
                                                           usePointStyle: true
                                                       }
                                                   },
-                                                  // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+                                                  // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
                                                   // Angka tampil langsung di atas titik tren tanpa perlu hover
                                                   datalabels: {
                                                       display: true,
@@ -419,7 +419,7 @@
         </div>
     @endif
 
-    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+    {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
     <!-- Alur Proses Tahapan Penelitian & Pengabdian (Data Riil) -->
     <div class="row row-cards mb-4">
         <div class="col-12">
@@ -855,6 +855,6 @@
         <div class="modal-backdrop fade show"></div>
     @endif
 
-    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+    {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
     @include('livewire.dashboard.partials.process-details-modal')
 </div>

@@ -1,6 +1,6 @@
 #!/bin/bash
 # update_production.sh — Script update cPanel (versi simpel)
-# Vetted by AI - Manual Review Required by Senior Engineer/Manager
+# Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 
 set -euo pipefail
 

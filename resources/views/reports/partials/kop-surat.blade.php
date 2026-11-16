@@ -1,4 +1,4 @@
-{{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+{{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
 @php
     $inst = get_institution_config();
     $logoPos = $pdfConfig['logo_position'] ?? 'left';

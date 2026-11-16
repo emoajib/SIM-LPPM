@@ -108,7 +108,7 @@
                             </select>
                         </div>
 
-                        <!-- Year Filter (Vetted by AI - Manual Review Required by Senior Engineer/Manager) -->
+                        <!-- Year Filter (Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager) -->
                         <div class="col-md-3">
                             <select class="form-select" wire:model.live="yearFilter">
                                 <option value="">Semua Tahun</option>

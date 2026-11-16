@@ -19,7 +19,7 @@ class InstitutionalReportSignatureTest extends TestCase
      */
     public function test_institutional_report_can_have_signatures()
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $report = InstitutionalReport::create([
             'id' => (string) Str::uuid(),
             'type' => 'research',

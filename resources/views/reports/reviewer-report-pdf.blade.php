@@ -1,4 +1,4 @@
-{{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+{{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
 <!DOCTYPE html>
 <html>
 
@@ -235,7 +235,7 @@
         <tbody>
             @forelse($proposals as $index => $proposal)
                 @php
-                    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+                    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
                     $reviewersList = $proposal->reviewers;
                 @endphp
                 <tr>

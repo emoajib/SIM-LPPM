@@ -10,7 +10,7 @@ parameters:
     # Level 9 is the highest level
     level: 5
 
-    # Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    # Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     treatPhpDocTypesAsCertain: false
 
     excludePaths:

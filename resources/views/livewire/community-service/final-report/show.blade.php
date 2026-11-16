@@ -54,7 +54,7 @@
             'mode' => 'final-report',
         ])
 
-        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+        {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
         <!-- Admin LPPM: Kelola Nomor Kontrak -->
         @if(auth()->user()->activeHasAnyRole(['admin lppm', 'admin lppm saintek', 'admin lppm dekabita', 'kepala lppm', 'superadmin']))
             <div class="card mb-3 border-info shadow-sm">
@@ -260,7 +260,7 @@
             </div>
         @endif
 
-        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+        {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
         <!-- Checklist Kelengkapan Dokumen & Lampiran Laporan Akhir PKM (1-12) -->
         @php
             $hasSubstance = $progressReport && $progressReport->hasMedia('substance_file');
@@ -937,7 +937,7 @@
         <!-- Title Change Request Section (Final Report) -->
         @include('livewire.partials.title-change-form')
 
-        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+        {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
         <!-- Lampiran Standar Laporan Pengabdian (Lampiran 3 - 12) -->
         <div class="card mb-3">
             <div class="card-header bg-azure-lt py-2">
@@ -1229,7 +1229,7 @@
                 </div>
             </div>
         <!-- Perubahan Mitra -->
-        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+        {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
         <div class="card mb-3">
             <div class="card-header">
                 <h3 class="card-title">Perubahan Mitra</h3>
@@ -1548,7 +1548,7 @@
         </div>
 
         {{-- Modal Tambah / Edit Luaran Tambahan --}}
-        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+        {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
         @if ($showOutputModal)
             <div class="modal modal-blur fade show d-block" tabindex="-1" role="dialog" style="background: rgba(0,0,0,0.5);" aria-modal="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">

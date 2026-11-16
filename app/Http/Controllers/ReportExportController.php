@@ -221,7 +221,7 @@ class ReportExportController extends Controller
 
             $isPreview = $request->boolean('preview');
             $pdfConfig = get_pdf_config('report', 'iku');
-            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
             $pdf = Pdf::loadView('reports.iku-report-pdf', [
                 'ikuMetrics' => $ikuMetrics,
                 'period' => $period,
@@ -345,7 +345,7 @@ class ReportExportController extends Controller
             $lppmHead = User::role('kepala lppm')->with('identity')->first();
 
             $pdfConfig = get_pdf_config('report', 'penelitian');
-            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
             $pdf = Pdf::loadView('reports.research-pdf', [
                 'proposals' => $proposals,
                 'period' => $period,
@@ -491,7 +491,7 @@ class ReportExportController extends Controller
             $lppmHead = User::role('kepala lppm')->with('identity')->first();
 
             $pdfConfig = get_pdf_config('report', 'pengabdian');
-            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
             $pdf = Pdf::loadView('reports.community-service-pdf', [
                 'proposals' => $proposals,
                 'period' => $period,
@@ -609,7 +609,7 @@ class ReportExportController extends Controller
             $lppmHead = User::role('kepala lppm')->with('identity')->first();
 
             $pdfConfig = get_pdf_config('report', 'output');
-            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
             $pdf = Pdf::loadView('reports.output-reports-pdf', [
                 'proposals' => $proposals,
                 'activeTab' => $activeTab,
@@ -759,7 +759,7 @@ class ReportExportController extends Controller
 
             $partners = $action->handle($search, $typeFilter, $periodFilter, $facultyId !== null ? (string) $facultyId : null)->get();
 
-            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
             $partners->each(function (Partner $partner) use ($facultyId, $periodFilter) {
                 $proposals = Proposal::query()
                     ->withArchived()
@@ -786,7 +786,7 @@ class ReportExportController extends Controller
 
             $isPreview = $request->boolean('preview');
             $pdfConfig = get_pdf_config('report', 'mitra');
-            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
             $pdf = Pdf::loadView('reports.partner-collaboration-pdf', [
                 'partners' => $partners,
                 'periodFilter' => $periodFilter,
@@ -1109,7 +1109,7 @@ class ReportExportController extends Controller
             }
 
             $pdfConfig = get_pdf_config('report_ba', 'monev-ba');
-            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
             $pdf = Pdf::loadView('reports.monev-ba-pdf', [
                 'review' => $review,
                 'criteria' => $criteria,
@@ -1252,7 +1252,7 @@ class ReportExportController extends Controller
             $lppmHead = User::role('kepala lppm')->with('identity')->first();
 
             $pdfConfig = get_pdf_config('report', 'monev');
-            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
             $pdf = Pdf::loadView('reports.monev-pdf', [
                 'reviews' => $reviews,
                 'period' => $period,
@@ -1302,8 +1302,8 @@ class ReportExportController extends Controller
         }
     }
 
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     public function reviewerPdf(Request $request)
     {
         @ini_set('memory_limit', '512M');
@@ -1421,7 +1421,7 @@ class ReportExportController extends Controller
 
             $progressPercent = $totalReviews > 0 ? round(($completedReviews / $totalReviews) * 100) : 0;
 
-            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
             $avgScore = round(ReviewLog::query()
                 ->whereHas('proposal', function ($q) use ($year, $semester) {
                     $q->whereIn('status', [
@@ -1453,7 +1453,7 @@ class ReportExportController extends Controller
 
             $pdfConfig = get_pdf_config('report_compact', 'reviewer');
             $pdfConfigLetter = get_pdf_config('letter', 'evaluasi-reviewer');
-            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
             $pdf = Pdf::loadView('reports.reviewer-report-pdf', [
                 'proposals' => $proposals,
                 'reviewers' => $reviewers,
@@ -1540,7 +1540,7 @@ class ReportExportController extends Controller
 
                         $qrUrl = URL::signedRoute('signatures.verify', ['documentSignature' => $signature->id]);
 
-                        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+                        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
                         $reviewPdf = Pdf::loadView('pdf.review-evaluation', [
                             'isPreview' => false,
                             'assignment' => $rev,
@@ -1619,7 +1619,7 @@ class ReportExportController extends Controller
         }
     }
 
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     public function reviewerExcel(Request $request)
     {
         try {

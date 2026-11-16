@@ -17,7 +17,7 @@ use Tests\TestCase;
 
 class RoleReportMonitoringScopingTest extends TestCase
 {
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     use RefreshDatabase;
 
     protected User $dosen1;

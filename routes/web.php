@@ -498,7 +498,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Admin LPPM - Persuratan Routes
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     Route::middleware(['auth', 'role:admin lppm|superadmin', 'letter.active'])->prefix('admin-lppm/persuratan')->name('admin-lppm.letters.')->group(function () {
         Route::get('/', App\Livewire\AdminLppm\Letter\Dashboard::class)->name('dashboard');
     });
@@ -510,7 +510,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Kepala LPPM Routes
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     Route::prefix('kepala-lppm')->name('kepala-lppm.')->group(function () {
         Route::middleware(['role:kepala lppm|rektor'])->group(function () {
             Route::get('persetujuan-awal', InitialApproval::class)->name('initial-approval');
@@ -576,7 +576,7 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     Route::any('settings', SettingsIndex::class)
         ->middleware(['auth', 'verified'])
         ->name('settings');
@@ -618,7 +618,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Backup Download Routes (Bypass Livewire WAF issues — safe approach: filename from cache, not URL)
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     Route::middleware(['auth', 'verified', 'role:admin lppm|superadmin'])->prefix('settings')->name('settings.')->group(function () {
         Route::any('download-backup-db', [BackupDownloadController::class, 'downloadDatabaseBackup'])
             ->name('download-backup-db');
@@ -668,7 +668,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('daily-notes/{proposal}/export-pdf', [DailyNoteExportController::class, 'download'])
         ->name('daily-notes.export-pdf');
 
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     Route::get('financial-reports/{proposal}/export-pdf', [DailyNoteExportController::class, 'financialReport'])
         ->name('financial-reports.export-pdf');
 
@@ -677,7 +677,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('media/{media:uuid}/download', [MediaDownloadController::class, 'download'])
         ->middleware(['auth'])
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         // Constrain {media} to valid UUID format to prevent PostgreSQL from receiving
         // invalid UUID strings which would throw SQLSTATE[22P02] instead of a 404.
         ->where('media', '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}')
@@ -729,7 +729,7 @@ Route::group(['middleware' => ['auth', 'verified', 'role:admin lppm|rektor|kepal
     Route::get('/admin/iku/export-excel', [ReportExportController::class, 'ikuExcel'])->name('admin.iku.export-excel');
 
     // Reviewer Report Exports
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     Route::get('/admin/reviewer/export-pdf', [ReportExportController::class, 'reviewerPdf'])->name('reports.reviewer.pdf');
     Route::get('/admin/reviewer/export-excel', [ReportExportController::class, 'reviewerExcel'])->name('reports.reviewer.excel');
 });

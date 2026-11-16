@@ -1,4 +1,4 @@
-{{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+{{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
 @if ($this->logbookApprovalMode === 'upload' || $this->logbookApprovalMode === 'both')
     <div class="card mb-3 border-azure-subtle shadow-sm">
         <div class="card-header bg-azure-lt d-flex justify-content-between align-items-center py-2">

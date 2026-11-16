@@ -6,7 +6,7 @@
       - $form            : ReportForm instance
       - $canEdit         : bool
       - $additionalOutput: AdditionalOutput model (bisa null)
-    Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 --}}
 @php
     $group = strtolower($outputGroup ?? '');

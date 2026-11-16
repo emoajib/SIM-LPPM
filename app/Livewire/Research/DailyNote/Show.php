@@ -65,7 +65,7 @@ class Show extends Component
         $this->activity_date = date('Y-m-d');
     }
 
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     protected function canAccess(Proposal $proposal): bool
     {
         $user = Auth::user();

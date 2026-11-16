@@ -64,7 +64,7 @@ class ProposalPdfService
      * Returns null if the file cannot be found.
      *
      * For local disks: resolves to the absolute filesystem path.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      * IMPORTANT: $media->getPath() may return a RELATIVE path via CustomPathGenerator.
      * Always use getPathRelativeToRoot() + disk->path() to get correct absolute path.
      *
@@ -340,7 +340,7 @@ class ProposalPdfService
 
         $pdfConfig = get_pdf_config('letter', 'proposal-export');
         // 1. Generate the basic info PDF using DomPDF
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $infoPdfContent = Pdf::loadView('pdf.proposal-export', [
             'isPreview' => $isPreview,
             'proposal' => $proposal,
@@ -649,7 +649,7 @@ class ProposalPdfService
             mkdir($cacheDir, 0755, true);
         }
 
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         // Calculate latest timestamp including media and proposal update (such as contract_number)
         $latestTimestamp = max($report->updated_at->timestamp, $proposal->updated_at->timestamp);
 
@@ -774,7 +774,7 @@ class ProposalPdfService
         $pdfConfig = get_pdf_config('letter', 'laporan-akhir');
 
         // Generate report content PDF
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $infoPdfContent = Pdf::loadView('pdf.report-export', [
             'proposal' => $proposal->load([
                 'submitter.identity.institution',
@@ -858,7 +858,7 @@ class ProposalPdfService
         }
 
         // 2. Add pages from the report's substance file (NASKAH SUBSTANSI LAPORAN AKHIR PDF)
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         /** @var ?Media $substanceFile */
         $substanceFile = $report->getFirstMedia('substance_file');
         if ($substanceFile) {
@@ -894,7 +894,7 @@ class ProposalPdfService
             Log::warning('FPDI Merge Fail (L1-L3 Appendices) for '.$report->id.': '.$e->getMessage());
         }
 
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         // 4. Attachments merging based on Proposal Type
         if ($proposal->detailable_type === 'App\Models\Research') {
             // File Realisasi Keterlibatan
@@ -1046,7 +1046,7 @@ class ProposalPdfService
         return $cachePath;
     }
 
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     /**
      * Resolve LPPM Head name and ID for the given proposal's institution.
      */
@@ -1087,7 +1087,7 @@ class ProposalPdfService
         return ['name' => $lppmHeadName, 'id' => $lppmHeadId];
     }
 
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     /**
      * Universal helper to merge media (PDF or Image) into FPDI.
      */
@@ -1165,7 +1165,7 @@ class ProposalPdfService
         $this->mergeMediaItem($pdf, $media, $reportId, $label);
     }
 
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     /**
      * Normalize PDF if it uses PDF 1.5+ with Object Streams using Ghostscript or qpdf if available on the server.
      */
@@ -1210,7 +1210,7 @@ class ProposalPdfService
         return $sourcePath;
     }
 
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     /**
      * Append a professional notice page when a PDF appendix cannot be parsed by FPDI.
      */
@@ -1246,7 +1246,7 @@ class ProposalPdfService
 
     /**
      * Export Financial Report (LPJ) as a separate PDF.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     public function exportFinancialReport(Proposal $proposal, bool $isPreview = false): string
     {
@@ -1334,7 +1334,7 @@ class ProposalPdfService
         }
         $pdf->save($cachePath);
 
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         // Collect all Daily Notes PDF evidence media to append at the end of the LPJ
         $dailyNotesPdfMedia = [];
         foreach ($proposal->dailyNotes as $note) {
@@ -1437,7 +1437,7 @@ class ProposalPdfService
 
     /**
      * Export Financial Report Approval Page (Lembar Pengesahan LPJ) template for physical/wet signature.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     public function exportFinancialApprovalTemplate(Proposal $proposal): string
     {

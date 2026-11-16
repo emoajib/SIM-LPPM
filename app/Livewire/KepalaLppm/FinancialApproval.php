@@ -24,7 +24,7 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 
 /**
  * @property-read LengthAwarePaginator $proposals
@@ -61,7 +61,7 @@ class FinancialApproval extends Component
         abort_unless(Auth::user()?->activeHasAnyRole(['kepala lppm', 'admin lppm', 'superadmin', 'rektor']), 403);
     }
 
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     public function updated(string $property): void
     {
         if (str_ends_with($property, 'Filter') || $property === 'search') {
@@ -97,7 +97,7 @@ class FinancialApproval extends Component
         return AcademicPeriod::optionsFromPeriods($periods);
     }
 
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     public function approveLpj(string $proposalId): void
     {
         abort_unless(Auth::user()?->activeHasAnyRole(['kepala lppm', 'admin lppm', 'superadmin']), 403);
@@ -148,7 +148,7 @@ class FinancialApproval extends Component
         ]);
     }
 
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     public function unapproveLpj(string $proposalId): void
     {
         abort_unless(Auth::user()?->activeHasAnyRole(['kepala lppm', 'admin lppm', 'superadmin']), 403);

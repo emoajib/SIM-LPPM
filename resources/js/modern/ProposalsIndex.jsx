@@ -1,4 +1,4 @@
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 import React, { useEffect, useState } from "react";
 import Button from "./components/Button.jsx";
 import Modal from "./components/Modal.jsx";
@@ -129,7 +129,7 @@ export default function ProposalsIndex() {
             align: "center",
             render: (p) => (
                 <a
-                    href={`/research/proposal/${p.id}/modern`}
+                    href={p.show_url}
                     className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold text-[#1e3a6e] dark:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition-colors"
                 >
                     Lihat &rarr;

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\View\View;
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 class MenuComposer
 {
     public function compose(View $view): void
@@ -157,7 +157,7 @@ class MenuComposer
                 'roles' => ['kaprodi'],
             ]] : []),
             // Kaprodi - Monitoring Laporan Akhir
-            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
             [
                 'title' => 'Monitoring Laporan',
                 'icon' => 'eye',
@@ -172,7 +172,7 @@ class MenuComposer
                 'params' => ['group' => 'academic-structure', 'tab' => 'study-program-roadmaps'],
                 'roles' => ['kaprodi'],
             ]] : []),
-            // Dekan menu - Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            // Dekan menu - Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
             [
                 'title' => 'Persetujuan Proposal',
                 'icon' => 'shield-check',
@@ -263,7 +263,7 @@ class MenuComposer
                 'roles' => ['admin lppm'],
             ],
             // Admin LPPM - Monitoring Laporan Akhir
-            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
             [
                 'title' => 'Monitoring Laporan',
                 'icon' => 'eye',
@@ -353,7 +353,7 @@ class MenuComposer
                         'icon' => 'presentation-analytics',
                         'route' => 'reports.monev',
                     ],
-                    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+                    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
                     [
                         'title' => 'Laporan Reviewer',
                         'icon' => 'users',
@@ -375,7 +375,7 @@ class MenuComposer
                 ],
             ],
             // Data Arsip - admin lppm
-            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
             [
                 'title' => 'Arsip',
                 'icon' => 'archive',
@@ -384,7 +384,7 @@ class MenuComposer
             ],
             // settings:
             // - master data - admin lppm
-            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
             [
                 'title' => 'Pengaturan',
                 'icon' => 'settings',
@@ -679,7 +679,7 @@ class MenuComposer
         return $formatted;
     }
 
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     protected function formatDropdownItem(array $item, ?User $user): ?array
     {
         $allowedRoles = $item['roles'] ?? null;

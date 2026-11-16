@@ -146,7 +146,7 @@ class SyncEnums extends Command
 
     private function getEnumMap(): array
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         // PENTING: Jangan tambahkan duplicate key — PHP array akan silently override entry sebelumnya.
         // Setiap 'table.column' harus muncul tepat SATU kali dengan enum class yang tepat.
         return [

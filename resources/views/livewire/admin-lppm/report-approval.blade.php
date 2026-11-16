@@ -1,4 +1,4 @@
-{{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+{{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
 <x-slot:title>Monitoring Laporan Akhir (Admin LPPM)</x-slot:title>
 <x-slot:pageTitle>Monitoring Laporan Akhir</x-slot:pageTitle>
 <x-slot:pageSubtitle>
@@ -142,7 +142,7 @@
                             </select>
                         </div>
 
-                        <!-- Baris 2: Skema, Tahun, dan Reset (Vetted by AI - Manual Review Required by Senior Engineer/Manager) -->
+                        <!-- Baris 2: Skema, Tahun, dan Reset (Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager) -->
                         @if ($typeFilter !== 'all')
                             <div class="col-md-6">
                                 <select class="form-select" wire:model.live="schemeFilter">

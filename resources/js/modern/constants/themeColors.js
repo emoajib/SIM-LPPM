@@ -1,4 +1,4 @@
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 /**
  * SIM-LPPM Modern Theme Color & Status Constants
  * Single Source of Truth for React Layer

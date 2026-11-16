@@ -6,7 +6,7 @@ use App\Constants\PdfConstants;
 
 /**
  * Trait to handle shared PDF setting field mappings.
- * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+ * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
  *
  * @phpstan-ignore trait.unused
  */

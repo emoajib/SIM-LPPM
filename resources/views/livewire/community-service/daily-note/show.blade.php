@@ -392,7 +392,7 @@
 
                     <div class="mb-3">
                         <label class="form-label">Bukti Dukung (Foto/Dokumen)</label>
-                        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                        {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
                         <div class="alert alert-info py-2 px-3 mb-2 rounded border-info-subtle" style="background-color: #f0f7ff;">
                             <div class="d-flex align-items-start gap-2">
                                 

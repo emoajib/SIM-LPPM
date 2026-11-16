@@ -9,7 +9,7 @@ use App\Models\ProgressReport;
 use Illuminate\Http\UploadedFile;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 class Show extends BaseFinalReportShow
 {
     // Research-specific file upload properties
@@ -53,7 +53,7 @@ class Show extends BaseFinalReportShow
             $missing[] = 'Lampiran 5: RPS / Bahan Ajar';
         }
 
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         // Note: Laporan Keuangan (LPJ) & Logbook dikelola terpisah di menu Catatan Harian.
         // Dosen tetap dapat mengajukan laporan akhir substansi tanpa terhambat LPJ.
 

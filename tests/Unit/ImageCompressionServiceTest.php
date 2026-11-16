@@ -8,7 +8,7 @@ use Tests\TestCase;
 
 class ImageCompressionServiceTest extends TestCase
 {
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 
     protected ImageCompressionService $service;
 

@@ -1,4 +1,4 @@
-{{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+{{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
 <div class="card mb-3 border-primary-subtle shadow-sm">
     <div class="card-header bg-light d-flex justify-content-between align-items-center">
         <h3 class="card-title mb-0">

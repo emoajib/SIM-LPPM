@@ -1,4 +1,4 @@
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 import React, { useEffect, useState } from "react";
 import Button from "./components/Button.jsx";
 import ModernPageCard from "./components/ModernPageCard.jsx";

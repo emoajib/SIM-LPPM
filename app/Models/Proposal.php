@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 
 use App\Enums\BudgetAmendmentStatus;
 use App\Enums\KaprodiStatus;
@@ -584,7 +584,7 @@ class Proposal extends Model implements HasMedia
 
     public function latestKaprodiApproval(): HasOne
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         // latestOfMany() includes MAX(id) as a tie-breaker subquery, which fails
         // on UUID PKs in PostgreSQL (function max(uuid) does not exist).
         // The cleanest driver-agnostic fix that supports eager loading without N+1
@@ -646,7 +646,7 @@ class Proposal extends Model implements HasMedia
 
     /**
      * Check if all reviewers have completed their reviews.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     public function allReviewsCompleted(): bool
     {
@@ -975,7 +975,7 @@ class Proposal extends Model implements HasMedia
 
     /**
      * Get the dynamic average score of completed reviewer logs.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     public function getScoreAttribute(): ?float
     {

@@ -1,6 +1,6 @@
 <?php
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 
 namespace App\Livewire\Settings;
 
@@ -288,7 +288,7 @@ class PdfExportSettings extends Component
 
     /**
      * Hapus cache PDF berdasarkan tipe.
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     public function clearPdfCache(string $type = 'all'): void
     {

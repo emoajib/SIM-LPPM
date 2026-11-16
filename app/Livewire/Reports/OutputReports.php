@@ -424,7 +424,7 @@ class OutputReports extends Component
     // =========================================================================
     // Verifikasi Luaran — hanya Admin LPPM
     // Admin LPPM memvalidasi apakah luaran yang dilaporkan dosen sudah sesuai.
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     // =========================================================================
 
     /**

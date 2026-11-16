@@ -18,7 +18,7 @@ use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 abstract class AbstractInstitutionalReport extends Component
 {
     use HasToast, WithInstitutionalApproval, WithPagination;

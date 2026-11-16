@@ -1,6 +1,6 @@
 import React from "react";
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 export default function ModernBanner() {
     return (
         <div className="rounded-xl overflow-hidden shadow-md mb-4 border border-[#1e3a6e]/20">

@@ -19,7 +19,7 @@
     @include('pdf.partials.section-footer')
 
     @if(($part ?? 'all') === 'l1_l2_l3' || ($part ?? 'all') === 'all')
-        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+        {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
         <!-- LAMPIRAN 1: ALOKASI PENGGUNAAN DANA -->
         <div class="section-title" style="font-size: 11pt; font-weight: bold; margin-bottom: 10px;">
             LAMPIRAN 1. ALOKASI PENGGUNAAN DANA

@@ -2,7 +2,7 @@
     $itemType = $item['type'] ?? 'link';
     $isActive = $item['active'] ?? false;
 @endphp
-{{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+{{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
 @if ($itemType === 'divider')
     <div class="dropdown-divider"></div>
 @elseif ($itemType === 'header')

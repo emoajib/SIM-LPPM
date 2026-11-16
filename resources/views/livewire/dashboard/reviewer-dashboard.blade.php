@@ -161,7 +161,7 @@
                                                          usePointStyle: true
                                                      }
                                                  },
-                                                 // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+                                                 // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
                                                  // Angka tampil langsung di atas titik tren tanpa perlu hover
                                                  datalabels: {
                                                      display: true,

@@ -33,7 +33,7 @@ use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 abstract class BaseFinalReportShow extends Component
 {
     use HandlesReportStateTransitions;
@@ -516,7 +516,7 @@ abstract class BaseFinalReportShow extends Component
                 // Save output files
                 $this->saveOutputFiles($report);
 
-                // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+                // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
                 // Ensure media and outputs relations are freshly loaded in Livewire state
                 $this->progressReport = $report->fresh(['media', 'mandatoryOutputs', 'additionalOutputs']);
             });
@@ -623,7 +623,7 @@ abstract class BaseFinalReportShow extends Component
             abort(403, 'Laporan akhir sedang dalam proses peninjauan atau telah disahkan, pengajuan tidak diperbolehkan.');
         }
 
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         // Laporan Keuangan (LPJ) dipisahkan dari Laporan Akhir sehingga dosen tidak diblokir.
 
         // Validate that substance file exists (either in DB or newly uploaded)
@@ -639,7 +639,7 @@ abstract class BaseFinalReportShow extends Component
         }
 
         // Realization file and RPS file are optional for final report submission.
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 
         // Luaran wajib harus dilengkapi sebelum laporan akhir dapat diajukan.
         // Mencegah laporan disetujui dalam keadaan luaran kosong (deadlock eligibility).

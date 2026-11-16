@@ -44,7 +44,7 @@ class MediaDownloadController extends Controller
             $diskName = $media->disk ?: config('media-library.disk_name', 'public');
 
             // 3. Path Traversal & Existence Check for local disks
-            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
             // IMPORTANT: $media->getPath() may return a RELATIVE path (via CustomPathGenerator).
             // MediaPathResolver handles primary, legacy, and relocated identity folders.
             $disk = Storage::disk($diskName);
@@ -102,7 +102,7 @@ class MediaDownloadController extends Controller
                 ob_end_clean();
             }
 
-            // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+            // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
             if ($request->has('preview') || $request->has('view')) {
                 return response()->file($realPath, [
                     'Content-Type' => $media->mime_type ?? 'application/pdf',

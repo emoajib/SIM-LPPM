@@ -8,7 +8,7 @@ use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class ImageCompressionService
 {
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 
     /**
      * Supported image mime types for compression.

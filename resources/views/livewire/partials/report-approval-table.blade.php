@@ -1,5 +1,5 @@
 {{-- Shared partial: tabel laporan akhir untuk Kaprodi / Admin LPPM / dll.
-     Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 
      Variabel yang diharapkan:
      - $role: string — 'kaprodi' | 'admin_lppm' (untuk future role-specific UI)

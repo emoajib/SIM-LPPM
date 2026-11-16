@@ -1,6 +1,6 @@
 <?php
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 header('Content-Type: text/plain');
 echo 'upload_max_filesize: '.ini_get('upload_max_filesize')."\n";
 echo 'post_max_size: '.ini_get('post_max_size')."\n";

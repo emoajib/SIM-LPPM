@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 # PANDUAN BUKA APLIKASI SIM-LPPM (Mode Lokal)
-# "Vetted by AI - Manual Review Required by Senior Engineer/Manager"
+# "Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager"
 
 clear
 echo "===================================================="

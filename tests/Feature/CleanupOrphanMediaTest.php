@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 class CleanupOrphanMediaTest extends TestCase
 {
-    // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     use RefreshDatabase;
 
     protected function setUp(): void

@@ -2,7 +2,7 @@
 
 namespace App\Livewire\CommunityService\Proposal;
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 
 use App\Constants\ProposalConstants;
 use App\Livewire\Abstracts\ProposalCreate;

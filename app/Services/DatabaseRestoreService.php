@@ -890,7 +890,7 @@ class DatabaseRestoreService
      * - REPLACE INTO → INSERT INTO ... ON CONFLICT DO NOTHING for pgsql
      * - SET statements are no-ops on pgsql (discarded)
      *
-     * Vetted by AI - Manual Review Required by Senior Engineer/Manager
+     * Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
      */
     protected function adaptSqlForCurrentDriver(string $statement): string
     {

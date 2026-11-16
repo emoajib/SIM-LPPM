@@ -74,7 +74,7 @@
                                         </x-tabler.badge>
                                     </td>
                                     <td>
-                                        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                                        {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
                                         @if ($partner->hasCommitmentForProposal($proposal->id))
                                             @php $media = $partner->getCommitmentMediaForProposal($proposal->id); @endphp
                                             @if ($media)

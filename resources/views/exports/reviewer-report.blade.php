@@ -1,4 +1,4 @@
-{{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+{{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
 @php
     $requiredReviewers = (int) \App\Models\Setting::get('reviewer_count_required', 1);
     $totalCols = max(8, 5 + $requiredReviewers);
@@ -108,7 +108,7 @@
     <tbody>
         @foreach($proposals as $index => $proposal)
             @php
-                // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+                // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
                 $reviewersList = $proposal->reviewers;
             @endphp
             <tr>

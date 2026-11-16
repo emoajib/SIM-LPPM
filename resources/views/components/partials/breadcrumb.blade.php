@@ -15,6 +15,6 @@
                 @endif
             </li>
         @endforeach
-    </ol>ngapa 
+    </ol>
 </nav>
 @endif

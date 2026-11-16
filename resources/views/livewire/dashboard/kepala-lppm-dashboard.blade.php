@@ -1,5 +1,5 @@
 <div>
-    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+    {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
     <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
         {{-- Export Dropdown --}}
         <div class="dropdown">
@@ -181,7 +181,7 @@
                 <!-- KPI Section: Approval Rate -->
                 <div class="col-sm-6 col-lg-3">
                     @php
-                        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+                        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
                         $totalProp = $stats['total_research'] + $stats['total_community_service'];
                         $totalAppr = $stats['research_approved'] + $stats['community_service_approved'];
                         $approvalRate = ($totalProp > 0) ? round(($totalAppr / $totalProp) * 100, 1) : 0;
@@ -254,7 +254,7 @@
                 </div>
             </div>
 
-            {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+            {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
             <div class="row row-cards mb-4">
                 <div class="col-lg-6">
                     <x-dashboard.analytics-chart 
@@ -353,7 +353,7 @@
                                                              usePointStyle: true
                                                          }
                                                      },
-                                                     // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+                                                     // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
                                                      // Angka tampil langsung di atas titik tren tanpa perlu hover
                                                      datalabels: {
                                                          display: true,
@@ -657,7 +657,7 @@
                             <span class="badge bg-primary-lt ms-auto">{{ count($recentResearch) }} Data</span>
                         </div>
                         <div class="table-responsive" style="max-height: 520px; overflow-y: auto;">
-                            {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                            {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
                             <table class="table table-vcenter card-table table-hover table-borderless mb-0">
                                 <thead class="bg-surface text-muted" style="position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                                     <tr>
@@ -745,7 +745,7 @@
                             <span class="badge bg-azure-lt ms-auto">{{ count($recentCommunityService) }} Data</span>
                         </div>
                         <div class="table-responsive" style="max-height: 520px; overflow-y: auto;">
-                            {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                            {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
                             <table class="table table-vcenter card-table table-hover table-borderless mb-0">
                                 <thead class="bg-surface text-muted" style="position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                                     <tr>

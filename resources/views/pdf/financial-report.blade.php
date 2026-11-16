@@ -1,6 +1,6 @@
 {{--
     Template: Laporan Keuangan (LPJ) Penelitian & Pengabdian
-    Vetted by AI - Manual Review Required by Senior Engineer/Manager
+    Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 --}}
 <!DOCTYPE html>
 <html>
@@ -157,7 +157,7 @@
         </thead>
         <tbody>
             @php
-                // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+                // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
                 $budgetGroups = \App\Models\BudgetGroup::all();
                 $totalProposed = 0;
                 $totalRealized = 0;
@@ -396,7 +396,7 @@
                                 </div>
                             @endif
                         @else
-                            {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                            {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
                             <div style="background: #f0f7ff; border: 1px dashed #0054a6; padding: 10px; color: #333; font-size: 8pt;">
                                 <strong>Dokumen Bukti Eksternal (<span style="text-transform: uppercase">{{ $media->extension }}</span>):</strong> {{ $media->file_name }}<br>
                                 <small style="color: #0054a6; font-weight: bold; font-style: italic;">

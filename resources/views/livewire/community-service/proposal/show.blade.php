@@ -21,9 +21,7 @@
             </a>
         @endif
         @if ($this->canEdit)
-            <a href="{{ $this->
-getEditRoute($proposal->id) }}" wire:navigate.hover class="btn btn-primary d-flex align-items-center gap-2">
-                <i class="ti ti-pencil me-1" aria-hidden="true"></i>
+            <a href="{{ $this->getEditRoute($proposal->id) }}" wire:navigate.hover class="btn btn-primary d-flex align-items-center gap-2">
                 <i class="ti ti-pencil me-1" aria-hidden="true"></i>
                 Edit
             </a>
@@ -36,9 +34,14 @@ getEditRoute($proposal->id) }}" wire:navigate.hover class="btn btn-primary d-fle
         @if ($this->canDelete)
             <button type="button" class="btn btn-danger d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#deleteModal">
                 <i class="ti ti-trash me-1" aria-hidden="true"></i>
-                <i class="ti ti-trash me-1" aria-hidden="true"></i>
                 Hapus
             </button>
+        @endif
+        @if (is_modern_theme())
+            <a href="{{ route('community-service.proposal.show.modern', $proposal) }}" data-navigate-ignore="true" class="btn btn-outline-secondary d-flex align-items-center gap-2">
+                <i class="ti ti-bolt me-1" aria-hidden="true"></i>
+                Tampilan Modern
+            </a>
         @endif
         <a href="{{ route('proposals.preview-pdf', $proposal) }}" target="_blank" class="btn btn-outline-info d-flex align-items-center gap-2">
             <i class="ti ti-file me-1" aria-hidden="true"></i>
@@ -62,7 +65,7 @@ getEditRoute($proposal->id) }}" wire:navigate.hover class="btn btn-primary d-fle
         <x-tabler.alert />
     </div>
 
-    {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+    {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
     @if(auth()->user()->activeHasAnyRole(['admin lppm', 'admin lppm saintek', 'admin lppm dekabita', 'kepala lppm', 'superadmin']))
         <div class="col-md-12 mb-3">
             <div class="card border-info shadow-sm">

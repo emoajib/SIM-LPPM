@@ -54,7 +54,7 @@
             'mode' => 'final-report',
         ])
 
-        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+        {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
         <!-- Admin LPPM: Kelola Nomor Kontrak -->
         @if(auth()->user()->activeHasAnyRole(['admin lppm', 'admin lppm saintek', 'admin lppm dekabita', 'kepala lppm', 'superadmin']))
             <div class="card mb-3 border-info shadow-sm">
@@ -260,7 +260,7 @@
             </div>
         @endif
 
-        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+        {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
         <!-- Checklist Kelengkapan Dokumen & Lampiran Laporan Akhir Penelitian -->
         @php
             $hasSubstance = $progressReport && $progressReport->hasMedia('substance_file');
@@ -601,7 +601,7 @@
                     @endif
                 </div>
 
-                {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
                 <div class="mb-3">
                     <label class="form-label">Lampiran 5: RPS atau Bahan Ajar (PDF/DOCX)</label>
                     <input type="file" wire:model="teachingMaterialFile"
@@ -709,7 +709,7 @@
                     @endif
                 </div>
 
-                {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
 
                 @if ($this->reportApprovalMode === 'upload')
                     <div class="mb-3 border-top pt-3 mt-3">
@@ -1098,7 +1098,7 @@
         </div>
 
         {{-- Modal Tambah / Edit Luaran Tambahan --}}
-        {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+        {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
         @if ($showOutputModal)
             <div class="modal modal-blur fade show d-block" tabindex="-1" role="dialog" style="background: rgba(0,0,0,0.5);" aria-modal="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">

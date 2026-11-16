@@ -114,7 +114,7 @@ class LetterService
             'pdfConfig' => $pdfConfig,
         ];
 
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $pdf = Pdf::loadView((string) $letterType->template_view, $data);
 
         $filename = 'letters/'.$letterType->code.'-'.Str::slug($letter->letter_number ?? (string) $letter->id).'.pdf';

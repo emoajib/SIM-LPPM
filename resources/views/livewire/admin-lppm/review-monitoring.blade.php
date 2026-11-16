@@ -48,7 +48,7 @@
                     </select>
                 </div>
 
-                <!-- Baris 3: Institusi & Periode (Vetted by AI - Manual Review Required by Senior Engineer/Manager) -->
+                <!-- Baris 3: Institusi & Periode (Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager) -->
                 <div class="col-md-4">
                     <label class="form-label">Fakultas Pengusul</label>
                     <select class="form-select" wire:model.live="facultyFilter">
@@ -105,7 +105,7 @@
                                 <div class="text-secondary small">{{ $proposal->submitter?->name }}</div>
                             </td>
                             <td>
-                                {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                                {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
                                 @php
                                     $requiredCount = (int) \App\Models\Setting::get('reviewer_count_required', 1);
                                     $assignedCount = $proposal->reviewers->count();
@@ -142,7 +142,7 @@
                                 @endif
                             </td>
                             <td>
-                                {{-- Vetted by AI - Manual Review Required by Senior Engineer/Manager --}}
+                                {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
                                 @php
                                     $totalToCompare = max($assignedCount, $requiredCount);
                                     $doneRev = $proposal->reviewers->filter(fn($r) => $r->isCompleted())->count();

@@ -14,7 +14,7 @@ class SettingsIndex extends Component
      */
     public function setActiveTab(string $tab): void
     {
-        // Vetted by AI - Manual Review Required by Senior Engineer/Manager
+        // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
         $adminOnlyTabs = ['appearance', 'audit', 'sync', 'feature-flags', 'captcha', 'backup', 'restore', 'pdf-export', 'tkt-manager', 'notification-config'];
 
         if (in_array($tab, $adminOnlyTabs) && ! (Auth::user()?->activeHasRole('admin lppm') || Auth::user()?->activeHasRole('superadmin'))) {

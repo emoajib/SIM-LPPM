@@ -5,7 +5,7 @@ namespace App\Livewire\Research\DailyNote;
 use App\Enums\ProposalStatus;
 use App\Livewire\Abstracts\ReportIndex;
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 class Index extends ReportIndex
 {
     protected function getDetailableType(): string

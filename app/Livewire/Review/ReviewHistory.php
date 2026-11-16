@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Review;
 
-// Vetted by AI - Manual Review Required by Senior Engineer/Manager
+// Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 
 use App\Models\Proposal;
 use App\Models\ReviewLog;
