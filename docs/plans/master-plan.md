@@ -136,16 +136,20 @@ Kriteria lulus: semua hijau + `git status` bersih.
 
 ## Wave 5 — Deploy produksi (P4)
 
+**Status: deploy pertama SUKSES 2026-11-16** — `9b8d9724` → `6a53ca53`
+(61 commit, migrasi batch 38, smoke 6/6). Catatan lengkap:
+`docs/plans/fase8-deploy-record.md`.
+
 | ID | Pekerjaan | Mitigasi |
 |---|---|---|
-| W5-1 | Pre-flight lokal: pint, phpstan, route:cache, full test, npm build + commit | BC-07 |
-| W5-2 | `rate-limiter:clear --force`, `config:clear` | AGENTS.md |
-| W5-3 | Push main + pantau 4 CI (Test & Q, MySQL, PostgreSQL, Security) | Semua hijau |
-| W5-4 | `update_production.sh` (backup 700/600 → maintenance → migrate preview 5s → migrate → cache → OPcache → permission → rate limiter → up) | **DONE (script)** — `trap EXIT` + `fail()`, `git pull --ff-only`, dirty-tree check, retensi backup 3; `tests/Feature/Console/DeployScriptTest.php` |
-| W5-5 | Checklist keamanan 10 item (curl .env, .git/HEAD, backup tar, phpinfo.php, database.sqlite, log, .env 600) | **DONE (otomatis di script)** — gagal keras bila ada temuan |
-| W5-6 | Smoke test browser: 11 halaman kunci × 2 tema | **SEBAGIAN** — otomatis 6 URL di script; `RoleThemeSmokeTest` 8 peran × 2 tema × 9 halaman; verifikasi manual pasca-deploy |
-| W5-7 | `budget-caps:audit` + verifikasi unique index (year, semester) | **SEBAGIAN** — lokal hijau; **butuh dijalankan di produksi** |
-| W5-8 | Rencana rollback: `git revert <sha>` per tahap; restore tar backup | **DONE** — backup tar di `storage/app/backup`; deploy via `git pull --ff-only` (revert + jalankan ulang script) |
+| W5-1 | Pre-flight lokal: pint, phpstan, route:cache, full test, npm build + commit | BC-07 — **DONE** (817 test hijau, build di-commit) |
+| W5-2 | `rate-limiter:clear --force`, `config:clear` | AGENTS.md — **DONE** (bagian script) |
+| W5-3 | Push main + pantau 4 CI (Test & Q, MySQL, PostgreSQL, Security) | Semua hijau — **DONE** |
+| W5-4 | `update_production.sh` (backup 700/600 → maintenance → migrate preview 5s → migrate → cache → OPcache → permission → rate limiter → up) | **DONE 2026-11-16** — `trap EXIT` + `fail()`, `git pull --ff-only`, dirty-tree check, retensi backup 3, snapshot DB pra-migrasi; `tests/Feature/Console/DeployScriptTest.php` |
+| W5-5 | Checklist keamanan 10 item (curl .env, .git/HEAD, backup tar, phpinfo.php, database.sqlite, log, .env 600) | **DONE 2026-11-16** — otomatis di script; satu temuan (`backup-20261027.sql`, 120 byte) dibersihkan pasca-deploy |
+| W5-6 | Smoke test browser: 11 halaman kunci × 2 tema | **DONE (otomatis)** 6 URL; **verifikasi manual 4 halaman** masih menunggu browser |
+| W5-7 | `budget-caps:audit` + verifikasi unique index (year, semester) | **BELUM** — jalankan di produksi |
+| W5-8 | Rencana rollback: `git revert <sha>` per tahap; restore tar backup | **DONE** — snapshot `pre-migrate-20261116_135905.sql.gz` + backup app; prosedur di `fase8-deploy-record.md` §8 |
 
 ---
 
