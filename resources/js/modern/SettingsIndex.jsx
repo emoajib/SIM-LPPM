@@ -104,20 +104,9 @@ export default function SettingsIndex() {
                             <p className="text-sm text-slate-500 dark:text-slate-400">
                                 Pilih pengaturan di sidebar untuk mengelola akun, sistem, dan master data.
                             </p>
-                            <div className="mt-5 grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-700/40">
-                                    <div className="text-2xl font-bold text-[#1e3a6e] dark:text-cyan-400">{sections.length}</div>
-                                    <div className="text-xs text-slate-500 dark:text-slate-400">Area Pengaturan</div>
-                                </div>
-                                <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-700/40">
-                                    <div className="text-2xl font-bold text-[#1e3a6e] dark:text-cyan-400">{totalItems}</div>
-                                    <div className="text-xs text-slate-500 dark:text-slate-400">Total Item</div>
-                                </div>
-                                <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-700/40">
-                                    <div className="text-2xl font-bold text-[#1e3a6e] dark:text-cyan-400">{modernItems}</div>
-                                    <div className="text-xs text-slate-500 dark:text-slate-400">Halaman Modern</div>
-                                </div>
-                            </div>
+                            <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">
+                                Klik item di sidebar untuk membuka pengaturan.
+                            </p>
                         </div>
                     </ModernPageCard>
                 </main>
