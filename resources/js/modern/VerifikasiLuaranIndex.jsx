@@ -308,6 +308,7 @@ export default function VerifikasiLuaranIndex() {
         {
             key: "display_title",
             label: "Judul Output",
+            className: "min-w-[320px]",
             render: (p) => (
                 <div>
                     <div className="font-bold text-slate-800 dark:text-slate-100">{p.display_title}</div>
@@ -322,18 +323,21 @@ export default function VerifikasiLuaranIndex() {
         {
             key: "category",
             label: "Kategori",
+            className: "w-px whitespace-nowrap",
             cellClassName: "text-slate-500 dark:text-slate-400 whitespace-nowrap",
             render: (p) => p.category || "-",
         },
         {
             key: "submitter_name",
             label: "Pengaju",
+            className: "w-px whitespace-nowrap",
             cellClassName: "text-slate-500 dark:text-slate-400 whitespace-nowrap",
             render: (p) => p.submitter_name,
         },
         {
             key: "status_type",
             label: "Status (Penulis)",
+            className: "w-px whitespace-nowrap",
             cellClassName: "whitespace-nowrap",
             render: (p) => {
                 if (!isDosen) return p.status_type || "-";
@@ -365,6 +369,7 @@ export default function VerifikasiLuaranIndex() {
         {
             key: "author_status",
             label: "Posisi Penulis",
+            className: "w-px whitespace-nowrap",
             cellClassName: "whitespace-nowrap",
             render: (p) => {
                 if (!isDosen) return p.author_status || "-";
@@ -389,6 +394,7 @@ export default function VerifikasiLuaranIndex() {
         {
             key: "is_verified",
             label: "Terverifikasi",
+            className: "w-px whitespace-nowrap",
             cellClassName: "text-center whitespace-nowrap",
             render: (p) => (
                 <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-bold ${
@@ -403,6 +409,7 @@ export default function VerifikasiLuaranIndex() {
         {
             key: "evidence",
             label: "Bukti",
+            className: "w-px whitespace-nowrap",
             cellClassName: "text-center whitespace-nowrap",
             render: (p) => (
                 <div className="flex flex-col gap-1">
@@ -425,6 +432,7 @@ export default function VerifikasiLuaranIndex() {
         {
             key: "actions",
             label: "Aksi",
+            className: "w-px whitespace-nowrap",
             align: "center",
             render: (p) => {
                 const isOwner = isDosen && (String(p.submitter_id) === String(window.__USER_ID__ || "") || p.is_team_member);
