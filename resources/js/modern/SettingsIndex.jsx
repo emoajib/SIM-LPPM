@@ -41,7 +41,13 @@ export default function SettingsIndex() {
     }
 
     return (
-        <div className="space-y-5">
+        <div className="space-y-6">
+            <div>
+                <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Pusat Pengaturan</h1>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                    Kelola akun, sistem, dan master data aplikasi.
+                </p>
+            </div>
             <nav aria-label="Breadcrumb" className="text-xs text-slate-500 dark:text-slate-400">
                 <a href="/dashboard" className="hover:underline">Dashboard</a>
                 <span className="mx-1.5 opacity-60">/</span>
