@@ -177,7 +177,7 @@ export default function CaptchaIndex() {
                             onChange={(e) => setAudioEnabled(e.target.checked)}
                             className="sr-only peer"
                         />
-                        <span className="w-11 h-6 bg-slate-400 dark:bg-slate-500 border border-slate-400 dark:border-slate-500 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#1e3a6e] rounded-full peer-checked:bg-[#1e3a6e] dark:peer-checked:bg-cyan-500 transition-colors" />
+                        <span className="w-11 h-6 bg-slate-400 dark:bg-slate-500 border border-slate-400 dark:border-slate-500 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#1e3a6e] rounded-full peer-checked:bg-emerald-600 dark:peer-checked:bg-emerald-500 transition-colors" />
                         <span className="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform peer-checked:translate-x-5" />
                     </label>
                 </div>
