@@ -122,7 +122,7 @@ export default function FeatureFlagsIndex() {
 
     if (loading) {
         return (
-            <div className="space-y-6">
+            <div className="max-w-4xl mx-auto space-y-6">
                 <SettingsHeaderNav
                     title="Feature Flags"
                     subtitle="Aktifkan atau nonaktifkan modul opsional, alur validasi, dan integrasi persuratan."
@@ -138,7 +138,7 @@ export default function FeatureFlagsIndex() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="max-w-4xl mx-auto space-y-6">
             <SettingsHeaderNav
                 title="Feature Flags"
                 subtitle="Aktifkan atau nonaktifkan modul opsional, alur validasi, dan integrasi persuratan."

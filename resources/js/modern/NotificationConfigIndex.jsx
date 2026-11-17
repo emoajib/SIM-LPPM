@@ -123,7 +123,7 @@ export default function NotificationConfigIndex() {
 
     if (loading) {
         return (
-            <div className="space-y-6">
+            <div className="max-w-4xl mx-auto space-y-6">
                 <SettingsHeaderNav
                     title="Konfigurasi Notifikasi"
                     subtitle="Kelola server SMTP email dan gateway WhatsApp untuk pengiriman notifikasi otomatis aplikasi."
@@ -139,7 +139,7 @@ export default function NotificationConfigIndex() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="max-w-4xl mx-auto space-y-6">
             <SettingsHeaderNav
                 title="Konfigurasi Notifikasi"
                 subtitle="Kelola server SMTP email dan gateway WhatsApp untuk pengiriman notifikasi otomatis aplikasi."

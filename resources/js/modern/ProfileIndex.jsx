@@ -131,7 +131,7 @@ export default function ProfileIndex() {
 
     if (loading) {
         return (
-            <div className="space-y-6">
+            <div className="max-w-5xl mx-auto space-y-6">
                 <SettingsHeaderNav
                     title="Profil Saya"
                     subtitle="Kelola informasi akun pengguna, data identitas akademik, dan tautan repositori ilmiah."
@@ -152,7 +152,7 @@ export default function ProfileIndex() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="max-w-5xl mx-auto space-y-6">
             <SettingsHeaderNav
                 title="Profil Saya"
                 subtitle="Kelola informasi akun pengguna, data identitas akademik, dan tautan repositori ilmiah."

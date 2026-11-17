@@ -82,7 +82,7 @@ export default function SettingsIndex() {
     );
 
     return (
-        <div className="space-y-6">
+        <div className="max-w-7xl mx-auto space-y-6">
             <SettingsHeaderNav
                 title="Pusat Pengaturan"
                 subtitle="Kelola konfigurasi akun pribadi, preferensi keamanan, sistem notifikasi, dan tata kelola master data SIM-LPPM."
@@ -171,7 +171,7 @@ export default function SettingsIndex() {
 
             {/* Loading State with Skeleton Cards */}
             {loading && (
-                <div className="space-y-6">
+                <div className="max-w-7xl mx-auto space-y-6">
                     {[1, 2].map((s) => (
                         <div key={s} className="space-y-3">
                             <Skeleton className="h-5 w-48 rounded" />
