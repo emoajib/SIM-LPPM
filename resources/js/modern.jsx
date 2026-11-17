@@ -87,11 +87,13 @@ function mount() {
     const PAGE = window.__MODERN_PAGE__ || "banner";
     const rootEl = document.getElementById("modern-root");
     if (!rootEl) return;
+    if (rootEl.dataset.mounted === "1") return;
     const Comp = PAGES[PAGE];
     if (!Comp) {
         rootEl.innerHTML = "<div style='padding:2rem;text-align:center;color:#64748b'>Halaman modern tidak tersedia: " + PAGE + "</div>";
         return;
     }
+    rootEl.dataset.mounted = "1";
     createRoot(rootEl).render(React.createElement(ErrorBoundary, null, React.createElement(Comp)));
 }
 
@@ -100,3 +102,11 @@ if (document.readyState === "loading") {
 } else {
     mount();
 }
+
+// Re-mount on SPA navigation (wire:navigate) so React pages appear without
+// a full reload. The DOM is replaced, so reset the mounted flag first.
+document.addEventListener("livewire:navigated", () => {
+    const rootEl = document.getElementById("modern-root");
+    if (rootEl) rootEl.dataset.mounted = "";
+    mount();
+});
