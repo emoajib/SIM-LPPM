@@ -17,6 +17,7 @@ export default function VerifikasiLuaranIndex() {
     const [type, setType] = useState("all");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [showHelp, setShowHelp] = useState(false);
     const [toast, setToast] = useState(null);
     const [showEvidenceModal, setShowEvidenceModal] = useState(false);
     const [evidenceTarget, setEvidenceTarget] = useState(null);
@@ -536,33 +537,53 @@ export default function VerifikasiLuaranIndex() {
                     {toast.message}
                 </div>
             )}
-            <div>
-                <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Verifikasi Luaran IKU</h1>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                    Pemantauan dan verifikasi target output penelitian & pengabdian.
-                </p>
-            </div>
-            <nav aria-label="Breadcrumb" className="text-xs text-slate-500 dark:text-slate-400 mb-1">
-                <a href="/dashboard" className="hover:underline">Dashboard</a>
-                <span className="mx-1.5 opacity-60">/</span>
-                <span className="font-semibold text-slate-700 dark:text-slate-200">Verifikasi Luaran IKU</span>
-            </nav>
-
             {isModernTheme && <ModuleTabNav tabs={tabs} currentPath={currentPath} />}
 
-            <ModernPageCard>
-                <div className="flex flex-col md:flex-row gap-3 mb-4">
-                    <div className="flex-1 min-w-0">
-                        <input
-                            type="text"
-                            value={search}
-                            aria-label="Cari verifikasi luaran"
-                            onChange={(e) => setSearch(e.target.value)}
-                            onKeyDown={(e) => e.key === "Enter" && load(1)}
-                            placeholder="Cari judul output atau pengaju..."
-                            className="flex-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
-                        />
+            {/* Info alert collapsible (Bantuan Penggunaan) */}
+            <ModernPageCard noPadding>
+                <button
+                    type="button"
+                    onClick={() => setShowHelp((v) => !v)}
+                    className="w-full flex items-center justify-between px-5 py-3.5 text-left text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/40 transition-colors rounded-xl"
+                    aria-expanded={showHelp}
+                >
+                    <span className="flex items-center gap-2">
+                        <span aria-hidden="true">ℹ️</span>
+                        Bantuan Penggunaan
+                    </span>
+                    <span aria-hidden="true" className="text-slate-400 dark:text-slate-500">
+                        {showHelp ? "▲" : "▼"}
+                    </span>
+                </button>
+                {showHelp && (
+                    <div className="px-5 pb-4 text-sm text-slate-600 dark:text-slate-300 border-t border-slate-100 dark:border-slate-700/70 pt-3">
+                        {isVerifierByRole || canVerify ? (
+                            <p className="mb-0">
+                                Halaman ini menampilkan seluruh output luaran (mandatory &amp; additional) yang perlu
+                                diverifikasi. Anda dapat memverifikasi, mengatur rank (Q1–Q4 / S1–S6), dan melihat bukti.
+                                Hanya output terverifikasi yang dihitung dalam IKU 6 (Publikasi Global).
+                            </p>
+                        ) : (
+                            <p className="mb-0">
+                                Halaman ini menampilkan output luaran dari proposal Anda. Perbarui status, posisi
+                                penulis, dan unggah bukti. Verifier akan memverifikasi output Anda.
+                            </p>
+                        )}
                     </div>
+                )}
+            </ModernPageCard>
+
+            <ModernPageCard>
+                <div className="flex flex-col md:flex-row md:flex-wrap items-center gap-3 mb-4">
+                    <input
+                        type="text"
+                        value={search}
+                        aria-label="Cari verifikasi luaran"
+                        onChange={(e) => setSearch(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && load(1)}
+                        placeholder="Cari judul output atau pengaju..."
+                        className="flex-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                    />
                     <select
                         value={status}
                         onChange={(e) => setStatus(e.target.value)}
@@ -583,6 +604,9 @@ export default function VerifikasiLuaranIndex() {
                     </select>
                     <Button onClick={() => load(1)} variant="primary" size="md">
                         Cari
+                    </Button>
+                    <Button onClick={() => { setSearch(""); setStatus("all"); setType("all"); load(1); }} variant="ghost" size="md">
+                        Reset
                     </Button>
                 </div>
 

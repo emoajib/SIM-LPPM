@@ -41,7 +41,7 @@ export default function SettingsIndex() {
     }
 
     return (
-        <div className="max-w-7xl mx-auto space-y-6">
+        <div className="max-w-7xl mx-auto space-y-8">
             <div>
                 <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Pusat Pengaturan</h1>
                 <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
@@ -64,23 +64,23 @@ export default function SettingsIndex() {
                 <section key={section.title} aria-labelledby={`settings-section-${section.title}`}>
                     <h2
                         id={`settings-section-${section.title}`}
-                        className="text-sm font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-2"
+                        className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 pb-2 border-b border-slate-200 dark:border-slate-700"
                     >
                         {section.title}
                     </h2>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {section.items.map((item) => (
                             <a
                                 key={item.key}
                                 href={item.href}
                                 className="group block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1e3a6e] rounded-xl"
                             >
-                                <ModernPageCard className="h-full group-hover:border-[#1e3a6e] dark:group-hover:border-[#4a7bc8] transition-colors">
+                                <ModernPageCard className="h-full group-hover:border-[#1e3a6e] dark:group-hover:border-[#4a7bc8] group-hover:shadow-md transition-all">
                                     <div className="flex items-start gap-3">
                                         <span
                                             aria-hidden="true"
-                                            className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-200 shrink-0"
+                                            className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-200 shrink-0"
                                         >
                                             {item.icon === "user" ? "👤"
                                                 : item.icon === "lock" ? "🔒"
@@ -105,16 +105,16 @@ export default function SettingsIndex() {
                                         </span>
                                         <span className="min-w-0">
                                             <span className="flex items-center gap-2 flex-wrap">
-                                                <span className="font-semibold text-slate-800 dark:text-slate-100">
+                                                <span className="text-base font-semibold text-slate-800 dark:text-slate-100">
                                                     {item.title}
                                                 </span>
                                                 {!item.modern && (
-                                                    <span className="text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-300">
+                                                    <span className="text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-300">
                                                         Klasik
                                                     </span>
                                                 )}
                                             </span>
-                                            <span className="block mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                                            <span className="block mt-1 text-sm text-slate-500 dark:text-slate-400">
                                                 {item.description}
                                             </span>
                                         </span>
