@@ -201,7 +201,7 @@ export default function CaptchaIndex() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="grid grid-cols-1 gap-3.5">
                     {voices.map((voice) => {
                         const isSelected = audioVoice === voice.key;
                         return (
