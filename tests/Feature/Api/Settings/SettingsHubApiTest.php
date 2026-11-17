@@ -112,6 +112,48 @@ class SettingsHubApiTest extends TestCase
     }
 
     /** @test */
+    public function test_superadmin_sees_the_complete_settings_surface(): void
+    {
+        $admin = User::factory()->create();
+        $admin->assignRole('superadmin');
+
+        $response = $this->actingAs($admin)->getJson('/api/v1/settings/hub');
+
+        $response->assertOk();
+
+        $keys = collect($response->json('sections'))
+            ->flatMap(fn (array $section): array => array_column($section['items'], 'key'))
+            ->all();
+
+        // Every settings area must be reachable for a superadmin. If a route name
+        // in the hub is wrong, the item is silently dropped and this fails.
+        $expected = [
+            'profile',
+            'password',
+            'security',
+            'notification-config',
+            'feature-flags',
+            'captcha',
+            'appearance',
+            'pdf-export',
+            'tkt-manager',
+            'audit',
+            'sync',
+            'backup',
+            'restore',
+            'master-data',
+            'proposal-schedule',
+            'proposal-template',
+            'contracts',
+            'manual-books',
+        ];
+
+        foreach ($expected as $key) {
+            $this->assertContains($key, $keys, "Superadmin harus melihat item pengaturan '{$key}'.");
+        }
+    }
+
+    /** @test */
     public function test_hub_exposes_no_admin_items_to_dosen(): void
     {
         $user = User::factory()->create();

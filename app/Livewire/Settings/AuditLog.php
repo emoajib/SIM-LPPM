@@ -53,11 +53,12 @@ class AuditLog extends Component
     }
 
     /**
-     * Ensure only admin LPPM users can view global audit logs.
+     * Ensure only admin LPPM / superadmin users can view global audit logs.
+     * Matches the SettingsIndex tab guard, which already allows both roles.
      */
     public function mount(): void
     {
-        abort_unless(Auth::user()?->activeHasRole('admin lppm'), 403);
+        abort_unless(Auth::user()?->activeHasAnyRole(['admin lppm', 'superadmin']), 403);
     }
 
     public function render(): View

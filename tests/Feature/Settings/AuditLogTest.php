@@ -109,3 +109,15 @@ it('can filter by date range and ip address', function () {
         ->assertSee('recent entry')
         ->assertDontSee('old entry');
 });
+
+it('allows superadmin to view the audit log', function () {
+    $this->artisan('db:seed', ['--class' => 'Database\\Seeders\\RoleSeeder'])->run();
+    $superadmin = User::factory()->create();
+    $superadmin->assignRole('superadmin');
+
+    session(['active_role' => 'superadmin']);
+
+    Livewire::actingAs($superadmin)
+        ->test(AuditLog::class)
+        ->assertOk();
+});
