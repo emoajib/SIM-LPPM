@@ -370,3 +370,27 @@ duplikasi logika:
 
 Tema Klasik **tidak berubah**: route & komponen Livewire lama tetap utuh, dan halaman
 modern melakukan redirect ke Klasik bila `is_modern_theme()` false.
+
+### 8.5 Jaminan Mekanis: Setiap Tautan Harus Bisa Dibuka
+
+Klaim "tidak ada gap" dijaga oleh test, bukan sekadar dokumen:
+
+| Test | Yang dijamin |
+|---|---|
+| `SettingsHubApiTest::test_every_hub_href_is_actually_reachable_for_superadmin` | Semua href hub → bukan 403/404/405/500 (tema klasik) |
+| `SettingsHubApiTest::test_every_hub_href_is_actually_reachable_in_modern_theme` | Idem untuk tema modern (jalur React) |
+| `SettingsHubApiTest::test_superadmin_sees_the_complete_settings_surface` | 18 area pengaturan wajib muncul; route name salah = item hilang = gagal |
+| `SettingsHubRoleReachabilityTest::test_every_role_hub_links_are_reachable_in_both_themes` | 8 peran × 2 tema: setiap tautan yang ditampilkan benar-benar terbuka |
+| `SettingsHubRoleReachabilityTest::test_dekan_and_kaprodi_only_see_master_data_when_roadmap_is_active` | Visibilitas mengikuti guard komponen (bukan hanya middleware route) |
+| `SettingsIndexDeepLinkTest` | `?tab=` deep-link bekerja + guard admin tetap berlaku |
+
+Bug nyata yang tertangkap oleh jaminan ini:
+
+1. `audit-log` → route sebenarnya `admin-lppm.audit-log` (item Audit Log hilang dari hub).
+2. `AuditLog::mount()` menolak superadmin padahal tab & hub mengizinkannya.
+3. `/settings/notification-config/modern` → 500 di tema klasik (redirect ke route tak ada).
+4. Hub menawarkan Master Data ke dekan/kaprodi padahal komponen menolak (403) saat
+   `feature_roadmap_active` mati.
+
+Audit global terakhir: 115 literal `route('...')` di `app/` + `resources/views/`,
+dan 56 nama route di menu (`'route' => '...'`), **0 nama route yang tidak ada**.
