@@ -48,8 +48,8 @@ class SettingsHubApiController extends Controller
                 'title' => 'Sistem',
                 'items' => array_values(array_filter([
                     $this->item('notification-config', 'Konfigurasi Notifikasi', 'Kelola SMTP email dan gateway WhatsApp.', 'bell', true, 'settings.notification-config.page', 'admin-lppm.notification-config', $isAdmin),
-                    $this->item('feature-flags', 'Feature Flags', 'Aktifkan/nonaktifkan modul dan fitur opsional.', 'toggle-right', true, 'settings.feature-flags.page', 'settings', $isAdmin),
-                    $this->item('captcha', 'Keamanan CAPTCHA', 'Atur audio dan suara CAPTCHA.', 'shield', true, 'settings.captcha.page', 'settings', $isAdmin),
+                    $this->item('feature-flags', 'Feature Flags', 'Aktifkan/nonaktifkan modul dan fitur opsional.', 'toggle-right', true, 'settings.feature-flags.page', 'settings', $isAdmin, 'feature-flags'),
+                    $this->item('captcha', 'Keamanan CAPTCHA', 'Atur audio dan suara CAPTCHA.', 'shield', true, 'settings.captcha.page', 'settings', $isAdmin, 'captcha'),
                     $this->item('appearance', 'Tampilan', 'Nama dashboard, judul login, dan logo.', 'palette', false, null, 'settings.appearance', $isAdmin),
                     $this->item('pdf-export', 'PDF & Ekspor', 'Preferensi tipografi, tata letak, dan logo PDF.', 'file-type-pdf', false, null, 'settings', $isAdmin, 'pdf-export'),
                     $this->item('tkt-manager', 'Manajemen TKT', 'Kelola tingkat kesiapan teknologi (TKT).', 'chart-histogram', false, null, 'settings', $isAdmin, 'tkt-manager'),
