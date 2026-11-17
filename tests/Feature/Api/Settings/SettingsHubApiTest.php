@@ -171,4 +171,65 @@ class SettingsHubApiTest extends TestCase
             $this->assertNotContains($forbidden, $keys, "Item admin '{$forbidden}' tidak boleh muncul untuk dosen.");
         }
     }
+
+    /** @test */
+    public function test_every_hub_href_is_actually_reachable_for_superadmin(): void
+    {
+        $admin = User::factory()->create();
+        $admin->assignRole('superadmin');
+
+        session(['active_role' => 'superadmin']);
+
+        $response = $this->actingAs($admin)->getJson('/api/v1/settings/hub');
+        $response->assertOk();
+
+        $items = collect($response->json('sections'))
+            ->flatMap(fn (array $section): array => $section['items']);
+
+        $this->assertNotEmpty($items);
+
+        foreach ($items as $item) {
+            $path = parse_url($item['href'], PHP_URL_PATH).'?'.(parse_url($item['href'], PHP_URL_QUERY) ?? '');
+
+            $status = $this->actingAs($admin)->get($path)->getStatusCode();
+
+            $this->assertNotContains(
+                $status,
+                [403, 404, 405, 500],
+                "Item '{$item['key']}' mengarah ke {$path} dan menghasilkan HTTP {$status}."
+            );
+        }
+    }
+
+    /** @test */
+    public function test_every_hub_href_is_actually_reachable_in_modern_theme(): void
+    {
+        $admin = User::factory()->create();
+        $admin->assignRole('superadmin');
+
+        session([
+            'active_role' => 'superadmin',
+            'sim_lppm_app_theme' => 'modern',
+        ]);
+
+        $response = $this->actingAs($admin)->getJson('/api/v1/settings/hub');
+        $response->assertOk();
+
+        $items = collect($response->json('sections'))
+            ->flatMap(fn (array $section): array => $section['items']);
+
+        $this->assertNotEmpty($items);
+
+        foreach ($items as $item) {
+            $path = parse_url($item['href'], PHP_URL_PATH).'?'.(parse_url($item['href'], PHP_URL_QUERY) ?? '');
+
+            $status = $this->actingAs($admin)->get($path)->getStatusCode();
+
+            $this->assertNotContains(
+                $status,
+                [403, 404, 405, 500],
+                "Item '{$item['key']}' mengarah ke {$path} dan menghasilkan HTTP {$status} (tema modern)."
+            );
+        }
+    }
 }

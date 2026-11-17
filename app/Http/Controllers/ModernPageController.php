@@ -102,7 +102,7 @@ class ModernPageController extends Controller
     public function settingsNotificationConfig(Request $request): View|RedirectResponse
     {
         if (! is_modern_theme()) {
-            return redirect()->route('settings.notification-config');
+            return redirect()->route('admin-lppm.notification-config');
         }
 
         abort_unless($request->user()?->activeHasAnyRole(['admin lppm', 'superadmin']), 403);
