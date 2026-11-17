@@ -21,6 +21,7 @@ rad.json
 #Test results file
 TestResults.xml
 /.phpunit.cache
+/--cache-result/
 /node_modules
 
 /public/hot

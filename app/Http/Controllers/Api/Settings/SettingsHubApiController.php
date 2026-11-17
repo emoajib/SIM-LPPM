@@ -35,7 +35,7 @@ class SettingsHubApiController extends Controller
                     $this->item('profile', 'Profil Saya', 'Kelola data profil dan identitas akademik.', 'user', true, 'settings.profile.page', 'settings.profile'),
                     $this->item('password', 'Ubah Kata Sandi', 'Perbarui kata sandi akun Anda.', 'lock', true, 'settings.password.page', 'settings.password'),
                     $this->item('two-factor', 'Autentikasi Dua Faktor', 'Amankan akun dengan verifikasi tambahan.', 'shield-lock', false, null, 'two-factor.show', Features::canManageTwoFactorAuthentication()),
-                    $this->item('security', 'Log Keamanan', 'Riwayat aktivitas keamanan akun.', 'shield-check', false, null, 'settings'),
+                    $this->item('security', 'Log Keamanan', 'Riwayat aktivitas keamanan akun.', 'shield-check', false, null, 'settings', true, 'security'),
                 ])),
             ],
             [
@@ -45,12 +45,12 @@ class SettingsHubApiController extends Controller
                     $this->item('feature-flags', 'Feature Flags', 'Aktifkan/nonaktifkan modul dan fitur opsional.', 'toggle-right', true, 'settings.feature-flags.page', 'settings', $isAdmin),
                     $this->item('captcha', 'Keamanan CAPTCHA', 'Atur audio dan suara CAPTCHA.', 'shield', true, 'settings.captcha.page', 'settings', $isAdmin),
                     $this->item('appearance', 'Tampilan', 'Nama dashboard, judul login, dan logo.', 'palette', false, null, 'settings.appearance', $user->activeHasRole('admin lppm')),
-                    $this->item('pdf-export', 'PDF & Ekspor', 'Preferensi tipografi, tata letak, dan logo PDF.', 'file-type-pdf', false, null, 'settings', $isAdmin),
-                    $this->item('tkt-manager', 'Manajemen TKT', 'Kelola tingkat kesiapan teknologi (TKT).', 'chart-histogram', false, null, 'settings', $isAdmin),
+                    $this->item('pdf-export', 'PDF & Ekspor', 'Preferensi tipografi, tata letak, dan logo PDF.', 'file-type-pdf', false, null, 'settings', $isAdmin, 'pdf-export'),
+                    $this->item('tkt-manager', 'Manajemen TKT', 'Kelola tingkat kesiapan teknologi (TKT).', 'chart-histogram', false, null, 'settings', $isAdmin, 'tkt-manager'),
                     $this->item('audit', 'Audit Log', 'Lihat jejak audit sistem.', 'list-details', false, null, 'audit-log', $isAdmin),
-                    $this->item('sync', 'Sinkronisasi Data', 'Sinkronisasi data SINTA dan eksternal.', 'refresh', false, null, 'settings', $isAdmin),
-                    $this->item('backup', 'Backup Data', 'Buat dan unduh cadangan data.', 'database-export', false, null, 'settings', $isAdmin),
-                    $this->item('restore', 'Pulihkan Data', 'Pulihkan data dari cadangan.', 'database-import', false, null, 'settings', $isAdmin),
+                    $this->item('sync', 'Sinkronisasi Data', 'Sinkronisasi data SINTA dan eksternal.', 'refresh', false, null, 'settings', $isAdmin, 'sync'),
+                    $this->item('backup', 'Backup Data', 'Buat dan unduh cadangan data.', 'database-export', false, null, 'settings', $isAdmin, 'backup'),
+                    $this->item('restore', 'Pulihkan Data', 'Pulihkan data dari cadangan.', 'database-import', false, null, 'settings', $isAdmin, 'restore'),
                 ])),
             ],
             [
@@ -85,6 +85,7 @@ class SettingsHubApiController extends Controller
         ?string $modernRoute,
         string $classicRoute,
         bool $allowed = true,
+        ?string $classicTab = null,
     ): ?array {
         if (! $allowed) {
             return null;
@@ -96,7 +97,11 @@ class SettingsHubApiController extends Controller
         if ($isModern) {
             $href = route($modernRoute);
         } elseif (Route::has($classicRoute)) {
-            $href = route($classicRoute);
+            // Deep-link into the Classic settings tab so the user lands on the
+            // exact panel instead of the default "Profil Saya" tab.
+            $href = $classicTab !== null
+                ? route($classicRoute, ['tab' => $classicTab])
+                : route($classicRoute);
         }
 
         if ($href === null) {

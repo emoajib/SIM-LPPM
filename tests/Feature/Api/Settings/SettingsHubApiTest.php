@@ -86,4 +86,47 @@ class SettingsHubApiTest extends TestCase
             $this->assertStringStartsWith('/', $path, "Item '{$item['key']}' href harus berupa path absolut.");
         }
     }
+
+    /** @test */
+    public function test_classic_tab_items_deep_link_to_their_tab(): void
+    {
+        $admin = User::factory()->create();
+        $admin->assignRole('superadmin');
+
+        $response = $this->actingAs($admin)->getJson('/api/v1/settings/hub');
+
+        $response->assertOk();
+
+        $items = collect($response->json('sections'))
+            ->flatMap(fn (array $section): array => $section['items'])
+            ->keyBy('key');
+
+        foreach (['pdf-export', 'tkt-manager', 'sync', 'backup', 'restore'] as $key) {
+            $this->assertTrue($items->has($key), "Item '{$key}' harus ada di hub untuk superadmin.");
+
+            $query = [];
+            parse_str((string) parse_url($items[$key]['href'], PHP_URL_QUERY), $query);
+
+            $this->assertSame($key, $query['tab'] ?? null, "Item '{$key}' harus deep-link ke ?tab={$key}.");
+        }
+    }
+
+    /** @test */
+    public function test_hub_exposes_no_admin_items_to_dosen(): void
+    {
+        $user = User::factory()->create();
+        $user->assignRole('dosen');
+
+        $response = $this->actingAs($user)->getJson('/api/v1/settings/hub');
+
+        $response->assertOk();
+
+        $keys = collect($response->json('sections'))
+            ->flatMap(fn (array $section): array => array_column($section['items'], 'key'))
+            ->all();
+
+        foreach (['pdf-export', 'tkt-manager', 'sync', 'backup', 'restore', 'audit', 'appearance', 'contracts', 'manual-books'] as $forbidden) {
+            $this->assertNotContains($forbidden, $keys, "Item admin '{$forbidden}' tidak boleh muncul untuk dosen.");
+        }
+    }
 }
