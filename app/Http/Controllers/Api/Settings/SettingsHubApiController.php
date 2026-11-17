@@ -5,6 +5,7 @@
 namespace App\Http\Controllers\Api\Settings;
 
 use App\Http\Controllers\Controller;
+use App\Models\Setting;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,7 +27,12 @@ class SettingsHubApiController extends Controller
         abort_unless($user !== null, 401);
 
         $isAdmin = $user->activeHasAnyRole(['admin lppm', 'superadmin']);
-        $isMasterData = $user->activeHasAnyRole(['admin lppm', 'superadmin', 'dekan', 'kaprodi']);
+
+        // Mirrors App\Livewire\Settings\MasterData::mount(): dekan & kaprodi may
+        // only open Master Data (roadmap management) when the roadmap feature is on.
+        $isMasterData = $isAdmin
+            || ((bool) Setting::get('feature_roadmap_active', false)
+                && $user->activeHasAnyRole(['dekan', 'kaprodi']));
 
         $sections = [
             [
