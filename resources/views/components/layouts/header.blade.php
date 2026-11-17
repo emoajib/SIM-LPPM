@@ -176,18 +176,23 @@
                         </div>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                        {{-- <a href="#" class="dropdown-item">Status</a>
-                        <a href="{{ route('settings.profile') }}" class="dropdown-item">Profile</a>
-                        <a href="#" class="dropdown-item">Feedback</a>
-                        <div class="dropdown-divider"></div> --}}
-                        <a href="{{ Route::has('settings.profile') ? route('settings.profile') : route('settings') }}" class="dropdown-item">
+                        {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
+                        @php
+                            $profileHref = is_modern_theme() && Route::has('settings.profile.page')
+                                ? route('settings.profile.page')
+                                : (Route::has('settings.profile') ? route('settings.profile') : route('settings'));
+                            $settingsHref = is_modern_theme() && Route::has('settings.index.page')
+                                ? route('settings.index.page')
+                                : route('settings');
+                        @endphp
+                        <a href="{{ $profileHref }}" class="dropdown-item">
                             @include('components.layouts.partials.menu.icon', [
                                 'name' => 'user',
                                 'class' => 'icon icon-2 icon-inline me-1',
                             ])
                             Profil Saya
                         </a>
-                        <a href="{{ route('settings') }}" class="dropdown-item">
+                        <a href="{{ $settingsHref }}" class="dropdown-item">
                             @include('components.layouts.partials.menu.icon', [
                                 'name' => 'settings',
                                 'class' => 'icon icon-2 icon-inline me-1',

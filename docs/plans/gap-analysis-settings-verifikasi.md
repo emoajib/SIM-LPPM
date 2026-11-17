@@ -295,3 +295,78 @@ php artisan test
 ./vendor/bin/pint --test
 ./vendor/bin/phpstan analyse --level=5
 ```
+
+---
+
+## 8. STATUS IMPLEMENTASI ZERO-GAP (2026-11-17)
+
+**Prinsip:** tidak ada fitur pengaturan yang *hilang* di tema Modern. Yang belum punya
+halaman React tetap **dapat dijangkau** lewat tautan fallback ke halaman Klasik (badge
+"Klasik"), dan seluruhnya terdaftar di **Pusat Pengaturan** (`/settings/modern`).
+
+### 8.1 Single Source of Truth
+
+| Komponen | Peran |
+|---|---|
+| `GET /api/v1/settings/hub` | Daftar section + item pengaturan yang boleh diakses user, lengkap dengan `href` |
+| `resources/js/modern/SettingsIndex.jsx` | Render hub; item non-React diberi badge "Klasik" |
+| `app/View/Composers/MenuComposer.php` | Child "Pusat Pengaturan" pada menu Pengaturan (tema Modern) |
+| `resources/views/components/layouts/header.blade.php` | Dropdown user → profil/pengaturan versi Modern |
+
+### 8.2 Sudah Punya Halaman Modern (React)
+
+| Pengaturan | Route Modern | API | Akses |
+|---|---|---|---|
+| Pusat Pengaturan | `settings.index.page` | `GET /api/v1/settings/hub` | semua user |
+| Profil Saya | `settings.profile.page` | `GET/PUT /api/v1/settings/profile` (+ foto) | semua user |
+| Ubah Kata Sandi | `settings.password.page` | `PUT /api/v1/settings/password` | semua user |
+| Konfigurasi Notifikasi | `settings.notification-config.page` | `GET/PUT /api/v1/settings/notification` (+ test email/WA) | admin LPPM, superadmin |
+| Feature Flags | `settings.feature-flags.page` | `GET/PUT /api/v1/settings/feature-flags` | admin LPPM, superadmin |
+| Keamanan CAPTCHA | `settings.captcha.page` | `GET/PUT /api/v1/settings/captcha` | admin LPPM, superadmin |
+
+### 8.3 Fallback Klasik (Fungsional, Belum React)
+
+Semua item di bawah **tetap dapat diakses** dari Pusat Pengaturan Modern (badge
+"Klasik") dan dari menu sidebar. Tidak ada fitur yang hilang — hanya tampilan yang
+masih Blade/Livewire.
+
+| Pengaturan | Route Klasik | Alasan belum React |
+|---|---|---|
+| Master Data (23 manager) | `settings.master-data` | 23 sub-manajer CRUD; perlu port bertahap |
+| Jadwal Proposal | `settings.proposal-schedule` | Form jadwal + validasi tanggal |
+| Template Proposal | `settings.proposal-template` | Upload/MediaLibrary |
+| Nomor Kontrak Usulan | `settings.contracts` | CRUD penomoran + preview |
+| Manual Book | `settings.manual-books` | Upload PDF per peran |
+| Tampilan (Appearance) | `settings.appearance` | Logo upload + tema |
+| PDF & Ekspor | tab `pdf-export` | 445 baris preferensi per-modul |
+| Manajemen TKT | tab `tkt-manager` | CRUD TKT |
+| Audit Log | `audit-log` | Tabel paginasi besar |
+| Sinkronisasi Data | tab `sync` | Proses job SINTA |
+| Backup Data | tab `backup` | Stream download arsip |
+| Pulihkan Data | tab `restore` | Upload + restore DB (berisiko) |
+| Autentikasi Dua Faktor | `two-factor.show` | Alur Fortify 2FA |
+| Log Keamanan | tab `security` | Riwayat sesi/aktivitas |
+
+**Catatan migrasi bertahap:** setiap item yang dipindah ke React harus (a) menambah
+entry di `config/modern-pages.php`, (b) menambah komponen di `resources/js/modern.jsx`,
+(c) mengubah `modern: true` pada `SettingsHubApiController`, dan (d) menambah test
+kontrak API. Guard `php artisan modern:check` memastikan registry tidak pernah
+mengarah ke komponen yang tidak ada.
+
+### 8.4 Jaminan Ekosistem Tidak Berubah
+
+API Modern memanggil **service/model yang sama** dengan Livewire Klasik — tidak ada
+duplikasi logika:
+
+| Integrasi | Titik Sentuh |
+|---|---|
+| SMTP override runtime | `NotificationConfigService` → `AppServiceProvider` (config mail) |
+| WhatsApp fallback | `HybridNotificationChannel` |
+| PDF export | `PdfExportSettings` + helper `get_pdf_*` |
+| Feature flags → menu | `menu_cache_version` di-bump oleh API |
+| CAPTCHA audio | `CaptchaAudioService` (voices + voice validation) |
+| Password policy | `PasswordRule::defaults()` + `ActivityLog` |
+| Profil/identitas | `HandleHybridInstitution` (sama dengan Livewire) |
+
+Tema Klasik **tidak berubah**: route & komponen Livewire lama tetap utuh, dan halaman
+modern melakukan redirect ke Klasik bila `is_modern_theme()` false.

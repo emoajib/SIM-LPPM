@@ -15,6 +15,10 @@ import DailyNoteIndex from "./modern/DailyNoteIndex.jsx";
 import ProposalShowIndex from "./modern/ProposalShowIndex.jsx";
 import NotificationConfigIndex from "./modern/NotificationConfigIndex.jsx";
 import ProfileIndex from "./modern/ProfileIndex.jsx";
+import SettingsIndex from "./modern/SettingsIndex.jsx";
+import PasswordIndex from "./modern/PasswordIndex.jsx";
+import FeatureFlagsIndex from "./modern/FeatureFlagsIndex.jsx";
+import CaptchaIndex from "./modern/CaptchaIndex.jsx";
 
 const PAGES = {
     "proposals-index": ProposalsIndex,
@@ -31,6 +35,10 @@ const PAGES = {
     "proposal-show-index": ProposalShowIndex,
     "notification-config-index": NotificationConfigIndex,
     "profile-index": ProfileIndex,
+    "settings-index": SettingsIndex,
+    "password-index": PasswordIndex,
+    "feature-flags-index": FeatureFlagsIndex,
+    "captcha-index": CaptchaIndex,
 };
 
 class ErrorBoundary extends React.Component {

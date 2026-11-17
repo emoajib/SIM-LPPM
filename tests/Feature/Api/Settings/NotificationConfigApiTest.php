@@ -21,7 +21,7 @@ class NotificationConfigApiTest extends TestCase
     }
 
     /** @test */
-    public function admin_lppm_can_view_notification_config(): void
+    public function test_admin_lppm_can_view_notification_config(): void
     {
         $admin = User::factory()->create();
         $admin->assignRole('admin lppm');
@@ -37,7 +37,7 @@ class NotificationConfigApiTest extends TestCase
     }
 
     /** @test */
-    public function superadmin_can_view_notification_config(): void
+    public function test_superadmin_can_view_notification_config(): void
     {
         $superadmin = User::factory()->create();
         $superadmin->assignRole('superadmin');
@@ -49,7 +49,7 @@ class NotificationConfigApiTest extends TestCase
     }
 
     /** @test */
-    public function non_admin_cannot_view_notification_config(): void
+    public function test_non_admin_cannot_view_notification_config(): void
     {
         $user = User::factory()->create();
         $user->assignRole('dosen');
@@ -61,14 +61,14 @@ class NotificationConfigApiTest extends TestCase
     }
 
     /** @test */
-    public function guest_cannot_view_notification_config(): void
+    public function test_guest_cannot_view_notification_config(): void
     {
         $response = $this->getJson('/api/v1/settings/notification');
         $response->assertUnauthorized();
     }
 
     /** @test */
-    public function admin_can_update_notification_config(): void
+    public function test_admin_can_update_notification_config(): void
     {
         $admin = User::factory()->create();
         $admin->assignRole('admin lppm');
@@ -105,7 +105,7 @@ class NotificationConfigApiTest extends TestCase
     }
 
     /** @test */
-    public function empty_password_does_not_overwrite_existing(): void
+    public function test_empty_password_does_not_overwrite_existing(): void
     {
         $admin = User::factory()->create();
         $admin->assignRole('admin lppm');

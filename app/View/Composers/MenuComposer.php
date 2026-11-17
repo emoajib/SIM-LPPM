@@ -390,6 +390,14 @@ class MenuComposer
                 'icon' => 'settings',
                 'roles' => ['admin lppm', 'superadmin'],
                 'children' => [
+                    // Modern theme: pintu masuk pusat pengaturan (React). Klasik: langsung ke master data.
+                    // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
+                    ...(is_modern_theme() ? [[
+                        'title' => 'Pusat Pengaturan',
+                        'icon' => 'layout-dashboard',
+                        'route' => 'settings.index.page',
+                        'navigate' => false,
+                    ]] : []),
                     [
                         'title' => 'Pengguna',
                         'icon' => 'users',
@@ -487,7 +495,7 @@ class MenuComposer
         if ($isModernHere) {
             foreach ($items as &$__item) {
                 // Force full page load for React modern pages (avoid wire:navigate blank)
-                $itemTitle = (string) ($__item['title'] ?? '');
+                $itemTitle = (string) $__item['title'];
                 if (in_array($itemTitle, ['Penelitian', 'Pengabdian', 'Surat', 'Dashboard'], true)) {
                     $__item['navigate'] = false;
                 }

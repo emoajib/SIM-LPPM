@@ -4,8 +4,12 @@ use App\Exports\UsersTemplateExport;
 use App\Http\Controllers\AdminLppm\ManualBookUploadController;
 use App\Http\Controllers\Api\DailyNoteController;
 use App\Http\Controllers\Api\ModernProposalController;
+use App\Http\Controllers\Api\Settings\CaptchaApiController;
+use App\Http\Controllers\Api\Settings\FeatureFlagsApiController;
 use App\Http\Controllers\Api\Settings\NotificationConfigApiController;
+use App\Http\Controllers\Api\Settings\PasswordApiController;
 use App\Http\Controllers\Api\Settings\ProfileApiController;
+use App\Http\Controllers\Api\Settings\SettingsHubApiController;
 use App\Http\Controllers\Api\VerifikasiLuaranController;
 use App\Http\Controllers\Auth\MathCaptchaController;
 use App\Http\Controllers\DailyNoteExportController;
@@ -652,6 +656,26 @@ Route::middleware(['auth'])->group(function () {
             ->name('profile.photo.upload');
         Route::delete('profile/photo', [ProfileApiController::class, 'deletePhoto'])
             ->name('profile.photo.delete');
+
+        // Settings hub (available settings for current user)
+        Route::get('hub', [SettingsHubApiController::class, 'show'])
+            ->name('hub');
+
+        // Password (all authenticated users)
+        Route::put('password', [PasswordApiController::class, 'update'])
+            ->name('password.update');
+
+        // Feature Flags (admin lppm/superadmin only - enforced in controller)
+        Route::get('feature-flags', [FeatureFlagsApiController::class, 'show'])
+            ->name('feature-flags.show');
+        Route::put('feature-flags', [FeatureFlagsApiController::class, 'update'])
+            ->name('feature-flags.update');
+
+        // CAPTCHA audio (admin lppm/superadmin only - enforced in controller)
+        Route::get('captcha', [CaptchaApiController::class, 'show'])
+            ->name('captcha.show');
+        Route::put('captcha', [CaptchaApiController::class, 'update'])
+            ->name('captcha.update');
     });
 
     Route::get('settings/two-factor', TwoFactor::class)
@@ -687,6 +711,22 @@ Route::middleware(['auth'])->group(function () {
     // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     Route::get('settings/profile/modern', [ModernPageController::class, 'settingsProfile'])
         ->middleware(['auth', 'verified'])->name('settings.profile.page');
+
+    // Modern theme page for Settings: Hub (all authenticated users)
+    Route::get('settings/modern', [ModernPageController::class, 'settingsHub'])
+        ->middleware(['auth', 'verified'])->name('settings.index.page');
+
+    // Modern theme page for Settings: Password (all authenticated users)
+    Route::get('settings/password/modern', [ModernPageController::class, 'settingsPassword'])
+        ->middleware(['auth', 'verified'])->name('settings.password.page');
+
+    // Modern theme page for Settings: Feature Flags (admin LPPM/superadmin)
+    Route::get('settings/feature-flags/modern', [ModernPageController::class, 'settingsFeatureFlags'])
+        ->middleware(['auth', 'verified', 'role:admin lppm|superadmin'])->name('settings.feature-flags.page');
+
+    // Modern theme page for Settings: CAPTCHA audio (admin LPPM/superadmin)
+    Route::get('settings/captcha/modern', [ModernPageController::class, 'settingsCaptcha'])
+        ->middleware(['auth', 'verified', 'role:admin lppm|superadmin'])->name('settings.captcha.page');
 
     // PDF Export Route
     Route::get('proposals/{proposal}/export-pdf', [ProposalExportController::class, 'download'])

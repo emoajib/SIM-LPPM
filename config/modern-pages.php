@@ -35,6 +35,10 @@ return [
         'community-service.proposal.show.modern' => 'proposal-show-index',
         'settings.notification-config.page' => 'notification-config-index',
         'settings.profile.page' => 'profile-index',
+        'settings.index.page' => 'settings-index',
+        'settings.password.page' => 'password-index',
+        'settings.feature-flags.page' => 'feature-flags-index',
+        'settings.captcha.page' => 'captcha-index',
     ],
 
     /*

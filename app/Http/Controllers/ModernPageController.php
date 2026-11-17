@@ -127,4 +127,68 @@ class ModernPageController extends Controller
             'pageSubtitle' => 'Kelola data profil dan identitas akademik Anda',
         ]);
     }
+
+    /**
+     * Modern theme: Pusat Pengaturan (all authenticated users).
+     */
+    public function settingsHub(Request $request): View|RedirectResponse
+    {
+        if (! is_modern_theme()) {
+            return redirect()->route('settings');
+        }
+
+        return view('modern.settings-index', [
+            'title' => 'Pengaturan',
+            'pageSubtitle' => 'Kelola akun, sistem, dan master data aplikasi',
+        ]);
+    }
+
+    /**
+     * Modern theme: Ubah Kata Sandi (all authenticated users).
+     */
+    public function settingsPassword(Request $request): View|RedirectResponse
+    {
+        if (! is_modern_theme()) {
+            return redirect()->route('settings.password');
+        }
+
+        return view('modern.settings-password', [
+            'title' => 'Ubah Kata Sandi',
+            'pageSubtitle' => 'Perbarui kata sandi akun Anda',
+        ]);
+    }
+
+    /**
+     * Modern theme: Feature Flags (admin LPPM/superadmin only).
+     */
+    public function settingsFeatureFlags(Request $request): View|RedirectResponse
+    {
+        if (! is_modern_theme()) {
+            return redirect()->route('settings');
+        }
+
+        abort_unless($request->user()?->activeHasAnyRole(['admin lppm', 'superadmin']), 403);
+
+        return view('modern.settings-feature-flags', [
+            'title' => 'Feature Flags',
+            'pageSubtitle' => 'Aktifkan atau nonaktifkan modul dan fitur opsional',
+        ]);
+    }
+
+    /**
+     * Modern theme: Keamanan CAPTCHA (admin LPPM/superadmin only).
+     */
+    public function settingsCaptcha(Request $request): View|RedirectResponse
+    {
+        if (! is_modern_theme()) {
+            return redirect()->route('settings');
+        }
+
+        abort_unless($request->user()?->activeHasAnyRole(['admin lppm', 'superadmin']), 403);
+
+        return view('modern.settings-captcha', [
+            'title' => 'Keamanan CAPTCHA',
+            'pageSubtitle' => 'Atur ketersediaan dan jenis suara audio CAPTCHA',
+        ]);
+    }
 }
