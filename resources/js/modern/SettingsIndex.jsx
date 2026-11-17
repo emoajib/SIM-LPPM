@@ -41,7 +41,7 @@ export default function SettingsIndex() {
     }
 
     return (
-        <div className="max-w-7xl mx-auto space-y-8">
+        <div className="max-w-4xl mx-auto space-y-6">
             <div>
                 <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Pusat Pengaturan</h1>
                 <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
@@ -61,70 +61,78 @@ export default function SettingsIndex() {
             )}
 
             {sections.map((section) => (
-                <section key={section.title} aria-labelledby={`settings-section-${section.title}`}>
-                    <h2
-                        id={`settings-section-${section.title}`}
-                        className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 pb-2 border-b border-slate-200 dark:border-slate-700"
-                    >
-                        {section.title}
-                    </h2>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {section.items.map((item) => (
-                            <a
-                                key={item.key}
-                                href={item.href}
-                                className="group block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1e3a6e] rounded-xl"
-                            >
-                                <ModernPageCard className="h-full group-hover:border-[#1e3a6e] dark:group-hover:border-[#4a7bc8] group-hover:shadow-md transition-all">
-                                    <div className="flex items-start gap-3">
-                                        <span
-                                            aria-hidden="true"
-                                            className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-200 shrink-0"
-                                        >
-                                            {item.icon === "user" ? "👤"
-                                                : item.icon === "lock" ? "🔒"
-                                                : item.icon === "shield-lock" ? "🛡️"
-                                                : item.icon === "shield-check" ? "✅"
-                                                : item.icon === "shield" ? "🔐"
-                                                : item.icon === "bell" ? "🔔"
-                                                : item.icon === "toggle-right" ? "🎛️"
-                                                : item.icon === "palette" ? "🎨"
-                                                : item.icon === "file-type-pdf" ? "📄"
-                                                : item.icon === "chart-histogram" ? "📊"
-                                                : item.icon === "list-details" ? "📋"
-                                                : item.icon === "refresh" ? "🔄"
-                                                : item.icon === "database-export" ? "💾"
-                                                : item.icon === "database-import" ? "📥"
-                                                : item.icon === "folders" ? "📁"
-                                                : item.icon === "calendar-event" ? "📅"
-                                                : item.icon === "file-text" ? "📝"
-                                                : item.icon === "file-pencil" ? "✍️"
-                                                : item.icon === "book-2" ? "📚"
-                                                : "⚙️"}
-                                        </span>
-                                        <span className="min-w-0">
-                                            <span className="flex items-center gap-2 flex-wrap">
-                                                <span className="text-base font-semibold text-slate-800 dark:text-slate-100">
-                                                    {item.title}
-                                                </span>
-                                                {!item.modern && (
-                                                    <span className="text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-300">
-                                                        Klasik
-                                                    </span>
-                                                )}
-                                            </span>
-                                            <span className="block mt-1 text-sm text-slate-500 dark:text-slate-400">
-                                                {item.description}
-                                            </span>
-                                        </span>
-                                    </div>
-                                </ModernPageCard>
-                            </a>
-                        ))}
+                <ModernPageCard key={section.title} noPadding>
+                    <div className="px-5 py-3 border-b border-slate-100 dark:border-slate-700/70">
+                        <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                            {section.title}
+                        </h2>
                     </div>
-                </section>
+                    <ul className="divide-y divide-slate-100 dark:divide-slate-700/60">
+                        {section.items.map((item) => (
+                            <li key={item.key}>
+                                <a
+                                    href={item.href}
+                                    className="flex items-center gap-4 px-5 py-3.5 hover:bg-slate-50 dark:hover:bg-slate-700/40 transition-colors group"
+                                >
+                                    <span
+                                        aria-hidden="true"
+                                        className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-200 shrink-0 text-lg"
+                                    >
+                                        {item.icon === "user" ? "👤"
+                                            : item.icon === "lock" ? "🔒"
+                                            : item.icon === "shield-lock" ? "🛡️"
+                                            : item.icon === "shield-check" ? "✅"
+                                            : item.icon === "shield" ? "🔐"
+                                            : item.icon === "bell" ? "🔔"
+                                            : item.icon === "toggle-right" ? "🎛️"
+                                            : item.icon === "palette" ? "🎨"
+                                            : item.icon === "file-type-pdf" ? "📄"
+                                            : item.icon === "chart-histogram" ? "📊"
+                                            : item.icon === "list-details" ? "📋"
+                                            : item.icon === "refresh" ? "🔄"
+                                            : item.icon === "database-export" ? "💾"
+                                            : item.icon === "database-import" ? "📥"
+                                            : item.icon === "folders" ? "📁"
+                                            : item.icon === "calendar-event" ? "📅"
+                                            : item.icon === "file-text" ? "📝"
+                                            : item.icon === "file-pencil" ? "✍️"
+                                            : item.icon === "book-2" ? "📚"
+                                            : "⚙️"}
+                                    </span>
+                                    <div className="min-w-0 flex-1">
+                                        <div className="flex items-center gap-2 flex-wrap">
+                                            <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 group-hover:text-[#1e3a6e] dark:group-hover:text-cyan-400 transition-colors">
+                                                {item.title}
+                                            </span>
+                                            {!item.modern && (
+                                                <span className="text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-300">
+                                                    Klasik
+                                                </span>
+                                            )}
+                                        </div>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                                            {item.description}
+                                        </p>
+                                    </div>
+                                    <span aria-hidden="true" className="text-slate-400 dark:text-slate-500 shrink-0 text-lg">
+                                        ›
+                                    </span>
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
+                </ModernPageCard>
             ))}
+
+            {sections.length === 0 && !error && (
+                <ModernPageCard>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                        Tidak ada pengaturan yang tersedia untuk akun Anda.
+                    </p>
+                </ModernPageCard>
+            )}
+        </div>
+    );
 
             {sections.length === 0 && !error && (
                 <ModernPageCard>
