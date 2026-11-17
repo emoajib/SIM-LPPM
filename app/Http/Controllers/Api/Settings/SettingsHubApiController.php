@@ -101,13 +101,15 @@ class SettingsHubApiController extends Controller
         $isModern = $modern && $modernRoute !== null && Route::has($modernRoute);
 
         if ($isModern) {
-            $href = route($modernRoute);
+            // Relative href: the SPA navigates on the same origin, so this works
+            // on any host/port (localhost:8000, Herd, production) and behind proxies.
+            $href = route($modernRoute, [], false);
         } elseif (Route::has($classicRoute)) {
             // Deep-link into the Classic settings tab so the user lands on the
             // exact panel instead of the default "Profil Saya" tab.
             $href = $classicTab !== null
-                ? route($classicRoute, ['tab' => $classicTab])
-                : route($classicRoute);
+                ? route($classicRoute, ['tab' => $classicTab], false)
+                : route($classicRoute, [], false);
         }
 
         if ($href === null) {

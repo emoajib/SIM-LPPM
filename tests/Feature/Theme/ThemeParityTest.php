@@ -79,7 +79,7 @@ it('redirects modern-only proposal-show route to classic in classic theme', func
     $response->assertRedirect(route('research.proposal.show', $proposal));
 });
 
-it('redirects verifikasi-luaran route to accreditation.verification in classic theme', function () {
+it('renders verifikasi-luaran page in classic theme', function () {
     $user = User::factory()->create();
     $user->assignRole('dosen');
 
@@ -87,5 +87,6 @@ it('redirects verifikasi-luaran route to accreditation.verification in classic t
         ->withSession(['active_role' => 'dosen', 'sim_lppm_app_theme' => 'classic'])
         ->get(route('research.verifikasi-luaran.page'));
 
-    $response->assertRedirect(route('accreditation.verification'));
+    $response->assertStatus(200);
+    $response->assertDontSee('id="modern-root"', false);
 });

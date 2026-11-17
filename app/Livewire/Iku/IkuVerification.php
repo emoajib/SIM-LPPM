@@ -19,11 +19,18 @@ class IkuVerification extends Component
     use HasToast;
     use WithPagination;
 
+    public ?string $module = null;
+
     public string $search = '';
 
     public string $type = 'all'; // all, publication, hki, product
 
     public string $status = 'all'; // all, verified, unverified
+
+    public function mount(?string $module = null): void
+    {
+        $this->module = $module;
+    }
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -172,7 +179,14 @@ class IkuVerification extends Component
     {
         $user = Auth::user();
 
+        $detailableType = match ($this->module) {
+            'community-service', 'community_service', 'communityService' => 'App\\Models\\CommunityService',
+            'research' => 'App\\Models\\Research',
+            default => null,
+        };
+
         $mandatoryQuery = MandatoryOutput::with(['progressReport.proposal.submitter', 'proposalOutput'])
+            ->when($detailableType, fn ($q) => $q->whereHas('progressReport.proposal', fn ($pq) => $pq->where('detailable_type', $detailableType)))
             ->when($this->status === 'unverified', fn ($q) => $q->where('is_verified', false))
             ->when($this->status === 'verified', fn ($q) => $q->where('is_verified', true))
             ->when($this->search, function ($q) {
@@ -182,6 +196,7 @@ class IkuVerification extends Component
             });
 
         $additionalQuery = AdditionalOutput::with(['progressReport.proposal.submitter', 'proposalOutput'])
+            ->when($detailableType, fn ($q) => $q->whereHas('progressReport.proposal', fn ($pq) => $pq->where('detailable_type', $detailableType)))
             ->when($this->status === 'unverified', fn ($q) => $q->where('is_verified', false))
             ->when($this->status === 'verified', fn ($q) => $q->where('is_verified', true))
             ->when($this->search, function ($q) {
@@ -246,23 +261,25 @@ class IkuVerification extends Component
                 return $item;
             });
 
-        $policies = PolicyInvolvement::with('user.identity')
-            ->when($this->status === 'unverified', fn ($q) => $q->where('status', PolicyInvolvementStatus::PENDING->value))
-            ->when($this->status === 'verified', fn ($q) => $q->where('status', 'verified'))
-            ->when($this->search, function ($q) {
-                $q->where('title', 'like', "%{$this->search}%")
-                    ->orWhereHas('user', fn ($uq) => $uq->where('name', 'like', "%{$this->search}%"));
-            })
-            ->get()
-            ->map(function (PolicyInvolvement $item) {
-                $item->model_type = 'policy';
-                $item->is_verified_status = $item->status === 'verified';
-                $item->display_title = $item->title;
-                $item->submitter_name = $item->user->name ?? 'Unknown';
-                $item->document_url = $item->getFirstMediaUrl('supporting_document');
+        $policies = $this->module
+            ? collect()
+            : PolicyInvolvement::with('user.identity')
+                ->when($this->status === 'unverified', fn ($q) => $q->where('status', PolicyInvolvementStatus::PENDING->value))
+                ->when($this->status === 'verified', fn ($q) => $q->where('status', 'verified'))
+                ->when($this->search, function ($q) {
+                    $q->where('title', 'like', "%{$this->search}%")
+                        ->orWhereHas('user', fn ($uq) => $uq->where('name', 'like', "%{$this->search}%"));
+                })
+                ->get()
+                ->map(function (PolicyInvolvement $item) {
+                    $item->model_type = 'policy';
+                    $item->is_verified_status = $item->status === 'verified';
+                    $item->display_title = $item->title;
+                    $item->submitter_name = $item->user->name ?? 'Unknown';
+                    $item->document_url = $item->getFirstMediaUrl('supporting_document');
 
-                return $item;
-            });
+                    return $item;
+                });
 
         $combined = $mandatory->concat($additional)->concat($policies)->sortByDesc('created_at');
 
@@ -293,7 +310,7 @@ class IkuVerification extends Component
         $items = $combined->slice(($page - 1) * $perPage, $perPage)->all();
 
         $paginatedItems = new LengthAwarePaginator($items, $combined->count(), $perPage, $page, [
-            'path' => route('accreditation.verification'),
+            'path' => request()->url(),
         ]);
 
         return view('livewire.iku.iku-verification', [
