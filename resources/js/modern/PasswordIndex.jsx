@@ -101,7 +101,7 @@ export default function PasswordIndex() {
     };
 
     return (
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className="space-y-6">
             <SettingsHeaderNav
                 title="Ubah Kata Sandi"
                 subtitle="Perbarui kata sandi akun Anda secara berkala untuk menjaga kerahasiaan dan integritas data tri dharma perguruan tinggi."

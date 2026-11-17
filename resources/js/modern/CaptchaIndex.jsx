@@ -84,7 +84,7 @@ export default function CaptchaIndex() {
 
     if (loading) {
         return (
-            <div className="max-w-4xl mx-auto space-y-6">
+            <div className="space-y-6">
                 <SettingsHeaderNav
                     title="Keamanan CAPTCHA"
                     subtitle="Atur preferensi audio dan suara verifikasi tantangan CAPTCHA pada halaman login pengguna."
@@ -100,7 +100,7 @@ export default function CaptchaIndex() {
     }
 
     return (
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className="space-y-6">
             <SettingsHeaderNav
                 title="Keamanan CAPTCHA"
                 subtitle="Atur preferensi audio dan suara verifikasi tantangan CAPTCHA pada halaman login pengguna."
