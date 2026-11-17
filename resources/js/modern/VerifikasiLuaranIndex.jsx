@@ -70,6 +70,9 @@ export default function VerifikasiLuaranIndex() {
     const module = isCommunityService ? "communityService" : "research";
     const apiBase = isCommunityService ? "/community-service" : "/research";
 
+    // Module tab bar (Usulan/Perbaikan/Laporan/Realisasi/Verifikasi) only in modern theme.
+    const isModernTheme = window.__IS_MODERN_THEME__ === true;
+
     const tabs = [
         ...MODULE_TABS[module],
         ...((isDosen || canVerify) ? [getVerifierTab(module)] : []),
@@ -531,7 +534,7 @@ export default function VerifikasiLuaranIndex() {
                 <span className="font-semibold text-slate-700 dark:text-slate-200">Verifikasi Luaran IKU</span>
             </nav>
 
-            <ModuleTabNav tabs={tabs} currentPath={currentPath} />
+            {isModernTheme && <ModuleTabNav tabs={tabs} currentPath={currentPath} />}
 
             <ModernPageCard>
                 <div className="flex flex-col md:flex-row gap-3 mb-4">
