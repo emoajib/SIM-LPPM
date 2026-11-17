@@ -3,6 +3,7 @@ import React from "react";
 // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 const VARIANTS = {
     primary:   "bg-[#1e3a6e] text-white hover:bg-[#254b8c] shadow-sm dark:bg-[#254b8c] dark:hover:bg-[#1e3a6e]",
+    purple:    "bg-purple-600 text-white hover:bg-purple-700 shadow-sm dark:bg-purple-700 dark:hover:bg-purple-600",
     secondary: "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600",
     ghost:     "bg-transparent text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700",
     danger:    "bg-red-600 text-white hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800",

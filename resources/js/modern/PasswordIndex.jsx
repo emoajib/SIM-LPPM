@@ -300,7 +300,7 @@ export default function PasswordIndex() {
                                 <p className="text-xs text-slate-400 dark:text-slate-500 hidden sm:block">
                                     Sesi lain akan tetap aktif setelah kata sandi diubah.
                                 </p>
-                                <Button type="submit" variant="primary" size="md" disabled={saving}>
+                                <Button type="submit" variant="purple" size="md" disabled={saving}>
                                     <i className="ti ti-device-floppy mr-1.5"></i>
                                     {saving ? "Menyimpan…" : "Perbarui Kata Sandi"}
                                 </Button>

@@ -323,7 +323,7 @@ export default function FeatureFlagsIndex() {
                 <p className="text-xs text-slate-500 dark:text-slate-400 text-center sm:text-left">
                     Perubahan langsung memengaruhi workflow dan validasi sistem seketika.
                 </p>
-                <Button onClick={handleSave} variant="primary" size="md" disabled={saving}>
+                <Button onClick={handleSave} variant="purple" size="md" disabled={saving}>
                     <i className="ti ti-device-floppy mr-1.5"></i>
                     {saving ? "Menyimpan Perubahan…" : "Simpan Feature Flags"}
                 </Button>

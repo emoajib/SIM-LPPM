@@ -405,7 +405,7 @@ export default function NotificationConfigIndex() {
                 <p className="text-xs text-slate-500 dark:text-slate-400 text-center sm:text-left">
                     Pastikan konfigurasi diuji sebelum disimpan agar layanan notifikasi tidak terganggu.
                 </p>
-                <Button onClick={handleSave} variant="primary" size="md" disabled={saving}>
+                <Button onClick={handleSave} variant="purple" size="md" disabled={saving}>
                     <i className="ti ti-device-floppy mr-1.5"></i>
                     {saving ? "Menyimpan Konfigurasi…" : "Simpan Semua Konfigurasi"}
                 </Button>

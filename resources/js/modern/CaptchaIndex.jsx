@@ -258,7 +258,7 @@ export default function CaptchaIndex() {
                 <p className="text-xs text-slate-500 dark:text-slate-400 text-center sm:text-left">
                     Pengaturan audio CAPTCHA diterapkan langsung pada form autentikasi publik.
                 </p>
-                <Button onClick={handleSave} variant="primary" size="md" disabled={saving}>
+                <Button onClick={handleSave} variant="purple" size="md" disabled={saving}>
                     <i className="ti ti-device-floppy mr-1.5"></i>
                     {saving ? "Menyimpan Pengaturan…" : "Simpan Pengaturan CAPTCHA"}
                 </Button>

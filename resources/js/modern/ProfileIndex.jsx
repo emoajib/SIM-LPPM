@@ -226,7 +226,7 @@ export default function ProfileIndex() {
                                 </label>
                             ) : (
                                 <div className="space-y-1.5">
-                                    <Button onClick={handleUploadPhoto} variant="primary" size="sm" className="w-full" disabled={uploading}>
+                                    <Button onClick={handleUploadPhoto} variant="purple" size="sm" className="w-full" disabled={uploading}>
                                         {uploading ? "Mengunggah…" : "Simpan Foto Baru"}
                                     </Button>
                                     <button
@@ -550,7 +550,7 @@ export default function ProfileIndex() {
                         <p className="text-xs text-slate-500 dark:text-slate-400 text-center sm:text-left">
                             Perubahan profil langsung berlaku di seluruh berkas proposal Anda.
                         </p>
-                        <Button onClick={handleSave} variant="primary" size="md" disabled={saving}>
+                        <Button onClick={handleSave} variant="purple" size="md" disabled={saving}>
                             <i className="ti ti-device-floppy mr-1.5"></i>
                             {saving ? "Menyimpan Perubahan…" : "Simpan Profil Saya"}
                         </Button>
