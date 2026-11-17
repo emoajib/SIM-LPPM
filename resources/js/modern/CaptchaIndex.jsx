@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import Button from "./components/Button.jsx";
 import ModernPageCard from "./components/ModernPageCard.jsx";
+import SettingsHeaderNav from "./components/SettingsHeaderNav.jsx";
+import Skeleton from "./components/Skeleton.jsx";
 
 const csrf = () => document.querySelector('meta[name="csrf-token"]')?.content ?? "";
 
@@ -72,7 +74,7 @@ export default function CaptchaIndex() {
                 setAudioVoice(data.data.audio_voice || "");
                 setVoices(data.data.voices || []);
             }
-            showToast("success", data.message || "Pengaturan audio CAPTCHA diperbarui.");
+            showToast("success", data.message || "Pengaturan audio CAPTCHA berhasil diperbarui.");
         } catch (e) {
             showToast("error", e.message);
         } finally {
@@ -81,47 +83,92 @@ export default function CaptchaIndex() {
     };
 
     if (loading) {
-        return <div className="flex items-center justify-center h-64 text-slate-500 dark:text-slate-400">Memuat…</div>;
+        return (
+            <div className="space-y-6">
+                <SettingsHeaderNav
+                    title="Keamanan CAPTCHA"
+                    subtitle="Atur preferensi audio dan suara verifikasi tantangan CAPTCHA pada halaman login pengguna."
+                    categoryBadge="Keamanan Akses"
+                    currentPath="/settings/captcha/modern"
+                />
+                <div className="grid grid-cols-1 gap-6">
+                    <Skeleton className="h-44 w-full rounded-2xl" />
+                    <Skeleton className="h-64 w-full rounded-2xl" />
+                </div>
+            </div>
+        );
     }
 
     return (
-        <div className="max-w-4xl mx-auto space-y-4">
+        <div className="space-y-6">
+            <SettingsHeaderNav
+                title="Keamanan CAPTCHA"
+                subtitle="Atur preferensi audio dan suara verifikasi tantangan CAPTCHA pada halaman login pengguna."
+                categoryBadge="Keamanan Akses"
+                currentPath="/settings/captcha/modern"
+            />
+
             {toast && (
                 <div
                     role="status"
-                    className={`px-4 py-3 rounded-lg border text-sm ${
+                    className={`px-4 py-3 rounded-xl border text-sm flex items-center gap-2.5 shadow-xs transition-all ${
                         toast.type === "success"
                             ? "bg-emerald-50 border-emerald-200 text-emerald-800 dark:bg-emerald-950/50 dark:border-emerald-900/50 dark:text-emerald-300"
                             : "bg-rose-50 border-rose-200 text-rose-800 dark:bg-rose-950/50 dark:border-rose-900/50 dark:text-rose-300"
                     }`}
                 >
-                    {toast.type === "success" ? "✓" : "✕"} {toast.message}
+                    <i className={`text-base ${toast.type === "success" ? "ti ti-check" : "ti ti-alert-circle"}`}></i>
+                    <span>{toast.message}</span>
                 </div>
             )}
 
-            <nav aria-label="Breadcrumb" className="text-xs text-slate-500 dark:text-slate-400">
-                <a href="/dashboard" className="hover:underline">Dashboard</a>
-                <span className="mx-1.5 opacity-60">/</span>
-                <a href="/settings/modern" className="hover:underline">Pengaturan</a>
-                <span className="mx-1.5 opacity-60">/</span>
-                <span className="font-semibold text-slate-700 dark:text-slate-200">Keamanan CAPTCHA</span>
-            </nav>
+            {/* Accessibility Note */}
+            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 text-xs text-slate-600 dark:text-slate-300 flex items-start gap-3">
+                <i className="ti ti-info-circle text-lg shrink-0 mt-0.5 text-[#1e3a6e] dark:text-cyan-400"></i>
+                <div className="leading-relaxed">
+                    Tantangan audio CAPTCHA dirancang untuk aksesibilitas pengguna (disabilitas penglihatan). Modul audio otomatis aktif sebagai fallback saat proteksi Cloudflare Turnstile tidak dikonfigurasi.
+                </div>
+            </div>
 
+            {/* Section 1: Toggle Audio Challenge */}
             <ModernPageCard>
-                <div className="mb-4">
-                    <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-1">Keamanan CAPTCHA</h2>
-                    <p className="text-slate-500 dark:text-slate-400">
-                        Audio hanya tampil di halaman login ketika Turnstile tidak dikonfigurasi.
-                    </p>
+                <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-slate-700/60">
+                    <div className="flex items-center gap-2.5">
+                        <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#1e3a6e] dark:text-cyan-400 flex items-center justify-center text-xl shadow-xs">
+                            <i className="ti ti-volume"></i>
+                        </div>
+                        <div>
+                            <h2 className="text-base font-bold text-slate-800 dark:text-slate-100">
+                                Mode Audio Tantangan
+                            </h2>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
+                                Mengaktifkan tombol putar suara verifikasi pada formulir login.
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
-                <div className="flex items-start justify-between gap-4 py-3 border-b border-slate-100 dark:border-slate-700/60">
-                    <div className="min-w-0">
-                        <p className="text-sm font-medium text-slate-800 dark:text-slate-100">Aktifkan soal audio</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                            Jika dimatikan, pengguna hanya dapat menyelesaikan soal bergambar.
+                <div className="flex items-center justify-between gap-4 p-4 rounded-xl bg-slate-50/70 dark:bg-slate-900/40 border border-slate-200/70 dark:border-slate-700/60">
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <label htmlFor="audio_enabled" className="text-sm font-bold text-slate-800 dark:text-slate-100 cursor-pointer">
+                                Aktifkan Soal Audio Tantangan
+                            </label>
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                audioEnabled
+                                    ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
+                                    : "bg-slate-200/70 text-slate-600 dark:bg-slate-700/70 dark:text-slate-400 border border-slate-300/60 dark:border-slate-600"
+                            }`}>
+                                {audioEnabled ? "Aktif" : "Nonaktif"}
+                            </span>
+                        </div>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                            {audioEnabled
+                                ? "Pengguna dapat mendengarkan pembacaan angka/karakter audio di samping gambar CAPTCHA."
+                                : "Soal suara dinonaktifkan, verifikasi hanya berbasis tantangan gambar statis."}
                         </p>
                     </div>
+
                     <label htmlFor="audio_enabled" className="relative inline-flex items-center cursor-pointer shrink-0">
                         <input
                             id="audio_enabled"
@@ -130,58 +177,92 @@ export default function CaptchaIndex() {
                             onChange={(e) => setAudioEnabled(e.target.checked)}
                             className="sr-only peer"
                         />
-                        <span className="w-11 h-6 bg-slate-300 dark:bg-slate-600 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#1e3a6e] rounded-full peer-checked:bg-[#1e3a6e] dark:peer-checked:bg-[#4a7bc8] transition-colors" />
-                        <span className="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform peer-checked:translate-x-5" />
+                        <span className="w-11 h-6 bg-slate-300 dark:bg-slate-600 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#1e3a6e] rounded-full peer-checked:bg-[#1e3a6e] dark:peer-checked:bg-cyan-500 transition-colors" />
+                        <span className="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-xs transition-transform peer-checked:translate-x-5" />
                     </label>
                 </div>
+            </ModernPageCard>
 
-                <fieldset className="mt-4">
-                    <legend className="text-sm font-medium text-slate-800 dark:text-slate-100 mb-2">Jenis suara</legend>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        {voices.map((voice) => (
+            {/* Section 2: Pilihan Suara (Voice Selector) */}
+            <ModernPageCard>
+                <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-slate-700/60">
+                    <div className="flex items-center gap-2.5">
+                        <div className="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-400 flex items-center justify-center text-xl shadow-xs">
+                            <i className="ti ti-microphone-2"></i>
+                        </div>
+                        <div>
+                            <h2 className="text-base font-bold text-slate-800 dark:text-slate-100">
+                                Pilihan Narator Suara
+                            </h2>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
+                                Pilih profil narator dan bahasa sintesis suara yang digunakan.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    {voices.map((voice) => {
+                        const isSelected = audioVoice === voice.key;
+                        return (
                             <label
                                 key={voice.key}
-                                className={`block border rounded-lg p-3 cursor-pointer transition-colors ${
-                                    audioVoice === voice.key
-                                        ? "border-[#1e3a6e] bg-[#1e3a6e]/5 dark:border-[#4a7bc8] dark:bg-[#4a7bc8]/10"
-                                        : "border-slate-200 dark:border-slate-700"
-                                } ${voice.available ? "" : "opacity-50 cursor-not-allowed"}`}
+                                className={`relative flex items-start gap-3.5 p-4 rounded-xl border transition-all cursor-pointer ${
+                                    isSelected
+                                        ? "bg-[#1e3a6e]/5 border-[#1e3a6e] dark:bg-cyan-950/30 dark:border-cyan-500 shadow-xs ring-1 ring-[#1e3a6e] dark:ring-cyan-500"
+                                        : "bg-white dark:bg-slate-800 border-slate-200/80 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600"
+                                } ${voice.available ? "" : "opacity-50 cursor-not-allowed bg-slate-50 dark:bg-slate-900/40"}`}
                             >
-                                <span className="flex items-start gap-2">
-                                    <input
-                                        type="radio"
-                                        name="audio_voice"
-                                        value={voice.key}
-                                        checked={audioVoice === voice.key}
-                                        disabled={!voice.available}
-                                        onChange={() => setAudioVoice(voice.key)}
-                                        className="mt-1"
-                                    />
-                                    <span>
-                                        <span className="block text-sm font-medium text-slate-800 dark:text-slate-100">
+                                <input
+                                    type="radio"
+                                    name="audio_voice"
+                                    value={voice.key}
+                                    checked={isSelected}
+                                    disabled={!voice.available}
+                                    onChange={() => setAudioVoice(voice.key)}
+                                    className="mt-1 text-[#1e3a6e] focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                                />
+
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center justify-between gap-2 mb-1">
+                                        <span className="text-sm font-bold text-slate-800 dark:text-slate-100">
                                             {voice.label}
                                         </span>
-                                        <span className="block text-xs text-slate-500 dark:text-slate-400">
-                                            {voice.locale ? voice.locale.toUpperCase() : "—"}
+                                        <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+                                            {voice.locale ? voice.locale.toUpperCase() : "ID"}
                                         </span>
-                                        {!voice.available && (
-                                            <span className="inline-block mt-1 text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300">
-                                                Aset tidak tersedia
+                                    </div>
+
+                                    <div className="flex items-center gap-2 mt-2">
+                                        {voice.available ? (
+                                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                                                <i className="ti ti-circle-check text-xs"></i>
+                                                Aset Suara Siap
+                                            </span>
+                                        ) : (
+                                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-rose-600 dark:text-rose-400">
+                                                <i className="ti ti-circle-x text-xs"></i>
+                                                Aset Belum Terinstal
                                             </span>
                                         )}
-                                    </span>
-                                </span>
+                                    </div>
+                                </div>
                             </label>
-                        ))}
-                    </div>
-                </fieldset>
-
-                <div className="flex justify-end mt-5">
-                    <Button onClick={handleSave} variant="primary" size="md" disabled={saving}>
-                        {saving ? "Menyimpan…" : "Simpan Pengaturan"}
-                    </Button>
+                        );
+                    })}
                 </div>
             </ModernPageCard>
+
+            {/* Bottom Single Unified Save Action */}
+            <div className="bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+                <p className="text-xs text-slate-500 dark:text-slate-400 text-center sm:text-left">
+                    Pengaturan audio CAPTCHA diterapkan langsung pada form autentikasi publik.
+                </p>
+                <Button onClick={handleSave} variant="primary" size="md" disabled={saving}>
+                    <i className="ti ti-device-floppy mr-1.5"></i>
+                    {saving ? "Menyimpan Pengaturan…" : "Simpan Pengaturan CAPTCHA"}
+                </Button>
+            </div>
         </div>
     );
 }
