@@ -1,6 +1,5 @@
 // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 import React, { useEffect, useState } from "react";
-import ModernPageCard from "./components/ModernPageCard.jsx";
 
 export default function SettingsIndex() {
     const [sections, setSections] = useState([]);
@@ -29,95 +28,78 @@ export default function SettingsIndex() {
     }, []);
 
     if (loading) {
-        return <div className="flex items-center justify-center h-64 text-slate-500 dark:text-slate-400">Memuat…</div>;
+        return <div className="text-center text-secondary py-4">Memuat…</div>;
     }
 
-    const totalItems = sections.reduce((a, s) => a + s.items.length, 0);
-    const modernItems = sections.reduce((a, s) => a + s.items.filter((i) => i.modern).length, 0);
-
     const iconFor = (icon) =>
-        icon === "user" ? "👤" : icon === "lock" ? "🔒" : icon === "shield-lock" ? "🛡️"
-        : icon === "shield-check" ? "✅" : icon === "shield" ? "🔐" : icon === "bell" ? "🔔"
-        : icon === "toggle-right" ? "🎛️" : icon === "palette" ? "🎨" : icon === "file-type-pdf" ? "📄"
-        : icon === "chart-histogram" ? "📊" : icon === "list-details" ? "📋" : icon === "refresh" ? "🔄"
-        : icon === "database-export" ? "💾" : icon === "database-import" ? "📥" : icon === "folders" ? "📁"
-        : icon === "calendar-event" ? "📅" : icon === "file-text" ? "📝" : icon === "file-pencil" ? "✍️"
-        : icon === "book-2" ? "📚" : "⚙️";
+        icon === "user" ? "user" : icon === "lock" ? "lock" : icon === "shield-lock" ? "shield-lock"
+        : icon === "shield-check" ? "circle-check" : icon === "shield" ? "shield"
+        : icon === "bell" ? "bell" : icon === "toggle-right" ? "toggle-right"
+        : icon === "palette" ? "palette" : icon === "file-type-pdf" ? "file-type"
+        : icon === "chart-histogram" ? "chart-histogram" : icon === "list-details" ? "list-details"
+        : icon === "refresh" ? "refresh" : icon === "database-export" ? "database-export"
+        : icon === "database-import" ? "database-import" : icon === "folders" ? "folders"
+        : icon === "calendar-event" ? "calendar-event" : icon === "file-text" ? "file-text"
+        : icon === "file-pencil" ? "file-pencil" : icon === "book-2" ? "book-2"
+        : "settings";
 
     return (
-        <div className="max-w-7xl mx-auto space-y-4">
-            <div>
-                <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Pusat Pengaturan</h1>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Kelola akun, sistem, dan master data aplikasi.</p>
+        <div>
+            <div className="mb-3">
+                <h1 className="page-title mb-1">Pusat Pengaturan</h1>
+                <div className="text-secondary">Kelola akun, sistem, dan master data aplikasi.</div>
             </div>
-            <nav aria-label="Breadcrumb" className="text-xs text-slate-500 dark:text-slate-400">
-                <a href="/dashboard" className="hover:underline">Dashboard</a>
-                <span className="mx-1.5 opacity-60">/</span>
-                <span className="font-semibold text-slate-700 dark:text-slate-200">Pengaturan</span>
-            </nav>
 
             {error && (
-                <div className="px-4 py-3 rounded-lg border text-sm bg-rose-50 border-rose-200 text-rose-800 dark:bg-rose-950/50 dark:border-rose-900/50 dark:text-rose-300">
-                    ✕ {error}
+                <div className="alert alert-danger py-2 px-3" role="alert">
+                    {error}
                 </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <aside className="md:col-span-1">
-                    <ModernPageCard noPadding>
-                        {sections.map((section) => (
-                            <div key={section.title} className="px-3 py-3 border-b border-slate-100 dark:border-slate-700/70 last:border-b-0">
-                                <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 px-2">
-                                    {section.title}
-                                </h4>
-                                <ul className="space-y-0.5">
-                                    {section.items.map((item) => (
-                                        <li key={item.key}>
-                                            <a href={item.href} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors group">
-                                                <span aria-hidden="true" className="w-5 h-5 flex items-center justify-center shrink-0 text-base">
-                                                    {iconFor(item.icon)}
-                                                </span>
-                                                <span className="flex-1 truncate group-hover:text-[#1e3a6e] dark:group-hover:text-cyan-400 transition-colors">
-                                                    {item.title}
-                                                </span>
+            <div className="card">
+                <div className="row g-0">
+                    <div className="col-12 col-md-3 settings-sidebar">
+                        <div className="card-body">
+                            {sections.map((section) => (
+                                <div key={section.title} className="mb-3">
+                                    <h4 className="subheader mb-2">{section.title}</h4>
+                                    <div className="list-group list-group-transparent">
+                                        {section.items.map((item) => (
+                                            <a
+                                                key={item.key}
+                                                href={item.href}
+                                                className="list-group-item list-group-item-action d-flex align-items-center gap-2"
+                                            >
+                                                <i className={`ti ti-${iconFor(item.icon)} me-1`} aria-hidden="true"></i>
+                                                <span className="flex-fill">{item.title}</span>
                                                 {!item.modern && (
-                                                    <span className="text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-300 shrink-0">
-                                                        Klasik
-                                                    </span>
+                                                    <span className="badge bg-secondary-lt ms-auto">Klasik</span>
                                                 )}
-                                                <span aria-hidden="true" className="text-slate-400 dark:text-slate-500 shrink-0">›</span>
                                             </a>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        ))}
-                    </ModernPageCard>
-                </aside>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
 
-                <main className="md:col-span-3">
-                    <ModernPageCard>
-                        <div className="p-5">
-                            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2">
-                                Selamat datang di Pusat Pengaturan
-                            </h3>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">
-                                Pilih pengaturan di sidebar untuk mengelola akun, sistem, dan master data.
-                            </p>
-                            <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">
-                                Klik item di sidebar untuk membuka pengaturan.
+                    <div className="col-12 col-md-9 ps-md-0">
+                        <div className="card-body">
+                            <h3 className="card-title mb-2">Selamat datang di Pusat Pengaturan</h3>
+                            <p className="text-secondary mb-0">
+                                Pilih pengaturan di sidebar untuk mengelola akun, sistem, dan master data aplikasi.
                             </p>
                         </div>
-                    </ModernPageCard>
-                </main>
+                    </div>
+                </div>
             </div>
 
             {sections.length === 0 && !error && (
-                <ModernPageCard>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                <div className="card">
+                    <div className="card-body text-center text-secondary">
                         Tidak ada pengaturan yang tersedia untuk akun Anda.
-                    </p>
-                </ModernPageCard>
+                    </div>
+                </div>
             )}
         </div>
     );
