@@ -88,5 +88,5 @@ it('renders verifikasi-luaran page in classic theme', function () {
         ->get(route('research.verifikasi-luaran.page'));
 
     $response->assertStatus(200);
-    $response->assertDontSee('id="modern-root"', false);
+    $response->assertSee('id="modern-root"', false);
 });

@@ -8,11 +8,8 @@ use App\Models\Proposal;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\HtmlString;
 use Illuminate\View\View;
-use Livewire\Livewire;
 
 /**
  * Halaman tema modern yang dirender server (Blade + root React).
@@ -23,18 +20,8 @@ use Livewire\Livewire;
  */
 class ModernPageController extends Controller
 {
-    public function verifikasiLuaran(Request $request): View|RedirectResponse|Response
+    public function verifikasiLuaran(Request $request): View
     {
-        if (! is_modern_theme()) {
-            $module = $this->module($request);
-            $componentHtml = Livewire::mount('iku.iku-verification', ['module' => $module]);
-
-            return response(view('components.layouts.app', [
-                'title' => 'Verifikasi Luaran IKU',
-                'slot' => new HtmlString($componentHtml),
-            ]));
-        }
-
         $isCommunityService = $this->module($request) === 'community-service';
 
         return view($isCommunityService ? 'modern.verifikasi-luaran-pkm' : 'modern.verifikasi-luaran', [

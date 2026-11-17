@@ -29,17 +29,19 @@
     <!-- END GLOBAL THEME SCRIPT -->
     @php
         $isModernTheme = is_modern_theme();
+        $modernPageMap = config('modern-pages.pages', []);
+        $modernPage = $modernPageMap[request()->route()?->getName() ?? ''] ?? null;
+        $modernPageEarly = $modernPage; // alias for header hiding
+        $hideHeaderRoutes = config('modern-pages.hide_header_routes', []);
+        $hideHeaderModern = $isModernTheme && in_array(request()->route()?->getName() ?? '', $hideHeaderRoutes, true);
+        // Verifikasi Luaran is rendered with React in BOTH themes so the classic
+        // and modern experiences stay aligned (seragam) without duplicated UI.
+        $forceReactRoutes = ['research.verifikasi-luaran.page', 'community-service.verifikasi-luaran.page'];
+        $forceReact = in_array(request()->route()?->getName() ?? '', $forceReactRoutes, true);
     @endphp
     <div class="page">
         @include('components.layouts.header')
         <div class="page-wrapper">
-            @php
-                $modernPageMap = config('modern-pages.pages', []);
-                $modernPage = $modernPageMap[request()->route()?->getName() ?? ''] ?? null;
-                $modernPageEarly = $modernPage; // alias for header hiding
-                $hideHeaderRoutes = config('modern-pages.hide_header_routes', []);
-                $hideHeaderModern = $isModernTheme && in_array(request()->route()?->getName() ?? '', $hideHeaderRoutes, true);
-            @endphp
             <!-- BEGIN PAGE HEADER -->
             @if (isset($pageTitle) && !$modernPageEarly && !$hideHeaderModern)
                 <x-page-header :title="$pageTitle" :subtitle="$pageSubtitle ?? null">
@@ -55,7 +57,7 @@
             <!-- BEGIN PAGE BODY -->
             <div class="page-body">
                 <div class="container-xl">
-                    @if ($isModernTheme)
+                    @if ($isModernTheme || $forceReact)
                         <script>window.__MODERN_PAGE__ = @json($modernPage);</script>
                         <script>window.__USER_ROLES__ = @json(auth()->user()?->getRoleNames() ?? []);</script>
                         <script>window.__ACTIVE_ROLE__ = @json(session('active_role', ''));</script>
@@ -77,7 +79,7 @@
             @include('components.layouts.footer')
         </div>
     </div>
-    @if ($isModernTheme)
+    @if ($isModernTheme || $forceReact)
         @if ($modernPage)
             @viteReactRefresh
             @vite('resources/js/modern.jsx')

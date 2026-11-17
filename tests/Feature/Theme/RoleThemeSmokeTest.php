@@ -49,10 +49,10 @@ it('opens every ecosystem page for every role in both themes', function (string 
         ->withSession(['active_role' => $role, 'sim_lppm_app_theme' => $theme])
         ->get(route($routeName));
 
-    // Verifikasi Luaran punya halaman modern-only: tema klasik dialihkan.
-    if ($theme === 'classic' && in_array($routeName, ['research.verifikasi-luaran.page', 'community-service.verifikasi-luaran.page'], true)) {
+    // Verifikasi Luaran now renders the React page in BOTH themes (seragam).
+    if (in_array($routeName, ['research.verifikasi-luaran.page', 'community-service.verifikasi-luaran.page'], true)) {
         $response->assertStatus(200);
-        $response->assertDontSee('id="modern-root"', false);
+        $response->assertSee('id="modern-root"', false);
 
         return;
     }
