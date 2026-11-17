@@ -93,7 +93,7 @@ class MenuComposer
                     [
                         'title' => 'Verifikasi Luaran',
                         'icon' => 'checkbox',
-                        'route' => 'accreditation.verification',
+                        'route' => 'research.verifikasi-luaran.page',
                         'roles' => ['admin lppm', 'kepala lppm', 'rektor', 'dosen', 'superadmin'],
                     ],
                 ],
@@ -126,7 +126,7 @@ class MenuComposer
                     [
                         'title' => 'Verifikasi Luaran',
                         'icon' => 'checkbox',
-                        'route' => 'accreditation.verification',
+                        'route' => 'community-service.verifikasi-luaran.page',
                         'roles' => ['admin lppm', 'kepala lppm', 'rektor', 'dosen', 'superadmin'],
                     ],
                 ],

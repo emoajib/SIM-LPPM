@@ -12,7 +12,7 @@
     ];
 
     if (active_has_any_role(['admin lppm', 'kepala lppm', 'rektor', 'dosen', 'superadmin'])) {
-        $tabs['verifikasi'] = ['label' => 'Verifikasi Luaran', 'href' => '/iku/verification', 'icon' => '🛡️'];
+        $tabs['verifikasi'] = ['label' => 'Verifikasi Luaran', 'href' => $base.'/verifikasi-luaran', 'icon' => '🛡️'];
     }
 @endphp
 
