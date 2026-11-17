@@ -107,7 +107,7 @@ export default function NotificationConfigIndex() {
     if (loading) return <div className="flex items-center justify-center h-64">Memuat…</div>;
 
     return (
-        <div className="space-y-4">
+        <div className="max-w-4xl mx-auto space-y-4">
             {toast && (
                 <div className={`px-4 py-3 rounded-lg border text-sm flex items-center gap-2 ${
                     toast.type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-800 dark:bg-emerald-950/50 dark:border-emerald-900/50 dark:text-emerald-300' :
