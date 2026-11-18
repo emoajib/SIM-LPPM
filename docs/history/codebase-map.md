@@ -2,7 +2,7 @@
 
 > Dihasilkan oleh `php artisan codebase:map`. **Jangan edit manual** —
 > jalankan ulang perintahnya setelah menambah route/komponen/test.
-> Dibuat: 2026-11-16
+> Dibuat: 2026-11-18
 
 ## Halaman modern (React)
 
@@ -22,6 +22,12 @@
 | `research.proposal.show.modern` | `proposal-show-index` |
 | `community-service.daily-note.modern` | `daily-note-index` |
 | `community-service.proposal.show.modern` | `proposal-show-index` |
+| `settings.notification-config.page` | `notification-config-index` |
+| `settings.profile.page` | `profile-index` |
+| `settings.index.page` | `settings-index` |
+| `settings.password.page` | `password-index` |
+| `settings.feature-flags.page` | `feature-flags-index` |
+| `settings.captcha.page` | `captcha-index` |
 
 ## Route per modul (jumlah)
 
@@ -29,15 +35,15 @@
 |---|---|
 | `research` | 36 |
 | `community-service` | 33 |
+| `settings` | 21 |
+| `api` | 19 |
 | `admin-lppm` | 17 |
-| `settings` | 15 |
 | `admin` | 10 |
 | `flux` | 9 |
 | `livewire-a7760ddc` | 9 |
 | `users` | 7 |
 | `kepala-lppm` | 7 |
 | `_debugbar` | 6 |
-| `api` | 5 |
 | `user` | 4 |
 | `review` | 4 |
 | `laporan-penelitian` | 3 |
@@ -87,6 +93,7 @@
 - `app/Http/Controllers` (16): `Controller.php`, `DailyNoteExportController.php`, `DocumentSignatureVerificationController.php`, `HealthCheckController.php`, `LetterTypeController.php`, `LetterVerificationController.php`, `MediaDownloadController.php`, `ModernPageController.php`, `ProposalExportController.php`, `ReportExportController.php`, `ReportVerificationController.php`, `ReviewExportController.php`, `RoleSwitcherController.php`, `SintaExportController.php`, `ThemeSwitcherController.php`, `TwoFactorChallengeController.php`
 - `app/Http/Controllers/AdminLppm` (1): `ManualBookUploadController.php`
 - `app/Http/Controllers/Api` (6): `DailyNoteController.php`, `ModernProposalController.php`, `PublicCommunityServiceController.php`, `PublicResearchController.php`, `PublicStatsController.php`, `VerifikasiLuaranController.php`
+- `app/Http/Controllers/Api/Settings` (6): `CaptchaApiController.php`, `FeatureFlagsApiController.php`, `NotificationConfigApiController.php`, `PasswordApiController.php`, `ProfileApiController.php`, `SettingsHubApiController.php`
 - `app/Http/Controllers/Auth` (2): `MathCaptchaController.php`, `VerifyEmailController.php`
 - `app/Http/Controllers/Settings` (3): `BackupDownloadController.php`, `PdfPreviewController.php`, `ProposalTemplateUploadController.php`
 
@@ -143,7 +150,7 @@
 
 ## Artisan command
 
-- `app/Console/Commands` (42): `AuditBudgetCaps.php`, `BackfillIdentityScienceCluster.php`, `BenchmarkNotifications.php`, `BugCapture.php`, `ChangelogBuild.php`, `CheckCopyArtifacts.php`, `CheckModernPages.php`, `CheckMySqlColumnOrders.php`, `CheckOverdueReviews.php`, `CheckRegressions.php`, `CheckSchemaDrift.php`, `CheckTheme.php`, `CleanupDummyData.php`, `CleanupOrphanMedia.php`, `ClearRateLimiters.php`, `CodebaseMap.php`, `DigestWeekly.php`, `FixDocSubstanceFiles.php`, `FixProposalSignatures.php`, `FixProposalSubstanceFile.php`, `GenerateMySqlColumnOrders.php`, `HistoryBrief.php`, `HistorySync.php`, `ImportSintaAuthor.php`, `ImportUsers.php`, `InstallCommand.php`, `MigrateMediaPaths.php`, `PatchSoftwareTkt.php`, `PruneLogs.php`, `PruneObservability.php`, `RecordDevEvent.php`, `RegressionHealth.php`, `RepairLetterData.php`, `ResetPdfSettings.php`, `RestoreBackupCommand.php`, `RunInstallationCommand.php`, `SendDailySummaries.php`, `SendReviewReminders.php`, `SendWeeklySummaries.php`, `SyncEnums.php`, `SyncProductionData.php`, `ValidateMySqlColumnOrders.php`
+- `app/Console/Commands` (43): `AuditBudgetCaps.php`, `BackfillIdentityScienceCluster.php`, `BenchmarkNotifications.php`, `BugCapture.php`, `ChangelogBuild.php`, `CheckCopyArtifacts.php`, `CheckModernPages.php`, `CheckMySqlColumnOrders.php`, `CheckOverdueReviews.php`, `CheckRegressions.php`, `CheckSchemaDrift.php`, `CheckTheme.php`, `CleanupDummyData.php`, `CleanupOrphanMedia.php`, `ClearRateLimiters.php`, `CodebaseMap.php`, `DbSnapshot.php`, `DigestWeekly.php`, `FixDocSubstanceFiles.php`, `FixProposalSignatures.php`, `FixProposalSubstanceFile.php`, `GenerateMySqlColumnOrders.php`, `HistoryBrief.php`, `HistorySync.php`, `ImportSintaAuthor.php`, `ImportUsers.php`, `InstallCommand.php`, `MigrateMediaPaths.php`, `PatchSoftwareTkt.php`, `PruneLogs.php`, `PruneObservability.php`, `RecordDevEvent.php`, `RegressionHealth.php`, `RepairLetterData.php`, `ResetPdfSettings.php`, `RestoreBackupCommand.php`, `RunInstallationCommand.php`, `SendDailySummaries.php`, `SendReviewReminders.php`, `SendWeeklySummaries.php`, `SyncEnums.php`, `SyncProductionData.php`, `ValidateMySqlColumnOrders.php`
 - `app/Console/Commands/Traits` (1): `ParsesMigrationColumns.php`
 
 ## Model
@@ -158,22 +165,25 @@
 | `Feature` | 52 |
 | `Feature/Admin` | 1 |
 | `Feature/AdminLppm` | 1 |
-| `Feature/Api` | 4 |
+| `Feature/Api` | 7 |
+| `Feature/Api/Settings` | 7 |
 | `Feature/Auth` | 9 |
-| `Feature/Console` | 12 |
+| `Feature/Console` | 13 |
 | `Feature/Dekan` | 1 |
 | `Feature/Iku` | 2 |
 | `Feature/Installer` | 2 |
 | `Feature/Kaprodi` | 1 |
-| `Feature/KepalaLppm` | 3 |
+| `Feature/KepalaLppm` | 4 |
 | `Feature/Livewire/Research` | 1 |
 | `Feature/Livewire/Research/Proposal/Components` | 1 |
+| `Feature/Menu` | 1 |
 | `Feature/Observability` | 1 |
+| `Feature/Regression` | 3 |
 | `Feature/Reports` | 2 |
 | `Feature/Security` | 7 |
 | `Feature/Services` | 1 |
-| `Feature/Settings` | 12 |
-| `Feature/Theme` | 8 |
+| `Feature/Settings` | 14 |
+| `Feature/Theme` | 9 |
 | `Support` | 1 |
 | `Unit` | 3 |
 | `Unit/Commands` | 1 |
@@ -192,6 +202,7 @@
 - `BC-07-stale-build.md`
 - `BC-08-workflow-dead-end.md`
 - `BC-09-ai-copy-artifact.md`
+- `BC-10-pagu-anggaran-per-skema-tidak-bisa-dieditdisimpan-modal-tamp.md`
 
 ## Dokumen acuan
 

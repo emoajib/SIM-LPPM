@@ -1,10 +1,11 @@
 # Changelog
 
-> Dihasilkan otomatis oleh `php artisan changelog:build` pada 2026-11-17.
+> Dihasilkan otomatis oleh `php artisan changelog:build` pada 2026-11-18.
 > Sumber: conventional commit. Jangan edit manual — jalankan ulang command.
 
 ## Fitur
 
+- [85288028](https://github.com/emoajib/SIM-LPPM/commit/85288028a27b0e869cedb0028679135a8e87e43d) — feat: standarisasi tata letak UI seluruh modul pengaturan modern ke level enterprise
 - **verifikasi-luaran** [c639eb2f](https://github.com/emoajib/SIM-LPPM/commit/c639eb2f3a986a1cb5426d70d898dea557988818) — feat(verifikasi-luaran): classic theme now renders the React page too
 - **verifikasi-luaran** [2189f2e6](https://github.com/emoajib/SIM-LPPM/commit/2189f2e6d53ab154e3313ae92625aede6784a823) — feat(verifikasi-luaran): classic theme now renders the verification page
 - **settings** [3e592de6](https://github.com/emoajib/SIM-LPPM/commit/3e592de6eb109f49f8541a491cebc71d62d0fbf1) — feat(settings): deep-link classic settings tabs from the modern hub
@@ -66,15 +67,10 @@
 - **uiux** [60e06f02](https://github.com/emoajib/SIM-LPPM/commit/60e06f02116abef673701f0b76cf6a6f4085cac2) — feat(uiux): breadcrumb di halaman Penelitian & Pengabdian (modern)
 - **fase1** [9b833df8](https://github.com/emoajib/SIM-LPPM/commit/9b833df82ef92db55c19627c27414458196bc64c) — feat(fase1): rate limit API proposals + health check (sudah ada)
 - **fase1** [40047d50](https://github.com/emoajib/SIM-LPPM/commit/40047d50fefd11f2eea9f885c58b787a7da5d760) — feat(fase1): konversi Pengabdian sub-modul (Perbaikan/Laporan/Realisasi) ke React
-- [2366c4d7](https://github.com/emoajib/SIM-LPPM/commit/2366c4d7debab98ff8c5b797b7b01e7f279debb5) — feat: tombol Buat Usulan untuk role dosen di modul Penelitian & Pengabdian (modern)
-- **uiux** [21215f72](https://github.com/emoajib/SIM-LPPM/commit/21215f72e799970c37410129fe0b1efb8d4f62e0) — feat(uiux): loading skeleton, error+retry, tooltip KPI (tahap 1)
-- [c0668aef](https://github.com/emoajib/SIM-LPPM/commit/c0668aef5cfa199e6ab807cb5807c0fb45b8b7b1) — feat: konversi Research FinalReport & DailyNote ke React (seragam dengan Usulan)
-- **fase2** [5d0fe10b](https://github.com/emoajib/SIM-LPPM/commit/5d0fe10b25c7a0365ae5d91887983465099ca512) — feat(fase2): pilot komponen React ResearchRevisionIndex + endpoint submodule revision
-- [b5eb4d34](https://github.com/emoajib/SIM-LPPM/commit/b5eb4d34bd02938ee76e5542656088aa623a0123) — feat: Penelitian & Pengabdian jadi link tunggal (modern) + tab in-page di semua sub-halaman
-- [5f77dde6](https://github.com/emoajib/SIM-LPPM/commit/5f77dde69aca07513b60c3f5fdfef49d05c6bf72) — feat: tambah tab in-page (Usulan/Perbaikan/Laporan/Realisasi) di modul Penelitian & Pengabdian (modern)
 
 ## Perbaikan
 
+- [f3d91416](https://github.com/emoajib/SIM-LPPM/commit/f3d914160988b7510cf2d03c39e39b4faf3fa353) — fix: pagu per-skema bisa diedit, tolak amandemen RAB, dashboard semua tipe [BC-10]
 - **verifikasi-luaran** [15a140d8](https://github.com/emoajib/SIM-LPPM/commit/15a140d8182fdf8e8be6863608eda8439f9d9084) — fix(verifikasi-luaran): hide module tab bar in classic theme
 - **modern** [7d0dce4d](https://github.com/emoajib/SIM-LPPM/commit/7d0dce4d30c687a2ff9ab0457780b6420c336501) — fix(modern): re-mount React on wire:navigate (SPA navigation)
 - **verifikasi-luaran** [e42aa467](https://github.com/emoajib/SIM-LPPM/commit/e42aa467a79ec3454a82fd3ec153be473267498f) — fix(verifikasi-luaran): sidebar/module-tabs link now points to the module page
@@ -147,18 +143,6 @@
 - [7d593b03](https://github.com/emoajib/SIM-LPPM/commit/7d593b032a3cf0ebcb5087fd434cc6c1254b422b) — fix: disable wire:navigate untuk modul modern (hindari blank)
 - [03024c47](https://github.com/emoajib/SIM-LPPM/commit/03024c479b7b9e12230a1af4da602ff45a364f83) — fix: Verifikasi Luaran jadi link (hindari blank iframe), tetap di tab bar
 - [5178ebbe](https://github.com/emoajib/SIM-LPPM/commit/5178ebbe080d983c449dd6cdb503caeec29ec627) — fix: gate module-tabs partial ke theme modern only (classic untouched)
-- [52497486](https://github.com/emoajib/SIM-LPPM/commit/524974864e9e1280841e0fd30caf018321b80b38) — fix: re-mount React pada wire:navigate (hindari blank load pertama)
-- [036d9f55](https://github.com/emoajib/SIM-LPPM/commit/036d9f55ed949d313e382d54b98759b70dbab2e2) — fix: mitigasi produksi React pages (no-store cache, error state, retry)
-- [68f0e041](https://github.com/emoajib/SIM-LPPM/commit/68f0e041a957a2d64d1a28c1dc66857c71cd53a4) — fix: hapus gradient header redundant Daftar Penelitian/Pengabdian (modern)
-- [e433b297](https://github.com/emoajib/SIM-LPPM/commit/e433b297377c6efed6db49f2022de9885e1d4251) — fix: sembunyikan page header redundant di halaman sub-modul Penelitian/Pengabdian (modern theme)
-- [581fe2da](https://github.com/emoajib/SIM-LPPM/commit/581fe2dabe3d70136451f8af4b7feddf7f91ec95) — fix: hapus duplikasi judul Daftar Penelitian/Pengabdian di theme modern (page header disembunyikan untuk React page)
-- [243905b7](https://github.com/emoajib/SIM-LPPM/commit/243905b79d736876e7bcf3cc26496189b08e4b8c) — fix: module-tabs include di dalam root element (hindari MultipleRootElements)
-- [c640919a](https://github.com/emoajib/SIM-LPPM/commit/c640919aa11fad13a8f8c4c1cae72b628117cbe5) — fix: undefined $isModern di MenuComposer (hitung theme lokal)
-- [4d40f31d](https://github.com/emoajib/SIM-LPPM/commit/4d40f31d11c5f84cbcb82232e278d3414ab06245) — fix: fallback title untuk Lainnya dropdown (hindari Undefined array key label)
-- [249bd411](https://github.com/emoajib/SIM-LPPM/commit/249bd4111c48e454b8c1dea382ce6b5df57e0517) — fix: perbaikan mendalam tata letak modul surat (overflow hidden, tabs min-width, search row, kolom stabil, FAB mobile)
-- [d4fd5a9c](https://github.com/emoajib/SIM-LPPM/commit/d4fd5a9c679907498368f4596aae5f96f0a8235d) — fix: rapihkan tata letak modul surat (tabs scroll, sticky header, empty state, FAB conditional)
-- [d5d439b9](https://github.com/emoajib/SIM-LPPM/commit/d5d439b978bf1ae2400545e5583056fc5b206d0e) — fix: mitigasi tata letak modul surat (tabs scroll, sticky header, FAB spacing, empty state) tanpa ubah layout
-- [640e8c04](https://github.com/emoajib/SIM-LPPM/commit/640e8c0474fdbcac3fd9a4598415bd4f66b6f5c2) — fix: hapus Lainnya kosong di role dosen (overflow dihitung setelah role-filter)
 
 ## Performa
 
@@ -166,6 +150,23 @@
 
 ## Lainnya
 
+- **settings** [13ee48ae](https://github.com/emoajib/SIM-LPPM/commit/13ee48ae5a8ed1c6d4e0ecf7ea935aaa61d6d94b) — ui(settings): change action button color to purple (emerald toggle stays green)
+- **feature-flags,captcha** [d814dbb1](https://github.com/emoajib/SIM-LPPM/commit/d814dbb1ea04f72087b14f4ad901be1f08bb2f10) — ui(feature-flags,captcha): change toggle on-state color to green (emerald)
+- **feature-flags,captcha** [834d4853](https://github.com/emoajib/SIM-LPPM/commit/834d4853e97b04dc079915208de0b45eb41d4359) — ui(feature-flags,captcha): improve toggle contrast (darker track + border + knob shadow)
+- **settings** [34bad900](https://github.com/emoajib/SIM-LPPM/commit/34bad9002e5394cd9084dfb469f935c927e0a58e) — ui(settings): stack form input columns to single-column to prevent margin overflow
+- **settings** [a6615ec0](https://github.com/emoajib/SIM-LPPM/commit/a6615ec018e6dee6854f994acd6b22110051bfe6) — ui(settings): revert to Tabler two-column layout matching classic theme
+- **settings** [2935f076](https://github.com/emoajib/SIM-LPPM/commit/2935f076c42253fd831b8ca080e857a7cb18d3d5) — ui(settings): remove max-w mx-auto so body margin follows header margin
+- **settings** [70d0237c](https://github.com/emoajib/SIM-LPPM/commit/70d0237c1d8da53ecb404e6d16b9d31049978fab) — ui(settings): constrain all modern settings pages to max-w-4xl mx-auto
+- **settings** [8bddb5cf](https://github.com/emoajib/SIM-LPPM/commit/8bddb5cfca3edacac31b7ae53509e588aefeab97) — ui(settings): add max-w-4xl mx-auto to remaining modern settings pages
+- **profile+notification-config** [a22edb55](https://github.com/emoajib/SIM-LPPM/commit/a22edb5583048c5ed1600c074e2a702b03634815) — ui(profile+notification-config): constrain to max-w-4xl mx-auto to prevent overflow
+- **profile** [b7037cfd](https://github.com/emoajib/SIM-LPPM/commit/b7037cfd568363879369611494f1fe0eb0322da7) — ui(profile): constrain to max-w-4xl mx-auto to prevent overflow
+- **settings** [e35d095d](https://github.com/emoajib/SIM-LPPM/commit/e35d095d1331f8a4e7c70cebd416a9feb3c85be3) — ui(settings): simplify content area (remove stats cards clutter)
+- **settings** [e137cd77](https://github.com/emoajib/SIM-LPPM/commit/e137cd77db06758baf9565b04e9af99eb5617247) — ui(settings): adopt classic two-column layout (sidebar list + content)
+- **settings** [2615435b](https://github.com/emoajib/SIM-LPPM/commit/2615435ba2fb611c2adea453d74fb2ed5917791c) — ui(settings): convert Pusat Pengaturan from card grid to compact list layout
+- **settings+verifikasi** [9be17d44](https://github.com/emoajib/SIM-LPPM/commit/9be17d4466f3b028304cee09d073433bef866fe9) — ui(settings+verifikasi): adopt production UI standards
+- **verifikasi+settings** [8ad8bc40](https://github.com/emoajib/SIM-LPPM/commit/8ad8bc405194fa8a377fb3f4fe29a1956ab0af6e) — ui(verifikasi+settings): widen Judul Output column, constrain settings to max-w-7xl
+- **settings+verifikasi** [57ec787c](https://github.com/emoajib/SIM-LPPM/commit/57ec787cd4ace84c6a1b85778de2292e1dca11e3) — ui(settings+verifikasi): add page titles and improve layout neatness
+- [76cc0271](https://github.com/emoajib/SIM-LPPM/commit/76cc0271af977ad859e832569338ec8ca9a2d2da) — chore: rebuild changelog via changelog:build
 - **settings** [5c40d408](https://github.com/emoajib/SIM-LPPM/commit/5c40d408800c417e0cb9d9b792441f8f6bf2c477) — chore(settings): hub fallback tabs for feature-flags and captcha
 - **settings** [400994ce](https://github.com/emoajib/SIM-LPPM/commit/400994ce08cb6038cab923641c6305b33df44742) — docs(settings): record the mechanical zero-gap guarantees
 - [79269220](https://github.com/emoajib/SIM-LPPM/commit/79269220caef26fd6efc5811e7d3ac5e898dd78f) — docs: riwayat pengembangan lengkap + update status Sentry & ContractManager
@@ -213,4 +214,3 @@
 - [7ce4df1e](https://github.com/emoajib/SIM-LPPM/commit/7ce4df1e847f296cd221cfad27ba6cdaa1362f07) — build: rebuild Vite assets with modern theme bug fixes
 - [7a343895](https://github.com/emoajib/SIM-LPPM/commit/7a343895eaa191c153691c8d01bfc2c671f8adb9) — refactor: konsolidasi modernPageMap (single source) + hapus debug log
 - [43a2aed5](https://github.com/emoajib/SIM-LPPM/commit/43a2aed583287af04a432db53fbeabe0fe800094) — debug: logging mountModern + re-render on navigate
-- [21893f7d](https://github.com/emoajib/SIM-LPPM/commit/21893f7df45f0886b89fc14a54bd8b5305c7d711) — debug: tambah console.log di PengabdianIndex load
