@@ -5,6 +5,7 @@ namespace App\Livewire\Settings\Tabs;
 use App\Livewire\Concerns\HasToast;
 use App\Models\BudgetComponent;
 use App\Models\BudgetGroup;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -40,6 +41,19 @@ class BudgetComponentManager extends Component
     public ?int $filterGroupId = null;
 
     public ?string $filterProposalType = null;
+
+    /**
+     * Authorization check - budget master data is Admin LPPM only.
+     *
+     * Parity with BudgetCapManager::mount(); superadmin inherits via
+     * User::activeHasRole(). See BC-02 (active role) and BC-08 (workflow dead end).
+     */
+    public function mount(): void
+    {
+        if (! Auth::user()?->activeHasRole('admin lppm')) {
+            abort(403, 'Hanya Admin LPPM yang dapat mengakses pengaturan anggaran.');
+        }
+    }
 
     public function render()
     {

@@ -30,7 +30,8 @@ export default function DashboardIndex() {
         prototipe: 0,
     });
     const [proposals, setProposals] = useState([]);
-    const [meta, setMeta] = useState({ current_page: 1, last_page: 1, total: 0 });
+    const [meta, setMeta] = useState({ current_page: 1, last_page: 1, per_page: 15, total: 0 });
+    const [page, setPage] = useState(1);
     const [search, setSearch] = useState("");
     const [status, setStatus] = useState("all");
     const [typeFilter, setTypeFilter] = useState("all");
@@ -59,16 +60,15 @@ export default function DashboardIndex() {
         }
     };
 
-    const loadProposals = async () => {
+    const loadProposals = async (targetPage = 1) => {
         setLoading(true);
         try {
-            const params = new URLSearchParams({ search, status, page: 1 });
-            if (typeFilter !== "all") params.set("type", typeFilter);
-            else params.set("type", "research");
+            const params = new URLSearchParams({ search, status, page: String(targetPage), type: typeFilter });
             const res = await fetch(`/research/api/v1/proposals?${params.toString()}`, { credentials: "same-origin" });
             const json = await res.json();
             setProposals(json.data || []);
             setMeta(json.meta || meta);
+            setPage(json.meta?.current_page || targetPage);
         } catch (e) {
             console.error(e);
         } finally {
@@ -78,16 +78,37 @@ export default function DashboardIndex() {
 
     useEffect(() => {
         loadStats();
-        loadProposals();
+        loadProposals(1);
     }, []);
 
     useEffect(() => {
-        loadProposals();
+        // Filter change always starts from page 1 so row numbers restart at 1.
+        loadProposals(1);
     }, [typeFilter]);
+
+    const changePage = (nextPage) => {
+        if (loading) return;
+        if (nextPage < 1 || nextPage > (meta.last_page || 1)) return;
+        loadProposals(nextPage);
+    };
+
+    // Sequential row number across pages: 1, 2, 3, ... per dataset.
+    const rowNumber = (rowIdx) => {
+        const perPage = meta.per_page || 15;
+        const currentPage = meta.current_page || 1;
+        return (currentPage - 1) * perPage + rowIdx + 1;
+    };
 
     const total = stats.penelitian + stats.pengabdian + stats.surat + stats.prototipe;
 
     const columns = [
+        {
+            key: "row_number",
+            label: "No",
+            align: "center",
+            cellClassName: "text-slate-500 dark:text-slate-400 font-semibold w-10",
+            render: (_p, rowIdx) => rowNumber(rowIdx),
+        },
         {
             key: "title",
             label: "Judul",
@@ -271,7 +292,7 @@ export default function DashboardIndex() {
                             value={search}
                             aria-label="Cari judul proposal di dashboard"
                             onChange={(e) => setSearch(e.target.value)}
-                            onKeyDown={(e) => e.key === "Enter" && loadProposals()}
+                            onKeyDown={(e) => e.key === "Enter" && loadProposals(1)}
                             placeholder="Ketik judul usulan lalu tekan enter..."
                             className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
                         />
@@ -305,7 +326,7 @@ export default function DashboardIndex() {
                             <option value="completed">Selesai</option>
                         </select>
                     </div>
-                    <Button onClick={loadProposals} variant="primary" size="md">
+                    <Button onClick={() => loadProposals(1)} variant="primary" size="md">
                         Cari
                     </Button>
                 </div>
@@ -316,13 +337,33 @@ export default function DashboardIndex() {
                     loading={loading}
                     emptyIcon="ti ti-certificate"
                     emptyTitle="Tidak ada data usulan"
-                    emptyDescription="Belum ada usulan penelitian yang tercatat."
+                    emptyDescription="Belum ada usulan yang tercatat untuk filter ini."
                     ariaLabel="Tabel Usulan Terkini"
                 />
 
                 {meta.last_page > 1 && (
-                    <div className="mt-4 text-xs text-slate-500 dark:text-slate-400">
-                        Halaman {meta.current_page} dari {meta.last_page} · Total {meta.total} usulan
+                    <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400">
+                        <div>
+                            Halaman {meta.current_page} dari {meta.last_page} · Total {meta.total} usulan
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <button
+                                type="button"
+                                onClick={() => changePage((meta.current_page || page) - 1)}
+                                disabled={loading || (meta.current_page || 1) <= 1}
+                                className="px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                            >
+                                &larr; Sebelumnya
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => changePage((meta.current_page || page) + 1)}
+                                disabled={loading || (meta.current_page || 1) >= meta.last_page}
+                                className="px-3 py-1.5 rounded-md border border-slate-300 dark:border-slate-600 font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                            >
+                                Berikutnya &rarr;
+                            </button>
+                        </div>
                     </div>
                 )}
             </ModernPageCard>

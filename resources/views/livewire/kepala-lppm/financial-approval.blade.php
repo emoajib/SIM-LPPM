@@ -133,15 +133,15 @@
     <!-- Table of Proposals -->
     <div class="card border-0 shadow-sm">
         <div class="px-3 py-2 border-bottom bg-light">
-            <label class="form-label small mb-1">Catatan keputusan amandemen</label>
-            <textarea wire:model="decisionNotes" class="form-control form-control-sm" rows="1" placeholder="Opsional saat menyetujui; wajib minimal 5 karakter saat menolak."></textarea>
+            <label class="form-label small mb-1">Catatan persetujuan amandemen (opsional)</label>
+            <textarea wire:model="decisionNotes" class="form-control form-control-sm" rows="1" placeholder="Opsional saat menyetujui. Catatan penolakan diisi lewat modal pada kolom Amandemen."></textarea>
         </div>
         @if (($this->stats['blocked_amendment'] ?? 0) > 0)
             <div class="alert alert-warning d-flex align-items-center gap-2 mx-3 mt-2 mb-0">
                 <i class="ti ti-alert-triangle"></i>
                 <div>
                     <strong>{{ $this->stats['blocked_amendment'] }} LPJ</strong> terblokir karena amandemen RAB pending yang alokasi barunya lebih kecil dari realisasi.
-                    Gunakan tombol <strong>Tolak Amandemen</strong> (merah) pada kolom Amandemen, atau minta dosen menyesuaikan alokasi agar tidak di bawah realisasi.
+                    Klik <strong>Tolak Amandemen</strong> (merah) pada kolom Amandemen — catatan penolakan wajib diisi lewat modal — atau minta dosen menyesuaikan alokasi agar tidak di bawah realisasi.
                 </div>
             </div>
         @endif
@@ -173,6 +173,10 @@ logbook_approved_at !== null;
                                 : route('community-service.daily-note.show', $proposal);
 
                             $isPkm = $proposal->detailable_type === 'App\Models\CommunityService';
+
+                            $pendingAmd = $proposal->budgetAmendments
+                                ->firstWhere('status', \App\Enums\BudgetAmendmentStatus::PENDING->value);
+                            $amdViolations = $this->amendmentViolations[$proposal->id] ?? [];
                         @endphp
                         <tr wire:key="prop-{{ $proposal->id }}">
                             <td>
@@ -258,22 +262,42 @@ logbook_approved_at !== null;
                                 @endif
                             </td>
                             <td>
-                                @php
-                                    $pendingAmd = $proposal->budgetAmendments->firstWhere('status', \App\Enums\BudgetAmendmentStatus::PENDING->value);
-                                @endphp
                                 @if ($pendingAmd)
                                     <span class="badge bg-warning-lt d-inline-flex align-items-center gap-1 mb-1">
                                         <i class="ti ti-alert-triangle"></i> v{{ $pendingAmd->version }} pending
                                     </span>
                                     <div class="small text-muted mb-1" style="font-size:0.7rem;">{{ $pendingAmd->requester->name ?? '-' }}</div>
+
+                                    @if ($amdViolations !== [])
+                                        <div class="alert alert-danger py-1 px-2 mb-2" style="font-size:0.72rem;">
+                                            <div class="fw-bold mb-1">Alokasi baru di bawah realisasi:</div>
+                                            <ul class="mb-0 ps-3">
+                                                @foreach ($amdViolations as $violation)
+                                                    <li>
+                                                        {{ $violation['group'] }}: realisasi
+                                                        Rp {{ number_format($violation['used'], 0, ',', '.') }}
+                                                        &gt; alokasi baru
+                                                        Rp {{ number_format($violation['allocation'], 0, ',', '.') }}
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endif
+
                                     @if (auth()->user()?->activeHasAnyRole(['kepala lppm', 'admin lppm', 'superadmin']))
                                         <div class="btn-list flex-nowrap">
-                                            <button type="button" class="btn btn-sm btn-success" wire:click="approveAmendment('{{ $pendingAmd->id }}')"
-                                                wire:confirm="Setujui amandemen RAB v{{ $pendingAmd->version }}? RAB aktif akan diperbarui.">
-                                                <i class="ti ti-check me-1"></i>Setujui
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-danger" wire:click="rejectAmendment('{{ $pendingAmd->id }}')"
-                                                wire:confirm="Tolak amandemen RAB v{{ $pendingAmd->version }}? Amandemen akan ditolak dan LPJ dapat disahkan dengan RAB awal.">
+                                            @if ($amdViolations !== [])
+                                                <button type="button" class="btn btn-sm btn-success" disabled
+                                                    title="Tidak dapat disetujui: alokasi baru lebih kecil dari realisasi. Tolak amandemen atau minta dosen menyesuaikan alokasi.">
+                                                    <i class="ti ti-check me-1"></i>Setujui
+                                                </button>
+                                            @else
+                                                <button type="button" class="btn btn-sm btn-success" wire:click="approveAmendment('{{ $pendingAmd->id }}')"
+                                                    wire:confirm="Setujui amandemen RAB v{{ $pendingAmd->version }}? RAB aktif akan diperbarui.">
+                                                    <i class="ti ti-check me-1"></i>Setujui
+                                                </button>
+                                            @endif
+                                            <button type="button" class="btn btn-sm btn-danger" wire:click="openRejectModal('{{ $pendingAmd->id }}')">
                                                 <i class="ti ti-x me-1"></i>Tolak Amandemen
                                             </button>
                                         </div>
@@ -313,17 +337,24 @@ logbook_approved_at !== null;
                                         @endif
                                     @else
                                         @if (auth()->user()?->activeHasAnyRole(['kepala lppm', 'admin lppm', 'superadmin']))
-                                            <button type="button" wire:click="approveLpj('{{ $proposal->id }}')" class="btn btn-sm btn-success"
-                                                wire:confirm="Sahkan Laporan Keuangan (LPJ) untuk proposal ini?"
-                                                wire:loading.attr="disabled">
-                                                <span wire:loading.remove wire:target="approveLpj('{{ $proposal->id }}')">
-                                                    
-                                                    Sahkan LPJ
-                                                </span>
-                                                <span wire:loading wire:target="approveLpj('{{ $proposal->id }}')">
-                                                    <span class="spinner-border spinner-border-sm"></span>
-                                                </span>
-                                            </button>
+                                            @if ($pendingAmd)
+                                                <button type="button" class="btn btn-sm btn-success" disabled
+                                                    title="LPJ belum bisa disahkan: masih ada amandemen RAB pending. Putuskan amandemen terlebih dahulu.">
+                                                    <i class="ti ti-lock me-1"></i>Sahkan LPJ
+                                                </button>
+                                            @else
+                                                <button type="button" wire:click="approveLpj('{{ $proposal->id }}')" class="btn btn-sm btn-success"
+                                                    wire:confirm="Sahkan Laporan Keuangan (LPJ) untuk proposal ini?"
+                                                    wire:loading.attr="disabled">
+                                                    <span wire:loading.remove wire:target="approveLpj('{{ $proposal->id }}')">
+                                                        
+                                                        Sahkan LPJ
+                                                    </span>
+                                                    <span wire:loading wire:target="approveLpj('{{ $proposal->id }}')">
+                                                        <span class="spinner-border spinner-border-sm"></span>
+                                                    </span>
+                                                </button>
+                                            @endif
                                             @if ($scanMedia || $proposal->dailyNotes->count() > 0)
                                                 <button type="button" wire:click="openReturnModal('{{ $proposal->id }}')" class="btn btn-sm btn-outline-warning"
                                                     data-bs-toggle="modal" data-bs-target="#modalReturnLpj" title="Kembalikan LPJ ke dosen beserta catatan perbaikan">
@@ -381,6 +412,38 @@ Batal</button>
                 <span wire:loading wire:target="returnToDosen">
                     <span class="spinner-border spinner-border-sm me-1"></span>
                     Memproses...
+                </span>
+            </button>
+        </x-slot:footer>
+    </x-tabler.modal>
+
+    <!-- Modal: Tolak Amandemen RAB -->
+    <x-tabler.modal id="modalRejectAmendment" title="Tolak Amandemen RAB" size="md" wire:ignore.self>
+        <x-slot:body>
+            <p class="text-secondary small">
+                Catatan penolakan wajib diisi (minimal 5 karakter). Catatan ini dikirim ke dosen pengaju
+                sebagai alasan penolakan sekaligus arahan perbaikan. Setelah ditolak, LPJ dapat disahkan
+                dengan RAB awal.
+            </p>
+            <label class="form-label required" for="rejectionNotes">Catatan Penolakan (min. 5 karakter)</label>
+            <textarea wire:model="rejectionNotes" id="rejectionNotes" rows="6"
+                class="form-control @error('rejectionNotes') is-invalid @enderror"
+                placeholder="Contoh: Alokasi Biaya Perjalanan lebih kecil dari realisasi. Mohon sesuaikan alokasi lalu ajukan ulang."></textarea>
+            @error('rejectionNotes')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </x-slot:body>
+        <x-slot:footer>
+            <button type="button" class="btn btn-ghost-secondary d-flex align-items-center gap-2" data-bs-dismiss="modal" wire:click="closeRejectModal">
+                <i class="ti ti-x me-1" aria-hidden="true"></i>Batal
+            </button>
+            <button type="button" class="btn btn-danger d-flex align-items-center gap-2" wire:click="rejectAmendment"
+                wire:loading.attr="disabled" wire:target="rejectAmendment">
+                <span wire:loading.remove wire:target="rejectAmendment">
+                    <i class="ti ti-x me-1" aria-hidden="true"></i>Tolak Amandemen
+                </span>
+                <span wire:loading wire:target="rejectAmendment">
+                    <span class="spinner-border spinner-border-sm me-1"></span>Memproses...
                 </span>
             </button>
         </x-slot:footer>

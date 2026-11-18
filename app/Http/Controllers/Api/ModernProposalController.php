@@ -33,7 +33,10 @@ class ModernProposalController
         $status = $request->get('status', 'all');
         $year = $request->get('year', '');
         $academicYear = $request->get('academic_year', '');
-        $type = $request->get('type', 'research');
+        $type = (string) $request->get('type', 'research');
+        if (! in_array($type, ['research', 'community-service', 'all'], true)) {
+            $type = 'research';
+        }
         $roleFilter = $request->get('role', 'all');
         $facultyId = $request->get('faculty_id');
         $studyProgramId = $request->get('study_program_id');
@@ -49,8 +52,34 @@ class ModernProposalController
             $queryRelations[] = 'latestFinalReport';
         }
 
-        $query = Proposal::with($queryRelations)
-            ->where('detailable_type', $type === 'research' ? 'App\\Models\\Research' : CommunityService::class);
+        // "all" = dashboard mode: both research and community service in one list,
+        // limited to modules the user is actually allowed to open (module_penelitian
+        // / module_pengabdian). Prevents a user who only has one module from seeing
+        // the other module's rows through this shared endpoint.
+        $query = Proposal::with($queryRelations);
+
+        if ($type === 'all') {
+            $allowedTypes = [];
+            if ($user->can('module_penelitian')) {
+                $allowedTypes[] = Research::class;
+            }
+            if ($user->can('module_pengabdian')) {
+                $allowedTypes[] = CommunityService::class;
+            }
+
+            if ($allowedTypes === []) {
+                $query->whereRaw('1=0');
+            } else {
+                $query->whereIn('detailable_type', $allowedTypes);
+            }
+        } else {
+            $moduleAbility = $type === 'research' ? 'module_penelitian' : 'module_pengabdian';
+            if (! $user->can($moduleAbility)) {
+                $query->whereRaw('1=0');
+            } else {
+                $query->where('detailable_type', $type === 'research' ? Research::class : CommunityService::class);
+            }
+        }
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -66,7 +95,14 @@ class ModernProposalController
             $query->whereHas('submitter.identity', fn ($si) => $si->where('study_program_id', $studyProgramId));
         }
         if ($schemeId) {
-            $query->where($type === 'research' ? 'research_scheme_id' : 'community_service_scheme_id', $schemeId);
+            if ($type === 'all') {
+                $query->where(function ($q) use ($schemeId) {
+                    $q->where('research_scheme_id', $schemeId)
+                        ->orWhere('community_service_scheme_id', $schemeId);
+                });
+            } else {
+                $query->where($type === 'research' ? 'research_scheme_id' : 'community_service_scheme_id', $schemeId);
+            }
         }
         if ($status && $status !== 'all') {
             // Untuk Laporan Akhir, "status" berarti status laporan (progress report),
@@ -144,7 +180,9 @@ class ModernProposalController
             });
         }
 
-        $proposals = $query->latest()->paginate(15);
+        // Deterministic order: created_at desc, id as tiebreaker so numbering
+        // in the UI stays stable when two rows share the same timestamp.
+        $proposals = $query->orderByDesc('created_at')->orderByDesc('id')->paginate(15);
 
         $stats = $statsBase === null ? null : $this->finalReportStatistics($statsBase);
 
@@ -165,7 +203,7 @@ class ModernProposalController
                 'report_status_label' => $submodule === 'final-report'
                     ? $this->finalReportStatusLabel($p)
                     : null,
-                'show_url' => $this->showUrl($type, $submodule, $p),
+                'show_url' => $this->showUrl($submodule, $p),
                 'budget_total' => $submodule === 'daily-note'
                     ? (float) $p->budgetItems->where('is_active', true)->sum('total_price')
                     : null,
@@ -176,6 +214,7 @@ class ModernProposalController
             'meta' => [
                 'current_page' => $proposals->currentPage(),
                 'last_page' => $proposals->lastPage(),
+                'per_page' => $proposals->perPage(),
                 'total' => $proposals->total(),
                 'stats' => $stats,
             ],
@@ -190,10 +229,14 @@ class ModernProposalController
      *
      * Sebelumnya selalu mengarah ke proposal.show, sehingga tautan "Lihat"
      * di halaman revision/final-report/daily-note salah sasaran.
+     *
+     * Prefix modul diturunkan dari detailable_type proposal, bukan dari
+     * parameter `type` request: pada mode "all" (dashboard) satu halaman bisa
+     * memuat penelitian dan pengabdian sekaligus (BC-03).
      */
-    private function showUrl(string $module, string $submodule, Proposal $proposal): string
+    private function showUrl(string $submodule, Proposal $proposal): string
     {
-        $prefix = $module === 'community-service' ? 'community-service' : 'research';
+        $prefix = $proposal->detailable_type === Research::class ? 'research' : 'community-service';
         $suffix = match ($submodule) {
             'daily-note' => 'daily-note.show',
             'final-report' => 'final-report.show',

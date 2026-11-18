@@ -13,4 +13,4 @@
 2. Base URL/API base wajib module-aware (jangan hardcode `/research`).
 3. Perubahan payload wajib memperbarui snapshot.
 
-**Kasus:** 2026-11-13 (field hilang, base URL).
+**Kasus:** 2026-11-13 (field hilang, base URL). 2026-11-18 (dashboard modern: `type=all` dipaksa `research` + `show_url` memakai prefix request, bukan modul baris).

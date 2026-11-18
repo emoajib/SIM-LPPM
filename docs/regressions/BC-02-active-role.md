@@ -13,4 +13,4 @@
 2. Setiap endpoint yang filter data user wajib cek kepemilikan di controller/policy (BOLA).
 3. Superadmin diwarisi ke admin lppm di semua titik global-role.
 
-**Kasus:** 2026-11-12 (32 titik); 2026-11-13 (superadmin 0 data).
+**Kasus:** 2026-11-12 (32 titik); 2026-11-13 (superadmin 0 data); 2026-11-18 (tab anggaran master data: guard `mount()` disamakan, dekan/kaprodi tidak lagi bisa CRUD kelompok/komponen).

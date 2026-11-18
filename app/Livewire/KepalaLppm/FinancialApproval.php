@@ -56,6 +56,10 @@ class FinancialApproval extends Component
 
     public string $decisionNotes = '';
 
+    public ?string $rejectingAmendmentId = null;
+
+    public string $rejectionNotes = '';
+
     public function mount(): void
     {
         abort_unless(Auth::user()?->activeHasAnyRole(['kepala lppm', 'admin lppm', 'superadmin', 'rektor']), 403);
@@ -203,23 +207,35 @@ class FinancialApproval extends Component
 
         unset($this->proposals);
         unset($this->stats);
+        unset($this->amendmentViolations);
     }
 
-    public function rejectAmendment(string $amendmentId): void
+    public function rejectAmendment(?string $amendmentId = null): void
     {
         abort_unless(Auth::user()?->activeHasAnyRole(['kepala lppm', 'admin lppm', 'superadmin']), 403);
 
-        if (mb_strlen(trim($this->decisionNotes)) < 5) {
-            $this->toastError('Catatan penolakan amandemen minimal 5 karakter.');
+        $amendmentId = $amendmentId ?: $this->rejectingAmendmentId;
 
+        if (! $amendmentId) {
             return;
         }
 
+        // Catatan penolakan wajib dan divalidasi inline di modal, agar Kepala
+        // LPPM tidak menekan tombol lalu "tidak terjadi apa-apa" (BC-08).
+        $this->validate([
+            'rejectionNotes' => 'required|string|min:5|max:2000',
+        ], [
+            'rejectionNotes.required' => 'Catatan penolakan wajib diisi agar dosen tahu alasan dan cara memperbaikinya.',
+            'rejectionNotes.min' => 'Catatan penolakan minimal 5 karakter.',
+            'rejectionNotes.max' => 'Catatan penolakan maksimal 2000 karakter.',
+        ]);
+
         try {
             $amendment = BudgetAmendment::findOrFail($amendmentId);
-            app(BudgetAmendmentService::class)->reject($amendment, Auth::user(), $this->decisionNotes);
+            app(BudgetAmendmentService::class)->reject($amendment, Auth::user(), $this->rejectionNotes);
             $this->reset('decisionNotes');
-            $this->toastSuccess('Amandemen RAB ditolak.');
+            $this->closeRejectModal();
+            $this->toastSuccess('Amandemen RAB ditolak. LPJ dapat disahkan dengan RAB awal.');
 
             ActivityLog::create([
                 'user_id' => Auth::id(),
@@ -238,6 +254,85 @@ class FinancialApproval extends Component
 
         unset($this->proposals);
         unset($this->stats);
+        unset($this->amendmentViolations);
+    }
+
+    /**
+     * Buka modal penolakan amandemen dengan catatan yang sudah terisi.
+     *
+     * Catatan sebelumnya berada di satu textarea di atas tabel sehingga
+     * tombol "Tolak Amandemen" di baris tabel terasa tidak berfungsi.
+     */
+    public function openRejectModal(string $amendmentId): void
+    {
+        abort_unless(Auth::user()?->activeHasAnyRole(['kepala lppm', 'admin lppm', 'superadmin']), 403);
+
+        $amendment = BudgetAmendment::with('items')->findOrFail($amendmentId);
+        $violations = app(BudgetAmendmentService::class)
+            ->allocationViolations($amendment->proposal, $amendment);
+
+        $this->rejectingAmendmentId = $amendment->id;
+        $this->rejectionNotes = $this->buildRejectionDraft($violations);
+        $this->resetValidation('rejectionNotes');
+
+        $this->dispatch('open-modal', modalId: 'modalRejectAmendment');
+    }
+
+    public function closeRejectModal(): void
+    {
+        $this->rejectingAmendmentId = null;
+        $this->rejectionNotes = '';
+        $this->resetValidation('rejectionNotes');
+    }
+
+    /**
+     * @param  array<int, array{group: string, used: float, allocation: float}>  $violations
+     */
+    protected function buildRejectionDraft(array $violations): string
+    {
+        if ($violations === []) {
+            return 'Amandemen RAB ditolak. Mohon sesuaikan kembali rencana anggaran dan ajukan ulang bila diperlukan.';
+        }
+
+        $lines = ['Alokasi baru di bawah realisasi yang sudah tercatat:'];
+        foreach ($violations as $violation) {
+            $lines[] = '- '.$violation['group'].': realisasi Rp '.number_format($violation['used'], 0, ',', '.').
+                ' > alokasi baru Rp '.number_format($violation['allocation'], 0, ',', '.');
+        }
+        $lines[] = 'Mohon sesuaikan alokasi agar tidak lebih kecil dari realisasi, lalu ajukan amandemen ulang.';
+
+        return implode("\n", $lines);
+    }
+
+    /**
+     * Pelanggaran realisasi vs alokasi baru per proposal, untuk proposal di
+     * halaman aktif. Nilainya dipakai UI agar tombol "Setujui" dinonaktifkan
+     * sebelum diklik, bukan gagal setelahnya.
+     *
+     * @return array<string, array<int, array{group_id: int, group: string, used: float, allocation: float}>>
+     */
+    #[Computed]
+    public function amendmentViolations(): array
+    {
+        $service = app(BudgetAmendmentService::class);
+        $violations = [];
+
+        foreach ($this->proposals as $proposal) {
+            $pending = $proposal->budgetAmendments
+                ->firstWhere('status', BudgetAmendmentStatus::PENDING->value);
+
+            if (! $pending) {
+                continue;
+            }
+
+            $found = $service->allocationViolations($proposal, $pending);
+
+            if ($found !== []) {
+                $violations[$proposal->id] = $found;
+            }
+        }
+
+        return $violations;
     }
 
     protected function clearFinancialPdfCache(string $proposalId): void

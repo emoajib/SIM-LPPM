@@ -13,4 +13,4 @@
 2. Gating modul hanya menutup *pembuatan* baru; akses baca/unduh/verifikasi surat lama tetap hidup.
 3. Perubahan flag wajib menginvalidasi cache menu (`menu_cache_version`).
 
-**Kasus:** 2026-11-13 (LPJ–amandemen); 2026-11-12 (surat saat modul off).
+**Kasus:** 2026-11-13 (LPJ–amandemen); 2026-11-12 (surat saat modul off); 2026-11-18 (catatan penolakan amandemen wajib lewat modal + tombol Setujui dinonaktifkan saat alokasi baru < realisasi).

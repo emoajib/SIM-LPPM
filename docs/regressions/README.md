@@ -31,6 +31,7 @@ halaman/modul baru. Tiap kelas memiliki:
 | BC-07 | Stale build asset (deploy tanpa `npm run build`) | `BC07StaleBuildTest`, BC-07 commit-level di CI |
 | BC-08 | Workflow dead-end (LPJ–amandemen, surat saat modul off) | `FinancialApprovalTest`, `LetterModuleGatingTest` |
 | BC-09 | Artefak copy/placeholder AI (teks liar di UI, marker generik) | `copy:check`, `ModernBreadcrumbTest`, `CopyCheckTest` |
+| BC-10 | Alpine `$watch` string dot-path (directive queue mati, modal read-only) | `BC10AlpineDotPathWatchTest`, `BudgetCapManagerTest` |
 
 Detail tiap kelas: lihat file `BC-0x-*.md`.
 

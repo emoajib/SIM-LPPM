@@ -292,9 +292,15 @@ class BudgetAmendmentService
     }
 
     /**
-     * Pastikan realisasi yang sudah dicatat muat dalam alokasi baru.
+     * Daftar kelompok anggaran yang realisasi tercatatnya melebihi alokasi baru.
+     *
+     * Dipakai bersama oleh guard backend (assertRealizationFits) dan UI Kepala
+     * LPPM agar tombol "Setujui" bisa dinonaktifkan lebih awal, bukan gagal
+     * setelah diklik.
+     *
+     * @return array<int, array{group_id: int, group: string, used: float, allocation: float}>
      */
-    protected function assertRealizationFits(Proposal $proposal, BudgetAmendment $amendment): void
+    public function allocationViolations(Proposal $proposal, BudgetAmendment $amendment): array
     {
         $newAllocations = [];
         foreach ($amendment->items as $item) {
@@ -309,17 +315,38 @@ class BudgetAmendmentService
         foreach ($newAllocations as $groupId => $allocation) {
             $used = (float) $proposal->dailyNotes()->where('budget_group_id', $groupId)->sum('amount');
             if ($used > $allocation) {
-                $groupName = BudgetGroup::whereKey($groupId)->value('name') ?? "Kelompok #{$groupId}";
-                $violations[] = "{$groupName}: terpakai Rp ".number_format($used, 0, ',', '.').' melebihi alokasi baru Rp '.number_format($allocation, 0, ',', '.');
+                $violations[] = [
+                    'group_id' => $groupId,
+                    'group' => BudgetGroup::whereKey($groupId)->value('name') ?? "Kelompok #{$groupId}",
+                    'used' => $used,
+                    'allocation' => $allocation,
+                ];
             }
         }
 
-        if ($violations !== []) {
-            throw ValidationException::withMessages(['amendment' => array_merge(
-                ['Realisasi yang sudah dicatat melebihi alokasi baru. Tolak amandemen ini, atau minta dosen menyesuaikan alokasi agar tidak di bawah realisasi:'],
-                $violations
-            )]);
+        return $violations;
+    }
+
+    /**
+     * Pastikan realisasi yang sudah dicatat muat dalam alokasi baru.
+     */
+    protected function assertRealizationFits(Proposal $proposal, BudgetAmendment $amendment): void
+    {
+        $violations = $this->allocationViolations($proposal, $amendment);
+
+        if ($violations === []) {
+            return;
         }
+
+        $messages = array_map(
+            fn (array $v) => "{$v['group']}: terpakai Rp ".number_format($v['used'], 0, ',', '.').' melebihi alokasi baru Rp '.number_format($v['allocation'], 0, ',', '.'),
+            $violations
+        );
+
+        throw ValidationException::withMessages(['amendment' => array_merge(
+            ['Realisasi yang sudah dicatat melebihi alokasi baru. Tolak amandemen ini, atau minta dosen menyesuaikan alokasi agar tidak di bawah realisasi:'],
+            $messages
+        )]);
     }
 
     /**

@@ -133,23 +133,30 @@
 
                     @if ($group === 'budget')
                         <h4 class="subheader d-flex align-items-center gap-2"><i class="ti ti-cash" aria-hidden="true"></i>Anggaran &amp; RAB</h4>
-                        <div class="list-group list-group-transparent">
-                            <button wire:click="setActiveTab('budget-groups')"
-                                class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'budget-groups' ? 'active' : '' }}">
-                                <i class="ti ti-category" aria-hidden="true"></i>
-                                Kelompok Anggaran
-                            </button>
-                            <button wire:click="setActiveTab('budget-components')"
-                                class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'budget-components' ? 'active' : '' }}">
-                                <i class="ti ti-puzzle" aria-hidden="true"></i>
-                                Komponen Anggaran
-                            </button>
-                            <button wire:click="setActiveTab('budget-caps')"
-                                class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'budget-caps' ? 'active' : '' }}">
-                                <i class="ti ti-coin" aria-hidden="true"></i>
-                                Batas Anggaran Tahunan
-                            </button>
-                        </div>
+                        @if (active_has_any_role(['admin lppm', 'superadmin']))
+                            <div class="list-group list-group-transparent">
+                                <button wire:click="setActiveTab('budget-groups')"
+                                    class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'budget-groups' ? 'active' : '' }}">
+                                    <i class="ti ti-category" aria-hidden="true"></i>
+                                    Kelompok Anggaran
+                                </button>
+                                <button wire:click="setActiveTab('budget-components')"
+                                    class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'budget-components' ? 'active' : '' }}">
+                                    <i class="ti ti-puzzle" aria-hidden="true"></i>
+                                    Komponen Anggaran
+                                </button>
+                                <button wire:click="setActiveTab('budget-caps')"
+                                    class="list-group-item list-group-item-action d-flex align-items-center gap-2 {{ $activeTab === 'budget-caps' ? 'active' : '' }}">
+                                    <i class="ti ti-coin" aria-hidden="true"></i>
+                                    Batas Anggaran Tahunan
+                                </button>
+                            </div>
+                        @else
+                            <div class="alert alert-secondary py-2 mb-0 small">
+                                <i class="ti ti-lock me-1"></i>
+                                Pengaturan anggaran hanya dapat dikelola oleh Admin LPPM.
+                            </div>
+                        @endif
                     @endif
 
                     @if ($group === 'partnership')
@@ -237,18 +244,23 @@
                         <div>
                             <livewire:settings.tabs.national-priority-manager />
                         </div>
-                    @elseif ($activeTab === 'budget-groups')
-                        <div>
-                            <livewire:settings.tabs.budget-group-manager />
-                        </div>
-                    @elseif ($activeTab === 'budget-components')
-                        <div>
-                            <livewire:settings.tabs.budget-component-manager />
-                        </div>
-                    @elseif ($activeTab === 'budget-caps')
-                        <div>
-                            <livewire:settings.tabs.budget-cap-manager />
-                        </div>
+                    @elseif (in_array($activeTab, ['budget-groups', 'budget-components', 'budget-caps'], true))
+                        @if (active_has_any_role(['admin lppm', 'superadmin']))
+                            <div>
+                                @if ($activeTab === 'budget-groups')
+                                    <livewire:settings.tabs.budget-group-manager />
+                                @elseif ($activeTab === 'budget-components')
+                                    <livewire:settings.tabs.budget-component-manager />
+                                @else
+                                    <livewire:settings.tabs.budget-cap-manager />
+                                @endif
+                            </div>
+                        @else
+                            <div class="alert alert-warning d-flex align-items-center gap-2">
+                                <i class="ti ti-lock"></i>
+                                <div>Pengaturan anggaran hanya dapat diakses oleh Admin LPPM. Hubungi Admin LPPM untuk perubahan pagu atau komponen anggaran.</div>
+                            </div>
+                        @endif
                     @elseif ($activeTab === 'tkt')
                         <div>
                             <livewire:settings.tabs.tkt-manager />

@@ -448,10 +448,29 @@ document.addEventListener("alpine:init", () => {
 
         init() {
             this.updateDisplay();
-            // Watch for external changes to the Livewire model
-            this.$watch(`$wire.${wireModelName}`, (value) => {
-                this.updateDisplay(value);
-            });
+            // Watch for external changes to the Livewire model.
+            //
+            // IMPORTANT: never use the string form `$watch(`$wire.${name}`)` here.
+            // Per-scheme caps use dot-paths (e.g. "research_scheme_caps.12"),
+            // which Alpine compiles as `$wire.research_scheme_caps.12` and throws
+            // "SyntaxError: Unexpected number". That single throw aborts Alpine's
+            // shared directive queue, so every directive after it (remaining money
+            // inputs, wire:model, wire:submit) never initialises and the modal
+            // renders read-only. A getter + $wire.get() supports dot-paths.
+            try {
+                this.$watch(
+                    () => this.$wire.get(wireModelName),
+                    (value) => {
+                        this.updateDisplay(value);
+                    },
+                );
+            } catch (error) {
+                console.warn(
+                    "moneyInputSingle: gagal memasang watcher",
+                    wireModelName,
+                    error,
+                );
+            }
         },
 
         updateDisplay(val) {
@@ -489,7 +508,9 @@ document.addEventListener("alpine:init", () => {
             // Handle empty input
             if (rawValue === "") {
                 this.display = "";
-                this.$wire.set(wireModelName, null);
+                // `false` = update client state only, no server round-trip on
+                // every keystroke while clearing the field.
+                this.$wire.set(wireModelName, null, false);
                 return;
             }
 
