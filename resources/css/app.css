@@ -396,6 +396,25 @@ body.theme-modern a:focus-visible {
 .card:hover {
   z-index: 2;
 }
+/*
+ * BC-11 — modal tertutup backdrop sehingga tidak bisa diklik/diisi.
+ *
+ * `.page-body` dan `.card` di atas diberi `z-index` agar dropdown dashboard
+ * tidak tertutup kartu. Efek sampingnya keduanya menjadi stacking context,
+ * sehingga `.modal` (z-index 1055) yang berada di dalamnya ikut terkurung dan
+ * kalah oleh `.modal-backdrop` (z-index 1050, anak langsung <body>). Semua klik
+ * jatuh ke backdrop: modal terlihat, nilainya terbaca, tetapi read-only —
+ * termasuk tombol Simpan.
+ *
+ * Saat modal terbuka Bootstrap menambahkan `modal-open` pada <body>, jadi
+ * stacking context dilepas hanya selama modal aktif. `.card:hover` ikut
+ * di-override karena hover juga menciptakan stacking context baru.
+ */
+body.modal-open .page-body,
+body.modal-open .card,
+body.modal-open .card:hover {
+  z-index: auto !important;
+}
 /* Modern theme: dropdown tidak tertutup (overflow visible + z-index max) */
 body.theme-modern .navbar,
 body.theme-modern .navbar-collapse,
