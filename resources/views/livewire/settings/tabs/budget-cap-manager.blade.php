@@ -129,7 +129,7 @@ id }}')" wire:loading.attr="disabled">
 getId() }}"
         on-confirm="handleConfirmDeleteAction" />
     <x-tabler.modal wire:key="modal-budget-cap" id="modal-budget-cap" :title="$modalTitle" onHide="resetForm"
-        component-id="{{ $this->getId() }}">
+        :scrollable="true" component-id="{{ $this->getId() }}">
         <x-slot:body>
             <form wire:submit="save" id="form-budget-cap">
                 <div class="row">

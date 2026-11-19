@@ -33,6 +33,7 @@ halaman/modul baru. Tiap kelas memiliki:
 | BC-09 | Artefak copy/placeholder AI (teks liar di UI, marker generik) | `copy:check`, `ModernBreadcrumbTest`, `CopyCheckTest` |
 | BC-10 | Alpine `$watch` string dot-path (directive queue mati, modal read-only) | `BC10AlpineDotPathWatchTest`, `BudgetCapManagerTest` |
 | BC-11 | Modal tertutup backdrop (stacking context .page-body/.card, klik jatuh ke backdrop) | `BC11ModalStackingContextTest` |
+| BC-12 | Navbar tema modern menutupi header modal (z-index 2147483647 di atas modal 1055) | `BC12ModalNavbarZIndexTest` |
 
 Detail tiap kelas: lihat file `BC-0x-*.md`.
 

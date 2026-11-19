@@ -415,6 +415,25 @@ body.modal-open .card,
 body.modal-open .card:hover {
   z-index: auto !important;
 }
+/*
+ * BC-12 — navbar tema modern menutupi header modal.
+ *
+ * `body.theme-modern .navbar` dipaksa z-index 2147483647 (agar dropdown
+ * header tidak tertutup banner). Efek samping: navbar berada di atas
+ * `.modal` (1055) dan `.modal-backdrop` (1050), sehingga judul + tombol
+ * close + field atas modal tertutup navbar. Lepas stacking context hanya
+ * saat modal terbuka (Bootstrap menambah `modal-open` pada <body>).
+ * `body.theme-modern.modal-open` dipakai agar menang spesifisitas dari
+ * `body.theme-modern .navbar` (0,2,1).
+ */
+body.modal-open .navbar,
+body.modal-open .navbar .dropdown,
+body.modal-open .page-header,
+body.modal-open .page-header .dropdown,
+body.theme-modern.modal-open .navbar,
+body.theme-modern.modal-open .page-header {
+  z-index: auto !important;
+}
 /* Modern theme: dropdown tidak tertutup (overflow visible + z-index max) */
 body.theme-modern .navbar,
 body.theme-modern .navbar-collapse,
