@@ -49,4 +49,28 @@ class BC12ModalNavbarZIndexTest extends TestCase
 
         expect($blade)->toContain('scrollable');
     }
+
+    public function test_header_wrapper_has_stable_id_for_offset_measurement(): void
+    {
+        $blade = (string) file_get_contents(resource_path('views/components/layouts/header.blade.php'));
+
+        expect($blade)->toContain('id="site-header"');
+    }
+
+    public function test_app_css_offsets_modal_below_header(): void
+    {
+        $css = (string) file_get_contents(resource_path('css/app.css'));
+
+        expect($css)->toContain('top: var(--sllp-modal-top, 0px)');
+        expect($css)->toContain('height: calc(100dvh - var(--sllp-modal-top, 0px))');
+    }
+
+    public function test_app_js_sets_modal_offset_variable(): void
+    {
+        $js = (string) file_get_contents(resource_path('js/app.js'));
+
+        expect($js)->toContain('syncModalOffset');
+        expect($js)->toContain('--sllp-modal-top');
+        expect($js)->toContain('show.bs.modal');
+    }
 }

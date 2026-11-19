@@ -72,7 +72,7 @@
     "src": "node_modules/@tabler/icons-webfont/dist/fonts/tabler-icons.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app-BKhoRkNK.css",
+    "file": "assets/app-ByzU-r5C.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "names": [
@@ -88,7 +88,7 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-BKBDo3D_.js",
+    "file": "assets/app-CP9mg0Jg.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,

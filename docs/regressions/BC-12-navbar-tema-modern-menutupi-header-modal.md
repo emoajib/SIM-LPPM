@@ -1,11 +1,12 @@
 # BC-12 — navbar tema modern menutupi header modal
 
-**Gejala:** navbar tema modern menutupi header modal
+**Gejala:** navbar tema modern menutupi header modal; modal mulai di y=28 sehingga menimpa area header 133px (2 baris header)
 
 **Akar masalah:** body.theme-modern .navbar z-index 2147483647 (agar dropdown header tidak tertutup banner) berada di atas .modal (1055) dan .modal-backdrop (1050), sehingga judul modal, tombol close, dan field atas tertutup navbar
 
 **Perbaikan:**
 - body.modal-open .navbar/.page-header (dan dropdown) z-index auto !important; modal Batas Anggaran dibuat scrollable agar footer selalu terlihat
+- Offset dinamis: wrapper header diberi id="site-header"; app.js mengukur bottom header saat modal dibuka dan menyimpannya di CSS var --sllp-modal-top; app.css memakai var untuk top & height .modal sehingga dialog mulai di bawah header (161px = 133 + 28) dengan gap 28px. Jika header keluar layar (page scrolled), offset 0 → modal center penuh.
 
 **Penjaga:**
 - `tests/Feature/Regression/BC12ModalNavbarZIndexTest.php` — kontrak sumber: aturan override `body.modal-open .navbar`/`.page-header` ada di `app.css` dan termuat di bundle `public/build/assets/app-*.css`; modal Batas Anggaran memakai `scrollable`.

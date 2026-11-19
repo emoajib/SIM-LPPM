@@ -892,6 +892,29 @@ const registerGlobalLivewireListeners = () => {
 window.addEventListener("open-modal", handleOpenModalEvent);
 window.addEventListener("close-modal", handleCloseModalEvent);
 
+// BC-12 — posisikan modal di bawah header agar tidak menimpa navbar.
+// Header terdiri dari 2 baris (logo 69px + menu 64px = ~133px); modal
+// sebelumnya mulai di y=28 sehingga menimpa area header. Offset diukur
+// dinamis karena header dapat collapse di mobile dan menu bisa wrap.
+const syncModalOffset = () => {
+    const header = document.getElementById("site-header");
+    const bottom = header ? Math.max(0, Math.round(header.getBoundingClientRect().bottom)) : 0;
+    document.documentElement.style.setProperty("--sllp-modal-top", `${bottom}px`);
+};
+document.addEventListener("show.bs.modal", syncModalOffset);
+document.addEventListener("hide.bs.modal", () => {
+    setTimeout(() => {
+        if (!document.body.classList.contains("modal-open")) {
+            document.documentElement.style.removeProperty("--sllp-modal-top");
+        }
+    }, 0);
+});
+window.addEventListener("resize", () => {
+    if (document.body.classList.contains("modal-open")) {
+        syncModalOffset();
+    }
+});
+
 if (window.Livewire) {
     registerGlobalLivewireListeners();
 } else {

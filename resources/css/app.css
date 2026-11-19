@@ -434,6 +434,16 @@ body.theme-modern.modal-open .navbar,
 body.theme-modern.modal-open .page-header {
   z-index: auto !important;
 }
+/* BC-12 — modal tampil di bawah header agar tidak menimpa navbar.
+ * Header terdiri dari 2 baris (logo 69px + menu 64px = ~133px); sebelumnya
+ * modal mulai di y=28 sehingga menimpa area header. Offset diukur JS dan
+ * disimpan di --sllp-modal-top. Jika halaman sudah discroll (header keluar),
+ * offset 0 → modal center penuh. `100vh` fallback untuk browser lama. */
+body.modal-open .modal {
+  top: var(--sllp-modal-top, 0px);
+  height: calc(100vh - var(--sllp-modal-top, 0px));
+  height: calc(100dvh - var(--sllp-modal-top, 0px));
+}
 /* Modern theme: dropdown tidak tertutup (overflow visible + z-index max) */
 body.theme-modern .navbar,
 body.theme-modern .navbar-collapse,
