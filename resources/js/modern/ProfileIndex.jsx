@@ -14,6 +14,7 @@ export default function ProfileIndex() {
     const [toast, setToast] = useState(null);
     const [photoFile, setPhotoFile] = useState(null);
     const [photoPreview, setPhotoPreview] = useState(null);
+    const [hasCustomPhoto, setHasCustomPhoto] = useState(false);
 
     const showToast = (type, message) => {
         setToast({ type, message });
@@ -31,6 +32,7 @@ export default function ProfileIndex() {
             const data = await res.json();
             setUser(data.user || {});
             setIdentity(data.identity || {});
+            setHasCustomPhoto(Boolean(data.user?.has_custom_photo));
             if (data.user?.photo_url) setPhotoPreview(data.user.photo_url);
         } catch (e) {
             showToast("error", e.message);
@@ -96,6 +98,7 @@ export default function ProfileIndex() {
             if (!res.ok) throw new Error("Gagal mengunggah foto profil");
             showToast("success", "Foto profil berhasil diperbarui.");
             setPhotoFile(null);
+            setHasCustomPhoto(true);
             load();
         } catch (e) {
             showToast("error", e.message);
@@ -114,7 +117,7 @@ export default function ProfileIndex() {
             });
             if (!res.ok) throw new Error("Gagal menghapus foto");
             showToast("success", "Foto profil berhasil dihapus.");
-            setPhotoPreview(null);
+            setHasCustomPhoto(false);
             load();
         } catch (e) {
             showToast("error", e.message);
@@ -238,7 +241,7 @@ export default function ProfileIndex() {
                                 </div>
                             )}
 
-                            {photoPreview && !photoFile && (
+                            {photoPreview && hasCustomPhoto && !photoFile && (
                                 <button
                                     type="button"
                                     onClick={handleDeletePhoto}

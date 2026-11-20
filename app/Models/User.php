@@ -231,9 +231,21 @@ class User extends Authenticatable implements HasMedia
                 // NOTE: no remote Gravatar fallback — www.gravatar.com routinely
                 // times out from Indonesian networks (console ERR_TIMED_OUT) and
                 // leaks email hashes. Views render local initials instead.
-                return $mediaUrl ?: $this->identity?->profile_picture;
+                return $mediaUrl ?: $this->identity?->profile_picture ?: $this->defaultGenderAvatarUrl();
             },
         );
+    }
+
+    /**
+     * Avatar default yang diatur admin LPPM di Pengaturan > Tampilan,
+     * dipilih berdasarkan gender pada data identitas (L/P).
+     * Null bila admin belum mengunggah avatar untuk gender tersebut.
+     */
+    public function defaultGenderAvatarUrl(): ?string
+    {
+        $key = $this->isFemale() ? 'default_avatar_female' : 'default_avatar_male';
+
+        return Setting::mediaUrl($key, 'avatar');
     }
 
     /**

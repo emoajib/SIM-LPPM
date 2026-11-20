@@ -5,6 +5,7 @@ namespace App\Livewire\Settings;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 
 class Appearance extends Component
@@ -18,6 +19,10 @@ class Appearance extends Component
     public $logo;
 
     public $mascot;
+
+    public $avatarMale;
+
+    public $avatarFemale;
 
     public function mount()
     {
@@ -104,6 +109,85 @@ class Appearance extends Component
         session()->flash('success_mascot', 'Maskot dikembalikan ke bawaan.');
     }
 
+    public function saveAvatarMale()
+    {
+        $this->saveGenderAvatar('male');
+    }
+
+    public function saveAvatarFemale()
+    {
+        $this->saveGenderAvatar('female');
+    }
+
+    public function removeAvatarMale()
+    {
+        $this->removeGenderAvatar('male');
+    }
+
+    public function removeAvatarFemale()
+    {
+        $this->removeGenderAvatar('female');
+    }
+
+    /**
+     * Simpan avatar default untuk gender tertentu (male|female).
+     * File lama otomatis tergantikan karena koleksi bersifat singleFile.
+     */
+    private function saveGenderAvatar(string $gender): void
+    {
+        $property = $gender === 'male' ? 'avatarMale' : 'avatarFemale';
+
+        $this->validate([
+            $property => 'required|image|mimes:png,jpg,jpeg,webp|max:2048',
+        ], [], [
+            $property => $gender === 'male' ? 'avatar pria' : 'avatar wanita',
+        ]);
+
+        /** @var TemporaryUploadedFile|null $file */
+        $file = $this->{$property};
+        if (! $file) {
+            return;
+        }
+
+        $setting = Setting::firstOrCreate(
+            ['key' => 'default_avatar_'.$gender],
+            ['value' => 'avatar', 'type' => 'image']
+        );
+
+        $setting->clearMediaCollection('avatar');
+        $setting->addMedia($file->getRealPath())
+            ->usingName($file->getClientOriginalName())
+            ->setFileName($file->getClientOriginalName())
+            ->toMediaCollection('avatar');
+
+        $this->{$property} = null;
+        Setting::clearCache();
+
+        session()->flash(
+            'success_avatar_'.$gender,
+            'Avatar default '.($gender === 'male' ? 'pria' : 'wanita').' berhasil diperbarui.'
+        );
+    }
+
+    private function removeGenderAvatar(string $gender): void
+    {
+        $property = $gender === 'male' ? 'avatarMale' : 'avatarFemale';
+
+        $setting = Setting::where('key', 'default_avatar_'.$gender)->first();
+        if ($setting) {
+            $setting->clearMediaCollection('avatar');
+            $setting->delete();
+        }
+
+        $this->{$property} = null;
+        Setting::clearCache();
+
+        session()->flash(
+            'success_avatar_'.$gender,
+            'Avatar default '.($gender === 'male' ? 'pria' : 'wanita').' dikembalikan ke inisial.'
+        );
+    }
+
     public function render()
     {
         $currentLogo = Setting::where('key', 'app_logo')->first()?->getFirstMediaUrl('logo') ?: '/logo.png';
@@ -112,6 +196,8 @@ class Appearance extends Component
         return view('livewire.settings.appearance', [
             'currentLogo' => $currentLogo,
             'currentMascot' => $currentMascot,
+            'currentAvatarMale' => Setting::mediaUrl('default_avatar_male', 'avatar'),
+            'currentAvatarFemale' => Setting::mediaUrl('default_avatar_female', 'avatar'),
         ]);
     }
 }

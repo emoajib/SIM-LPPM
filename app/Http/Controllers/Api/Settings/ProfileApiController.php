@@ -33,6 +33,9 @@ class ProfileApiController extends Controller
                 'username' => $user->username,
                 'whatsapp_number' => $user->whatsapp_number,
                 'photo_url' => $user->getAttribute('profile_picture'),
+                // true hanya bila user benar-benar punya foto sendiri (unggahan
+                // atau dari data identitas), bukan avatar default gender.
+                'has_custom_photo' => $user->hasMedia('avatar') || filled($user->identity?->profile_picture),
             ],
             'identity' => $user->identity ? $this->formatIdentity($user->identity) : null,
         ]);

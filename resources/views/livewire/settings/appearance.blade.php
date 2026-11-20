@@ -232,6 +232,90 @@ Ubah ilustrasi maskot yang tampil di banner dashboard modern (kanan). Hanya admi
         </div>
     </div>
 
+    <!-- Avatar Default Pengguna (Pria / Wanita) -->
+    <div class="mt-5 mb-4 border-top pt-4 border-muted" id="avatar-default">
+        <h3 class="card-title">Avatar Default Pengguna</h3>
+        <p class="form-hint"><i class="ti ti-pencil me-1" aria-hidden="true"></i>
+Tampil untuk pengguna yang belum mengunggah foto profil. Avatar dipilih otomatis sesuai
+jenis kelamin pada data identitas (L = pria, P = wanita); bila jenis kelamin kosong, sistem
+memakai perkiraan dari nama. Foto profil milik pengguna sendiri selalu diutamakan. Bila avatar
+belum diatur, yang tampil adalah inisial nama. Khusus admin LPPM &amp; superadmin.</p>
+
+        <div class="row g-3">
+            @foreach ([
+                ['gender' => 'male', 'label' => 'Avatar Pria', 'current' => $currentAvatarMale, 'prop' => 'avatarMale', 'flash' => 'success_avatar_male'],
+                ['gender' => 'female', 'label' => 'Avatar Wanita', 'current' => $currentAvatarFemale, 'prop' => 'avatarFemale', 'flash' => 'success_avatar_female'],
+            ] as $slot)
+                <div class="col-12 col-md-6">
+                    <div class="card card-sm h-100">
+                        <div class="card-body">
+                            <h4 class="card-title mb-3">{{ $slot['label'] }}</h4>
+
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                @php
+                                    $pending = $slot['gender'] === 'male' ? $avatarMale : $avatarFemale;
+                                    $previewUrl = $slot['current'];
+                                    if ($pending) {
+                                        try {
+                                            $previewUrl = $pending->temporaryUrl();
+                                        } catch (\Throwable $e) {
+                                            $previewUrl = null;
+                                        }
+                                    }
+                                @endphp
+                                <span class="avatar avatar-xl"
+                                    style="width:72px;height:72px;background:#e2e8f0 center/cover no-repeat{{ $previewUrl ? ';background-image:url('.$previewUrl.')' : '' }};overflow:hidden;">
+                                    @if (! $previewUrl)
+                                        <span class="text-secondary small">Inisial</span>
+                                    @endif
+                                </span>
+                                <div class="small text-secondary">
+                                    {{ $slot['current'] ? 'Avatar aktif digunakan.' : 'Belum diatur — pengguna melihat inisial nama.' }}
+                                </div>
+                            </div>
+
+                            <label class="form-label" for="avatar_{{ $slot['gender'] }}_file">Berkas avatar {{ $slot['gender'] === 'male' ? 'pria' : 'wanita' }}</label>
+                            <input type="file" id="avatar_{{ $slot['gender'] }}_file"
+                                class="form-control @error($slot['prop']) is-invalid @enderror"
+                                wire:model="{{ $slot['prop'] }}"
+                                accept="image/png, image/jpeg, image/jpg, image/webp"
+                                aria-describedby="avatar_{{ $slot['gender'] }}_hint">
+                            <div class="mt-1 text-muted small" id="avatar_{{ $slot['gender'] }}_hint">
+                                Maksimal 2MB. Disarankan PNG/JPG rasio 1:1, minimal 200×200 px.
+                            </div>
+
+                            <div wire:loading wire:target="{{ $slot['prop'] }}" class="mt-2 text-primary small">Mengunggah...</div>
+                            @error($slot['prop']) <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+
+                            @if (session()->has($slot['flash']))
+                                <div class="alert alert-success mt-3 mb-0">{{ session($slot['flash']) }}</div>
+                            @endif
+
+                            <div class="mt-3 d-flex flex-wrap gap-2">
+                                <button type="button"
+                                    wire:click="saveAvatar{{ $slot['gender'] === 'male' ? 'Male' : 'Female' }}"
+                                    class="btn btn-primary d-flex align-items-center gap-2"
+                                    wire:loading.attr="disabled" wire:target="saveAvatar{{ $slot['gender'] === 'male' ? 'Male' : 'Female' }}, {{ $slot['prop'] }}">
+                                    <i class="ti ti-upload me-1" aria-hidden="true"></i>
+                                    Simpan {{ $slot['label'] }}
+                                </button>
+                                @if ($slot['current'])
+                                    <button type="button"
+                                        wire:click="removeAvatar{{ $slot['gender'] === 'male' ? 'Male' : 'Female' }}"
+                                        wire:confirm="Hapus avatar {{ $slot['gender'] === 'male' ? 'pria' : 'wanita' }} dan kembalikan ke inisial?"
+                                        class="btn btn-outline-danger d-flex align-items-center gap-2">
+                                        <i class="ti ti-trash me-1" aria-hidden="true"></i>
+                                        Hapus
+                                    </button>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+
     <!-- Teks Aplikasi/Brand -->
     <div class="mt-5 mb-4 border-top pt-4 border-muted">
         <h3 class="card-title">Pengaturan Nama Aplikasi</h3>

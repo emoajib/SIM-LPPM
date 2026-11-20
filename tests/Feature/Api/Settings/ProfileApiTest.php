@@ -31,7 +31,7 @@ class ProfileApiTest extends TestCase
 
         $response->assertOk()
             ->assertJsonStructure([
-                'user' => ['name', 'email', 'username', 'whatsapp_number', 'photo_url'],
+                'user' => ['name', 'email', 'username', 'whatsapp_number', 'photo_url', 'has_custom_photo'],
                 'identity',
             ]);
     }
@@ -48,6 +48,26 @@ class ProfileApiTest extends TestCase
         $response->assertOk();
         $photoUrl = $response->json('user.photo_url');
         $this->assertTrue($photoUrl === null || is_string($photoUrl), 'photo_url harus string atau null, bukan objek Attribute.');
+
+        // User ini belum pernah mengunggah foto -> frontend tidak boleh menampilkan
+        // tombol "Hapus Foto" (photo_url bisa saja avatar default gender).
+        $this->assertFalse($response->json('user.has_custom_photo'));
+    }
+
+    /** @test */
+    public function test_has_custom_photo_true_after_upload(): void
+    {
+        $user = User::factory()->create();
+        $user->assignRole('dosen');
+
+        $this->actingAs($user)->postJson('/api/v1/settings/profile/photo', [
+            'photo' => UploadedFile::fake()->image('foto.png', 200, 200),
+        ])->assertOk();
+
+        $this->actingAs($user->fresh())
+            ->getJson('/api/v1/settings/profile')
+            ->assertOk()
+            ->assertJsonPath('user.has_custom_photo', true);
     }
 
     /** @test */

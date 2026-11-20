@@ -32,6 +32,9 @@ class Setting extends Model implements HasMedia
 
         $this->addMediaCollection('mascot')
             ->singleFile(); // Maskot banner dashboard; upload baru menggantikan yang lama
+
+        $this->addMediaCollection('avatar')
+            ->singleFile(); // Avatar default (pria/wanita); 1 file per setting key
     }
 
     /**
