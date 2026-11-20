@@ -72,7 +72,7 @@
     "src": "node_modules/@tabler/icons-webfont/dist/fonts/tabler-icons.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app-ByzU-r5C.css",
+    "file": "assets/app-B0YKKSx6.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "names": [
@@ -80,7 +80,7 @@
     ]
   },
   "resources/css/modern.css": {
-    "file": "assets/modern-CQ-vBiN4.css",
+    "file": "assets/modern-l9vzNF45.css",
     "src": "resources/css/modern.css",
     "isEntry": true,
     "names": [
@@ -98,7 +98,7 @@
     ]
   },
   "resources/js/modern.jsx": {
-    "file": "assets/modern-ntJuCZab.js",
+    "file": "assets/modern-9C3ebaCZ.js",
     "name": "modern",
     "src": "resources/js/modern.jsx",
     "isEntry": true,
@@ -106,7 +106,7 @@
       "__commonjsHelpers-CqkleIqs.js"
     ],
     "css": [
-      "assets/modern-CQ-vBiN4.css"
+      "assets/modern-l9vzNF45.css"
     ]
   },
   "resources/js/theme-config.js": {

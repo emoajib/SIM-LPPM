@@ -34,6 +34,7 @@ halaman/modul baru. Tiap kelas memiliki:
 | BC-10 | Alpine `$watch` string dot-path (directive queue mati, modal read-only) | `BC10AlpineDotPathWatchTest`, `BudgetCapManagerTest` |
 | BC-11 | Modal tertutup backdrop (stacking context .page-body/.card, klik jatuh ke backdrop) | `BC11ModalStackingContextTest` |
 | BC-12 | Navbar tema modern menutupi header modal (z-index 2147483647 di atas modal 1055) | `BC12ModalNavbarZIndexTest` |
+| BC-13 | Utility Tailwind (grid-cols-*) kalah dari `.grid` Tabler unlayered → form gepeng & overflow horizontal | `BC13TailwindGridLayerTest` |
 
 Detail tiap kelas: lihat file `BC-0x-*.md`.
 

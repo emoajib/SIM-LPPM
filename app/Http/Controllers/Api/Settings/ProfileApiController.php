@@ -32,7 +32,7 @@ class ProfileApiController extends Controller
                 'email' => $user->email,
                 'username' => $user->username,
                 'whatsapp_number' => $user->whatsapp_number,
-                'photo_url' => $user->profilePicture(),
+                'photo_url' => $user->getAttribute('profile_picture'),
             ],
             'identity' => $user->identity ? $this->formatIdentity($user->identity) : null,
         ]);

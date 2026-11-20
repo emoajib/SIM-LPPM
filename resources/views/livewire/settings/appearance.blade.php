@@ -179,6 +179,59 @@ Ubah logo yang ditampilkan pada navbar aplikasi Anda.</p>
         </form>
     </div>
 
+    <!-- Upload Maskot Banner Dashboard -->
+    <div class="mt-5 mb-4 border-top pt-4 border-muted" id="maskot">
+        <h3 class="card-title">Maskot Banner Dashboard</h3>
+        <p class="form-hint"><i class="ti ti-pencil me-1" aria-hidden="true"></i>
+Ubah ilustrasi maskot yang tampil di banner dashboard modern (kanan). Hanya admin LPPM & superadmin.</p>
+
+        <div class="row align-items-center g-3">
+            <div class="col-auto">
+                <span class="avatar avatar-xl form-imagecheck-image" style="width:120px;height:120px;background:linear-gradient(135deg,#0284c7,#0f172a);display:flex;align-items:flex-end;justify-content:center;overflow:hidden;">
+                    @if ($currentMascot)
+                        <img src="{{ $currentMascot }}" alt="Maskot Dashboard" style="max-width:100%;max-height:100%;object-fit:contain;">
+                    @else
+                        <span class="text-white small text-center">SVG bawaan</span>
+                    @endif
+                </span>
+            </div>
+            <div class="col">
+                <form wire:submit="saveMascot" enctype="multipart/form-data">
+                    <label class="form-label" for="mascot_file">Berkas maskot</label>
+                    <input type="file" id="mascot_file" class="form-control @error('mascot') is-invalid @enderror"
+                        wire:model="mascot" accept="image/png, image/jpeg, image/jpg, image/webp"
+                        aria-describedby="mascot_hint">
+                    <div class="mt-2 text-muted small" id="mascot_hint">
+                        Maksimal 2MB. Disarankan PNG transparan, rasio ±1:1 (tinggi tampil 144px).
+                    </div>
+
+                    <div wire:loading wire:target="mascot" class="mt-2 text-primary small">Mengunggah...</div>
+
+                    @error('mascot') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+
+                    @if (session()->has('success_mascot'))
+                        <div class="alert alert-success mt-3">
+                            {{ session('success_mascot') }}
+                        </div>
+                    @endif
+
+                    <div class="mt-3 d-flex flex-wrap gap-2">
+                        <button type="submit" class="btn btn-primary d-flex align-items-center gap-2" wire:loading.attr="disabled" wire:target="saveMascot, mascot">
+                            <i class="ti ti-save me-1" aria-hidden="true"></i>
+                            Simpan Maskot
+                        </button>
+                        @if ($currentMascot)
+                            <button type="button" wire:click="removeMascot" wire:confirm="Kembalikan maskot ke bawaan?" class="btn btn-outline-danger d-flex align-items-center gap-2">
+                                <i class="ti ti-trash me-1" aria-hidden="true"></i>
+                                Kembalikan ke Bawaan
+                            </button>
+                        @endif
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Teks Aplikasi/Brand -->
     <div class="mt-5 mb-4 border-top pt-4 border-muted">
         <h3 class="card-title">Pengaturan Nama Aplikasi</h3>

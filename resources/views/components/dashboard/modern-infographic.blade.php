@@ -6,6 +6,7 @@
 ])
 
 @php
+    $mascotUrl = \App\Models\Setting::mediaUrl('dashboard_mascot', 'mascot');
     $totalUsulan = $stats['total_usulan'] ?? 0;
     $totalDidanai = $stats['total_didanai'] ?? 0;
     $fundingRate = $totalUsulan > 0 ? round(($totalDidanai / $totalUsulan) * 100, 1) : 0;
@@ -95,6 +96,13 @@
             user-select: none;
             opacity: 0.85;
             z-index: 1;
+        }
+        .sli-mascot-img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+            object-position: bottom center;
+            filter: drop-shadow(0 6px 14px rgba(2, 132, 199, 0.35));
         }
         @media (min-width: 992px) {
             .sli-mascot-box { display: flex; }
@@ -322,28 +330,32 @@
         <div class="sli-banner-glow-1"></div>
         <div class="sli-banner-glow-2"></div>
 
-        <!-- Dynamic Lecturer Illustrator Mascot SVG -->
+        <!-- Maskot Banner (SVG bawaan atau gambar upload admin LPPM) -->
         <div class="sli-mascot-box">
-            <svg style="width: 100%; height: 100%; overflow: visible;" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10,20 L12,23 L15,24 L12,25 L10,28 L8,25 L5,24 L8,23 Z" fill="#38bdf8" opacity="0.8"/>
-                <path d="M100,50 L101.5,53 L104,54 L101.5,55 L100,58 L98.5,55 L96,54 L98.5,53 Z" fill="#38bdf8" opacity="0.9"/>
-                <ellipse cx="65" cy="115" rx="35" ry="5" fill="rgba(0,0,0,0.2)" />
-                <rect x="58" y="72" width="14" height="15" rx="3" fill="#bae6fd" />
-                <rect x="45" y="32" width="40" height="42" rx="14" fill="#e0f2fe" />
-                <circle cx="53" cy="58" r="4" fill="#38bdf8" opacity="0.4" />
-                <circle cx="77" cy="58" r="4" fill="#38bdf8" opacity="0.4" />
-                <path d="M42,42 C42,24 55,20 68,22 C81,24 88,34 88,44" stroke="#0f172a" stroke-width="7" stroke-linecap="round" fill="none" />
-                <path d="M43,36 C48,26 62,24 74,25 C84,26 87,32 87,36" fill="#0f172a" />
-                <path d="M57,60 Q65,66 73,60" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round" fill="none" />
-                <circle cx="54" cy="48" r="9" fill="none" stroke="#0f172a" stroke-width="2.5" />
-                <circle cx="76" cy="48" r="9" fill="none" stroke="#0f172a" stroke-width="2.5" />
-                <line x1="63" y1="48" x2="67" y2="48" stroke="#0f172a" stroke-width="2.5" />
-                <circle cx="54" cy="48" r="2.2" fill="#0f172a" />
-                <circle cx="76" cy="48" r="2.2" fill="#0f172a" />
-                <path d="M35,90 L95,90 L88,125 L42,125 Z" fill="#0369a1" />
-                <path d="M54,90 L76,90 L65,107 Z" fill="#ffffff" />
-                <path d="M62,91 L68,91 L65,123 L62,123 Z" fill="#38bdf8" stroke="#0284c7" stroke-width="0.5" />
-            </svg>
+            @if ($mascotUrl)
+                <img src="{{ $mascotUrl }}" alt="Maskot LPPM" class="sli-mascot-img" loading="lazy">
+            @else
+                <svg style="width: 100%; height: 100%; overflow: visible;" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10,20 L12,23 L15,24 L12,25 L10,28 L8,25 L5,24 L8,23 Z" fill="#38bdf8" opacity="0.8"/>
+                    <path d="M100,50 L101.5,53 L104,54 L101.5,55 L100,58 L98.5,55 L96,54 L98.5,53 Z" fill="#38bdf8" opacity="0.9"/>
+                    <ellipse cx="65" cy="115" rx="35" ry="5" fill="rgba(0,0,0,0.2)" />
+                    <rect x="58" y="72" width="14" height="15" rx="3" fill="#bae6fd" />
+                    <rect x="45" y="32" width="40" height="42" rx="14" fill="#e0f2fe" />
+                    <circle cx="53" cy="58" r="4" fill="#38bdf8" opacity="0.4" />
+                    <circle cx="77" cy="58" r="4" fill="#38bdf8" opacity="0.4" />
+                    <path d="M42,42 C42,24 55,20 68,22 C81,24 88,34 88,44" stroke="#0f172a" stroke-width="7" stroke-linecap="round" fill="none" />
+                    <path d="M43,36 C48,26 62,24 74,25 C84,26 87,32 87,36" fill="#0f172a" />
+                    <path d="M57,60 Q65,66 73,60" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round" fill="none" />
+                    <circle cx="54" cy="48" r="9" fill="none" stroke="#0f172a" stroke-width="2.5" />
+                    <circle cx="76" cy="48" r="9" fill="none" stroke="#0f172a" stroke-width="2.5" />
+                    <line x1="63" y1="48" x2="67" y2="48" stroke="#0f172a" stroke-width="2.5" />
+                    <circle cx="54" cy="48" r="2.2" fill="#0f172a" />
+                    <circle cx="76" cy="48" r="2.2" fill="#0f172a" />
+                    <path d="M35,90 L95,90 L88,125 L42,125 Z" fill="#0369a1" />
+                    <path d="M54,90 L76,90 L65,107 Z" fill="#ffffff" />
+                    <path d="M62,91 L68,91 L65,123 L62,123 Z" fill="#38bdf8" stroke="#0284c7" stroke-width="0.5" />
+                </svg>
+            @endif
         </div>
 
         <div class="sli-banner-content">
@@ -361,6 +373,9 @@
                 <button type="button" onclick="sliOpenModal()" class="sli-badge-pill" style="background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.3); color: #ffffff; cursor: pointer; margin-left: auto;">
                     ⚙️ Kelola Pengumuman/Jadwal
                 </button>
+                <a href="{{ route('settings.appearance') }}#maskot" class="sli-badge-pill" style="background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.3); color: #ffffff; text-decoration: none;">
+                    🖼️ Atur Maskot
+                </a>
                 @endif
             </div>
 

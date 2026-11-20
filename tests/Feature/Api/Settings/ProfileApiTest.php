@@ -37,6 +37,20 @@ class ProfileApiTest extends TestCase
     }
 
     /** @test */
+    public function test_view_profile_photo_url_is_string_or_null_not_attribute_object(): void
+    {
+        $user = User::factory()->create();
+        $user->assignRole('dosen');
+
+        $response = $this->actingAs($user)
+            ->getJson('/api/v1/settings/profile');
+
+        $response->assertOk();
+        $photoUrl = $response->json('user.photo_url');
+        $this->assertTrue($photoUrl === null || is_string($photoUrl), 'photo_url harus string atau null, bukan objek Attribute.');
+    }
+
+    /** @test */
     public function test_guest_cannot_view_profile(): void
     {
         $response = $this->getJson('/api/v1/settings/profile');

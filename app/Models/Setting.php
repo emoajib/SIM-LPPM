@@ -29,6 +29,25 @@ class Setting extends Model implements HasMedia
     {
         $this->addMediaCollection('template')
             ->singleFile(); // Hanya simpan 1 file per setting key; file lama otomatis tergantikan
+
+        $this->addMediaCollection('mascot')
+            ->singleFile(); // Maskot banner dashboard; upload baru menggantikan yang lama
+    }
+
+    /**
+     * URL media collection untuk setting key tertentu.
+     *
+     * Tidak di-cache statis: URL media bergantung pada baris `media` yang bisa
+     * berubah kapan saja (upload/hapus maskot) dan cache statis bocor antar
+     * request/test. Query `settings` tetap di-cache lewat loadCache().
+     */
+    public static function mediaUrl(string $key, string $collection = 'default'): ?string
+    {
+        self::loadCache();
+        /** @var self|null $setting */
+        $setting = self::$settingsCache->get($key);
+
+        return $setting ? ($setting->getFirstMediaUrl($collection) ?: null) : null;
     }
 
     /**

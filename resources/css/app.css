@@ -5,6 +5,15 @@
 @import '@tabler/core/dist/css/tabler.min.css';
 @import 'nprogress/nprogress.css';
 
+/* Menu horizontal header tidak boleh memperlebar halaman.
+ * Tabler memakai `flex-nowrap` pada `.navbar-nav`, sehingga di 768–1440px
+ * item menu yang banyak mendorong lebar dokumen (muncul scroll horizontal
+ * di semua halaman). Biarkan menu membungkus ke baris berikutnya. */
+#site-header .navbar-collapse .navbar-nav {
+    flex-wrap: wrap;
+    max-width: 100%;
+}
+
 /* TomSelect / Dropdown — paksa opaque agar pilihan mudah dibaca.
  * Berlaku untuk form Penelitian & Pengabdian (skema, fokus, tema,
  * topik, rumpun ilmu, keywords, SDGs, roadmap) + select native

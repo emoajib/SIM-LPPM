@@ -17,9 +17,11 @@ class Appearance extends Component
 
     public $logo;
 
+    public $mascot;
+
     public function mount()
     {
-        if (! auth()->user()->activeHasRole('admin lppm')) {
+        if (! auth()->user()->activeHasAnyRole(['admin lppm', 'superadmin'])) {
             abort(403);
         }
 
@@ -66,10 +68,50 @@ class Appearance extends Component
         session()->flash('success_logo', 'Logo berhasil diperbarui.');
     }
 
+    public function saveMascot()
+    {
+        $this->validate([
+            'mascot' => 'image|mimes:png,jpg,jpeg,webp|max:2048',
+        ]);
+
+        $setting = Setting::firstOrCreate(
+            ['key' => 'dashboard_mascot'],
+            ['value' => 'mascot', 'type' => 'image']
+        );
+
+        if ($this->mascot) {
+            $setting->clearMediaCollection('mascot');
+            $setting->addMedia($this->mascot->getRealPath())
+                ->usingName($this->mascot->getClientOriginalName())
+                ->setFileName($this->mascot->getClientOriginalName())
+                ->toMediaCollection('mascot');
+        }
+
+        $this->mascot = null;
+        Setting::clearCache();
+        session()->flash('success_mascot', 'Maskot banner berhasil diperbarui.');
+    }
+
+    public function removeMascot()
+    {
+        $setting = Setting::where('key', 'dashboard_mascot')->first();
+        if ($setting) {
+            $setting->clearMediaCollection('mascot');
+            $setting->delete();
+        }
+        $this->mascot = null;
+        Setting::clearCache();
+        session()->flash('success_mascot', 'Maskot dikembalikan ke bawaan.');
+    }
+
     public function render()
     {
         $currentLogo = Setting::where('key', 'app_logo')->first()?->getFirstMediaUrl('logo') ?: '/logo.png';
+        $currentMascot = Setting::mediaUrl('dashboard_mascot', 'mascot');
 
-        return view('livewire.settings.appearance', ['currentLogo' => $currentLogo]);
+        return view('livewire.settings.appearance', [
+            'currentLogo' => $currentLogo,
+            'currentMascot' => $currentMascot,
+        ]);
     }
 }

@@ -39,12 +39,12 @@
         </div>
 
         @if ($form->proposal && $form->proposal->detailable && $form->proposal->detailable->hasMedia('approval_file'))
-            <div class="mt-3 p-2 bg-light border rounded d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center">
+            <div class="mt-3 p-2 bg-light border rounded d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <div class="d-flex align-items-center me-2" style="min-width:0">
                     
                     <div>
                         <div class="small font-weight-bold">File Tersimpan:</div>
-                        <div class="small text-muted">{{ $form->proposal->detailable->getFirstMedia('approval_file')->file_name }}</div>
+                        <div class="small text-muted text-break">{{ $form->proposal->detailable->getFirstMedia('approval_file')->file_name }}</div>
                     </div>
                 </div>
                 @php $media = $form->proposal->detailable->getFirstMedia('approval_file'); @endphp
@@ -70,11 +70,11 @@
 <div class="mb-3 card">
     <div class="card-body">
         <div class="d-flex align-items-center justify-content-between mb-4">
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center me-2" style="min-width:0">
                 
                 <h3 class="mb-0 card-title">Mitra Kerjasama</h3>
             </div>
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center me-2" style="min-width:0">
                 <button type="button" wire:click="downloadPartnerCommitmentTemplate" class="btn btn-link btn-sm me-2 text-decoration-none d-flex align-items-center gap-2">
                     
                     Unduh Template Surat Kesanggupan
@@ -130,7 +130,7 @@
                                     </td>
                                     <td>
                                         @if ($partner->institution)
-                                            <div class="d-flex align-items-center">
+                                            <div class="d-flex align-items-center me-2" style="min-width:0">
                                                 
                                                 {{ $partner->institution }}
                                             </div>
@@ -141,7 +141,7 @@
                                     <td>
                                         @if ($partner->email)
                                             <a href="mailto:{{ $partner->email }}" class="text-reset">
-                                                <div class="d-flex align-items-center">
+                                                <div class="d-flex align-items-center me-2" style="min-width:0">
                                                     
                                                     {{ $partner->email }}
                                                 </div>
@@ -152,7 +152,7 @@
                                     </td>
                                     <td>
                                         @if ($partner->country)
-                                            <div class="d-flex align-items-center">
+                                            <div class="d-flex align-items-center me-2" style="min-width:0">
                                                 
                                                 {{ $partner->country }}
                                             </div>

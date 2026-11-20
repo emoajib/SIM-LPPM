@@ -186,7 +186,7 @@ export default function NotificationConfigIndex() {
                 </div>
 
                 {/* Grid Fields SMTP */}
-                <div className="grid grid-cols-1 gap-4 mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                     <div className="flex flex-col gap-1.5 sm:col-span-2">
                         <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                             SMTP Host
@@ -331,7 +331,7 @@ export default function NotificationConfigIndex() {
                 </div>
 
                 {/* Grid Fields WhatsApp */}
-                <div className="grid grid-cols-1 gap-4 mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                     <div className="flex flex-col gap-1.5 sm:col-span-2">
                         <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                             Endpoint API URL

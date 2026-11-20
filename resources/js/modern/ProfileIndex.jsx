@@ -126,7 +126,6 @@ export default function ProfileIndex() {
         { key: "scopus_id", label: "Scopus Author ID", icon: "ti ti-book", placeholder: "Contoh: 57200000000" },
         { key: "google_scholar_id", label: "Google Scholar ID", icon: "ti ti-school", placeholder: "ID Profil Google Scholar" },
         { key: "wos_id", label: "WoS ResearcherID", icon: "ti ti-file-analytics", placeholder: "Web of Science ID" },
-        { key: "orcid_id", label: "ORCID iD", icon: "ti ti-id-badge", placeholder: "0000-0000-0000-0000" },
     ];
 
     if (loading) {
@@ -283,7 +282,7 @@ export default function ProfileIndex() {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div className="flex flex-col gap-1.5 sm:col-span-2">
                                 <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                                     Nama Lengkap Beserta Gelar <span className="text-rose-500">*</span>
@@ -358,7 +357,7 @@ export default function ProfileIndex() {
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="flex flex-col gap-1.5">
                                         <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                                             NIDN / NUPTK
@@ -455,7 +454,7 @@ export default function ProfileIndex() {
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     {publicationIdFields.map((field) => (
                                         <div key={field.key} className="flex flex-col gap-1.5">
                                             <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
@@ -487,7 +486,7 @@ export default function ProfileIndex() {
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="flex flex-col gap-1.5">
                                         <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                                             Jenis Kelamin

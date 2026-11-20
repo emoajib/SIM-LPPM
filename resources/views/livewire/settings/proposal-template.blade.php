@@ -106,7 +106,6 @@ DOC/DOCX/PDF</strong> maksimum 10&nbsp;MB untuk masing‑masing template.
                                         >
                                         <button type="submit" class="btn btn-primary d-flex align-items-center gap-2">
                                             <i class="ti ti-upload me-1" aria-hidden="true"></i>
-                                             <i class="ti ti-upload me-1" aria-hidden="true"></i>
                                              Unggah
                                         </button>
                                     </div>
@@ -116,11 +115,11 @@ DOC/DOCX/PDF</strong> maksimum 10&nbsp;MB untuk masing‑masing template.
                                 </form>
 
                                 @if($template['media'])
-                                    <div class="mt-3 p-2 bg-light rounded d-flex align-items-center justify-content-between">
-                                        <div class="d-flex align-items-center">
+                                    <div class="mt-3 p-2 bg-light rounded d-flex flex-wrap align-items-center justify-content-between gap-2">
+                                        <div class="d-flex align-items-center me-2" style="min-width:0">
                                             
                                             <div>
-                                                <div class="fw-medium small">{{ $template['media']->file_name }}</div>
+                                                <div class="fw-medium small text-break">{{ $template['media']->file_name }}</div>
                                                 <div class="text-secondary" style="font-size: 0.75rem;">
                                                     {{ $template['media']->human_readable_size }} &middot;
                                                     diubah {{ $template['media']->updated_at->format('d M Y') }}
@@ -134,7 +133,6 @@ DOC/DOCX/PDF</strong> maksimum 10&nbsp;MB untuk masing‑masing template.
                                             target="_blank"
                                             download="{{ $template['media']->file_name }}"
                                         >
-                                             <i class="ti ti-download me-1" aria-hidden="true"></i>
                                              <i class="ti ti-download me-1" aria-hidden="true"></i>
                                              Unduh
                                         </a>
@@ -210,11 +208,11 @@ DOC/DOCX/PDF</strong> maksimum 10&nbsp;MB untuk masing‑masing template.
                                             @enderror
                                         </form>
                                         @if($template['media'])
-                                            <div class="mt-2 p-2 bg-light rounded d-flex align-items-center justify-content-between">
-                                                <div class="d-flex align-items-center">
+                                            <div class="mt-2 p-2 bg-light rounded d-flex flex-wrap align-items-center justify-content-between gap-2">
+                                                <div class="d-flex align-items-center me-2" style="min-width:0">
                                                     
                                                     <div>
-                                                        <div class="fw-medium small">{{ $template['media']->file_name }}</div>
+                                                        <div class="fw-medium small text-break">{{ $template['media']->file_name }}</div>
                                                         <div class="text-secondary" style="font-size: 0.75rem;">
                                                             {{ $template['media']->human_readable_size }}
                                                         </div>
@@ -227,7 +225,6 @@ DOC/DOCX/PDF</strong> maksimum 10&nbsp;MB untuk masing‑masing template.
                                                     target="_blank"
                                                     download="{{ $template['media']->file_name }}"
                                                 >
-                                                     <i class="ti ti-download me-1" aria-hidden="true"></i>
                                                      <i class="ti ti-download me-1" aria-hidden="true"></i>
                                                      Unduh
                                                 </a>
@@ -332,15 +329,14 @@ DOC/DOCX/PDF</strong> maksimum 10&nbsp;MB untuk masing‑masing template.
                                     @enderror
                                 </form>
                                 @if ($this->proposalApprovalPageTemplateMedia)
-                                    <div class="mt-2 p-2 bg-light rounded d-flex align-items-center justify-content-between">
-                                        <div class="d-flex align-items-center">
+                                    <div class="mt-2 p-2 bg-light rounded d-flex flex-wrap align-items-center justify-content-between gap-2">
+                                        <div class="d-flex align-items-center me-2" style="min-width:0">
                                             
-                                            <span class="small fw-medium">{{ $this->proposalApprovalPageTemplateMedia->file_name }}</span>
+                                            <span class="small fw-medium text-break">{{ $this->proposalApprovalPageTemplateMedia->file_name }}</span>
                                         </div>
                                         <a href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $this->proposalApprovalPageTemplateMedia]) }}"
                                             class="btn btn-outline-primary btn-sm" data-navigate-ignore="true" target="_blank"
                                             download="{{ $this->proposalApprovalPageTemplateMedia->file_name }}">
-                                             <i class="ti ti-download me-1" aria-hidden="true"></i>
                                              <i class="ti ti-download me-1" aria-hidden="true"></i>
                                              Unduh
                                         </a>
@@ -385,15 +381,14 @@ DOC/DOCX/PDF</strong> maksimum 10&nbsp;MB untuk masing‑masing template.
                                     @enderror
                                 </form>
                                 @if ($this->reportApprovalPageTemplateMedia)
-                                    <div class="mt-2 p-2 bg-light rounded d-flex align-items-center justify-content-between">
-                                        <div class="d-flex align-items-center">
+                                    <div class="mt-2 p-2 bg-light rounded d-flex flex-wrap align-items-center justify-content-between gap-2">
+                                        <div class="d-flex align-items-center me-2" style="min-width:0">
                                             
-                                            <span class="small fw-medium">{{ $this->reportApprovalPageTemplateMedia->file_name }}</span>
+                                            <span class="small fw-medium text-break">{{ $this->reportApprovalPageTemplateMedia->file_name }}</span>
                                         </div>
                                         <a href="{{ \Illuminate\Support\Facades\URL::temporarySignedRoute('media.download', now()->addMinutes(config('media-library.temporary_url_default_lifetime', 5)), ['media' => $this->reportApprovalPageTemplateMedia]) }}"
                                             class="btn btn-outline-primary btn-sm" data-navigate-ignore="true" target="_blank"
                                             download="{{ $this->reportApprovalPageTemplateMedia->file_name }}">
-                                             <i class="ti ti-download me-1" aria-hidden="true"></i>
                                              <i class="ti ti-download me-1" aria-hidden="true"></i>
                                              Unduh
                                         </a>
@@ -460,7 +455,6 @@ Unggah Template Baru</label>
                                         >
                                         <button type="submit" class="btn btn-primary d-flex align-items-center gap-2">
                                             <i class="ti ti-upload me-1" aria-hidden="true"></i>
-                                             <i class="ti ti-upload me-1" aria-hidden="true"></i>
                                              Unggah
                                         </button>
                                     </div>
@@ -469,11 +463,11 @@ Unggah Template Baru</label>
                                     @enderror
                                 </form>
                                 @if($template['media'])
-                                    <div class="mt-3 p-2 bg-light rounded d-flex align-items-center justify-content-between">
-                                        <div class="d-flex align-items-center">
+                                    <div class="mt-3 p-2 bg-light rounded d-flex flex-wrap align-items-center justify-content-between gap-2">
+                                        <div class="d-flex align-items-center me-2" style="min-width:0">
                                             
                                             <div>
-                                                <div class="fw-medium small">{{ $template['media']->file_name }}</div>
+                                                <div class="fw-medium small text-break">{{ $template['media']->file_name }}</div>
                                             </div>
                                         </div>
                                         <a
@@ -483,7 +477,6 @@ Unggah Template Baru</label>
                                             target="_blank"
                                             download="{{ $template['media']->file_name }}"
                                         >
-                                             <i class="ti ti-download me-1" aria-hidden="true"></i>
                                              <i class="ti ti-download me-1" aria-hidden="true"></i>
                                              Unduh
                                         </a>
