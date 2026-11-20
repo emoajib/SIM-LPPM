@@ -302,7 +302,16 @@ Template PR: `.github/pull_request_template.md`.
   - ✅ `update_production.sh` hardened (trap EXIT, `git pull --ff-only`, backup exclude `.env`, smoke 6 URL)
   - ✅ BC-07 gate adaptif di CI (build stage + source/build commit consistency)
   - ✅ `budget-caps:audit` read-only tersedia
-- All tests: **770 passed** ✅ (13 skipped, 0 failed)
+- All tests: **921 passed** ✅ (13 skipped, 0 failed)
+
+### Selesai 2026-11-20 (BC-13, BC-14, avatar per gender, maskot size)
+- BC-13 — overflow horizontal `/settings/*` (profil, notifikasi, captcha, password, appearance, proposal-template): akar masalah `.grid` Tabler unlayered mengalahkan utility Tailwind. Netralkan `#modern-root .grid` + mirror utility, form 2 kolom, menu header `flex-wrap`, baris berkas `flex-wrap/min-width:0/text-break`.
+- Fitur maskot banner dashboard bisa diganti dari UI (upload/hapus, khusus admin LPPM & superadmin; tombol pintasan di banner; fallback SVG).
+- Fitur maskot **ukuran 3 preset** (Kecil/Sedang/Besar) dengan preview dan tanpa tumpang tindih teks.
+- BC-14 — maskot tetap default setelah upload: berkas langsung tersimpan saat dipilih (hook `updatedMascot`), dan "Simpan Ukuran" tidak membuang berkas pending; status "Maskot aktif" + tautan "Lihat gambar".
+- Avatar default per gender (pria/wanita) yang diatur admin LPPM di Pengaturan › Tampilan; prioritas: foto user → foto identitas → avatar gender → inisial.
+- Field ORCID dihapus dari form profil (tidak ada kolom DB); `photo_url` API diperbaiki (objek `Attribute` → 404).
+- Commit: `15adc43a` (BC-13), `7ced4452` (avatar), `96d1da59` (BC-14); CI (CI, MySQL, PostgreSQL, Security Audit) hijau.
 
 ### In Progress
 - *(none)*
