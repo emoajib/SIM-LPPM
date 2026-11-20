@@ -55,14 +55,13 @@ class GenderAvatarTest extends TestCase
         $this->actingAs($admin);
         session(['active_role' => 'admin lppm']);
 
+        // Memilih berkas sudah cukup: hook updatedAvatarMale/Female menyimpannya.
         Livewire::test(Appearance::class)
             ->set('avatarMale', UploadedFile::fake()->image('pria.png', 200, 200))
-            ->call('saveAvatarMale')
             ->assertHasNoErrors();
 
         Livewire::test(Appearance::class)
             ->set('avatarFemale', UploadedFile::fake()->image('wanita.png', 200, 200))
-            ->call('saveAvatarFemale')
             ->assertHasNoErrors();
     }
 
@@ -168,7 +167,6 @@ class GenderAvatarTest extends TestCase
 
         Livewire::test(Appearance::class)
             ->set('avatarMale', UploadedFile::fake()->create('jahat.svg', 10, 'image/svg+xml'))
-            ->call('saveAvatarMale')
             ->assertHasErrors(['avatarMale']);
     }
 

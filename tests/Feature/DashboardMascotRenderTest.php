@@ -63,6 +63,30 @@ class DashboardMascotRenderTest extends TestCase
         $response->assertDontSee('M10,20 L12,23', false);
     }
 
+    public function test_banner_uses_scale_from_admin_setting(): void
+    {
+        $admin = User::factory()->create(['name' => 'Admin LPPM']);
+        $admin->assignRole('admin lppm');
+
+        session(['active_role' => 'admin lppm']);
+        session(['sim_lppm_app_theme' => 'modern']);
+        session(['sim_lppm_dashboard_theme' => 'modern']);
+        $this->actingAs($admin);
+
+        // Default: sedang (100%)
+        Setting::clearCache();
+        $this->get('/dashboard')->assertSee('--sli-mascot-scale: 1;', false);
+
+        foreach (['small' => '0.75', 'large' => '1.25'] as $size => $scale) {
+            Setting::set('dashboard_mascot_size', $size);
+            Setting::clearCache();
+
+            $this->get('/dashboard')
+                ->assertOk()
+                ->assertSee('--sli-mascot-scale: '.$scale.';', false);
+        }
+    }
+
     public function test_non_admin_does_not_see_mascot_shortcut_button(): void
     {
         $user = User::factory()->create(['name' => 'Dosen Pengusul']);

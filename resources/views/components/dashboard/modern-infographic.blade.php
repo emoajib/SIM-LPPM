@@ -7,6 +7,12 @@
 
 @php
     $mascotUrl = \App\Models\Setting::mediaUrl('dashboard_mascot', 'mascot');
+    $mascotSize = \App\Models\Setting::get('dashboard_mascot_size', 'medium');
+    $mascotScale = match ($mascotSize) {
+        'small' => 0.75,
+        'large' => 1.25,
+        default => 1.0,
+    };
     $totalUsulan = $stats['total_usulan'] ?? 0;
     $totalDidanai = $stats['total_didanai'] ?? 0;
     $fundingRate = $totalUsulan > 0 ? round(($totalDidanai / $totalUsulan) * 100, 1) : 0;
@@ -87,8 +93,8 @@
             position: absolute;
             right: 1.5rem;
             bottom: 0;
-            height: 9rem;
-            width: 11rem;
+            height: calc(9rem * var(--sli-mascot-scale, 1));
+            width: calc(11rem * var(--sli-mascot-scale, 1));
             display: none;
             align-items: flex-end;
             justify-content: center;
@@ -115,7 +121,7 @@
             width: 100%;
         }
         @media (min-width: 992px) {
-            .sli-banner-content { max-width: 76%; }
+            .sli-banner-content { max-width: calc(100% - (11rem * var(--sli-mascot-scale, 1)) - 1rem); }
         }
 
         .sli-badge-pill {
@@ -326,7 +332,7 @@
     </style>
 
     <!-- 1. WELCOME BANNER CARD -->
-    <div class="sli-banner">
+    <div class="sli-banner" style="--sli-mascot-scale: {{ $mascotScale }};">
         <div class="sli-banner-glow-1"></div>
         <div class="sli-banner-glow-2"></div>
 

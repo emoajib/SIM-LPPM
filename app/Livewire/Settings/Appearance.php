@@ -24,6 +24,9 @@ class Appearance extends Component
 
     public $avatarFemale;
 
+    /** Ukuran maskot banner dashboard: small|medium|large. */
+    public string $mascotSize = 'medium';
+
     public function mount()
     {
         if (! auth()->user()->activeHasAnyRole(['admin lppm', 'superadmin'])) {
@@ -32,6 +35,7 @@ class Appearance extends Component
 
         $this->dashboardName = Setting::where('key', 'dashboard_name')->value('value') ?? 'Dashboard';
         $this->loginTitle = Setting::where('key', 'login_title')->value('value') ?? 'Login to your account';
+        $this->mascotSize = (string) (Setting::get('dashboard_mascot_size', 'medium') ?: 'medium');
     }
 
     public function saveSettings()
@@ -51,10 +55,22 @@ class Appearance extends Component
         session()->flash('success_settings', 'Pengaturan teks berhasil disimpan.');
     }
 
+    /** Simpan otomatis logo begitu berkas dipilih (lihat BC-14). */
+    public function updatedLogo(): void
+    {
+        $this->saveLogo();
+    }
+
     public function saveLogo()
     {
+        if (! $this->logo) {
+            $this->addError('logo', 'Pilih berkas logo terlebih dahulu.');
+
+            return;
+        }
+
         $this->validate([
-            'logo' => 'image|max:2048', // 2MB Max
+            'logo' => 'required|image|max:2048', // 2MB Max
         ]);
 
         $setting = Setting::firstOrCreate(
@@ -62,21 +78,38 @@ class Appearance extends Component
             ['value' => 'logo', 'type' => 'image']
         );
 
-        if ($this->logo) {
-            $setting->clearMediaCollection('logo');
-            $setting->addMedia($this->logo->getRealPath())
-                ->usingName($this->logo->getClientOriginalName())
-                ->setFileName($this->logo->getClientOriginalName())
-                ->toMediaCollection('logo');
-        }
+        $setting->clearMediaCollection('logo');
+        $setting->addMedia($this->logo->getRealPath())
+            ->usingName($this->logo->getClientOriginalName())
+            ->setFileName($this->logo->getClientOriginalName())
+            ->toMediaCollection('logo');
 
+        $this->logo = null;
         session()->flash('success_logo', 'Logo berhasil diperbarui.');
+    }
+
+    /**
+     * Simpan otomatis begitu admin memilih berkas.
+     *
+     * Sebelumnya berkas hanya tersimpan bila tombol "Simpan Maskot" diklik;
+     * memilih berkas lalu menekan "Simpan Ukuran" membuang berkas sementara
+     * sehingga dashboard tetap menampilkan SVG bawaan.
+     */
+    public function updatedMascot(): void
+    {
+        $this->saveMascot();
     }
 
     public function saveMascot()
     {
+        if (! $this->mascot) {
+            $this->addError('mascot', 'Pilih berkas maskot terlebih dahulu.');
+
+            return;
+        }
+
         $this->validate([
-            'mascot' => 'image|mimes:png,jpg,jpeg,webp|max:2048',
+            'mascot' => 'required|image|mimes:png,jpg,jpeg,webp|max:2048',
         ]);
 
         $setting = Setting::firstOrCreate(
@@ -84,17 +117,36 @@ class Appearance extends Component
             ['value' => 'mascot', 'type' => 'image']
         );
 
-        if ($this->mascot) {
-            $setting->clearMediaCollection('mascot');
-            $setting->addMedia($this->mascot->getRealPath())
-                ->usingName($this->mascot->getClientOriginalName())
-                ->setFileName($this->mascot->getClientOriginalName())
-                ->toMediaCollection('mascot');
-        }
+        $setting->clearMediaCollection('mascot');
+        $setting->addMedia($this->mascot->getRealPath())
+            ->usingName($this->mascot->getClientOriginalName())
+            ->setFileName($this->mascot->getClientOriginalName())
+            ->toMediaCollection('mascot');
 
         $this->mascot = null;
         Setting::clearCache();
         session()->flash('success_mascot', 'Maskot banner berhasil diperbarui.');
+    }
+
+    public function saveMascotSize()
+    {
+        // Jangan buang berkas yang sudah dipilih admin: simpan dulu maskotnya.
+        if ($this->mascot) {
+            $this->saveMascot();
+
+            if ($this->getErrorBag()->has('mascot')) {
+                return;
+            }
+        }
+
+        $this->validate([
+            'mascotSize' => 'required|in:small,medium,large',
+        ], [], ['mascotSize' => 'ukuran maskot']);
+
+        Setting::set('dashboard_mascot_size', $this->mascotSize);
+        Setting::clearCache();
+
+        session()->flash('success_mascot_size', 'Ukuran maskot banner berhasil diperbarui.');
     }
 
     public function removeMascot()
@@ -107,6 +159,18 @@ class Appearance extends Component
         $this->mascot = null;
         Setting::clearCache();
         session()->flash('success_mascot', 'Maskot dikembalikan ke bawaan.');
+    }
+
+    /** Simpan otomatis avatar pria begitu berkas dipilih. */
+    public function updatedAvatarMale(): void
+    {
+        $this->saveGenderAvatar('male');
+    }
+
+    /** Simpan otomatis avatar wanita begitu berkas dipilih. */
+    public function updatedAvatarFemale(): void
+    {
+        $this->saveGenderAvatar('female');
     }
 
     public function saveAvatarMale()
@@ -192,10 +256,12 @@ class Appearance extends Component
     {
         $currentLogo = Setting::where('key', 'app_logo')->first()?->getFirstMediaUrl('logo') ?: '/logo.png';
         $currentMascot = Setting::mediaUrl('dashboard_mascot', 'mascot');
+        $currentMascotName = Setting::where('key', 'dashboard_mascot')->first()?->getFirstMedia('mascot')?->file_name;
 
         return view('livewire.settings.appearance', [
             'currentLogo' => $currentLogo,
             'currentMascot' => $currentMascot,
+            'currentMascotName' => $currentMascotName,
             'currentAvatarMale' => Setting::mediaUrl('default_avatar_male', 'avatar'),
             'currentAvatarFemale' => Setting::mediaUrl('default_avatar_female', 'avatar'),
         ]);

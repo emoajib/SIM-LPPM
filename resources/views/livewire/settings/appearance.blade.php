@@ -154,9 +154,13 @@ Ubah logo yang ditampilkan pada navbar aplikasi Anda.</p>
                     </span>
                 </div>
                 <div class="col">
-                    <input type="file" class="form-control" wire:model="logo"
-                        accept="image/png, image/jpeg, image/jpg, image/webp">
-                    <div class="mt-2 text-muted small">Max file size is 2MB. Recommended dimensions: 200x200px.</div>
+                    <label class="form-label" for="logo_file">Berkas logo</label>
+                    <input type="file" id="logo_file" class="form-control @error('logo') is-invalid @enderror"
+                        wire:model="logo" accept="image/png, image/jpeg, image/jpg, image/webp"
+                        aria-describedby="logo_hint">
+                    <div class="mt-2 text-muted small" id="logo_hint">
+                        Berkas <strong>langsung tersimpan</strong> begitu dipilih. Maksimal 2MB, disarankan 200×200 px.
+                    </div>
                 </div>
             </div>
 
@@ -171,9 +175,9 @@ Ubah logo yang ditampilkan pada navbar aplikasi Anda.</p>
             @endif
 
             <div class="mt-3">
-                <button type="submit" class="btn btn-primary d-flex align-items-center gap-2" wire:loading.attr="disabled" wire:target="saveLogo, logo">
-                    <i class="ti ti-save me-1" aria-hidden="true"></i>
-                    Simpan Logo
+                <button type="submit" class="btn btn-outline-primary d-flex align-items-center gap-2" wire:loading.attr="disabled" wire:target="saveLogo, logo">
+                    <i class="ti ti-refresh me-1" aria-hidden="true"></i>
+                    Unggah Ulang / Simpan
                 </button>
             </div>
         </form>
@@ -202,10 +206,25 @@ Ubah ilustrasi maskot yang tampil di banner dashboard modern (kanan). Hanya admi
                         wire:model="mascot" accept="image/png, image/jpeg, image/jpg, image/webp"
                         aria-describedby="mascot_hint">
                     <div class="mt-2 text-muted small" id="mascot_hint">
-                        Maksimal 2MB. Disarankan PNG transparan, rasio ±1:1 (tinggi tampil 144px).
+                        Berkas <strong>langsung tersimpan</strong> begitu dipilih. Maksimal 2MB, disarankan
+                        PNG transparan rasio ±1:1.
                     </div>
 
-                    <div wire:loading wire:target="mascot" class="mt-2 text-primary small">Mengunggah...</div>
+                    <div wire:loading wire:target="mascot" class="mt-2 text-primary small">
+                        <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                        Mengunggah maskot...
+                    </div>
+
+                    <div class="mt-2 small" aria-live="polite">
+                        @if ($currentMascot)
+                            <span class="badge bg-success-lt text-success">Maskot aktif</span>
+                            <span class="text-secondary ms-1">{{ $currentMascotName }}</span>
+                            <a href="{{ $currentMascot }}" target="_blank" rel="noopener noreferrer" class="ms-2">Lihat gambar</a>
+                        @else
+                            <span class="badge bg-secondary-lt text-secondary">Belum ada maskot</span>
+                            <span class="text-secondary ms-1">Dashboard memakai SVG bawaan.</span>
+                        @endif
+                    </div>
 
                     @error('mascot') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
 
@@ -216,9 +235,9 @@ Ubah ilustrasi maskot yang tampil di banner dashboard modern (kanan). Hanya admi
                     @endif
 
                     <div class="mt-3 d-flex flex-wrap gap-2">
-                        <button type="submit" class="btn btn-primary d-flex align-items-center gap-2" wire:loading.attr="disabled" wire:target="saveMascot, mascot">
-                            <i class="ti ti-save me-1" aria-hidden="true"></i>
-                            Simpan Maskot
+                        <button type="submit" class="btn btn-outline-primary d-flex align-items-center gap-2" wire:loading.attr="disabled" wire:target="saveMascot, mascot">
+                            <i class="ti ti-refresh me-1" aria-hidden="true"></i>
+                            Unggah Ulang / Simpan
                         </button>
                         @if ($currentMascot)
                             <button type="button" wire:click="removeMascot" wire:confirm="Kembalikan maskot ke bawaan?" class="btn btn-outline-danger d-flex align-items-center gap-2">
@@ -228,6 +247,44 @@ Ubah ilustrasi maskot yang tampil di banner dashboard modern (kanan). Hanya admi
                         @endif
                     </div>
                 </form>
+
+                <!-- Ukuran maskot (preset) -->
+                <div class="mt-4 pt-3 border-top border-muted">
+                    <span class="form-label mb-2 d-block">Ukuran maskot di banner</span>
+                    <div class="d-flex flex-wrap gap-3" role="radiogroup" aria-label="Ukuran maskot banner">
+                        @foreach ([
+                            'small' => ['label' => 'Kecil', 'note' => '75%'],
+                            'medium' => ['label' => 'Sedang', 'note' => '100%'],
+                            'large' => ['label' => 'Besar', 'note' => '125%'],
+                        ] as $value => $option)
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="mascot_size"
+                                    id="mascot_size_{{ $value }}" wire:model="mascotSize" value="{{ $value }}">
+                                <label class="form-check-label" for="mascot_size_{{ $value }}">
+                                    {{ $option['label'] }} <span class="text-muted small">({{ $option['note'] }})</span>
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
+                    <div class="mt-1 text-muted small">
+                        Teks banner otomatis menyesuaikan agar tidak tertutup maskot.
+                    </div>
+
+                    @error('mascotSize') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+
+                    @if (session()->has('success_mascot_size'))
+                        <div class="alert alert-success mt-3 mb-0">{{ session('success_mascot_size') }}</div>
+                    @endif
+
+                    <div class="mt-3 d-flex flex-wrap gap-2">
+                        <button type="button" wire:click="saveMascotSize"
+                            class="btn btn-primary d-flex align-items-center gap-2"
+                            wire:loading.attr="disabled" wire:target="saveMascotSize, mascotSize">
+                            <i class="ti ti-check me-1" aria-hidden="true"></i>
+                            Simpan Ukuran
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

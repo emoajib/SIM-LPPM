@@ -40,9 +40,9 @@ class AppearanceMascotTest extends TestCase
 
         $file = UploadedFile::fake()->image('maskot.png', 200, 200);
 
+        // Memilih berkas sudah cukup: hook updatedMascot() menyimpannya.
         Livewire::test(Appearance::class)
             ->set('mascot', $file)
-            ->call('saveMascot')
             ->assertHasNoErrors();
 
         $setting = Setting::where('key', 'dashboard_mascot')->first();
@@ -58,8 +58,7 @@ class AppearanceMascotTest extends TestCase
 
         $file = UploadedFile::fake()->image('maskot.png', 200, 200);
         Livewire::test(Appearance::class)
-            ->set('mascot', $file)
-            ->call('saveMascot');
+            ->set('mascot', $file);
 
         $this->actingAs($admin);
         session(['active_role' => 'admin lppm']);
@@ -69,6 +68,56 @@ class AppearanceMascotTest extends TestCase
 
         $setting = Setting::where('key', 'dashboard_mascot')->first();
         $this->assertTrue($setting === null || $setting->getFirstMedia('mascot') === null);
+    }
+
+    public function test_admin_can_save_mascot_size_preset(): void
+    {
+        $admin = $this->admin();
+        $this->actingAs($admin);
+        session(['active_role' => 'admin lppm']);
+
+        Livewire::test(Appearance::class)
+            ->assertSet('mascotSize', 'medium')
+            ->set('mascotSize', 'large')
+            ->call('saveMascotSize')
+            ->assertHasNoErrors();
+
+        Setting::clearCache();
+        $this->assertSame('large', Setting::get('dashboard_mascot_size'));
+
+        Livewire::test(Appearance::class)
+            ->set('mascotSize', 'small')
+            ->call('saveMascotSize')
+            ->assertHasNoErrors();
+
+        Setting::clearCache();
+        $this->assertSame('small', Setting::get('dashboard_mascot_size'));
+    }
+
+    public function test_save_mascot_without_file_shows_error(): void
+    {
+        $admin = $this->admin();
+        $this->actingAs($admin);
+        session(['active_role' => 'admin lppm']);
+
+        Livewire::test(Appearance::class)
+            ->call('saveMascot')
+            ->assertHasErrors(['mascot']);
+    }
+
+    public function test_invalid_mascot_size_is_rejected(): void
+    {
+        $admin = $this->admin();
+        $this->actingAs($admin);
+        session(['active_role' => 'admin lppm']);
+
+        Livewire::test(Appearance::class)
+            ->set('mascotSize', 'raksasa')
+            ->call('saveMascotSize')
+            ->assertHasErrors(['mascotSize']);
+
+        Setting::clearCache();
+        $this->assertNull(Setting::get('dashboard_mascot_size'));
     }
 
     public function test_non_admin_cannot_access_appearance(): void
@@ -91,7 +140,6 @@ class AppearanceMascotTest extends TestCase
 
         Livewire::test(Appearance::class)
             ->set('mascot', $file)
-            ->call('saveMascot')
             ->assertHasErrors(['mascot']);
     }
 }
