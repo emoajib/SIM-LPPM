@@ -22,7 +22,7 @@
                             : null;
                         $logoUrl = $customLogo ?: asset('logo.png');
                     @endphp
-                    <img src="{{ $logoUrl }}?v={{ is_file(public_path('logo.png')) ? filemtime(public_path('logo.png')) : time() }}" alt="" width="45" height="45" onerror="this.src='{{ asset('logo.png') }}'">
+                    <img src="{{ $logoUrl }}?v={{ is_file(public_path('logo.png')) ? filemtime(public_path('logo.png')) : time() }}" alt="" width="56" height="56" onerror="this.src='{{ asset('logo.png') }}'">
                     <span>{{ $appName }}</span>
                 </a>
             </div>

@@ -473,14 +473,25 @@ body.theme-modern .navbar {
     position: relative;
     z-index: 10000;
 }
-/* BC-16: logo gelap (logo.png) tidak kontras di navbar gradasi biru.
-   Beri backdrop putih rounded agar logo terbaca tanpa mengubah berkas. */
+/* BC-16/BC-17: logo gelap (logo.png) tidak kontras di navbar gradasi biru.
+   Render sebagai siluet putih dengan backdrop gradasi + blur agar terlihat
+   profesional dan tidak menyatu dengan background. */
 body.theme-modern .navbar .navbar-brand img {
-    background-color: #ffffff;
-    border-radius: 10px;
-    padding: 4px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    filter: brightness(0) invert(1);
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.06) 100%);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-radius: 12px;
+    padding: 6px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35), inset 0 0 0 1px rgba(255, 255, 255, 0.25);
     object-fit: contain;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+body.theme-modern .navbar .navbar-brand img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.35);
 }
 body.theme-modern .navbar .navbar-brand span {
     font-weight: 700;

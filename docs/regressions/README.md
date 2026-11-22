@@ -38,6 +38,7 @@ halaman/modul baru. Tiap kelas memiliki:
 | BC-14 | Upload deferred Livewire tidak tersimpan (maskot/logo/avatar kembali default) | `BC14Test`, `AppearanceMascotTest` |
 | BC-15 | Nomor urut tabel melompat setelah filter klien & selector `[data-scheme]` mengenai baris tabel | `BC15Test`, `DashboardProposalTableTest` |
 | BC-16 | Logo navbar tidak kontras dengan background gradasi biru gelap tema modern | `BC16Test` |
+| BC-17 | Logo navbar belum siluet, terlalu kecil, tanpa efek gradasi | `BC17Test` |
 
 Detail tiap kelas: lihat file `BC-0x-*.md`.
 
