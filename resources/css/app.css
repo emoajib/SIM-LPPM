@@ -473,6 +473,19 @@ body.theme-modern .navbar {
     position: relative;
     z-index: 10000;
 }
+/* BC-16: logo gelap (logo.png) tidak kontras di navbar gradasi biru.
+   Beri backdrop putih rounded agar logo terbaca tanpa mengubah berkas. */
+body.theme-modern .navbar .navbar-brand img {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    object-fit: contain;
+}
+body.theme-modern .navbar .navbar-brand span {
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
 
 /* Modern theme: boxed unified layout */
 /* Lebar konten modern.
