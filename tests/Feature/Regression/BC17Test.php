@@ -8,6 +8,6 @@ it('BC-17: logo navbar dirender sebagai siluet putih dengan backdrop gradasi', f
 
     expect($css)->toContain('body.theme-modern .navbar .navbar-brand img');
     expect($css)->toContain('filter: brightness(0) invert(1)');
-    expect($css)->toContain('backdrop-filter: blur(6px)');
-    expect($css)->toContain('linear-gradient(135deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.06) 100%)');
+    expect($css)->toContain('backdrop-filter: blur(4px)');
+    expect($css)->toContain('linear-gradient(135deg, rgba(0, 0, 0, 0.30) 0%, rgba(0, 0, 0, 0.08) 100%)');
 });
