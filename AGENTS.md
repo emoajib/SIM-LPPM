@@ -302,7 +302,7 @@ Template PR: `.github/pull_request_template.md`.
   - ✅ `update_production.sh` hardened (trap EXIT, `git pull --ff-only`, backup exclude `.env`, smoke 6 URL)
   - ✅ BC-07 gate adaptif di CI (build stage + source/build commit consistency)
   - ✅ `budget-caps:audit` read-only tersedia
-- All tests: **925 passed** ✅ (13 skipped, 0 failed)
+- All tests: **926 passed** ✅ (13 skipped, 0 failed)
 
 ### Selesai 2026-11-20 (BC-13, BC-14, avatar per gender, maskot size)
 - BC-13 — overflow horizontal `/settings/*` (profil, notifikasi, captcha, password, appearance, proposal-template): akar masalah `.grid` Tabler unlayered mengalahkan utility Tailwind. Netralkan `#modern-root .grid` + mirror utility, form 2 kolom, menu header `flex-wrap`, baris berkas `flex-wrap/min-width:0/text-break`.
