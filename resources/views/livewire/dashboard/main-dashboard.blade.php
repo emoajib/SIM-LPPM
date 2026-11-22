@@ -172,48 +172,31 @@
                         </h4>
                     </div>
                     <div class="list-group list-group-flush small">
-                        <div class="list-group-item py-3 px-3 text-center text-muted small">
-                            Belum ada riwayat Tri Dharma yang dapat ditampilkan.
-                        </div>
-                        <!--
-                        <div class="list-group-item py-2 px-3">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <span class="badge bg-rose-lt text-rose">Penelitian</span>
-                                <span class="text-muted small">2026</span>
+                        @forelse ($recentProposals->take(5) as $prop)
+                            @php
+                                $isPengabdian = $prop->detailable_type === \App\Models\CommunityService::class;
+                                $year = $prop->start_year ?: ($prop->created_at?->format('Y') ?? '-');
+                                $showRoute = $isPengabdian
+                                    ? route('community-service.proposal.show', $prop->id)
+                                    : route('research.proposal.show', $prop->id);
+                            @endphp
+                            <a href="{{ $showRoute }}" wire:navigate class="list-group-item list-group-item-action py-2 px-3">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span class="badge {{ $isPengabdian ? 'bg-teal-lt text-teal' : 'bg-azure-lt text-azure' }}">
+                                        {{ $isPengabdian ? 'Pengabdian' : 'Penelitian' }}
+                                    </span>
+                                    <span class="text-muted small">{{ $year }}</span>
+                                </div>
+                                <div class="text-dark fw-bold mt-1 text-truncate" title="{{ $prop->title }}">
+                                    {{ $prop->title ?: '-' }}
+                                </div>
+                            </a>
+                        @empty
+                            <div class="list-group-item py-3 px-3 text-center text-muted small">
+                                Belum ada riwayat Tri Dharma yang dapat ditampilkan.
                             </div>
-                            <div class="text-dark fw-bold mt-1 text-truncate" title="Penerapan Sistem ERP UMKM Berkah Jaya">
-                                Penerapan Sistem ERP UMKM Berkah Jaya
-                            </div>
-                        </div>
-                        <div class="list-group-item py-2 px-3">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <span class="badge bg-cyan-lt text-cyan">Pengabdian</span>
-                                <span class="text-muted small">2026</span>
-                            </div>
-                            <div class="text-dark fw-bold mt-1 text-truncate" title="Pemberdayaan Pengelolaan BUMDes Digital Marketing">
-                                Pemberdayaan Pengelolaan BUMDes Digital Marketing
-                            </div>
-                        </div>
-                        <div class="list-group-item py-2 px-3">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <span class="badge bg-yellow-lt text-yellow">Surat</span>
-                                <span class="text-muted small">2026</span>
-                            </div>
-                            <div class="text-dark fw-bold mt-1 text-truncate" title="Surat Tugas Penelitian Mandiri No: 124/LPPM/ITSNU/2026">
-                                Surat Tugas Penelitian Mandiri No: 124/2026
-                            </div>
-                        </div>
-                        <div class="list-group-item py-2 px-3">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <span class="badge bg-green-lt text-green">Prototipe</span>
-                                <span class="text-muted small">2026</span>
-                            </div>
-                            <div class="text-dark fw-bold mt-1 text-truncate" title="Prototipe Alat Pengering Pewarna Batik Alami">
-                                Prototipe Alat Pengering Pewarna Batik Alami
-                            </div>
-                        </div>
+                        @endforelse
                     </div>
-                        -->
                 </div>
 
                 {{-- Quick Actions --}}
