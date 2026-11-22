@@ -331,11 +331,12 @@
                         <a href="{{ route('review.research') }}" class="btn btn-ghost-primary btn-sm rounded-pill px-3" wire:navigate.hover>Lihat Semua</a>
                     </div>
                 </div>
-                <div class="table-responsive">
+                <div class="table-responsive" style="max-height: 520px; overflow-y: auto;">
                     <table class="table table-vcenter card-table table-hover table-borderless">
                         <thead class="bg-transparent text-muted">
                             <tr>
-                                <th class="ps-4">Judul & Pengaju</th>
+                                <th class="ps-4" style="width: 1%;">No</th>
+                                <th>Judul & Pengaju</th>
                                 <th class="text-center">Status</th>
                                 <th class="text-end pe-4">Aksi</th>
                             </tr>
@@ -344,7 +345,8 @@
                             @forelse($recentResearch as $research)
                                 @php $review = $researchReviewerStats->where('proposal_id', $research->id)->first(); @endphp
                                 <tr>
-                                    <td class="ps-4">
+                                    <td class="ps-4 text-secondary">{{ $loop->iteration }}</td>
+                                    <td>
                                         <div class="fw-bold text-dark text-wrap lh-base" title="{{ $research->title }}">
                                             {{ $research->title }}
                                         </div>
@@ -366,7 +368,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="3" class="py-5 text-center text-muted">Belum ada tugas penelitian</td></tr>
+                                <tr><td colspan="4" class="py-5 text-center text-muted">Belum ada tugas penelitian</td></tr>
                             @endforelse
                         </tbody>
                     </table>
@@ -385,11 +387,12 @@
                         <a href="{{ route('review.community-service') }}" class="btn btn-ghost-green btn-sm rounded-pill px-3" wire:navigate.hover>Lihat Semua</a>
                     </div>
                 </div>
-                <div class="table-responsive">
+                <div class="table-responsive" style="max-height: 520px; overflow-y: auto;">
                     <table class="table table-vcenter card-table table-hover table-borderless">
                         <thead class="bg-transparent text-muted">
                             <tr>
-                                <th class="ps-4">Judul & Pengaju</th>
+                                <th class="ps-4" style="width: 1%;">No</th>
+                                <th>Judul & Pengaju</th>
                                 <th class="text-center">Status</th>
                                 <th class="text-end pe-4">Aksi</th>
                             </tr>
@@ -398,7 +401,8 @@
                             @forelse($recentCommunityService as $pkm)
                                 @php $review = $communityServiceReviewerStats->where('proposal_id', $pkm->id)->first(); @endphp
                                 <tr>
-                                    <td class="ps-4">
+                                    <td class="ps-4 text-secondary">{{ $loop->iteration }}</td>
+                                    <td>
                                         <div class="fw-bold text-dark text-wrap lh-base" title="{{ $pkm->title }}">
                                             {{ $pkm->title }}
                                         </div>
@@ -420,7 +424,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="3" class="py-5 text-center text-muted">Belum ada tugas PKM</td></tr>
+                                <tr><td colspan="4" class="py-5 text-center text-muted">Belum ada tugas PKM</td></tr>
                             @endforelse
                         </tbody>
                     </table>

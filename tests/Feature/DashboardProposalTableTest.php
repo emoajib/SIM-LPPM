@@ -137,6 +137,35 @@ class DashboardProposalTableTest extends TestCase
         $this->assertStringNotContainsString('Ketua', $table);
     }
 
+    public function test_load_more_adds_more_proposal_rows_and_keeps_sequential_numbers(): void
+    {
+        $dosen = User::factory()->create(['name' => 'Dosen Pengusul']);
+        $dosen->assignRole('dosen');
+
+        for ($i = 1; $i <= 5; $i++) {
+            Proposal::factory()->create([
+                'title' => 'Usulan Penomoran '.$i,
+                'submitter_id' => $dosen->id,
+                'detailable_id' => Research::factory()->create()->id,
+                'detailable_type' => Research::class,
+                'start_year' => 2026,
+            ]);
+        }
+
+        $component = Livewire::test(Dashboard::class);
+        $component->set('proposalLimit', 2);
+
+        $table = $this->tableBody($component->html());
+        $this->assertSame(2, substr_count($table, 'sli-row-no'));
+        $this->assertSame(['1', '2'], $this->rowNumbers($table));
+
+        $component->call('loadMoreProposals');
+
+        $table = $this->tableBody($component->html());
+        $this->assertSame(5, substr_count($table, 'sli-row-no'));
+        $this->assertSame(['1', '2', '3', '4', '5'], $this->rowNumbers($table));
+    }
+
     public function test_modern_page_width_is_widened_two_centimetres_per_side(): void
     {
         $css = file_get_contents(resource_path('css/app.css'));
@@ -147,6 +176,13 @@ class DashboardProposalTableTest extends TestCase
             'Lebar halaman modern harus 1472px (1320px + 2 x 1 cm per sisi).'
         );
         $this->assertStringContainsString('max-width: var(--sli-page-max)', $css);
+    }
+
+    private function rowNumbers(string $table): array
+    {
+        preg_match_all('/class="text-secondary sli-row-no">(\d+)</', $table, $matches);
+
+        return $matches[1] ?? [];
     }
 
     private function tableBody(string $html): string

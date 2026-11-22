@@ -1093,6 +1093,7 @@ Usulan Masuk</div>
     ];
 
     let currentScheme = 'all';
+    let lastFilterScheme = null;
     let currentAcademicYear = 'all';
     let currentSemester = 'all';
     let currentLayout = 'both';
@@ -1100,8 +1101,10 @@ Usulan Masuk</div>
     let isTableOpen = false;
     let editingId = null;
 
-    // Event listeners untuk tombol scheme filter (lebih andal dari inline onclick)
-    document.querySelectorAll('[data-scheme]').forEach(btn => {
+    // Event listeners untuk tombol scheme filter (lebih andal dari inline onclick).
+    // BC-15: batasi ke <button data-scheme> agar baris tabel (<tr data-scheme>)
+    // tidak ikut mendapat handler klik yang mengubah filter.
+    document.querySelectorAll('button[data-scheme]').forEach(btn => {
         btn.addEventListener('click', () => {
             const scheme = btn.getAttribute('data-scheme');
             if (scheme) sliSetScheme(scheme);
@@ -1659,7 +1662,9 @@ Usulan Masuk</div>
         refreshVisuals();
     };
 
-    // Filter tabel proposal Daftar Usulan Terdaftar berdasarkan skema (client-side)
+    // Filter tabel proposal Daftar Usulan Terdaftar berdasarkan skema (client-side).
+    // BC-15: baris yang terlihat dinomori ulang 1..N sesuai hasil filter, bukan
+    // mempertahankan nomor urut global (1,2,4,9,10) yang membingungkan.
     window.filterProposalTable = function(scheme) {
         const tbody = document.getElementById('sli-proposal-table-body');
         if (!tbody) return;
@@ -1669,7 +1674,11 @@ Usulan Masuk</div>
             const rowScheme = row.getAttribute('data-scheme');
             const show = (scheme === 'all' || rowScheme === scheme);
             row.style.display = show ? '' : 'none';
-            if (show) visibleCount++;
+            if (show) {
+                visibleCount++;
+                const noCell = row.querySelector('.sli-row-no');
+                if (noCell) noCell.textContent = String(visibleCount);
+            }
         });
         // Tampilkan pesan kosong jika tidak ada baris yang cocok
         let emptyMsg = tbody.querySelector('.sli-empty-msg');
@@ -1684,6 +1693,23 @@ Usulan Masuk</div>
         } else if (emptyMsg) {
             emptyMsg.style.display = 'none';
         }
+
+        // Ringkasan jumlah baris yang sedang tampil.
+        const countEl = document.getElementById('sli-proposal-visible-count');
+        if (countEl) countEl.textContent = String(visibleCount);
+
+        // Tabel selalu bisa digulir: beri petunjuk hanya saat isinya melebihi tinggi.
+        const scrollBox = tbody.closest('.table-responsive');
+        const hintEl = document.getElementById('sli-proposal-scroll-hint');
+        if (scrollBox && hintEl) {
+            hintEl.style.display = (scrollBox.scrollHeight > scrollBox.clientHeight + 4) ? '' : 'none';
+        }
+        // Filter baru selalu mulai dari baris teratas; "Muat lebih banyak"
+        // (skema sama) tidak mereset posisi gulir pengguna.
+        if (scrollBox && lastFilterScheme !== scheme) {
+            scrollBox.scrollTop = 0;
+        }
+        lastFilterScheme = scheme;
     };
 
     window.sliSetAcademicYear = function(value) {
@@ -1862,8 +1888,9 @@ Usulan Masuk</div>
     }, 6000);
 
     function renderAll() {
-        // Re-attach scheme filter event listeners (aman untuk Livewire re-render)
-        document.querySelectorAll('[data-scheme]').forEach(btn => {
+        // Re-attach scheme filter event listeners (aman untuk Livewire re-render).
+        // BC-15: hanya tombol filter, bukan baris tabel yang juga punya data-scheme.
+        document.querySelectorAll('button[data-scheme]').forEach(btn => {
             // Clone to remove old listeners, then re-add
             const newBtn = btn.cloneNode(true);
             btn.parentNode.replaceChild(newBtn, btn);
@@ -1890,5 +1917,18 @@ Usulan Masuk</div>
     document.addEventListener('livewire:initialized', renderAll);
     document.addEventListener('livewire:navigated', renderAll);
     document.addEventListener('livewire:load', renderAll);
+
+    // BC-15: setelah Livewire mengganti isi tabel (mis. "Muat lebih banyak"),
+    // terapkan kembali filter skema yang sedang aktif agar baris baru tidak
+    // tampil campur dan nomornya tetap berurutan.
+    document.addEventListener('livewire:init', () => {
+        if (window.Livewire && typeof window.Livewire.hook === 'function') {
+            window.Livewire.hook('morph.updated', () => {
+                if (document.getElementById('sli-proposal-table-body')) {
+                    filterProposalTable(currentScheme);
+                }
+            });
+        }
+    });
 })();
 </script>

@@ -24,6 +24,14 @@ class Dashboard extends Component
 
     public $dashboardComponent;
 
+    /**
+     * Jumlah baris tabel "Daftar Usulan Terdaftar" yang dimuat.
+     *
+     * Dulu hanya 10 baris sehingga pengguna tidak bisa menggulir untuk
+     * melihat usulan lain. Sekarang 50 baris + tombol "Muat lebih banyak".
+     */
+    public int $proposalLimit = 50;
+
     public string $dashboardTheme = Theme::CLASSIC->value;
 
     public function mount()
@@ -55,6 +63,14 @@ class Dashboard extends Component
         session(['sim_lppm_app_theme' => $this->dashboardTheme]);
         cookie()->queue(cookie('sim_lppm_dashboard_theme', $this->dashboardTheme, 60 * 24 * 365));
         cookie()->queue(cookie('sim_lppm_app_theme', $this->dashboardTheme, 60 * 24 * 365));
+    }
+
+    /**
+     * Muat 50 baris berikutnya pada tabel "Daftar Usulan Terdaftar".
+     */
+    public function loadMoreProposals(): void
+    {
+        $this->proposalLimit = min(500, $this->proposalLimit + 50);
     }
 
     /**
@@ -400,7 +416,7 @@ class Dashboard extends Component
                     'teamMembers:id,name',
                 ]),
                 $this->user
-            )->latest()->take(10);
+            )->latest()->take($this->proposalLimit);
 
             $items = $query->get();
 

@@ -302,7 +302,7 @@ Template PR: `.github/pull_request_template.md`.
   - ✅ `update_production.sh` hardened (trap EXIT, `git pull --ff-only`, backup exclude `.env`, smoke 6 URL)
   - ✅ BC-07 gate adaptif di CI (build stage + source/build commit consistency)
   - ✅ `budget-caps:audit` read-only tersedia
-- All tests: **921 passed** ✅ (13 skipped, 0 failed)
+- All tests: **925 passed** ✅ (13 skipped, 0 failed)
 
 ### Selesai 2026-11-20 (BC-13, BC-14, avatar per gender, maskot size)
 - BC-13 — overflow horizontal `/settings/*` (profil, notifikasi, captcha, password, appearance, proposal-template): akar masalah `.grid` Tabler unlayered mengalahkan utility Tailwind. Netralkan `#modern-root .grid` + mirror utility, form 2 kolom, menu header `flex-wrap`, baris berkas `flex-wrap/min-width:0/text-break`.
@@ -313,11 +313,17 @@ Template PR: `.github/pull_request_template.md`.
 - Field ORCID dihapus dari form profil (tidak ada kolom DB); `photo_url` API diperbaiki (objek `Attribute` → 404).
 - Commit: `15adc43a` (BC-13), `7ced4452` (avatar), `96d1da59` (BC-14); CI (CI, MySQL, PostgreSQL, Security Audit) hijau.
 
+### Selesai 2026-11-22 (deploy produksi + BC-15 nomor urut & gulir tabel dashboard)
+- Deploy produksi via `update_production.sh`: `f3d91416` → `96d1da59` (fast-forward), snapshot DB pra-migrasi, smoke test 6/6, checklist keamanan aman, `dev:record` tercatat. Setelahnya `git pull --ff-only` → `f51ab6ae`; produksi & GitHub seragam.
+- BC-15 — tabel "Daftar Usulan Terdaftar" (tema modern): nomor urut melompat (3,5,6,7,8) setelah filter skema karena JS hanya menyembunyikan baris; selector `[data-scheme]` juga mengenai `<tr data-scheme>` sehingga klik baris mengubah filter. Perbaikan: renumber baris terlihat 1..N, selector dibatasi `button[data-scheme]`, footer menampilkan jumlah baris + hint gulir, filter diterapkan ulang setelah Livewire morph.
+- Tabel dashboard kini memuat 50 baris + tombol "Muat 50 lagi" (hingga 500) sehingga data bisa digulir; tema klasik mendapat kolom "No" berurutan (`$loop->iteration`) dan container gulir (`max-height: 520px`) di 6 dashboard (admin, dosen, exec, kepala LPPM, default, reviewer).
+- Penjaga: `tests/Feature/Regression/BC15Test.php`, `DashboardProposalTableTest::test_load_more_adds_more_proposal_rows_and_keeps_sequential_numbers`.
+- Registry: `docs/regressions/BC-15-*.md`, `docs/regressions/README.md` (BC-14 & BC-15).
+
 ### In Progress
 - *(none)*
 
 ### Planned
 - Sentry: isi `SENTRY_DSN` di `.env` produksi (kode/config sudah siap; `SENTRY_RELEASE` otomatis dari deploy)
 - `GITHUB_TOKEN` produksi agar `history:sync` terjadwal tidak gagal
-- Fase 8: deploy produksi via `bash update_production.sh` (butuh terminal cPanel)
 - Opsional: pastikan Laravel Boost tidak aktif di produksi (`composer install --no-dev`)

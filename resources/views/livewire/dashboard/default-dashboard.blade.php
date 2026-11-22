@@ -79,12 +79,13 @@
                             </div>
                             <h3 class="card-title fw-bold mb-0">Penelitian Terbaru</h3>
                         </div>
-                        <div class="table-responsive">
+                        <div class="table-responsive" style="max-height: 520px; overflow-y: auto;">
                             {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
                             <table class="table table-vcenter card-table table-hover table-borderless">
                                 <thead class="bg-transparent text-muted">
                                     <tr>
-                                        <th class="ps-4">Judul & Peneliti</th>
+                                        <th class="ps-4" style="width: 1%;">No</th>
+                                        <th>Judul & Peneliti</th>
                                         <th class="text-center">Status</th>
                                         <th class="text-end pe-4">Tanggal</th>
                                     </tr>
@@ -92,7 +93,8 @@
                                 <tbody>
                                     @forelse($recentResearch as $research)
                                         <tr>
-                                            <td class="ps-4">
+                                            <td class="ps-4 text-secondary">{{ $loop->iteration }}</td>
+                                            <td>
                                                 <div class="fw-bold text-wrap lh-base" title="{{ $research->title }}">
                                                     {{ $research->title }}
                                                 </div>
@@ -115,7 +117,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="3" class="py-5 text-muted text-center">
+                                            <td colspan="4" class="py-5 text-muted text-center">
                                                 Belum ada penelitian
                                             </td>
                                         </tr>
@@ -135,12 +137,13 @@
                             </div>
                             <h3 class="card-title fw-bold mb-0">PKM Terbaru</h3>
                         </div>
-                        <div class="table-responsive">
+                        <div class="table-responsive" style="max-height: 520px; overflow-y: auto;">
                             {{-- Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager --}}
                             <table class="table table-vcenter card-table table-hover table-borderless">
                                 <thead class="bg-transparent text-muted">
                                     <tr>
-                                        <th class="ps-4">Judul & Pengaju</th>
+                                        <th class="ps-4" style="width: 1%;">No</th>
+                                        <th>Judul & Pengaju</th>
                                         <th class="text-center">Status</th>
                                         <th class="text-end pe-4">Tanggal</th>
                                     </tr>
@@ -148,7 +151,8 @@
                                 <tbody>
                                     @forelse($recentCommunityService as $communityService)
                                         <tr>
-                                            <td class="ps-4">
+                                            <td class="ps-4 text-secondary">{{ $loop->iteration }}</td>
+                                            <td>
                                                 <div class="fw-bold text-wrap lh-base" title="{{ $communityService->title }}">
                                                     {{ $communityService->title }}
                                                 </div>
@@ -171,7 +175,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="3" class="py-5 text-muted text-center">
+                                            <td colspan="4" class="py-5 text-muted text-center">
                                                 Belum ada PKM
                                             </td>
                                         </tr>

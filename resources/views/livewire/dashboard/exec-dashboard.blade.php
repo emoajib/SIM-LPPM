@@ -858,7 +858,8 @@
                     <table class="table table-vcenter card-table table-hover table-borderless">
                         <thead class="bg-surface text-muted" style="position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                             <tr>
-                                <th class="ps-4">Judul & Peneliti</th>
+                                <th class="ps-4" style="width: 1%;">No</th>
+                                <th>Judul & Peneliti</th>
                                 <th class="text-center">Status</th>
                                 <th class="text-end pe-4">Tanggal</th>
                             </tr>
@@ -866,7 +867,8 @@
                         <tbody>
                             @forelse($recentResearch as $research)
                                 <tr>
-                                    <td class="ps-4">
+                                    <td class="ps-4 text-secondary">{{ $loop->iteration }}</td>
+                                    <td>
                                         <a href="{{ route('research.proposal.show', $research->id) }}" class="text-reset fw-bold text-wrap lh-base text-decoration-none" title="{{ $research->title }}" wire:navigate>
                                             {{ $research->title }}
                                         </a>
@@ -922,7 +924,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="3" class="text-center py-5 text-muted">Belum ada penelitian</td>
+                                    <td colspan="4" class="text-center py-5 text-muted">Belum ada penelitian</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -946,7 +948,8 @@
                     <table class="table table-vcenter card-table table-hover table-borderless">
                         <thead class="bg-surface text-muted" style="position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                             <tr>
-                                <th class="ps-4">Judul & Pengaju</th>
+                                <th class="ps-4" style="width: 1%;">No</th>
+                                <th>Judul & Pengaju</th>
                                 <th class="text-center">Status</th>
                                 <th class="text-end pe-4">Tanggal</th>
                             </tr>
@@ -954,7 +957,8 @@
                         <tbody>
                             @forelse($recentCommunityService as $communityService)
                                 <tr>
-                                    <td class="ps-4">
+                                    <td class="ps-4 text-secondary">{{ $loop->iteration }}</td>
+                                    <td>
                                         <a href="{{ route('community-service.proposal.show', $communityService->id) }}" class="text-reset fw-bold text-wrap lh-base text-decoration-none" title="{{ $communityService->title }}" wire:navigate>
                                             {{ $communityService->title }}
                                         </a>
@@ -1010,7 +1014,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="3" class="text-center py-5 text-muted">Belum ada PKM</td>
+                                    <td colspan="4" class="text-center py-5 text-muted">Belum ada PKM</td>
                                 </tr>
                             @endforelse
                         </tbody>

@@ -23,7 +23,7 @@
                             <span class="badge bg-blue-lt">Tahun Berjalan {{ date('Y') }}</span>
                         </div>
                     </div>
-                    <div class="table-responsive" style="max-height: 480px; overflow-y: auto;">
+                    <div class="table-responsive" tabindex="0" role="region" aria-label="Daftar usulan terdaftar, gulir untuk melihat semua data" style="max-height: 480px; overflow-y: auto; overscroll-behavior: contain;">
                         <table class="table table-vcenter table-hover card-table">
                             <thead class="sticky-top bg-white">
                                 <tr class="bg-light text-secondary text-uppercase" style="font-size: 11px;">
@@ -62,7 +62,7 @@
                                         $schemeData = $isPengabdian ? 'pengabdian' : 'penelitian';
                                     @endphp
                                     <tr data-scheme="{{ $schemeData }}">
-                                        <td class="text-secondary">{{ $index + 1 }}</td>
+                                        <td class="text-secondary sli-row-no">{{ $index + 1 }}</td>
                                         <td>
                                             <div class="fw-bold text-dark text-truncate" style="max-width: 420px;" title="{{ $title }}">
                                                 {{ $title }}
@@ -97,8 +97,18 @@
                         </table>
                     </div>
                     <div class="card-footer bg-white d-flex justify-content-between align-items-center flex-wrap gap-2 py-2" style="position: relative; z-index: 5;">
-                        <span class="text-secondary small">Menampilkan {{ count($recentProposals) }} usulan terbaru (dari total {{ $infographicStats['total_usulan'] ?? 0 }}).</span>
+                        <span class="text-secondary small">
+                            Menampilkan <span id="sli-proposal-visible-count" class="fw-bold">{{ count($recentProposals) }}</span>
+                            dari total {{ $infographicStats['total_usulan'] ?? 0 }} usulan.
+                            <span id="sli-proposal-scroll-hint" class="text-muted" style="display: none;">· Gulir tabel untuk melihat semua usulan.</span>
+                        </span>
                         <div class="d-flex gap-2">
+                            @if (($infographicStats['total_usulan'] ?? 0) > count($recentProposals))
+                                <button type="button" class="btn btn-sm btn-outline-primary" wire:click="loadMoreProposals" wire:loading.attr="disabled" wire:target="loadMoreProposals">
+                                    <span wire:loading.remove wire:target="loadMoreProposals">Muat 50 lagi</span>
+                                    <span wire:loading wire:target="loadMoreProposals">Memuat…</span>
+                                </button>
+                            @endif
                             @if (Route::has('research.proposal.index'))
                                 <a href="{{ route('research.proposal.index') }}" class="btn btn-sm btn-outline-primary" onclick="window.location.href=this.href; return false;" style="cursor: pointer;">Semua Penelitian →</a>
                             @endif
