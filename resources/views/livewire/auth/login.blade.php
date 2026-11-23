@@ -26,12 +26,12 @@
 
                         <form method="post" wire:submit.prevent="login" autocomplete="off" novalidate>
                             <div class="mb-4">
-                                <label class="form-label fw-medium text-secondary mb-2">Email atau ID Identitas</label>
+                                <label class="form-label fw-medium text-secondary mb-2" for="email">Email atau ID Identitas</label>
                                 <div class="input-group input-group-flat border rounded-3 focus-within-glow">
                                     <span class="input-group-text bg-transparent border-0 px-3">
                                         <i class="ti ti-lock"></i>
                                     </span>
-                                    <input type="text" wire:model="email"
+                                    <input type="text" id="email" wire:model="email"
                                         class="form-control border-0 ps-0 @error('email') is-invalid @enderror"
                                         placeholder="NUPTK / Email / NIDN / NIM" autocomplete="username" autofocus />
                                 </div>
@@ -49,7 +49,7 @@
                             </div>
 
                             <div class="mb-4">
-                                <label class="form-label fw-medium text-secondary mb-2 d-flex justify-content-between">
+                                <label class="form-label fw-medium text-secondary mb-2 d-flex justify-content-between" for="password">
                                     Password
                                     <a href="{{ route('password.request') }}" class="small link-primary text-decoration-none fw-normal">Lupa password?</a>
                                 </label>
@@ -59,7 +59,7 @@
                                     </span>
                                     <input x-bind:type="showPassword ? 'text' : 'password'"
                                         class="form-control border-0 ps-0 @error('password') is-invalid @enderror"
-                                        placeholder="Masukkan password" autocomplete="off" wire:model="password" />
+                                        placeholder="Masukkan password" autocomplete="current-password" wire:model="password" id="password" />
                                     <span class="input-group-text bg-transparent border-0 pe-3">
                                         <button type="button" class="bg-transparent p-0 border-0 link-secondary"
                                             x-on:click="showPassword = ! showPassword"
