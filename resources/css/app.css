@@ -1033,3 +1033,23 @@ body.theme-dark ::placeholder {
 body.theme-dark .text-dark {
     color: #e2e8f0 !important;
 }
+
+/* Accessibility preferences */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+@media (prefers-contrast: more) {
+    body, .card, .form-control, .form-select, .dropdown-menu {
+        border-width: 2px;
+    }
+}
+@media (forced-colors: active) {
+    .btn, .badge, .card, .modal-content {
+        border: 1px solid CanvasText;
+    }
+}
