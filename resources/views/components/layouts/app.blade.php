@@ -17,6 +17,9 @@
     <link href="/preview/css/demo.css" rel="stylesheet" /> --}}
     <!-- END DEMO STYLES -->
     <!-- BEGIN CUSTOM FONT -->
+    <script>
+        document.documentElement.setAttribute('data-bs-theme', @json(session('sim_lppm_color_mode', request()->cookie('sim_lppm_color_mode')) === 'dark' ? 'dark' : 'light'));
+    </script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- END CUSTOM FONT -->
 </head>

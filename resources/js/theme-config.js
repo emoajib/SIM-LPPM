@@ -2,7 +2,6 @@
  * Default theme configuration
  */
 const THEME_CONFIG = {
-	theme: 'light',
 	'theme-base': 'neutral',
 	'theme-font': 'sans-serif',
 	'theme-primary': 'green',
