@@ -20,7 +20,10 @@
     <!-- END CUSTOM FONT -->
 </head>
 
-<body class="{{ is_modern_theme() ? 'theme-modern' : 'theme-classic' }} {{ session('sim_lppm_color_mode') === 'dark' ? 'theme-dark' : '' }}">
+@php
+    $colorMode = session('sim_lppm_color_mode', request()->cookie('sim_lppm_color_mode'));
+@endphp
+<body class="{{ is_modern_theme() ? 'theme-modern' : 'theme-classic' }} {{ $colorMode === 'dark' ? 'theme-dark' : '' }}">
     <!-- Toast Container for notifications -->
     <x-tabler.toast-container />
 
@@ -39,6 +42,7 @@
         $forceReactRoutes = ['research.verifikasi-luaran.page', 'community-service.verifikasi-luaran.page'];
         $forceReact = in_array(request()->route()?->getName() ?? '', $forceReactRoutes, true);
     @endphp
+    <a href="#main-content" class="skip-link">Lewati ke konten utama</a>
     <div class="page">
         @include('components.layouts.header')
         <div class="page-wrapper">
@@ -56,7 +60,7 @@
             <!-- END PAGE HEADER -->
             <!-- BEGIN PAGE BODY -->
             <div class="page-body">
-                <div class="container-xl">
+                <div class="container-xl" id="main-content">
                     @if ($isModernTheme || $forceReact)
                         <script>window.__MODERN_PAGE__ = @json($modernPage);</script>
                         <script>window.__USER_ROLES__ = @json(auth()->user()?->getRoleNames() ?? []);</script>

@@ -72,7 +72,7 @@
     "src": "node_modules/@tabler/icons-webfont/dist/fonts/tabler-icons.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app-CAvcb-1O.css",
+    "file": "assets/app-WGZvwO3Q.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "names": [
@@ -98,7 +98,7 @@
     ]
   },
   "resources/js/modern.jsx": {
-    "file": "assets/modern-aTH6DB3m.js",
+    "file": "assets/modern-BlsiLUDE.js",
     "name": "modern",
     "src": "resources/js/modern.jsx",
     "isEntry": true,

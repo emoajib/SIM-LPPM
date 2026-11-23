@@ -30,7 +30,7 @@
             <div class="flex-row order-md-last navbar-nav">
                 <div class="d-md-flex d-none">
                     <div class="nav-item">
-                        <a href="?theme=dark" class="px-0 nav-link hide-theme-dark" title="Enable dark mode"
+                        <a href="{{ route('theme.color-mode', ['mode' => 'dark']) }}" class="px-0 nav-link hide-theme-dark" title="Enable dark mode"
                             data-bs-toggle="tooltip" data-bs-placement="bottom">
                             <!-- Download SVG icon from http://tabler.io/icons/icon/moon -->
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -40,7 +40,7 @@
                                     d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
                             </svg>
                         </a>
-                        <a href="?theme=light" class="px-0 nav-link hide-theme-light" title="Enable light mode"
+                        <a href="{{ route('theme.color-mode', ['mode' => 'light']) }}" class="px-0 nav-link hide-theme-light" title="Enable light mode"
                             data-bs-toggle="tooltip" data-bs-placement="bottom">
                             <!-- Download SVG icon from http://tabler.io/icons/icon/sun -->
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"

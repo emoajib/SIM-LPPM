@@ -906,3 +906,33 @@ body.theme-modern.theme-dark .border-slate-200 { border-color: #334155 !importan
 .cluster-tree-levels { border-color: var(--tblr-border-color) !important; }
 .tkt-tree-header .btn,
 .cluster-tree-header .btn { --tblr-btn-line-height: 1; }
+
+/* Skip link for accessibility */
+.skip-link {
+    position: absolute;
+    left: -9999px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    z-index: 10000;
+}
+.skip-link:focus {
+    left: 1rem;
+    top: 1rem;
+    width: auto;
+    height: auto;
+    padding: .5rem 1rem;
+    background: #ffffff;
+    color: #1e293b;
+    border: 2px solid #1e3a6e;
+    border-radius: .5rem;
+}
+
+/* Touch targets on mobile */
+@media (max-width: 767px) {
+    button, a.btn, .btn, .nav-link, .dropdown-item, .pagination .page-link {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}

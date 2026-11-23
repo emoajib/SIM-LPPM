@@ -32,4 +32,22 @@ class ThemeSwitcherController extends Controller
 
         return redirect()->back()->with('success', "Tema website berhasil diubah ke: {$theme->label()}");
     }
+
+    /**
+     * Persist dark/light color mode across all pages, not only Dashboard.
+     */
+    public function colorMode(Request $request): RedirectResponse
+    {
+        $mode = $request->input('mode', $request->query('mode'));
+        if (! in_array($mode, ['dark', 'light'], true)) {
+            $mode = $request->input('theme', $request->query('theme'));
+        }
+
+        if (in_array($mode, ['dark', 'light'], true)) {
+            session(['sim_lppm_color_mode' => $mode]);
+            cookie()->queue(cookie('sim_lppm_color_mode', $mode, 60 * 24 * 365));
+        }
+
+        return redirect()->back();
+    }
 }

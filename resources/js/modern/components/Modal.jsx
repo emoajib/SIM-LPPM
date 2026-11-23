@@ -6,11 +6,30 @@ export default function Modal({ open, onClose, title, children, size = "md", ari
 
     useEffect(() => {
         if (!open) return;
-        const onKey = (e) => e.key === "Escape" && onClose();
+        const previouslyFocused = document.activeElement;
+        const onKey = (e) => {
+            if (e.key === "Escape") {
+                onClose();
+                return;
+            }
+            if (e.key !== "Tab" || !dialogRef.current) return;
+            const focusable = dialogRef.current.querySelectorAll(
+                'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+            );
+            if (focusable.length === 0) return;
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
+        };
         document.addEventListener("keydown", onKey);
         document.body.style.overflow = "hidden";
 
-        // Accessible focus management
         if (dialogRef.current) {
             dialogRef.current.focus();
         }
@@ -18,6 +37,9 @@ export default function Modal({ open, onClose, title, children, size = "md", ari
         return () => {
             document.removeEventListener("keydown", onKey);
             document.body.style.overflow = "";
+            if (previouslyFocused && typeof previouslyFocused.focus === "function") {
+                previouslyFocused.focus();
+            }
         };
     }, [open, onClose]);
 

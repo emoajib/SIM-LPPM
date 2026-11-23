@@ -702,6 +702,9 @@ Route::middleware(['auth'])->group(function () {
     Route::match(['get', 'post'], 'theme/switch', [ThemeSwitcherController::class, 'switch'])
         ->name('theme.switch');
 
+    Route::match(['get', 'post'], 'theme/color-mode', [ThemeSwitcherController::class, 'colorMode'])
+        ->name('theme.color-mode');
+
     // Modern theme page for Settings: Notification Config (admin LPPM/superadmin)
     // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
     Route::get('settings/notification-config/modern', [ModernPageController::class, 'settingsNotificationConfig'])
