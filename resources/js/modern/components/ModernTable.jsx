@@ -11,6 +11,8 @@ export default function ModernTable({
     columns = [],
     data = [],
     loading = false,
+    error = null,
+    onRetry = null,
     emptyIcon = "ti ti-folder-open",
     emptyTitle = "Tidak ada data",
     emptyDescription = "Belum ada item yang dapat ditampilkan.",
@@ -25,6 +27,17 @@ export default function ModernTable({
             <div className="py-2">
                 <Skeleton lines={6} preset="table-row" className="h-10 my-1.5" />
             </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <EmptyState
+                icon="ti ti-alert-triangle"
+                title="Gagal memuat data"
+                description={typeof error === "string" ? error : "Terjadi kesalahan. Silakan coba lagi."}
+                action={onRetry ? <button type="button" onClick={onRetry} className="px-4 py-2 rounded-lg bg-[var(--color-primary)] text-white">Coba lagi</button> : null}
+            />
         );
     }
 
