@@ -5,8 +5,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta name="theme-color" content="#1e3a6e" />
     <link rel="icon" href="{{ asset('logo.png') }}" type="image/png">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>{{ $title ?? '' }} - {{ config('app.name') }}</title>
     <!-- BEGIN GLOBAL MANDATORY STYLES -->
     <!-- END GLOBAL MANDATORY STYLES -->
@@ -90,6 +91,7 @@
         @endif
     @endif
 
+    <noscript><p style="padding:1rem;">Beberapa fitur memerlukan JavaScript untuk berjalan.</p></noscript>
     @stack('scripts')
     <script>
         document.addEventListener('livewire:initialized', () => {
