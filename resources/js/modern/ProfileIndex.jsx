@@ -188,7 +188,7 @@ export default function ProfileIndex() {
                                     className="w-28 h-28 rounded-2xl object-cover border-2 border-slate-200 dark:border-slate-700 shadow-sm"
                                 />
                             ) : (
-                                <div className="w-28 h-28 rounded-2xl bg-gradient-to-tr from-[#1e3a6e] to-cyan-600 text-white flex items-center justify-center text-4xl font-extrabold shadow-sm">
+                                <div className="w-28 h-28 rounded-2xl bg-gradient-to-tr from-[var(--color-primary)] to-cyan-600 text-white flex items-center justify-center text-4xl font-extrabold shadow-sm">
                                     {user.name?.charAt(0)?.toUpperCase() || "?"}
                                 </div>
                             )}
@@ -261,7 +261,7 @@ export default function ProfileIndex() {
                     {/* Quick Guidance Card */}
                     <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/70 rounded-2xl p-5 text-xs text-slate-600 dark:text-slate-300 space-y-2.5">
                         <div className="flex items-center gap-2 font-bold text-slate-800 dark:text-slate-200">
-                            <i className="ti ti-info-circle text-base text-[#1e3a6e] dark:text-cyan-400"></i>
+                            <i className="ti ti-info-circle text-base text-[var(--color-primary)] dark:text-cyan-400"></i>
                             <span>Sinkronisasi SINTA & Sister</span>
                         </div>
                         <p className="leading-relaxed text-slate-500 dark:text-slate-400">
@@ -276,7 +276,7 @@ export default function ProfileIndex() {
                     <ModernPageCard>
                         <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-slate-700/60">
                             <div className="flex items-center gap-2.5">
-                                <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-[#1e3a6e] dark:text-cyan-400 flex items-center justify-center text-base">
+                                <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-[var(--color-primary)] dark:text-cyan-400 flex items-center justify-center text-base">
                                     <i className="ti ti-user"></i>
                                 </div>
                                 <h3 className="font-bold text-slate-800 dark:text-slate-100 text-sm">
@@ -294,7 +294,7 @@ export default function ProfileIndex() {
                                     type="text"
                                     value={user.name}
                                     onChange={(e) => setUser({ ...user, name: e.target.value })}
-                                    className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500 transition-all"
+                                    className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500 transition-all"
                                     required
                                 />
                             </div>
@@ -320,7 +320,7 @@ export default function ProfileIndex() {
                                     type="email"
                                     value={user.email}
                                     onChange={(e) => setUser({ ...user, email: e.target.value })}
-                                    className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500 transition-all"
+                                    className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500 transition-all"
                                     required
                                 />
                             </div>
@@ -338,7 +338,7 @@ export default function ProfileIndex() {
                                         value={user.whatsapp_number || ""}
                                         onChange={(e) => setUser({ ...user, whatsapp_number: e.target.value })}
                                         placeholder="Contoh: 6281234567890"
-                                        className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500 transition-all font-mono"
+                                        className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl pl-10 pr-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500 transition-all font-mono"
                                     />
                                 </div>
                             </div>
@@ -370,7 +370,7 @@ export default function ProfileIndex() {
                                             value={identity.identity_id || ""}
                                             placeholder="Nomor Induk Dosen Nasional"
                                             onChange={(e) => setIdentity({ ...identity, identity_id: e.target.value })}
-                                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500 font-mono"
+                                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500 font-mono"
                                         />
                                     </div>
 
@@ -381,7 +381,7 @@ export default function ProfileIndex() {
                                         <select
                                             value={identity.type || ""}
                                             onChange={(e) => setIdentity({ ...identity, type: e.target.value })}
-                                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500 capitalize"
+                                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500 capitalize"
                                         >
                                             <option value="">-- Pilih Tipe --</option>
                                             <option value="dosen">Dosen</option>
@@ -399,7 +399,7 @@ export default function ProfileIndex() {
                                             value={identity.title_prefix || ""}
                                             placeholder="Contoh: Dr., Prof."
                                             onChange={(e) => setIdentity({ ...identity, title_prefix: e.target.value })}
-                                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500"
                                         />
                                     </div>
 
@@ -412,7 +412,7 @@ export default function ProfileIndex() {
                                             value={identity.title_suffix || ""}
                                             placeholder="Contoh: M.Kom., Ph.D."
                                             onChange={(e) => setIdentity({ ...identity, title_suffix: e.target.value })}
-                                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500"
                                         />
                                     </div>
 
@@ -425,7 +425,7 @@ export default function ProfileIndex() {
                                             value={identity.last_education || ""}
                                             placeholder="Contoh: S3 Ilmu Komputer"
                                             onChange={(e) => setIdentity({ ...identity, last_education: e.target.value })}
-                                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500"
                                         />
                                     </div>
 
@@ -438,7 +438,7 @@ export default function ProfileIndex() {
                                             value={identity.functional_position || ""}
                                             placeholder="Contoh: Lektor Kepala"
                                             onChange={(e) => setIdentity({ ...identity, functional_position: e.target.value })}
-                                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500"
                                         />
                                     </div>
                                 </div>
@@ -469,7 +469,7 @@ export default function ProfileIndex() {
                                                 value={identity[field.key] || ""}
                                                 placeholder={field.placeholder || ""}
                                                 onChange={(e) => setIdentity({ ...identity, [field.key]: e.target.value })}
-                                                className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500 font-mono transition-all"
+                                                className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500 font-mono transition-all"
                                             />
                                         </div>
                                     ))}
@@ -497,7 +497,7 @@ export default function ProfileIndex() {
                                         <select
                                             value={identity.gender || ""}
                                             onChange={(e) => setIdentity({ ...identity, gender: e.target.value })}
-                                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500"
                                         >
                                             <option value="">-- Pilih Jenis Kelamin --</option>
                                             <option value="L">Laki-laki</option>
@@ -513,7 +513,7 @@ export default function ProfileIndex() {
                                             type="date"
                                             value={identity.birthdate || ""}
                                             onChange={(e) => setIdentity({ ...identity, birthdate: e.target.value })}
-                                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500"
                                         />
                                     </div>
 
@@ -526,7 +526,7 @@ export default function ProfileIndex() {
                                             value={identity.birthplace || ""}
                                             placeholder="Kota kelahiran"
                                             onChange={(e) => setIdentity({ ...identity, birthplace: e.target.value })}
-                                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500"
                                         />
                                     </div>
 
@@ -539,7 +539,7 @@ export default function ProfileIndex() {
                                             placeholder="Alamat domisili lengkap"
                                             onChange={(e) => setIdentity({ ...identity, address: e.target.value })}
                                             rows={3}
-                                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500"
                                         />
                                     </div>
                                 </div>

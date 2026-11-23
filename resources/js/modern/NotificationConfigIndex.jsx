@@ -164,7 +164,7 @@ export default function NotificationConfigIndex() {
             <ModernPageCard>
                 <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-slate-700/60">
                     <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#1e3a6e] dark:text-cyan-400 flex items-center justify-center text-xl shadow-xs">
+                        <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[var(--color-primary)] dark:text-cyan-400 flex items-center justify-center text-xl shadow-xs">
                             <i className="ti ti-mail"></i>
                         </div>
                         <div>
@@ -172,14 +172,14 @@ export default function NotificationConfigIndex() {
                             <p className="text-xs text-slate-500 dark:text-slate-400">Pengiriman surel persetujuan, revisi berkas, dan pengingat tenggat waktu.</p>
                         </div>
                     </div>
-                    <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-blue-50 dark:bg-blue-950/60 text-[#1e3a6e] dark:text-cyan-300 border border-blue-200/60 dark:border-blue-800/60 hidden sm:inline-block">
+                    <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-blue-50 dark:bg-blue-950/60 text-[var(--color-primary)] dark:text-cyan-300 border border-blue-200/60 dark:border-blue-800/60 hidden sm:inline-block">
                         Protokol SMTP
                     </span>
                 </div>
 
                 {/* Info Note */}
                 <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/70 dark:border-slate-700/70 text-xs text-slate-600 dark:text-slate-300 mb-5 flex items-start gap-2.5">
-                    <i className="ti ti-info-circle text-base text-[#1e3a6e] dark:text-cyan-400 shrink-0 mt-0.5"></i>
+                    <i className="ti ti-info-circle text-base text-[var(--color-primary)] dark:text-cyan-400 shrink-0 mt-0.5"></i>
                     <p className="leading-relaxed">
                         Gunakan server SMTP kampus (misal: <code className="px-1.5 py-0.5 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono">mail.itsnu.ac.id</code>, port 465/SSL atau 587/TLS) atau Google Workspace dengan App Password aktif.
                     </p>
@@ -196,7 +196,7 @@ export default function NotificationConfigIndex() {
                             value={smtp.host}
                             onChange={(e) => setSmtp({ ...smtp, host: e.target.value })}
                             placeholder="Contoh: smtp.gmail.com atau mail.itsnu.ac.id"
-                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500 font-mono"
+                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500 font-mono"
                         />
                     </div>
 
@@ -210,12 +210,12 @@ export default function NotificationConfigIndex() {
                                 value={smtp.port}
                                 onChange={(e) => setSmtp({ ...smtp, port: e.target.value })}
                                 placeholder="587"
-                                className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500 font-mono text-center"
+                                className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500 font-mono text-center"
                             />
                             <select
                                 value={smtp.encryption}
                                 onChange={(e) => setSmtp({ ...smtp, encryption: e.target.value })}
-                                className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-2 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500 uppercase font-bold"
+                                className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-2 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500 uppercase font-bold"
                             >
                                 <option value="tls">TLS</option>
                                 <option value="ssl">SSL</option>
@@ -233,7 +233,7 @@ export default function NotificationConfigIndex() {
                             value={smtp.username}
                             onChange={(e) => setSmtp({ ...smtp, username: e.target.value })}
                             placeholder="noreply@itsnu.ac.id"
-                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500 font-mono"
+                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500 font-mono"
                         />
                     </div>
 
@@ -247,7 +247,7 @@ export default function NotificationConfigIndex() {
                             value={smtp.password}
                             onChange={(e) => setSmtp({ ...smtp, password: e.target.value })}
                             placeholder="••••••••••••••••"
-                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500 font-mono"
+                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500 font-mono"
                         />
                     </div>
 
@@ -260,7 +260,7 @@ export default function NotificationConfigIndex() {
                             value={smtp.from_address}
                             onChange={(e) => setSmtp({ ...smtp, from_address: e.target.value })}
                             placeholder="lppm@itsnu.ac.id"
-                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500 font-mono"
+                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500 font-mono"
                         />
                     </div>
 
@@ -273,7 +273,7 @@ export default function NotificationConfigIndex() {
                             value={smtp.from_name}
                             onChange={(e) => setSmtp({ ...smtp, from_name: e.target.value })}
                             placeholder="SIM-LPPM ITSNU Pekalongan"
-                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500"
                         />
                     </div>
                 </div>
@@ -296,7 +296,7 @@ export default function NotificationConfigIndex() {
                             value={testEmail}
                             onChange={(e) => setTestEmail(e.target.value)}
                             placeholder="alamat-email-tujuan@domain.com"
-                            className="flex-1 sm:w-64 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500 font-mono"
+                            className="flex-1 sm:w-64 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500 font-mono"
                         />
                         <Button onClick={handleTestEmail} variant="secondary" size="sm" disabled={testing.email}>
                             {testing.email ? "Mengirim…" : "Kirim Uji"}
@@ -341,7 +341,7 @@ export default function NotificationConfigIndex() {
                             value={whatsapp.api_url}
                             onChange={(e) => setWhatsapp({ ...whatsapp, api_url: e.target.value })}
                             placeholder="Contoh: https://api.fonnte.com/send"
-                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500 font-mono"
+                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500 font-mono"
                         />
                     </div>
 
@@ -355,7 +355,7 @@ export default function NotificationConfigIndex() {
                             value={whatsapp.api_key}
                             onChange={(e) => setWhatsapp({ ...whatsapp, api_key: e.target.value })}
                             placeholder="••••••••••••••••"
-                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500 font-mono"
+                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500 font-mono"
                         />
                     </div>
 
@@ -368,7 +368,7 @@ export default function NotificationConfigIndex() {
                             value={whatsapp.sender_id}
                             onChange={(e) => setWhatsapp({ ...whatsapp, sender_id: e.target.value })}
                             placeholder="Format: 628xxxxxxxxxx"
-                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500 font-mono"
+                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500 font-mono"
                         />
                     </div>
                 </div>
@@ -391,7 +391,7 @@ export default function NotificationConfigIndex() {
                             value={testPhone}
                             onChange={(e) => setTestPhone(e.target.value)}
                             placeholder="628xxxxxxxxxx"
-                            className="flex-1 sm:w-64 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500 font-mono"
+                            className="flex-1 sm:w-64 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500 font-mono"
                         />
                         <Button onClick={handleTestWhatsApp} variant="secondary" size="sm" disabled={testing.whatsapp}>
                             {testing.whatsapp ? "Mengirim…" : "Kirim Uji"}

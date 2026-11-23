@@ -88,7 +88,7 @@ export default function ProposalsIndex() {
             label: "Judul",
             render: (p) => (
                 <div>
-                    <div className="font-bold text-slate-800 dark:text-slate-100 group-hover:text-[#1e3a6e] dark:group-hover:text-cyan-400 transition-colors">
+                    <div className="font-bold text-slate-800 dark:text-slate-100 group-hover:text-[var(--color-primary)] dark:group-hover:text-cyan-400 transition-colors">
                         {p.title}
                     </div>
                     {p.focus_area && (
@@ -130,7 +130,7 @@ export default function ProposalsIndex() {
             render: (p) => (
                 <a
                     href={p.show_url}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold text-[#1e3a6e] dark:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition-colors"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold text-[var(--color-primary)] dark:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition-colors"
                 >
                     Lihat &rarr;
                 </a>
@@ -155,13 +155,13 @@ export default function ProposalsIndex() {
                         onChange={(e) => setSearch(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && load()}
                         placeholder="Cari berdasarkan judul..."
-                        className="flex-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                        className="flex-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500"
                     />
                     <select
                         value={roleFilter}
                         aria-label="Filter berdasarkan peran"
                         onChange={(e) => setRoleFilter(e.target.value)}
-                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500"
                     >
                         <option value="all">Semua Peran</option>
                         <option value="ketua">Sebagai Ketua</option>
@@ -171,7 +171,7 @@ export default function ProposalsIndex() {
                         value={status}
                         aria-label="Filter berdasarkan status"
                         onChange={(e) => setStatus(e.target.value)}
-                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                        className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500"
                     >
                         <option value="all">Semua Status</option>
                         {Array.isArray(filtersMeta.statuses) && filtersMeta.statuses.map((s) => (
@@ -183,7 +183,7 @@ export default function ProposalsIndex() {
                             value={year}
                             aria-label="Filter berdasarkan tahun"
                             onChange={(e) => setYear(e.target.value)}
-                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500"
                         >
                             <option value="">Semua Tahun</option>
                             {filtersMeta.years.map((y) => (
@@ -196,7 +196,7 @@ export default function ProposalsIndex() {
                             value={schemeId}
                             aria-label="Filter berdasarkan skema"
                             onChange={(e) => setSchemeId(e.target.value)}
-                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500"
                         >
                             <option value="">Semua Skema</option>
                             {filtersMeta.schemes.map((s) => (
@@ -209,7 +209,7 @@ export default function ProposalsIndex() {
                             value={facultyId}
                             aria-label="Filter berdasarkan fakultas"
                             onChange={(e) => setFacultyId(e.target.value)}
-                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500"
                         >
                             <option value="">Semua Fakultas</option>
                             {filtersMeta.faculties.map((f) => (
@@ -222,7 +222,7 @@ export default function ProposalsIndex() {
                             value={studyProgramId}
                             aria-label="Filter berdasarkan program studi"
                             onChange={(e) => setStudyProgramId(e.target.value)}
-                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500"
                         >
                             <option value="">Semua Prodi</option>
                             {filtersMeta.study_programs.map((p) => (

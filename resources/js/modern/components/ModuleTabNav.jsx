@@ -49,12 +49,12 @@ export default function ModuleTabNav({ tabs = [], currentPath = "", onTabClick =
                             onClick={handleClick}
                             className={`group inline-flex items-center gap-2 px-3.5 py-2 text-sm font-semibold whitespace-nowrap border-b-2 rounded-t-lg transition-all duration-150 ${
                                 isActive
-                                    ? "border-[#1e3a6e] dark:border-cyan-400 text-[#1e3a6e] dark:text-cyan-400 bg-slate-50/80 dark:bg-slate-700/50"
+                                    ? "border-[var(--color-primary)] dark:border-cyan-400 text-[var(--color-primary)] dark:text-cyan-400 bg-slate-50/80 dark:bg-slate-700/50"
                                     : "border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:border-slate-300 dark:hover:border-slate-600"
                             }`}
                         >
                             {t.icon && (
-                                <span className={`text-base transition-transform group-hover:scale-110 ${isActive ? "text-[#1e3a6e] dark:text-cyan-400" : "text-slate-400 dark:text-slate-500"}`}>
+                                <span className={`text-base transition-transform group-hover:scale-110 ${isActive ? "text-[var(--color-primary)] dark:text-cyan-400" : "text-slate-400 dark:text-slate-500"}`}>
                                     {t.icon}
                                 </span>
                             )}
@@ -62,7 +62,7 @@ export default function ModuleTabNav({ tabs = [], currentPath = "", onTabClick =
                             {t.badge !== undefined && t.badge !== null && (
                                 <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
                                     isActive
-                                        ? "bg-[#1e3a6e] text-white dark:bg-cyan-500 dark:text-slate-900"
+                                        ? "bg-[var(--color-primary)] text-white dark:bg-cyan-500 dark:text-slate-900"
                                         : "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300"
                                 }`}>
                                     {t.badge}

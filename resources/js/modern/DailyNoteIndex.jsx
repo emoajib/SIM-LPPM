@@ -303,7 +303,7 @@ export default function DailyNoteIndex() {
                                 href={f.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-xs text-[#1e3a6e] dark:text-cyan-400 hover:underline"
+                                className="text-xs text-[var(--color-primary)] dark:text-cyan-400 hover:underline"
                             >
                                 📎 {f.name}
                             </a>
@@ -454,7 +454,7 @@ export default function DailyNoteIndex() {
                 </div>
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4">
                     <div className="text-xs text-slate-500 dark:text-slate-400 uppercase font-semibold">Realisasi Riil</div>
-                    <div className="text-2xl font-bold text-[#1e3a6e] dark:text-cyan-400">{formatRupiah(totalActual)}</div>
+                    <div className="text-2xl font-bold text-[var(--color-primary)] dark:text-cyan-400">{formatRupiah(totalActual)}</div>
                 </div>
                 <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4">
                     <div className="text-xs text-slate-500 dark:text-slate-400 uppercase font-semibold">Terkunci</div>
@@ -479,7 +479,7 @@ export default function DailyNoteIndex() {
                             href={`/financial-reports/${window.__PROPOSAL_ID__}/export-pdf?preview=1`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-bold text-[#1e3a6e] dark:text-cyan-400 border border-[#1e3a6e]/30 dark:border-cyan-500/30 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition"
+                            className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-bold text-[var(--color-primary)] dark:text-cyan-400 border border-[var(--color-primary)]/30 dark:border-cyan-500/30 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition"
                         >
                             👁️ Preview PDF
                         </a>
@@ -525,7 +525,7 @@ export default function DailyNoteIndex() {
                                 type="date"
                                 value={form.activity_date}
                                 onChange={(e) => setForm({ ...form, activity_date: e.target.value })}
-                                className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                                 required
                             />
                         </div>
@@ -537,7 +537,7 @@ export default function DailyNoteIndex() {
                                 max="100"
                                 value={form.progress_percentage}
                                 onChange={(e) => setForm({ ...form, progress_percentage: parseInt(e.target.value) || 0 })}
-                                className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                             />
                         </div>
                     </div>
@@ -547,7 +547,7 @@ export default function DailyNoteIndex() {
                             value={form.activity_description}
                             onChange={(e) => setForm({ ...form, activity_description: e.target.value })}
                             rows={3}
-                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                             required
                         />
                     </div>
@@ -557,7 +557,7 @@ export default function DailyNoteIndex() {
                             type="text"
                             value={form.notes}
                             onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                             placeholder="Catatan tambahan..."
                         />
                     </div>
@@ -567,7 +567,7 @@ export default function DailyNoteIndex() {
                             <select
                                 value={form.budget_group_id}
                                 onChange={(e) => setForm({ ...form, budget_group_id: e.target.value })}
-                                className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                             >
                                 <option value="">Pilih kelompok anggaran</option>
                                 {budgetGroups.map((bg) => (
@@ -584,7 +584,7 @@ export default function DailyNoteIndex() {
                                 min="0"
                                 value={form.amount}
                                 onChange={(e) => setForm({ ...form, amount: parseFloat(e.target.value) || 0 })}
-                                className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e]"
+                                className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                                 placeholder="0"
                             />
                         </div>

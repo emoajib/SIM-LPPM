@@ -130,7 +130,7 @@ export default function PasswordIndex() {
                     <ModernPageCard>
                         <div className="flex items-center justify-between pb-3 mb-5 border-b border-slate-100 dark:border-slate-700/60">
                             <div className="flex items-center gap-2.5">
-                                <div className="w-9 h-9 rounded-xl bg-[#1e3a6e]/10 dark:bg-cyan-950/60 text-[#1e3a6e] dark:text-cyan-400 flex items-center justify-center text-lg shadow-xs">
+                                <div className="w-9 h-9 rounded-xl bg-[var(--color-primary)]/10 dark:bg-cyan-950/60 text-[var(--color-primary)] dark:text-cyan-400 flex items-center justify-center text-lg shadow-xs">
                                     <i className="ti ti-key"></i>
                                 </div>
                                 <div>
@@ -163,7 +163,7 @@ export default function PasswordIndex() {
                                         onChange={setField("current_password")}
                                         aria-invalid={Boolean(errors.current_password)}
                                         aria-describedby={errors.current_password ? "err-current_password" : undefined}
-                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl pl-10 pr-10 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500 focus:bg-white dark:focus:bg-slate-900 transition-all font-mono"
+                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl pl-10 pr-10 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500 focus:bg-white dark:focus:bg-slate-900 transition-all font-mono"
                                         placeholder="••••••••••••"
                                         required
                                     />
@@ -209,7 +209,7 @@ export default function PasswordIndex() {
                                         onChange={setField("password")}
                                         aria-invalid={Boolean(errors.password)}
                                         aria-describedby={errors.password ? "err-password" : "hint-password"}
-                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl pl-10 pr-10 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500 focus:bg-white dark:focus:bg-slate-900 transition-all font-mono"
+                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl pl-10 pr-10 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500 focus:bg-white dark:focus:bg-slate-900 transition-all font-mono"
                                         placeholder="••••••••••••"
                                         required
                                     />
@@ -274,7 +274,7 @@ export default function PasswordIndex() {
                                         value={form.password_confirmation}
                                         onChange={setField("password_confirmation")}
                                         aria-invalid={Boolean(errors.password_confirmation)}
-                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl pl-10 pr-10 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500 focus:bg-white dark:focus:bg-slate-900 transition-all font-mono"
+                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl pl-10 pr-10 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500 focus:bg-white dark:focus:bg-slate-900 transition-all font-mono"
                                         placeholder="••••••••••••"
                                         required
                                     />
@@ -345,7 +345,7 @@ export default function PasswordIndex() {
                     {/* Security Advice Card */}
                     <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/70 rounded-2xl p-5 text-xs text-slate-600 dark:text-slate-300 space-y-3">
                         <div className="flex items-center gap-2 font-bold text-slate-800 dark:text-slate-200">
-                            <i className="ti ti-lock-heart text-base text-[#1e3a6e] dark:text-cyan-400"></i>
+                            <i className="ti ti-lock-heart text-base text-[var(--color-primary)] dark:text-cyan-400"></i>
                             <span>Pedoman Keamanan Siber LPPM</span>
                         </div>
                         <p className="leading-relaxed text-slate-500 dark:text-slate-400">

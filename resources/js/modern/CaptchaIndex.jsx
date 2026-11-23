@@ -124,7 +124,7 @@ export default function CaptchaIndex() {
 
             {/* Accessibility Note */}
             <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 text-xs text-slate-600 dark:text-slate-300 flex items-start gap-3">
-                <i className="ti ti-info-circle text-lg shrink-0 mt-0.5 text-[#1e3a6e] dark:text-cyan-400"></i>
+                <i className="ti ti-info-circle text-lg shrink-0 mt-0.5 text-[var(--color-primary)] dark:text-cyan-400"></i>
                 <div className="leading-relaxed">
                     Tantangan audio CAPTCHA dirancang untuk aksesibilitas pengguna (disabilitas penglihatan). Modul audio otomatis aktif sebagai fallback saat proteksi Cloudflare Turnstile tidak dikonfigurasi.
                 </div>
@@ -134,7 +134,7 @@ export default function CaptchaIndex() {
             <ModernPageCard>
                 <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-slate-700/60">
                     <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#1e3a6e] dark:text-cyan-400 flex items-center justify-center text-xl shadow-xs">
+                        <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[var(--color-primary)] dark:text-cyan-400 flex items-center justify-center text-xl shadow-xs">
                             <i className="ti ti-volume"></i>
                         </div>
                         <div>
@@ -177,7 +177,7 @@ export default function CaptchaIndex() {
                             onChange={(e) => setAudioEnabled(e.target.checked)}
                             className="sr-only peer"
                         />
-                        <span className="w-11 h-6 bg-slate-400 dark:bg-slate-500 border border-slate-400 dark:border-slate-500 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#1e3a6e] rounded-full peer-checked:bg-emerald-600 dark:peer-checked:bg-emerald-500 transition-colors" />
+                        <span className="w-11 h-6 bg-slate-400 dark:bg-slate-500 border border-slate-400 dark:border-slate-500 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--color-primary)] rounded-full peer-checked:bg-emerald-600 dark:peer-checked:bg-emerald-500 transition-colors" />
                         <span className="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform peer-checked:translate-x-5" />
                     </label>
                 </div>
@@ -209,7 +209,7 @@ export default function CaptchaIndex() {
                                 key={voice.key}
                                 className={`relative flex items-start gap-3.5 p-4 rounded-xl border transition-all cursor-pointer ${
                                     isSelected
-                                        ? "bg-[#1e3a6e]/5 border-[#1e3a6e] dark:bg-cyan-950/30 dark:border-cyan-500 shadow-xs ring-1 ring-[#1e3a6e] dark:ring-cyan-500"
+                                        ? "bg-[var(--color-primary)]/5 border-[var(--color-primary)] dark:bg-cyan-950/30 dark:border-cyan-500 shadow-xs ring-1 ring-[var(--color-primary)] dark:ring-cyan-500"
                                         : "bg-white dark:bg-slate-800 border-slate-200/80 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600"
                                 } ${voice.available ? "" : "opacity-50 cursor-not-allowed bg-slate-50 dark:bg-slate-900/40"}`}
                             >
@@ -220,7 +220,7 @@ export default function CaptchaIndex() {
                                     checked={isSelected}
                                     disabled={!voice.available}
                                     onChange={() => setAudioVoice(voice.key)}
-                                    className="mt-1 text-[#1e3a6e] focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                                    className="mt-1 text-[var(--color-primary)] focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500"
                                 />
 
                                 <div className="flex-1 min-w-0">

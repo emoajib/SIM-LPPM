@@ -114,7 +114,7 @@ export default function DashboardIndex() {
             label: "Judul",
             render: (p) => (
                 <div>
-                    <div className="font-bold text-slate-800 dark:text-slate-100 group-hover:text-[#1e3a6e] dark:group-hover:text-cyan-400 transition-colors">
+                    <div className="font-bold text-slate-800 dark:text-slate-100 group-hover:text-[var(--color-primary)] dark:group-hover:text-cyan-400 transition-colors">
                         {p.title}
                     </div>
                     {p.focus_area && (
@@ -165,7 +165,7 @@ export default function DashboardIndex() {
             render: (p) => (
                 <a
                     href={p.show_url}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold text-[#1e3a6e] dark:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition-colors"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold text-[var(--color-primary)] dark:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition-colors"
                 >
                     Lihat &rarr;
                 </a>
@@ -175,7 +175,7 @@ export default function DashboardIndex() {
 
     return (
         <div className="space-y-4">
-            <div className="bg-gradient-to-r from-[#11244e] via-[#1e3a6e] to-[#254b8c] text-white rounded-xl p-5 shadow-md relative overflow-hidden">
+            <div className="bg-gradient-to-r from-[var(--color-primary-dark)] via-[var(--color-primary)] to-[var(--color-primary-light)] text-white rounded-xl p-5 shadow-md relative overflow-hidden">
                 <div className="relative z-10">
                     <div className="text-[10px] font-black uppercase tracking-widest text-cyan-200">
                         SIM-LPPM ITSNU Pekalongan
@@ -215,12 +215,12 @@ export default function DashboardIndex() {
             {/* Total Summary Mini Banner */}
             <div className="rounded-xl p-4 shadow-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 flex items-center justify-between transition-colors">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-[#1e3a6e]/10 dark:bg-cyan-500/20 text-[#1e3a6e] dark:text-cyan-400 flex items-center justify-center text-xl">
+                    <div className="w-10 h-10 rounded-lg bg-[var(--color-primary)]/10 dark:bg-cyan-500/20 text-[var(--color-primary)] dark:text-cyan-400 flex items-center justify-center text-xl">
                         📈
                     </div>
                     <div>
                         <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Keseluruhan Usulan</div>
-                        <div className="text-lg font-black text-[#1e3a6e] dark:text-cyan-400">{total} Judul Terdata</div>
+                        <div className="text-lg font-black text-[var(--color-primary)] dark:text-cyan-400">{total} Judul Terdata</div>
                     </div>
                 </div>
                 <div className="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">
@@ -249,7 +249,7 @@ export default function DashboardIndex() {
                                     onClick={() => setActiveNav(item.key)}
                                     className={`px-3.5 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition inline-flex items-center gap-1.5 ${
                                         isCurrent
-                                            ? "bg-[#1e3a6e] dark:bg-cyan-600 text-white shadow-sm"
+                                            ? "bg-[var(--color-primary)] dark:bg-cyan-600 text-white shadow-sm"
                                             : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/60"
                                     }`}
                                 >
@@ -294,7 +294,7 @@ export default function DashboardIndex() {
                             onChange={(e) => setSearch(e.target.value)}
                             onKeyDown={(e) => e.key === "Enter" && loadProposals(1)}
                             placeholder="Ketik judul usulan lalu tekan enter..."
-                            className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                            className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500"
                         />
                     </div>
                     <div className="w-full md:w-40">
@@ -303,7 +303,7 @@ export default function DashboardIndex() {
                             value={typeFilter}
                             aria-label="Filter tipe proposal di dashboard"
                             onChange={(e) => setTypeFilter(e.target.value)}
-                            className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                            className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500"
                         >
                             <option value="all">Semua Tipe</option>
                             <option value="research">Penelitian</option>
@@ -316,7 +316,7 @@ export default function DashboardIndex() {
                             value={status}
                             aria-label="Filter status proposal di dashboard"
                             onChange={(e) => setStatus(e.target.value)}
-                            className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                            className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500"
                         >
                             <option value="all">Semua Status</option>
                             <option value="draft">Draft</option>

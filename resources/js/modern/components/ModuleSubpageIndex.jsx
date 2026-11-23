@@ -8,7 +8,7 @@ import ModernTable from "./ModernTable.jsx";
 import { STATUS_COLORS, MODULE_TABS, getVerifierTab } from "../constants/themeColors.js";
 
 const SELECT_CLASS =
-    "bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500";
+    "bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500";
 
 /**
  * Format angka ke Rupiah Indonesia.
@@ -153,7 +153,7 @@ export default function ModuleSubpageIndex({
             key: "title",
             label: "Judul",
             render: (p) => (
-                <div className="font-bold text-slate-800 dark:text-slate-100 group-hover:text-[#1e3a6e] dark:group-hover:text-cyan-400 transition-colors">
+                <div className="font-bold text-slate-800 dark:text-slate-100 group-hover:text-[var(--color-primary)] dark:group-hover:text-cyan-400 transition-colors">
                     {p.title}
                 </div>
             ),
@@ -193,7 +193,7 @@ export default function ModuleSubpageIndex({
             render: (p) => (
                 <a
                     href={actionUrlFn ? actionUrlFn(p) : p.show_url}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold text-[#1e3a6e] dark:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition-colors"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold text-[var(--color-primary)] dark:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition-colors"
                 >
                     Lihat &rarr;
                 </a>
@@ -238,7 +238,7 @@ export default function ModuleSubpageIndex({
 
     const statCards = isFinalReport && stats
         ? [
-            { key: "all", label: "Total Wajib Lapor", value: stats.total, tone: "text-[#1e3a6e] dark:text-cyan-400", border: "border-[#1e3a6e] dark:border-cyan-500" },
+            { key: "all", label: "Total Wajib Lapor", value: stats.total, tone: "text-[var(--color-primary)] dark:text-cyan-400", border: "border-[var(--color-primary)] dark:border-cyan-500" },
             { key: "approved", label: "Laporan Selesai", value: stats.approved, tone: "text-emerald-600 dark:text-emerald-400", border: "border-emerald-500" },
             { key: "submitted", label: "Dalam Proses", value: stats.in_review, tone: "text-sky-600 dark:text-sky-400", border: "border-sky-500" },
             { key: "belum_laporan", label: "Belum Laporan", value: stats.belum_laporan, tone: "text-amber-600 dark:text-amber-400", border: "border-amber-500" },
@@ -284,7 +284,7 @@ export default function ModuleSubpageIndex({
                         onChange={(e) => setSearch(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && load(1)}
                         placeholder={searchPlaceholder}
-                        className="flex-1 min-w-[200px] bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500"
+                        className="flex-1 min-w-[200px] bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500"
                     />
                     {isDosen && (
                         <select

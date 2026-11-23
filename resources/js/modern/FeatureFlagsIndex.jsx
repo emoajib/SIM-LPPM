@@ -22,7 +22,7 @@ function FeatureToggleItem({ id, checked, onChange, label, description, icon = n
         <div className="flex items-start justify-between gap-4 p-4 rounded-xl bg-slate-50/70 dark:bg-slate-900/40 border border-slate-200/70 dark:border-slate-700/60 hover:bg-slate-50 dark:hover:bg-slate-900/70 transition-colors">
             <div className="flex items-start gap-3 min-w-0">
                 {icon && (
-                    <div className="w-8 h-8 rounded-lg bg-white dark:bg-slate-800 text-[#1e3a6e] dark:text-cyan-400 flex items-center justify-center text-base shrink-0 shadow-2xs mt-0.5 border border-slate-200/50 dark:border-slate-700/50">
+                    <div className="w-8 h-8 rounded-lg bg-white dark:bg-slate-800 text-[var(--color-primary)] dark:text-cyan-400 flex items-center justify-center text-base shrink-0 shadow-2xs mt-0.5 border border-slate-200/50 dark:border-slate-700/50">
                         <i className={icon}></i>
                     </div>
                 )}
@@ -53,7 +53,7 @@ function FeatureToggleItem({ id, checked, onChange, label, description, icon = n
                     onChange={(e) => onChange(e.target.checked)}
                     className="sr-only peer"
                 />
-                <span className="w-11 h-6 bg-slate-400 dark:bg-slate-500 border border-slate-400 dark:border-slate-500 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#1e3a6e] rounded-full peer-checked:bg-emerald-600 dark:peer-checked:bg-emerald-500 transition-colors" />
+                <span className="w-11 h-6 bg-slate-400 dark:bg-slate-500 border border-slate-400 dark:border-slate-500 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--color-primary)] rounded-full peer-checked:bg-emerald-600 dark:peer-checked:bg-emerald-500 transition-colors" />
                 <span className="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform peer-checked:translate-x-5" />
             </label>
         </div>
@@ -172,7 +172,7 @@ export default function FeatureFlagsIndex() {
             <ModernPageCard>
                 <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-slate-700/60">
                     <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#1e3a6e] dark:text-cyan-400 flex items-center justify-center text-xl shadow-xs">
+                        <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[var(--color-primary)] dark:text-cyan-400 flex items-center justify-center text-xl shadow-xs">
                             <i className="ti ti-school"></i>
                         </div>
                         <div>
@@ -217,7 +217,7 @@ export default function FeatureFlagsIndex() {
                     {/* Reviewer Count Field */}
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-slate-50/70 dark:bg-slate-900/40 border border-slate-200/70 dark:border-slate-700/60">
                         <div className="flex items-start gap-3 min-w-0">
-                            <div className="w-8 h-8 rounded-lg bg-white dark:bg-slate-800 text-[#1e3a6e] dark:text-cyan-400 flex items-center justify-center text-base shrink-0 shadow-2xs mt-0.5 border border-slate-200/50 dark:border-slate-700/50">
+                            <div className="w-8 h-8 rounded-lg bg-white dark:bg-slate-800 text-[var(--color-primary)] dark:text-cyan-400 flex items-center justify-center text-base shrink-0 shadow-2xs mt-0.5 border border-slate-200/50 dark:border-slate-700/50">
                                 <i className="ti ti-user-check"></i>
                             </div>
                             <div>
@@ -234,7 +234,7 @@ export default function FeatureFlagsIndex() {
                             id="reviewer_count_select"
                             value={flags.reviewer_count_required}
                             onChange={(e) => set("reviewer_count_required")(Number(e.target.value))}
-                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-800 dark:text-slate-100 font-bold focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500 shrink-0 self-end sm:self-auto"
+                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-800 dark:text-slate-100 font-bold focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500 shrink-0 self-end sm:self-auto"
                             aria-label="Jumlah reviewer per proposal"
                         >
                             <option value={1}>1 Reviewer</option>
@@ -249,7 +249,7 @@ export default function FeatureFlagsIndex() {
             <ModernPageCard>
                 <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-slate-700/60">
                     <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 rounded-xl bg-cyan-50 dark:bg-cyan-950/60 text-[#1e3a6e] dark:text-cyan-400 flex items-center justify-center text-xl shadow-xs">
+                        <div className="w-9 h-9 rounded-xl bg-cyan-50 dark:bg-cyan-950/60 text-[var(--color-primary)] dark:text-cyan-400 flex items-center justify-center text-xl shadow-xs">
                             <i className="ti ti-file-text"></i>
                         </div>
                         <div>
@@ -276,7 +276,7 @@ export default function FeatureFlagsIndex() {
                     {/* Metode Tanda Tangan Select */}
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-slate-50/70 dark:bg-slate-900/40 border border-slate-200/70 dark:border-slate-700/60">
                         <div className="flex items-start gap-3 min-w-0">
-                            <div className="w-8 h-8 rounded-lg bg-white dark:bg-slate-800 text-[#1e3a6e] dark:text-cyan-400 flex items-center justify-center text-base shrink-0 shadow-2xs mt-0.5 border border-slate-200/50 dark:border-slate-700/50">
+                            <div className="w-8 h-8 rounded-lg bg-white dark:bg-slate-800 text-[var(--color-primary)] dark:text-cyan-400 flex items-center justify-center text-base shrink-0 shadow-2xs mt-0.5 border border-slate-200/50 dark:border-slate-700/50">
                                 <i className="ti ti-writing"></i>
                             </div>
                             <div>
@@ -293,7 +293,7 @@ export default function FeatureFlagsIndex() {
                             id="surat_signature_select"
                             value={flags.surat_signature_mode}
                             onChange={set("surat_signature_mode")}
-                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-800 dark:text-slate-100 font-bold focus:outline-none focus:ring-2 focus:ring-[#1e3a6e] dark:focus:ring-cyan-500 shrink-0 self-end sm:self-auto"
+                            className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-800 dark:text-slate-100 font-bold focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500 shrink-0 self-end sm:self-auto"
                             aria-label="Metode tanda tangan utama"
                         >
                             <option value="tte">TTE Digital (QR Code)</option>

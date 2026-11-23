@@ -80,7 +80,7 @@ export default function SettingsHeaderNav({
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="min-w-0">
                         {categoryBadge && (
-                            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#1e3a6e]/10 dark:bg-cyan-950/60 text-[#1e3a6e] dark:text-cyan-300 border border-[#1e3a6e]/15 dark:border-cyan-800/60 mb-2">
+                            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[var(--color-primary)]/10 dark:bg-cyan-950/60 text-[var(--color-primary)] dark:text-cyan-300 border border-[var(--color-primary)]/15 dark:border-cyan-800/60 mb-2">
                                 <i className="ti ti-adjustments-alt text-xs"></i>
                                 {categoryBadge}
                             </div>
@@ -117,13 +117,13 @@ export default function SettingsHeaderNav({
                                 aria-current={isActive ? "page" : undefined}
                                 className={`group inline-flex items-center gap-2 px-3.5 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-all duration-150 ${
                                     isActive
-                                        ? "border-[#1e3a6e] dark:border-cyan-400 text-[#1e3a6e] dark:text-cyan-400 bg-white dark:bg-slate-800/90 shadow-2xs"
+                                        ? "border-[var(--color-primary)] dark:border-cyan-400 text-[var(--color-primary)] dark:text-cyan-400 bg-white dark:bg-slate-800/90 shadow-2xs"
                                         : "border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:border-slate-300 dark:hover:border-slate-600"
                                 }`}
                             >
                                 <i
                                     className={`${t.icon} text-base transition-transform group-hover:scale-110 ${
-                                        isActive ? "text-[#1e3a6e] dark:text-cyan-400" : "text-slate-400 dark:text-slate-500"
+                                        isActive ? "text-[var(--color-primary)] dark:text-cyan-400" : "text-slate-400 dark:text-slate-500"
                                     }`}
                                 ></i>
                                 <span>{t.label}</span>

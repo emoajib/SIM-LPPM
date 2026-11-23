@@ -2,7 +2,7 @@ import React from "react";
 
 // Vetted by SOSIOMEN - Manual Review Required by Senior Engineer/Manager
 const VARIANTS = {
-    primary:   "bg-[#1e3a6e] text-white hover:bg-[#254b8c] shadow-sm dark:bg-[#254b8c] dark:hover:bg-[#1e3a6e]",
+    primary:   "bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-light)] shadow-sm dark:bg-[var(--color-primary-light)] dark:hover:bg-[var(--color-primary)]",
     purple:    "bg-purple-600 text-white hover:bg-purple-700 shadow-sm dark:bg-purple-700 dark:hover:bg-purple-600",
     secondary: "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600",
     ghost:     "bg-transparent text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700",
@@ -16,7 +16,7 @@ export default function Button({ children, variant = "primary", size = "md", dis
     return (
         <button
             disabled={disabled}
-            className={`inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1e3a6e] disabled:opacity-50 disabled:cursor-not-allowed ${VARIANTS[variant]} ${sizes[size]} ${className}`}
+            className={`inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)] disabled:opacity-50 disabled:cursor-not-allowed ${VARIANTS[variant]} ${sizes[size]} ${className}`}
             {...props}
         >
             {children}

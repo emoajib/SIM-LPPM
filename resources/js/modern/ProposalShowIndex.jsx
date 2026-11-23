@@ -162,7 +162,7 @@ export default function ProposalShowIndex() {
                 {proposal.show_url && (
                     <a
                         href={proposal.show_url}
-                        className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-bold text-[#1e3a6e] dark:text-cyan-400 border border-[#1e3a6e]/30 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition"
+                        className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-bold text-[var(--color-primary)] dark:text-cyan-400 border border-[var(--color-primary)]/30 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition"
                         title="Buka workflow, surat, tim, kontrak, amandemen RAB, dan hapus di tampilan klasik"
                     >
                         ⚙️ Aksi lanjutan (tampilan klasik)
@@ -183,11 +183,11 @@ export default function ProposalShowIndex() {
                     </div>
                     <div className="flex items-center gap-2">
                         {proposal.can_edit && (
-                            <a href={proposal.edit_url} className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-bold text-white bg-[#1e3a6e] hover:bg-[#254b8c] transition">
+                            <a href={proposal.edit_url} className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-bold text-white bg-[var(--color-primary)] hover:bg-[var(--color-primary-light)] transition">
                                 ✏️ Edit
                             </a>
                         )}
-                        <a href={proposal.preview_pdf_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-bold text-[#1e3a6e] dark:text-cyan-400 border border-[#1e3a6e]/30 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition">
+                        <a href={proposal.preview_pdf_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-bold text-[var(--color-primary)] dark:text-cyan-400 border border-[var(--color-primary)]/30 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition">
                             👁️ Preview PDF
                         </a>
                         <a href={proposal.export_pdf_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition">
