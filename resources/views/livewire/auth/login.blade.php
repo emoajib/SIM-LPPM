@@ -1,7 +1,4 @@
 <div class="page page-center overflow-hidden" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); position: relative;">
-    <!-- Premium Mesh Gradient Background -->
-    <div style="position: absolute; top: -10%; left: -10%; width: 40%; height: 40%; background: radial-gradient(circle, rgba(32, 107, 196, 0.1) 0%, transparent 70%); filter: blur(50px); z-index: 0;"></div>
-    <div style="position: absolute; bottom: -10%; right: -10%; width: 50%; height: 50%; background: radial-gradient(circle, rgba(40, 167, 69, 0.08) 0%, transparent 70%); filter: blur(60px); z-index: 0;"></div>
 
     <div class="py-5 container-normal container" style="position: relative; z-index: 1;">
         <div class="row justify-content-center">
