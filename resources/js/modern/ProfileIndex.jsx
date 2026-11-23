@@ -287,11 +287,13 @@ export default function ProfileIndex() {
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div className="flex flex-col gap-1.5 sm:col-span-2">
-                                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                                <label htmlFor="profile-name" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                                     Nama Lengkap Beserta Gelar <span className="text-rose-500">*</span>
                                 </label>
                                 <input
+                                    id="profile-name"
                                     type="text"
+                                    autoComplete="name"
                                     value={user.name}
                                     onChange={(e) => setUser({ ...user, name: e.target.value })}
                                     className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500 transition-all"
@@ -313,11 +315,13 @@ export default function ProfileIndex() {
                             </div>
 
                             <div className="flex flex-col gap-1.5">
-                                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                                <label htmlFor="profile-email" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                                     Alamat Email Kampus <span className="text-rose-500">*</span>
                                 </label>
                                 <input
+                                    id="profile-email"
                                     type="email"
+                                    autoComplete="email"
                                     value={user.email}
                                     onChange={(e) => setUser({ ...user, email: e.target.value })}
                                     className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-cyan-500 transition-all"
@@ -326,7 +330,7 @@ export default function ProfileIndex() {
                             </div>
 
                             <div className="flex flex-col gap-1.5 sm:col-span-2">
-                                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                                <label htmlFor="profile-whatsapp" className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                                     Nomor WhatsApp Aktif
                                 </label>
                                 <div className="relative">
@@ -334,7 +338,10 @@ export default function ProfileIndex() {
                                         <i className="ti ti-brand-whatsapp text-base"></i>
                                     </div>
                                     <input
+                                        id="profile-whatsapp"
                                         type="tel"
+                                        inputMode="tel"
+                                        autoComplete="tel"
                                         value={user.whatsapp_number || ""}
                                         onChange={(e) => setUser({ ...user, whatsapp_number: e.target.value })}
                                         placeholder="Contoh: 6281234567890"
