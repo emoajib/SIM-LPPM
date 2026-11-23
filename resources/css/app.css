@@ -992,3 +992,44 @@ body.theme-dark .navbar {
 body.theme-dark a {
     color: #60a5fa;
 }
+
+/* Dark mode typography contrast */
+[data-bs-theme='dark'] h1,
+[data-bs-theme='dark'] h2,
+[data-bs-theme='dark'] h3,
+[data-bs-theme='dark'] h4,
+[data-bs-theme='dark'] h5,
+[data-bs-theme='dark'] h6,
+body.theme-dark h1,
+body.theme-dark h2,
+body.theme-dark h3,
+body.theme-dark h4,
+body.theme-dark h5,
+body.theme-dark h6 {
+    color: #f8fafc;
+}
+[data-bs-theme='dark'] .card-title,
+[data-bs-theme='dark'] .modal-title,
+body.theme-dark .card-title,
+body.theme-dark .modal-title {
+    color: #f8fafc;
+}
+[data-bs-theme='dark'] label,
+[data-bs-theme='dark'] .form-label,
+body.theme-dark label,
+body.theme-dark .form-label {
+    color: #e2e8f0;
+}
+[data-bs-theme='dark'] .table thead th,
+body.theme-dark .table thead th {
+    color: #cbd5e1;
+}
+[data-bs-theme='dark'] ::placeholder,
+body.theme-dark ::placeholder {
+    color: #94a3b8;
+    opacity: 1;
+}
+[data-bs-theme='dark'] .text-dark,
+body.theme-dark .text-dark {
+    color: #e2e8f0 !important;
+}
